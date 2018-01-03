@@ -1,13 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="app">
-        This is the pass-culture
-      </div>
-    );
-  }
+const App = ({ children }) => {
+  return (
+    <div className='app'>
+      {children}
+    </div>
+  )
 }
 
-export default App;
+export default App
