@@ -46,6 +46,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
+    "deploy-staging": "netlify deploy -e staging",
+    "deploy-production": "netlify deploy -e production",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
