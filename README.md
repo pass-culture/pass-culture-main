@@ -2,15 +2,22 @@
 
 ## Installation des outils
 
-$ npm install -g aglio
-$ npm install -g dredd
+```bash
+  npm install -g aglio concurrently drakov dredd
+```
 
-## Générer la documentation html
+## Developement
 
-Dans le répertoire racine :
-$ make
+Pour avoir un drakov mock server à http://localhost:3001
+et un aglios rendant le htm produit par la doc à http://localhost:3002
+(les deux servers reloadent quand vous changez n'importe quel .apib.md dans le folder src):
 
-## Import postman
+```bash
+  make dev
+```
 
-Nécessite drafter : https://github.com/apiaryio/drafter
-et blueman : https://github.com/pixelfusion/blueman
+## Construire le fichier doc correspondant
+
+```bash
+  make build
+```

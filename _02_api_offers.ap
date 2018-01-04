@@ -1,0 +1,131 @@
+### Offers [/offers]
+
+#### pour un PROFESSIONEL [/offers{?sellerId}]
+
+##### List toutes les *offers* [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "events": [
+                    {
+                        "composers": [
+                            {
+                                "id" : "58c2b1d7920ea806e862231e",
+                                "name": "Molière",
+                                "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Pierre_Mignard_-_Portrait_de_Jean-Baptiste_Poquelin_dit_Moli%C3%A8re_%281622-1673%29_-_Google_Art_Project_%28cropped%29.jpg/1200px-Pierre_Mignard_-_Portrait_de_Jean-Baptiste_Poquelin_dit_Moli%C3%A8re_%281622-1673%29_-_Google_Art_Project_%28cropped%29.jpg"
+                            }
+                        ],
+                        "id" : "58c2b1d7920ea816e861233e",
+                        "performers": [
+                          {
+                            "id" : "58c2b1d7920ea806e862231e",
+                            "name": "Denis Podalydes",
+                            "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Denis_Podalydes_Cannes_2011.jpg/220px-Denis_Podalydes_Cannes_2011.jpg"
+                          }
+                        ],
+                        "organizer": {
+                            "id" : "58c2b1d7920ea806e862233e",
+                            "location": {
+                                "address": "1 Place Colette, 75001 Paris",
+                                "geo": {
+                                    "latitude": 48.8635708,
+                                    "longitude": 2.3359376
+                                }
+
+                            },
+                            "name": "La Comédie Française",
+                            "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/42/CFfacadePlacedelOpera.png"
+                        }
+                    }
+                ],
+                "id" : "58c2b1d7920ea806e862230e",
+                "published_at": "2015-08-05T08:40:51.620Z",
+                "title": "Le Misanthrope",
+                "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/LeMisanthrope.jpg",
+                "type": "theater"
+            },
+            {
+                "authors": [
+                    {
+                        "id" : "58c2b1d7920ea806e862234e",
+                        "name": "Albert Camus",
+                        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Albert_Camus%2C_gagnant_de_prix_Nobel%2C_portrait_en_buste%2C_pos%C3%A9_au_bureau%2C_faisant_face_%C3%A0_gauche%2C_cigarette_de_tabagisme.jpg"
+                    }
+                ],
+                "id" : "58c2b1d7920ea806e862230a",
+                "localBusinesses": [
+                    {
+                        "id" : "58c2b1d7920ea806e862230c",
+                        "location": {
+                                "address": "155 Rue Saint Honoré, 75001 Paris",
+                                "geo": {
+                                    "latitude": 48.8619639,
+                                    "longitude": 2.3359426
+                                }
+
+                            },
+                        "name": "Librairie Delamain",
+                        "openingHours": "10AM-8PM",
+                        "thumbnailUrl": "http://static.epagine.fr/mediaweb3/2661/logo_delamain.jpg"
+                    }
+                ],
+                "title": "La Chute",
+                "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/0/0a/La_Chute.jpg/220px-La_Chute.jpg",
+                "type": "book",
+                "published_at": "2015-08-05T09:40:51.620Z"
+            }
+        ]
+
+#### Create New Products [POST]
+
+When you are using the PRO part of the app, you may create your own products using this action.
+
++ Request (application/json)
+
+        [
+            {
+                "authorIds": [
+                    "58c2b1d7920ea806e862231e"
+                ],
+                "localBusinessId": "58c2b1d7920ea806e862230c",
+                "title": "Les Fourberies de Scapin",
+                "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/94/FourberiesScapin.jpg",
+                "type": "book"
+            },
+            {
+                "authors": [
+                    {
+                        "name": "Nabokov",
+                        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Vladimir_Nabokov_1973.jpg/460px-Vladimir_Nabokov_1973.jpg"
+                    }
+                ],
+                "localBusinessId": "58c2b1d7920ea806e862230c",
+                "title": "Ada",
+                "thumbnailUrl": "https://www.babelio.com/couv/CVT_Ada-ou-lardeur--Chronique-familiale_3306.jpeg",
+                "type": "book"
+            }
+        ]
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /products/2
+
+    + Body
+
+            [
+                {
+                    "id" : "58c2b1d7920ea806e862230a",
+                    "published_at": "2015-08-05T10:40:51.620Z"
+                },
+                {
+                    "authorIds": [
+                        "58c2b1d7920ea806e862236a"
+                    ],
+                    "id" : "58c2b1d7920ea806e862235a",
+                    "published_at": "2015-08-05T11:40:51.620Z"
+                }
+            ]
