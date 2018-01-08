@@ -1,33 +1,30 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-class Select extends Component {
-  constructor () {
-    super()
-    this.onOptionClick = this._onOptionClick.bind(this)
-  }
-  _onOptionClick () {
-
-  }
-  render () {
-    const { selectedOption, options } = this.props
-    return (
-      <select className='select'>
-        <option key={-1} disabled selected value>
-          -- select an option --
-        </option>
-        {
-          options.map(({ label, value }, index) => (
-            <option key={index}
-              onClick={value => this.onOptionClick(value)}
-              value={value}
-            >
-              {label}
-            </option>
-          ))
-        }
-      </select>
-    )
-  }
+const Select = ({ className,
+  defaultLabel,
+  extraClass,
+  onOptionClick,
+  options
+}) => {
+  return (
+    <select className={className || 'select'}
+      defaultValue={defaultLabel}
+      onChange={onOptionClick}
+    >
+      <option key={-1} disabled>
+        {defaultLabel}
+      </option>
+      {
+        options.map(({ label, value }, index) => (
+          <option key={index}
+            value={value}
+          >
+            {label}
+          </option>
+        ))
+      }
+    </select>
+  )
 }
 
 export default Select

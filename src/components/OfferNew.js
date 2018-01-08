@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Button from './Button'
 import OfferForm from './OfferForm'
 import { showModal } from '../reducers/modal'
 
@@ -16,11 +15,11 @@ class OfferNew extends Component {
   render () {
     return (
       <div className='flex items-center justify-center p1'>
-        <Button className='button button--alive button--inversed'
+        <button className='button button--alive button--inversed'
           onClick={this.onNewClick}
         >
           New
-        </Button>
+        </button>
       </div>
     )
   }

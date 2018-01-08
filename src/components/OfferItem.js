@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Button from './Button'
 import { showModal } from '../reducers/modal'
 
 class OfferItem extends Component {
@@ -14,33 +13,30 @@ class OfferItem extends Component {
   }
   render () {
     const { name,
-      style,
+      // style,
       work: { thumbnailUrl }
     } = this.props
-    const { imgStyle } = style
+    // const { imgStyle } = style
     return (
       <div className='offer-item flex items-center justify-between mb1 p1'
-        style={style}
-        style={null}
       >
         <img alt='thumbnail'
           className='offer-item__image'
           src={thumbnailUrl}
-          style={imgStyle}
-          style={null}
         />
         {name}
-        <Button className='button button--alive'
+        <button className='button button--alive'
           onClick={this.onEditClick}
         >
           Edit
-        </Button>
+        </button>
       </div>
     )
   }
 }
 
 OfferItem.defaultProps = {
+  /*
   style: { alignItems: 'center',
     display: 'flex',
     imgStyle: {
@@ -49,6 +45,7 @@ OfferItem.defaultProps = {
     },
     width: '20rem'
   }
+  */
 }
 
 export default connect(null, { showModal })(OfferItem)
