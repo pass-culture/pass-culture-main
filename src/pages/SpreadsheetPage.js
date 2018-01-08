@@ -20,9 +20,7 @@ class SpreadsheetPage extends Component {
   render () {
     const { offers } = this.props
     return (
-      <main className='spreadsheet-page flex items-center justify-center'
-        style={{ height: '100vh' }}
-      >
+      <main className='page flex items-center justify-center'>
         <div>
           <OfferNew />
           {
