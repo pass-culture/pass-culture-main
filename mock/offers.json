@@ -1,0 +1,36 @@
+[
+  {
+   "comment": "Nouvelle mise en scène du Misanthrope à la Comédie Française!",
+   "editionDate": "2017-04-10T19:00:00+00:00",
+   "events": [
+      {
+        "endDate": "2017-05-10T19:00:00+00:00",
+        "id" : "58c2b1d7920ea816e861233e",
+        "location": "1 Place Colette, 75001 Paris",
+        "startDate": "2017-05-10T22:00:00+00:00"
+      }
+    ],
+    "id" : "58c2b1d7920ea806e862230e",
+    "name": "Le Misanthrope",
+    "thumbnailUrl": "http://img11.hostingpics.net/pics/632132Image49900001.jpg",
+    "work": {
+      "category": "theater",
+      "composer": "Molière",
+      "id": "58c2b1d7920ea806e862240e",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/LeMisanthrope.jpg"
+    }
+  },
+  {
+      "category": "book",
+      "editionDate": "2017-04-11T19:00:00+00:00",
+      "id" : "58c2b1d7920ea806e862231e",
+      "name": "Le Bourgeois gentilhomme",
+      "work": {
+        "category": "theater",
+        "composer": "Molière",
+        "id": "58c2b1d7920ea806e862240e",
+        "performer": "Clotilde de Bayser, Denis Podalydès, Laurent Natrella, Michel Favory, Alberte Aveline",
+        "thumbnailUrl": "https://static.fnac-static.com/multimedia/Images/FR/NR/da/3c/1c/1850586/1507-1/tsp20160517152634/Le-bourgeois-gentilhomme.jpg"
+      }
+  }
+]

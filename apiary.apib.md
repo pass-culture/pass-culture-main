@@ -6,9 +6,13 @@ HOST: http://localhost:3001
 This is the api of the Pass Culture project.
 
 
+## Ontology
+
 L'ontology se compose tout d'abord de deux types d'utilisateurs: des CLIENTS et des PROFESSIONNELS (de la culture). Chaque PROFESSIONNEL possède une entité *seller* et peuvent proposer des *offers* aux CLIENTS. Ceci consiste à proposer un *price* pour un certain groupe d'*événement* ou un *work*. Si le CLIENT accepte la transaction, ce dernier voit son carnet d'*orders* augmenter de ce dernier achat.
 
 Pour connaître les préférences culturelles des CLIENTS, l'application pose des *questions* à ces derniers lors de son inscription.
+
+## Data Structures
 
 
 ### Events (object)
@@ -25,6 +29,8 @@ Pour connaître les préférences culturelles des CLIENTS, l'application pose de
 #### Properties
 + `comment` (string)
 + `editionDate` (string, required)
++ `id` (string, required)
++ `name` (string, required)
 + `sellerId` (string, required)
 + `thumbnailUrl` (string)
 + `workId` (string, required)
@@ -76,28 +82,35 @@ Pour connaître les préférences culturelles des CLIENTS, l'application pose de
 ### Works (object)
 
 #### Properties
++ `category` (string, required)
 + `composer` (string, required)
 + `date` (string, required)
 + `identifier` (string, required)
 + `name` (string, required)
 + `performer` (string, required)
-+ `type` (string, required)
++ `thumbnailUrl` (string)
 
 
-L'application côté CLIENT doit permettre à celui-ci d'obtenir les */offers* à sa proximité, ainsi que la possiblité de commander les */orders* correspondants.
+## API
 
-L'application côté PROFESSIONNEL doit permettre à ces derniers d'ajouter des */offers* ainsi que les */works* qui leur sont asssociés.
+L'application côté CLIENT */client* doit permettre aux utilisateurs d'obtenir les *offers* à sa proximité, ainsi que la possiblité de commander les *orders* correspondants.
+
+L'application côté PROFESSIONNEL */pro* doit permettre à des utilisateurs *sellers* d'ajouter des */offers* ainsi que les */works* qui leur sont asssociés.
 
 
-### Offers
-
-#### pour un PROFESSIONEL [/offers/pro/{?sellerId}]
+### Offers pour un PROFESSIONEL [/offers{?sellerId}]
 
 + Parameters
 
   + sellerId (required, string) - Identifiant du seller.
 
-##### List toutes les *offers* [GET]
+#### List toutes les *offers* [OPTIONS]
+
++ Request
+
+    + Headers
+
+            Authorization:Bearer bd2b9fa5-fbee-434f-9aaf-adc6701fd3db
 
 + Response 200 (application/json)
 
@@ -129,82 +142,5 @@ L'application côté PROFESSIONNEL doit permettre à ces derniers d'ajouter des 
                  "text": "Wrong"
                 }
             ]
-
-
-### Orders [/orders]
-
-An order is a confirmation of a transaction made with the pass culture:
-    - acceptedOffer is the product
-    - confirmationNumber is the token that confirms the transaction
-    - orderStatus says if the order is done or waiting
-    - seller is the organization or the localBusinness selling the product.
-
-#### List All Orders [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "acceptedOffer": {
-                    "authors": [
-                        {
-                            "id" : "58c2b1d7920ea806e862234e",
-                            "name": "Albert Camus"
-                        }
-                    ],
-                    "id" : "58c2b1d7920ea806e862230a",
-                    "title": "La Chute",
-                    "type": "book",
-                    "published_at": "2015-08-05T09:40:51.620Z"
-                },
-                "confirmationNumber": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9",
-                "orderStatus": "done",
-                "published_at": "2015-08-05T10:40:51.620Z",
-                "seller":  {
-                    "id" : "58c2b1d7920ea806e862230c",
-                    "location": {
-                            "address": "155 Rue Saint Honoré, 75001 Paris",
-                            "geo": {
-                                "latitude": 48.8619639,
-                                "longitude": 2.3359426
-                            }
-
-                        },
-                    "name": "Librairie Delamain",
-                    "openingHours": "10AM-8PM"
-                }
-            }
-        ]
-
-#### Create New Order [POST]
-
-When you are using the CLIENT part of the app, you may create your own order using this action.
-    - customerId is the id of the client
-
-+ Request (application/json)
-
-        {
-            "acceptedOfferId": "58c2b1d7920ea806e862230e",
-            "customerId": "58c2b1d7920ea806e862335a",
-            "sellerId": "58c2b1d7920ea806e862335b"
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /orders/2
-
-    + Body
-
-            {
-                "confirmationNumber": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9",
-                "orderStatus": "waiting",
-                "id" : "58c2b1d7920ea806e862231a",
-                "published_at": "2015-08-05T10:40:51.620Z"
-            }
-
-
-### Works [/works]
 
 

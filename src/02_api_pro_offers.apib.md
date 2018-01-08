@@ -1,12 +1,16 @@
-### Offers
-
-#### pour un PROFESSIONEL [/offers/pro/{?sellerId}]
+### Offers pour un PROFESSIONEL [/offers{?sellerId}]
 
 + Parameters
 
   + sellerId (required, string) - Identifiant du seller.
 
-##### List toutes les *offers* [GET]
+#### List toutes les *offers* [OPTIONS]
+
++ Request
+
+    + Headers
+
+            Authorization:Bearer bd2b9fa5-fbee-434f-9aaf-adc6701fd3db
 
 + Response 200 (application/json)
 
