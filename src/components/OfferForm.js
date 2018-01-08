@@ -3,28 +3,27 @@ import { connect } from 'react-redux'
 
 import Select from './Select'
 import BookForm from '../forms/BookForm'
+import { setFormCategory } from '../reducers/form'
 
 class OfferForm extends Component {
   constructor () {
     super()
-    this.state = { selectedType: null }
     this.onOptionClick = this._onOptionClick.bind(this)
   }
   _onOptionClick ({ target: { value } }) {
-    this.setState({ selectedType: value })
-
+    this.props.setFormCategory(value)
   }
   render () {
-    const { options } = this.props
-    const { selectedType } = this.state
+    const { category, options } = this.props
     return (
       <div className='offer-form'>
         <Select className='select mb2'
           defaultLabel='-- select a type --'
           onOptionClick={this.onOptionClick}
           options={options}
+          value={category}
         />
-        { selectedType === 'book' && <BookForm /> }
+        { category === 'book' && <BookForm /> }
       </div>
     )
   }
@@ -37,5 +36,5 @@ OfferForm.defaultProps = {
   ]
 }
 
-
-export default connect()(OfferForm)
+export default connect(({ form: { category } }) =>
+  ({ category }), { setFormCategory })(OfferForm)

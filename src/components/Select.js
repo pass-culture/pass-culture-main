@@ -4,12 +4,13 @@ const Select = ({ className,
   defaultLabel,
   extraClass,
   onOptionClick,
-  options
+  options,
+  value
 }) => {
   return (
     <select className={className || 'select'}
-      defaultValue={defaultLabel}
       onChange={onOptionClick}
+      value={value || defaultLabel}
     >
       <option key={-1} disabled>
         {defaultLabel}
