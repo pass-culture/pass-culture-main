@@ -7,7 +7,9 @@ export async function apiData (path, config = {}) {
   const { body, token } = config
   const method = config.method || 'GET'
   // init
-  const init = { method }
+  const init = { method,
+    mode: 'cors'
+  }
   if (method && method !== 'GET') {
     init.headers = {
       'Accept': 'application/json',
@@ -25,6 +27,5 @@ export async function apiData (path, config = {}) {
   }
   // fetch
   const result = await fetch(`${URL}/${path}`, init)
-  const json = await result.json()
-  return json
+  return await result.json()
 }

@@ -1,7 +1,8 @@
 // INITIAL STATE
 const initialState = {
+  clientToken: 'bd2b9fa5-fbee-434f-9aaf-adc6701fd3db',
   offers: null,
-  token: 'bd2b9fa5-fbee-434f-9aaf-adc6701fd3db',
+  professionalToken: 'bd2b9fa5-fbee-434f-9aaf-adc6701fd3db',
   works: null
 }
 
@@ -28,6 +29,11 @@ export const successData = (method, path, data, config) => ({
   path,
   type: `SUCCESS_${method.toUpperCase()}_${path.toUpperCase()}`
 })
+
+// SELECTORS
+export const getToken = (state, type) => {
+  return state.request[`${type}Token`]
+}
 
 // default
 export default request
