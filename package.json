@@ -36,6 +36,7 @@
     "react": "^16.2.0",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^16.2.0",
+    "react-hot-loader": "^3.1.3",
     "react-redux": "^5.0.3",
     "react-router-dom": "^4.0.0",
     "redux": "^3.6.0",
@@ -92,6 +93,9 @@
     ]
   },
   "babel": {
+    "plugins": [
+      "react-hot-loader/babel"
+    ],
     "presets": [
       "react-app"
     ]
