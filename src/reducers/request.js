@@ -1,26 +1,39 @@
-export const REQUEST_GET_PRODUCTS = 'REQUEST_GET_PRODUCTS'
-export const SUCCESS_GET_PRODUCTS = 'SUCCESS_GET_PRODUCTS'
-
+// INITIAL STATE
 const initialState = {
-  products: null
+  clientToken: 'bd2b9fa5-fbee-434f-9aaf-adc6701fd3db',
+  offers: null,
+  professionalToken: 'bd2b9fa5-fbee-434f-9aaf-adc6701fd3db',
+  works: null
 }
 
-const request = (state=initialState, action) => {
-  switch (action.type) {
-    case SUCCESS_GET_PRODUCTS:
-      return Object.assign({}, state, { products: action.data })
-    default:
-      return state
+// REDUCER
+const request = (state = initialState, action) => {
+  if (/SUCCESS_(.*)/.test(action.type)) {
+    return Object.assign({}, state, { [action.path.split('/')[0]]: action.data })
   }
+  return state
 }
 
-export const requestGetProducts = () => ({
-  type: REQUEST_GET_PRODUCTS
+// ACTION CREATORS
+export const requestData = (method, path, config) => ({
+  config,
+  method,
+  path,
+  type: `REQUEST_${method.toUpperCase()}_${path.toUpperCase()}`
 })
 
-export const successGetProducts = data => ({
+export const successData = (method, path, data, config) => ({
+  config,
   data,
-  type: SUCCESS_GET_PRODUCTS
+  method,
+  path,
+  type: `SUCCESS_${method.toUpperCase()}_${path.toUpperCase()}`
 })
 
+// SELECTORS
+export const getToken = (state, type) => {
+  return state.request[`${type}Token`]
+}
+
+// default
 export default request

@@ -1,1 +1,15 @@
-$font-family: "Helvetica Neue", Arial, sans-serif;
+// Breakpoints
+$mini: 425px;
+$sm: 768px;
+$md: 1024px;
+$lg: 1440px;
+$xl: 2560px;
+
+$border: 1px solid $light-grey;
+$border-radius: 0.5rem;
+$button-border-radius: 2rem;
+$box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+$box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
+$font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+$identity-color: $medium-green;
+$opacity-transition: all 1s ease-out;
