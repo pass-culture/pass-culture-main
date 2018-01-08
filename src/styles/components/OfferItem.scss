@@ -1,0 +1,11 @@
+.offer-item {
+  border-radius: $border-radius;
+  transition: all 1s ease-out;
+  img {
+    height: 7.5rem;
+    width: 7.5rem;
+  }
+  &:hover {
+    background-color: $very-light-grey;
+  }
+}

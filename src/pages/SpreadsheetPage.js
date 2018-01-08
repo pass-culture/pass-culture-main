@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import SpreadsheetItem from '../components/SpreadsheetItem'
+import OfferItem from '../components/OfferItem'
+import OfferNew from '../components/OfferNew'
 import { requestData } from '../reducers/request'
 
 /*
@@ -14,18 +15,21 @@ import { requestData } from '../reducers/request'
 
 class SpreadsheetPage extends Component {
   componentWillMount() {
-    this.props.requestData('GET', 'pro/offers')
+    this.props.requestData('GET', 'offers', { type: 'professional' })
   }
   render () {
     const { offers } = this.props
     return (
-      <main className='flex items-center justify-center' style={{ height: '100vh' }}>
+      <main className='spreadsheet-page flex items-center justify-center'
+        style={{ height: '100vh' }}
+      >
         <div>
-        {
-          offers && offers.map((offer, index) => (
-            <SpreadsheetItem key={index} {...offer} />
-          ))
-        }
+          <OfferNew />
+          {
+            offers && offers.map((offer, index) => (
+              <OfferItem key={index} {...offer} />
+            ))
+          }
         </div>
       </main>
     )

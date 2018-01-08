@@ -5,7 +5,7 @@ import { requestData } from '../reducers/request'
 
 class ActivitiesPage extends Component {
   componentWillMount() {
-    this.props.requestData('GET', 'pro/offers')
+    this.props.requestData('GET', 'offers')
   }
   render () {
     const { offers } = this.props
