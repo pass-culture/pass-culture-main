@@ -1,11 +1,13 @@
-import { call, takeEvery, put } from 'redux-saga/effects'
+import { call, put, select, takeEvery } from 'redux-saga/effects'
 
-import { successGetProducts } from '../reducers/request'
-import api from '../utils/api'
+import { successData } from '../reducers/request'
+import { apiData } from '../utils/api'
 
 function * fromWatchRequestActions (action) {
-  const data = yield call(api, 'products')
-  yield put(successGetProducts(data))
+  const { method, path, config } = action
+  const token = yield select(({ request: { token } }) => token)
+  const data = yield call(apiData, action.path, { token })
+  yield put(successData(method, path, data, config))
 }
 
 export function * watchRequestActions () {
