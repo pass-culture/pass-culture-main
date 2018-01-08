@@ -31,6 +31,9 @@ export const successData = (method, path, data, config) => ({
 })
 
 // SELECTORS
+export const getCurrentWork = ({ request: { works } }) =>
+  works && works.length === 1 && works[0]
+
 export const getToken = (state, type) => {
   return state.request[`${type}Token`]
 }
