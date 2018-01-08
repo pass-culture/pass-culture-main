@@ -1,14 +1,14 @@
 import React from 'react'
 
-const SpreadsheetItem = ({ style,
-  title,
-  thumbnailUrl
+const SpreadsheetItem = ({ name,
+  style,
+  work: { thumbnailUrl }
 }) => {
   const { imgStyle } = style
   return (
     <div style={style}>
       <img alt='thumbnail' src={thumbnailUrl} style={imgStyle} />
-      {title}
+      {name}
     </div>
   )
 }

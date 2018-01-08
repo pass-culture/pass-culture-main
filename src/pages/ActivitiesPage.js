@@ -1,18 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestGetProducts } from '../reducers/request'
+import { requestData } from '../reducers/request'
 
 class ActivitiesPage extends Component {
   componentWillMount() {
-    this.props.requestGetProducts()
+    this.props.requestData('GET', 'pro/offers')
   }
   render () {
-    const { products } = this.props
+    const { offers } = this.props
     return (
       <main>
         {
-          products && products.map(({ type }, index) => (
+          offers && offers.map(({ type }, index) => (
             <div key={index}>
               {type}
             </div>
@@ -23,6 +23,6 @@ class ActivitiesPage extends Component {
   }
 }
 
-export default connect(({ request: { products } }) => ({ products }),
-  { requestGetProducts }
+export default connect(({ request: { offers } }) => ({ offers }),
+  { requestData }
 )(ActivitiesPage)
