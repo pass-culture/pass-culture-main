@@ -1,10 +1,10 @@
-### Offers pour un PROFESSIONEL [/offers{?sellerId}]
+### Offers pour un PROFESSIONNEL [/offers{?sellerId}]
 
 + Parameters
 
   + sellerId (required, string) - Identifiant du seller.
 
-#### List toutes les *offers* [OPTIONS]
+#### List toutes les *offers* [GET]
 
 + Request
 
