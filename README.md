@@ -14,7 +14,7 @@ Prod url - https://pass-culture.netlify.com
   ```
 
 ## Start
-  Pour faire tourner un webpack dev server et continuer à développer l'application:
+  Pour faire tourner un webpack dev server à http://localhost:3000 et continuer à développer l'application:
   ```bash
     yarn start
   ```
