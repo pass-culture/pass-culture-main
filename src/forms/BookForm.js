@@ -2,7 +2,9 @@ import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestData } from '../reducers/request'
+import InputForm from '../components/InputForm'
+import SubmitButton from '../components/SubmitButton'
+import { getCurrentWork, requestData } from '../reducers/request'
 
 class BookForm extends Component {
   constructor () {
@@ -44,21 +46,33 @@ class BookForm extends Component {
         {
           work && (
             <div>
-              <img alt='thumbnail'
-                className='book__image mb1'
-                src={work.thumbnailUrl}
-              />
+              <div className='flex items-center justify-center mb2'>
+                <div>
+                  <img alt='thumbnail'
+                    className='book__image mb1'
+                    src={work.thumbnailUrl}
+                  />
+                  <div>
+                    {work.name}
+                  </div>
+                </div>
+                <div>
+                  <label> Name </label>
+                  <InputForm name='name' />
+                </div>
+              </div>
               <div>
-                {work.name}
+                <SubmitButton />
               </div>
             </div>
           )
         }
+
       </div>
     )
   }
 }
 
-export default connect(({ request: { works } }) => ({
-  work: works && works.length === 1 && works[0]
+export default connect(state => ({
+  work: getCurrentWork(state)
 }), { requestData })(BookForm)

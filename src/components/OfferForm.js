@@ -3,15 +3,22 @@ import { connect } from 'react-redux'
 
 import Select from './Select'
 import BookForm from '../forms/BookForm'
-import { setFormCategory } from '../reducers/form'
+import { assignForm } from '../reducers/form'
+import { getCurrentWork } from '../reducers/request'
 
 class OfferForm extends Component {
   constructor () {
     super()
     this.onOptionClick = this._onOptionClick.bind(this)
   }
+  componentWillReceiveProps(nextProps) {
+    const { assignForm, work } = nextProps
+    if (work && work !== this.props.work) {
+      assignForm({ workId: work.id })
+    }
+  }
   _onOptionClick ({ target: { value } }) {
-    this.props.setFormCategory(value)
+    this.props.assignForm({ category: value })
   }
   render () {
     const { category, options } = this.props
@@ -36,5 +43,9 @@ OfferForm.defaultProps = {
   ]
 }
 
-export default connect(({ form: { category } }) =>
-  ({ category }), { setFormCategory })(OfferForm)
+export default connect(state => {
+  const { form: { category } } = state
+  return { category,
+    work: getCurrentWork(state)
+  }
+}, { assignForm })(OfferForm)
