@@ -9,7 +9,7 @@ const initialState = {
 // REDUCER
 const request = (state = initialState, action) => {
   if (/SUCCESS_(.*)/.test(action.type)) {
-    return Object.assign({}, state, { [action.path.split('/').slice(-1)[0]]: action.data })
+    return Object.assign({}, state, { [action.path.split('/')[0]]: action.data })
   }
   return state
 }

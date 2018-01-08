@@ -5,7 +5,7 @@ import { apiData } from '../utils/api'
 
 function * fromWatchRequestActions (action) {
   const { method, path, config } = action
-  const token = yield select(getToken, config.type)
+  const token = yield select(getToken, config && config.type)
   const data = yield call(apiData, action.path, { token })
   yield put(successData(method, path, data, config))
 }
