@@ -9,7 +9,6 @@ services:
       - env_file
     networks:
       - db_nw
-    hostname: passq-postgres
 
   flask:
     build: dockerfiles/flask
@@ -22,7 +21,6 @@ services:
       - web_nw
     depends_on:
       - postgres
-    hostname: passq-flask
 
   nginx:
     image: "nginx:1.13.5"
@@ -34,7 +32,6 @@ services:
       - web_nw
     depends_on: 
       - flask
-    hostname: passq-nginx
 
 networks:
   db_nw:
