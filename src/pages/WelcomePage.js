@@ -1,6 +1,6 @@
 import React from 'react'
 
-const WelcomePage = ({}) => {
+const WelcomePage = () => {
   return (
     <main className='page flex items-center justify-center'>
       <div className='center'>
