@@ -15,7 +15,7 @@ const Root = () => {
         <App>
           <Route exact
             path='/'
-            render={() => <Redirect to='/activities' />}
+            render={() => <Redirect to='/spreadsheet' />}
           />
           <Route exact
             path='/activities'
