@@ -1,6 +1,8 @@
 FROM python:3
 
 ENV PYTHONUNBUFFERED 1
-WORKDIR /opt/services/flaskapp/src
+WORKDIR /usr/local/bin
 COPY ./start_python.sh ./
+RUN ls
 EXPOSE 5090
+CMD ./start_python.sh
