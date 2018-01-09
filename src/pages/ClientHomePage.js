@@ -8,7 +8,6 @@ class ClientHomePage extends Component {
   componentWillMount () {
     this.props.requestData('GET', 'offers');
   }
-    
   render () {
     const { offers } = this.props
     return (
@@ -20,5 +19,4 @@ class ClientHomePage extends Component {
 }
 
 export default connect(({ request: { offers } }) => ({ offers }),
-                       { requestData })
-                      (ClientHomePage)
+                        { requestData })(ClientHomePage)
