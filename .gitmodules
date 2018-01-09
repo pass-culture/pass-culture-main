@@ -1,0 +1,9 @@
+[submodule "api"]
+	path = api
+	url = git@github.com:sgmap/pass-culture-flask.git
+[submodule "webapp"]
+	path = webapp
+	url = git@github.com:sgmap/pass-culture-browser.git
+[submodule "doc"]
+	path = doc
+	url = git@github.com:sgmap/pass-culture-doc.git

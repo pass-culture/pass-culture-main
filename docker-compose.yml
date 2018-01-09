@@ -4,16 +4,16 @@ services:
   postgres:
     image: postgres:10.1
     volumes:
-      - "postgres_data:/var/lib/postgresql/data"
+      - "./api/postgres_data:/var/lib/postgresql/data"
     env_file:
       - env_file
     networks:
       - db_nw
 
   flask:
-    build: flask
+    build: dockerfiles/flask
     volumes:
-      - ../pass-culture-flask:/opt/services/flaskapp/src
+      - ./api:/opt/services/flaskapp/src
     env_file:
       - env_file
     networks:
@@ -25,9 +25,9 @@ services:
   nginx:
     image: "nginx:1.13.5"
     ports:
-      - "5090:80"
+      - "8080:80"
     volumes:
-      - ./conf.d:/etc/nginx/conf.d
+      - ./dockerfiles/nginx/conf.d:/etc/nginx/conf.d
     networks:
       - web_nw
     depends_on: 
