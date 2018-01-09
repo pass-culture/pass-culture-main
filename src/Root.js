@@ -4,6 +4,7 @@ import { BrowserRouter, Redirect, Route } from 'react-router-dom'
 
 import App from './App'
 import ActivitiesPage from './pages/ActivitiesPage'
+import ClientHomePage from './pages/ClientHomePage'
 import SpreadsheetPage from './pages/SpreadsheetPage'
 import WelcomePage from './pages/WelcomePage'
 import store from './utils/store'
@@ -15,7 +16,7 @@ const Root = () => {
         <App>
           <Route exact
             path='/'
-            render={() => <Redirect to='/spreadsheet' />}
+            render={() => <ClientHomePage />}
           />
           <Route exact
             path='/activities'
