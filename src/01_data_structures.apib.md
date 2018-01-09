@@ -1,18 +1,20 @@
-## Ontology
+## Ontologie
 
-L'ontology se compose tout d'abord de deux types d'utilisateurs: des CLIENTS et des PROFESSIONNELS (de la culture). Chaque PROFESSIONNEL possède une entité *seller* et peuvent proposer des *offers* aux CLIENTS. Ceci consiste à proposer un *price* pour un certain groupe d'*événement* ou un *work*. Si le CLIENT accepte la transaction, ce dernier voit son carnet d'*orders* augmenter de ce dernier achat.
+L'ontologie se compose tout d'abord de deux types d'utilisateurs: des CLIENTS et des PROFESSIONNELS (de la culture). Chaque PROFESSIONNEL possède une entité *seller* et peuvent proposer des *offers* aux CLIENTS. Ceci consiste à proposer un *price* pour un certain groupe d'*événement* ou un *work*. Si le CLIENT accepte la transaction, ce dernier voit son carnet d'*orders* augmenter de ce dernier achat.
 
 Pour connaître les préférences culturelles des CLIENTS, l'application pose des *questions* à ces derniers lors de son inscription.
 
 ## Data Structures
-### Events (object)
+
+### Event (object)
 
 #### Properties
 + `endDate` (string, required)
 + `location` (string, required)
 + `offerId` (string, required)
 + `startDate` (string, required)
-### Offers (object)
+
+### Offer (object)
 
 #### Properties
 + `comment` (string)
@@ -22,38 +24,32 @@ Pour connaître les préférences culturelles des CLIENTS, l'application pose de
 + `sellerId` (string, required)
 + `thumbnailUrl` (string)
 + `workId` (string, required)
-### Prices (object)
+
+### Price (object)
 
 #### Properties
 + `condition` (string, required)
 + `eventId` (string, required)
 + `value` (string, required)
-### Questions (object)
+
+### Question (object)
 
 #### Properties
 + `choices` (array[string], required)
-### Sellers (object)
+
+### Seller (object)
 
 #### Properties
 + `location` (object, required)
 + `thumbnailUrl` (string)
-### UserQuestionJoins (object)
 
-#### Properties
-+ `choiceIndex` (number, required)
-+ `questionId` (string, required)
-+ `userId` (string, required)
-### Users (object)
+### User (object)
 
 #### Properties
 + `firstName` (string, required)
 + `lastName` (string, required)
-### UserSellerJoins (object)
 
-#### Properties
-+ `sellerId` (string, required)
-+ `userId` (string, required)
-### Works (object)
+### Work (object)
 
 #### Properties
 + `category` (string, required)
@@ -61,5 +57,14 @@ Pour connaître les préférences culturelles des CLIENTS, l'application pose de
 + `date` (string, required)
 + `identifier` (string, required)
 + `name` (string, required)
-+ `performer` (string, required)
-+ `thumbnailUrl` (string)
++ `performer` (string, optional)
+
+#### Book (Work)
+
+##### Properties
++ `category`: book (string, required)
++ `composer`: On Lisp (string, required)
++ `date`: 01/09/1993 (string, required)
++ `identifier`: 9780130305527 (string, required)
++ `name`: On Lisp (string, required)
++ `publisher`: Prentice Hall (string, required)

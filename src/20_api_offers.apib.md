@@ -1,16 +1,14 @@
-### Offers pour un PROFESSIONNEL [/offers{?sellerId}]
+### Offres [/offers{?sellerId}]
 
 + Parameters
 
-  + sellerId (required, string) - Identifiant du seller.
+  + sellerId (optional, string) - Identifiant du "seller" (fournisseur de l'offre)
+  + around: 37.423021,-122.083739 (optional, string) - Coordonnées de l'endroit autour duquel afficher les offres
+  + radius: 2 (optional, integer) - Rayon autour de l'endroit dans lequel afficher les offres
 
-#### List toutes les *offers* [GET]
+#### Lister des offres [GET]
 
 + Request
-
-    + Headers
-
-            Authorization:Bearer bd2b9fa5-fbee-434f-9aaf-adc6701fd3db
 
 + Response 200 (application/json)
 
