@@ -12,14 +12,6 @@ class OffersHorizScroller extends Component {
     requestData('GET', `offers?type=${type}`)
   }
 
-  componentDidMount = () => {
-    this.viewPortElement.addEventListener('scroll', this.handleScroll);
-  }
-
-  componentWillUnmount = () => {
-    this.viewPortElement.removeEventListener('scroll', this.handleScroll);
-  }
-
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.offers !== this.props.offers && this.isFetching) {
       this.isFetching = false;
@@ -45,7 +37,7 @@ class OffersHorizScroller extends Component {
   render = () => {
     const { offers } = this.props
     return (
-      <div className='offer-horiz-scroller flex overflow-auto' ref={ element => { this.viewPortElement = element } }>
+      <div className='offer-horiz-scroller flex overflow-auto' onScroll={this.handleScroll} ref={ element => { this.viewPortElement = element } }>
         { 
           offers ? offers.map((offer, index) =>
                      (
