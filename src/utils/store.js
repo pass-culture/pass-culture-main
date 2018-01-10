@@ -5,6 +5,7 @@ import { applyMiddleware,
 import { responsiveStoreEnhancer } from 'redux-responsive'
 import createSagaMiddleware from 'redux-saga'
 
+import init from './init'
 import rootReducer from '../reducers'
 import rootSaga from '../sagas'
 
@@ -24,6 +25,9 @@ const store = createStore(rootReducer, {}, storeEnhancer)
 
 // RUN
 sagaMiddleware.run(rootSaga)
+
+// INIT
+init(store)
 
 // export
 export default store
