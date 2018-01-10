@@ -5,7 +5,8 @@ import { requestData } from '../reducers/request'
 
 class SearchBar extends Component {
   onChange = (event) => {
-    this.props.requestData('GET', 'offers')
+    const search = event.target.value;
+    this.props.requestData('GET', `offers?search=${search}`)
   }
   render () {
     return (

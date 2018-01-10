@@ -1,22 +1,21 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import OffersHorizScroller from '../components/OffersHorizScroller'
 import SearchBar from '../components/SearchBar'
-import { requestData } from '../reducers/request'
 
 class ClientHomePage extends Component {
-  componentWillMount () {
-    this.props.requestData('GET', 'offers')
-  }
-  render () {
-    const { offers } = this.props
+  render = () => {
     return (
-      <main className='page flex'>
+      <main className='page flex flex-column'>
         <SearchBar />
+        <h3>Livres</h3>
+        <OffersHorizScroller type='book' />
+        <h3>Spectacle vivant</h3>
+        <OffersHorizScroller type='theater' />
       </main>
     )
   }
 }
 
-export default connect(({ request: { offers } }) => ({ offers }),
-                        { requestData })(ClientHomePage)
+export default ClientHomePage

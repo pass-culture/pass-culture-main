@@ -9,7 +9,16 @@ const initialState = {
 // REDUCER
 const request = (state = initialState, action) => {
   if (/SUCCESS_(.*)/.test(action.type)) {
-    return Object.assign({}, state, { [action.path.split('/')[0]]: action.data })
+    const key = action.config.key || action.path.split('/')[0].replace(/\?.*$/, '');
+    if (action.config.add === 'append') {
+      return Object.assign({}, state, { [key]: state[key].concat(action.data) })
+      }
+    else if (action.config.add === 'prepend') {
+      return Object.assign({}, state, { [key]: action.data.concat(state[key]) })
+      }
+    else {
+      return Object.assign({}, state, { [key]: action.data })
+      }
   }
   return state
 }
@@ -30,7 +39,7 @@ export const requestData = (method, path, config) => ({
   type: `REQUEST_${method.toUpperCase()}_${path.toUpperCase()}`
 })
 
-export const successData = (method, path, data, config) => ({
+export const successData = (method, path, data, config={}) => ({
   config,
   data,
   method,
