@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 
+import Icon from '../components/Icon'
 import { requestData } from '../reducers/request'
+
 
 class OffersHorizScroller extends Component {
   componentWillMount = () => {
@@ -46,6 +48,7 @@ class OffersHorizScroller extends Component {
       <div className='offer-horiz-scroller flex overflow-auto' ref={ element => { this.viewPortElement = element } }>
         { 
           offers && offers.map((offer, index) => (<div className='offer-card' key={index}>
+                                                    <Icon name='favorite-outline' />
                                                     { offer.name }
                                                  </div>))
         }

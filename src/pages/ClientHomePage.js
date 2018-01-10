@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 
 import OffersHorizScroller from '../components/OffersHorizScroller'
 import SearchBar from '../components/SearchBar'
@@ -7,7 +6,7 @@ import SearchBar from '../components/SearchBar'
 class ClientHomePage extends Component {
   render = () => {
     return (
-      <main className='page flex flex-column'>
+      <main className='page client-home-page flex flex-column'>
         <SearchBar />
         <h3>Livres</h3>
         <OffersHorizScroller type='book' />
