@@ -47,13 +47,14 @@ class OffersHorizScroller extends Component {
     return (
       <div className='offer-horiz-scroller flex overflow-auto' ref={ element => { this.viewPortElement = element } }>
         { 
-          offers && offers.map((offer, index) => (<div className='offer-card' key={index}>
-                                                    { offer.sellers_favorite && offer.sellers_favorite.length ? ( <Icon name='favorite-outline' /> ) : undefined }
-                                                    { offer.name }
-                                                 </div>))
-        }
-        {
-          offers || ( <div className='no-offers'>Aucune offre à afficher</div>)
+          offers ? offers.map((offer, index) =>
+                     (
+                       <div className='offer-card' key={index}>
+                         { offer.sellersFavorites && offer.sellersFavorites.length && <Icon name='favorite-outline' /> }
+                         { offer.name }
+                       </div>
+                     ))
+                 : <div className='no-offers'>Aucune offre à afficher</div>
         }
       </div>
     )
