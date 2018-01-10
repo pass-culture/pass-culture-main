@@ -18,6 +18,10 @@ class OffersHorizScroller extends Component {
       }
   }
 
+  handleCardClick = () => {
+    this.props.showModal(<div> Hello </div>)
+  }
+
   handleScroll = (event) => {
     if (this.isFetching) {
       return
@@ -41,7 +45,7 @@ class OffersHorizScroller extends Component {
         { 
           offers ? offers.map((offer, index) =>
                      (
-                       <div className='offer-card' key={index}>
+                       <div className='offer-card' key={index} onClick={this.handleCardClick}>
                          { offer.sellersFavorites && offer.sellersFavorites.length && <Icon name='favorite-outline' /> }
                          { offer.name }
                        </div>
