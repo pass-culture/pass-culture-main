@@ -7,8 +7,12 @@ import { closeModal, showModal } from '../reducers/modal'
 const withLogin = WrappedComponent => {
   class _withLogin extends Component {
     componentWillMount = () => {
-      const { user, showModal } = this.props
-      !user && showModal(<Sign />)
+      // be sure that user is not defined yet
+      // by waiting a bit
+      setTimeout(() => {
+        const { user, showModal } = this.props
+        !user && showModal(<Sign />)
+      }, 1000)
     }
     componentWillReceiveProps = nextProps => {
       if (nextProps.user && nextProps.user !== this.props.user) {
