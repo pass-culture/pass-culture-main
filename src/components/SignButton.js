@@ -5,10 +5,9 @@ import Sign from './Sign'
 import { closeModal, showModal } from '../reducers/modal'
 
 class SignButton extends Component {
-  componentWillUnmount (nextProps) {
+  componentWillUnmount () {
     this.props.closeModal()
   }
-  component
   onClick = () => {
     this.props.showModal(<Sign />)
   }

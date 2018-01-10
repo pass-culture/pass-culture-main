@@ -1,5 +1,8 @@
 .header {
-  height: 7.5rem;
+  height: 5.5rem;
+  @media (min-width: $md) {
+    height: 7.5rem;
+  }
   &__logo {
     height: 90%;
     width: auto;

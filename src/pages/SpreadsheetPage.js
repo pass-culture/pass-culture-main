@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import OfferItem from '../components/OfferItem'
 import OfferNew from '../components/OfferNew'
+import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/request'
 
 /*
@@ -14,8 +16,17 @@ import { requestData } from '../reducers/request'
 */
 
 class SpreadsheetPage extends Component {
-  componentWillMount() {
-    this.props.requestData('GET', 'offers', { type: 'professional' })
+  handleRequestData = props => {
+    const { requestData, sellerId } = this.props
+    sellerId && requestData('GET', 'offers?sellerId=${sellerId}')
+  }
+  componentWillMount () {
+    this.props.sellerId && this.handleRequestData(this.props)
+  }
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.sellerId && nextProps.sellerId !== this.props.sellerId) {
+      this.handleRequestData(nextProps)
+    }
   }
   render () {
     const { offers } = this.props
@@ -34,6 +45,11 @@ class SpreadsheetPage extends Component {
   }
 }
 
-export default connect(({ request: { offers } }) => ({ offers }),
-  { requestData }
+export default compose(
+  withLogin,
+  connect(
+    ({ request: { offers }, user }) =>
+      ({ offers, sellerId: user && user.sellerId }),
+    { requestData }
+  )
 )(SpreadsheetPage)
