@@ -1,4 +1,5 @@
 .offer-horiz-scroller {
+  height: 150px;
   .offer-card {
     width: 100px;
     height: 150px;
@@ -7,5 +8,10 @@
     margin-right: 2px;
     cursor: pointer;
     flex: none;
+  }
+  .no-offers {
+    height: 150px;
+    padding-left: 10px;
+    padding-top: 50px;
   }
 }
