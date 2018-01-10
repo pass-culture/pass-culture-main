@@ -1,8 +1,13 @@
 .header {
-  height: 7.5rem;
+  height: 55px;
+  background-color: black;
   &__logo {
-    height: 90%;
-    width: auto;
+    position: absolute;
+    left:50%;
+    transform: translate(-50%, 0);
+    color: white;
+    text-align: center;
+    font-size: 25px;
   }
   &__avatar {
     height: 90%;
