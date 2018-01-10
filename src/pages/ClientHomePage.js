@@ -6,14 +6,14 @@ import { requestData } from '../reducers/request'
 
 class ClientHomePage extends Component {
   componentWillMount () {
-    this.props.requestData('GET', 'offers');
+    this.props.requestData('GET', 'offers')
   }
   render () {
     const { offers } = this.props
     return (
-        <main className='page flex'>
-            <SearchBar />
-        </main>
+      <main className='page flex'>
+        <SearchBar />
+      </main>
     )
   }
 }

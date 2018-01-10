@@ -5,11 +5,7 @@ import OfferForm from './OfferForm'
 import { showModal } from '../reducers/modal'
 
 class OfferNew extends Component {
-  constructor () {
-    super()
-    this.onNewClick = this._onNewClick.bind(this)
-  }
-  _onNewClick () {
+  onNewClick = () => {
     this.props.showModal(<OfferForm />)
   }
   render () {

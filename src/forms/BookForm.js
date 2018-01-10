@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import InputForm from '../components/InputForm'
+import FormInput from '../components/FormInput'
 import SubmitButton from '../components/SubmitButton'
 import { getCurrentWork, requestData } from '../reducers/request'
 
@@ -10,14 +10,12 @@ class BookForm extends Component {
   constructor () {
     super()
     this.state = { identifier: '' }
-    this.onChange = this._onChange.bind(this)
-    this.onClick = this._onClick.bind(this)
   }
-  _onClick () {
+  onClick = () => {
     const { identifier } = this.state
     this.props.requestData('PUT', `works/isbn:${identifier}`)
   }
-  _onChange ({ target: { value } }) {
+  onChange = ({ target: { value } }) => {
     this.setState({ identifier: value })
   }
   render () {
@@ -58,7 +56,7 @@ class BookForm extends Component {
                 </div>
                 <div>
                   <label> Name </label>
-                  <InputForm name='name' />
+                  <FormInput name='name' />
                 </div>
               </div>
               <div>

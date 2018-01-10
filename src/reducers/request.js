@@ -15,6 +15,14 @@ const request = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
+export const failData = (method, path, error, config) => ({
+  config,
+  error,
+  method,
+  path,
+  type: `FAIL_${method.toUpperCase()}_${path.toUpperCase()}`
+})
+
 export const requestData = (method, path, config) => ({
   config,
   method,

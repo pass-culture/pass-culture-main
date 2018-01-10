@@ -2,13 +2,12 @@ import 'fetch-everywhere'
 
 import { URL } from './config'
 
-export async function apiData (path, config = {}) {
+export async function apiData (method, path, config = {}) {
   // unpack
   const { body, token } = config
-  const method = config.method || 'GET'
   // init
   const init = { method,
-    mode: 'cors'
+    // mode: 'cors'
   }
   if (method && method !== 'GET') {
     init.headers = {
@@ -17,7 +16,7 @@ export async function apiData (path, config = {}) {
     }
   }
   if (body) {
-    init.body = body
+    init.body = JSON.stringify(body)
   }
   if (token) {
     if (!init.headers) {
@@ -27,5 +26,5 @@ export async function apiData (path, config = {}) {
   }
   // fetch
   const result = await fetch(`${URL}/${path}`, init)
-  return await result.json()
+  return result.json && await result.json()
 }

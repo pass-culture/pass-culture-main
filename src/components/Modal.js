@@ -5,11 +5,7 @@ import { connect } from 'react-redux'
 import { closeModal } from '../reducers/modal'
 
 class Modal extends Component {
-  constructor () {
-    super()
-    this.onCloseClick = this._onCloseClick.bind(this)
-  }
-  _onCloseClick () {
+  onCloseClick = () => {
     this.props.closeModal()
   }
   render () {

@@ -4,11 +4,7 @@ import { connect } from 'react-redux'
 import { showModal } from '../reducers/modal'
 
 class OfferItem extends Component {
-  constructor () {
-    super()
-    this.onEditClick = this._onEditClick.bind(this)
-  }
-  _onEditClick ()  {
+  onEditClick = () => {
     this.props.showModal(<div> Hello </div>)
   }
   render () {

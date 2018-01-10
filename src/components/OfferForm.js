@@ -7,17 +7,13 @@ import { assignForm } from '../reducers/form'
 import { getCurrentWork } from '../reducers/request'
 
 class OfferForm extends Component {
-  constructor () {
-    super()
-    this.onOptionClick = this._onOptionClick.bind(this)
-  }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const { assignForm, work } = nextProps
     if (work && work !== this.props.work) {
       assignForm({ workId: work.id })
     }
   }
-  _onOptionClick ({ target: { value } }) {
+  onOptionClick = ({ target: { value } }) => {
     this.props.assignForm({ category: value })
   }
   render () {
