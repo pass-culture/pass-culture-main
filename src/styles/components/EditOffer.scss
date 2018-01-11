@@ -1,12 +1,14 @@
 .edit-offer {
   height: 75vh;
-  img, textarea {
-    border-radius: $border-radius;
-    height: auto;
-    width: 200px;
-    @media (min-width: $md) {
+  &__hero {
+    &__img, &__textarea {
+      border-radius: $border-radius;
       height: auto;
-      width: 300px;
+      width: 200px;
+      @media (min-width: $md) {
+        height: auto;
+        width: 300px;
+      }
     }
   }
 }

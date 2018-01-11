@@ -1,0 +1,15 @@
+.edit-seller-favorite {
+  border: $border;
+  border-radius: $border-radius;
+  &__icon {
+    left: 25px;
+    top: 25px;
+  }
+  &__textarea {
+    border: 0;
+    font-size: 16px;
+    min-height: 20px;
+    padding: 0;
+    width: 400px;
+  }
+}

@@ -16,7 +16,13 @@ const Header = ({ user }) => {
             src={user.thumbnailUrl} />
         )
       }
-      <div className='header__account-balance'>500€</div>
+      {
+        user && user.type === 'client' && (
+          <div className='header__account-balance'>
+            500€
+          </div>
+        )
+      }
     </div>
   )
 }

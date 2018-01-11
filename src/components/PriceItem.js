@@ -4,7 +4,6 @@ import FormInput from './FormInput'
 
 class PriceItem extends Component {
   render () {
-    console.log('his.props', this.props)
     const { endDate, startDate, size, value } = this.props
     return (
       <div className='price-item mb3 col-9 mx-auto p2'>

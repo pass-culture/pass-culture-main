@@ -126,8 +126,9 @@ select {
 .textarea {
   border: solid 0.5px $medium-grey;
   border-radius: $border-radius;
+  color: $very-dark-grey;
   font-family: $font-family;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 12px;
   min-height: 100px;
   padding: 20px;

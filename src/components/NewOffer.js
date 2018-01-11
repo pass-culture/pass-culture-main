@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -10,16 +11,32 @@ class NewOffer extends Component {
   componentWillReceiveProps (nextProps) {
     const { assignForm, work } = nextProps
     if (work && work !== this.props.work) {
-      assignForm({ workId: work.id })
+      const now = moment()
+      const endDate = now.add(1, 'd').utc().format()
+      const startDate = now.utc().format()
+      assignForm({
+        prices: [
+          {
+            endDate,
+            size: 1,
+            startDate,
+            value: 10
+          }
+        ],
+        workId: work.id
+      })
     }
   }
   render () {
-    const { work } = this.props
+    const { prices, sellersFavorites, work } = this.props
     return (
       <div className='new-offer'>
         {
           work
-            ? <EditOffer work={work} />
+            ? <EditOffer prices={prices}
+                sellersFavorites={sellersFavorites}
+                work={work}
+              />
             : <WorkDetector />
         }
       </div>
@@ -29,6 +46,8 @@ class NewOffer extends Component {
 
 export default connect(state => {
   return {
+    prices: state.form && state.form.prices,
+    sellersFavorites: state.form.sellersFavorites,
     selectedCategory: state.form && state.form.work && state.form.work.category,
     work: getCurrentWork(state)
   }

@@ -5,17 +5,28 @@ import { assignForm } from '../reducers/form'
 
 class FormTextarea extends Component {
   onChange = ({ target: { value } }) => {
-    const { assignForm, name } = this.props
-    assignForm({ [name]: value })
+    const { assignForm, name, maxLength } = this.props
+    if (value.length < maxLength) {
+      assignForm({ [name]: value })
+    } else {
+      console.warn('value reached maxLength')
+    }
   }
   render () {
-    const { className, defaultValue, placeholder, type } = this.props
+    const { className, defaultValue, placeholder, type, value } = this.props
     return <textarea className={className || 'textarea'}
-      defaultValue={defaultValue}
       onChange={this.onChange}
       placeholder={placeholder}
-      type={type} />
+      type={type}
+      value={value || defaultValue} />
   }
 }
 
-export default connect(null, { assignForm })(FormTextarea)
+FormTextarea.defaultProps = {
+  maxLength: 200
+}
+
+export default connect(
+  (state, ownProps) => ({ value: state.form[ownProps.name] }),
+  { assignForm }
+)(FormTextarea)
