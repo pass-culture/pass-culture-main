@@ -9,6 +9,7 @@ function * fromWatchSuccessPostSignActions (action) {
   }
 }
 
-export function * watchSuccessPostSignActions () {
-  yield takeEvery(({ type }) => /SUCCESS_POST_SIGN(.*)/.test(type), fromWatchSuccessPostSignActions)
+export function * watchUserActions () {
+  yield takeEvery(({ type }) =>
+    /SUCCESS_POST_SIGN(.*)/.test(type), fromWatchSuccessPostSignActions)
 }
