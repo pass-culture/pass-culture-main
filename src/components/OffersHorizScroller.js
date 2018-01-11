@@ -21,7 +21,7 @@ class OffersHorizScroller extends Component {
   }
 
   handleCardClick = (offerId) => {
-    this.props.history.push("/offres/"+offerId);
+    this.props.history.push('/offres/'+offerId);
   }
 
   handleScroll = (event) => {

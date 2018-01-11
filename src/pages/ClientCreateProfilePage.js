@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { withRouter } from 'react-router'
 
 class ClientCreateProfilePage extends Component {
   constructor () {
@@ -7,22 +8,24 @@ class ClientCreateProfilePage extends Component {
   }
   
   questions = [
-                [{title: 'Booba',  img: 'booba.jpg' }, {title: 'Orelsan',  img: 'orelsan.jpg' }],
-                [{title: 'Booba2', img: 'booba2.jpg'}, {title: 'Orelsan2', img: 'orelsan2.jpg'}],
-                [{title: 'Booba3', img: 'booba3.jpg'}, {title: 'Orelsan3', img: 'orelsan3.jpg'}]
+                [{title: 'Booba',  img: 'booba' }, {title: 'Orelsan',  img: 'orelsan' }],
+                [{title: 'Booba2', img: 'booba2'}, {title: 'Orelsan2', img: 'orelsan2'}],
+                [{title: 'Booba3', img: 'booba'}, {title: 'Orelsan3', img: 'orelsan'}]
               ]
-  
+
   handleChoice = (event) => {
-    console.log("clicked");
+    if (this.state.question_index==this.questions.length-1) {
+      this.props.history.push('/offres/');
+      return;
+    }
     this.setState(prevState => { console.log(prevState); return { question_index: prevState.question_index+1 } });
   }
 
   renderChoice = (question_index, choice_index) => {
     let question = this.questions[question_index];
     return (
-        <div className='choice' data-choice='{number}' onClick={this.handleChoice}>
-          <div className='choice-title'>{question[choice_index].title}</div>
-          <img className='choice-img' alt='' src={question[choice_index].img} />
+        <div className='choice' data-index={choice_index} onClick={this.handleChoice}>
+          <img className='choice-img' alt={question[choice_index].title} src={'/images_questions/'+question[choice_index].img+'_300.jpg'} />
         </div>
       )
   }
@@ -31,13 +34,15 @@ class ClientCreateProfilePage extends Component {
     return (
       <main className='page client-create-profile-page flex flex-column'>
         <h2>Aidez Pass Culture à vous connaître</h2>
-        <h3>Vous êtes plutôt</h3>
-        { this.renderChoice(this.state.question_index, 0) }
-        <div className='or'>OU</div>
-        { this.renderChoice(this.state.question_index, 1) }
+        <h3>Vous êtes plutôt&nbsp;:</h3>
+        <div className='choices'>
+          { this.renderChoice(this.state.question_index, 0) }
+          <div className='or'>OU</div>
+          { this.renderChoice(this.state.question_index, 1) }
+        </div>
       </main>
     )
   }
 }
 
-export default ClientCreateProfilePage
+export default withRouter(ClientCreateProfilePage)
