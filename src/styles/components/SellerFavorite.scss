@@ -1,0 +1,8 @@
+.seller-favorite {
+  border: $border;
+  border-radius: $border-radius;
+  &__icon {
+    left: 25px;
+    top: 25px;
+  }
+}

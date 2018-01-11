@@ -3,14 +3,14 @@ import { connect } from 'react-redux'
 
 import { assignForm } from '../reducers/form'
 
-class FormInput extends Component {
+class FormTextarea extends Component {
   onChange = ({ target: { value } }) => {
     const { assignForm, name } = this.props
     assignForm({ [name]: value })
   }
   render () {
     const { className, defaultValue, placeholder, type } = this.props
-    return <input className={className || 'input'}
+    return <textarea className={className || 'textarea'}
       defaultValue={defaultValue}
       onChange={this.onChange}
       placeholder={placeholder}
@@ -18,4 +18,4 @@ class FormInput extends Component {
   }
 }
 
-export default connect(null, { assignForm })(FormInput)
+export default connect(null, { assignForm })(FormTextarea)

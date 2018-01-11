@@ -3,22 +3,17 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import OfferItem from '../components/OfferItem'
-import OfferNew from '../components/OfferNew'
+import NewOfferButton from '../components/NewOfferButton'
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/request'
 
-/*
-{ alignItems: 'center',
-  display: 'flex',
-  height: '100vh',
-  justifyContent: 'space-between'
-}
-*/
-
-class SpreadsheetPage extends Component {
+class ProfessionalHomePage extends Component {
   handleRequestData = props => {
-    const { requestData, sellerId } = this.props
-    sellerId && requestData('GET', 'offers?sellerId=${sellerId}')
+    const { requestData, sellerId } = props
+    if (!this.hasRequired && sellerId) {
+      requestData('GET', `offers?sellerId=${sellerId}`)
+      this.hasRequired = true
+    }
   }
   componentWillMount () {
     this.props.sellerId && this.handleRequestData(this.props)
@@ -31,15 +26,13 @@ class SpreadsheetPage extends Component {
   render () {
     const { offers } = this.props
     return (
-      <main className='page flex items-center justify-center'>
-        <div>
-          <OfferNew />
-          {
-            offers && offers.map((offer, index) => (
-              <OfferItem key={index} {...offer} />
-            ))
-          }
-        </div>
+      <main className='spreadsheet-page p2'>
+        <NewOfferButton />
+        {
+          offers && offers.map((offer, index) => (
+            <OfferItem key={index} {...offer} />
+          ))
+        }
       </main>
     )
   }
@@ -48,8 +41,10 @@ class SpreadsheetPage extends Component {
 export default compose(
   withLogin,
   connect(
-    ({ request: { offers }, user }) =>
-      ({ offers, sellerId: user && user.sellerId }),
+    state =>({
+      offers: state.request.offers,
+      sellerId: state.user && state.user.sellerId
+    }),
     { requestData }
   )
-)(SpreadsheetPage)
+)(ProfessionalHomePage)

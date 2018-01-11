@@ -7,7 +7,7 @@ import ActivitiesPage from './pages/ActivitiesPage'
 import ClientCreateProfilePage from './pages/ClientCreateProfilePage'
 import ClientHomePage from './pages/ClientHomePage'
 import ClientOfferPage from './pages/ClientOfferPage'
-import SpreadsheetPage from './pages/SpreadsheetPage'
+import ProfessionalHomePage from './pages/ProfessionalHomePage'
 import WelcomePage from './pages/WelcomePage'
 import store from './utils/store'
 
@@ -18,28 +18,22 @@ const Root = () => {
         <App>
           <Route exact
             path='/'
-            render={() => <ClientCreateProfilePage />}
-          />
+            render={() => <ClientCreateProfilePage />} />
           <Route exact
             path='/offres'
-            render={() => <ClientHomePage />}
-          />
+            render={() => <ClientHomePage />} />
           <Route exact
             path='/offres/:offerId'
-            render={() => <ClientOfferPage />}
-          />
+            render={() => <ClientOfferPage />} />
           <Route exact
             path='/activities'
-            render={() => <ActivitiesPage />}
-          />
+            render={() => <ActivitiesPage />} />
           <Route exact
-            path='/spreadsheet'
-            render={() => <SpreadsheetPage />}
-          />
+            path='/gestion'
+            render={() => <ProfessionalHomePage />} />
           <Route exact
             path='/welcome'
-            render={() => <WelcomePage />}
-          />
+            render={() => <WelcomePage />} />
         </App>
       </BrowserRouter>
     </Provider>
