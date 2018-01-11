@@ -1,16 +1,25 @@
 .header {
   height: 55px;
   background-color: black;
+  color: white;
+  .hamburger {
+    margin-left: -10px;
+  }
   &__logo {
     position: absolute;
     left:50%;
     transform: translate(-50%, 0);
-    color: white;
     text-align: center;
-    font-size: 25px;
+    font-size: 20px;
+  }
+  &__account-balance {
+    position: absolute;
+    right: 45px;
+    padding-top: 3px;
   }
   &__avatar {
-    height: 90%;
-    width: auto;
+    height: 40px;
+    position: absolute;
+    right: 0;
   }
 }
