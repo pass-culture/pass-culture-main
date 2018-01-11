@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
+import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
+import { withRouter } from 'react-router'
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/request'
@@ -18,8 +20,8 @@ class OffersHorizScroller extends Component {
       }
   }
 
-  handleCardClick = () => {
-    this.props.showModal(<div> Hello </div>)
+  handleCardClick = (offerId) => {
+    this.props.history.push("/offres/"+offerId);
   }
 
   handleScroll = (event) => {
@@ -45,7 +47,7 @@ class OffersHorizScroller extends Component {
         { 
           offers ? offers.map((offer, index) =>
                      (
-                       <div className='offer-card' key={index} onClick={this.handleCardClick}>
+                       <div className='offer-card' key={index} onClick={() => this.handleCardClick(offer.id)}>
                          { offer.sellersFavorites && offer.sellersFavorites.length && <Icon name='favorite-outline' /> }
                          { offer.name }
                        </div>
@@ -57,7 +59,9 @@ class OffersHorizScroller extends Component {
   }
 }
 
-export default connect(createSelector(state => state.request.offers,
-                                      (state, ownProps) => ownProps.type,
-                                      (offers, type) => ({ offers: offers && offers.filter(o => o.work.category === type) })),
-                       { requestData })(OffersHorizScroller)
+export default compose(withRouter,
+                       connect(createSelector(state => state.request.offers,
+                                              (state, ownProps) => ownProps.type,
+                                              (offers, type) => ({ offers: offers && offers.filter(o => o.work.category === type) })),
+                              { requestData })
+                      )(OffersHorizScroller)

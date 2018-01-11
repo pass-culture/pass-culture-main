@@ -4,6 +4,7 @@ import { BrowserRouter, Route } from 'react-router-dom'
 
 import App from './App'
 import ActivitiesPage from './pages/ActivitiesPage'
+import ClientCreateProfilePage from './pages/ClientCreateProfilePage'
 import ClientHomePage from './pages/ClientHomePage'
 import ClientOfferPage from './pages/ClientOfferPage'
 import SpreadsheetPage from './pages/SpreadsheetPage'
@@ -17,10 +18,14 @@ const Root = () => {
         <App>
           <Route exact
             path='/'
+            render={() => <ClientCreateProfilePage />}
+          />
+          <Route exact
+            path='/offres'
             render={() => <ClientHomePage />}
           />
           <Route exact
-            path='/offers/:offerId'
+            path='/offres/:offerId'
             render={() => <ClientOfferPage />}
           />
           <Route exact
