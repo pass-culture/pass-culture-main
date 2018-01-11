@@ -1,24 +1,27 @@
 // INITIAL STATE
-const initialState = {
-  clientToken: 'bd2b9fa5-fbee-434f-9aaf-adc6701fd3db',
-  offers: null,
-  professionalToken: 'bd2b9fa5-fbee-434f-9aaf-adc6701fd3db',
-  works: null
-}
+const initialState = { isOptimist: false }
 
 // REDUCER
 const request = (state = initialState, action) => {
-  if (/SUCCESS_(.*)/.test(action.type)) {
-    const key = action.config.key || action.path.split('/')[0].replace(/\?.*$/, '');
+  if (/REQUEST_(POST|PUT|DELETE)_(.*)/.test(action.type)) {
+    if (action.config && action.config.getOptimistState) {
+      const newState = { isOptimist: true }
+      const optimistState = action.config.getOptimistState(state, action)
+      Object.assign(newState, optimistState)
+      return Object.assign({}, state, newState)
+    }
+    return state
+  } else if (/SUCCESS_GET_(.*)/.test(action.type)) {
+    const key = action.config.key || action.path.split('/')[0].replace(/\?.*$/, '')
+    const newState = { isOptimist: false }
     if (action.config.add === 'append') {
-      return Object.assign({}, state, { [key]: state[key].concat(action.data) })
-      }
-    else if (action.config.add === 'prepend') {
-      return Object.assign({}, state, { [key]: action.data.concat(state[key]) })
-      }
-    else {
-      return Object.assign({}, state, { [key]: action.data })
-      }
+      newState[key] = state[key].concat(action.data)
+    } else if (action.config.add === 'prepend') {
+      newState[key] = action.data.concat(state[key])
+    } else {
+      newState[key] = action.data
+    }
+    return Object.assign({}, state, newState)
   }
   return state
 }
