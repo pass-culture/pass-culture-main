@@ -7,11 +7,8 @@ class ClientHomePage extends Component {
   render = () => {
     return (
       <main className='page client-home-page flex flex-column'>
+        <OffersHorizScroller />
         <SearchBar />
-        <h3>Livres</h3>
-        <OffersHorizScroller type='book' />
-        <h3>Spectacle vivant</h3>
-        <OffersHorizScroller type='theater' />
       </main>
     )
   }

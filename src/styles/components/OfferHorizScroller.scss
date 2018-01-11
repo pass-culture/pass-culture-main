@@ -1,17 +1,29 @@
 .offer-horiz-scroller {
-  height: 150px;
+  margin-left: -5px;
+  > div {
+    width: 100%;
+    height: 33.333%;
+  }
+  .carousel {
+    height: 100%;
+    .slider-wrapper, .slider, .slide {
+      height: 100%;
+    }
+    .slide {
+      color: white;
+    }
+  }
   .offer-card {
-    width: 100px;
-    height: 150px;
+    width: 95%;
+    height: 30%;
     border: 1px solid grey;
     border-radius: 3px;
-    margin-right: 2px;
     cursor: pointer;
     flex: none;
   }
   .no-offers {
-    height: 150px;
-    padding-left: 10px;
-    padding-top: 50px;
+    width: 100%;
+    padding-top: 40%;
+    text-align: center;
   }
 }

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader';
 
 import './styles/index.scss'
+import './utils/styles'
+
 import registerServiceWorker from './utils/registerServiceWorker'
 import Root from './Root'
 

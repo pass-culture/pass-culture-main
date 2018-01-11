@@ -4,8 +4,13 @@
   padding: 0;
 }
 
+html,body {
+  min-height: 100vh;
+}
+
 .app {
   font-family: $font-family;
+  min-height: 100vh;
 }
 
 .button {
@@ -88,4 +93,5 @@ label {
 
 .page {
   padding: 5px;
+  min-height: 100vh;
 }

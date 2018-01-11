@@ -1,5 +1,15 @@
 .client-home-page {
-  h3 {
-    margin-top: 10px;
+  height: 100%;
+  width: 100%;
+  .offer-horiz-scroller {
+    position: fixed;
+    top: 55px;
+    bottom: 28px;
+    width: 100%;
   }
+  .search-bar {
+    position: fixed;
+    bottom: 0px;
+    width: 98%;
+    }
 }
