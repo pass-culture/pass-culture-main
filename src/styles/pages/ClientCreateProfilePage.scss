@@ -1,0 +1,35 @@
+.client-create-profile-page {
+  h2 {
+    font-size: 6vw;
+    text-align: center;
+  }
+  h3 {
+    font-size: 8vw;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .choices {
+    background-color: black;
+    .choice[data-index='1'] {
+      margin-top: -35px;
+      margin-bottom: -35px;
+    }
+    .choice-img {
+      width: 100%;
+      z-index: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+    .or {
+      position: relative;
+      z-index: 1;
+      color: white;
+      top: -20px;
+      width: 100%;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+    }
+  padding: 0;
+  }
+}
