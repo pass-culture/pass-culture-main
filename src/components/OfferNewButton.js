@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Icon from './Icon'
-import NewOffer from './NewOffer'
+import OfferNew from './OfferNew'
 import { showModal } from '../reducers/modal'
 
-class NewOfferButton extends Component {
+class OfferNewButton extends Component {
   onNewClick = () => {
-    this.props.showModal(<NewOffer />)
+    this.props.showModal(<OfferNew />)
   }
   render () {
     return (
@@ -22,4 +22,4 @@ class NewOfferButton extends Component {
   }
 }
 
-export default connect(null, { showModal })(NewOfferButton)
+export default connect(null, { showModal })(OfferNewButton)

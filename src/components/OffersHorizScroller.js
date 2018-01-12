@@ -5,7 +5,7 @@ import { withRouter } from 'react-router'
 import { Carousel } from 'react-responsive-carousel'
 
 import Icon from '../components/Icon'
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 
 class OffersHorizScroller extends Component {
@@ -34,7 +34,7 @@ class OffersHorizScroller extends Component {
                       </div>
                   ))
           }
-        </Carousel> 
+        </Carousel>
       )
   }
 
@@ -42,7 +42,7 @@ class OffersHorizScroller extends Component {
     const { offers } = this.props
     return (
       <div className='offer-horiz-scroller'>
-        { 
+        {
           offers ? [0,1,2].map(this.renderCarousel)
                  : <div className='no-offers'>Aucune offre à afficher</div>
         }
@@ -52,6 +52,8 @@ class OffersHorizScroller extends Component {
 }
 
 export default compose(withRouter,
-                       connect((state, ownProps) => ( { offers: state.request.offers } ),
-                               { requestData })
-                      )(OffersHorizScroller)
+   connect(createSelector(state => state.data.offers,
+                          (state, ownProps) => ownProps.type,
+                          (offers, type) => ({ offers: offers && offers.filter(o => o.work.category === type) })),
+          { requestData })
+)(OffersHorizScroller)

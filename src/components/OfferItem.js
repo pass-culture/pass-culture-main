@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 
 import Icon from './Icon'
 import DeleteButton from './DeleteButton'
-import EditOffer from './EditOffer'
+import OfferModify from './OfferModify'
 import { showModal } from '../reducers/modal'
 
 class OfferItem extends Component {
   onClick = action => {
     const { showModal } = this.props
-    showModal(<EditOffer {...this.props} />)
+    showModal(<OfferModify {...this.props} />)
   }
   render () {
     const { id,

@@ -2,12 +2,11 @@ import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import EditOffer from './EditOffer'
+import OfferModify from './OfferModify'
 import WorkDetector from './WorkDetector'
 import { assignForm } from '../reducers/form'
-import { getCurrentWork } from '../reducers/request'
 
-class NewOffer extends Component {
+class OfferNew extends Component {
   componentWillReceiveProps (nextProps) {
     const { assignForm, work } = nextProps
     if (work && work !== this.props.work) {
@@ -30,10 +29,10 @@ class NewOffer extends Component {
   render () {
     const { prices, sellersFavorites, work } = this.props
     return (
-      <div className='new-offer'>
+      <div className='offer-new'>
         {
           work
-            ? <EditOffer prices={prices}
+            ? <OfferModify prices={prices}
                 sellersFavorites={sellersFavorites}
                 work={work}
               />
@@ -49,6 +48,6 @@ export default connect(state => {
     prices: state.form && state.form.prices,
     sellersFavorites: state.form.sellersFavorites,
     selectedCategory: state.form && state.form.work && state.form.work.category,
-    work: getCurrentWork(state)
+    work: state.data.works && state.data.works.length === 1 && state.data.works[0]
   }
-}, { assignForm })(NewOffer)
+}, { assignForm })(OfferNew)

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import Select from './Select'
 import { assignForm } from '../reducers/form'
-import { getCurrentWork, requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 class WorkDetector extends Component {
   constructor () {
@@ -79,6 +79,6 @@ WorkDetector.defaultProps = {
 }
 
 export default connect(
-  state => ({ work: getCurrentWork(state) }),
+  state => ({ work: state.data.works && state.data.works.length === 1 && state.data.works[0] }),
   { assignForm, requestData }
 )(WorkDetector)

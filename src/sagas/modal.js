@@ -1,4 +1,4 @@
-import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { takeEvery } from 'redux-saga/effects'
 
 import { CLOSE_MODAL, SHOW_MODAL } from '../reducers/modal'
 

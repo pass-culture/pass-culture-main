@@ -11,33 +11,25 @@ class PriceItem extends Component {
         <label className='mr1'>
           début
         </label>
-        <FormInput className='input price-item__form-input mb1'
-          defaultValue={startDate}
-          name='startDate' />
+        {startDate}
         <br />
 
         <label className='mr1'>
           fin
         </label>
-        <FormInput className='input price-item__form-input mb1'
-          defaultValue={endDate}
-          name='endDate' />
+        {endDate}
         <br />
 
         <label className='mr1'>
           groupe
         </label>
-        <FormInput className='input price-item__form-input mb1'
-          defaultValue={size}
-          name='size' />
+        {size}
         <br />
 
         <label className='mr1'>
           prix
         </label>
-        <FormInput className='input price-item__form-input'
-          defaultValue={value}
-          name='value' />
+        {value}
       </div>
     )
   }

@@ -2,7 +2,7 @@ import {
   // clientSignin as body,
   professionalSignin as body
 } from './mock'
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 const init = store => {
   // mock sign

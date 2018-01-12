@@ -1,9 +1,14 @@
+// ACTIONS
+const ASSIGN_DATA = 'ASSIGN_DATA'
+
 // INITIAL STATE
 const initialState = { isOptimist: false }
 
 // REDUCER
-const request = (state = initialState, action) => {
-  if (/REQUEST_(POST|PUT|DELETE)_(.*)/.test(action.type)) {
+const data = (state = initialState, action) => {
+  if (action.type === ASSIGN_DATA) {
+    return Object.assign({}, state, action.patch)
+  } else if (/REQUEST_(POST|PUT|DELETE)_(.*)/.test(action.type)) {
     if (action.config && action.config.getOptimistState) {
       const newState = { isOptimist: true }
       const optimistState = action.config.getOptimistState(state, action)
@@ -27,6 +32,11 @@ const request = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
+export const assignData = patch => ({
+  patch,
+  type: ASSIGN_DATA
+})
+
 export const failData = (method, path, error, config) => ({
   config,
   error,
@@ -50,13 +60,5 @@ export const successData = (method, path, data, config={}) => ({
   type: `SUCCESS_${method.toUpperCase()}_${path.toUpperCase()}`
 })
 
-// SELECTORS
-export const getCurrentWork = ({ request: { works } }) =>
-  works && works.length === 1 && works[0]
-
-export const getToken = (state, type) => {
-  return state.request[`${type}Token`]
-}
-
 // default
-export default request
+export default data

@@ -3,9 +3,9 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import OfferItem from '../components/OfferItem'
-import NewOfferButton from '../components/NewOfferButton'
+import OfferNewButton from '../components/OfferNewButton'
 import withLogin from '../hocs/withLogin'
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 class ProfessionalHomePage extends Component {
   handleRequestData = props => {
@@ -27,7 +27,7 @@ class ProfessionalHomePage extends Component {
     const { offers } = this.props
     return (
       <main className='spreadsheet-page p2'>
-        <NewOfferButton />
+        <OfferNewButton />
         {
           offers && offers.map((offer, index) => (
             <OfferItem key={index} {...offer} />
@@ -42,7 +42,7 @@ export default compose(
   withLogin,
   connect(
     state =>({
-      offers: state.request.offers,
+      offers: state.data.offers,
       sellerId: state.user && state.user.sellerId
     }),
     { requestData }

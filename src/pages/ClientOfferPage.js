@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 class ClientOfferPage extends Component {
   render = () => {
@@ -13,6 +13,6 @@ class ClientOfferPage extends Component {
   }
 }
 
-//export default connect((state, ownProps) => state.request.offers.filter(o => o.id===ownProps.params.offerId),
+//export default connect((state, ownProps) => state.data.offers.filter(o => o.id===ownProps.params.offerId),
 //                       { requestData })(ClientOfferPage)
 export default ClientOfferPage

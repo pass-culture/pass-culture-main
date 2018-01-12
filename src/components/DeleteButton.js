@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import Icon from './Icon'
 import { closeModal, showModal } from '../reducers/modal'
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 class DeleteButton extends Component {
   onCancelClick = () => {

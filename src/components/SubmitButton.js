@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { resetForm } from '../reducers/form'
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 class SubmitButton extends Component {
   onSubmitClick = () => {
