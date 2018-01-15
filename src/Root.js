@@ -24,7 +24,7 @@ const Root = () => {
             render={() => <ClientHomePage />} />
           <Route exact
             path='/offres/:offerId'
-            render={() => <ClientOfferPage />} />
+            render={(props) => <ClientOfferPage offerId={props.match.params.offerId}/>} />
           <Route exact
             path='/activities'
             render={() => <ActivitiesPage />} />

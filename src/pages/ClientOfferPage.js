@@ -4,15 +4,25 @@ import { connect } from 'react-redux'
 import { requestData } from '../reducers/data'
 
 class ClientOfferPage extends Component {
+  componentWillMount = () => {
+    const { requestData, offerId } = this.props;
+    requestData('GET', 'offers/' + offerId)
+  }
+
   render = () => {
+    const { offer } = this.props;
     return (
       <main className='page client-offer-page flex flex-column'>
-        <h2>Le bourgeois Gentillhomme</h2>
+        {
+        offer &&
+          (
+          <h2>{offer.name}</h2>
+          )
+        }
       </main>
     )
   }
 }
 
-//export default connect((state, ownProps) => state.data.offers.filter(o => o.id===ownProps.params.offerId),
-//                       { requestData })(ClientOfferPage)
-export default ClientOfferPage
+export default connect((state, ownProps) => ({ offer: state.data['offers/'+ownProps.offerId] }),
+                       { requestData })(ClientOfferPage)
