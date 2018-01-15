@@ -12,7 +12,7 @@ class OfferNewButton extends Component {
   render () {
     return (
       <div className='flex items-center justify-center p1'>
-        <button className='button button--alive button--inversed'
+        <button className='button button--alive button--rounded left-align'
           onClick={this.onNewClick}
         >
           <Icon name='add' />

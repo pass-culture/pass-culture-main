@@ -1,9 +1,5 @@
-.page {
-  top: 55px;
-}
-
 .header {
-  height: 55px;
+  height: $header-height;
   background-color: black;
   color: white;
   position: fixed;

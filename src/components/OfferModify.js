@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import DeleteButton from './DeleteButton'
 import List from './List'
 import OfferForm from './OfferForm'
 import OfferItem from './OfferItem'
@@ -20,11 +21,9 @@ class OfferModify extends Component {
     <div className='offer-modify p2'>
 
       {
-        /*
         newOffer
           ? <OfferItem {...this.props} {...newOffer} />
           : <OfferForm {...this.props} />
-        */
       }
 
       <div className='sep mb2' />
@@ -65,6 +64,12 @@ class OfferModify extends Component {
         title='Offres' />
 
       <div className='sep mb2' />
+
+      <DeleteButton className='button button--alive mb2'
+        collectionName='offers'
+        id={id}
+        text='Supprimer'
+      />
 
     </div>
   )

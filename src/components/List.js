@@ -24,8 +24,8 @@ class List extends Component {
       ContentComponent,
       elements,
       extra,
-      getIsDisabled,
       FormComponent,
+      getIsDisabled,
       isSubmitting,
       getBody,
       getOptimistState,
@@ -38,7 +38,7 @@ class List extends Component {
         <div className='h2 mb2'>
           {title}
         </div>
-        <div className='flex items-center flex-start mb2'>
+        <div className='list__control flex items-center flex-start'>
           {
             isModify
               ? <SubmitButton getBody={getBody}
