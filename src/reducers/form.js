@@ -46,16 +46,24 @@ export const mergeForm = patch => ({
 export const resetForm = patch => ({ type: RESET_FORM })
 
 // SELECTORS
-export function getFormValue (state, ownProps) {
+export function getFormCollection (state, ownProps) {
   const form = state.form
   if (!form) {
     return
   }
-  const collection = form[`${ownProps.collectionName}ById`]
+  return form[`${ownProps.collectionName}ById`]
+}
+
+export function getFormEntity (state, ownProps) {
+  const collection = getFormCollection (state, ownProps)
   if (!collection) {
     return
   }
-  const entity = collection[ownProps.id || NEW]
+  return collection[ownProps.id || NEW]
+}
+
+export function getFormValue (state, ownProps) {
+  const entity = getFormEntity (state, ownProps)
   if (!entity) {
     return
   }

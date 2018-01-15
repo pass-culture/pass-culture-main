@@ -23,6 +23,7 @@ class OfferModify extends Component {
       sellersFavorites,
       prices
     } = this.props
+  console.log('sellersFavorites', sellersFavorites)
   return (
     <div className='offer-modify p2'>
 
@@ -76,9 +77,8 @@ class OfferModify extends Component {
           )
         }
         getOptimistState={(state, action) => {
-          const offer = state.offers.find(offer => offer.id === id)
           return { sellersFavorites: action.config.body.concat(
-            offer.sellersFavorites) }
+            sellersFavorites) }
         }}
         FormComponent={SellerFavoriteForm}
         path='sellersFavorites'
@@ -125,7 +125,11 @@ class OfferModify extends Component {
 }
 }
 
-export default connect(state =>
-  ({ newOffer: state.data.newOffer }),
+export default connect((state, ownProps) =>
+  ({
+    newOffer: state.data.newOffer,
+    prices: state.data.prices || ownProps.prices,
+    sellersFavorites: state.data.sellersFavorites || ownProps.sellersFavorites
+  }),
   { assignData }
 )(OfferModify)

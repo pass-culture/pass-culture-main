@@ -18,15 +18,12 @@ class OfferNew extends Component {
    }
   }
   render () {
-    const { prices, sellersFavorites, work } = this.props
+    const { work } = this.props
     return (
       <div className='offer-new'>
         {
           work
-            ? <OfferModify prices={prices}
-                sellersFavorites={sellersFavorites}
-                work={work}
-              />
+            ? <OfferModify work={work} />
             : <WorkDetector />
         }
       </div>
@@ -36,9 +33,6 @@ class OfferNew extends Component {
 
 export default connect(state => {
   return {
-    prices: state.form && state.form.prices,
-    sellersFavorites: state.form.sellersFavorites,
-    selectedCategory: state.form && state.form.work && state.form.work.category,
     work: state.data.works && state.data.works.length === 1 && state.data.works[0]
   }
 }, { mergeForm })(OfferNew)

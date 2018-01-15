@@ -45,26 +45,6 @@ class List extends Component {
             onClick={this.onSubmitClick}
             path={path}
             text='Ajouter' />
-          {
-            /*
-            isModify
-              ? <SubmitButton getBody={getBody}
-                  getIsDisabled={getIsDisabled}
-                  getOptimistState={getOptimistState}
-                  onClick={this.onSubmitClick}
-                  path={path}
-                  text='Ajouter' />
-              : (
-                  <button className={classnames(
-                      'button button--alive button--rounded left-align',
-                      { 'hide': isSubmitting }
-                    )}
-                    onClick={this.onAddClick}>
-                    +
-                  </button>
-              )
-            */
-          }
         </div>
         <FormComponent {...extra} />
         {
