@@ -13,7 +13,6 @@ const Header = ({ user }) => {
         user && <img className='header__avatar' alt='avatar' src={user.thumbnailUrl} />
       }
       <div className='header__account-balance'>500€</div>
-      <img className='header__avatar' alt='avatar' src="/dragon.png" />
     </div>
   )
 }
