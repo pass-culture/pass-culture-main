@@ -24,11 +24,12 @@ class List extends Component {
       ContentComponent,
       elements,
       extra,
+      getIsDisabled,
+      FormComponent,
       isSubmitting,
       getBody,
       getOptimistState,
       path,
-      ModifyComponent,
       title
     } = this.props
     const { isModify } = this.state
@@ -40,26 +41,24 @@ class List extends Component {
         <div className='flex items-center flex-start mb2'>
           {
             isModify
-            ? <SubmitButton className={classnames('button button--alive', {
-                  'hide': isSubmitting
-                })}
-                getBody={getBody}
-                getOptimistState={getOptimistState}
-                onClick={this.onSubmitClick}
-                path={path}
-                text='Ajouter' />
-            : (
-                <button className={classnames(
-                    'button button--alive button--rounded left-align',
-                    { 'hide': isSubmitting }
-                  )}
-                  onClick={this.onAddClick}>
-                  +
-                </button>
-            )
+              ? <SubmitButton getBody={getBody}
+                  getIsDisabled={getIsDisabled}
+                  getOptimistState={getOptimistState}
+                  onClick={this.onSubmitClick}
+                  path={path}
+                  text='Ajouter' />
+              : (
+                  <button className={classnames(
+                      'button button--alive button--rounded left-align',
+                      { 'hide': isSubmitting }
+                    )}
+                    onClick={this.onAddClick}>
+                    +
+                  </button>
+              )
           }
         </div>
-        { isModify && <ModifyComponent {...extra} /> }
+        { isModify && <FormComponent {...extra} /> }
         {
           elements && elements.map((favorite, index) => (
             <ContentComponent key={index} {...favorite} />

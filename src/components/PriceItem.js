@@ -1,35 +1,52 @@
 import React, { Component } from 'react'
+import moment from 'moment'
 
 import FormInput from './FormInput'
 
+const FormItem = ({ name, value }) => (
+  <div className='flex items-center justify-center'>
+    <label className='mr2 right-align'>
+      {name}
+    </label>
+    <div className='price-item__value'>
+      {value}
+    </div>
+  </div>
+)
+
 class PriceItem extends Component {
+  handleFormatDate = ({ endDate, startDate }) => {
+    this.setState({
+      formatEndDate: moment(endDate).format('YYYY-MM-DD'),
+      formatStartDate: moment(startDate).format('YYYY-MM-DD')
+    })
+  }
+  componentWillMount () {
+    this.handleFormatDate(this.props)
+  }
+  componentWillReceiveProps (nextProps) {
+    const { endDate, startDate } = nextProps
+    // we just avoid here to recompute the date at each render
+    if (endDate !== this.props.endDate || startDate !== this.props.startDate) {
+      this.handleFormatDate(nextProps)
+    }
+  }
   render () {
-    const { endDate, startDate, size, value } = this.props
+    const { size, value } = this.props
+    const { formatEndDate, formatStartDate } = this.state
     return (
       <div className='price-item mb3 col-9 mx-auto p2'>
 
-        <label className='mr1'>
-          début
-        </label>
-        {startDate}
+        <FormItem name='début' value={formatStartDate} />
         <br />
 
-        <label className='mr1'>
-          fin
-        </label>
-        {endDate}
+        <FormItem name='fin' value={formatEndDate} />
         <br />
 
-        <label className='mr1'>
-          groupe
-        </label>
-        {size}
+        <FormItem name='groupe' value={size} />
         <br />
 
-        <label className='mr1'>
-          prix
-        </label>
-        {value}
+        <FormItem name='prix' value={value} />
       </div>
     )
   }

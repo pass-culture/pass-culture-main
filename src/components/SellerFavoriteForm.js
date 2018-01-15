@@ -6,19 +6,19 @@ import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 import { assignForm } from '../reducers/form'
 
-class SellerFavoriteModify extends Component {
+class SellerFavoriteForm extends Component {
   componentWillMount () {
     const { assignForm, offerId } = this.props
     assignForm({ offerId })
   }
   render () {
     return (
-      <div className='seller-favorite-modify mb2 p3 relative'>
+      <div className='seller-favorite-form mb2 p3 relative'>
         <div className='seller-favorite__icon absolute'>
           <Icon name='favorite-outline' />
         </div>
-        <FormTextarea className='textarea seller-favorite-modify__textarea mt2'
-          name='sellersFavoriteDescription'
+        <FormTextarea className='textarea seller-favorite-form__textarea mt2'
+          name='description'
           placeholder='donnez la description de votre coup de coeur' />
         {
           /*<FormInput name='description'
@@ -30,4 +30,4 @@ class SellerFavoriteModify extends Component {
   }
 }
 
-export default connect(null, { assignForm })(SellerFavoriteModify)
+export default connect(null, { assignForm })(SellerFavoriteForm)

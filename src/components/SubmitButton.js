@@ -1,3 +1,5 @@
+import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -23,9 +25,14 @@ class SubmitButton extends Component {
     resetForm()
   }
   render () {
-    const { text } = this.props
+    const { className, getIsDisabled, form, text } = this.props
+    console.log('getIsDisabled(form)', getIsDisabled(form), form)
+    const isDisabled = getIsDisabled(form)
     return (
-      <button className='button button--alive'
+      <button className={classnames(className || 'button button--alive', {
+          'button--disabled': isDisabled
+        })}
+        disabled={isDisabled}
         onClick={this.onSubmitClick}
       >
         { text }
@@ -35,8 +42,13 @@ class SubmitButton extends Component {
 }
 
 SubmitButton.defaultProps = { getBody: form => form,
+  getIsDisabled: form => Object.keys(form).length === 0,
   method: 'POST',
   text: 'Soumettre'
+}
+
+SubmitButton.propTypes = {
+  path: PropTypes.string.isRequired
 }
 
 export default connect(({ form }) => ({ form }),

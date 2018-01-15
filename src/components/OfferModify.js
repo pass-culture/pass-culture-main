@@ -1,47 +1,31 @@
-import React, { Component }  from 'react'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
-import FormInput from './FormInput'
-import FormTextarea from './FormTextarea'
 import List from './List'
-import PriceModify from './PriceModify'
+import OfferForm from './OfferForm'
+import OfferItem from './OfferItem'
+import PriceForm from './PriceForm'
 import PriceItem from './PriceItem'
 import SellerFavoriteItem from './SellerFavoriteItem'
-import SellerFavoriteModify from './SellerFavoriteModify'
-import SubmitButton from './SubmitButton'
+import SellerFavoriteForm from './SellerFavoriteForm'
 
-const OfferModify = ({
-  description,
-  id,
-  isEditing,
-  name,
-  sellersFavorites,
-  thumbnailUrl,
-  prices,
-  work
-}) => {
+class OfferModify extends Component {
+  render () {
+    const { id,
+      newOffer,
+      sellersFavorites,
+      prices
+    } = this.props
   return (
     <div className='offer-modify p2'>
 
-      <FormInput className='input mt1 mb3'
-        defaultValue={name}
-        name='name'
-        placeholder="titre de l'offre"
-      />
-      <div className='sep mb2' />
-      <div className='offer-modify__hero flex flex-wrap items-center justify-around mb2 p1'>
-        <img alt='thumbnail'
-          className='offer-modify__hero__img mb1'
-          src={thumbnailUrl || work.thumbnailUrl} />
-        <FormTextarea className='textarea offer-modify__hero__textarea'
-          defaultValue={description}
-          name='description'
-          placeholder="Vous pouvez écrire un description ici" >
-          {description}
-        </FormTextarea>
-      </div>
-      <button className='button button--alive mb2'>
-        Soumettre
-      </button>
+      {
+        /*
+        newOffer
+          ? <OfferItem {...this.props} {...newOffer} />
+          : <OfferForm {...this.props} />
+        */
+      }
 
       <div className='sep mb2' />
 
@@ -50,21 +34,16 @@ const OfferModify = ({
         elements={sellersFavorites}
         extra={{ offerId: id }}
         getBody={form => [{
-          description: form.sellersFavoriteDescription,
+          description: form.description,
           offerId: id
         }]}
+        getIsDisabled={form => !form.description && !form.title}
         getOptimistState={(state, action) => {
-          let sellersFavorites
-          const offers = state.offers.map(offer => {
-            if (offer.id === id) {
-              sellersFavorites = action.config.body.concat(
-                offer.sellersFavorites)
-            }
-            return offer
-          })
-          return { sellersFavorites }
+          const offer = state.offers.find(offer => offer.id === id)
+          return { sellersFavorites: action.config.body.concat(
+            offer.sellersFavorites) }
         }}
-        ModifyComponent={SellerFavoriteModify}
+        FormComponent={SellerFavoriteForm}
         path='sellersFavorites'
         title='Coups de Coeur' />
 
@@ -78,17 +57,10 @@ const OfferModify = ({
           offerId: id
         }, form)]}
         getOptimistState={(state, action) => {
-          let prices
-          const offers = state.offers.map(offer => {
-            if (offer.id === id) {
-              prices = action.config.body.concat(
-                offer.prices)
-            }
-            return offer
-          })
-          return { prices }
+          const offer = state.offers.find(offer => offer.id === id)
+          return { prices: action.config.body.concat(offer.prices) }
         }}
-        ModifyComponent={PriceModify}
+        FormComponent={PriceForm}
         path='prices'
         title='Offres' />
 
@@ -97,5 +69,7 @@ const OfferModify = ({
     </div>
   )
 }
+}
 
-export default OfferModify
+export default connect(state =>
+  ({ newOffer: state.data.newOffer }))(OfferModify)
