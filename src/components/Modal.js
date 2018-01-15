@@ -9,7 +9,7 @@ class Modal extends Component {
     this.props.closeModal()
   }
   render () {
-    const { content,
+    const { ContentComponent,
       isActive
     } = this.props
     return (
@@ -30,7 +30,7 @@ class Modal extends Component {
             x
           </button>
           <div className='modal__content'>
-            {content}
+            { ContentComponent && <ContentComponent /> }
           </div>
         </div>
       </div>
@@ -38,6 +38,6 @@ class Modal extends Component {
   }
 }
 
-export default connect(({ modal: { content, isActive } }) =>
-  ({ content, isActive }),
+export default connect(({ modal: { ContentComponent, isActive } }) =>
+  ({ ContentComponent, isActive }),
   { closeModal })(Modal)
