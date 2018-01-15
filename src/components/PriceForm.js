@@ -12,10 +12,10 @@ class PriceForm extends Component {
   }
   render () {
     const { endDate, startDate, size, value } = this.props
-    return (
+    return (<form>
       <div className='price-form mb3 col-9 mx-auto p2'>
 
-        <label className='mr1'>
+        <label className='mr1 right-align'>
           début
         </label>
         <FormInput className='input price-form__form-input mb1'
@@ -25,7 +25,7 @@ class PriceForm extends Component {
           name='startDate' />
         <br />
 
-        <label className='mr1'>
+        <label className='mr1 right-align'>
           fin
         </label>
         <FormInput className='input price-form__form-input mb1'
@@ -35,7 +35,7 @@ class PriceForm extends Component {
           name='endDate' />
         <br />
 
-        <label className='mr1'>
+        <label className='mr1 right-align'>
           groupe
         </label>
         <FormInput className='input price-form__form-input mb1'
@@ -45,7 +45,7 @@ class PriceForm extends Component {
           name='size' />
         <br />
 
-        <label className='mr1'>
+        <label className='mr1 right-align'>
           prix
         </label>
         <FormInput className='input price-form__form-input'
@@ -54,6 +54,7 @@ class PriceForm extends Component {
           isRequired
           name='value' />
       </div>
+      </form>
     )
   }
 }

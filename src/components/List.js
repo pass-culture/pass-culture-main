@@ -39,7 +39,8 @@ class List extends Component {
           {title}
         </div>
         <div className='list__control flex items-center flex-start'>
-          <SubmitButton getBody={getBody}
+          <SubmitButton
+            getBody={getBody}
             getIsDisabled={getIsDisabled}
             getOptimistState={getOptimistState}
             onClick={this.onSubmitClick}

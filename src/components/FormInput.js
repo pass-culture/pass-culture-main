@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -11,13 +12,23 @@ class FormInput extends Component {
     mergeForm(collectionName, id, name, value)
   }
   render () {
-    const { className, defaultValue, isRequired, placeholder, type } = this.props
-    return <input className={className || 'input'}
-      defaultValue={defaultValue}
-      onChange={this.onChange}
-      placeholder={placeholder}
-      required={isRequired}
-      type={type} />
+    const { className,
+      defaultValue,
+      isRequired,
+      placeholder,
+      type,
+      value
+    } = this.props
+    return (
+      <span>
+        <input className={className || 'input'}
+          onChange={this.onChange}
+          placeholder={placeholder}
+          type={type}
+          value={value || defaultValue || ''} />
+        {isRequired && <span className='form-input__required'> (*) </span>}
+      </span>
+    )
   }
 }
 
@@ -32,7 +43,6 @@ FormInput.propTypes = {
 }
 
 export default connect(
-  // (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
-  null,
+  (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
   { mergeForm }
 )(FormInput)

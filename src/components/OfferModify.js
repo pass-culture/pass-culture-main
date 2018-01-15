@@ -23,7 +23,6 @@ class OfferModify extends Component {
       sellersFavorites,
       prices
     } = this.props
-  console.log('sellersFavorites', sellersFavorites)
   return (
     <div className='offer-modify p2'>
 
@@ -37,7 +36,8 @@ class OfferModify extends Component {
               Modifier
             </button>
           )
-          : <SubmitButton getIsDisabled={form =>
+          : <SubmitButton getBody={form => form.offersById[NEW]}
+            getIsDisabled={form =>
               !form ||
               !form.offersById ||
               !form.offersById[NEW] ||
@@ -65,9 +65,11 @@ class OfferModify extends Component {
         ContentComponent={SellerFavoriteItem}
         elements={sellersFavorites}
         extra={{ offerId: id }}
-        getBody={form => [Object.assign({
-          offerId: id
-        }, form.sellersFavoritesById[NEW])]}
+        getBody={form => [
+          Object.assign({
+            offerId: id
+          }, form.sellersFavoritesById[NEW])
+        ]}
         getIsDisabled={form =>
           !form ||
           !form.sellersFavoritesById ||
@@ -100,8 +102,8 @@ class OfferModify extends Component {
           (
             !form.pricesById[NEW].endDate ||
             !form.pricesById[NEW].startDate ||
-            !form.pricesById[NEW].group ||
-            !form.pricesById[NEW].price
+            !form.pricesById[NEW].size ||
+            !form.pricesById[NEW].value
           )
         }
         getOptimistState={(state, action) => {

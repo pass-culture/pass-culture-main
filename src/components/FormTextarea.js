@@ -6,13 +6,6 @@ import { getFormEntity, getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormTextarea extends Component {
-  componentWillReceiveProps(nextProps) {
-    console.log('nextProps', nextProps)
-    if (nextProps.isEmptyForm && !this.props.isEmptyForm) {
-      console.log('BEN ALORS')
-      // this._element.empty()
-    }
-  }
   onChange = ({ target: { value } }) => {
     const { collectionName, id, mergeForm, name, maxLength } = this.props
     if (value.length < maxLength) {
@@ -23,13 +16,12 @@ class FormTextarea extends Component {
   }
   render () {
     const { className, defaultValue, placeholder, type, value } = this.props
-    console.log('value', value)
     return <textarea className={className || 'textarea'}
       onChange={this.onChange}
       placeholder={placeholder}
       ref={_element => this._element = _element}
       type={type}
-      value={value || defaultValue} />
+      value={value || defaultValue || ''} />
   }
 }
 
@@ -46,7 +38,6 @@ FormTextarea.propTypes = {
 
 export default connect(
   (state, ownProps) => ({
-    isEmptyForm: (getFormEntity(state, ownProps) || {}).length === 0,
     value: getFormValue(state, ownProps)
   }),
   { mergeForm }
