@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { mergeForm } from '../reducers/form'
+import { getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormInput extends Component {
@@ -31,4 +31,8 @@ FormInput.propTypes = {
   name: PropTypes.string.isRequired
 }
 
-export default connect(null, { mergeForm })(FormInput)
+export default connect(
+  // (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
+  null,
+  { mergeForm }
+)(FormInput)

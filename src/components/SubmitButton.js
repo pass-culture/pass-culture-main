@@ -26,7 +26,6 @@ class SubmitButton extends Component {
   }
   render () {
     const { className, getIsDisabled, form, text } = this.props
-    console.log('getIsDisabled(form)', getIsDisabled(form), form)
     const isDisabled = getIsDisabled(form)
     return (
       <button className={classnames(className || 'button button--alive button--cta', {

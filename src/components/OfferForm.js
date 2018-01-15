@@ -24,9 +24,7 @@ const OfferForm = ({ description,
           collectionName='offers'
           defaultValue={description}
           name='description'
-          placeholder="Vous pouvez écrire un description ici" >
-          {description}
-        </FormTextarea>
+          placeholder="Vous pouvez écrire une description ici" />
       </div>
     </div>
   )

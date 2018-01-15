@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { mergeForm } from '../reducers/form'
+import { getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormTextarea extends Component {
@@ -16,6 +16,7 @@ class FormTextarea extends Component {
   }
   render () {
     const { className, defaultValue, placeholder, type, value } = this.props
+    console.log('value', value)
     return <textarea className={className || 'textarea'}
       onChange={this.onChange}
       placeholder={placeholder}
@@ -31,11 +32,11 @@ FormTextarea.defaultProps = {
 
 FormTextarea.propTypes = {
   collectionName: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
   name: PropTypes.string.isRequired
 }
 
 export default connect(
-  (state, ownProps) => ({ value: state.form[ownProps.name] }),
+  (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
   { mergeForm }
 )(FormTextarea)

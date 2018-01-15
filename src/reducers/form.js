@@ -1,16 +1,17 @@
+import merge from 'lodash.merge'
+
+import { NEW } from '../utils/config'
+
 // INITIAL STATE
 const initialState = {}
 
 // ACTIONS
-const ASSIGN_FORM = 'ASSIGN_FORM'
 const MERGE_FORM = 'MERGE_FORM'
 const RESET_FORM = 'RESET_FORM'
 
 // REDUCER
 const form = (state = initialState, action) => {
   switch (action.type) {
-    case ASSIGN_FORM:
-      return Object.assign({}, state, action.patch)
     case MERGE_FORM:
       const collectionKey = `${action.collectionName}ById`
       const collection = Object.assign({}, state[collectionKey])
@@ -18,6 +19,7 @@ const form = (state = initialState, action) => {
       collection[action.id] = entity
       entity[action.name] = action.value
       return Object.assign({}, state, { [collectionKey]: collection })
+      // return merge({}, state, action.patch)
     case RESET_FORM:
       return {}
     default:
@@ -26,11 +28,6 @@ const form = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
-export const assignForm = patch => ({
-  patch,
-  type: ASSIGN_FORM
-})
-
 export const mergeForm = (collectionName, id, name, value) => ({
   collectionName,
   id,
@@ -39,7 +36,31 @@ export const mergeForm = (collectionName, id, name, value) => ({
   value
 })
 
+/*
+export const mergeForm = patch => ({
+  patch,
+  type: MERGE_FORM
+})
+*/
+
 export const resetForm = patch => ({ type: RESET_FORM })
+
+// SELECTORS
+export function getFormValue (state, ownProps) {
+  const form = state.form
+  if (!form) {
+    return
+  }
+  const collection = form[`${ownProps.collectionName}ById`]
+  if (!collection) {
+    return
+  }
+  const entity = collection[ownProps.id || NEW]
+  if (!entity) {
+    return
+  }
+  return entity[ownProps.name]
+}
 
 // default
 export default form

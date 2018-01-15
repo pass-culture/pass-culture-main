@@ -3,8 +3,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Select from './Select'
-import { assignForm } from '../reducers/form'
+import { mergeForm } from '../reducers/form'
 import { requestData } from '../reducers/data'
+import { NEW } from '../utils/config'
 
 class WorkDetector extends Component {
   constructor () {
@@ -18,7 +19,7 @@ class WorkDetector extends Component {
     this.setState({ identifier: value })
   }
   onOptionClick = ({ target: { value } }) => {
-    this.props.assignForm({ work: { category: value } })
+    this.props.mergeForm('works', NEW, 'category', value)
     this.setState({ selectedCategory: value })
   }
   onSearchClick = () => {
@@ -80,5 +81,5 @@ WorkDetector.defaultProps = {
 
 export default connect(
   state => ({ work: state.data.works && state.data.works.length === 1 && state.data.works[0] }),
-  { assignForm, requestData }
+  { mergeForm, requestData }
 )(WorkDetector)
