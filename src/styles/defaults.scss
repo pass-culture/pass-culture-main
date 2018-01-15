@@ -44,6 +44,9 @@ html,body {
       transition: all 0.4s ease-out;
     }
   }
+  &--cta {
+    min-width: 100px;
+  }
   &--disabled {
     opacity: 0.25;
   }

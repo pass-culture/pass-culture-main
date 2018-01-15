@@ -39,7 +39,14 @@ class List extends Component {
           {title}
         </div>
         <div className='list__control flex items-center flex-start'>
+          <SubmitButton getBody={getBody}
+            getIsDisabled={getIsDisabled}
+            getOptimistState={getOptimistState}
+            onClick={this.onSubmitClick}
+            path={path}
+            text='Ajouter' />
           {
+            /*
             isModify
               ? <SubmitButton getBody={getBody}
                   getIsDisabled={getIsDisabled}
@@ -56,9 +63,10 @@ class List extends Component {
                     +
                   </button>
               )
+            */
           }
         </div>
-        { isModify && <FormComponent {...extra} /> }
+        <FormComponent {...extra} />
         {
           elements && elements.map((favorite, index) => (
             <ContentComponent key={index} {...favorite} />

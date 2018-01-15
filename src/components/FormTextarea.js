@@ -1,13 +1,15 @@
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { assignForm } from '../reducers/form'
+import { mergeForm } from '../reducers/form'
+import { NEW } from '../utils/config'
 
 class FormTextarea extends Component {
   onChange = ({ target: { value } }) => {
-    const { assignForm, name, maxLength } = this.props
+    const { collectionName, id, mergeForm, name, maxLength } = this.props
     if (value.length < maxLength) {
-      assignForm({ [name]: value })
+      mergeForm(collectionName, id, name, value)
     } else {
       console.warn('value reached maxLength')
     }
@@ -23,10 +25,17 @@ class FormTextarea extends Component {
 }
 
 FormTextarea.defaultProps = {
+  id: NEW,
   maxLength: 200
+}
+
+FormTextarea.propTypes = {
+  collectionName: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired
 }
 
 export default connect(
   (state, ownProps) => ({ value: state.form[ownProps.name] }),
-  { assignForm }
+  { mergeForm }
 )(FormTextarea)

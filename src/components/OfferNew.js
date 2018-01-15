@@ -8,6 +8,7 @@ import { assignForm } from '../reducers/form'
 
 class OfferNew extends Component {
   componentWillReceiveProps (nextProps) {
+    /*
     const { assignForm, work } = nextProps
     if (work && work !== this.props.work) {
       const now = moment()
@@ -25,6 +26,7 @@ class OfferNew extends Component {
         workId: work.id
       })
     }
+    */
   }
   render () {
     const { prices, sellersFavorites, work } = this.props

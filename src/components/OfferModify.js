@@ -9,6 +9,8 @@ import PriceForm from './PriceForm'
 import PriceItem from './PriceItem'
 import SellerFavoriteItem from './SellerFavoriteItem'
 import SellerFavoriteForm from './SellerFavoriteForm'
+import SubmitButton from '../components/SubmitButton'
+import { NEW } from '../utils/config'
 
 class OfferModify extends Component {
   render () {
@@ -20,6 +22,22 @@ class OfferModify extends Component {
   return (
     <div className='offer-modify p2'>
 
+      <div className='h2 mt2'> Offre </div>
+      <div className='offer-modify__control flex items-center flex-start'>
+        <SubmitButton getIsDisabled={form =>
+            !form ||
+            !form.offersById ||
+            !form.offersById[NEW] ||
+            (
+              !form.offersById[NEW].description &&
+              !form.offersById[NEW].name
+            )
+          }
+          getOptimistState={(state, action) => {
+            return { newOffer: action.config.body }
+          }}
+          path='offers' />
+      </div>
       {
         newOffer
           ? <OfferItem {...this.props} {...newOffer} />
@@ -32,11 +50,17 @@ class OfferModify extends Component {
         ContentComponent={SellerFavoriteItem}
         elements={sellersFavorites}
         extra={{ offerId: id }}
-        getBody={form => [{
-          description: form.description,
+        getBody={form => [Object.assign({
           offerId: id
-        }]}
-        getIsDisabled={form => !form.description && !form.title}
+        }, form.sellersFavoritesById[NEW])]}
+        getIsDisabled={form =>
+            !form ||
+            !form.sellersFavoritesById ||
+            !form.sellersFavoritesById[NEW] ||
+            (
+              !form.sellersFavoritesById[NEW].description
+            )
+          }
         getOptimistState={(state, action) => {
           const offer = state.offers.find(offer => offer.id === id)
           return { sellersFavorites: action.config.body.concat(
@@ -54,7 +78,18 @@ class OfferModify extends Component {
         extra={{ offerId: id }}
         getBody={form => [Object.assign({
           offerId: id
-        }, form)]}
+        }, form.pricesById[NEW])]}
+        getIsDisabled={form =>
+            !form ||
+            !form.pricesById ||
+            !form.pricesById[NEW] ||
+            (
+              !form.pricesById[NEW].endDate ||
+              !form.pricesById[NEW].startDate ||
+              !form.pricesById[NEW].group ||
+              !form.pricesById[NEW].price
+            )
+          }
         getOptimistState={(state, action) => {
           const offer = state.offers.find(offer => offer.id === id)
           return { prices: action.config.body.concat(offer.prices) }

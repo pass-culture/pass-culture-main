@@ -1,21 +1,34 @@
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { assignForm } from '../reducers/form'
+import { mergeForm } from '../reducers/form'
+import { NEW } from '../utils/config'
 
 class FormInput extends Component {
   onChange = ({ target: { value } }) => {
-    const { assignForm, name } = this.props
-    assignForm({ [name]: value })
+    const { collectionName, id, mergeForm, name } = this.props
+    mergeForm(collectionName, id, name, value)
   }
   render () {
-    const { className, defaultValue, placeholder, type } = this.props
+    const { className, defaultValue, isRequired, placeholder, type } = this.props
     return <input className={className || 'input'}
       defaultValue={defaultValue}
       onChange={this.onChange}
       placeholder={placeholder}
+      required={isRequired}
       type={type} />
   }
 }
 
-export default connect(null, { assignForm })(FormInput)
+FormInput.defaultProps = {
+  id: NEW
+}
+
+FormInput.propTypes = {
+  collectionName: PropTypes.string.isRequired,
+  id: PropTypes.string,
+  name: PropTypes.string.isRequired
+}
+
+export default connect(null, { mergeForm })(FormInput)

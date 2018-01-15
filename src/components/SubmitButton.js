@@ -29,7 +29,7 @@ class SubmitButton extends Component {
     console.log('getIsDisabled(form)', getIsDisabled(form), form)
     const isDisabled = getIsDisabled(form)
     return (
-      <button className={classnames(className || 'button button--alive', {
+      <button className={classnames(className || 'button button--alive button--cta', {
           'button--disabled': isDisabled
         })}
         disabled={isDisabled}

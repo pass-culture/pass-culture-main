@@ -1,8 +1,15 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
+import { mergeForm } from '../reducers/form'
+import { NEW } from '../utils/config'
 
 class PriceForm extends Component {
+  componentWillMount () {
+    const { mergeForm, offerId } = this.props
+    mergeForm('prices', NEW, 'offerId', offerId)
+  }
   render () {
     const { endDate, startDate, size, value } = this.props
     return (
@@ -12,7 +19,9 @@ class PriceForm extends Component {
           début
         </label>
         <FormInput className='input price-form__form-input mb1'
+          collectionName='prices'
           defaultValue={startDate}
+          isRequired
           name='startDate' />
         <br />
 
@@ -20,7 +29,9 @@ class PriceForm extends Component {
           fin
         </label>
         <FormInput className='input price-form__form-input mb1'
+          collectionName='prices'
           defaultValue={endDate}
+          isRequired
           name='endDate' />
         <br />
 
@@ -28,7 +39,9 @@ class PriceForm extends Component {
           groupe
         </label>
         <FormInput className='input price-form__form-input mb1'
+          collectionName='prices'
           defaultValue={size}
+          isRequired
           name='size' />
         <br />
 
@@ -36,11 +49,13 @@ class PriceForm extends Component {
           prix
         </label>
         <FormInput className='input price-form__form-input'
+          collectionName='prices'
           defaultValue={value}
+          isRequired
           name='value' />
       </div>
     )
   }
 }
 
-export default PriceForm
+export default connect(null, { mergeForm })(PriceForm)
