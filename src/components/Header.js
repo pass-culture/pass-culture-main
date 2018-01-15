@@ -10,9 +10,19 @@ const Header = ({ user }) => {
       <div className='header__logo'>Pass Culture</div>
       <div className='flex-auto' />
       {
-        user && <img className='header__avatar' alt='avatar' src={user.thumbnailUrl} />
+        user && (
+          <img className='header__avatar'
+            alt='avatar'
+            src={user.thumbnailUrl} />
+        )
       }
-      <div className='header__account-balance'>500€</div>
+      {
+        user && user.type === 'client' && (
+          <div className='header__account-balance'>
+            500€
+          </div>
+        )
+      }
     </div>
   )
 }

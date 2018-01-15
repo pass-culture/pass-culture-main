@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 class SearchBar extends Component {
   onChange = (event) => {

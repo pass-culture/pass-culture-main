@@ -9,24 +9,28 @@ class Modal extends Component {
     this.props.closeModal()
   }
   render () {
-    const { content,
+    const { ContentComponent,
       isActive
     } = this.props
-    const classes = classnames({
-      'modal--active': isActive
-    }, 'modal')
     return (
-      <div className={classes}
+      <div className={classnames({
+        'modal--active': isActive
+      }, 'modal')}
         role='dialog'
         onClick={this.onCloseClick}>
-        <div className='modal__dialog'
+        <div className='modal__dialog relative'
           role='document'
           onClick={e => {
             e.nativeEvent.stopImmediatePropagation() // Prevent click bubbling and closing modal
             e.stopPropagation()
           }}>
+          <button className='button button--alive button--rounded absolute top-0 right-0 mt2 mr2'
+            onClick={this.onCloseClick}
+          >
+            x
+          </button>
           <div className='modal__content'>
-            {content}
+            { ContentComponent && <ContentComponent /> }
           </div>
         </div>
       </div>
@@ -34,6 +38,6 @@ class Modal extends Component {
   }
 }
 
-export default connect(({ modal: { content, isActive } }) =>
-  ({ content, isActive }),
+export default connect(({ modal: { ContentComponent, isActive } }) =>
+  ({ ContentComponent, isActive }),
   { closeModal })(Modal)

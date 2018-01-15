@@ -1,0 +1,14 @@
+.price-item {
+  border: $border;
+  border-radius: $border-radius;
+  label {
+    display: inline-block;
+    font-size: 12px;
+    width: 75px;
+  }
+  &__form-input {
+    border-radius: 5px;
+    font-size: 10px;
+    width: 100px;
+  }
+}

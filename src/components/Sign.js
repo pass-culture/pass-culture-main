@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
-import { requestData } from '../reducers/request'
+import { requestData } from '../reducers/data'
 
 const inputClassName = 'input block col-12 mb2'
 

@@ -9,8 +9,9 @@ class FormInput extends Component {
     assignForm({ [name]: value })
   }
   render () {
-    const { className, placeholder, type } = this.props
+    const { className, defaultValue, placeholder, type } = this.props
     return <input className={className || 'input'}
+      defaultValue={defaultValue}
       onChange={this.onChange}
       placeholder={placeholder}
       type={type} />

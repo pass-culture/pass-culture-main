@@ -1,24 +1,53 @@
+import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import OfferForm from './OfferForm'
-import { showModal } from '../reducers/modal'
+import OfferModify from './OfferModify'
+import WorkDetector from './WorkDetector'
+import { assignForm } from '../reducers/form'
 
 class OfferNew extends Component {
-  onNewClick = () => {
-    this.props.showModal(<OfferForm />)
+  componentWillReceiveProps (nextProps) {
+    const { assignForm, work } = nextProps
+    if (work && work !== this.props.work) {
+      const now = moment()
+      const endDate = now.add(1, 'd').utc().format()
+      const startDate = now.utc().format()
+      assignForm({
+        prices: [
+          {
+            endDate,
+            size: 1,
+            startDate,
+            value: 10
+          }
+        ],
+        workId: work.id
+      })
+    }
   }
   render () {
+    const { prices, sellersFavorites, work } = this.props
     return (
-      <div className='flex items-center justify-center p1'>
-        <button className='button button--alive button--inversed'
-          onClick={this.onNewClick}
-        >
-          New
-        </button>
+      <div className='offer-new'>
+        {
+          work
+            ? <OfferModify prices={prices}
+                sellersFavorites={sellersFavorites}
+                work={work}
+              />
+            : <WorkDetector />
+        }
       </div>
     )
   }
 }
 
-export default connect(null, { showModal })(OfferNew)
+export default connect(state => {
+  return {
+    prices: state.form && state.form.prices,
+    sellersFavorites: state.form.sellersFavorites,
+    selectedCategory: state.form && state.form.work && state.form.work.category,
+    work: state.data.works && state.data.works.length === 1 && state.data.works[0]
+  }
+}, { assignForm })(OfferNew)

@@ -55,6 +55,13 @@ html,body {
       fill: $identity-color !important;
     }
   }
+  &--rounded {
+    border-radius: 50%;
+    font-weight: 500;
+    height: 30px;
+    padding: 0.25rem;
+    width: 30px;
+  }
   &--selected {
     box-shadow: $box-shadow-hover;
     transform: scale(1.04);
@@ -95,4 +102,39 @@ label {
   padding: 5px;
   min-height: 100vh;
   padding-top: 55px;
+}
+
+select {
+  border: $border;
+  border-radius: $border-radius;
+  font-family: $font-family;
+  font-size: 20px;
+  font-weight: 500;
+  &:focus {
+    outline: none;
+  }
+}
+
+.sep {
+  background-color: $very-light-grey;
+  height: 1px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+}
+
+.textarea {
+  border: solid 0.5px $medium-grey;
+  border-radius: $border-radius;
+  color: $very-dark-grey;
+  font-family: $font-family;
+  font-weight: 500;
+  font-size: 12px;
+  min-height: 100px;
+  padding: 20px;
+  resize: none;
+  width: 300px;
+  &:focus {
+    outline: none;
+  }
 }

@@ -1,21 +1,12 @@
 .offer-item {
+  border: $border;
   border-radius: $border-radius;
-  transition: all 1s ease-out;
   img {
     height: 100px;
     width: 100px;
     @media (min-width: $md) {
       height: 200px;
       width: 200px;
-    }
-  }
-  &:hover {
-    background-color: $very-light-grey;
-  }
-  &__space {
-    width: 50px;
-    @media (min-width: $md) {
-      width: 300px;
     }
   }
 }

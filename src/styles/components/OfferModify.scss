@@ -1,0 +1,14 @@
+.offer-modify {
+  height: 75vh;
+  &__hero {
+    &__img, &__textarea {
+      border-radius: $border-radius;
+      height: auto;
+      width: 200px;
+      @media (min-width: $md) {
+        height: auto;
+        width: 300px;
+      }
+    }
+  }
+}
