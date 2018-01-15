@@ -14,21 +14,23 @@ class OffersHorizScroller extends Component {
     requestData('GET', `offers`)
   }
 
-  handleCardClick = (offerId) => {
+  handleCardClick = (modulo, cardIndex) => {
+    let offerId = this.props.offers[modulo*3+cardIndex].id;
     this.props.history.push('/offres/'+offerId);
   }
 
   renderCarousel = (modulo) => {
     const { offers } = this.props;
     return (
-        <Carousel showArrows={true} emulateTouch infiniteLoop showStatus={false} showIndicators={false} showThumbs={false}>
+        <Carousel showArrows={true} emulateTouch showStatus={false} showIndicators={false} showThumbs={false} onClickItem={ (cardIndex) => this.handleCardClick(modulo, cardIndex) }>
           {
             offers.filter((offer, index) => index % 3 === modulo )
                   .map((offer, index) =>
                   (
-                      <div key={index} onClick={() => this.handleCardClick(offer.id)}>
+                      <div key={index}>
                         { offer.sellersFavorites && offer.sellersFavorites.length && <Icon name='favorite-outline' /> }
                         { offer.name }>
+                        <img className='offerPicture' src={ offer.thumbnailUrl } />
                       </div>
                   ))
           }

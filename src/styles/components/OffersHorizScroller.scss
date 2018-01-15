@@ -11,15 +11,13 @@
     }
     .slide {
       color: white;
+      cursor: pointer;
+      img.offerPicture {
+        max-width: 50%;
+        height: 100%;
+        float: left;
+      }
     }
-  }
-  .offer-card {
-    width: 95%;
-    height: 30%;
-    border: 1px solid grey;
-    border-radius: 3px;
-    cursor: pointer;
-    flex: none;
   }
   .no-offers {
     width: 100%;
