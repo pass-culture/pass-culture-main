@@ -52,8 +52,5 @@ class OffersHorizScroller extends Component {
 }
 
 export default compose(withRouter,
-   connect(createSelector(state => state.data.offers,
-                          (state, ownProps) => ownProps.type,
-                          (offers, type) => ({ offers: offers && offers.filter(o => o.work.category === type) })),
-          { requestData })
+   connect(state => ({ offers: state.data.offers }), { requestData })
 )(OffersHorizScroller)
