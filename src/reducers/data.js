@@ -17,7 +17,7 @@ const data = (state = initialState, action) => {
     }
     return state
   } else if (/SUCCESS_GET_(.*)/.test(action.type)) {
-    const key = action.config.key || action.path.split('/')[0].replace(/\?.*$/, '')
+    const key = action.config.key || action.path.replace(/\/$/, '').replace(/\?.*$/, '')
     const newState = { isOptimist: false }
     if (action.config.add === 'append') {
       newState[key] = state[key].concat(action.data)

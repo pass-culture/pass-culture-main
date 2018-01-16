@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
+import { URL } from '../utils/config'
 
 class ClientOfferPage extends Component {
   componentWillMount = () => {
