@@ -26,6 +26,13 @@ class ClientOfferPage extends Component {
             </h2>
             <img className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
             { offer.text }
+            <div>
+            À la librairie Tartenshmoll (à 200m)<br/>
+            2 rue des Lilas<br/><br/>
+            <img src='/map.png' /><br/>
+            Ouvert jusqu&quot;à 19h aujourd&quot;hui
+            <a>voir tous les horaires</a>
+            </div>
             <h3>Offres</h3>
             <ul className="prices">
               { offer.prices.map(price => (
