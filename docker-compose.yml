@@ -25,9 +25,12 @@ services:
   nginx:
     image: "nginx:1.13.5"
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./dockerfiles/nginx/conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/letsencrypt
+      - ./certs-data:/data/letsencrypt
     networks:
       - web_nw
     depends_on: 
