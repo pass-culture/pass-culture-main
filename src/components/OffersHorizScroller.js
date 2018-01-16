@@ -6,12 +6,13 @@ import { Carousel } from 'react-responsive-carousel'
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
+import { URL } from '../utils/config'
 
 
 class OffersHorizScroller extends Component {
   componentWillMount = () => {
     const { requestData } = this.props;
-    requestData('GET', `offers`)
+    requestData('GET', `offers?hasPrice=true`)
   }
 
   handleCardClick = (modulo, cardIndex) => {
@@ -27,10 +28,11 @@ class OffersHorizScroller extends Component {
             offers.filter((offer, index) => index % 3 === modulo )
                   .map((offer, index) =>
                   (
-                      <div key={index}>
-                        { offer.sellersFavorites && offer.sellersFavorites.length && <Icon name='favorite-outline' /> }
-                        { offer.name }>
-                        <img className='offerPicture' src={ offer.thumbnailUrl } />
+                      <div>
+                        <img className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
+                        { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
+                        { offer.prices.filter(p => p.groupSize>1) && <Icon name='favorite-outline' /> }
+                        { offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€
                       </div>
                   ))
           }
@@ -43,8 +45,8 @@ class OffersHorizScroller extends Component {
     return (
       <div className='offer-horiz-scroller'>
         {
-          offers ? [0,1,2].map(this.renderCarousel)
-                 : <div className='no-offers'>Aucune offre à afficher</div>
+          offers && offers.length>0 ? [0,1,2].map(this.renderCarousel)
+                                    : <div className='no-offers'>Aucune offre à afficher</div>
         }
       </div>
     )

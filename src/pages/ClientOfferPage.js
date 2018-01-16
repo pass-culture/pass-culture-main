@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
 
 class ClientOfferPage extends Component {
@@ -16,7 +17,11 @@ class ClientOfferPage extends Component {
         {
         offer &&
           (
-          <h2>{offer.name}</h2>
+          <div>
+            <h2>{offer.work.name}</h2>
+            <img className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
+            { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
+          </div>
           )
         }
       </main>
