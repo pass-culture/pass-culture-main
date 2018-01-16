@@ -20,11 +20,12 @@ class ClientOfferPage extends Component {
           (
           <div>
             <h2>
-              {offer.work.name}
+              { offer.title || offer.work.name }
               { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
               { offer.prices.filter(p => p.groupSize>1) && <Icon name='error' /> }
             </h2>
             <img className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
+            { offer.text }
             <h3>Offres</h3>
             <ul className="prices">
               { offer.prices.map(price => (
