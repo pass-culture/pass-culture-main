@@ -19,9 +19,21 @@ class ClientOfferPage extends Component {
         offer &&
           (
           <div>
-            <h2>{offer.work.name}</h2>
+            <h2>
+              {offer.work.name}
+              { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
+              { offer.prices.filter(p => p.groupSize>1) && <Icon name='error' /> }
+            </h2>
             <img className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
-            { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
+            <h3>Offres</h3>
+            <ul className="prices">
+              { offer.prices.map(price => (
+                                           <li>
+                                              {price.value} €
+                                              {price.groupSize > 1 && " si vous y allez avec "+(price.groupSize-1)+" amis !"}
+                                           </li>
+                                         )) }
+            </ul>
           </div>
           )
         }
