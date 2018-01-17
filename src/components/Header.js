@@ -14,7 +14,7 @@ const Header = ({ user }) => {
           <img className='header__avatar'
             alt='avatar'
             src={user.thumbnailUrl} />
-        )
+        ) || <img className='header__avatar' alt='' src='/dragon.png' />
       }
       {
         user && user.type === 'client' && (
