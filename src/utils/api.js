@@ -7,7 +7,8 @@ export async function apiData (method, path, config = {}) {
   const { body, token } = config
   // init
   const init = { method,
-     mode: 'cors'
+    // mode: 'cors',
+    // credentials: 'include'
   }
   if (method && method !== 'GET') {
     init.headers = {
