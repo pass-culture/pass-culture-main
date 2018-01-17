@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
-import { URL } from '../utils/config'
+import { API_URL } from '../utils/config'
 
 class ClientOfferPage extends Component {
   componentWillMount = () => {
@@ -24,7 +24,7 @@ class ClientOfferPage extends Component {
               { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
               { offer.prices.filter(p => p.groupSize>1) && <Icon name='error' /> }
             </h2>
-            <img alt='' className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
+            <img alt='' className='offerPicture' src={ API_URL+'/thumbs/'+offer.work.id } />
             { offer.description }
             <div className='clearfix' />
             <div className='sellerInfos'>

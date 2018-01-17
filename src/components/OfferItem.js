@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import OfferModify from './OfferModify'
 import { showModal } from '../reducers/modal'
-import { URL } from '../utils/config'
+import { API_URL } from '../utils/config'
 
 class OfferItem extends Component {
   onClick = action => {
@@ -27,7 +27,7 @@ class OfferItem extends Component {
       >
         <img alt='thumbnail'
           className='offer-item__image mr2'
-          src={thumbnailUrl || `${URL}/thumbs/${work.id}`}
+          src={thumbnailUrl || `${API_URL}/thumbs/${work.id}`}
         />
         <div className='offer-item__info flex-auto center'>
           <div className='h2 mb2'>
