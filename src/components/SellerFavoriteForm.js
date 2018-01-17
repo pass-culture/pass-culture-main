@@ -4,12 +4,13 @@ import { connect } from 'react-redux'
 import FormInput from './FormInput'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
-import { assignForm } from '../reducers/form'
+import { mergeForm } from '../reducers/form'
+import { NEW } from '../utils/config'
 
 class SellerFavoriteForm extends Component {
   componentWillMount () {
-    const { assignForm, offerId } = this.props
-    assignForm({ offerId })
+    const { mergeForm, offerId } = this.props
+    mergeForm('sellersFavorites', NEW, 'offerId', offerId)
   }
   render () {
     return (
@@ -18,16 +19,15 @@ class SellerFavoriteForm extends Component {
           <Icon name='favorite-outline' />
         </div>
         <FormTextarea className='textarea seller-favorite-form__textarea mt2'
+          collectionName='sellersFavorites'
           name='description'
           placeholder='donnez la description de votre coup de coeur' />
-        {
-          /*<FormInput name='description'
+        <FormInput collectionName='sellersFavorites'
+          name='description'
           placeholder='donnez quelques hashtags pour cibler votre audience' />
-          */
-        }
       </div>
     )
   }
 }
 
-export default connect(null, { assignForm })(SellerFavoriteForm)
+export default connect(null, { mergeForm })(SellerFavoriteForm)

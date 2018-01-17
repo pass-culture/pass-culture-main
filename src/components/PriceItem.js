@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import moment from 'moment'
 
-import FormInput from './FormInput'
-
 const FormItem = ({ name, value }) => (
   <div className='flex items-center justify-center'>
     <label className='mr2 right-align'>

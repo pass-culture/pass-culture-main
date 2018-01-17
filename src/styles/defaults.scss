@@ -44,6 +44,9 @@ html,body {
       transition: all 0.4s ease-out;
     }
   }
+  &--cta {
+    min-width: 100px;
+  }
   &--disabled {
     opacity: 0.25;
   }
@@ -137,4 +140,23 @@ select {
   &:focus {
     outline: none;
   }
+}
+
+::-webkit-input-placeholder { /* Chrome */
+  color: $light-grey;
+  font-style: italic;
+}
+:-ms-input-placeholder { /* IE 10+ */
+  color: $light-grey;
+  font-style: italic;
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: $light-grey;
+  font-style: italic;
+  opacity: 1;
+}
+:-moz-placeholder { /* Firefox 4 - 18 */
+  color: $light-grey;
+  font-style: italic;
+  opacity: 1;
 }

@@ -4,38 +4,28 @@ import { connect } from 'react-redux'
 
 import OfferModify from './OfferModify'
 import WorkDetector from './WorkDetector'
-import { assignForm } from '../reducers/form'
+import { mergeForm } from '../reducers/form'
+import { NEW } from '../utils/config'
 
 class OfferNew extends Component {
   componentWillReceiveProps (nextProps) {
-    const { assignForm, work } = nextProps
+    const { mergeForm, work } = nextProps
     if (work && work !== this.props.work) {
       const now = moment()
       const endDate = now.add(1, 'd').utc().format()
       const startDate = now.utc().format()
-      assignForm({
-        prices: [
-          {
-            endDate,
-            size: 1,
-            startDate,
-            value: 10
-          }
-        ],
-        workId: work.id
-      })
+      mergeForm('prices', NEW, 'endDate', endDate)
+      mergeForm('prices', NEW, 'startDate', startDate)
+      mergeForm('offers', NEW, 'workId', work.id)
     }
   }
   render () {
-    const { prices, sellersFavorites, work } = this.props
+    const { work } = this.props
     return (
       <div className='offer-new'>
         {
           work
-            ? <OfferModify prices={prices}
-                sellersFavorites={sellersFavorites}
-                work={work}
-              />
+            ? <OfferModify work={work} />
             : <WorkDetector />
         }
       </div>
@@ -43,11 +33,7 @@ class OfferNew extends Component {
   }
 }
 
-export default connect(state => {
-  return {
-    prices: state.form && state.form.prices,
-    sellersFavorites: state.form.sellersFavorites,
-    selectedCategory: state.form && state.form.work && state.form.work.category,
-    work: state.data.works && state.data.works.length === 1 && state.data.works[0]
-  }
-}, { assignForm })(OfferNew)
+export default connect(
+  state => ({ work: state.data.work }),
+  { mergeForm }
+)(OfferNew)

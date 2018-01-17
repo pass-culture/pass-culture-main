@@ -35,7 +35,7 @@ class ClientOfferPage extends Component {
               Ouvert jusqu&quot;à 19h aujourd&quot;hui<br/>
               <a href=''>voir tous les horaires</a>
             </div>
-             
+
             { offer.prices.length>1 &&
                 (
                 <div>
@@ -59,5 +59,7 @@ class ClientOfferPage extends Component {
   }
 }
 
-export default connect((state, ownProps) => ({ offer: state.data['offers/'+ownProps.offerId] }),
-                       { requestData })(ClientOfferPage)
+export default connect(
+  (state, ownProps) => ({ offer: state.data['offers/'+ownProps.offerId] }),
+  { requestData }
+)(ClientOfferPage)

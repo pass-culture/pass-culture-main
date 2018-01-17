@@ -2,14 +2,16 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
+import SubmitButton from './SubmitButton'
 import { requestData } from '../reducers/data'
+import { NEW } from '../utils/config'
 
 const inputClassName = 'input block col-12 mb2'
 
 class Sign extends Component {
   onSubmitClick = () => {
     const { form, requestData } = this.props
-    requestData('POST', 'signin', { body: form })
+    requestData('POST', 'signin', { body: form, key: 'user' })
   }
   render () {
     return (
@@ -18,19 +20,20 @@ class Sign extends Component {
           Login!
         </div>
         <FormInput className={inputClassName}
+          collectionName='users'
           name='identifier'
           placeholder='identifiant (CAF ou SIREN)'
         />
         <FormInput className={inputClassName}
+          collectionName='users'
           name='password'
           placeholder='password'
           type='password'
         />
-        <button className='button button--alive'
-          onClick={this.onSubmitClick}
-        >
-          Connect
-        </button>
+        <SubmitButton getBody={form => form.usersById[NEW]}
+          path='signin'
+          text='Connecter'
+        />
       </div>
     )
   }

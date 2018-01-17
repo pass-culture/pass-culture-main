@@ -3,8 +3,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Select from './Select'
-import { assignForm } from '../reducers/form'
+import { mergeForm } from '../reducers/form'
 import { requestData } from '../reducers/data'
+import { NEW } from '../utils/config'
 
 class WorkDetector extends Component {
   constructor () {
@@ -18,12 +19,12 @@ class WorkDetector extends Component {
     this.setState({ identifier: value })
   }
   onOptionClick = ({ target: { value } }) => {
-    this.props.assignForm({ work: { category: value } })
+    this.props.mergeForm('works', NEW, 'category', value)
     this.setState({ selectedCategory: value })
   }
   onSearchClick = () => {
     const { identifier } = this.state
-    this.props.requestData('GET', `works/isbn:${identifier}`)
+    this.props.requestData('GET', `works/book:${identifier}`, { key: 'work' })
   }
   render () {
     const { identifier, selectedCategory } = this.state
@@ -33,7 +34,7 @@ class WorkDetector extends Component {
       <div className='work-detector p2'>
         {
           !work && <Select className='select mb2'
-            defaultLabel='-- select a type --'
+            defaultLabel='-- choisir une catégorie --'
             onOptionClick={this.onOptionClick}
             options={options}
             value={selectedCategory}
@@ -45,7 +46,7 @@ class WorkDetector extends Component {
               <label className='block left-align mb1'>
                 {
                   selectedCategory === 'book'
-                    ? 'ISBN (203583418X for e.g.)'
+                    ? 'ISBN (2072534054 for e.g.)'
                     : 'Identifiant'
                 }
               </label>
@@ -73,12 +74,12 @@ class WorkDetector extends Component {
 
 WorkDetector.defaultProps = {
   options: [
-    { value: 'book', label: 'Book' },
-    { value: 'theater', label: 'Theater' }
+    { value: 'book', label: 'Livre' },
+    { value: 'theater', label: 'Theâtre' }
   ]
 }
 
 export default connect(
-  state => ({ work: state.data.works && state.data.works.length === 1 && state.data.works[0] }),
-  { assignForm, requestData }
+  state => ({ work: state.data.work }),
+  { mergeForm, requestData }
 )(WorkDetector)
