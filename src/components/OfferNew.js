@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -22,7 +23,7 @@ class OfferNew extends Component {
   render () {
     const { work } = this.props
     return (
-      <div className='offer-new'>
+      <div className={classnames('offer-new', { 'offer-new--work-detector mt2': !work })}>
         {
           work
             ? <OfferModify work={work} />

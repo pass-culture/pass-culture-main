@@ -27,14 +27,16 @@ class ProfessionalHomePage extends Component {
     const { offers } = this.props
     return (
       <main className='professional-home-page p2'>
-        <div className='flex items-center flex-start'>
+        <div className='flex items-center flex-start mt2'>
           <OfferNewButton />
         </div>
-        {
-          offers && offers.map((offer, index) => (
-            <OfferItem isModify key={index} {...offer} />
-          ))
-        }
+        <div className='md-col-9 mx-auto'>
+          {
+            offers && offers.map((offer, index) => (
+              <OfferItem isModify key={index} {...offer} />
+            ))
+          }
+        </div>
       </main>
     )
   }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import FormInput from './FormInput'
+// import FormInput from './FormInput'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 import { mergeForm } from '../reducers/form'
@@ -22,9 +22,11 @@ class SellerFavoriteForm extends Component {
           collectionName='sellersFavorites'
           name='description'
           placeholder='donnez la description de votre coup de coeur' />
+        {/*
         <FormInput collectionName='sellersFavorites'
           name='description'
           placeholder='donnez quelques hashtags pour cibler votre audience' />
+        */}
       </div>
     )
   }

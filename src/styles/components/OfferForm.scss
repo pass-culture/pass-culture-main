@@ -1,13 +1,10 @@
 .offer-form {
-  &__content {
-    &__img, &__textarea {
-      border-radius: $border-radius;
-      height: auto;
-      width: 200px;
-      @media (min-width: $md) {
-        height: auto;
-        width: 300px;
-      }
+  &__img, &__textarea {
+    border-radius: $border-radius;
+    height: auto;
+    width: 150px;
+    @media (min-width: $md) {
+      width: 150px;
     }
   }
 }

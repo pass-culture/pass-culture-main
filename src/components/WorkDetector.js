@@ -46,7 +46,7 @@ class WorkDetector extends Component {
               <label className='block left-align mb1'>
                 {
                   selectedCategory === 'book'
-                    ? 'ISBN (2072534054 for e.g.)'
+                    ? 'ISBN (0140188711 for e.g.)'
                     : 'Identifiant'
                 }
               </label>

@@ -2,11 +2,10 @@
   border: $border;
   border-radius: $border-radius;
   img {
-    height: 100px;
+    height: auto;
     width: 100px;
     @media (min-width: $md) {
-      height: 200px;
-      width: 200px;
+      width: 150px;
     }
   }
   &--modify {

@@ -22,7 +22,20 @@
     right: 55px;
     padding-top: 3px;
   }
+  &__seller {
+    background-color: white;
+    border-radius: $border-radius;
+    color: black;
+    font-style: italic;
+    font-weight: 500;
+    position: absolute;
+    right: 75px;
+    &__image {
+      height: 40px;
+    }
+  }
   &__avatar {
+    border-radius: 50%;
     height: 40px;
     position: absolute;
     top: 8px;

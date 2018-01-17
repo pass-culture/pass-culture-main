@@ -22,7 +22,9 @@ class PriceForm extends Component {
           collectionName='prices'
           defaultValue={startDate}
           isRequired
-          name='startDate' />
+          name='startDate'
+          type='date'
+        />
         <br />
 
         <label className='mr1 right-align'>
@@ -32,17 +34,23 @@ class PriceForm extends Component {
           collectionName='prices'
           defaultValue={endDate}
           isRequired
-          name='endDate' />
+          name='endDate'
+          type='date'
+        />
         <br />
 
         <label className='mr1 right-align'>
-          groupe
+          à partir de
         </label>
-        <FormInput className='input price-form__form-input mb1'
+        <FormInput className='input price-form__form-input mb1 mr1'
           collectionName='prices'
           defaultValue={size}
           isRequired
-          name='size' />
+          name='size'
+        />
+        <label>
+          personnes
+        </label>
         <br />
 
         <label className='mr1 right-align'>
@@ -52,7 +60,8 @@ class PriceForm extends Component {
           collectionName='prices'
           defaultValue={value}
           isRequired
-          name='value' />
+          name='value'
+        />
       </div>
       </form>
     )

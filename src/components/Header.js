@@ -10,6 +10,18 @@ const Header = ({ user }) => {
       <div className='header__logo'>Pass Culture</div>
       <div className='flex-auto' />
       {
+        user && user.seller && (
+          <div className='header__seller flex items-center'>
+            <span className='mx1'>
+              {user.seller.name}
+            </span>
+            <img className='header__seller__image mr2'
+              alt='seller'
+              src={user.seller.thumbnailUrl} />
+          </div>
+        )
+      }
+      {
         user && (
           <img className='header__avatar'
             alt='avatar'
