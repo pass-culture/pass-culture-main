@@ -16,6 +16,7 @@ class OffersHorizScroller extends Component {
   }
 
   handleCardClick = (modulo, cardIndex) => {
+    console.log(modulo); console.log(cardIndex);
     let offerId = this.props.offers[modulo*3+cardIndex].id;
     this.props.history.push('/offres/'+offerId);
   }
@@ -33,6 +34,7 @@ class OffersHorizScroller extends Component {
                         { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
                         { offer.prices.filter(p => p.groupSize>1) && <Icon name='error' /> }
                         { offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€
+                        à {offer.id*25}m
                       </div>
                   ))
           }
