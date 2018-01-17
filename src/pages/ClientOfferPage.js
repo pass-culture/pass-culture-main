@@ -24,14 +24,14 @@ class ClientOfferPage extends Component {
               { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
               { offer.prices.filter(p => p.groupSize>1) && <Icon name='error' /> }
             </h2>
-            <img className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
+            <img alt='' className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
             { offer.text }
             <div className='clearfix' />
             <div className='sellerInfos'>
               <b>{ offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€</b><br/>
               à la librairie Tartenshmoll (à {offer.id*25}m)<br/>
               2 rue des Lilas<br/>
-              <img src='/map.png' /><br/>
+              <img alt='' src='/map.png' /><br/>
               Ouvert jusqu&quot;à 19h aujourd&quot;hui<br/>
               <a href=''>voir tous les horaires</a>
             </div>

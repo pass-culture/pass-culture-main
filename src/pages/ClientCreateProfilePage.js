@@ -14,7 +14,7 @@ class ClientCreateProfilePage extends Component {
               ]
 
   handleChoice = (event) => {
-    if (this.state.question_index==this.questions.length-1) {
+    if (this.state.question_index === this.questions.length-1) {
       this.props.history.push('/offres/');
       return;
     }

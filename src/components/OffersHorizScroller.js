@@ -16,7 +16,6 @@ class OffersHorizScroller extends Component {
   }
 
   handleCardClick = (modulo, cardIndex) => {
-    console.log(modulo); console.log(cardIndex);
     let offerId = this.props.offers[modulo+3*cardIndex].id;
     this.props.history.push('/offres/'+offerId);
   }
@@ -24,13 +23,13 @@ class OffersHorizScroller extends Component {
   renderCarousel = (modulo) => {
     const { offers } = this.props;
     return (
-        <Carousel showArrows={true} emulateTouch showStatus={false} showIndicators={false} showThumbs={false} onClickItem={ (cardIndex) => this.handleCardClick(modulo, cardIndex) }>
+        <Carousel key={'carousel'+modulo} showArrows={true} emulateTouch showStatus={false} showIndicators={false} showThumbs={false} onClickItem={ (cardIndex) => this.handleCardClick(modulo, cardIndex) }>
           {
             offers.filter((offer, index) => index % 3 === modulo )
                   .map((offer, index) =>
                   (
-                      <div>
-                        <img className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
+                      <div key={'slide'+modulo+3*index}>
+                        <img alt='' className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
                         { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
                         { offer.prices.filter(p => p.groupSize>1) && <Icon name='error' /> }
                         { offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€
