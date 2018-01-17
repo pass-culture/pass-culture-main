@@ -25,7 +25,7 @@ server {
     ssl_prefer_server_ciphers on;
 
     ssl_session_cache shared:SSL:10m;
-    ssl_dhparam /etc/ssl/private/dhparams.pem;
+    #ssl_dhparam /etc/ssl/private/dhparams.pem;
 
     location / {
         proxy_set_header   Host                 $host;
