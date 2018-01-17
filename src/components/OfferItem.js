@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import OfferModify from './OfferModify'
 import PriceItem from './PriceItem'
+import SellerFavoriteItem from './SellerFavoriteItem'
 import { assignData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
 import { showModal } from '../reducers/modal'
@@ -25,14 +26,13 @@ class OfferItem extends Component {
     const { description,
       isModify,
       isPrices,
+      isSellersFavorites,
       name,
       prices,
       sellersFavorites,
       work,
       thumbnailUrl
     } = this.props
-    console.log('prices', prices)
-    console.log('sellersFavorites', sellersFavorites)
     return (
       <div className={classnames(
         'offer-item flex items-center justify-between p1 mb1', {
@@ -51,9 +51,17 @@ class OfferItem extends Component {
           <div className='mb2'>
             {description}
           </div>
-          {
-            isPrices && prices && prices.map((price, index) => <PriceItem key={index} />)
-          }
+          <div className='flex flex-wrap items-center p1'>
+            {
+              isSellersFavorites && sellersFavorites &&
+                sellersFavorites.map((sellersFavorite, index) =>
+                  <SellerFavoriteItem key={index} {...sellersFavorite} />)
+            }
+            {
+              isPrices && prices && prices.map((price, index) =>
+                <PriceItem key={index} {...price} />)
+            }
+          </div>
         </div>
       </div>
     )

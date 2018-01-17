@@ -77,6 +77,7 @@ class OfferModify extends Component {
           ContentComponent={SellerFavoriteItem}
           elements={sellersFavorites}
           extra={{ offerId: id }}
+          FormComponent={SellerFavoriteForm}
           getBody={form => [
             Object.assign({
               offerId: id
@@ -99,7 +100,6 @@ class OfferModify extends Component {
               sellersFavorites: optimistSellersFavorites
             }
           }}
-          FormComponent={SellerFavoriteForm}
           path='sellersFavorites'
           title='Coups de Coeur' />
 
@@ -109,6 +109,7 @@ class OfferModify extends Component {
           ContentComponent={PriceItem}
           elements={prices}
           extra={{ offerId: id }}
+          FormComponent={PriceForm}
           getBody={form => [Object.assign({
             offerId: id
           }, form.pricesById[NEW])]}
@@ -119,7 +120,7 @@ class OfferModify extends Component {
             (
               !form.pricesById[NEW].endDate ||
               !form.pricesById[NEW].startDate ||
-              !form.pricesById[NEW].size ||
+              !form.pricesById[NEW].groupSize ||
               !form.pricesById[NEW].value
             )
           }
@@ -132,7 +133,7 @@ class OfferModify extends Component {
               prices: optimistPrices
             }
           }}
-          FormComponent={PriceForm}
+          isWrap
           path='prices'
           title='Prix' />
 

@@ -7,12 +7,19 @@
     margin-left: -50px;
     width: 75px;
   }
+  span {
+    font-size: 12px;
+  }
+  input {
+    width: 150px;
+  }
   &__form-input {
     border-radius: 5px;
     font-size: 10px;
     width: 100px;
   }
-  input {
-    width: 75px;
+  &__suffix {
+    color: $dark-grey;
+    top: 4.5px;
   }
 }

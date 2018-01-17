@@ -33,7 +33,12 @@ class ProfessionalHomePage extends Component {
         <div className='md-col-9 mx-auto'>
           {
             offers && offers.map((offer, index) => (
-              <OfferItem isModify key={index} {...offer} />
+              <OfferItem isModify
+                isPrices
+                isSellersFavorites
+                key={index}
+                {...offer}
+              />
             ))
           }
         </div>
