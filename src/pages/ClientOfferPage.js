@@ -32,9 +32,8 @@ class ClientOfferPage extends Component {
               { offer.work.type=="book" ? "À la librairie" : "À 20h au théatre" } Tartenshmoll<br/>
               2 rue des Lilas (à {offer.id*25}m)<br/>
               <img alt='' src='/map.png' /><br/>
-              { offer.work.type=="book" ? <span>Ouvert jusqu&quot;à 19h aujourd&quot;hui<br/></span>
+              { offer.work.type=="book" ? <span>Ouvert jusqu&apos;à 19h aujourd&quot;hui<br/><a href=''>voir tous les horaires</a></span>
                                         : <span><br/>Dates&nbsp;:<br/><img alt='' src='/calendrier.png' /><br/></span> }
-              <a href=''>voir tous les horaires</a>
             </div>
 
             { offer.prices.length>1 &&
