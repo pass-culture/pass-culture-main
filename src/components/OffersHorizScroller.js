@@ -17,7 +17,7 @@ class OffersHorizScroller extends Component {
 
   handleCardClick = (modulo, cardIndex) => {
     console.log(modulo); console.log(cardIndex);
-    let offerId = this.props.offers[modulo*3+cardIndex].id;
+    let offerId = this.props.offers[modulo+3*cardIndex].id;
     this.props.history.push('/offres/'+offerId);
   }
 
