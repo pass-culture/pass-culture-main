@@ -20,19 +20,20 @@ class ClientOfferPage extends Component {
           (
           <div>
             <h2>
-              { offer.title || offer.work.name }
+              { offer.name || offer.work.name }
               { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
               { offer.prices.filter(p => p.groupSize>1) && <Icon name='error' /> }
             </h2>
             <img alt='' className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
-            { offer.text }
+            { offer.description }
             <div className='clearfix' />
             <div className='sellerInfos'>
               <b>{ offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€</b><br/>
-              à la librairie Tartenshmoll (à {offer.id*25}m)<br/>
-              2 rue des Lilas<br/>
+              { offer.work.type=="book" ? "À la librairie" : "À 20h au théatre" } Tartenshmoll<br/>
+              2 rue des Lilas (à {offer.id*25}m)<br/>
               <img alt='' src='/map.png' /><br/>
-              Ouvert jusqu&quot;à 19h aujourd&quot;hui<br/>
+              { offer.work.type=="book" ? <span>Ouvert jusqu&quot;à 19h aujourd&quot;hui<br/></span>
+                                        : <span><br/>Dates&nbsp;:<br/><img alt='' src='/calendrier.png' /><br/></span> }
               <a href=''>voir tous les horaires</a>
             </div>
 
