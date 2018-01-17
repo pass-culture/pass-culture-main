@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
@@ -58,5 +59,7 @@ class ClientOfferPage extends Component {
   }
 }
 
-export default connect((state, ownProps) => ({ offer: state.data['offers/'+ownProps.offerId] }),
-                       { requestData })(ClientOfferPage)
+export default connect(
+  (state, ownProps) => ({ offer: state.data['offers/'+ownProps.offerId] }),
+  { requestData }
+)(ClientOfferPage)
