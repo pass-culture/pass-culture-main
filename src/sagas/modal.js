@@ -2,11 +2,11 @@ import { takeEvery } from 'redux-saga/effects'
 
 import { CLOSE_MODAL, SHOW_MODAL } from '../reducers/modal'
 
-function * fromWatchCloseModalAction (action) {
+function fromWatchCloseModalAction (action) {
   document.body.style.overflow = 'scroll'
 }
 
-function * fromWatchShowModalAction (action) {
+function fromWatchShowModalAction (action) {
   document.body.style.overflow = 'hidden'
 }
 

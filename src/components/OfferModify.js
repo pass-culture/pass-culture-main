@@ -21,8 +21,10 @@ class OfferModify extends Component {
     const { id,
       newOffer,
       sellersFavorites,
-      prices
+      prices,
+      work
     } = this.props
+  console.log('work', work)
   return (
     <div className='offer-modify p2'>
 
@@ -31,10 +33,12 @@ class OfferModify extends Component {
         {
           newOffer
           ? (
-            <button className='button button--alive'
-              onClick={this.onModifyClick}>
-              Modifier
-            </button>
+            id && (
+              <button className='button button--alive'
+                onClick={this.onModifyClick}>
+                Modifier
+              </button>
+            )
           )
           : <SubmitButton getBody={form => form.offersById[NEW]}
             getIsDisabled={form =>
@@ -47,7 +51,12 @@ class OfferModify extends Component {
               )
             }
             getOptimistState={(state, action) => {
-              return { newOffer: action.config.body }
+              const newOffer = Object.assign({
+                work
+              }, action.config.body)
+              return { newOffer,
+                offers: state.offers.concat(newOffer)
+              }
             }}
             path='offers' />
         }
@@ -79,8 +88,13 @@ class OfferModify extends Component {
           )
         }
         getOptimistState={(state, action) => {
-          return { sellersFavorites: action.config.body.concat(
-            sellersFavorites) }
+          let optimistSellersFavorites = action.config.body
+          if (sellersFavorites) {
+            optimistSellersFavorites = optimistSellersFavorites.concat(sellersFavorites)
+          }
+          return {
+            sellersFavorites: optimistSellersFavorites
+          }
         }}
         FormComponent={SellerFavoriteForm}
         path='sellersFavorites'
@@ -107,8 +121,13 @@ class OfferModify extends Component {
           )
         }
         getOptimistState={(state, action) => {
-          const offer = state.offers.find(offer => offer.id === id)
-          return { prices: action.config.body.concat(offer.prices) }
+          let optimistPrices = action.config.body
+          if (prices) {
+            optimistPrices = optimistPrices.concat(prices)
+          }
+          return {
+            prices: optimistPrices
+          }
         }}
         FormComponent={PriceForm}
         path='prices'

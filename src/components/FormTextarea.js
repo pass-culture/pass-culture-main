@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getFormEntity, getFormValue, mergeForm } from '../reducers/form'
+import { getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormTextarea extends Component {

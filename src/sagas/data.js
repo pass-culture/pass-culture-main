@@ -1,9 +1,9 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
-import { failData, getToken, successData } from '../reducers/data'
+import { failData, successData } from '../reducers/data'
 import { apiData } from '../utils/api'
 
-function * fromWatchRequestActions (action) {
+function * fromWatchRequestDataActions (action) {
   const { method, path, config } = action
   const body = config && config.body
   const type = config && config.type
@@ -17,6 +17,6 @@ function * fromWatchRequestActions (action) {
   }
 }
 
-export function * watchRequestActions () {
-  yield takeEvery(({ type }) => /REQUEST_(.*)/.test(type), fromWatchRequestActions)
+export function * watchDataActions () {
+  yield takeEvery(({ type }) => /REQUEST_DATA_(.*)/.test(type), fromWatchRequestDataActions)
 }

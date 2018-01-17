@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React from 'react'
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
@@ -35,7 +34,7 @@ class ClientOfferPage extends Component {
               Ouvert jusqu&quot;à 19h aujourd&quot;hui<br/>
               <a href=''>voir tous les horaires</a>
             </div>
-             
+
             { offer.prices.length>1 &&
                 (
                 <div>

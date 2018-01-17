@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -7,7 +6,13 @@ import { getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormInput extends Component {
+  componentWillMount () {
+    this.props.defaultValue && this.handleMergeForm(this.props.defaultValue)
+  }
   onChange = ({ target: { value } }) => {
+    this.handleMergeForm(value)
+  }
+  handleMergeForm = (value) => {
     const { collectionName, id, mergeForm, name } = this.props
     mergeForm(collectionName, id, name, value)
   }

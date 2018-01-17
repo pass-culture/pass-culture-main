@@ -14,8 +14,10 @@ class OfferNew extends Component {
       const now = moment()
       const endDate = now.add(1, 'd').utc().format()
       const startDate = now.utc().format()
+      mergeForm('prices', NEW, 'endDate', endDate)
+      mergeForm('prices', NEW, 'startDate', startDate)
       mergeForm('offers', NEW, 'workId', work.id)
-   }
+    }
   }
   render () {
     const { work } = this.props
@@ -31,8 +33,7 @@ class OfferNew extends Component {
   }
 }
 
-export default connect(state => {
-  return {
-    work: state.data.works && state.data.works.length === 1 && state.data.works[0]
-  }
-}, { mergeForm })(OfferNew)
+export default connect(
+  state => ({ work: state.data.work }),
+  { mergeForm }
+)(OfferNew)

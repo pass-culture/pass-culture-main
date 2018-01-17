@@ -9,7 +9,6 @@ import { requestData } from '../reducers/data'
 class SubmitButton extends Component {
   onSubmitClick = () => {
     const { form,
-      formSelector,
       getBody,
       getOptimistState,
       method,
@@ -18,10 +17,6 @@ class SubmitButton extends Component {
       requestData,
       resetForm
     } = this.props
-
-
-    console.log(formSelector && document.querySelector(formSelector))
-
     requestData(method, path, {
       body: (getBody && getBody(form)) || form,
       getOptimistState

@@ -6,7 +6,7 @@ class ClientCreateProfilePage extends Component {
     super()
     this.state = { 'question_index' : 0 };
   }
-  
+
   questions = [
                 [{title: 'Booba',  img: 'booba' }, {title: 'Orelsan',  img: 'orelsan' }],
                 [{title: 'Booba2', img: 'booba2'}, {title: 'Orelsan2', img: 'orelsan2'}],
@@ -29,7 +29,7 @@ class ClientCreateProfilePage extends Component {
         </div>
       )
   }
-  
+
   render = () => {
     return (
       <main className='page client-create-profile-page flex flex-column'>

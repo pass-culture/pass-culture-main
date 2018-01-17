@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import OfferModify from './OfferModify'
 import { showModal } from '../reducers/modal'
+import { URL } from '../utils/config'
 
 class OfferItem extends Component {
   onClick = action => {
@@ -12,7 +13,6 @@ class OfferItem extends Component {
   }
   render () {
     const { description,
-      id,
       isModify,
       name,
       work,
@@ -27,7 +27,7 @@ class OfferItem extends Component {
       >
         <img alt='thumbnail'
           className='offer-item__image mr2'
-          src={thumbnailUrl || work.thumbnailUrl}
+          src={thumbnailUrl || `${URL}/thumbs/${work.id}`}
         />
         <div className='offer-item__info flex-auto center'>
           <div className='h2 mb2'>

@@ -24,7 +24,7 @@ class WorkDetector extends Component {
   }
   onSearchClick = () => {
     const { identifier } = this.state
-    this.props.requestData('GET', `works/isbn:${identifier}`)
+    this.props.requestData('GET', `works/book:${identifier}`, { key: 'work' })
   }
   render () {
     const { identifier, selectedCategory } = this.state
@@ -34,7 +34,7 @@ class WorkDetector extends Component {
       <div className='work-detector p2'>
         {
           !work && <Select className='select mb2'
-            defaultLabel='-- select a type --'
+            defaultLabel='-- choisir une catégorie --'
             onOptionClick={this.onOptionClick}
             options={options}
             value={selectedCategory}
@@ -46,7 +46,7 @@ class WorkDetector extends Component {
               <label className='block left-align mb1'>
                 {
                   selectedCategory === 'book'
-                    ? 'ISBN (203583418X for e.g.)'
+                    ? 'ISBN (2072534054 for e.g.)'
                     : 'Identifiant'
                 }
               </label>
@@ -74,12 +74,12 @@ class WorkDetector extends Component {
 
 WorkDetector.defaultProps = {
   options: [
-    { value: 'book', label: 'Book' },
-    { value: 'theater', label: 'Theater' }
+    { value: 'book', label: 'Livre' },
+    { value: 'theater', label: 'Theâtre' }
   ]
 }
 
 export default connect(
-  state => ({ work: state.data.works && state.data.works.length === 1 && state.data.works[0] }),
+  state => ({ work: state.data.work }),
   { mergeForm, requestData }
 )(WorkDetector)

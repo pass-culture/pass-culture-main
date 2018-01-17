@@ -22,12 +22,9 @@ class SellerFavoriteForm extends Component {
           collectionName='sellersFavorites'
           name='description'
           placeholder='donnez la description de votre coup de coeur' />
-        {
-          /*<FormInput collectionName='sellersFavorites'
-            name='description'
-            placeholder='donnez quelques hashtags pour cibler votre audience' />
-          */
-        }
+        <FormInput collectionName='sellersFavorites'
+          name='description'
+          placeholder='donnez quelques hashtags pour cibler votre audience' />
       </div>
     )
   }
