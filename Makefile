@@ -20,7 +20,7 @@ start:
 	concurrently "docker-compose up" "cd webapp && yarn start"
 
 restore_db:
-	cat $(backup_file) | bunzip2 | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture
+	cat $(backup_file) | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c
 
 update:
 	cd $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
