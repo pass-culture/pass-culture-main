@@ -1,4 +1,6 @@
 .client-create-profile-page {
+  background-color: #333333;
+  color: white;
   h2 {
     font-size: 6vw;
     text-align: center;
@@ -9,7 +11,7 @@
     margin-bottom: 10px;
   }
   .choices {
-    background-color: black;
+    background-color: #333333;
     .choice[data-index='1'] {
       margin-top: -35px;
       margin-bottom: -35px;
@@ -24,6 +26,7 @@
       position: relative;
       z-index: 1;
       color: white;
+      text-shadow: 1px 1px #333333;
       top: -20px;
       width: 100%;
       text-align: center;
