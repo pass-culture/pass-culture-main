@@ -40,7 +40,7 @@ class OffersHorizScroller extends Component {
                         <img alt='' className='offerPicture' src={ API_URL+'/thumbs/'+offer.work.id } />
                         { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
                         { offer.prices.filter(p => p.groupSize>1).length>0 && <Icon name='error' /> }
-                        { offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; à {offer.id*25}m
+                        { offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; à {(20-offer.id)*15}m
                         <div className='offerName'>{ offer.name || offer.work.name }</div>
                       </div>
                   ))
