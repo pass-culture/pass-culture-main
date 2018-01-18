@@ -6,7 +6,9 @@ import { closeModal } from '../reducers/modal'
 
 class Modal extends Component {
   onCloseClick = () => {
-    this.props.closeModal()
+    const { closeModal, config } = this.props
+    config && config.onCloseClick && config.onCloseClick()
+    closeModal()
   }
   render () {
     const { ContentComponent,
@@ -38,6 +40,6 @@ class Modal extends Component {
   }
 }
 
-export default connect(({ modal: { ContentComponent, isActive } }) =>
-  ({ ContentComponent, isActive }),
+export default connect(({ modal: { config, ContentComponent, isActive } }) =>
+  ({ config, ContentComponent, isActive }),
   { closeModal })(Modal)

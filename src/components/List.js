@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -19,6 +20,7 @@ class List extends Component {
       getIsDisabled,
       getBody,
       getOptimistState,
+      isWrap,
       path,
       title
     } = this.props
@@ -37,11 +39,15 @@ class List extends Component {
             text='Ajouter' />
         </div>
         <FormComponent {...extra} />
-        {
-          elements && elements.map((favorite, index) => (
-            <ContentComponent key={index} {...favorite} />
-          ))
-        }
+        <div className={classnames('list__content', {
+          'flex items-center flex-wrap': isWrap
+        })}>
+          {
+            elements && elements.map((favorite, index) => (
+              <ContentComponent key={index} {...favorite} />
+            ))
+          }
+        </div>
       </div>
     )
   }

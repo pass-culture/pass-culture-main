@@ -1,18 +1,9 @@
 .price-item {
+  background-color: black;
   border: $border;
   border-radius: $border-radius;
-  label {
-    display: inline-block;
+  color: white;
+  &__date {
     font-size: 12px;
-    margin-left: -50px;
-    width: 75px;
-  }
-  &__form-input {
-    border-radius: 5px;
-    font-size: 10px;
-    width: 100px;
-  }
-  &__value {
-    min-width: 75px;
   }
 }

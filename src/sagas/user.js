@@ -3,7 +3,7 @@ import { put, select, takeEvery } from 'redux-saga/effects'
 import { setUser } from '../reducers/user'
 
 function * fromWatchSuccessPostSignActions () {
-  const user = yield select(state => state.data.user)
+  const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     yield put(setUser(user))
   }

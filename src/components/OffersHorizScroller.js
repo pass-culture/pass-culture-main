@@ -6,7 +6,7 @@ import { Carousel } from 'react-responsive-carousel'
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
-import { URL } from '../utils/config'
+import { API_URL } from '../utils/config'
 
 
 class OffersHorizScroller extends Component {
@@ -29,7 +29,7 @@ class OffersHorizScroller extends Component {
                   .map((offer, index) =>
                   (
                       <div key={'slide'+modulo+3*index}>
-                        <img alt='' className='offerPicture' src={ URL+'/thumbs/'+offer.work.id } />
+                        <img alt='' className='offerPicture' src={ API_URL+'/thumbs/'+offer.work.id } />
                         { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
                         { offer.prices.filter(p => p.groupSize>1).length>0 && <Icon name='error' /> }
                         { offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; à {offer.id*25}m

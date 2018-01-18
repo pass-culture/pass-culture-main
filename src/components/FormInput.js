@@ -7,12 +7,14 @@ import { NEW } from '../utils/config'
 
 class FormInput extends Component {
   componentWillMount () {
-    this.props.defaultValue && this.handleMergeForm(this.props.defaultValue)
+    // fill automatically the form when it is a NEW POST action
+    const { defaultValue, id } = this.props
+    defaultValue && id === NEW && this.handleMergeForm(defaultValue)
   }
   onChange = ({ target: { value } }) => {
     this.handleMergeForm(value)
   }
-  handleMergeForm = (value) => {
+  handleMergeForm = value => {
     const { collectionName, id, mergeForm, name } = this.props
     mergeForm(collectionName, id, name, value)
   }
@@ -43,7 +45,6 @@ FormInput.defaultProps = {
 
 FormInput.propTypes = {
   collectionName: PropTypes.string.isRequired,
-  id: PropTypes.string,
   name: PropTypes.string.isRequired
 }
 

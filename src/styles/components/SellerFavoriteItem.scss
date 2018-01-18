@@ -1,8 +1,12 @@
 .seller-favorite-item {
+  background-color: black;
   border: $border;
   border-radius: $border-radius;
-  &__icon {
-    left: 25px;
-    top: 25px;
+  color: white;
+  font-size: 14px;
+  max-width: 250px;
+  text-align: left;
+  svg {
+    width: 25px;
   }
 }

@@ -1,15 +1,15 @@
 .offer-item {
-  border: $border;
-  border-radius: $border-radius;
   img {
-    height: 100px;
-    width: 100px;
+    height: auto;
+    width: 150px;
     @media (min-width: $md) {
-      height: 200px;
-      width: 200px;
+      width: 150px;
     }
   }
   &--modify {
     cursor: pointer;
+  }
+  &__description {
+    font-size: 10px;
   }
 }

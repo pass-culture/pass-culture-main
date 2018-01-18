@@ -24,7 +24,7 @@ class WorkDetector extends Component {
   }
   onSearchClick = () => {
     const { identifier } = this.state
-    this.props.requestData('GET', `works/book:${identifier}`, { key: 'work' })
+    this.props.requestData('GET', `works/book:${identifier}`, { key: 'works'})
   }
   render () {
     const { identifier, selectedCategory } = this.state
@@ -46,7 +46,7 @@ class WorkDetector extends Component {
               <label className='block left-align mb1'>
                 {
                   selectedCategory === 'book'
-                    ? 'ISBN (2072534054 for e.g.)'
+                    ? 'ISBN (0140188711 for e.g.)'
                     : 'Identifiant'
                 }
               </label>
@@ -80,6 +80,6 @@ WorkDetector.defaultProps = {
 }
 
 export default connect(
-  state => ({ work: state.data.work }),
+  state => ({ work: state.data.works && state.data.works[0] }),
   { mergeForm, requestData }
 )(WorkDetector)

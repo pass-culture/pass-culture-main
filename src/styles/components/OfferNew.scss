@@ -1,11 +1,6 @@
 .offer-new {
-  height: 75vh;
-  img {
-    height: 200px;
-    width: 200px;
-    @media (min-width: $md) {
-      height: 300px;
-      width: 300px;
-    }
+  min-height: 75vh;
+  &--work-detector {
+    min-height: 25vh;
   }
 }

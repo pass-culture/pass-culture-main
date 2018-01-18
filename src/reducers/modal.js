@@ -17,6 +17,7 @@ function modal (state = initialState, action) {
       })
     case SHOW_MODAL:
       return Object.assign({}, state, {
+        config: action.config || state.config,
         isActive: true,
         ContentComponent: action.ContentComponent || state.ContentComponent
       })
@@ -30,8 +31,8 @@ export function closeModal () {
   return { type: CLOSE_MODAL }
 }
 
-export function showModal (newContent) {
-  return {
+export function showModal (newContent, config) {
+  return { config,
     ContentComponent: () => newContent,
     type: SHOW_MODAL
   }

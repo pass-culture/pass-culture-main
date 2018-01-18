@@ -9,6 +9,7 @@ html,body {
 }
 
 .app {
+  color: $dark-grey;
   font-family: $font-family;
   min-height: 100vh;
 }
@@ -88,6 +89,7 @@ html,body {
 .input {
   border: solid 0.5px $medium-grey;
   border-radius: $border-radius;
+  color: $very-dark-grey;
   font-family: $font-family;
   font-weight: 500;
   font-size: 20px;

@@ -1,6 +1,6 @@
 import 'fetch-everywhere'
 
-import { URL } from './config'
+import { API_URL } from './config'
 
 export async function apiData (method, path, config = {}) {
   // unpack
@@ -26,6 +26,6 @@ export async function apiData (method, path, config = {}) {
     init.headers.Authorization = `Bearer ${token}`
   }
   // fetch
-  const result = await fetch(`${URL}/${path}`, init)
+  const result = await fetch(`${API_URL}/${path}`, init)
   return result.json && await result.json()
 }

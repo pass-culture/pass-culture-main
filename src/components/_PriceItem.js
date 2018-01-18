@@ -1,6 +1,17 @@
 import React, { Component } from 'react'
 import moment from 'moment'
 
+const FormItem = ({ name, value }) => (
+  <div className='flex items-center justify-center'>
+    <label className='mr2 right-align'>
+      {name}
+    </label>
+    <div className='price-item__value'>
+      {value}
+    </div>
+  </div>
+)
+
 class PriceItem extends Component {
   handleFormatDate = ({ endDate, startDate }) => {
     this.setState({
@@ -19,16 +30,21 @@ class PriceItem extends Component {
     }
   }
   render () {
-    const { groupSize, value } = this.props
+    const { size, value } = this.props
     const { formatEndDate, formatStartDate } = this.state
     return (
-      <div className='price-item col-4 p1'>
-        <div className='mb1'>
-          <span className='h3'> {value} </span> € { groupSize && <span> à partir de <span className='h3'> {groupSize} </span> pers. </span> }
-        </div>
-        <div className='price-item__date'>
-          {formatStartDate} / {formatEndDate}
-        </div>
+      <div className='price-item mb3 col-3 p2'>
+
+        <FormItem name='début' value={formatStartDate} />
+        <br />
+
+        <FormItem name='fin' value={formatEndDate} />
+        <br />
+
+        <FormItem name='groupe' value={size} />
+        <br />
+
+        <FormItem name='prix' value={value} />
       </div>
     )
   }

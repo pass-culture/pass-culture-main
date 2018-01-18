@@ -8,7 +8,8 @@ import { requestData } from '../reducers/data'
 
 class SubmitButton extends Component {
   onSubmitClick = () => {
-    const { form,
+    const { add,
+      form,
       getBody,
       getOptimistState,
       method,
@@ -17,7 +18,7 @@ class SubmitButton extends Component {
       requestData,
       resetForm
     } = this.props
-    requestData(method, path, {
+    requestData(method, path, { add,
       body: (getBody && getBody(form)) || form,
       getOptimistState
     })
@@ -40,7 +41,8 @@ class SubmitButton extends Component {
   }
 }
 
-SubmitButton.defaultProps = { getBody: form => form,
+SubmitButton.defaultProps = { add: 'append',
+  getBody: form => form,
   getIsDisabled: form => Object.keys(form).length === 0,
   method: 'POST',
   text: 'Soumettre'
