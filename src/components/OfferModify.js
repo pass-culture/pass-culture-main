@@ -44,7 +44,7 @@ class OfferModify extends Component {
             }}
             getSuccessState={(state, action) => {
               if (action.method === 'POST') {
-                return { modifyOfferId: action.config.body.id }
+                return { modifyOfferId: action.data.id }
               }
             }}
             method={isNew ? 'POST' : 'PUT'}
@@ -74,10 +74,8 @@ OfferModify.defaultProps = {
 const getModifyOffer = createSelector(state => state.data.offers,
   (state, ownProps) =>
     state.data.modifyOfferId || ownProps.id,
-  (offers, offerId) => {
-    console.log('offerId', offerId)
-    return offers.find(({ id }) => id === offerId)
-  })
+  (offers, offerId) => offers.find(({ id }) => id === offerId)
+)
 
 export default connect(
   (state, ownProps) => getModifyOffer(state, ownProps) || {},

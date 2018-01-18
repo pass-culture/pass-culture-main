@@ -20,15 +20,26 @@ class PriceItem extends Component {
   }
   render () {
     const { groupSize, value } = this.props
-    const { formatEndDate, formatStartDate } = this.state
+    // const { formatEndDate, formatStartDate } = this.state
     return (
-      <div className='price-item col-4 p1'>
-        <div className='mb1'>
-          <span className='h3'> {value} </span> € { groupSize && <span> à partir de <span className='h3'> {groupSize} </span> pers. </span> }
+      <div className='price-item flex items-center p1'>
+        {
+          groupSize > 1 && (
+            <div className='mr1'>
+              BP
+            </div>
+          )
+        }
+        <div>
+          <span className='h3'> {value} </span> € { groupSize > 1 && <span> à partir de <span className='h3'> {groupSize} </span> pers. </span> }
         </div>
-        <div className='price-item__date'>
-          {formatStartDate} / {formatEndDate}
-        </div>
+        {
+          /*
+          <div className='price-item__date'>
+            {formatStartDate} / {formatEndDate}
+          </div>
+          */
+        }
       </div>
     )
   }
