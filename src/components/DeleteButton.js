@@ -17,10 +17,11 @@ class DeleteButton extends Component {
     const { className, disabled, showModal, text } = this.props
     return (
       <button className={className || 'button button--alive'}
+        disabled={disabled}
         onClick={() => showModal(
           <div>
             <div className='mb2'>
-              Enlever cette offre ?
+              Enlever ?
             </div>
             <button className='button button--alive mr2'
               disabled

@@ -18,7 +18,6 @@ class OfferModify extends Component {
   render () {
     const { id, work } = this.props
     const isNew = id === NEW
-    console.log('isNew', isNew)
     return (
       <div className='offer-modify p2'>
         <div className='h2 mt2 mb2'> Offre </div>
@@ -56,7 +55,6 @@ class OfferModify extends Component {
             text='Supprimer'
           />
         </div>
-        <div className='sep mt2 mb2' />
         { !isNew && <OfferJoinForm id={id} /> }
       </div>
     )
@@ -68,8 +66,13 @@ OfferModify.defaultProps = {
 }
 
 const getModifyOffer = createSelector(state => state.data.offers,
-  (state, ownProps) => state.data.postedDatum && state.data.postedDatum.id || ownProps.id,
-  (offers, offerId) => offers.find(({ id }) => id === offerId))
+  (state, ownProps) =>
+    (state.data.postedDatum && state.data.postedDatum.id) ||
+    ownProps.id,
+  (offers, offerId) => {
+    console.log('offerId', offerId)
+    return offers.find(({ id }) => id === offerId)
+  })
 
 export default connect(
   (state, ownProps) => getModifyOffer(state, ownProps) || {},

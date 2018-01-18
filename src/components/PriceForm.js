@@ -14,39 +14,13 @@ class PriceForm extends Component {
     const { endDate, startDate, groupSize, value } = this.props
     return (
       <div className='price-form mb2 mx-auto p2 clearfix'>
-        <div className='md-col md-col-6'>
-          <label className='mr1 right-align'>
-            début
-          </label>
-          <FormInput className='input price-form__form-input mb1'
-            collectionName='prices'
-            defaultValue={startDate}
-            isRequired
-            name='startDate'
-            type='date'
-          />
-          <br />
-
-          <label className='mr1 right-align'>
-            fin
-          </label>
-          <FormInput className='input price-form__form-input'
-            collectionName='prices'
-            defaultValue={endDate}
-            isRequired
-            name='endDate'
-            type='date'
-          />
-          <br />
-        </div>
-
         <div className='md-col md-col-6 relative'>
           <label className='mr1 right-align'>
             à partir de
           </label>
           <FormInput className='input price-form__form-input price-form__form-input--group-size mb1'
             collectionName='prices'
-            defaultValue={ groupSize || 1 }
+            defaultValue={groupSize}
             isRequired
             name='groupSize'
             type='number'
@@ -55,7 +29,6 @@ class PriceForm extends Component {
             pers.
           </span>
           <br />
-
           <label className='mr1 right-align'>
             prix
           </label>
@@ -65,6 +38,28 @@ class PriceForm extends Component {
             isRequired
             name='value'
           />
+        </div>
+        <div className='md-col md-col-6'>
+          <label className='mr1 right-align'>
+            début
+          </label>
+          <FormInput className='input price-form__form-input mb1'
+            collectionName='prices'
+            defaultValue={startDate}
+            name='startDate'
+            type='date'
+          />
+          <br />
+          <label className='mr1 right-align'>
+            fin
+          </label>
+          <FormInput className='input price-form__form-input'
+            collectionName='prices'
+            defaultValue={endDate}
+            name='endDate'
+            type='date'
+          />
+          <br />
         </div>
       </div>
     )

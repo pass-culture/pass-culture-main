@@ -2,4 +2,11 @@
   box-shadow: $box-shadow;
   border: $border;
   border-radius: $border-radius;
+  &__content {
+    &__id {
+      color: $medium-grey;
+      font-weight: 400;
+      font-style: italic;
+    }
+  }
 }

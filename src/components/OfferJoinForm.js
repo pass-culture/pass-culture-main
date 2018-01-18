@@ -11,6 +11,7 @@ import { NEW } from '../utils/config'
 const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
   return (
     <div>
+      <div className='sep mt2 mb2' />
       <List className='mb1'
         ContentComponent={PriceItem}
         elements={prices}
@@ -24,8 +25,6 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
           !form.pricesById ||
           !form.pricesById[NEW] ||
           (
-            !form.pricesById[NEW].endDate ||
-            !form.pricesById[NEW].startDate ||
             !form.pricesById[NEW].groupSize ||
             !form.pricesById[NEW].value
           )
