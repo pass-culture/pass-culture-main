@@ -24,7 +24,6 @@ class DeleteButton extends Component {
               Enlever ?
             </div>
             <button className='button button--alive mr2'
-              disabled
               onClick={this.onConfirmClick}
             >
               Oui

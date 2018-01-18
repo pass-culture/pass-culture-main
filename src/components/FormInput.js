@@ -15,8 +15,13 @@ class FormInput extends Component {
     this.handleMergeForm(value)
   }
   handleMergeForm = value => {
-    const { collectionName, id, mergeForm, name } = this.props
-    mergeForm(collectionName, id, name, value)
+    const { collectionName, id, mergeForm, name, type } = this.props
+    // be sure to cast to the good type
+    const mergedValue = type === 'number'
+      ? Number(value)
+      : value
+    // merge
+    mergeForm(collectionName, id, name, mergedValue)
   }
   render () {
     const { className,

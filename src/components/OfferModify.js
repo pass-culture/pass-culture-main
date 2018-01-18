@@ -24,7 +24,8 @@ class OfferModify extends Component {
         <WorkItem extraClass='mb2' {...work} />
         <OfferForm {...this.props} />
         <div>
-          <SubmitButton extraClass='mr1'
+          <SubmitButton add='append'
+            extraClass='mr1'
             getBody={form => form.offersById[id]}
             getIsDisabled={form =>
               !form ||

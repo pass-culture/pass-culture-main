@@ -38,6 +38,11 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
             prices: optimistPrices
           }
         }}
+        getSuccessState={state =>
+          // on success we need to make this buffer
+          // null again in order to catch the new refreshed ownProps.prices
+          ({ prices: null })
+        }
         isWrap
         path='prices'
         title='Prix' />
@@ -71,6 +76,11 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
             sellersFavorites: optimistSellersFavorites
           }
         }}
+        getSuccessState={state =>
+          // on success we need to make this buffer
+          // null again in order to catch the new refreshed ownProps.sellersFavorites
+          ({ sellersFavorites: null })
+        }
         isWrap
         path='sellersFavorites'
         title='Coups de Coeur' />

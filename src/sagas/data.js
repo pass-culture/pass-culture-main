@@ -1,6 +1,7 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { failData, successData } from '../reducers/data'
+import { resetForm } from '../reducers/form'
 import { apiData } from '../utils/api'
 
 function * fromWatchRequestDataActions (action) {
@@ -17,6 +18,11 @@ function * fromWatchRequestDataActions (action) {
   }
 }
 
+function * fromWatchSuccessDataActions (action) {
+  yield put(resetForm())
+}
+
 export function * watchDataActions () {
   yield takeEvery(({ type }) => /REQUEST_DATA_(.*)/.test(type), fromWatchRequestDataActions)
+  yield takeEvery(({ type }) => /SUCCESS_DATA_(POST|PUT)_(.*)/.test(type), fromWatchSuccessDataActions)
 }
