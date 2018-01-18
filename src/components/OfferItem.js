@@ -13,7 +13,6 @@ import { API_URL } from '../utils/config'
 class OfferItem extends Component {
   onCloseClick = () => {
     const { assignData, resetForm } = this.props
-    console.log('qsqsqs')
     assignData({ work: null })
     resetForm()
   }
@@ -44,11 +43,11 @@ class OfferItem extends Component {
           className='offer-item__image mr2'
           src={thumbnailUrl || `${API_URL}/thumbs/${work.id}`}
         />
-        <div className='offer-item__info flex-auto center'>
-          <div className='h2 mb2'>
+        <div className='offer-item__content flex-auto center left-align'>
+          <div className='h2 mb2 left-align'>
             {name}
           </div>
-          <div className='mb2'>
+          <div className='offer-item__content__description mb2 left-align'>
             {description}
           </div>
           <div className='flex flex-wrap items-center p1'>

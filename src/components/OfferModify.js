@@ -5,22 +5,22 @@ import { createSelector } from 'reselect'
 import DeleteButton from './DeleteButton'
 import List from './List'
 import OfferForm from './OfferForm'
-import OfferItem from './OfferItem'
 import PriceForm from './PriceForm'
 import PriceItem from './PriceItem'
 import SellerFavoriteItem from './SellerFavoriteItem'
 import SellerFavoriteForm from './SellerFavoriteForm'
 import SubmitButton from '../components/SubmitButton'
+import WorkItem from './WorkItem'
 import { assignData } from '../reducers/data'
 import { NEW } from '../utils/config'
 
 class OfferModify extends Component {
   onModifyClick = () => {
-    this.props.assignData({ newOffer: null })
+    this.props.assignData({ modifyOffer: null })
   }
   render () {
     const { id,
-      newOffer,
+      modifyOffer,
       sellersFavorites,
       prices,
       work
@@ -28,50 +28,32 @@ class OfferModify extends Component {
     return (
       <div className='offer-modify p2'>
 
-        <div className='h2 mt2'> Offre </div>
-        <div className='offer-modify__control flex items-center flex-start'>
-          {
-            newOffer
-            ? (
-              id && (
-                <button className='button button--alive'
-                  onClick={this.onModifyClick}>
-                  Modifier
-                </button>
-              )
+        <div className='h2 mt2 mb2'> Offre </div>
+        <WorkItem extraClass='mb2' {...work} />
+        <OfferForm {...this.props} {...modifyOffer} />
+        <SubmitButton getBody={form => form.offersById[id]}
+          getIsDisabled={form =>
+            !form ||
+            !form.offersById ||
+            !form.offersById[id] ||
+            (
+              !form.offersById[id].description &&
+              !form.offersById[id].name
             )
-            : <SubmitButton getBody={form => form.offersById[NEW]}
-                getIsDisabled={form =>
-                  !form ||
-                  !form.offersById ||
-                  !form.offersById[NEW] ||
-                  (
-                    !form.offersById[NEW].description &&
-                    !form.offersById[NEW].name
-                  )
-                }
-                getOptimistState={(state, action) => {
-                  const newOffer = Object.assign({ id: NEW,
-                    work
-                  }, action.config.body)
-                  return { offers: state.offers.concat(newOffer) }
-                }}
-                method={id ? 'PUT' : 'POST'}
-                path='offers'
-              />
           }
+          getOptimistState={(state, action) => {
+            const modifyOffer = Object.assign({ id: NEW,
+              work
+            }, action.config.body)
+            return { offers: state.offers.concat(modifyOffer) }
+          }}
+          method={id ? 'PUT' : 'POST'}
+          path='offers'
+          text={id ? 'Modifer' : 'Enregistrer'}
+          onClick={modifyOffer && id && this.onModifyClick}
+        />
 
-        </div>
-        {
-          newOffer
-            ? <OfferItem {...this.props} {...newOffer}
-                isPrices={false}
-                isSellersFavorites={false}
-              />
-            : <OfferForm {...this.props} />
-        }
-
-        <div className='sep mb2' />
+        <div className='sep mt2 mb2' />
 
         <List className='mb1'
           ContentComponent={SellerFavoriteItem}
@@ -88,7 +70,7 @@ class OfferModify extends Component {
             !form.sellersFavoritesById ||
             !form.sellersFavoritesById[NEW] ||
             (
-              !form.sellersFavoritesById[NEW].description
+              !form.sellersFavoritesById[NEW].comment
             )
           }
           getOptimistState={(state, action) => {
@@ -100,6 +82,7 @@ class OfferModify extends Component {
               sellersFavorites: optimistSellersFavorites
             }
           }}
+          isWrap
           path='sellersFavorites'
           title='Coups de Coeur' />
 
@@ -150,13 +133,17 @@ class OfferModify extends Component {
   }
 }
 
+OfferModify.defaultProps = {
+  id: NEW
+}
+
 const getModifyOffer = createSelector(state => state.data.offers,
   (state, ownProps) => ownProps.work.id,
   (offers, workId) => offers.find(offer => offer.workId === workId))
 
 export default connect((state, ownProps) =>
   ({
-    newOffer: getModifyOffer(state, ownProps),
+    modifyOffer: getModifyOffer(state, ownProps),
     prices: state.data.prices || ownProps.prices,
     sellersFavorites: state.data.sellersFavorites || ownProps.sellersFavorites
   }),

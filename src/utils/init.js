@@ -9,7 +9,7 @@ const init = store => {
   store.dispatch(requestData(
     'POST',
     'signin',
-    { body, key: 'user' }
+    { body, key: 'users' }
   ))
 }
 

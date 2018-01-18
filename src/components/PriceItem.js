@@ -1,17 +1,6 @@
 import React, { Component } from 'react'
 import moment from 'moment'
 
-const FormItem = ({ name, value }) => (
-  <div className='flex items-center justify-center'>
-    <label className='mr2 right-align'>
-      {name}
-    </label>
-    <div className='price-item__value'>
-      {value}
-    </div>
-  </div>
-)
-
 class PriceItem extends Component {
   handleFormatDate = ({ endDate, startDate }) => {
     this.setState({

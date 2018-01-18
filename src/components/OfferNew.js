@@ -35,6 +35,6 @@ class OfferNew extends Component {
 }
 
 export default connect(
-  state => ({ work: state.data.work }),
+  state => ({ work: state.data.works && state.data.works[0] }),
   { mergeForm }
 )(OfferNew)

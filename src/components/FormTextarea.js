@@ -6,6 +6,11 @@ import { getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormTextarea extends Component {
+  componentWillMount () {
+    // fill automatically the form when it is a NEW POST action
+    const { defaultValue, method } = this.props
+    defaultValue && method === 'POST' && this.handleMergeForm(defaultValue)
+  }
   onChange = ({ target: { value } }) => {
     const { collectionName, id, mergeForm, name, maxLength } = this.props
     if (value.length < maxLength) {
@@ -32,7 +37,6 @@ FormTextarea.defaultProps = {
 
 FormTextarea.propTypes = {
   collectionName: PropTypes.string.isRequired,
-  id: PropTypes.string,
   name: PropTypes.string.isRequired
 }
 
