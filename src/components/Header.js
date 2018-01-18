@@ -22,11 +22,12 @@ const Header = ({ user }) => {
         )
       }
       {
-        user && (
+        user && user.type !== 'client' ?
+        (
           <img className='header__avatar'
             alt='avatar'
             src={user.thumbnailUrl} />
-        ) || <img className='header__avatar' alt='' src='/dragon.png' />
+        ) : <img className='header__avatar' alt='' src='/dragon.png' />
       }
       {
         user && user.type === 'client' || !user && (
