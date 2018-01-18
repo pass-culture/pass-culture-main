@@ -17,6 +17,7 @@ class OfferModify extends Component {
   render () {
     const { id, work } = this.props
     const isNew = id === NEW
+    console.log('isNew', isNew)
     return (
       <div className='offer-modify p2'>
         <div className='h2 mt2 mb2'> Offre </div>
