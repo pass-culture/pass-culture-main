@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
@@ -23,34 +24,40 @@ class OfferModify extends Component {
         <div className='h2 mt2 mb2'> Offre </div>
         <WorkItem extraClass='mb2' {...work} />
         <OfferForm {...this.props} />
-        <SubmitButton className='' getBody={form => form.offersById[id]}
-          getIsDisabled={form =>
-            !form ||
-            !form.offersById ||
-            !form.offersById[id] ||
-            (
-              !form.offersById[id].description &&
-              !form.offersById[id].name
-            )
-          }
-          getOptimistState={(state, action) => {
-            const modifyOffer = Object.assign({ id,
-              work
-            }, action.config.body)
-            return { offers: state.offers.concat(modifyOffer) }
-          }}
-          method={isNew ? 'POST' : 'PUT'}
-          path='offers'
-          text={isNew ? 'Enregistrer' : 'Modifer'}
-          onClick={isNew && this.onModifyClick}
-        />
+        <div>
+          <SubmitButton extraClass='mr1'
+            getBody={form => form.offersById[id]}
+            getIsDisabled={form =>
+              !form ||
+              !form.offersById ||
+              !form.offersById[id] ||
+              (
+                !form.offersById[id].description &&
+                !form.offersById[id].name
+              )
+            }
+            getOptimistState={(state, action) => {
+              const modifyOffer = Object.assign({ id,
+                work
+              }, action.config.body)
+              return { offers: state.offers.concat(modifyOffer) }
+            }}
+            method={isNew ? 'POST' : 'PUT'}
+            path='offers'
+            text={isNew ? 'Enregistrer' : 'Modifer'}
+            onClick={isNew && this.onModifyClick}
+          />
+          <DeleteButton className={classnames('button button--alive mb2', {
+            'button--disabled': isNew
+          })}
+            collectionName='offers'
+            disabled={isNew}
+            id={id}
+            text='Supprimer'
+          />
+        </div>
         <div className='sep mt2 mb2' />
         { !isNew && <OfferJoinForm id={id} /> }
-        <DeleteButton className='button button--alive mb2'
-          collectionName='offers'
-          id={id}
-          text='Supprimer'
-        />
       </div>
     )
   }

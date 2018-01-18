@@ -28,11 +28,12 @@ class SubmitButton extends Component {
     resetForm()
   }
   render () {
-    const { className, getIsDisabled, form, text } = this.props
+    const { className, extraClass, getIsDisabled, form, text } = this.props
     const isDisabled = getIsDisabled(form)
     return (
       <button className={classnames(className || 'button button--alive button--cta', {
-          'button--disabled': isDisabled
+          'button--disabled': isDisabled,
+          [extraClass]: extraClass
         })}
         disabled={isDisabled}
         onClick={this.onSubmitClick}
