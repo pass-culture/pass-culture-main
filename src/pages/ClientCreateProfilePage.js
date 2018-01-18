@@ -8,9 +8,12 @@ class ClientCreateProfilePage extends Component {
   }
 
   questions = [
-                [{title: 'Booba',  img: 'booba' }, {title: 'Orelsan',  img: 'orelsan' }],
-                [{title: 'Booba2', img: 'booba2'}, {title: 'Orelsan2', img: 'orelsan2'}],
-                [{title: 'Booba3', img: 'booba'}, {title: 'Orelsan3', img: 'orelsan'}]
+                ['concert','casque'],
+                ['bouquin','bd'],
+                ['sculpture','peinture'],
+                ['theatre','standup'],
+                ['naruto','goku'],
+                ['jeuxdetable','vj']
               ]
 
   handleChoice = (event) => {
@@ -25,7 +28,7 @@ class ClientCreateProfilePage extends Component {
     let question = this.questions[question_index];
     return (
         <div className='choice' data-index={choice_index} onClick={this.handleChoice}>
-          <img className='choice-img' alt={question[choice_index].title} src={'/images_questions/'+question[choice_index].img+'_300.jpg'} />
+          <img className='choice-img' alt={question[choice_index]} src={'/images_questions/'+question[choice_index]+'_300.jpg'} srcset={'/images_questions/'+question[choice_index]+'_600.jpg 600w'} />
         </div>
       )
   }
