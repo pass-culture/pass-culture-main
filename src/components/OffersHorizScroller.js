@@ -41,7 +41,7 @@ class OffersHorizScroller extends Component {
                         { offer.sellersFavorites && offer.sellersFavorites.length>0 && <Icon name='favorite-outline' /> }
                         { offer.prices.filter(p => p.groupSize>1).length>0 && <Icon name='error' /> }
                         { offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; à {offer.id*25}m
-                        <div className='offerName'>{ offer.work.name }</div>
+                        <div className='offerName'>{ offer.name || offer.work.name }</div>
                       </div>
                   ))
           }

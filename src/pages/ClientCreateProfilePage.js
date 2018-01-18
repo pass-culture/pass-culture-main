@@ -28,7 +28,7 @@ class ClientCreateProfilePage extends Component {
     let question = this.questions[question_index];
     return (
         <div className='choice' data-index={choice_index} onClick={this.handleChoice}>
-          <img className='choice-img' alt={question[choice_index]} src={'/images_questions/'+question[choice_index]+'_300.jpg'} srcset={'/images_questions/'+question[choice_index]+'_600.jpg 600w'} />
+          <img className='choice-img' alt={question[choice_index]} src={'/images_questions/'+question[choice_index]+'_300.jpg'} srcSet={'/images_questions/'+question[choice_index]+'_600.jpg 600w'} />
         </div>
       )
   }

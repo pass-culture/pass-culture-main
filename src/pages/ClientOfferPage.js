@@ -59,7 +59,6 @@ class ClientOfferPage extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({ offer: state.data['offers/'+ownProps.offerId] }),
-  { requestData }
-)(ClientOfferPage)
+export default connect((state, ownProps) => ({ offer: state.data['offers/'+ownProps.offerId] && state.data['offers/'+ownProps.offerId][0] }),
+                       { requestData }
+                      )(ClientOfferPage)
