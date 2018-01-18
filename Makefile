@@ -3,7 +3,10 @@ ssh:
 
 dump_db:
 	mkdir -p $(dir $(realpath $(firstword $(MAKEFILE_LIST))))db_dumps
-	docker exec `docker ps | grep postgres | cut -d' ' -f 1` pg_dump -d pass_culture -U pass_culture | bzip2 > $(dir $(realpath $(firstword $(MAKEFILE_LIST))))db_dumps/`date +%Y%m%d_%H%M%S`.bz
+	docker exec `docker ps | grep postgres | cut -d' ' -f 1` pg_dump -d pass_culture -U pass_culture -F c > $(dir $(realpath $(firstword $(MAKEFILE_LIST))))db_dumps/`date +%Y%m%d_%H%M%S`.pgdump
+
+restore_db:
+	cat $(backup_file) | bunzip2 | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture
 
 install:
 	yarn global add concurrently
