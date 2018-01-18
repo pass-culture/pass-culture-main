@@ -9,10 +9,6 @@ import { NEW } from '../utils/config'
 const inputClassName = 'input block col-12 mb2'
 
 class Sign extends Component {
-  onSubmitClick = () => {
-    const { form, requestData } = this.props
-    requestData('POST', 'signin', { body: form, key: 'user' })
-  }
   render () {
     return (
       <div className='sign'>
@@ -32,6 +28,7 @@ class Sign extends Component {
         />
         <SubmitButton getBody={form => form.usersById[NEW]}
           path='signin'
+          storeKey='users'
           text='Connecter'
         />
       </div>

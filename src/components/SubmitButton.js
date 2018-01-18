@@ -15,12 +15,14 @@ class SubmitButton extends Component {
       method,
       onClick,
       path,
+      storeKey,
       requestData,
       resetForm
     } = this.props
     requestData(method, path, { add,
       body: (getBody && getBody(form)) || form,
-      getOptimistState
+      getOptimistState,
+      key: storeKey
     })
     onClick && onClick()
     resetForm()
