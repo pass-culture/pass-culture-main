@@ -12,6 +12,7 @@ class SubmitButton extends Component {
       form,
       getBody,
       getOptimistState,
+      getSuccessState,
       method,
       onClick,
       path,
@@ -22,6 +23,7 @@ class SubmitButton extends Component {
     requestData(method, path, { add,
       body: (getBody && getBody(form)) || form,
       getOptimistState,
+      getSuccessState,
       key: storeKey
     })
     onClick && onClick()

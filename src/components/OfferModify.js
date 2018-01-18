@@ -41,6 +41,11 @@ class OfferModify extends Component {
               }, action.config.body)
               return { offers: state.offers.concat(modifyOffer) }
             }}
+            getSuccessState={(state, action) => {
+              if (action.method === 'POST') {
+                return { modifyOfferId: action.config.body.id }
+              }
+            }}
             method={isNew ? 'POST' : 'PUT'}
             path='offers'
             text={isNew ? 'Enregistrer' : 'Modifer'}
@@ -55,7 +60,7 @@ class OfferModify extends Component {
             text='Supprimer'
           />
         </div>
-        { !isNew && <OfferJoinForm id={id} /> }
+        { !isNew && <OfferJoinForm {...this.props} /> }
       </div>
     )
   }
@@ -67,8 +72,7 @@ OfferModify.defaultProps = {
 
 const getModifyOffer = createSelector(state => state.data.offers,
   (state, ownProps) =>
-    (state.data.postedDatum && state.data.postedDatum.id) ||
-    ownProps.id,
+    state.data.modifyOfferId || ownProps.id,
   (offers, offerId) => {
     console.log('offerId', offerId)
     return offers.find(({ id }) => id === offerId)

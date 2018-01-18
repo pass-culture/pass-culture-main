@@ -13,7 +13,7 @@ class PriceForm extends Component {
   render () {
     const { endDate, startDate, groupSize, value } = this.props
     return (
-      <div className='price-form mb2 mx-auto p2 clearfix'>
+      <div className='price-form mb2 mx-auto p3 clearfix'>
         <div className='md-col md-col-6 relative'>
           <label className='mr1 right-align'>
             à partir de
