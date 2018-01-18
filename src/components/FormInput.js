@@ -14,7 +14,7 @@ class FormInput extends Component {
   onChange = ({ target: { value } }) => {
     this.handleMergeForm(value)
   }
-  handleMergeForm = (value) => {
+  handleMergeForm = value => {
     const { collectionName, id, mergeForm, name } = this.props
     mergeForm(collectionName, id, name, value)
   }
@@ -40,7 +40,8 @@ class FormInput extends Component {
 }
 
 FormInput.defaultProps = {
-  id: NEW
+  id: NEW,
+  method: 'POST'
 }
 
 FormInput.propTypes = {

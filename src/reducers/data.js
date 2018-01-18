@@ -50,6 +50,10 @@ const data = (state = initialState, action) => {
       } else {
         nextState[key] = nextData
       }
+      if (action.method === 'POST' && nextData.length === 1) {
+        // keep a trace of the last posted data
+        nextState.postedDatum = nextData[0]
+      }
     }
     // return
     return Object.assign({}, previousState, nextState)

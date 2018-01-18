@@ -13,7 +13,7 @@ const WorkItem = ({ composer,
     <div className={classnames('work-item col-9 mx-auto flex items-center justify-center p2',
       { [extraClass]: extraClass })}>
       <img alt='thumbnail'
-        className='offer-form__content__img mb1 mr2'
+        className='offer-form__content__img mr2'
         src={`${API_URL}/thumbs/${id}`} />
       <div>
         <div className='h2 mb1 left-align'>

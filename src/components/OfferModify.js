@@ -3,12 +3,8 @@ import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 
 import DeleteButton from './DeleteButton'
-import List from './List'
 import OfferForm from './OfferForm'
-import PriceForm from './PriceForm'
-import PriceItem from './PriceItem'
-import SellerFavoriteItem from './SellerFavoriteItem'
-import SellerFavoriteForm from './SellerFavoriteForm'
+import OfferJoinForm from './OfferJoinForm'
 import SubmitButton from '../components/SubmitButton'
 import WorkItem from './WorkItem'
 import { assignData } from '../reducers/data'
@@ -19,19 +15,14 @@ class OfferModify extends Component {
     this.props.assignData({ modifyOffer: null })
   }
   render () {
-    const { id,
-      modifyOffer,
-      sellersFavorites,
-      prices,
-      work
-    } = this.props
+    const { id, work } = this.props
+    const isNew = id === NEW
     return (
       <div className='offer-modify p2'>
-
         <div className='h2 mt2 mb2'> Offre </div>
         <WorkItem extraClass='mb2' {...work} />
-        <OfferForm {...this.props} {...modifyOffer} />
-        <SubmitButton getBody={form => form.offersById[id]}
+        <OfferForm {...this.props} />
+        <SubmitButton className='' getBody={form => form.offersById[id]}
           getIsDisabled={form =>
             !form ||
             !form.offersById ||
@@ -42,92 +33,23 @@ class OfferModify extends Component {
             )
           }
           getOptimistState={(state, action) => {
-            const modifyOffer = Object.assign({ id: NEW,
+            const modifyOffer = Object.assign({ id,
               work
             }, action.config.body)
             return { offers: state.offers.concat(modifyOffer) }
           }}
-          method={id ? 'PUT' : 'POST'}
+          method={isNew ? 'POST' : 'PUT'}
           path='offers'
-          text={id ? 'Modifer' : 'Enregistrer'}
-          onClick={modifyOffer && id && this.onModifyClick}
+          text={isNew ? 'Enregistrer' : 'Modifer'}
+          onClick={isNew && this.onModifyClick}
         />
-
         <div className='sep mt2 mb2' />
-
-        <List className='mb1'
-          ContentComponent={SellerFavoriteItem}
-          elements={sellersFavorites}
-          extra={{ offerId: id }}
-          FormComponent={SellerFavoriteForm}
-          getBody={form => [
-            Object.assign({
-              offerId: id
-            }, form.sellersFavoritesById[NEW])
-          ]}
-          getIsDisabled={form =>
-            !form ||
-            !form.sellersFavoritesById ||
-            !form.sellersFavoritesById[NEW] ||
-            (
-              !form.sellersFavoritesById[NEW].comment
-            )
-          }
-          getOptimistState={(state, action) => {
-            let optimistSellersFavorites = action.config.body
-            if (sellersFavorites) {
-              optimistSellersFavorites = optimistSellersFavorites.concat(sellersFavorites)
-            }
-            return {
-              sellersFavorites: optimistSellersFavorites
-            }
-          }}
-          isWrap
-          path='sellersFavorites'
-          title='Coups de Coeur' />
-
-        <div className='sep mb2' />
-
-        <List className='mb1'
-          ContentComponent={PriceItem}
-          elements={prices}
-          extra={{ offerId: id }}
-          FormComponent={PriceForm}
-          getBody={form => [Object.assign({
-            offerId: id
-          }, form.pricesById[NEW])]}
-          getIsDisabled={form =>
-            !form ||
-            !form.pricesById ||
-            !form.pricesById[NEW] ||
-            (
-              !form.pricesById[NEW].endDate ||
-              !form.pricesById[NEW].startDate ||
-              !form.pricesById[NEW].groupSize ||
-              !form.pricesById[NEW].value
-            )
-          }
-          getOptimistState={(state, action) => {
-            let optimistPrices = action.config.body
-            if (prices) {
-              optimistPrices = optimistPrices.concat(prices)
-            }
-            return {
-              prices: optimistPrices
-            }
-          }}
-          isWrap
-          path='prices'
-          title='Prix' />
-
-        <div className='sep mb2' />
-
+        { !isNew && <OfferJoinForm id={id} /> }
         <DeleteButton className='button button--alive mb2'
           collectionName='offers'
           id={id}
           text='Supprimer'
         />
-
       </div>
     )
   }
@@ -138,14 +60,10 @@ OfferModify.defaultProps = {
 }
 
 const getModifyOffer = createSelector(state => state.data.offers,
-  (state, ownProps) => ownProps.work.id,
-  (offers, workId) => offers.find(offer => offer.workId === workId))
+  (state, ownProps) => state.data.postedDatum && state.data.postedDatum.id || ownProps.id,
+  (offers, offerId) => offers.find(({ id }) => id === offerId))
 
-export default connect((state, ownProps) =>
-  ({
-    modifyOffer: getModifyOffer(state, ownProps),
-    prices: state.data.prices || ownProps.prices,
-    sellersFavorites: state.data.sellersFavorites || ownProps.sellersFavorites
-  }),
+export default connect(
+  (state, ownProps) => getModifyOffer(state, ownProps) || {},
   { assignData }
 )(OfferModify)

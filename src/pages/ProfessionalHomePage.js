@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { createSelector } from 'reselect'
 
 import OfferItem from '../components/OfferItem'
 import OfferNewButton from '../components/OfferNewButton'
@@ -48,11 +49,22 @@ class ProfessionalHomePage extends Component {
   }
 }
 
+const getSortOffers = createSelector(state => state.data.offers,
+  offers => {
+    if (!offers) {
+      return
+    }
+    const sortOffers = [...offers]
+    // youngest are at the top of the list
+    sortOffers.sort((o1, o2) => o2.id - o1.id)
+    return sortOffers
+  })
+
 export default compose(
   withLogin,
   connect(
     state =>({
-      offers: state.data.offers,
+      offers: getSortOffers(state),
       sellerId: state.user && state.user.sellerId
     }),
     { requestData }

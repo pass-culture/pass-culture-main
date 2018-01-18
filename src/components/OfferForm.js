@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import FormInput from './FormInput'
 import FormTextarea from './FormTextarea'
 import { mergeForm } from '../reducers/form'
-import { API_URL } from '../utils/config'
 
 class OfferForm extends Component {
   componentWillMount () {
@@ -20,14 +19,14 @@ class OfferForm extends Component {
     }
   }
   handleMergeForm = props => {
-    const { id, mergeForm } = props
+    const { id, mergeForm, sellerId } = props
     id && mergeForm('offers', id, 'id', id)
+    mergeForm('offers', id, 'sellerId', sellerId)
   }
   render () {
     const { description,
       id,
       name,
-      thumbnailUrl,
       work
     } = this.props
     return (
@@ -62,6 +61,9 @@ class OfferForm extends Component {
 }
 
 export default connect(
-  (state, ownProps) => ({ formOffer: state.form.offersById && state.form.offersById[ownProps.id] }),
+  (state, ownProps) => ({
+    formOffer: state.form.offersById && state.form.offersById[ownProps.id],
+    sellerId: state.user && state.user.sellerId
+  }),
   { mergeForm }
 )(OfferForm)
