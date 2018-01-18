@@ -23,7 +23,7 @@ class OffersHorizScroller extends Component {
   renderCarousel = (modulo) => {
     const { offers } = this.props;
     return (
-        <Carousel key={'carousel'+modulo} showArrows={true} emulateTouch showStatus={false} showIndicators={false} showThumbs={false} onClickItem={ (cardIndex) => this.handleCardClick(modulo, cardIndex) }>
+        <Carousel key={'carousel'+modulo} showArrows={true} transitionTime={250} swipeScrollTolerance={2} emulateTouch showStatus={false} showIndicators={false} showThumbs={false} onClickItem={ (cardIndex) => this.handleCardClick(modulo, cardIndex) }>
           {
             offers.filter((offer, index) => index % 3 === modulo )
                   .map((offer, index) =>
