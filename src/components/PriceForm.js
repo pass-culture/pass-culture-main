@@ -46,9 +46,10 @@ class PriceForm extends Component {
           </label>
           <FormInput className='input price-form__form-input price-form__form-input--group-size mb1'
             collectionName='prices'
-            defaultValue={groupSize}
+            defaultValue={ groupSize || 1 }
             isRequired
             name='groupSize'
+            type='number'
           />
           <span className='absolute price-form__suffix'>
             pers.

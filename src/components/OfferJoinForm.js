@@ -16,9 +16,9 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
         elements={prices}
         extra={{ offerId: id }}
         FormComponent={PriceForm}
-        getBody={form => [Object.assign({
+        getBody={form => Object.assign({
           offerId: id
-        }, form.pricesById[NEW])]}
+        }, form.pricesById[NEW])}
         getIsDisabled={form =>
           !form ||
           !form.pricesById ||
@@ -31,7 +31,7 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
           )
         }
         getOptimistState={(state, action) => {
-          let optimistPrices = action.config.body
+          let optimistPrices = [action.config.body]
           if (prices) {
             optimistPrices = optimistPrices.concat(prices)
           }

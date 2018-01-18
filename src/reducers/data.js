@@ -28,7 +28,7 @@ const data = (state = initialState, action) => {
     const previousState = action.method === 'GET'
       ? state
       : state.previousOptimistState || {}
-    let previousData = previousState[key]
+    let previousData = previousState[key] || []
     if (!Array.isArray(previousData)) {
       previousData = [previousData]
     }
