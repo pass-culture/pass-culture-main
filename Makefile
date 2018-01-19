@@ -1,6 +1,13 @@
+rebuild:
+	docker-compose build --no-cache
+	rm -rf api/postgres_data
+
 dump_db:
 	mkdir -p $(dir $(realpath $(firstword $(MAKEFILE_LIST))))db_dumps
 	docker exec `docker ps | grep postgres | cut -d' ' -f 1` pg_dump -d pass_culture -U pass_culture -F c > $(dir $(realpath $(firstword $(MAKEFILE_LIST))))db_dumps/`date +%Y%m%d_%H%M%S`.pgdump
+
+init_db:
+	cd api && python scripts/init_db.py
 
 install:
 	yarn global add concurrently
@@ -11,7 +18,7 @@ install:
 
 recreate:
 	rm -rf api/postgres_data
-	docker-compose up --force-recreate
+	docker-compose up
 
 restore_db:
 	cat $(backup_file) | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c
