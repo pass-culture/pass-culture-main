@@ -3,11 +3,14 @@ import { connect } from 'react-redux'
 
 import Icon from './Icon'
 import OfferNew from './OfferNew'
+import { resetForm } from '../reducers/form'
 import { showModal } from '../reducers/modal'
 
 class OfferNewButton extends Component {
   onNewClick = () => {
-    this.props.showModal(<OfferNew />)
+    const { resetForm, showModal } = this.props
+    resetForm()
+    showModal(<OfferNew />)
   }
   render () {
     return (
@@ -22,4 +25,4 @@ class OfferNewButton extends Component {
   }
 }
 
-export default connect(null, { showModal })(OfferNewButton)
+export default connect(null, { resetForm, showModal })(OfferNewButton)

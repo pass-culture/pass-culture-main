@@ -50,7 +50,7 @@ class OfferItem extends Component {
           </div>
           <div className='offer-item__content__description mb2 left-align'>
             {
-              description.length > maxDescriptionLength
+              (description && description.length > maxDescriptionLength)
                 ? `${description.slice(0, maxDescriptionLength)}...`
                 : description
             }

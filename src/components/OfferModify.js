@@ -9,9 +9,13 @@ import OfferJoinForm from './OfferJoinForm'
 import SubmitButton from '../components/SubmitButton'
 import WorkItem from './WorkItem'
 import { assignData } from '../reducers/data'
+import { closeModal } from '../reducers/modal'
 import { NEW } from '../utils/config'
 
 class OfferModify extends Component {
+  onCloseClick = () => {
+    this.props.closeModal()
+  }
   onModifyClick = () => {
     this.props.assignData({ modifyOffer: null })
   }
@@ -62,6 +66,10 @@ class OfferModify extends Component {
           />
         </div>
         { !isNew && <OfferJoinForm {...this.props} /> }
+        <button className='button button--alive'
+          onClick={this.onCloseClick} >
+          Ok
+        </button>
       </div>
     )
   }
@@ -79,5 +87,5 @@ const getModifyOffer = createSelector(state => state.data.offers,
 
 export default connect(
   (state, ownProps) => getModifyOffer(state, ownProps) || {},
-  { assignData }
+  { assignData, closeModal }
 )(OfferModify)
