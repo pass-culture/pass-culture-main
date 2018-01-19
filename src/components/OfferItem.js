@@ -19,6 +19,7 @@ class OfferItem extends Component {
   onClick = action => {
     const { onCloseClick } = this
     const { showModal } = this.props
+    console.log('this.props', this.props)
     showModal(<OfferModify {...this.props} />, { onCloseClick })
   }
   render () {

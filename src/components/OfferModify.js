@@ -16,8 +16,8 @@ class OfferModify extends Component {
   onCloseClick = () => {
     this.props.closeModal()
   }
-  onModifyClick = () => {
-    this.props.assignData({ modifyOffer: null })
+  componentWillUnmount () {
+    this.props.assignData({ modifyOfferId: null })
   }
   render () {
     const { id, work } = this.props
@@ -54,7 +54,6 @@ class OfferModify extends Component {
             method={isNew ? 'POST' : 'PUT'}
             path='offers'
             text={isNew ? 'Enregistrer' : 'Modifer'}
-            onClick={isNew && this.onModifyClick}
           />
           <DeleteButton className={classnames('button button--alive mb2', {
             'button--disabled': isNew
@@ -65,11 +64,15 @@ class OfferModify extends Component {
             text='Supprimer'
           />
         </div>
-        { !isNew && <OfferJoinForm {...this.props} /> }
-        <button className='button button--alive'
-          onClick={this.onCloseClick} >
-          Ok
-        </button>
+        {
+          !isNew && [
+            <OfferJoinForm {...this.props} />,
+            <button className='button button--alive'
+              onClick={this.onCloseClick} >
+              Ok
+            </button>
+          ]
+        }
       </div>
     )
   }
