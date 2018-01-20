@@ -65,10 +65,6 @@
     }
   }
 
-  &__dialog {
-    margin-top: 1rem;
-  }
-
   &__dialog,
   &__content {
     background-color: white;
@@ -77,6 +73,7 @@
     font-weight: 500;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
+    max-height: 95vh;
     padding-bottom: 0.5rem;
     padding-top: 0.5rem;
   }

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
@@ -8,32 +8,33 @@ import { NEW } from '../utils/config'
 
 const inputClassName = 'input block col-12 mb2'
 
-class Sign extends Component {
-  render () {
-    return (
-      <div className='sign'>
-        <div className='h1 mb3'>
-          Login!
-        </div>
-        <FormInput className={inputClassName}
-          collectionName='users'
-          name='identifier'
-          placeholder='identifiant (CAF ou SIREN)'
-        />
-        <FormInput className={inputClassName}
-          collectionName='users'
-          name='password'
-          placeholder='password'
-          type='password'
-        />
-        <SubmitButton getBody={form => form.usersById[NEW]}
-          path='signin'
-          storeKey='users'
-          text='Connecter'
-        />
+const Sign = () => {
+  return (
+    <div className='sign'>
+      <div className='h1 mb3'>
+        Login!
       </div>
-    )
-  }
+      <FormInput className={inputClassName}
+        collectionName='users'
+        name='identifier'
+        placeholder='identifiant (CAF ou SIREN)'
+      />
+      <FormInput className={inputClassName}
+        collectionName='users'
+        name='password'
+        placeholder='password'
+        type='password'
+      />
+      <SubmitButton getBody={form => form.usersById[NEW]}
+        path='signin'
+        storeKey='users'
+        text='Connecter'
+      />
+    </div>
+  )
 }
 
-export default connect(({ form }) => ({ form }), { requestData })(Sign)
+export default connect(
+  ({ form }) => ({ form }),
+  { requestData }
+)(Sign)

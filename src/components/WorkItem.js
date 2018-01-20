@@ -5,17 +5,22 @@ import { API_URL } from '../utils/config'
 
 const WorkItem = ({ composer,
   id,
+  identifier,
   extraClass,
   name,
-  performer
+  performer,
+  type
 }) => {
   return (
     <div className={classnames('work-item col-9 mx-auto flex items-center justify-center p2',
       { [extraClass]: extraClass })}>
       <img alt='thumbnail'
-        className='offer-form__content__img mr2'
+        className='work-item__content__img mr2'
         src={`${API_URL}/thumbs/${id}`} />
       <div>
+        <div className='work-item__content__id left-align mb1'>
+          {type} {identifier}
+        </div>
         <div className='h2 mb1 left-align'>
           {name}
         </div>

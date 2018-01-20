@@ -14,13 +14,14 @@ class DeleteButton extends Component {
     requestData('DELETE', `/${collectionName}?id:${id}`)
   }
   render () {
-    const { className, showModal, text } = this.props
+    const { className, disabled, showModal, text } = this.props
     return (
       <button className={className || 'button button--alive'}
+        disabled={disabled}
         onClick={() => showModal(
           <div>
             <div className='mb2'>
-              Enlever cette offre ?
+              Enlever ?
             </div>
             <button className='button button--alive mr2'
               onClick={this.onConfirmClick}

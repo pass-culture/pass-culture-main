@@ -9,7 +9,9 @@
   &--modify {
     cursor: pointer;
   }
-  &__description {
-    font-size: 10px;
+  &__content {
+    &__description {
+      font-size: 14px;
+    }
   }
 }

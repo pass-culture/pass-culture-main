@@ -13,7 +13,7 @@ class SellerFavoriteForm extends Component {
   }
   render () {
     return (
-      <div className='seller-favorite-form mb2 p3 relative'>
+      <div className='seller-favorite-form mb2 relative p3'>
         <FormTextarea className='textarea seller-favorite-form__textarea mt2'
           collectionName='sellersFavorites'
           name='comment'

@@ -42,7 +42,7 @@ class WorkDetector extends Component {
         }
         {
           selectedCategory && (
-            <div className='mb2 sm-col-6 mx-auto'>
+            <div className='mb2 mx-auto'>
               <label className='block left-align mb1'>
                 {
                   selectedCategory === 'book'

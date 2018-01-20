@@ -19,6 +19,7 @@ class OfferItem extends Component {
   onClick = action => {
     const { onCloseClick } = this
     const { showModal } = this.props
+    console.log('this.props', this.props)
     showModal(<OfferModify {...this.props} />, { onCloseClick })
   }
   render () {
@@ -26,6 +27,7 @@ class OfferItem extends Component {
       isModify,
       isPrices,
       isSellersFavorites,
+      maxDescriptionLength,
       name,
       prices,
       sellersFavorites,
@@ -48,23 +50,35 @@ class OfferItem extends Component {
             {name}
           </div>
           <div className='offer-item__content__description mb2 left-align'>
-            {description}
+            {
+              (description && description.length > maxDescriptionLength)
+                ? `${description.slice(0, maxDescriptionLength)}...`
+                : description
+            }
           </div>
-          <div className='flex flex-wrap items-center p1'>
-            {
-              isSellersFavorites && sellersFavorites &&
-                sellersFavorites.map((sellersFavorite, index) =>
-                  <SellerFavoriteItem key={index} {...sellersFavorite} />)
-            }
-            {
-              isPrices && prices && prices.map((price, index) =>
-                <PriceItem key={index} {...price} />)
-            }
+          <div className='flex items-center p1'>
+            <div className='flex flex-wrap items-center'>
+              {
+                isPrices && prices && prices.map((price, index) =>
+                  <PriceItem key={index} {...price} />)
+              }
+            </div>
+            <div className='flex flex-wrap items-center mr1'>
+              {
+                isSellersFavorites && sellersFavorites &&
+                  sellersFavorites.map((sellersFavorite, index) =>
+                    <SellerFavoriteItem key={index} {...sellersFavorite} />)
+              }
+            </div>
           </div>
         </div>
       </div>
     )
   }
+}
+
+OfferItem.defaultProps = {
+  maxDescriptionLength: 300
 }
 
 export default connect(null,

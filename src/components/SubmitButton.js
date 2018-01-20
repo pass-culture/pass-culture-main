@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { resetForm } from '../reducers/form'
 import { requestData } from '../reducers/data'
 
 class SubmitButton extends Component {
@@ -12,27 +11,29 @@ class SubmitButton extends Component {
       form,
       getBody,
       getOptimistState,
+      getSuccessState,
       method,
       onClick,
       path,
       storeKey,
-      requestData,
-      resetForm
+      requestData
     } = this.props
     requestData(method, path, { add,
       body: (getBody && getBody(form)) || form,
       getOptimistState,
+      getSuccessState,
       key: storeKey
     })
     onClick && onClick()
-    resetForm()
+    //resetForm()
   }
   render () {
-    const { className, getIsDisabled, form, text } = this.props
+    const { className, extraClass, getIsDisabled, form, text } = this.props
     const isDisabled = getIsDisabled(form)
     return (
       <button className={classnames(className || 'button button--alive button--cta', {
-          'button--disabled': isDisabled
+          'button--disabled': isDisabled,
+          [extraClass]: extraClass
         })}
         disabled={isDisabled}
         onClick={this.onSubmitClick}
@@ -43,8 +44,7 @@ class SubmitButton extends Component {
   }
 }
 
-SubmitButton.defaultProps = { add: 'append',
-  getBody: form => form,
+SubmitButton.defaultProps = { getBody: form => form,
   getIsDisabled: form => Object.keys(form).length === 0,
   method: 'POST',
   text: 'Soumettre'
@@ -55,4 +55,4 @@ SubmitButton.propTypes = {
 }
 
 export default connect(({ form }) => ({ form }),
-  { requestData, resetForm })(SubmitButton)
+  { requestData })(SubmitButton)

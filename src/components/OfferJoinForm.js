@@ -11,21 +11,18 @@ import { NEW } from '../utils/config'
 const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
   return (
     <div>
+      <div className='sep mt2 mb2' />
       <List className='mb1'
         ContentComponent={PriceItem}
         elements={prices}
         extra={{ offerId: id }}
         FormComponent={PriceForm}
-        getBody={form => Object.assign({
-          offerId: id
-        }, form.pricesById[NEW])}
+        getBody={form => Object.assign({ offerId: id }, form.pricesById[NEW])}
         getIsDisabled={form =>
           !form ||
           !form.pricesById ||
           !form.pricesById[NEW] ||
           (
-            !form.pricesById[NEW].endDate ||
-            !form.pricesById[NEW].startDate ||
             !form.pricesById[NEW].groupSize ||
             !form.pricesById[NEW].value
           )
@@ -39,6 +36,17 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
             prices: optimistPrices
           }
         }}
+        getSuccessState={(state, action) => {
+          const offerIds = state.offers.map(({ id }) => id)
+          const offerIndex = offerIds.indexOf(id)
+          const nextOffers = [...state.offers]
+          nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex], {
+            prices: [action.data].concat(nextOffers[offerIndex].prices)
+          })
+          // on success we need to make this buffer
+          // null again in order to catch the new refreshed ownProps.prices
+          return { offers: nextOffers, prices: null }
+        }}
         isWrap
         path='prices'
         title='Prix' />
@@ -50,11 +58,8 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
         elements={sellersFavorites}
         extra={{ offerId: id }}
         FormComponent={SellerFavoriteForm}
-        getBody={form => 
-          Object.assign({
-            offerId: id
-          }, form.sellersFavoritesById[NEW])
-        }
+        getBody={form => Object.assign({ offerId: id },
+          form.sellersFavoritesById[NEW])}
         getIsDisabled={form =>
           !form ||
           !form.sellersFavoritesById ||
@@ -71,6 +76,17 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
           return {
             sellersFavorites: optimistSellersFavorites
           }
+        }}
+        getSuccessState={(state, action) => {
+          const offerIds = state.offers.map(({ id }) => id)
+          const offerIndex = offerIds.indexOf(id)
+          const nextOffers = [...state.offers]
+          nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex], {
+            sellersFavorites: [action.data].concat(nextOffers[offerIndex].sellersFavorites)
+          })
+          // on success we need to make this buffer
+          // null again in order to catch the new refreshed ownProps.sellersFavorites
+          return { offers: nextOffers, sellersFavorites: null }
         }}
         isWrap
         path='sellersFavorites'
