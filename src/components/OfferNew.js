@@ -23,7 +23,7 @@ class OfferNew extends Component {
   render () {
     const { work } = this.props
     return (
-      <div className={classnames('offer-new', { 'offer-new--work-detector mt2': !work })}>
+      <div className={classnames('offer-new', { 'offer-new--work-detector mt2 flex items-center': !work })}>
         {
           work
             ? <OfferModify work={work} />
