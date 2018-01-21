@@ -66,8 +66,8 @@ class OfferModify extends Component {
         </div>
         {
           !isNew && [
-            <OfferJoinForm {...this.props} />,
-            <button className='button button--alive'
+            <OfferJoinForm key='offer-join-form' {...this.props} />,
+            <button key='ok' className='button button--alive'
               onClick={this.onCloseClick} >
               Ok
             </button>

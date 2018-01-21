@@ -29,7 +29,7 @@ class ClientOfferPage extends Component {
             <div className='clearfix' />
             <div className='sellerInfos'>
               <b>{ offer.prices.sort((p1, p2) => p1.value > p2.value)[0].value }&nbsp;€</b><br/>
-              { offer.work.type=="book" ? "À la librairie" : "À 20h au théatre" } Tartenshmoll<br/>
+              { offer.work.type==="book" ? "À la librairie" : "À 20h au théatre" } Tartenshmoll<br/>
               2 rue des Lilas (à {(20-offer.id)*15}m)<br/>
               <img alt='' src='/map.png' /><br/>
               { offer.work.type==='book' ? <span>Ouvert jusqu&apos;à 19h aujourd&quot;hui<br/><a href=''>voir tous les horaires</a></span>
