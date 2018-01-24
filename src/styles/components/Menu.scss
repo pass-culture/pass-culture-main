@@ -1,0 +1,28 @@
+.menu {
+  background-color: black;
+  color: white;
+  left: -$menu-width;
+  height: 110%;
+  padding: 0.5rem;
+  position: fixed;
+  top: $header-height;
+  transition: all 0.25s ease-out;
+  width: $menu-width;
+  &--active {
+    left: 0;
+  }
+  &__link {
+    color: white;
+    font-size: 16px;
+    transition: padding-left 1s ease-out;
+    @media (min-width: $sm) {
+      font-size: 26px;
+    }
+    &:hover {
+      padding-left: $menu-padding-left;
+    }
+    &--active {
+      color: $light-blue;
+    }
+  }
+}
