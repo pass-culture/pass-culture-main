@@ -4,6 +4,24 @@
     width: 100%;
     height: 33.4%;
   }
+  &--1 {
+    > div {
+      height: 100%;
+      width: 100%;
+    }
+  }
+  &--2 {
+    > div {
+      height: 50%;
+      width: 100%;
+    }
+  }
+  &--3 {
+    > div {
+      height: 33.34%;
+      width: 100%;
+    }
+  }
   .carousel {
     height: 100%;
     .slider-wrapper, .slider, .slide {

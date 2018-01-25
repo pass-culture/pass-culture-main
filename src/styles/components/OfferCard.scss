@@ -1,0 +1,29 @@
+.offer-card {
+  background-color: $very-very-light-grey;
+  height: 100%;
+  &__content {
+    border-radius: $border-radius;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    height: 75vh;
+    width: 75%;
+    @media (min-width: $sm) {
+      width: 50%;
+    }
+    @media (min-width: $md) {
+      width: 25%;
+    }
+    &__info {
+      background-color: $very-very-light-grey;
+      border: $border;
+      border-radius: $border-radius;
+      color: $very-dark-grey;
+      font-weight: 500;
+      position: absolute;
+    }
+  }
+}
+
+.carousel {
+  .control-prev.control-arrow:before{ border-right:8px solid $very-dark-grey; }
+  .control-next.control-arrow:before{ border-left:8px solid $very-dark-grey; }
+}
