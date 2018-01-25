@@ -8,7 +8,9 @@ import { NEW } from '../utils/config'
 
 const inputClassName = 'input block col-12 mb2'
 
-const Sign = () => {
+const Sign = ({
+  error
+}) => {
   return (
     <div className='sign'>
       <div className='h1 mb3'>
@@ -17,24 +19,24 @@ const Sign = () => {
       <FormInput className={inputClassName}
         collectionName='users'
         name='identifier'
-        placeholder='identifiant (CAF ou SIREN)'
-      />
+        placeholder='identifiant (email)' />
       <FormInput className={inputClassName}
         collectionName='users'
         name='password'
         placeholder='password'
-        type='password'
-      />
+        type='password' />
       <SubmitButton getBody={form => form.usersById[NEW]}
-        path='signin'
+        path='users/signin'
         storeKey='users'
-        text='Connecter'
-      />
+        text='Connecter' />
+      <div className='sign__error mt1'>
+        {error && error.message}
+      </div>
     </div>
   )
 }
 
 export default connect(
-  ({ form }) => ({ form }),
+  ({ data, form }) => ({ error: data.error, form }),
   { requestData }
 )(Sign)

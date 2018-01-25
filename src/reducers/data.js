@@ -50,6 +50,17 @@ const data = (state = initialState, action) => {
       } else {
         nextState[key] = nextData
       }
+      // keep it the previousOptimistState when
+      // it is a GET method
+      // because it means that this success happens
+      // between a REQUEST and a SUCCESS POST PUT actions
+      if (action.method === 'GET') {
+        nextState.previousOptimistState = nextState
+      }
+    }
+    // clear the optimist when it is the POST PUT success
+    if (action.method === 'POST' || action.method === 'PUT') {
+      nextState.previousOptimistState = null
     }
     // last
     if (action.config.getSuccessState) {

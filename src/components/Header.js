@@ -22,17 +22,16 @@ const Header = ({ user }) => {
         )
       }
       {
-        user && user.type !== 'client' ?
-        (
+        user && (
           <img className='header__avatar'
             alt='avatar'
             src={user.thumbnailUrl} />
-        ) : <img className='header__avatar' alt='' src='/dragon.png' />
+        )
       }
       {
-        ((user && user.type === 'client') || !user) && (
+        user && !user.seller && (
           <div className='header__account-balance'>
-            100€
+            {user.account}{user.account ? '€' : ''}
           </div>
         )
       }

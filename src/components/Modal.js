@@ -12,7 +12,8 @@ class Modal extends Component {
   }
   render () {
     const { ContentComponent,
-      isActive
+      isActive,
+      isCloseButton
     } = this.props
     return (
       <div className={classnames({
@@ -26,11 +27,15 @@ class Modal extends Component {
             e.nativeEvent.stopImmediatePropagation() // Prevent click bubbling and closing modal
             e.stopPropagation()
           }}>
-          <button className='button button--alive button--rounded absolute top-0 right-0 mt2 mr2'
-            onClick={this.onCloseClick}
-          >
-            x
-          </button>
+          {
+            isCloseButton && (
+              <button className='button button--alive button--rounded absolute top-0 right-0 mt2 mr2'
+                onClick={this.onCloseClick}
+              >
+                x
+              </button>
+            )
+          }
           <div className='modal__content'>
             { ContentComponent && <ContentComponent /> }
           </div>
@@ -40,6 +45,11 @@ class Modal extends Component {
   }
 }
 
+Modal.defaultProps = {
+  isCloseButton: true
+}
+
 export default connect(({ modal: { config, ContentComponent, isActive } }) =>
-  ({ config, ContentComponent, isActive }),
-  { closeModal })(Modal)
+  Object.assign({ ContentComponent, isActive }, config),
+  { closeModal }
+)(Modal)

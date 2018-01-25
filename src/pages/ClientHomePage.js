@@ -1,6 +1,7 @@
 import React from 'react'
 
 import OffersHorizScroller from '../components/OffersHorizScroller'
+import withLogin from '../hocs/withLogin'
 
 const ClientHomePage = () => {
   return (
@@ -10,4 +11,4 @@ const ClientHomePage = () => {
   )
 }
 
-export default ClientHomePage
+export default withLogin(ClientHomePage)

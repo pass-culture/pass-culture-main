@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
 
 class ControlBar extends Component {
@@ -19,18 +18,18 @@ class ControlBar extends Component {
   }
   render () {
     return (
-      <div className='flex items-center flex-justify justify-center p2'>
+      <div className='flex items-center flex-justify justify-around p2'>
         <button className='button button--alive mr1'
           onClick={() => this.onPinClick('dislike')}>
-          X
+          Jeter
         </button>
         <button className='button button--alive mr1'
           onClick={() => this.onPinClick('interesting')} >
-          Interessant
+          Garder de côté
         </button>
         <button className='button button--alive'
           onClick={() => this.onBookClick} >
-          Je réserve
+          Réserver
         </button>
       </div>
     )

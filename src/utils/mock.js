@@ -1,7 +1,7 @@
-export const clientSignin = { identifier: '1234567',
+export const clientSignin = { identifier: 'arnaud.betremieux@beta.gouv.fr',
   password: 'arnaud'
 }
 
-export const professionalSignin = { identifier: '123 456 789',
+export const professionalSignin = { identifier: 'erwan.ledoux@beta.gouv.fr',
   password: 'erwan'
 }

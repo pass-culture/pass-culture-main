@@ -11,7 +11,7 @@ const withLogin = WrappedComponent => {
       // by waiting a bit
       setTimeout(() => {
         const { user, showModal } = this.props
-        !user && showModal(<Sign />)
+        !user && showModal(<Sign />, { isCloseButton: false })
       }, 1000)
     }
     componentWillReceiveProps = nextProps => {
