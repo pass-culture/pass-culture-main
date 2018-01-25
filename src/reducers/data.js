@@ -1,5 +1,6 @@
 // ACTIONS
 const ASSIGN_DATA = 'ASSIGN_DATA'
+const FILTER_DATA = 'FILTER_DATA'
 
 // INITIAL STATE
 const initialState = { isOptimist: false }
@@ -8,7 +9,10 @@ const initialState = { isOptimist: false }
 const data = (state = initialState, action) => {
   if (action.type === ASSIGN_DATA) {
     return Object.assign({}, state, action.patch)
-  } else if (/REQUEST_DATA_(POST|PUT|DELETE)_(.*)/.test(action.type)) {
+  } else if (action.type === FILTER_DATA) {
+    const filteredElements = state[action.key].filter(action.filter)
+    return Object.assign({}, state, { [action.key]: filteredElements })
+  }  else if (/REQUEST_DATA_(POST|PUT|DELETE)_(.*)/.test(action.type)) {
     if (action.config && action.config.getOptimistState) {
       const nextState = { isOptimist: true, previousOptimistState: state }
       const optimistState = action.config.getOptimistState(state, action)
@@ -84,6 +88,11 @@ export const failData = (method, path, error, config) => ({
   method,
   path,
   type: `FAIL_DATA_${method.toUpperCase()}_${path.toUpperCase()}`
+})
+
+export const filterData = (key, filter) => ({ filter,
+  key,
+  type: FILTER_DATA
 })
 
 export const requestData = (method, path, config) => ({
