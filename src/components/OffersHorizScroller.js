@@ -5,9 +5,17 @@ import OffersCaroussel from './OffersCaroussel'
 import { requestData } from '../reducers/data'
 
 class OffersHorizScroller extends Component {
-  componentWillMount = () => {
-    const { requestData } = this.props;
-    requestData('GET', `offers?hasPrice=true`)
+  handleRequestData (props) {
+    const { requestData, userId } = props
+    userId && requestData('GET', `offers?hasPrice=true&&userId=${userId}`)
+  }
+  componentWillMount () {
+    this.handleRequestData(this.props)
+  }
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.userId && (!this.props.userId || nextProps.userId !== this.props.userId)) {
+      this.handleRequestData(nextProps)
+    }
   }
   render = () => {
     const { carousselsCount, offers } = this.props
@@ -34,6 +42,6 @@ OffersHorizScroller.defaultProps = {
 }
 
 export default connect(
-   state => ({ offers: state.data.offers }),
+   state => ({ offers: state.data.offers, userId: state.user && state.user.id }),
    { requestData }
  )(OffersHorizScroller)

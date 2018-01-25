@@ -58,7 +58,7 @@ const data = (state = initialState, action) => {
       // it is a GET method
       // because it means that this success happens
       // between a REQUEST and a SUCCESS POST PUT actions
-      if (action.method === 'GET') {
+      if (action.method === 'GET' && state.isOptimist) {
         nextState.previousOptimistState = nextState
       }
     }

@@ -10,24 +10,28 @@ import { requestData } from '../reducers/data'
 class OffersCaroussel extends Component {
   constructor () {
     super()
-    this.state = { arrowButtonElement: null }
+    this.state = { carousselElement: null }
   }
   componentDidMount () {
-    const newState = { carousselElement : this.carousselElement }
+    const newState = { carousselElement: this.carousselElement }
+    /*
     if (!this.state.nextButtonElement) {
       newState.nextButtonElement = document.querySelector('button.control-arrow.control-next')
     }
     if (!this.state.prevButtonElement) {
       newState.prevButtonElement = document.querySelector('button.control-arrow.control-prev')
     }
-    console.log('newState', newState)
+    */
     if (Object.keys(newState).length > 0) {
       this.setState(newState)
     }
   }
   render () {
     const { filteredOffers } = this.props
-    const { carousselElement, nextButtonElement, prevButtonElement } = this.state
+    const { carousselElement,
+      nextButtonElement,
+      prevButtonElement
+    } = this.state
     return (
       <Carousel axis='horizontal'
         emulateTouch
