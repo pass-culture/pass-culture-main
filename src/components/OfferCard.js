@@ -16,6 +16,7 @@ class OfferCard extends Component {
     this.state = {
       dislikedOpacity: 0,
       interestingOpacity: 0,
+      isDragging: false,
       isPinned: false,
       position: null,
       type: null
@@ -33,6 +34,10 @@ class OfferCard extends Component {
     const { history, id } = this.props
     history.push(`/offres/${id}`)
   }
+  onDeleteClick = () => {
+    const { pin: { id }, requestData } = this.props
+    // requestData('DELETE', `pins/${id}`)
+  }
   onDrag = (event, data) => {
     const { thresholdDragRatio } = this.props
     const { y } = data
@@ -43,7 +48,7 @@ class OfferCard extends Component {
     })
   }
   onStart = () => {
-    this.setState({ position: null })
+    this.setState({ position: null, isDragging: true })
   }
   onStop = (event, data) => {
     const { carousselElement,
@@ -81,6 +86,7 @@ class OfferCard extends Component {
     this.setState({
       dislikedOpacity: 0,
       interestingOpacity: isPinned ? 1 : 0,
+      isDragging: false,
       position: { x: 0, y: 0 }
     })
   }
@@ -93,32 +99,48 @@ class OfferCard extends Component {
   render () {
     const { carousselNode,
       id,
+      index,
+      selectedItem,
       sellersFavorites,
       work
     } = this.props
     const { dislikedOpacity,
       interestingOpacity,
       isDisabled,
+      isDragging,
+      isPinned,
       position
     } = this.state
     return (
       <div className='offer-card flex items-center justify-center'
         ref={_element => this._element = _element}>
-        <Portal node={carousselNode}>
-          <div className={classnames('offer-card__interesting absolute p2', {
-            'offer-card__interesting--active': interestingOpacity >= 1 })}
-            style={{ opacity: interestingOpacity }}>
-            pourquoi pas
-          </div>
-        </Portal>
-        <Portal node={carousselNode}>
-          <div className={classnames('offer-card__disliked absolute p2', {
-            'offer-card__disliked--active': dislikedOpacity >= 1
-          })}
-            style={{ opacity: dislikedOpacity }} >
-            pas pour moi
-          </div>
-        </Portal>
+        {
+          selectedItem === index && [
+            <Portal key='interesting' node={carousselNode}>
+              <div className={classnames('offer-card__typed offer-card__typed--interesting absolute p2 relative', {
+                'offer-card__typed--interesting--active': interestingOpacity >= 1 })}
+                style={{ opacity: interestingOpacity }}>
+                {
+                  isPinned && !isDragging && (
+                    <button className='button button--alive button--reversed offer-card__typed__delete absolute'
+                      onClick={this.onDeleteClick}>
+                      X
+                    </button>
+                  )
+                }
+                pourquoi pas
+              </div>
+            </Portal>,
+            <Portal key='disliked' node={carousselNode}>
+              <div className={classnames('offer-card__typed offer-card__typed--disliked absolute p2', {
+                'offer-card__typed--disliked--active': dislikedOpacity >= 1
+              })}
+                style={{ opacity: dislikedOpacity }} >
+                pas pour moi
+              </div>
+            </Portal>
+          ]
+        }
         <Draggable axis='y'
           disabled={isDisabled}
           onDrag={this.onDrag}
@@ -134,11 +156,13 @@ class OfferCard extends Component {
               <div className='mb1'>
                 à {(20-id)*15}m
               </div>
+              <div className='flex items-center justify-center'>
               {
                 sellersFavorites && sellersFavorites.map((sellersFavorite, index) =>
                   <SellerFavoriteItem key={index} {...sellersFavorite} />
                 )
               }
+              </div>
             </div>
           </div>
         </Draggable>

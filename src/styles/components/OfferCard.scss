@@ -21,29 +21,43 @@
       position: absolute;
     }
   }
-  &__interesting {
-    border: 2px solid transparent;
+  &__typed {
+    background-color: $very-very-light-grey;
+    border: 3px solid transparent;
     border-radius: $border-radius;
-    color: $medium-green;
     font-size: 20px;
     font-weight: 500;
-    left: 200px;
-    top: 100px;
     transition: all 0.25s ease-out;
-    &--active {
-      border: 2px solid $medium-green;
+    &--interesting {
+      color: $medium-green;
+      left: 10px;
+      top: 10px;
+      @media (min-width: $md) {
+        left: 200px;
+        top: 100px;
+      }
+      &--active {
+        border: 3px solid $medium-green;
+      }
     }
-  }
-  &__disliked {
-    border: 2px solid transparent;
-    border-radius: $border-radius;
-    bottom: 100px;
-    color: $medium-red;
-    font-size: 20px;
-    font-weight: 500;
-    left: 200px;
-    &--active {
-      border: 2px solid $medium-red;
+    &--disliked {
+      bottom: 10px;
+      color: $medium-red;
+      left: 10px;
+      @media (min-width: $md) {
+        bottom: 100px;
+        left: 200px;
+      }
+      &--active {
+        border: 3px solid $medium-red;
+      }
+    }
+    &__delete {
+      background-color: $very-very-light-grey;
+      border: 3px solid $medium-green;
+      color: $medium-green;
+      left: -19px;
+      top: -19px;
     }
   }
 }
