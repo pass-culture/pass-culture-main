@@ -23,7 +23,6 @@ class OfferCard extends Component {
   }
   handlePinHighlight = props => {
     const { index, pin, selectedItem } = props
-    const { interestingOpacity } = this.state
     if (pin && pin.type === 'interesting' && index === selectedItem) {
       this.setState({ interestingOpacity: 1, isPinned: true })
     } else {
@@ -55,7 +54,6 @@ class OfferCard extends Component {
       // nextButtonElement,
       // prevButtonElement,
       requestData,
-      selectedItem,
       thresholdDragRatio,
       userId
     } = this.props
@@ -63,18 +61,16 @@ class OfferCard extends Component {
     const { y } = data
     let type
     if (y < -thresholdDragRatio * this._element.offsetHeight) {
-      type = 'disliked'
-    } else if (y > thresholdDragRatio * this._element.offsetHeight) {
       type = 'interesting'
+    } else if (y > thresholdDragRatio * this._element.offsetHeight) {
+      type = 'disliked'
     }
     if (type) {
-      /*
-      requestData('POST', 'pins', {
+      requestData('POST', 'pins', { body: {
         offerId: id,
         type,
         userId
-      })
-      */
+      }})
       carousselElement.selectItem({ selectedItem: (index < itemsCount - 1)
         ? index
         : index -1
@@ -95,8 +91,7 @@ class OfferCard extends Component {
     this.handlePinHighlight(nextProps)
   }
   render () {
-    const { carousselElement,
-      carousselNode,
+    const { carousselNode,
       id,
       sellersFavorites,
       work
