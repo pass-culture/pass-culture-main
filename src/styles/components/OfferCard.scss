@@ -21,6 +21,30 @@
       position: absolute;
     }
   }
+  &__interesting {
+    border: 2px solid transparent;
+    border-radius: $border-radius;
+    color: $medium-green;
+    font-size: 20px;
+    font-weight: 500;
+    left: 200px;
+    top: 100px;
+    &--active {
+      border: 2px solid $medium-green;
+    }
+  }
+  &__disliked {
+    border: 2px solid transparent;
+    border-radius: $border-radius;
+    bottom: 100px;
+    color: $medium-red;
+    font-size: 20px;
+    font-weight: 500;
+    left: 200px;
+    &--active {
+      border: 2px solid $medium-red;
+    }
+  }
 }
 
 .carousel {

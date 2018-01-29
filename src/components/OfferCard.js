@@ -1,5 +1,7 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 import Draggable from 'react-draggable'
+import { Portal } from 'react-portal'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
@@ -11,11 +13,25 @@ import { API_URL } from '../utils/config'
 class OfferCard extends Component {
   constructor () {
     super ()
-    this.state = { position: null }
+    this.state = {
+      dislikedOpacity: 0,
+      interestingOpacity: 0,
+      position: null,
+      type: null
+    }
   }
   onContentClick = () => {
     const { history, id } = this.props
     history.push(`/offres/${id}`)
+  }
+  onDrag = (event, data) => {
+    const { thresholdDragRatio } = this.props
+    const { y } = data
+    const ratio = -y / (thresholdDragRatio * this._element.offsetHeight)
+    this.setState({
+      dislikedOpacity: Math.max(0, -ratio),
+      interestingOpacity: Math.max(0, ratio)
+    })
   }
   onStart = () => {
     this.setState({ position: null })
@@ -25,8 +41,8 @@ class OfferCard extends Component {
       filterData,
       id,
       index,
-      nextButtonElement,
-      prevButtonElement,
+      // nextButtonElement,
+      // prevButtonElement,
       requestData,
       thresholdDragRatio,
       userId
@@ -47,11 +63,19 @@ class OfferCard extends Component {
       })
       */
       filterData('offers', offer => offer.id !== id)
-      this.props.carousselElement.selectItem({ selectedItem: index })
+      carousselElement.selectItem({ selectedItem: index })
       // nextButtonElement.click()
-      this.setState({ position: { x: 0, y: 0 } })
+      this.setState({
+        dislikedOpacity: 0,
+        interestingOpacity: 0,
+        position: { x: 0, y: 0 }
+      })
     } else {
-      this.setState({ position: { x: 0, y: 0 } })
+      this.setState({
+        dislikedOpacity: 0,
+        interestingOpacity: 0,
+        position: { x: 0, y: 0 }
+      })
     }
   }
   render () {
@@ -59,10 +83,31 @@ class OfferCard extends Component {
       sellersFavorites,
       work
     } = this.props
-    const { isDisabled, position } = this.state
+    const { carousselElement,
+      dislikedOpacity,
+      interestingOpacity,
+      isDisabled,
+      position
+    } = this.state
     return (
       <div className='offer-card flex items-center justify-center'
         ref={_element => this._element = _element}>
+        <Portal node={carousselElement}>
+          <div className={classnames('offer-card__interesting absolute p2', {
+            'offer-card__interesting--active': interestingOpacity > 1
+          })}
+            style={{ opacity: interestingOpacity }}>
+            pourquoi pas
+          </div>
+        </Portal>
+        <Portal node={carousselElement}>
+          <div className={classnames('offer-card__disliked absolute p2', {
+            'offer-card__disliked--active': dislikedOpacity > 1
+          })}
+            style={{ opacity: dislikedOpacity }} >
+            pas pour moi
+          </div>
+        </Portal>
         <Draggable axis='y'
           disabled={isDisabled}
           onDrag={this.onDrag}
@@ -73,7 +118,7 @@ class OfferCard extends Component {
             backgroundImage: `url(${API_URL}/thumbs/${work.id})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover'
-          }} onClick={this.onContentClick}>
+          }} onDoubleClick={this.onContentClick}>
             <div className='offer-card__content__info absolute bottom-0 left-0 right-0 m2 p1'>
               à {(20-id)*15}m
               {

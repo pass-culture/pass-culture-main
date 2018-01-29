@@ -3,8 +3,7 @@ export const CLOSE_MODAL = 'CLOSE_MODAL'
 export const SHOW_MODAL = 'SHOW_MODAL'
 
 // INITIAL STATE
-const initialState = {
-  content: null,
+const initialState = { ContentComponent: null,
   isActive: false
 }
 
@@ -18,8 +17,8 @@ function modal (state = initialState, action) {
     case SHOW_MODAL:
       return Object.assign({}, state, {
         config: action.config || state.config,
+        ContentComponent: action.ContentComponent || state.ContentComponent,
         isActive: true,
-        ContentComponent: action.ContentComponent || state.ContentComponent
       })
     default:
       return state
@@ -31,9 +30,9 @@ export function closeModal () {
   return { type: CLOSE_MODAL }
 }
 
-export function showModal (newContent, config) {
+export function showModal (modalElement, config) {
   return { config,
-    ContentComponent: () => newContent,
+    ContentComponent: () => modalElement,
     type: SHOW_MODAL
   }
 }
