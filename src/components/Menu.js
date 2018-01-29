@@ -14,7 +14,14 @@ const Menu = ({ isNavigationActive, user }) => {
         })}
         href={user && user.type === 'client' ? '/offres' : '/gestion'}
       >
-        Home
+        {user && user.type === 'client' ? 'Explore' : 'Offres'}
+      </Link>
+      <Link className={classnames('link block menu__link mb2', {
+          'menu__link--active': window.location.pathname === '/inventaire'
+        })}
+        href='/inventaire'
+      >
+        Inventaire
       </Link>
       {
         user && user.type === 'client' && [

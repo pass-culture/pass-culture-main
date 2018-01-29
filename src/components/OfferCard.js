@@ -35,8 +35,8 @@ class OfferCard extends Component {
     history.push(`/offres/${id}`)
   }
   onDeleteClick = () => {
-    const { pin: { id }, requestData } = this.props
-    // requestData('DELETE', `pins/${id}`)
+    const { id, requestData } = this.props
+    requestData('DELETE', `pins/offerId:${id}`)
   }
   onDrag = (event, data) => {
     const { thresholdDragRatio } = this.props
