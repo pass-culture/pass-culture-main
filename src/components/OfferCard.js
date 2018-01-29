@@ -16,8 +16,18 @@ class OfferCard extends Component {
     this.state = {
       dislikedOpacity: 0,
       interestingOpacity: 0,
+      isPinned: false,
       position: null,
       type: null
+    }
+  }
+  handlePinHighlight = props => {
+    const { index, pin, selectedItem } = props
+    const { interestingOpacity } = this.state
+    if (pin && pin.type === 'interesting' && index === selectedItem) {
+      this.setState({ interestingOpacity: 1, isPinned: true })
+    } else {
+      this.setState({ interestingOpacity: 0, isPinned: false })
     }
   }
   onContentClick = () => {
@@ -41,12 +51,15 @@ class OfferCard extends Component {
       filterData,
       id,
       index,
+      itemsCount,
       // nextButtonElement,
       // prevButtonElement,
       requestData,
+      selectedItem,
       thresholdDragRatio,
       userId
     } = this.props
+    const { isPinned } = this.state
     const { y } = data
     let type
     if (y < -thresholdDragRatio * this._element.offsetHeight) {
@@ -62,29 +75,33 @@ class OfferCard extends Component {
         userId
       })
       */
+      carousselElement.selectItem({ selectedItem: (index < itemsCount - 1)
+        ? index
+        : index -1
+      })
       filterData('offers', offer => offer.id !== id)
-      carousselElement.selectItem({ selectedItem: index })
       // nextButtonElement.click()
-      this.setState({
-        dislikedOpacity: 0,
-        interestingOpacity: 0,
-        position: { x: 0, y: 0 }
-      })
-    } else {
-      this.setState({
-        dislikedOpacity: 0,
-        interestingOpacity: 0,
-        position: { x: 0, y: 0 }
-      })
     }
+    this.setState({
+      dislikedOpacity: 0,
+      interestingOpacity: isPinned ? 1 : 0,
+      position: { x: 0, y: 0 }
+    })
+  }
+  componentDidMount () {
+    this.handlePinHighlight(this.props)
+  }
+  componentWillReceiveProps (nextProps) {
+    this.handlePinHighlight(nextProps)
   }
   render () {
-    const { id,
+    const { carousselElement,
+      carousselNode,
+      id,
       sellersFavorites,
       work
     } = this.props
-    const { carousselElement,
-      dislikedOpacity,
+    const { dislikedOpacity,
       interestingOpacity,
       isDisabled,
       position
@@ -92,17 +109,16 @@ class OfferCard extends Component {
     return (
       <div className='offer-card flex items-center justify-center'
         ref={_element => this._element = _element}>
-        <Portal node={carousselElement}>
+        <Portal node={carousselNode}>
           <div className={classnames('offer-card__interesting absolute p2', {
-            'offer-card__interesting--active': interestingOpacity > 1
-          })}
+            'offer-card__interesting--active': interestingOpacity >= 1 })}
             style={{ opacity: interestingOpacity }}>
             pourquoi pas
           </div>
         </Portal>
-        <Portal node={carousselElement}>
+        <Portal node={carousselNode}>
           <div className={classnames('offer-card__disliked absolute p2', {
-            'offer-card__disliked--active': dislikedOpacity > 1
+            'offer-card__disliked--active': dislikedOpacity >= 1
           })}
             style={{ opacity: dislikedOpacity }} >
             pas pour moi
@@ -119,8 +135,10 @@ class OfferCard extends Component {
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover'
           }} onDoubleClick={this.onContentClick}>
-            <div className='offer-card__content__info absolute bottom-0 left-0 right-0 m2 p1'>
-              à {(20-id)*15}m
+            <div className='offer-card__content__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
+              <div className='mb1'>
+                à {(20-id)*15}m
+              </div>
               {
                 sellersFavorites && sellersFavorites.map((sellersFavorite, index) =>
                   <SellerFavoriteItem key={index} {...sellersFavorite} />
@@ -135,7 +153,7 @@ class OfferCard extends Component {
 }
 
 OfferCard.defaultProps = {
-  thresholdDragRatio: 0.5
+  thresholdDragRatio: 0.3
 }
 
 export default compose(

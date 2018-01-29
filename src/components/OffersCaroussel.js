@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { findDOMNode } from 'react-dom'
 import { connect } from 'react-redux'
 import { Carousel } from 'react-responsive-carousel'
 import { compose } from 'redux'
@@ -10,10 +11,16 @@ import { requestData } from '../reducers/data'
 class OffersCaroussel extends Component {
   constructor () {
     super()
-    this.state = { carousselElement: null }
+    this.state = { carousselElement: null,
+      carousselNode: null,
+      selectedItem: 0
+    }
   }
   componentDidMount () {
-    const newState = { carousselElement: this.carousselElement }
+    const newState = {
+      carousselElement: this.carousselElement,
+      carousselNode: findDOMNode(this.carousselElement)
+    }
     /*
     if (!this.state.nextButtonElement) {
       newState.nextButtonElement = document.querySelector('button.control-arrow.control-next')
@@ -26,28 +33,29 @@ class OffersCaroussel extends Component {
       this.setState(newState)
     }
   }
+  onChange = selectedItem => {
+    this.setState({ selectedItem })
+  }
   render () {
     const { filteredOffers } = this.props
-    const { carousselElement,
-      nextButtonElement,
-      prevButtonElement
-    } = this.state
+    const { selectedItem } = this.state
     return (
       <Carousel axis='horizontal'
         emulateTouch
         ref={_element => this.carousselElement = _element}
+        selectedItem={selectedItem}
         showArrows={true}
         swipeScrollTolerance={100}
         showStatus={false}
         showIndicators={false}
         showThumbs={false}
-        transitionTime={250} >
+        transitionTime={250}
+        onChange={this.onChange} >
         {
           filteredOffers && filteredOffers.map((offer, index) =>
-            <OfferCard carousselElement={carousselElement}
+            <OfferCard {...this.state}
               index={index}
-              nextButtonElement={nextButtonElement}
-              prevButtonElement={prevButtonElement}
+              itemsCount={filteredOffers.length}
               key={index} {...offer} />
           )
         }

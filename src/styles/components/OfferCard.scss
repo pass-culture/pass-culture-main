@@ -29,6 +29,7 @@
     font-weight: 500;
     left: 200px;
     top: 100px;
+    transition: all 0.25s ease-out;
     &--active {
       border: 2px solid $medium-green;
     }
