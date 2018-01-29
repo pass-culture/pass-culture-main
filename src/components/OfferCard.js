@@ -121,8 +121,8 @@ class OfferCard extends Component {
       index,
       selectedItem,
       sellersFavorites,
-      work
     } = this.props
+    const workOrEvent = this.props.work || this.props.event
     const { dislikedOpacity,
       interestingOpacity,
       isDisabled,
@@ -167,7 +167,7 @@ class OfferCard extends Component {
           onStop={this.onStop}
           position={position} >
           <div className='offer-card__content relative' style={{
-            backgroundImage: `url(${API_URL}/thumbs/${work.id})`,
+            backgroundImage: `url(${API_URL}/thumbs/${workOrEvent.id})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover'
           }} onDoubleClick={this.onContentClick}>

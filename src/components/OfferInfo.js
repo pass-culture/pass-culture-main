@@ -14,30 +14,30 @@ class OfferInfo extends Component {
       description,
       id,
       name,
-      work,
       prices,
       sellersFavorites,
       sortedPrices
     } = this.props
+    const workOrEvent = this.props.work || this.props.event
     return (
       <div>
         <h2>
-          { name || work.name }
+          { name || workOrEvent.name }
           {
             sellersFavorites && sellersFavorites.length > 0 &&
             <Icon name='favorite-outline' />
           }
           { bargainPrices && bargainPrices.length > 1 && <Icon name='error' /> }
         </h2>
-        <img alt='' className='offerPicture' src={`${API_URL}/thumbs/${work.id}`} />
+        <img alt='' className='offerPicture' src={`${API_URL}/thumbs/${workOrEvent.id}`} />
         { description }
         <div className='clearfix' />
         <div className='sellerInfos'>
           <b>{ sortedPrices && sortedPrices[0].value }&nbsp;€</b><br/>
-          { work.type==="book" ? "À la librairie" : "À 20h au théatre" } Tartenshmoll<br/>
+          { workOrEvent.type==="book" ? "À la librairie" : "À 20h au théatre" } Tartenshmoll<br/>
           2 rue des Lilas (à {(20-id)*15}m)<br/>
           <img alt='' src='/map.png' /><br/>
-          { work.type==='book' ? <span>Ouvert jusqu&apos;à 19h aujourd&quot;hui<br/><a href=''>voir tous les horaires</a></span>
+          { workOrEvent.type==='book' ? <span>Ouvert jusqu&apos;à 19h aujourd&quot;hui<br/><a href=''>voir tous les horaires</a></span>
                                     : <span><br/>Dates&nbsp;:<br/><img alt='' src='/calendrier.png' /><br/></span> }
         </div>
 
