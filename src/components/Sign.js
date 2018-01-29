@@ -3,14 +3,11 @@ import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
 import SubmitButton from './SubmitButton'
-import { requestData } from '../reducers/data'
 import { NEW } from '../utils/config'
 
 const inputClassName = 'input block col-12 mb2'
 
-const Sign = ({
-  error
-}) => {
+const Sign = ({ error }) => {
   return (
     <div className='sign'>
       <div className='h1 mb3'>
@@ -37,6 +34,5 @@ const Sign = ({
 }
 
 export default connect(
-  ({ data, form }) => ({ error: data.error, form }),
-  { requestData }
+  ({ data, form }) => ({ error: data.error, form })
 )(Sign)
