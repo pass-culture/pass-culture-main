@@ -36,7 +36,26 @@ class OfferCard extends Component {
   }
   onDeleteClick = () => {
     const { id, requestData } = this.props
-    requestData('DELETE', `pins/offerId:${id}`)
+    requestData('DELETE', `pins/offerId:${id}`, {
+      getOptimistState: (state, action) => {
+        const offerIds = state.offers.map(offer => offer.id)
+        const offerIndex = offerIds.indexOf(id)
+        const optimistOffers = [...state.offers]
+        optimistOffers[offerIndex] = Object.assign({}, optimistOffers[offerIndex])
+        delete optimistOffers[offerIndex].pin
+        return {
+          offers: optimistOffers
+        }
+      },
+      getSuccessState: (state, action) => {
+        const offerIds = state.offers.map(({ id }) => id)
+        const offerIndex = offerIds.indexOf(id)
+        const nextOffers = [...state.offers]
+        nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex])
+        delete nextOffers[offerIndex].pin
+        return { offers: nextOffers }
+      }
+    })
   }
   onDrag = (event, data) => {
     const { thresholdDragRatio } = this.props

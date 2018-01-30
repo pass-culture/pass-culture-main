@@ -72,6 +72,15 @@ const data = (state = initialState, action) => {
     }
     // return
     return Object.assign({}, previousState, nextState)
+  } else if (/SUCCESS_DATA_DELETE_(.*)/.test(action.type)) {
+    // init
+    const nextState = { isOptimist: false }
+    // update
+    if (action.config.getSuccessState) {
+      Object.assign(nextState, action.config.getSuccessState(state, action))
+    }
+    // return
+    return Object.assign({}, state, nextState)
   }
   return state
 }
