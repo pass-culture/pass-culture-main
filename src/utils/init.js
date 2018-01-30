@@ -1,8 +1,10 @@
+/*
 import {
   clientSignin as body,
   // professionalSignin as body
 } from './mock'
 import { requestData } from '../reducers/data'
+*/
 import { IS_DEV } from '../utils/config'
 
 const init = store => {
