@@ -6,8 +6,11 @@ dump_db:
 	mkdir -p $(dir $(realpath $(firstword $(MAKEFILE_LIST))))db_dumps
 	docker exec `docker ps | grep postgres | cut -d' ' -f 1` pg_dump -d pass_culture -U pass_culture -F c > $(dir $(realpath $(firstword $(MAKEFILE_LIST))))db_dumps/`date +%Y%m%d_%H%M%S`.pgdump
 
-init_db:
-	cd api && python scripts/init_db.py
+init-dev:
+	cd api && make init-dev
+
+init-prod:
+	cd api && make init-prod
 
 install:
 	yarn global add concurrently
