@@ -18,11 +18,11 @@ const Menu = ({ isNavigationActive, user }) => {
       <Link className={classnames('link block menu__link mb2', {
           'menu__link--active': ['/offres', '/gestion'].includes(window.location.pathname)
         })}
-        href={user && user.type === 'client' ? '/offres' : '/gestion'}>
-        {user && user.type === 'client' ? 'Explore' : 'Offres'}
+        href={user && user.seller ? '/gestion' : '/offres' }>
+        {user && user.seller ? 'Offres' : 'Explore' }
       </Link>
       {
-        user && user.type === 'client' && (
+        user && !user.seller  && (
           <Link className={classnames('link block menu__link mb2', {
               'menu__link--active': window.location.pathname === '/inventaire'
             })}

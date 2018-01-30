@@ -15,6 +15,7 @@ const withLogin = WrappedComponent => {
       }, 1000)
     }
     componentWillReceiveProps = nextProps => {
+      console.log('nextProps', nextProps)
       if (nextProps.user && nextProps.user !== this.props.user) {
         nextProps.closeModal()
       } else if (!nextProps.user) {

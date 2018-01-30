@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import OfferInfo from '../components/OfferInfo'
+import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 
 class ClientOfferPage extends Component {
@@ -19,10 +21,13 @@ class ClientOfferPage extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    offer: state.data['offers/'+ownProps.offerId] &&
-      state.data['offers/'+ownProps.offerId][0]
-  }),
-  { requestData }
+export default compose(
+  withLogin,
+  connect(
+    (state, ownProps) => ({
+      offer: state.data['offers/'+ownProps.offerId] &&
+        state.data['offers/'+ownProps.offerId][0]
+    }),
+    { requestData }
+  )
 )(ClientOfferPage)
