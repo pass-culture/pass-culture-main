@@ -9,6 +9,7 @@ import ClientHomePage from './pages/ClientHomePage'
 import ClientOfferPage from './pages/ClientOfferPage'
 import InventoryPage from './pages/InventoryPage'
 import ProfessionalHomePage from './pages/ProfessionalHomePage'
+import ProfilePage from './pages/ProfilePage'
 import WelcomePage from './pages/WelcomePage'
 import store from './utils/store'
 
@@ -35,6 +36,9 @@ const Root = () => {
           <Route exact
             path='/inventaire'
             render={() => <InventoryPage />} />
+          <Route exact
+            path='/profile'
+            render={() => <ProfilePage />} />
           <Route exact
             path='/welcome'
             render={() => <WelcomePage />} />

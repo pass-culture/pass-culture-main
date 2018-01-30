@@ -7,6 +7,10 @@ function * fromWatchFailPostSignActions (action) {
   // yield put(set)
 }
 
+function * fromWatchSuccessGetSignoutActions () {
+  yield put(setUser(null))
+}
+
 function * fromWatchSuccessPostSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
@@ -20,4 +24,6 @@ export function * watchUserActions () {
   yield takeEvery(({ type }) =>
     /SUCCESS_DATA_POST_USERS\/SIGN(.*)/.test(type) ||
     /SUCCESS_DATA_GET_USERS\/ME(.*)/.test(type), fromWatchSuccessPostSignActions)
+  yield takeEvery(({ type }) =>
+    /SUCCESS_DATA_GET_USERS\/SIGNOUT(.*)/.test(type), fromWatchSuccessGetSignoutActions)
 }

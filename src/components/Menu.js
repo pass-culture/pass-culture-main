@@ -10,39 +10,27 @@ const Menu = ({ isNavigationActive, user }) => {
   return (
     <div className={classnames('menu', { 'menu--active': isNavigationActive })}>
       <Link className={classnames('link block menu__link mb2', {
-          'menu__link--active': window.location.pathname === '/offres'
+          'menu__link--active': window.location.pathname === '/profile'
         })}
-        href={user && user.type === 'client' ? '/offres' : '/gestion'}
-      >
-        {user && user.type === 'client' ? 'Explore' : 'Offres'}
+        href='/profile'>
+        Profile
       </Link>
       <Link className={classnames('link block menu__link mb2', {
-          'menu__link--active': window.location.pathname === '/inventaire'
+          'menu__link--active': ['/offres', '/gestion'].includes(window.location.pathname)
         })}
-        href='/inventaire'
-      >
-        Inventaire
+        href={user && user.type === 'client' ? '/offres' : '/gestion'}>
+        {user && user.type === 'client' ? 'Explore' : 'Offres'}
       </Link>
       {
-        user && user.type === 'client' && [
+        user && user.type === 'client' && (
           <Link className={classnames('link block menu__link mb2', {
-              'menu__link--active': window.location.pathname === '/favoris'
+              'menu__link--active': window.location.pathname === '/inventaire'
             })}
-            key={0}
-            href='/favoris'
+            href='/inventaire'
           >
-            Mes favoris
-          </Link>,
-
-          <Link className={classnames('link block menu__link mb2', {
-              'menu__link--active': window.location.pathname === '/panier'
-            })}
-            key={1}
-            href='/panier'
-          >
-            Mon panier
+            Inventaire
           </Link>
-        ]
+        )
       }
     </div>
   )
