@@ -16,9 +16,11 @@ class OfferInfo extends Component {
       name,
       prices,
       sellersFavorites,
+      hasThumb,
       sortedPrices
     } = this.props
     const workOrEvent = this.props.work || this.props.event
+    const offerType = this.props.work ? 'work' : 'event'
     return (
       <div>
         <h2>
@@ -29,7 +31,7 @@ class OfferInfo extends Component {
           }
           { bargainPrices && bargainPrices.length > 1 && <Icon name='error' /> }
         </h2>
-        <img alt='' className='offerPicture' src={`${API_URL}/thumbs/${workOrEvent.id}`} />
+        <img alt='' className='offerPicture' src={`${API_URL}/storage/thumbs/${hasThumb ? 'offers/'+id : offerType+'s/'+workOrEvent.id}`} />
         { description }
         <div className='clearfix' />
         <div className='sellerInfos'>
