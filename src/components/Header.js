@@ -3,21 +3,21 @@ import { connect } from 'react-redux'
 
 import Hamburger from './Hamburger'
 
-const Header = ({ user }) => {
+const Header = ({ user, venue }) => {
   return (
     <div className='header flex items-center justify-start p2'>
       <Hamburger className='hamburger mr1'/>
       <div className='header__logo'>Pass Culture</div>
       <div className='flex-auto' />
       {
-        user && user.seller && (
-          <div className='header__seller flex items-center'>
+        user && venue && (
+          <div className='header__venue flex items-center'>
             <span className='mx1'>
-              {user.seller.name}
+              {venue.name}
             </span>
-            <img className='header__seller__image mr2'
-              alt='seller'
-              src={user.seller.thumbnailUrl} />
+            <img className='header__venue__image mr2'
+              alt='venue'
+              src={venue.thumbnailUrl} />
           </div>
         )
       }
@@ -29,7 +29,7 @@ const Header = ({ user }) => {
         )
       }
       {
-        user && !user.seller && (
+        user && !venue && (
           <div className='header__account-balance'>
             {user.account}{user.account ? '€' : ''}
           </div>
@@ -40,5 +40,8 @@ const Header = ({ user }) => {
 }
 
 export default connect(
-  ({ user }) => ({ user })
+  ({ user }) => ({
+    user,
+    venue: user && user.userVenues && user.userVenues[0] && user.userVenues[0].venue
+  })
 )(Header)
