@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import SellerFavoriteItem from './SellerFavoriteItem'
+import FavoriteItem from './FavoriteItem'
 import withFrontendOffer from '../hocs/withFrontendOffer'
 import { filterData, requestData } from '../reducers/data'
 
@@ -120,7 +120,7 @@ class OfferCard extends Component {
       id,
       index,
       selectedItem,
-      sellersFavorites,
+      venuesFavorites,
       thumbUrl
     } = this.props
     const { dislikedOpacity,
@@ -177,8 +177,8 @@ class OfferCard extends Component {
               </div>
               <div className='flex items-center justify-center'>
               {
-                sellersFavorites && sellersFavorites.map((sellersFavorite, index) =>
-                  <SellerFavoriteItem key={index} {...sellersFavorite} />
+                venuesFavorites && venuesFavorites.map((venuesFavorite, index) =>
+                  <FavoriteItem key={index} {...venuesFavorite} />
                 )
               }
               </div>

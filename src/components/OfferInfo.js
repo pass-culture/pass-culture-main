@@ -7,7 +7,6 @@ import Icon from './Icon'
 import withFrontendOffer from '../hocs/withFrontendOffer'
 import withSelectors from '../hocs/withSelectors'
 import { requestData } from '../reducers/data'
-import { API_URL } from '../utils/config'
 
 class OfferInfo extends Component {
   render = () => {
@@ -21,7 +20,6 @@ class OfferInfo extends Component {
       thumbUrl,
       type
     } = this.props
-    const offerType = this.props.work ? 'work' : 'event'
     return (
       <div>
         <h2>

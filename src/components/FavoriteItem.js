@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 
 import Icon from './Icon'
 
-class SellerFavoriteItem extends Component {
+class FavoriteItem extends Component {
   render () {
     const { comment,
       // tag
     } = this.props
     return (
-      <div className='seller-favorite-item flex items-center p1'>
+      <div className='favorite-item flex items-center p1'>
         <Icon name='favorite-outline' />
         <div className='ml2'>
           { comment }
@@ -21,4 +21,4 @@ class SellerFavoriteItem extends Component {
 
 export default connect(state =>
   ({ isEditing: Object.keys(state.form) > 0 })
-)(SellerFavoriteItem)
+)(FavoriteItem)

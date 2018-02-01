@@ -4,11 +4,11 @@ import { connect } from 'react-redux'
 import List from './List'
 import PriceForm from './PriceForm'
 import PriceItem from './PriceItem'
-import SellerFavoriteItem from './SellerFavoriteItem'
-import SellerFavoriteForm from './SellerFavoriteForm'
+import FavoriteItem from './FavoriteItem'
+import FavoriteForm from './FavoriteForm'
 import { NEW } from '../utils/config'
 
-const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
+const OfferJoinForm = ({ id, prices, venuesFavorites }) => {
   return (
     <div>
       <div className='sep mt2 mb2' />
@@ -54,27 +54,27 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
       <div className='sep mb2' />
 
       <List className='mb1'
-        ContentComponent={SellerFavoriteItem}
-        elements={sellersFavorites}
+        ContentComponent={FavoriteItem}
+        elements={venuesFavorites}
         extra={{ offerId: id }}
-        FormComponent={SellerFavoriteForm}
+        FormComponent={FavoriteForm}
         getBody={form => Object.assign({ offerId: id },
-          form.sellersFavoritesById[NEW])}
+          form.venuesFavoritesById[NEW])}
         getIsDisabled={form =>
           !form ||
-          !form.sellersFavoritesById ||
-          !form.sellersFavoritesById[NEW] ||
+          !form.venuesFavoritesById ||
+          !form.venuesFavoritesById[NEW] ||
           (
-            !form.sellersFavoritesById[NEW].comment
+            !form.venuesFavoritesById[NEW].comment
           )
         }
         getOptimistState={(state, action) => {
           let optimistSellersFavorites = [action.config.body]
-          if (sellersFavorites) {
-            optimistSellersFavorites = optimistSellersFavorites.concat(sellersFavorites)
+          if (venuesFavorites) {
+            optimistSellersFavorites = optimistSellersFavorites.concat(venuesFavorites)
           }
           return {
-            sellersFavorites: optimistSellersFavorites
+            venuesFavorites: optimistSellersFavorites
           }
         }}
         getSuccessState={(state, action) => {
@@ -82,14 +82,14 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
           const offerIndex = offerIds.indexOf(id)
           const nextOffers = [...state.offers]
           nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex], {
-            sellersFavorites: [action.data].concat(nextOffers[offerIndex].sellersFavorites)
+            venuesFavorites: [action.data].concat(nextOffers[offerIndex].venuesFavorites)
           })
           // on success we need to make this buffer
-          // null again in order to catch the new refreshed ownProps.sellersFavorites
-          return { offers: nextOffers, sellersFavorites: null }
+          // null again in order to catch the new refreshed ownProps.venuesFavorites
+          return { offers: nextOffers, venuesFavorites: null }
         }}
         isWrap
-        path='sellersFavorites'
+        path='venuesFavorites'
         title='Coups de Coeur' />
     </div>
   )
@@ -98,6 +98,6 @@ const OfferJoinForm = ({ id, prices, sellersFavorites }) => {
 export default connect((state, ownProps) =>
   ({
     prices: state.data.prices || ownProps.prices,
-    sellersFavorites: state.data.sellersFavorites || ownProps.sellersFavorites
+    venuesFavorites: state.data.venuesFavorites || ownProps.venuesFavorites
   })
 )(OfferJoinForm)
