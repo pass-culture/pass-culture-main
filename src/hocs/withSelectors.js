@@ -21,7 +21,7 @@ const withSelectors = patch => WrappedComponent => {
       const nextState = {}
       Object.keys(patch)
         .forEach(key => {
-          nextState[key] = this[`${key}Selector`](props)
+          nextState[key] = this[`${key}Selector`](props, nextState)
         })
       this.setState(nextState)
     }

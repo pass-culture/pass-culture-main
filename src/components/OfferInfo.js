@@ -4,6 +4,7 @@ import { compose } from 'redux'
 
 import ControlBar from './ControlBar'
 import Icon from './Icon'
+import withFrontendOffer from '../hocs/withFrontendOffer'
 import withSelectors from '../hocs/withSelectors'
 import { requestData } from '../reducers/data'
 import { API_URL } from '../utils/config'
@@ -16,35 +17,41 @@ class OfferInfo extends Component {
       name,
       prices,
       sellersFavorites,
-      hasThumb,
-      sortedPrices
+      sortedPrices,
+      thumbUrl,
+      type
     } = this.props
-    const workOrEvent = this.props.work || this.props.event
     const offerType = this.props.work ? 'work' : 'event'
     return (
       <div>
         <h2>
-          { name || workOrEvent.name }
+          { name }
           {
             sellersFavorites && sellersFavorites.length > 0 &&
-            <Icon name='favorite-outline' />
+              <Icon name='favorite-outline' />
           }
           { bargainPrices && bargainPrices.length > 1 && <Icon name='error' /> }
         </h2>
-        <img alt='' className='offerPicture' src={`${API_URL}/storage/thumbs/${hasThumb ? 'offers/'+id : offerType+'s/'+workOrEvent.id}`} />
+        <img alt='' className='offerPicture' src={thumbUrl} />
         { description }
         <div className='clearfix' />
         <div className='sellerInfos'>
           <b>{ sortedPrices && sortedPrices[0].value }&nbsp;€</b><br/>
-          { workOrEvent.type==="book" ? "À la librairie" : "À 20h au théatre" } Tartenshmoll<br/>
+          {
+            type === "book"
+              ? "À la librairie"
+              : "À 20h au théatre"
+          } Tartenshmoll<br/>
           2 rue des Lilas (à {(20-id)*15}m)<br/>
           <img alt='' src='/map.png' /><br/>
-          { workOrEvent.type==='book' ? <span>Ouvert jusqu&apos;à 19h aujourd&quot;hui<br/><a href=''>voir tous les horaires</a></span>
-                                    : <span><br/>Dates&nbsp;:<br/><img alt='' src='/calendrier.png' /><br/></span> }
+          {
+            type==='book'
+              ? <span>Ouvert jusqu&apos;à 19h aujourd&quot;hui<br/><a href=''>voir tous les horaires</a></span>
+              : <span><br/>Dates&nbsp;:<br/><img alt='' src='/calendrier.png' /><br/></span>
+          }
         </div>
-
-        { prices.length>1 &&
-            (
+        {
+          prices.length > 1 && (
             <div>
               <h3>Tarifs Pass Culture</h3>
               <ul className='prices'>
@@ -58,7 +65,7 @@ class OfferInfo extends Component {
                 }
               </ul>
             </div>
-            )
+          )
         }
         <ControlBar offerId={id} />
       </div>
@@ -67,6 +74,7 @@ class OfferInfo extends Component {
 }
 
 export default compose(
+  withFrontendOffer,
   connect(
     null,
     { requestData }
