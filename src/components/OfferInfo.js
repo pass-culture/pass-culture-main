@@ -38,14 +38,14 @@ class OfferInfo extends Component {
         <div className='sellerInfos'>
           <b>{ sortedPrices && sortedPrices[0].value }&nbsp;€</b><br/>
           {
-            type === "book"
+            type.includes("Book")
               ? "À la librairie"
               : "À 20h au théatre"
           } Tartenshmoll<br/>
           2 rue des Lilas (à {(20-id)*15}m)<br/>
           <img alt='' src='/map.png' /><br/>
           {
-            type==='book'
+            type.includes("Book")
               ? <span>Ouvert jusqu&apos;à 19h aujourd&quot;hui<br/><a href=''>voir tous les horaires</a></span>
               : <span><br/>Dates&nbsp;:<br/><img alt='' src='/calendrier.png' /><br/></span>
           }
