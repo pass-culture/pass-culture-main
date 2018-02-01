@@ -7,7 +7,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import SellerFavoriteItem from './SellerFavoriteItem'
-import withThumbUrl from '../hocs/withThumbUrl'
+import withFrontendOffer from '../hocs/withFrontendOffer'
 import { filterData, requestData } from '../reducers/data'
 
 class OfferCard extends Component {
@@ -123,7 +123,6 @@ class OfferCard extends Component {
       sellersFavorites,
       thumbUrl
     } = this.props
-    const workOrEvent = this.props.work || this.props.event
     const { dislikedOpacity,
       interestingOpacity,
       isDisabled,
@@ -197,7 +196,7 @@ OfferCard.defaultProps = {
 
 export default compose(
   withRouter,
-  withThumbUrl,
+  withFrontendOffer,
   connect(
     state => ({ userId: state.user && state.user.id }),
     { filterData, requestData }
