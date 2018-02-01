@@ -10,7 +10,6 @@ const withFrontendOffer = withSelectors({
   description: [
     ownProps => ownProps.description,
     (ownProps, nextState) => nextState.workOrEvent,
-    ownProps => ownProps.event,
     (description, workOrEvent) => description || workOrEvent.description
   ],
   name: [
@@ -20,13 +19,18 @@ const withFrontendOffer = withSelectors({
   thumbUrl: [
     ownProps => ownProps.hasThumb,
     ownProps => ownProps.id,
+    ownProps => ownProps.event,
     ownProps => ownProps.work,
-    (hasThumb, id, work) => hasThumb
+    (hasThumb, id, event, work) => hasThumb
       ? `${THUMBS_URL}/offers/${id}`
       : (
-        work && work.hasThumb
-          ? `${THUMBS_URL}/works/${work.id}`
-          : `${API_URL}/static/images/default_thumb.png`
+        event && event.hasThumb
+          ? `${THUMBS_URL}/events/${event.id}`
+          : (
+            work && work.hasThumb
+            ? `${THUMBS_URL}/works/${work.id}`
+            : `${API_URL}/static/images/default_thumb.png`
+          )
       )
   ],
   type: [
