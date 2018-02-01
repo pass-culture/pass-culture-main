@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import OfferModify from './OfferModify'
 import PriceItem from './PriceItem'
-import SellerFavoriteItem from './SellerFavoriteItem'
+import FavoriteItem from './FavoriteItem'
 import { assignData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
 import { showModal } from '../reducers/modal'
@@ -23,13 +23,13 @@ class OfferItem extends Component {
   }
   render () {
     const { description,
+      isFavorites,
       isModify,
       isPrices,
-      isSellersFavorites,
       maxDescriptionLength,
       name,
       prices,
-      sellersFavorites,
+      venuesFavorites,
       work,
       thumbnailUrl
     } = this.props
@@ -64,9 +64,9 @@ class OfferItem extends Component {
             </div>
             <div className='flex flex-wrap items-center mr1'>
               {
-                isSellersFavorites && sellersFavorites &&
-                  sellersFavorites.map((sellersFavorite, index) =>
-                    <SellerFavoriteItem key={index} {...sellersFavorite} />)
+                isFavorites && venuesFavorites &&
+                  venuesFavorites.map((sellersFavorite, index) =>
+                    <FavoriteItem key={index} {...sellersFavorite} />)
               }
             </div>
           </div>

@@ -6,20 +6,20 @@ import FormTextarea from './FormTextarea'
 import { mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
-class SellerFavoriteForm extends Component {
+class FavoriteForm extends Component {
   componentWillMount () {
     const { mergeForm, offerId } = this.props
-    mergeForm('sellersFavorites', NEW, 'offerId', offerId)
+    mergeForm('venuesFavorites', NEW, 'offerId', offerId)
   }
   render () {
     return (
-      <div className='seller-favorite-form mb2 relative p3'>
-        <FormTextarea className='textarea seller-favorite-form__textarea mt2'
-          collectionName='sellersFavorites'
+      <div className='favorite-form mb2 relative p3'>
+        <FormTextarea className='textarea favorite-form__textarea mt2'
+          collectionName='venuesFavorites'
           name='comment'
           placeholder='donnez la description de votre coup de coeur' />
         {/*
-        <FormInput collectionName='sellersFavorites'
+        <FormInput collectionName='venuesFavorites'
           name='description'
           placeholder='donnez quelques hashtags pour cibler votre audience' />
         */}
@@ -28,4 +28,4 @@ class SellerFavoriteForm extends Component {
   }
 }
 
-export default connect(null, { mergeForm })(SellerFavoriteForm)
+export default connect(null, { mergeForm })(FavoriteForm)

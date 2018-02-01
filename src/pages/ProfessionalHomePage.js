@@ -36,7 +36,7 @@ class ProfessionalHomePage extends Component {
             offers && offers.map((offer, index) => [
               <OfferItem isModify
                 isPrices
-                isSellersFavorites
+                isFavorites
                 key={index}
                 {...offer}
               />,
