@@ -7,8 +7,8 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import SellerFavoriteItem from './SellerFavoriteItem'
+import withThumbUrl from '../hocs/withThumbUrl'
 import { filterData, requestData } from '../reducers/data'
-import { API_URL } from '../utils/config'
 
 class OfferCard extends Component {
   constructor () {
@@ -121,7 +121,7 @@ class OfferCard extends Component {
       index,
       selectedItem,
       sellersFavorites,
-      hasThumb
+      thumbUrl
     } = this.props
     const workOrEvent = this.props.work || this.props.event
     const { dislikedOpacity,
@@ -168,7 +168,7 @@ class OfferCard extends Component {
           onStop={this.onStop}
           position={position} >
           <div className='offer-card__content relative' style={{
-            backgroundImage: `url(${API_URL}/thumbs/${hasThumb ? id : workOrEvent.id})`,
+            backgroundImage: `url(${thumbUrl})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover'
           }} onDoubleClick={this.onContentClick}>
@@ -197,6 +197,7 @@ OfferCard.defaultProps = {
 
 export default compose(
   withRouter,
+  withThumbUrl,
   connect(
     state => ({ userId: state.user && state.user.id }),
     { filterData, requestData }
