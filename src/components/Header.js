@@ -43,6 +43,6 @@ const Header = ({ user, venue }) => {
 export default connect(
   ({ user }) => ({
     user,
-    venue: user && user.userVenues && user.userVenues[0] && user.userVenues[0].venue
+    venue: user && user.userVenues && user.userVenues[0]
   })
 )(Header)
