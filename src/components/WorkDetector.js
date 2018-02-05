@@ -24,7 +24,7 @@ class WorkDetector extends Component {
   }
   onSearchClick = () => {
     const { identifier } = this.state
-    this.props.requestData('GET', `works/Book:${identifier}`, { key: 'works'})
+    this.props.requestData('GET', `works/book:${identifier}`, { key: 'works'})
   }
   render () {
     const { identifier, selectedCategory } = this.state
@@ -45,7 +45,7 @@ class WorkDetector extends Component {
             <div className='mb2 mx-auto'>
               <label className='block left-align mb1'>
                 {
-                  selectedCategory === 'Book'
+                  selectedCategory === 'book'
                     ? 'ISBN (0140188711 for e.g.)'
                     : 'Identifiant'
                 }
@@ -74,7 +74,7 @@ class WorkDetector extends Component {
 
 WorkDetector.defaultProps = {
   options: [
-    { value: 'Book', label: 'Livre' },
+    { value: 'book', label: 'Livre' },
     { value: 'theater', label: 'Theâtre' }
   ]
 }
