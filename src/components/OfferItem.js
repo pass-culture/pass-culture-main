@@ -1,14 +1,15 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import OfferModify from './OfferModify'
 import PriceItem from './PriceItem'
 import FavoriteItem from './FavoriteItem'
+import withFrontendOffer from '../hocs/withFrontendOffer'
 import { assignData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
 import { showModal } from '../reducers/modal'
-import { API_URL } from '../utils/config'
 
 class OfferItem extends Component {
   onCloseClick = () => {
@@ -29,9 +30,8 @@ class OfferItem extends Component {
       maxDescriptionLength,
       name,
       prices,
+      thumbUrl,
       venuesFavorites,
-      work,
-      thumbnailUrl
     } = this.props
     return (
       <div className={classnames(
@@ -42,7 +42,7 @@ class OfferItem extends Component {
       >
         <img alt='thumbnail'
           className='offer-item__image mr2'
-          src={thumbnailUrl || `${API_URL}/thumbs/${work.id}`}
+          src={thumbUrl}
         />
         <div className='offer-item__content flex-auto center left-align'>
           <div className='h2 mb2 left-align'>
@@ -80,6 +80,7 @@ OfferItem.defaultProps = {
   maxDescriptionLength: 300
 }
 
-export default connect(null,
-  { assignData, resetForm, showModal }
+export default compose(
+  withFrontendOffer,
+  connect(null, { assignData, resetForm, showModal })
 )(OfferItem)

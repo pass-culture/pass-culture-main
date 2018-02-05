@@ -27,7 +27,7 @@ export async function apiData (method, path, config = {}) {
   }
   // fetch
   const result = await fetch(`${API_URL}/${path}`, init)
-  if (result.status === 200) {
+  if (result.status === 200 || result.status === 201) {
     return { data: await result.json() }
   } else {
     return { error: await result.json() }
