@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import React from 'react'
 
-import { API_URL } from '../utils/config'
+import { THUMBS_URL } from '../utils/config'
 
 const WorkItem = ({ composer,
   id,
@@ -16,7 +16,7 @@ const WorkItem = ({ composer,
       { [extraClass]: extraClass })}>
       <img alt='thumbnail'
         className='work-item__content__img mr2'
-        src={`${API_URL}/thumbs/${id}`} />
+        src={`${THUMBS_URL}/works/${id}`} />
       <div>
         <div className='work-item__content__id left-align mb1'>
           {type} {identifier}

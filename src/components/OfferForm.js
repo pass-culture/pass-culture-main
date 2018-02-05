@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import FormInput from './FormInput'
 import FormTextarea from './FormTextarea'
+import withFrontendOffer from '../hocs/withFrontendOffer'
 import { mergeForm } from '../reducers/form'
 
 class OfferForm extends Component {
@@ -26,8 +28,7 @@ class OfferForm extends Component {
   render () {
     const { description,
       id,
-      name,
-      work
+      name
     } = this.props
     return (
       <div className='offer-form p2'>
@@ -37,7 +38,7 @@ class OfferForm extends Component {
           </label>
           <FormInput className='input col-12'
             collectionName='offers'
-            defaultValue={name || work.name}
+            defaultValue={name}
             id={id}
             name='name'
             placeholder="titre de l'offre"
@@ -49,7 +50,7 @@ class OfferForm extends Component {
           </label>
           <FormTextarea className='textarea offer-form__textarea'
             collectionName='offers'
-            defaultValue={description || work.description}
+            defaultValue={description}
             id={id}
             maxLength={1000}
             name='description'
@@ -60,10 +61,12 @@ class OfferForm extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    formOffer: state.form.offersById && state.form.offersById[ownProps.id],
-    sellerId: state.user && state.user.sellerId
-  }),
-  { mergeForm }
+export default compose(
+  withFrontendOffer,
+  connect(
+    (state, ownProps) => ({
+      formOffer: state.form.offersById && state.form.offersById[ownProps.id]
+    }),
+    { mergeForm }
+  )
 )(OfferForm)
