@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 
 services:
   postgres:
@@ -14,6 +14,10 @@ services:
     build: dockerfiles/flask
     volumes:
       - ./api:/opt/services/flaskapp/src
+      - type: bind
+        source: ./api/ftp_mirrors 
+        target: /opt/services/flaskapp/src/ftp_mirrors
+        read_only: true
     env_file:
       - env_file
     networks:
