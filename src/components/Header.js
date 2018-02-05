@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Hamburger from './Hamburger'
+import { THUMBS_URL } from '../utils/config'
 
 const Header = ({ user, venue }) => {
   return (
@@ -17,7 +18,7 @@ const Header = ({ user, venue }) => {
             </span>
             <img className='header__venue__image mr2'
               alt='venue'
-              src={venue.thumbnailUrl} />
+              src={`${THUMBS_URL}/venues/${venue.id}`} />
           </div>
         )
       }
@@ -25,7 +26,7 @@ const Header = ({ user, venue }) => {
         user && (
           <img className='header__avatar'
             alt='avatar'
-            src={user.thumbnailUrl} />
+            src={`${THUMBS_URL}/users/${user.id}`} />
         )
       }
       {
