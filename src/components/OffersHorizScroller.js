@@ -7,7 +7,7 @@ import { requestData } from '../reducers/data'
 class OffersHorizScroller extends Component {
   handleRequestData (props) {
     const { requestData, userId } = props
-    userId && requestData('GET', `offers?hasPrice=true`)
+    userId && requestData('GET', `offers?hasPrice=true&&removeDisliked=true`)
   }
   componentWillMount () {
     this.handleRequestData(this.props)

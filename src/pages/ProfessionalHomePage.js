@@ -10,17 +10,17 @@ import { requestData } from '../reducers/data'
 
 class ProfessionalHomePage extends Component {
   handleRequestData = props => {
-    const { requestData, sellerId } = props
-    if (!this.hasRequired && sellerId) {
-      requestData('GET', `offers?sellerId=${sellerId}`)
+    const { requestData, user } = props
+    if (!this.hasRequired && user) {
+      requestData('GET', 'offers')
       this.hasRequired = true
     }
   }
   componentWillMount () {
-    this.props.sellerId && this.handleRequestData(this.props)
+    this.props.user && this.handleRequestData(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    if (nextProps.sellerId && nextProps.sellerId !== this.props.sellerId) {
+    if (nextProps.user && nextProps.user !== this.props.user) {
       this.handleRequestData(nextProps)
     }
   }
@@ -65,7 +65,7 @@ export default compose(
   connect(
     state =>({
       offers: getSortOffers(state),
-      sellerId: state.user && state.user.sellerId
+      user: state.user
     }),
     { requestData }
   )

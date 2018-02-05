@@ -91,7 +91,7 @@ html,body {
 }
 
 .input {
-  border: solid 0.5px $medium-grey;
+  border: $border;
   border-radius: $border-radius;
   color: $very-dark-grey;
   font-family: $font-family;
@@ -133,7 +133,7 @@ select {
 }
 
 .textarea {
-  border: solid 0.5px $medium-grey;
+  border: $border;
   border-radius: $border-radius;
   color: $very-dark-grey;
   font-family: $font-family;
