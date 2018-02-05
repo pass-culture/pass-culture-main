@@ -20,6 +20,7 @@ install:
 	cd webapp && yarn
 
 recreate:
+	rm -rf api/static/object_store_data
 	rm -rf api/postgres_data
 	docker-compose up
 
