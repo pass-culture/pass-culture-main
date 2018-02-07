@@ -17,17 +17,17 @@ const withFrontendOffer = withSelectors({
     workOrEvent => workOrEvent.name
   ],
   thumbUrl: [
-    ownProps => ownProps.hasThumb,
+    ownProps => ownProps.thumbCount,
     ownProps => ownProps.id,
     ownProps => ownProps.event,
     ownProps => ownProps.work,
-    (hasThumb, id, event, work) => hasThumb
+    (thumbCount, id, event, work) => thumbCount>0
       ? `${THUMBS_URL}/offers/${id}`
       : (
-        event && event.hasThumb
+        event && event.thumbCount>0
           ? `${THUMBS_URL}/events/${event.id}`
           : (
-            work && work.hasThumb
+            work && work.thumbCount>0
             ? `${THUMBS_URL}/works/${work.id}`
             : `${API_URL}/static/images/default_thumb.png`
           )
