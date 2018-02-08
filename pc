@@ -1,0 +1,80 @@
+#!/bin/bash
+
+set -o nounset
+
+PRG="$BASH_SOURCE"
+
+while [ -h "$PRG" ] ; do
+	ls=`ls -ld "$PRG"`
+	link=`expr "$ls" : '.*-> \(.*\)$'`
+	if expr "$link" : '/.*' > /dev/null; then
+		PRG="$link"
+	else
+		PRG=`dirname "$PRG"`"/$link"
+	fi
+done
+
+ROOT_PATH=$(dirname "$PRG")
+
+if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
+  ENV=$2
+  shift 2
+else
+  ENV="local"
+fi
+
+if [[ "$1" == "" ]]; then
+  echo "Usage : pc <command> [arguments]"
+  exit
+fi
+
+CMD="$1"
+shift
+
+if [[ "$CMD" == "dump_db" ]]; then
+  RUN='mkdir -p "$ROOT_PATH/db_dumps";
+       docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
+elif [[ "$CMD" == "ftp_mirrors" ]]; then
+  sshfs -o allow_other,idmap=user deploy@pc-api.btmx.fr:/home/deploy/pass-culture-main/api/ftp_mirrors ftp_mirrors
+  exit
+elif [[ "$CMD" == "install" ]]; then
+  RUN='yarn global add concurrently;
+       git submodules init;
+       git submodules update;
+       git submodules foreach git checkout origin master;
+       cd webapp && yarn'
+elif [[ "$CMD" == "psql" ]]; then
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture $*"'
+elif [[ "$CMD" == "psql-reset" ]]; then
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",offer,venue,work CASCADE;\""'
+elif [[ "$CMD" == "start" ]]; then
+  RUN='concurrently "docker-compose up" "cd webapp && yarn start"'
+elif [[ "$CMD" == "restore_db" ]]; then
+  if [[ "$1" == "" ]]; then
+    echo "Usage : pc restore_db <backup_file> [arguments]"
+    exit
+  fi
+  backup_file="$1"
+  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c'
+elif [[ "$CMD" == "rebuild" ]]; then
+  RUN='docker-compose build --no-cache;
+       rm -rf api/postgres_data'
+elif [[ "$CMD" == "recreate" ]]; then
+  RUN='rm -rf api/static/object_store_data;
+       rm -rf api/postgres_data;
+       docker-compose up'
+elif [[ "$CMD" == "update" ]]; then
+  RUN='cd "$ROOT_PATH";
+	git fetch && git reset --hard && git checkout origin/master && git reset --hard;
+	cd dockerfiles/nginx/conf.d && rm flaskapp.conf && ln -s flaskapp_ssl flaskapp.conf && cd;
+	git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
+else
+  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '$*'"'
+fi
+
+
+if [[ "$ENV" == "prod" ]]; then
+  ssh deploy@pc-api.btmx.fr bash -c "$RUN"
+else
+  eval $RUN
+fi
