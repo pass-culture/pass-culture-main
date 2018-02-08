@@ -31,7 +31,7 @@ fi
 CMD="$1"
 shift
 
-if [[ "$CMD" == "dump_db" ]]; then
+if [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
        docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
 elif [[ "$CMD" == "ftp_mirrors" ]]; then
@@ -46,24 +46,26 @@ elif [[ "$CMD" == "install" ]]; then
        cd webapp && yarn'
 elif [[ "$CMD" == "psql" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture $*"'
-elif [[ "$CMD" == "psql-reset" ]]; then
+elif [[ "$CMD" == "rebuild-backend" ]]; then
+  RUN='docker-compose build --no-cache;
+       rm -rf api/postgres_data'
+elif [[ "$CMD" == "restart-backend" ]]; then
+  RUN='rm -rf api/static/object_store_data;
+       rm -rf api/postgres_data;
+       docker-compose up'
+elif [[ "$CMD" == "reset-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",offer,venue,work CASCADE;\""'
-elif [[ "$CMD" == "start" ]]; then
-  RUN='concurrently "docker-compose up" "cd webapp && yarn start"'
-elif [[ "$CMD" == "restore_db" ]]; then
+elif [[ "$CMD" == "restore-db" ]]; then
   if [[ "$1" == "" ]]; then
-    echo "Usage : pc restore_db <backup_file> [arguments]"
+    echo "Usage : pc restore-db <backup_file> [arguments]"
     exit
   fi
   backup_file="$1"
   RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c'
-elif [[ "$CMD" == "rebuild" ]]; then
-  RUN='docker-compose build --no-cache;
-       rm -rf api/postgres_data'
-elif [[ "$CMD" == "recreate" ]]; then
-  RUN='rm -rf api/static/object_store_data;
-       rm -rf api/postgres_data;
-       docker-compose up'
+elif [[ "$CMD" == "start-backend" ]]; then
+  RUN='docker-compose up'
+elif [[ "$CMD" == "start-frontend" ]]; then
+  RUN='cd webapp && yarn start'
 elif [[ "$CMD" == "update" ]]; then
   RUN='cd "$ROOT_PATH";
 	git fetch && git reset --hard && git checkout origin/master && git reset --hard;
@@ -72,7 +74,6 @@ elif [[ "$CMD" == "update" ]]; then
 else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
-
 
 if [[ "$ENV" == "prod" ]]; then
   ssh deploy@pc-api.btmx.fr bash -c "$RUN"
