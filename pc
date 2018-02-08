@@ -35,7 +35,8 @@ if [[ "$CMD" == "dump_db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
        docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
 elif [[ "$CMD" == "ftp_mirrors" ]]; then
-  sshfs -o allow_other,idmap=user deploy@pc-api.btmx.fr:/home/deploy/pass-culture-main/api/ftp_mirrors ftp_mirrors
+  mkdir -p "$ROOT_PATH/api/ftp_mirrors"
+  sshfs -o allow_other,idmap=user deploy@pc-api.btmx.fr:/home/deploy/pass-culture-main/api/ftp_mirrors "$ROOT_PATH/api/ftp_mirrors"
   exit
 elif [[ "$CMD" == "install" ]]; then
   RUN='yarn global add concurrently;
@@ -69,7 +70,7 @@ elif [[ "$CMD" == "update" ]]; then
 	cd dockerfiles/nginx/conf.d && rm flaskapp.conf && ln -s flaskapp_ssl flaskapp.conf && cd;
 	git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
 else
-  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '$*'"'
+  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
 
 
