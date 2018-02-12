@@ -4,21 +4,25 @@ import { connect } from 'react-redux'
 import Hamburger from './Hamburger'
 import { THUMBS_URL } from '../utils/config'
 
-const Header = ({ user, venue }) => {
+const Header = ({ user, offerer }) => {
   return (
-    <div className='header flex items-center justify-start p2'>
+    <div className='header flex flex-wrap items-center justify-start p2'>
       <Hamburger className='hamburger mr1'/>
       <div className='header__logo'>Pass Culture</div>
       <div className='flex-auto' />
       {
-        user && venue && (
-          <div className='header__venue flex items-center'>
-            <span className='mx1'>
-              {venue.name}
-            </span>
-            <img className='header__venue__image mr2'
-              alt='venue'
-              src={`${THUMBS_URL}/venues/${venue.id}`} />
+        user && offerer && (
+          <div className='header__offerer flex items-center justify-center'>
+            {
+              /*
+              <span className='mx1'>
+                {offerer.name}
+              </span>
+              */
+            }
+            <img className='header__offerer__image'
+              alt='offerer'
+              src={`${THUMBS_URL}/offerers/${offerer.id}`} />
           </div>
         )
       }
@@ -30,7 +34,7 @@ const Header = ({ user, venue }) => {
         )
       }
       {
-        user && !venue && (
+        user && !offerer && (
           <div className='header__account-balance'>
             {user.account}{user.account ? '€' : ''}
           </div>
@@ -43,6 +47,6 @@ const Header = ({ user, venue }) => {
 export default connect(
   ({ user }) => ({
     user,
-    venue: user && user.userVenues && user.userVenues[0]
+    offerer: user && user.userOfferers && user.userOfferers[0]
   })
 )(Header)
