@@ -4,7 +4,7 @@ import { API_URL } from './config'
 
 export async function apiData (method, path, config = {}) {
   // unpack
-  const { body, token } = config
+  const { body, position, token } = config
   // init
   const init = { method,
     // mode: 'cors',
@@ -16,9 +16,22 @@ export async function apiData (method, path, config = {}) {
       'Content-Type': 'application/json'
     }
   }
+  // position
+  if (position) {
+    const { latitude, longitude } = position.coords
+    if (body) {
+      init.body.latitude = latitude
+      init.body.longitude = longitude
+    } else {
+      const positionQuery = `latitude=${latitude}&longitude=${longitude}`
+      path = `${path}${path.includes('?') ? '&' : '?'}${positionQuery}`
+    }
+  }
+  // body
   if (body) {
     init.body = JSON.stringify(body)
   }
+  // token
   if (token) {
     if (!init.headers) {
       init.headers = {}
