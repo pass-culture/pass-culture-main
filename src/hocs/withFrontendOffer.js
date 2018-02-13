@@ -21,13 +21,13 @@ const withFrontendOffer = withSelectors({
     ownProps => ownProps.id,
     ownProps => ownProps.event,
     ownProps => ownProps.work,
-    (thumbCount, id, event, work) => thumbCount>0
+    (thumbCount, id, event, work) => thumbCount > 0
       ? `${THUMBS_URL}/offers/${id}`
       : (
-        event && event.thumbCount>0
+        event && event.thumbCount > 0
           ? `${THUMBS_URL}/events/${event.id}`
           : (
-            work && work.thumbCount>0
+            work && work.thumbCount > 0
             ? `${THUMBS_URL}/works/${work.id}`
             : `${API_URL}/static/images/default_thumb.png`
           )
