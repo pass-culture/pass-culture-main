@@ -10,7 +10,7 @@
       width: 50%;
     }
     @media (min-width: $md) {
-      width: 25%;
+      width: 33%;
     }
     &__info {
       background-color: $very-very-light-grey;
@@ -31,7 +31,7 @@
     &--interesting {
       color: $medium-green;
       left: 10px;
-      top: 10px;
+      top: 50px;
       @media (min-width: $md) {
         left: 200px;
         top: 100px;
@@ -41,7 +41,7 @@
       }
     }
     &--disliked {
-      bottom: 10px;
+      bottom: 50px;
       color: $medium-red;
       left: 10px;
       @media (min-width: $md) {
