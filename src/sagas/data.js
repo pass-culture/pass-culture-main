@@ -2,15 +2,28 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { assignData, failData, successData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
+import { setGeolocationPosition } from '../reducers/geolocation'
 import { apiData } from '../utils/api'
+import { getGeolocationPosition } from '../utils/geolocation'
 
 function * fromWatchRequestDataActions (action) {
+  // UNPACK
   const { method, path, config } = action
   const body = config && config.body
   const type = config && config.type
+  // GEOLOCATION
+  const position = yield config && config.isGeolocated &&
+    call(getGeolocationPosition, { highAccuracy: true })
+  yield put(setGeolocationPosition(position))
+  // TOKEN
   const token = yield type && select(state => state.data[`${type}Token`])
+  // API
   try {
-    const result = yield call(apiData, action.method, action.path, { body, token })
+    const result = yield call(apiData,
+      action.method,
+      action.path,
+      { body, position, token }
+    )
     if (result.data) {
       yield put(successData(method, path, result.data, config))
     } else {
