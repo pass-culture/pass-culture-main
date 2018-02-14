@@ -57,3 +57,31 @@ ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
   ```bash
     ./pc reset-db
   ```
+
+### Test
+  Using pytest and hypothesis for testing backend apis:
+  ```bash
+    ./pc test-backend
+  ```
+
+  Using jest to do unit testing on frontend javascript functions:
+  ```bash
+    ./pc test-frontend
+  ```
+
+  Using testcafe for testing browser navigation of the app
+  ```bash
+    ./pc testcafe
+  ```
+
+## Deploy
+  When you need to update a new version of the app
+  (Please be careful to not deploy in prod without authorization !)
+  ```bash
+    ./pc rebuild-frontend
+    ./pc deploy-frontend
+  ```
+
+  ```bash
+    ./pc deploy-backend
+  ```

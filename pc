@@ -20,7 +20,7 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
   ENV=$2
   shift 2
 else
-  ENV="local"
+  ENV="development"
 fi
 
 if [[ "$1" == "" ]]; then
@@ -31,7 +31,14 @@ fi
 CMD="$1"
 shift
 
-if [[ "$CMD" == "dump-db" ]]; then
+if [[ "$CMD" == "deploy-backend" ]]; then
+  RUN='cd "$ROOT_PATH";
+	git fetch && git reset --hard && git checkout origin/master && git reset --hard;
+	cd dockerfiles/nginx/conf.d && rm flaskapp.conf && ln -s flaskapp_ssl flaskapp.conf && cd;
+	git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
+elif [[ "$CMD" == "deploy-frontend" ]]; then
+  RUN='cd webapp && netlify deploy -e '"$ENV"
+elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
        docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
 elif [[ "$CMD" == "ftp_mirrors" ]]; then
@@ -49,6 +56,8 @@ elif [[ "$CMD" == "psql" ]]; then
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
        rm -rf api/postgres_data'
+elif [[ "$CMD" == "rebuild-frontend" ]]; then
+	RUN='cd webapp && npm run build'
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='rm -rf api/static/object_store_data;
        rm -rf api/postgres_data;
@@ -66,11 +75,10 @@ elif [[ "$CMD" == "start-backend" ]]; then
   RUN='docker-compose up'
 elif [[ "$CMD" == "start-frontend" ]]; then
   RUN='cd webapp && yarn start'
-elif [[ "$CMD" == "update" ]]; then
-  RUN='cd "$ROOT_PATH";
-	git fetch && git reset --hard && git checkout origin/master && git reset --hard;
-	cd dockerfiles/nginx/conf.d && rm flaskapp.conf && ln -s flaskapp_ssl flaskapp.conf && cd;
-	git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
+elif [[ "$CMD" == "test-backend" ]]; then
+	RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pytest tests/*"'
+elif [[ "$CMD" == "testcafe" ]]; then
+	RUN='cd webapp && ./scripts/pc.js '"$*"
 else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
@@ -78,5 +86,6 @@ fi
 if [[ "$ENV" == "prod" ]]; then
   ssh deploy@pc-api.btmx.fr bash -c "$RUN"
 else
+	echo $RUN
   eval $RUN
 fi
