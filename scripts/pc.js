@@ -13,10 +13,14 @@ program
 
   .parse(process.argv);
 
-const { testcafe } = program
+const { environment, testcafe } = program
+const NODE_ENV = environment === 'local'
+  ? 'development'
+  : environment
 
 if (testcafe) {
   const { browser, environment, file } = program
-  const command = `NODE_ENV=${environment} testcafe ${browser} ${environment === 'development' ? '-d' : ''} testcafe/${file}`
+  const debugOption = environment === 'local' ? '-d' : ''
+  const command = `NODE_ENV=${NODE_ENV} testcafe ${browser} ${debugOption} testcafe/${file}`
   childProcess.execSync(command, { stdio: [0, 1, 2] })
 }
