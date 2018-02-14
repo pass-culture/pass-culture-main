@@ -26,6 +26,11 @@ ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
     ./pc init
   ```
 
+### Update
+  ```bash
+    ./pc update_providables -p TiteliveOffers
+  ```
+
 ### Start
   Make the flask, postgres and nginx working:
   ```bash
