@@ -78,7 +78,7 @@ elif [[ "$CMD" == "start-frontend" ]]; then
 elif [[ "$CMD" == "test-backend" ]]; then
 	RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pytest tests/*"'
 elif [[ "$CMD" == "testcafe" ]]; then
-	RUN='cd webapp && ./scripts/pc.js '"$*"
+	RUN='cd webapp && ./scripts/pc.js testcafe '"$*"
 else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi

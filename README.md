@@ -69,9 +69,9 @@ ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
     ./pc test-frontend
   ```
 
-  Using testcafe for testing browser navigation of the app
+  Using testcafe for testing browser navigation of the app (default is on the development chrome brower)
   ```bash
-    ./pc testcafe
+    ./pc testcafe -b firefox -e production
   ```
 
 ## Deploy
