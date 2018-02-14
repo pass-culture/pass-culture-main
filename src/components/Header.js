@@ -5,29 +5,13 @@ import Hamburger from './Hamburger'
 import Loading from './Loading'
 import { THUMBS_URL } from '../utils/config'
 
-const Header = ({ user, offerer }) => {
+const Header = ({ isPro, user }) => {
   return (
     <div className='header flex flex-wrap items-center justify-start p2'>
       <Hamburger className='hamburger mr1'/>
-      <div className='header__logo mr1'>Pass Culture</div>
+      <div className='header__logo mr1'>Pass Culture {isPro && (<i> PRO </i>)} </div>
       <Loading />
       <div className='flex-auto' />
-      {
-        user && offerer && (
-          <div className='header__offerer flex items-center justify-center mr1'>
-            {
-              /*
-              <span className='mx1'>
-                {offerer.name}
-              </span>
-              */
-            }
-            <img className='header__offerer__image'
-              alt='offerer'
-              src={`${THUMBS_URL}/offerers/${offerer.id}`} />
-          </div>
-        )
-      }
       {
         user && (
           <img className='header__avatar'
@@ -36,7 +20,7 @@ const Header = ({ user, offerer }) => {
         )
       }
       {
-        user && !offerer && (
+        user && user.account && (
           <div className='header__account-balance'>
             {user.account}{user.account ? '€' : ''}
           </div>
@@ -48,7 +32,7 @@ const Header = ({ user, offerer }) => {
 
 export default connect(
   ({ user }) => ({
-    user,
-    offerer: user && user.userOfferers && user.userOfferers[0]
+    isPro: user && user.userOfferers && user.userOfferers[0],
+    user
   })
 )(Header)
