@@ -8,6 +8,7 @@ import ClientCreateProfilePage from './pages/ClientCreateProfilePage'
 import ClientHomePage from './pages/ClientHomePage'
 import ClientOfferPage from './pages/ClientOfferPage'
 import InventoryPage from './pages/InventoryPage'
+import OffererPage from './pages/OffererPage'
 import ProfessionalHomePage from './pages/ProfessionalHomePage'
 import ProfilePage from './pages/ProfilePage'
 import SignPage from './pages/SignPage'
@@ -29,6 +30,9 @@ const Root = () => {
             path='/gestion'
             render={() => <ProfessionalHomePage />} />
           <Route exact
+            path='/gestion/:offererId'
+            render={props => <OffererPage offererId={props.match.params.offererId}/>} />
+          <Route exact
             path='/inscription'
             render={() => <SignPage />} />
           <Route exact
@@ -39,7 +43,7 @@ const Root = () => {
             render={() => <ClientHomePage />} />
           <Route exact
             path='/offres/:offerId'
-            render={(props) => <ClientOfferPage offerId={props.match.params.offerId}/>} />
+            render={props => <ClientOfferPage offerId={props.match.params.offerId}/>} />
           <Route exact
             path='/profile'
             render={() => <ProfilePage />} />

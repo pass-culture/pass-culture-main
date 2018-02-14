@@ -1,0 +1,7 @@
+.offerer-button {
+  border: 0;
+  &__image {
+    border-radius: $border-radius;
+    max-height: 200px;
+  }
+}

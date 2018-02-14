@@ -9,9 +9,9 @@ import { requestData } from '../reducers/data'
 
 class OffersList extends Component {
   handleRequestData = props => {
-    const { requestData, user } = props
+    const { offererId, requestData, user } = props
     if (!this.hasRequired && user) {
-      requestData('GET', 'offers')
+      requestData('GET', `offers?offererId=${offererId}`)
       this.hasRequired = true
     }
   }

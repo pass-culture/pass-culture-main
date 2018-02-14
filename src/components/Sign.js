@@ -4,7 +4,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import FormInput from './FormInput'
-import Link from './Link'
 import SubmitButton from './SubmitButton'
 import { assignData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'

@@ -1,17 +1,14 @@
 import React from 'react'
 
-import OffersList from '../components/OffersList'
-import OfferNewButton from '../components/OfferNewButton'
-import SearchInput from '../components/SearchInput'
+import OfferersGrid from '../components/OfferersGrid'
 
 const ProfessionalHomePage = () => {
   return (
-    <main className='professional-home-page p2'>
-      <div className='flex items-center flex-start mt2'>
-        <OfferNewButton />
-        <SearchInput />
+    <main className='professional-home-page p2 center'>
+      <div className='h2 mt2'>
+        Mes offres
       </div>
-      <OffersList />
+      <OfferersGrid />
     </main>
   )
 }
