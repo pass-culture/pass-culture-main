@@ -63,6 +63,12 @@ ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
     ./pc reset-db
   ```
 
+### Migrate
+  We use alembic, so just pass al the classic alembic options after a ./pc alembic cli, like
+  ```bash
+    ./pc alembic upgrade
+  ```
+
 ### Test
   Using pytest and hypothesis for testing backend apis:
   ```bash
