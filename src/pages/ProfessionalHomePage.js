@@ -1,72 +1,19 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-import { createSelector } from 'reselect'
+import React from 'react'
 
-import OfferItem from '../components/OfferItem'
+import OffersList from '../components/OffersList'
 import OfferNewButton from '../components/OfferNewButton'
-import withLogin from '../hocs/withLogin'
-import { requestData } from '../reducers/data'
+import SearchInput from '../components/SearchInput'
 
-class ProfessionalHomePage extends Component {
-  handleRequestData = props => {
-    const { requestData, user } = props
-    if (!this.hasRequired && user) {
-      requestData('GET', 'offers')
-      this.hasRequired = true
-    }
-  }
-  componentWillMount () {
-    this.props.user && this.handleRequestData(this.props)
-  }
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.user && nextProps.user !== this.props.user) {
-      this.handleRequestData(nextProps)
-    }
-  }
-  render () {
-    const { offers } = this.props
-    return (
-      <main className='professional-home-page p2'>
-        <div className='flex items-center flex-start mt2'>
-          <OfferNewButton />
-        </div>
-        <div className='md-col-9 mx-auto'>
-          {
-            offers && offers.map((offer, index) => [
-              <OfferItem isModify
-                isPrices
-                isFavorites
-                key={index}
-                {...offer}
-              />,
-              (index !== offers.length -1) && <div className='sep mb2' key={`sep-${index}`}/>
-            ])
-          }
-        </div>
-      </main>
-    )
-  }
+const ProfessionalHomePage = () => {
+  return (
+    <main className='professional-home-page p2'>
+      <div className='flex items-center flex-start mt2'>
+        <OfferNewButton />
+        <SearchInput />
+      </div>
+      <OffersList />
+    </main>
+  )
 }
 
-const getSortOffers = createSelector(state => state.data.offers,
-  offers => {
-    if (!offers) {
-      return
-    }
-    const sortOffers = [...offers]
-    // youngest are at the top of the list
-    sortOffers.sort((o1, o2) => o2.id - o1.id)
-    return sortOffers
-  })
-
-export default compose(
-  withLogin,
-  connect(
-    state =>({
-      offers: getSortOffers(state),
-      user: state.user
-    }),
-    { requestData }
-  )
-)(ProfessionalHomePage)
+export default ProfessionalHomePage
