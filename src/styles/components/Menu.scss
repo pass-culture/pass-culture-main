@@ -8,6 +8,7 @@
   top: calc(#{$header-height} - 1px);
   transition: all 0.25s ease-out;
   width: $menu-width;
+  z-index: 20000;
   &--active {
     left: 0;
   }

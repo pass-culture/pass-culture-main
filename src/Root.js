@@ -10,6 +10,7 @@ import ClientOfferPage from './pages/ClientOfferPage'
 import InventoryPage from './pages/InventoryPage'
 import ProfessionalHomePage from './pages/ProfessionalHomePage'
 import ProfilePage from './pages/ProfilePage'
+import SignPage from './pages/SignPage'
 import WelcomePage from './pages/WelcomePage'
 import store from './utils/store'
 
@@ -25,17 +26,20 @@ const Root = () => {
             path='/activities'
             render={() => <ActivitiesPage />} />
           <Route exact
+            path='/gestion'
+            render={() => <ProfessionalHomePage />} />
+          <Route exact
+            path='/inscription'
+            render={() => <SignPage />} />
+          <Route exact
+            path='/inventaire'
+            render={() => <InventoryPage />} />
+          <Route exact
             path='/offres'
             render={() => <ClientHomePage />} />
           <Route exact
             path='/offres/:offerId'
             render={(props) => <ClientOfferPage offerId={props.match.params.offerId}/>} />
-          <Route exact
-            path='/gestion'
-            render={() => <ProfessionalHomePage />} />
-          <Route exact
-            path='/inventaire'
-            render={() => <InventoryPage />} />
           <Route exact
             path='/profile'
             render={() => <ProfilePage />} />

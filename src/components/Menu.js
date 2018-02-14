@@ -16,12 +16,14 @@ const Menu = ({ isNavigationActive, user }) => {
         Explore
       </Link>
       {
-        user && user.userVenues && user.userVenues.length > 0 && <Link className={classnames('link block menu__link mb2', {
+        user && user.userOfferers && user.userOfferers.length > 0 && (
+          <Link className={classnames('link block menu__link mb2', {
             'menu__link--active': '/gestion' === window.location.pathname
           })}
           href={'/gestion'}>
-          Gestion
-        </Link>
+            Gestion
+          </Link>
+        )
       }
       <Link className={classnames('link block menu__link mb2', {
           'menu__link--active': window.location.pathname === '/inventaire'
