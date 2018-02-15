@@ -31,7 +31,11 @@ fi
 CMD="$1"
 shift
 
-if [[ "$CMD" == "deploy-backend" ]]; then
+if [[ "$CMD" == "alembic" ]]; then
+  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && alembic '"$*"'"'
+elif [[ "$CMD" == "bash" ]]; then
+	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
+elif [[ "$CMD" == "deploy-backend" ]]; then
   RUN='cd "$ROOT_PATH";
 	git fetch && git reset --hard && git checkout origin/master && git reset --hard;
 	cd dockerfiles/nginx/conf.d && rm flaskapp.conf && ln -s flaskapp_ssl flaskapp.conf && cd;
@@ -51,6 +55,7 @@ elif [[ "$CMD" == "install" ]]; then
        git submodules init;
        git submodules update;
        git submodules foreach git checkout origin master;
+			 ./pc symlink;
        cd webapp && yarn'
 elif [[ "$CMD" == "psql" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture $*"'
@@ -76,6 +81,8 @@ elif [[ "$CMD" == "start-backend" ]]; then
   RUN='docker-compose up'
 elif [[ "$CMD" == "start-frontend" ]]; then
   RUN='cd webapp && yarn start'
+elif [[ "$CMD" == "symlink" ]]; then
+	RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
 elif [[ "$CMD" == "test-backend" ]]; then
 	RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pytest tests/*"'
 elif [[ "$CMD" == "testcafe" ]]; then
