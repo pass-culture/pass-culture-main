@@ -12,4 +12,4 @@ export const BROWSER_URL = IS_DEV ? 'http://localhost:3000'
 
 export const THUMBS_URL = IS_DEV
   ? `${API_URL}/static/object_store_data/thumbs`
-  : `${API_URL}/thumbs`
+  : `${API_URL}/static/object_store_data/thumbs`
