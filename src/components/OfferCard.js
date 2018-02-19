@@ -17,7 +17,7 @@ class OfferCard extends Component {
       dislikedOpacity: 0,
       interestingOpacity: 0,
       isDragging: false,
-      isPinned: false,
+      isFavorite: false,
       position: null,
       type: null
     }
@@ -25,9 +25,9 @@ class OfferCard extends Component {
   handlePinHighlight = props => {
     const { index, pin, selectedItem } = props
     if (pin && pin.type === 'interesting' && index === selectedItem) {
-      this.setState({ interestingOpacity: 1, isPinned: true })
+      this.setState({ interestingOpacity: 1, isFavorite: true })
     } else {
-      this.setState({ interestingOpacity: 0, isPinned: false })
+      this.setState({ interestingOpacity: 0, isFavorite: false })
     }
   }
   onContentClick = () => {
@@ -36,26 +36,27 @@ class OfferCard extends Component {
   }
   onDeleteClick = () => {
     const { id, requestData } = this.props
-    requestData('DELETE', `pins/offerId:${id}`, {
-      getOptimistState: (state, action) => {
-        const offerIds = state.offers.map(offer => offer.id)
-        const offerIndex = offerIds.indexOf(id)
-        const optimistOffers = [...state.offers]
-        optimistOffers[offerIndex] = Object.assign({}, optimistOffers[offerIndex])
-        delete optimistOffers[offerIndex].pin
-        return {
-          offers: optimistOffers
-        }
-      },
-      getSuccessState: (state, action) => {
-        const offerIds = state.offers.map(({ id }) => id)
-        const offerIndex = offerIds.indexOf(id)
-        const nextOffers = [...state.offers]
-        nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex])
-        delete nextOffers[offerIndex].pin
-        return { offers: nextOffers }
-      }
-    })
+    //TODO: remove favorite status
+    //requestData('DELETE', `pins/offerId:${id}`, {
+    //  getOptimistState: (state, action) => {
+    //    const offerIds = state.offers.map(offer => offer.id)
+    //    const offerIndex = offerIds.indexOf(id)
+    //    const optimistOffers = [...state.offers]
+    //    optimistOffers[offerIndex] = Object.assign({}, optimistOffers[offerIndex])
+    //    delete optimistOffers[offerIndex].pin
+    //    return {
+    //      offers: optimistOffers
+    //    }
+    //  },
+    //  getSuccessState: (state, action) => {
+    //    const offerIds = state.offers.map(({ id }) => id)
+    //    const offerIndex = offerIds.indexOf(id)
+    //    const nextOffers = [...state.offers]
+    //    nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex])
+    //    delete nextOffers[offerIndex].pin
+    //    return { offers: nextOffers }
+    //  }
+    //})
   }
   onDrag = (event, data) => {
     const { thresholdDragRatio } = this.props
@@ -81,7 +82,7 @@ class OfferCard extends Component {
       thresholdDragRatio,
       userId
     } = this.props
-    const { isPinned } = this.state
+    const { isFavorite } = this.state
     const { y } = data
     let type
     if (y < -thresholdDragRatio * this._element.offsetHeight) {
@@ -90,11 +91,12 @@ class OfferCard extends Component {
       type = 'disliked'
     }
     if (type) {
-      requestData('POST', 'pins', { body: {
-        offerId: id,
-        type,
-        userId
-      }})
+      //TODO: mark item as favorite
+      //requestData('POST', 'pins', { body: {
+      //  offerId: id,
+      //  type,
+      //  userId
+      //}})
       carousselElement.selectItem({ selectedItem: (index < itemsCount - 1)
         ? index
         : index -1
@@ -104,7 +106,7 @@ class OfferCard extends Component {
     }
     this.setState({
       dislikedOpacity: 0,
-      interestingOpacity: isPinned ? 1 : 0,
+      interestingOpacity: isFavorite ? 1 : 0,
       isDragging: false,
       position: { x: 0, y: 0 }
     })
@@ -127,7 +129,7 @@ class OfferCard extends Component {
       interestingOpacity,
       isDisabled,
       isDragging,
-      isPinned,
+      isFavorite,
       position
     } = this.state
     return (
@@ -140,7 +142,7 @@ class OfferCard extends Component {
                 'offer-card__typed--interesting--active': interestingOpacity >= 1 })}
                 style={{ opacity: interestingOpacity }}>
                 {
-                  isPinned && !isDragging && (
+                  isFavorite && !isDragging && (
                     <button className='button button--alive button--reversed offer-card__typed__delete absolute'
                       onClick={this.onDeleteClick}>
                       X

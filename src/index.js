@@ -5,7 +5,8 @@ import { AppContainer } from 'react-hot-loader';
 import './styles/index.scss'
 import './utils/styles'
 
-import registerServiceWorker from './utils/registerServiceWorker'
+import registerCacheServiceWorker from './utils/registerCacheServiceWorker'
+import registerSyncServiceWorker from './utils/registerSyncServiceWorker'
 import Root from './Root'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
@@ -19,4 +20,5 @@ if (module.hot) {
     ), document.getElementById('root'))
   })
 }
-registerServiceWorker()
+registerCacheServiceWorker()
+registerSyncServiceWorker()
