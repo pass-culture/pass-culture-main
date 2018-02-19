@@ -205,8 +205,10 @@ module.exports = {
       inject: true,
       template: paths.appHtml,
     }),
-    new ServiceWorkerWepbackPlugin({
+    new ServiceWorkerWebpackPlugin({
       entry: require.resolve(paths.appSrc+'/sync-service-worker.js'),
+      filename: 'sync-service-worker.js',
+      publicPath: publicPath
     }),
     // Add module names to factory functions so they appear in browser profiler.
     new webpack.NamedModulesPlugin(),

@@ -1,4 +1,4 @@
-import db from 'db'
+import db from './utils/db'
 
 self.addEventListener('sync', function (event) {
   if (event.tag === 'user_mediations') {
