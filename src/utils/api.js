@@ -23,8 +23,8 @@ export async function apiData (method, path, config = {}) {
       init.body.latitude = latitude
       init.body.longitude = longitude
     } else {
-      const positionQuery = `latitude=${latitude}&longitude=${longitude}`
-      path = `${path}${path.includes('?') ? '&' : '?'}${positionQuery}`
+      const positionQuery = `latitude=${latitude}&&longitude=${longitude}`
+      path = `${path}${path.includes('?') ? '&&' : '?'}${positionQuery}`
     }
   }
   // body

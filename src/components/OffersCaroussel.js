@@ -33,6 +33,11 @@ class OffersCaroussel extends Component {
       this.setState(newState)
     }
   }
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.filteredOffers !== this.props.filteredOffers) {
+      this.carousselElement.selectItem({ selectedItem: 0 })
+    }
+  }
   onChange = selectedItem => {
     this.setState({ selectedItem })
   }
