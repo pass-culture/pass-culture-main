@@ -3,17 +3,25 @@ import { connect } from 'react-redux'
 
 import OffersCaroussel from './OffersCaroussel'
 import { requestData } from '../reducers/data'
+import { syncUserMediations } from '../utils/sync'
 
 class OffersHorizScroller extends Component {
   handleRequestData (props) {
     const { requestData, userId } = props
+    /*
     userId && requestData('GET',
-      'offers?hasPrice=true&&removeDisliked=true', 
+      'offers?hasPrice=true&&removeDisliked=true',
       { isGeolocated: true }
+    )
+    */
+    userId && requestData('GET',
+      'userMediations',
+      { isGeolocated: true, sync: true }
     )
   }
   componentWillMount () {
     this.handleRequestData(this.props)
+    // syncUserMediations()
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.userId && (!this.props.userId || nextProps.userId !== this.props.userId)) {

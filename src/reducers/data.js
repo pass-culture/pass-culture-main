@@ -13,13 +13,14 @@ const data = (state = initialState, action) => {
     const filteredElements = state[action.key].filter(action.filter)
     return Object.assign({}, state, { [action.key]: filteredElements })
   }  else if (/REQUEST_DATA_(POST|PUT|DELETE)_(.*)/.test(action.type)) {
+    const nextState = { isOptimist: true, previousOptimistState: state }
     if (action.config && action.config.getOptimistState) {
       const nextState = { isOptimist: true, previousOptimistState: state }
       const optimistState = action.config.getOptimistState(state, action)
       Object.assign(nextState, optimistState)
       return Object.assign({}, state, nextState)
     }
-    return state
+    return Object.assign({}, state, nextState)
   } else if (/SUCCESS_DATA_(GET|POST|PUT)_(.*)/.test(action.type)) {
     const key = action.config.key || action.path.replace(/\/$/, '').replace(/\?.*$/, '')
     const nextState = { isOptimist: false }

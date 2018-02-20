@@ -1,14 +1,12 @@
-export default function registerSyncServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        const swUrl = `${process.env.PUBLIC_URL}/sync-service-worker.js`;
-        navigator.serviceWorker.register(swUrl)
-               .then(registration => navigator.serviceWorker.ready)
-               .then(registration => {
-                   registration.sync.register('user_mediations').then(() => {
-                       console.log('Sync registered');
-                       });
-                   });
-    } else {
-        //TODO: fetch user_mediations with a XMLHTTPRequest
+export default async function registerSyncServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    const swUrl = `${process.env.PUBLIC_URL}/sync-service-worker.js`
+    const registration = await navigator.serviceWorker.register(swUrl)
+    if (!navigator.serviceWorker.ready) {
+      return
     }
+    const userMediations = registration.sync.register('user_mediations')
+  } else {
+      //TODO: fetch user_mediations with a XMLHTTPRequest
+  }
 }

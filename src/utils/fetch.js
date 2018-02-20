@@ -2,7 +2,7 @@ import 'fetch-everywhere'
 
 import { API_URL } from './config'
 
-export async function apiData (method, path, config = {}) {
+export async function fetchData (method, path, config = {}) {
   // unpack
   const { body, position, token } = config
   // init
@@ -15,6 +15,8 @@ export async function apiData (method, path, config = {}) {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     }
+    // body
+    init.body = JSON.stringify(body || {})
   }
   // position
   if (position) {
@@ -26,10 +28,6 @@ export async function apiData (method, path, config = {}) {
       const positionQuery = `latitude=${latitude}&&longitude=${longitude}`
       path = `${path}${path.includes('?') ? '&&' : '?'}${positionQuery}`
     }
-  }
-  // body
-  if (body) {
-    init.body = JSON.stringify(body)
   }
   // token
   if (token) {

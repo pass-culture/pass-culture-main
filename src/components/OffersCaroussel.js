@@ -13,6 +13,7 @@ class OffersCaroussel extends Component {
     super()
     this.state = { carousselElement: null,
       carousselNode: null,
+      hasUserMediationRequested: false,
       selectedItem: 0
     }
   }
@@ -21,14 +22,6 @@ class OffersCaroussel extends Component {
       carousselElement: this.carousselElement,
       carousselNode: findDOMNode(this.carousselElement)
     }
-    /*
-    if (!this.state.nextButtonElement) {
-      newState.nextButtonElement = document.querySelector('button.control-arrow.control-next')
-    }
-    if (!this.state.prevButtonElement) {
-      newState.prevButtonElement = document.querySelector('button.control-arrow.control-prev')
-    }
-    */
     if (Object.keys(newState).length > 0) {
       this.setState(newState)
     }
@@ -39,7 +32,16 @@ class OffersCaroussel extends Component {
     }
   }
   onChange = selectedItem => {
-    this.setState({ selectedItem })
+    const { filteredOffers, requestData } = this.props
+    const { hasUserMediationRequested } = this.state
+    const newState = { selectedItem }
+    if (!hasUserMediationRequested && selectedItem === filteredOffers.length - 1) {
+      requestData('POST', 'user_mediations')
+      newState.hasUserMediationRequested = true
+    } else if (selectedItem === 0) {
+      newState.hasUserMediationRequested = false
+    }
+    this.setState(newState)
   }
   render () {
     const { filteredOffers } = this.props
