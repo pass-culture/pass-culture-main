@@ -5,7 +5,7 @@ export default async function registerSyncServiceWorker() {
     if (!navigator.serviceWorker.ready) {
       return
     }
-    const userMediations = registration.sync.register('user_mediations')
+    registration.sync.register('user_mediations')
   } else {
       //TODO: fetch user_mediations with a XMLHTTPRequest
   }

@@ -1,21 +1,16 @@
 import React from 'react'
 
-import OffersHorizScroller from '../components/OffersHorizScroller'
-// import OffersSwipe from '../components/OffersSwipe'
+import Explorer from '../components/Explorer'
 import SearchInput from '../components/SearchInput'
 import withLogin from '../hocs/withLogin'
 
-const ClientHomePage = ({ OffersComponent }) => {
+const ClientHomePage = () => {
   return (
-    <main className='page client-home-page flex flex-column'>
+    <main className='page client-home-page center'>
       <SearchInput />
-      <OffersComponent />
+      <Explorer collectionName='userMediations' />
     </main>
   )
-}
-
-ClientHomePage.defaultProps = {
-  OffersComponent: OffersHorizScroller
 }
 
 export default withLogin(ClientHomePage)

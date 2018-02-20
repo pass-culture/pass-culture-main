@@ -27,6 +27,9 @@ const Root = () => {
             path='/activities'
             render={() => <ActivitiesPage />} />
           <Route exact
+            path='/explore'
+            render={() => <ClientHomePage />} />
+          <Route exact
             path='/gestion'
             render={() => <ProfessionalHomePage />} />
           <Route exact
@@ -38,9 +41,6 @@ const Root = () => {
           <Route exact
             path='/inventaire'
             render={() => <InventoryPage />} />
-          <Route exact
-            path='/offres'
-            render={() => <ClientHomePage />} />
           <Route exact
             path='/offres/:offerId'
             render={props => <ClientOfferPage offerId={props.match.params.offerId}/>} />

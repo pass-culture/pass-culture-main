@@ -10,7 +10,7 @@ import FavoriteItem from './FavoriteItem'
 import withFrontendOffer from '../hocs/withFrontendOffer'
 import { filterData, requestData } from '../reducers/data'
 
-class OfferCard extends Component {
+class Card extends Component {
   constructor () {
     super ()
     this.state = {
@@ -133,17 +133,17 @@ class OfferCard extends Component {
       position
     } = this.state
     return (
-      <div className='offer-card flex items-center justify-center'
+      <div className='card flex items-center justify-center'
         ref={_element => this._element = _element}>
         {
           selectedItem === index && [
             <Portal key='interesting' node={carousselNode}>
-              <div className={classnames('offer-card__typed offer-card__typed--interesting absolute p2 relative', {
-                'offer-card__typed--interesting--active': interestingOpacity >= 1 })}
+              <div className={classnames('card__typed card__typed--interesting absolute p2 relative', {
+                'card__typed--interesting--active': interestingOpacity >= 1 })}
                 style={{ opacity: interestingOpacity }}>
                 {
                   isFavorite && !isDragging && (
-                    <button className='button button--alive button--reversed offer-card__typed__delete absolute'
+                    <button className='button button--alive button--reversed card__typed__delete absolute'
                       onClick={this.onDeleteClick}>
                       X
                     </button>
@@ -153,8 +153,8 @@ class OfferCard extends Component {
               </div>
             </Portal>,
             <Portal key='disliked' node={carousselNode}>
-              <div className={classnames('offer-card__typed offer-card__typed--disliked absolute p2', {
-                'offer-card__typed--disliked--active': dislikedOpacity >= 1
+              <div className={classnames('card__typed card__typed--disliked absolute p2', {
+                'card__typed--disliked--active': dislikedOpacity >= 1
               })}
                 style={{ opacity: dislikedOpacity }} >
                 pas pour moi
@@ -168,12 +168,12 @@ class OfferCard extends Component {
           onStart={this.onStart}
           onStop={this.onStop}
           position={position} >
-          <div className='offer-card__content relative' style={{
+          <div className='card__content relative' style={{
             backgroundImage: `url(${thumbUrl})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover'
           }} onDoubleClick={this.onContentClick}>
-            <div className='offer-card__content__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
+            <div className='card__content__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
               <div className='mb1'>
                 à {(20-id)*15}m
               </div>
@@ -192,7 +192,7 @@ class OfferCard extends Component {
   }
 }
 
-OfferCard.defaultProps = {
+Card.defaultProps = {
   thresholdDragRatio: 0.3
 }
 
@@ -203,4 +203,4 @@ export default compose(
     state => ({ userId: state.user && state.user.id }),
     { filterData, requestData }
   )
-)(OfferCard)
+)(Card)

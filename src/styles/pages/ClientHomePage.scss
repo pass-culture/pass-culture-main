@@ -1,16 +1,4 @@
 .client-home-page {
-  height: 100%;
+  min-height: 100vh;
   width: 100%;
-  background-color: black;
-  .offer-horiz-scroller {
-    position: fixed;
-    top: 55px;
-    bottom: 0;
-    width: 100%;
-  }
-  .search-bar {
-    position: fixed;
-    bottom: 0px;
-    width: 98%;
-    }
 }
