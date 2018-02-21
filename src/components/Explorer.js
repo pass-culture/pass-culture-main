@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { findDOMNode } from 'react-dom'
 import { connect } from 'react-redux'
+import { Portal } from 'react-portal'
 import { Carousel } from 'react-responsive-carousel'
 import { compose } from 'redux'
 
 import Card from './Card'
+import SearchInput from '../components/SearchInput'
 import { requestData } from '../reducers/data'
 
 class Explorer extends Component {
@@ -59,7 +61,10 @@ class Explorer extends Component {
     const { elements } = this.props
     const { selectedItem } = this.state
     return (
-      <div className='explorer mx-auto p2'>
+      <div className='explorer mx-auto p2' id='explorer'>
+        <div className='explorer__search absolute'>
+          <SearchInput />
+        </div>
         <Carousel axis='horizontal'
           emulateTouch
           ref={_element => this.carousselElement = _element}
