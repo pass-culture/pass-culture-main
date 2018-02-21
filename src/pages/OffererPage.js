@@ -5,14 +5,15 @@ import OffererEditButton from '../components/OffererEditButton'
 import OffersList from '../components/OffersList'
 import OfferNewButton from '../components/OfferNewButton'
 import SearchInput from '../components/SearchInput'
+import { requestData } from '../reducers/data'
 import { setUserOfferer } from '../reducers/user'
 
 class OffererPage extends Component {
   handleSetUserOfferer = props => {
-    const { offererId, setUserOfferer } = props
-    setUserOfferer(offererId)
+    const { offererId, requestData, setUserOfferer } = props    
   }
   componentWillMount () {
+    requestData('GET', 'providers')
     this.handleSetUserOfferer(this.props)
   }
   componentWillReceiveProps (nextProps) {

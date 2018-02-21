@@ -2,9 +2,9 @@ import React from 'react'
 
 import OfferersGrid from '../components/OfferersGrid'
 
-const ProfessionalHomePage = () => {
+const ProfessionalPage = () => {
   return (
-    <main className='professional-home-page p2 center'>
+    <main className='professional-page p2 center'>
       <div className='h2 mt2'>
         Mes offres
       </div>
@@ -13,4 +13,4 @@ const ProfessionalHomePage = () => {
   )
 }
 
-export default ProfessionalHomePage
+export default ProfessionalPage

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import OffererButton from './OffererButton'
+import OffererItem from './OffererItem'
 import withLogin from '../hocs/withLogin'
 
 const OfferersGrid = ({ offerers }) => {
@@ -10,7 +10,7 @@ const OfferersGrid = ({ offerers }) => {
     <div className='flex flex-wrap items-center justify-center p2'>
       {
         offerers && offerers.map((offerer, index) => (
-          <OffererButton key={index} {...offerer} />
+          <OffererItem key={index} {...offerer} />
         ))
       }
     </div>

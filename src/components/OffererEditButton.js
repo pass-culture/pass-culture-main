@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -11,8 +12,13 @@ class OffererEditButton extends Component {
     showModal(<OffererSetting />)
   }
   render () {
+    const { offerer } = this.props
     return (
-      <button className='button button--alive button--rounded'
+      <button className={classnames('button button--alive button--rounded',
+        {
+          'button--disabled': !offerer
+        })}
+        disabled={!offerer}
         onClick={this.onClick} >
         <Icon name='perm-data-setting' />
       </button>
@@ -20,4 +26,7 @@ class OffererEditButton extends Component {
   }
 }
 
-export default connect(null, { showModal })(OffererEditButton)
+export default connect(
+  state => ({ offerer: state.user && state.user.offerer }),
+  { showModal }
+)(OffererEditButton)

@@ -3,12 +3,12 @@ import React from 'react'
 import Explorer from '../components/Explorer'
 import withLogin from '../hocs/withLogin'
 
-const ClientHomePage = () => {
+const DiscoveryPage = () => {
   return (
-    <main className='page client-home-page center'>
+    <main className='page discovery-page center'>
       <Explorer collectionName='userMediations' />
     </main>
   )
 }
 
-export default withLogin(ClientHomePage)
+export default withLogin(DiscoveryPage)

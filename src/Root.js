@@ -1,18 +1,9 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import { BrowserRouter, Route } from 'react-router-dom'
+import { BrowserRouter, matchPath, Redirect, Route } from 'react-router-dom'
 
 import App from './App'
-import ActivitiesPage from './pages/ActivitiesPage'
-import ClientCreateProfilePage from './pages/ClientCreateProfilePage'
-import ClientHomePage from './pages/ClientHomePage'
-import ClientOfferPage from './pages/ClientOfferPage'
-import InventoryPage from './pages/InventoryPage'
-import OffererPage from './pages/OffererPage'
-import ProfessionalHomePage from './pages/ProfessionalHomePage'
-import ProfilePage from './pages/ProfilePage'
-import SignPage from './pages/SignPage'
-import WelcomePage from './pages/WelcomePage'
+import routes from './utils/routes'
 import store from './utils/store'
 
 const Root = () => {
@@ -20,36 +11,19 @@ const Root = () => {
     <Provider store={store}>
       <BrowserRouter>
         <App>
-          <Route exact
-            path='/'
-            render={() => <ClientCreateProfilePage />} />
-          <Route exact
-            path='/activities'
-            render={() => <ActivitiesPage />} />
-          <Route exact
-            path='/explore'
-            render={() => <ClientHomePage />} />
-          <Route exact
-            path='/gestion'
-            render={() => <ProfessionalHomePage />} />
-          <Route exact
-            path='/gestion/:offererId'
-            render={props => <OffererPage offererId={props.match.params.offererId} />} />
-          <Route exact
-            path='/inscription'
-            render={() => <SignPage />} />
-          <Route exact
-            path='/inventaire'
-            render={() => <InventoryPage />} />
-          <Route exact
-            path='/offres/:offerId'
-            render={props => <ClientOfferPage offerId={props.match.params.offerId} />} />
-          <Route exact
-            path='/profile'
-            render={() => <ProfilePage />} />
-          <Route exact
-            path='/welcome'
-            render={() => <WelcomePage />} />
+          { routes.map((route, index) =>  <Route key={index} {...route} />) }
+          {
+            // and then add the route that redirects to home
+            // when the path does not match anything
+          }
+          <Route path="/:active?"
+            render={props => {
+              const matchedRoute = routes.find(route =>
+                matchPath(`/${props.match.params.active}`, route))
+              return props.location.pathname !== '/' &&
+                !matchedRoute &&
+                <Redirect to='/' />
+            }} />
         </App>
       </BrowserRouter>
     </Provider>
