@@ -9,8 +9,8 @@ const initialState = null
 function user (state = initialState, action) {
   switch (action.type) {
     case SET_USER:
-      return Object.assign({
-        isPro: user && user.userOfferers && user.userOfferers[0]
+      return action.user && Object.assign({
+        isPro: action.user && action.user.userOfferers && action.user.userOfferers[0]
       }, action.user)
     case SET_USER_OFFERER:
       if (!state) {
