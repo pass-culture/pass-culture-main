@@ -66,7 +66,7 @@ const OfferJoinForm = ({ id, prices, mediations }) => {
           !form.mediationsById ||
           !form.mediationsById[NEW] ||
           (
-            !form.mediationsById[NEW].comment
+            !form.mediationsById[NEW].description
           )
         }
         getOptimistState={(state, action) => {

@@ -14,7 +14,7 @@ class SignPage extends Component {
     this.props.showModal(<Sign />, { isCloseButton: false })
   }
   render () {
-    const { form } = this.props
+    // const { form } = this.props
     return (
       <main className='page center col-6 mx-auto mt3'>
         <FormInput className={inputClassName}

@@ -8,6 +8,7 @@ import { NEW } from '../utils/config'
 class MediationForm extends Component {
   componentWillMount () {
     const { mergeForm, offerId } = this.props
+    mergeForm('mediations', NEW, 'name', 'Coup de Coeur')
     mergeForm('mediations', NEW, 'offerId', offerId)
   }
   render () {

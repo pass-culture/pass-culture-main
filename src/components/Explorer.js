@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { findDOMNode } from 'react-dom'
 import { connect } from 'react-redux'
-import { Portal } from 'react-portal'
 import { Carousel } from 'react-responsive-carousel'
 import { compose } from 'redux'
 
