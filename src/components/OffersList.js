@@ -29,9 +29,9 @@ class OffersList extends Component {
       <div className='md-col-9 mx-auto'>
         {
           offers && offers.map((offer, index) => [
-            <OfferItem isModify
+            <OfferItem isMediations
+              isModify
               isPrices
-              isFavorites
               key={index}
               {...offer}
             />,

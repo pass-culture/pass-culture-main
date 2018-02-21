@@ -3,9 +3,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
+import MediationItem from './MediationItem'
 import OfferModify from './OfferModify'
 import PriceItem from './PriceItem'
-import FavoriteItem from './FavoriteItem'
 import withFrontendOffer from '../hocs/withFrontendOffer'
 import { assignData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
@@ -24,14 +24,14 @@ class OfferItem extends Component {
   }
   render () {
     const { description,
-      isFavorites,
+      isMediations,
       isModify,
       isPrices,
       maxDescriptionLength,
+      mediations,
       name,
       prices,
-      thumbUrl,
-      venuesFavorites,
+      thumbUrl
     } = this.props
     return (
       <div className={classnames(
@@ -64,9 +64,9 @@ class OfferItem extends Component {
             </div>
             <div className='flex flex-wrap items-center mr1'>
               {
-                isFavorites && venuesFavorites &&
-                  venuesFavorites.map((sellersFavorite, index) =>
-                    <FavoriteItem key={index} {...sellersFavorite} />)
+                isMediations && mediations &&
+                  mediations.map((mediation, index) =>
+                    <MediationItem key={index} {...mediation} />)
               }
             </div>
           </div>

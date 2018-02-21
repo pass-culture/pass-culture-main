@@ -1,7 +1,9 @@
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
+import { Portal } from 'react-portal'
 import { connect } from 'react-redux'
 
+import Loading from './Loading'
 import { requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
 
@@ -32,10 +34,20 @@ class SearchInput extends Component {
     this.handleDebouncedRequestData(event)
   }
   render () {
-    return <input className='input search-input mt1 mx-auto col-9'
-      onChange={this.onChange}
-      placeholder='tape ta recherche'
-      type='text' />
+    const children = [
+      <input className='input search-input mt1 mx-auto col-9'
+        key={0}
+        onChange={this.onChange}
+        placeholder='tape ta recherche'
+        type='text' />
+    ]
+    window.location.pathname.includes('/gestion') && children.push(
+      <Portal key={1}
+        node={document && document.getElementById('header__content')}>
+        <Loading />
+      </Portal>
+    )
+    return children
   }
 }
 

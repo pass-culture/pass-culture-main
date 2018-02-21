@@ -2,15 +2,16 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Hamburger from './Hamburger'
-import Loading from './Loading'
 import { THUMBS_URL } from '../utils/config'
 
 const Header = ({ isPro, user }) => {
   return (
     <div className='header flex flex-wrap items-center justify-start p2'>
       <Hamburger className='hamburger mr1'/>
-      <div className='header__logo mr1'>Pass Culture {isPro && (<i> PRO </i>)} </div>
-      <Loading />
+      <div className='header__logo mr1'>
+        Pass Culture {isPro && (<i> PRO </i>)}
+      </div>
+      <div id='header__content' />
       <div className='flex-auto' />
       {
         user && (

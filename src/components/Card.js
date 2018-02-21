@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import FavoriteItem from './FavoriteItem'
+import MediationItem from './MediationItem'
 import withFrontendOffer from '../hocs/withFrontendOffer'
 import { filterData, requestData } from '../reducers/data'
 
@@ -121,8 +121,8 @@ class Card extends Component {
     const { carousselNode,
       id,
       index,
+      mediations,
       selectedItem,
-      venuesFavorites,
       thumbUrl
     } = this.props
     const { dislikedOpacity,
@@ -179,8 +179,8 @@ class Card extends Component {
               </div>
               <div className='flex items-center justify-center'>
               {
-                venuesFavorites && venuesFavorites.map((venuesFavorite, index) =>
-                  <FavoriteItem key={index} {...venuesFavorite} />
+                mediations && mediations.map((mediation, index) =>
+                  <MediationItem key={index} {...mediation} />
                 )
               }
               </div>
