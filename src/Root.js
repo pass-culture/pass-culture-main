@@ -34,7 +34,7 @@ const Root = () => {
             render={() => <ProfessionalHomePage />} />
           <Route exact
             path='/gestion/:offererId'
-            render={props => <OffererPage offererId={props.match.params.offererId}/>} />
+            render={props => <OffererPage offererId={props.match.params.offererId} />} />
           <Route exact
             path='/inscription'
             render={() => <SignPage />} />
@@ -43,7 +43,7 @@ const Root = () => {
             render={() => <InventoryPage />} />
           <Route exact
             path='/offres/:offerId'
-            render={props => <ClientOfferPage offerId={props.match.params.offerId}/>} />
+            render={props => <ClientOfferPage offerId={props.match.params.offerId} />} />
           <Route exact
             path='/profile'
             render={() => <ProfilePage />} />

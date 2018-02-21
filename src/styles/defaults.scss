@@ -101,6 +101,31 @@ html,body {
   &:focus {
     outline: none;
   }
+  &--checkbox {
+  	-webkit-appearance: none;
+  	background-color: $very-very-light-grey;
+  	border: $border;
+    border-radius: $border-radius;
+    display: inline-block;
+    padding: 9px;
+  	position: relative;
+    transition: all 0.25s ease-out;
+    &:focus{
+      outline: none;
+    }
+    &:active,&:checked {
+    	background-color: black;
+    	color: $very-very-light-grey;
+      &:after {
+      	content: '\2714';
+      	font-size: 14px;
+      	position: absolute;
+      	top: 0px;
+      	left: 3px;
+      	color: $very-very-light-grey;
+      }
+    }
+  }
 }
 
 label {

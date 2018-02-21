@@ -35,7 +35,7 @@ class SearchInput extends Component {
   }
   render () {
     const children = [
-      <input className='input search-input mt1 mx-auto col-9'
+      <input className='input search-input mx-auto col-9'
         key={0}
         onChange={this.onChange}
         placeholder='tape ta recherche'

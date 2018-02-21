@@ -8,7 +8,7 @@ import { resetForm } from '../reducers/form'
 import { showModal } from '../reducers/modal'
 
 class OfferNewButton extends Component {
-  onNewClick = () => {
+  onClick = () => {
     const { assignData, resetForm, showModal } = this.props
     assignData({ works: null })
     resetForm()
@@ -16,13 +16,11 @@ class OfferNewButton extends Component {
   }
   render () {
     return (
-      <div className='flex items-center justify-center p1'>
-        <button className='button button--alive button--rounded left-align'
-          onClick={this.onNewClick}
-        >
-          <Icon name='add' />
-        </button>
-      </div>
+      <button className='button button--alive button--rounded mr1'
+        onClick={this.onClick}
+      >
+        <Icon name='add' />
+      </button>
     )
   }
 }

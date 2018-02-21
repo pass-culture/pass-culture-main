@@ -1,5 +1,6 @@
 // ACTIONS
 export const SET_USER = 'SET_USER'
+export const SET_USER_OFFERER = 'SET_USER_OFFERER'
 
 // INITIAL STATE
 const initialState = null
@@ -9,6 +10,13 @@ function user (state = initialState, action) {
   switch (action.type) {
     case SET_USER:
       return action.user
+    case SET_USER_OFFERER:
+      if (!state) {
+        return state
+      }
+      return Object.assign({}, state, {
+        offerer: state.userOfferers.find(({ id }) => id === action.id)
+      })
     default:
       return state
   }
@@ -16,10 +24,17 @@ function user (state = initialState, action) {
 
 // ACTION CREATORS
 export function setUser (user) {
-  return ({
+  return {
     type: SET_USER,
     user
-  })
+  }
+}
+
+export function setUserOfferer (id) {
+  return {
+    type: SET_USER_OFFERER,
+    id
+  }
 }
 
 // default

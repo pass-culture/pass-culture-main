@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { createSelector } from 'reselect'
 
@@ -9,7 +10,7 @@ import { requestData } from '../reducers/data'
 
 class OffersList extends Component {
   handleRequestData = props => {
-    const { offererId, requestData, user } = props
+    const { match: { params: { offererId } }, requestData, user } = props
     if (!this.hasRequired && user) {
       requestData('GET', `offers?offererId=${offererId}`)
       this.hasRequired = true
@@ -55,6 +56,7 @@ const getSortOffers = createSelector(state => state.data.offers,
   })
 
 export default compose(
+  withRouter,
   withLogin,
   connect(
     state =>({
