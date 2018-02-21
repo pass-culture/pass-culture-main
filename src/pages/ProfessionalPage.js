@@ -4,7 +4,7 @@ import OfferersGrid from '../components/OfferersGrid'
 
 const ProfessionalPage = () => {
   return (
-    <main className='professional-page p2 center'>
+    <main className='page professional-page p2 center'>
       <div className='h2 mt2'>
         Mes offres
       </div>

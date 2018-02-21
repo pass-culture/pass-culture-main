@@ -10,10 +10,11 @@ import { setUserOfferer } from '../reducers/user'
 
 class OffererPage extends Component {
   handleSetUserOfferer = props => {
-    const { offererId, requestData, setUserOfferer } = props    
+    const { offererId, setUserOfferer } = props
+    setUserOfferer(offererId)
   }
   componentWillMount () {
-    requestData('GET', 'providers')
+    this.props.requestData('GET', 'providers')
     this.handleSetUserOfferer(this.props)
   }
   componentWillReceiveProps (nextProps) {
@@ -23,7 +24,7 @@ class OffererPage extends Component {
   }
   render () {
     return (
-      <main className='professional-home-page p2'>
+      <main className='page offerer-page p2'>
         <div className='flex items-center flex-start mt2 mb2'>
           <OfferNewButton />
           <OffererEditButton />
@@ -37,5 +38,5 @@ class OffererPage extends Component {
 
 export default connect(
   state => ({ offerer: state.user && state.user.offerer }),
-  { setUserOfferer }
+  { requestData, setUserOfferer }
 )(OffererPage)

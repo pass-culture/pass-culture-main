@@ -10,18 +10,18 @@ const Menu = ({ isNavigationActive, user }) => {
   return (
     <div className={classnames('menu', { 'menu--active': isNavigationActive })}>
       <Link className={classnames('link block menu__link mb2', {
-          'menu__link--active': '/explore' === window.location.pathname
+          'menu__link--active': '/decouverte' === window.location.pathname
         })}
-        href={'/explore'}>
-        Explore
+        href={'/decouverte'}>
+        Découverte
       </Link>
       {
         user && user.userOfferers && user.userOfferers.length > 0 && (
           <Link className={classnames('link block menu__link mb2', {
-            'menu__link--active': '/gestion' === window.location.pathname
+            'menu__link--active': '/pro' === window.location.pathname
           })}
           href={'/gestion'}>
-            Gestion
+            Pro
           </Link>
         )
       }
