@@ -23,8 +23,12 @@ class SearchInput extends Component {
   }
   handleRequestData = event => {
     const { target: { value } } = event
-    const { collectionName, hook, requestData } = this.props
-    this.props.showLoading('search')
+    const { collectionName,
+      hook,
+      requestData,
+      showLoading
+    } = this.props
+    showLoading('search')
     requestData('GET', `${collectionName}?search=${value}`, { hook, value })
     this._isDebouncing = false
   }

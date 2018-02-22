@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React, { Component } from 'react'
 import { findDOMNode } from 'react-dom'
 import { connect } from 'react-redux'
@@ -15,44 +16,45 @@ class Explorer extends Component {
     super()
     this.state = { carouselElement: null,
       carousselNode: null,
-      hasRequested: false,
       selectedItem: 0
     }
   }
   handleLoading = props => {
-    const { closeLoading, elements, showLoading } = props
-    if (!elements || elements.length === 0) {
+    const { closeLoading, showLoading, userMediations } = props
+    if (!userMediations || userMediations.length === 0) {
       showLoading()
       return
     }
     closeLoading()
   }
-  handleRequestData = props => {
-    const { collectionName, requestData, userId } = props
-    userId && requestData('GET',
-      collectionName,
-      { isGeolocated: true, sync: true }
-    )
+  handleSearchHook = (method, path, result, config) => {
+    const { assignData, requestData } = this.props
+    if (!result.data) {
+      return
+    }
+    if (config.value &&  config.value.length > 0) {
+      const userMediations = result.data.map(offer => ({
+        isClicked: false,
+        isFavorite: false,
+        offer
+      }))
+      assignData({ userMediations })
+    } else {
+      requestData('PUT', 'userMediations', { sync: true })
+    }
   }
   onChange = selectedItem => {
-    const { closeLoading,
-      collectionName,
-      elements,
-      requestData,
-      showLoading
+    const { requestData,
+      userMediations
     } = this.props
-    const { hasRequested } = this.state
     const newState = { selectedItem }
-    if (elements && !hasRequested && selectedItem === elements.length - 1) {
-      requestData('POST', collectionName)
-      newState.hasRequested = true
-    } else if (selectedItem === 0) {
-      newState.hasRequested = false
-    }
+    // update dateRead for previous item
+    const { id, isFavorite } = userMediations[selectedItem - 1]
+    const body = [{ dateRead: moment().toISOString(), id, isFavorite }]
+    requestData('PUT', 'userMediations', { body, sync: true })
     this.setState(newState)
   }
   componentWillMount () {
-    this.handleRequestData(this.props)
     this.handleLoading(this.props)
   }
   componentDidMount () {
@@ -67,28 +69,22 @@ class Explorer extends Component {
     }
   }
   componentWillReceiveProps (nextProps) {
-    const { elements, userId } = nextProps
-    if (userId && (!this.props.userId || userId !== this.props.userId)) {
-      this.handleRequestData(nextProps)
-    }
-    if (this.carouselElement && elements !== this.props.elements) {
+    const { userMediations } = nextProps
+    if (this.carouselElement && userMediations !== this.props.userMediations) {
       this.handleLoading(nextProps)
       //this.carouselElement.selectItem({ selectedItem: 0 })
     }
   }
   render () {
-    const { collectionName,
-      elements,
-      loadingTag,
-      searchCollectionName,
-      searchHook
+    const { loadingTag,
+      userMediations
     } = this.props
     const { selectedItem } = this.state
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
-          <SearchInput collectionName={searchCollectionName || collectionName}
-            hook={searchHook}
+          <SearchInput collectionName='offers'
+            hook={this.handleSearchHook}
             ref={element => this.searchElement = element} />
         </div>
         <Carousel axis='horizontal'
@@ -103,15 +99,15 @@ class Explorer extends Component {
           transitionTime={250}
           onChange={this.onChange} >
           {
-            loadingTag !== 'search' && elements && elements.length > 0
-              ? elements.map((element, index) =>
+            loadingTag !== 'search' && userMediations && userMediations.length > 0
+              ? userMediations.map((userMediation, index) =>
                   <Card {...this.state}
                     index={index}
-                    itemsCount={elements.length}
+                    itemsCount={userMediations.length}
                     key={index}
-                    {...element}
-                    {...element.mediation && element.mediation.offer}
-                    {...element.offer} />
+                    {...userMediation}
+                    {...userMediation.mediation && userMediation.mediation.offer}
+                    {...userMediation.offer} />
                 ).concat([<LoadingCard key='last' isForceActive />])
               : <LoadingCard />
           }
@@ -124,9 +120,8 @@ class Explorer extends Component {
 export default compose(
   connect(
     (state, ownProps) => ({
-      elements: state.data[ownProps.collectionName],
-      loadingTag: state.loading.tag,
-      userId: state.user && state.user.id
+      userMediations: state.data.userMediations,
+      loadingTag: state.loading.tag
     }),
     { closeLoading, requestData, showLoading }
   )

@@ -1,26 +1,32 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
+import { requestData } from '../reducers/data'
 import { setUser } from '../reducers/user'
-import { clearUserMediations,
-  requestUserMediationsData
-} from '../utils/sync'
+import { clear } from '../utils/dexie'
 
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false
   yield put(setUser(false))
-  yield call(clearUserMediations)
+  yield call(clear)
+  // this will download examples of userMediations
+  // for not connected user
+  yield put(requestData('PUT', 'userMediations', { sync: true }))
 }
 
 function * fromWatchSuccessGetSignoutActions () {
   yield put(setUser(null))
-  yield call(clearUserMediations)
+  yield call(clear)
+  // this will download examples of userMediations
+  // for not connected user
+  yield put(requestData('PUT', 'userMediations', { sync: true }))
 }
 
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     yield put(setUser(user))
-    yield put(requestUserMediationsData())
+    // that one will fetch specified userMediations
+    yield put(requestData('PUT', 'userMediations', { sync: true }))
   }
 }
 

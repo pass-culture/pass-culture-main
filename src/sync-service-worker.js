@@ -1,7 +1,7 @@
-import { syncUserMediations } from './utils/dexie'
+import { sync } from './utils/dexie'
 
 self.addEventListener('sync', function (event) {
   if (event.tag === 'user_mediations') {
-    event.waitUntil(syncUserMediations())
+    event.waitUntil(sync('PUT', 'userMediations'))
   }
 })

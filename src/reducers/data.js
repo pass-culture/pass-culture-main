@@ -39,12 +39,16 @@ const data = (state = initialState, action) => {
     }
     // update
     if (action.method === 'PUT') {
-      // for put we need just to 'override pre existing data'
+      // for put we need just to 'override pre existing data' or append it in the end
       nextState[key] = [...previousData]
       const previousIds = previousData.map(({ id }) => id)
       nextData.forEach(datum => {
         const previousIndex = previousIds.indexOf(datum.id)
-        nextState[key][previousIndex] = Object.assign({}, nextState[key][previousIndex], datum)
+        const putIndex = previousIndex === -1
+          ? nextState[key].length
+          : previousIndex
+        nextState[key][putIndex] = Object.assign({},
+          previousIndex !== -1 && nextState[key][previousIndex], datum)
       })
     } else {
       // for get and post we need to concat
