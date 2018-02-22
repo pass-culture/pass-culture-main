@@ -9,20 +9,20 @@ import { requestUserMediationsData } from '../utils/sync'
 
 class DiscoveryPage extends Component {
   handleSearchHook = (method, path, result, config) => {
-     const { assignData, requestUserMediationsData } = this.props
-     if (!result.data) {
-       return
-     }
-     if (config.value &&  config.value.length > 0) {
-       const userMediations = result.data.map(offer => ({
-         isClicked: false,
-         isFavorite: false,
-         offer
-       }))
-       assignData({ userMediations })
-     } else {
-       requestUserMediationsData()
-     }
+    const { assignData, requestUserMediationsData } = this.props
+    if (!result.data) {
+      return
+    }
+    if (config.value &&  config.value.length > 0) {
+      const userMediations = result.data.map(offer => ({
+        isClicked: false,
+        isFavorite: false,
+        offer
+      }))
+      assignData({ userMediations })
+    } else {
+      requestUserMediationsData()
+    }
   }
   render () {
     return (

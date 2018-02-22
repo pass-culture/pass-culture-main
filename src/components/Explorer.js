@@ -35,8 +35,12 @@ class Explorer extends Component {
     )
   }
   onChange = selectedItem => {
-    /*
-    const { collectionName, elements, requestData } = this.props
+    const { closeLoading,
+      collectionName,
+      elements,
+      requestData,
+      showLoading
+    } = this.props
     const { hasRequested } = this.state
     const newState = { selectedItem }
     if (elements && !hasRequested && selectedItem === elements.length - 1) {
@@ -46,7 +50,6 @@ class Explorer extends Component {
       newState.hasRequested = false
     }
     this.setState(newState)
-    */
   }
   componentWillMount () {
     this.handleRequestData(this.props)
@@ -76,7 +79,7 @@ class Explorer extends Component {
   render () {
     const { collectionName,
       elements,
-      isLoadingActive,
+      loadingTag,
       searchCollectionName,
       searchHook
     } = this.props
@@ -100,7 +103,7 @@ class Explorer extends Component {
           transitionTime={250}
           onChange={this.onChange} >
           {
-            !isLoadingActive && elements && elements.length > 0
+            loadingTag !== 'search' && elements && elements.length > 0
               ? elements.map((element, index) =>
                   <Card {...this.state}
                     index={index}
@@ -109,7 +112,7 @@ class Explorer extends Component {
                     {...element}
                     {...element.mediation && element.mediation.offer}
                     {...element.offer} />
-                )
+                ).concat([<LoadingCard key='last' isForceActive />])
               : <LoadingCard />
           }
         </Carousel>
@@ -122,7 +125,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       elements: state.data[ownProps.collectionName],
-      isLoadingActive: state.loading.isActive,
+      loadingTag: state.loading.tag,
       userId: state.user && state.user.id
     }),
     { closeLoading, requestData, showLoading }

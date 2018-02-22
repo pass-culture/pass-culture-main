@@ -2,12 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 const Loading = ({ className,
+  isForceActive,
   isActive
 }) => {
   return (
     <div className={className || 'loading'}>
       {
-        isActive && <div className='loading__container' />
+        (isActive || isForceActive) && <div className='loading__container' />
       }
     </div>
   )
