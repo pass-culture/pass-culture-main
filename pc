@@ -84,9 +84,16 @@ elif [[ "$CMD" == "start-frontend" ]]; then
 elif [[ "$CMD" == "symlink" ]]; then
 	RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
 elif [[ "$CMD" == "test-backend" ]]; then
-	RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pytest tests/*"'
+   read -p "Warning: your database will be wiped. Is this OK (y/n): " -n 1 -r
+   echo
+   if [[ ! $REPLY =~ ^[Yy]$ ]]
+   then
+     exit
+   fi
+  "$ROOT_PATH"/pc -e $ENV reset-db
+  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest tests/*"'
 elif [[ "$CMD" == "testcafe" ]]; then
-	RUN='cd webapp && ./scripts/pc.js testcafe '"$*"
+  RUN='cd webapp && ./scripts/pc.js testcafe '"$*"
 else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
@@ -94,6 +101,6 @@ fi
 if [[ "$ENV" == "prod" ]]; then
   ssh deploy@pc-api.btmx.fr bash -c "$RUN"
 else
-	echo $RUN
+  echo $RUN
   eval $RUN
 fi
