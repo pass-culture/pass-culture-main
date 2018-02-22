@@ -1,11 +1,13 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
+import { requestData } from '../reducers/data'
 import { setUser } from '../reducers/user'
-import { clearUserMediations } from '../utils/sync'
+import { clearUserMediations, putUserMediations } from '../utils/sync'
 
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false
   yield put(setUser(false))
+  yield call(clearUserMediations)
 }
 
 function * fromWatchSuccessGetSignoutActions () {
@@ -17,6 +19,7 @@ function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     yield put(setUser(user))
+    yield put(requestData('POST', 'userMediations', { hook: putUserMediations }))
   }
 }
 

@@ -20,7 +20,7 @@ class OffererPage extends Component {
     this.handleSetUserOfferer(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    if (nextProps.user && nextProps.user.userOfferers != (this.props.user && this.props.user.userOfferers)) {
+    if (nextProps.user && nextProps.user.userOfferers !== (this.props.user && this.props.user.userOfferers)) {
       this.handleSetUserOfferer(nextProps)
     }
   }

@@ -9,11 +9,11 @@ import { closeLoading, showLoading } from '../reducers/loading'
 
 class SearchInput extends Component {
   constructor (props) {
-      super (props)
-      this.handleDebouncedRequestData = debounce(
-        this.handleRequestData,
-        props.debounceTimeout
-      )
+    super (props)
+    this.handleDebouncedRequestData = debounce(
+      this.handleRequestData,
+      props.debounceTimeout
+    )
   }
   componentWillReceiveProps (nextProps) {
     const { closeLoading, offers } = nextProps

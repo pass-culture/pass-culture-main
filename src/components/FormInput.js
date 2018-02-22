@@ -1,3 +1,4 @@
+import debounce from 'lodash.debounce'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -6,15 +7,21 @@ import { getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormInput extends Component {
-  componentWillMount () {
-    // fill automatically the form when it is a NEW POST action
-    const { defaultValue, id } = this.props
-    defaultValue && id === NEW && this.handleMergeForm(defaultValue)
+  constructor (props) {
+    super (props)
+    this.state = { localValue: null }
+    this.handleDebouncedMergeForm = debounce(
+      this.handleMergeForm,
+      props.debounceTimeout
+    )
   }
-  onChange = ({ target: { value } }) => {
-    this.handleMergeForm(value)
+  onChange = event => {
+    event.persist()
+    console.log('event', event.target.value)
+    this.handleDebouncedMergeForm(event)
+    this.setState({ localValue: event.target.value })
   }
-  handleMergeForm = value => {
+  handleMergeForm = ({ target: { value } }) => {
     const { collectionName, id, mergeForm, name, type } = this.props
     // be sure to cast to the good type
     const mergedValue = type === 'number'
@@ -22,6 +29,11 @@ class FormInput extends Component {
       : value
     // merge
     mergeForm(collectionName, id, name, mergedValue)
+  }
+  componentWillMount () {
+    // fill automatically the form when it is a NEW POST action
+    const { defaultValue, id } = this.props
+    defaultValue && id === NEW && this.handleMergeForm(defaultValue)
   }
   render () {
     const { className,
@@ -31,13 +43,18 @@ class FormInput extends Component {
       type,
       value
     } = this.props
+    const { localValue } = this.state
     return (
       <span>
         <input className={className || 'input'}
           onChange={this.onChange}
           placeholder={placeholder}
           type={type}
-          value={value || defaultValue || ''} />
+          value={
+            localValue !== null
+            ? localValue
+            : value || defaultValue || ''
+          } />
         {isRequired && <span className='form-input__required'> (*) </span>}
       </span>
     )
@@ -45,6 +62,7 @@ class FormInput extends Component {
 }
 
 FormInput.defaultProps = {
+  debounceTimeout: 500,
   id: NEW
 }
 

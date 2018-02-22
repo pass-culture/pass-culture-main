@@ -11,6 +11,7 @@ function * fromWatchRequestDataActions (action) {
   // UNPACK
   const { method, path, config } = action
   const body = config && config.body
+  const hook = config && config.hook
   const sync = config && config.sync
   const type = config && config.type
   // GEOLOCATION
@@ -19,13 +20,14 @@ function * fromWatchRequestDataActions (action) {
   yield put(setGeolocationPosition(position))
   // TOKEN
   const token = yield type && select(state => state.data[`${type}Token`])
-  // API
+  // DATA
   try {
     const result = yield call((sync && syncData) || fetchData,
       action.method,
       action.path,
       { body, position, token }
     )
+    hook && hook(method, path, result, config)
     if (result.data) {
       yield put(successData(method, path, result.data, config))
     } else {

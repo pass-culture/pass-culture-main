@@ -6,9 +6,15 @@ export async function syncData (method, path, config = {}) {
   return { data }
 }
 
+export async function putUserMediations (result) {
+  if (result.data) {
+    return db.userMediations.bulkPut(result.data)
+  }
+}
+
 export async function syncUserMediations () {
-  const { data } = await fetchData('POST', 'userMediations')
-  db.userMediations.bulkPut(data)
+  const result = await fetchData('POST', 'userMediations')
+  putUserMediations(result)
 }
 
 export async function clearUserMediations () {

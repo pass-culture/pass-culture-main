@@ -9,15 +9,3 @@ export default async function registerSyncServiceWorker() {
     registration.sync.register('user_mediations')
   }
 }
-
-async function unregisterSyncServiceWorker () {
-  navigator.serviceWorker.unregister(swUrl)
-  /*
-  const registrations = await navigator.serviceWorker.getRegistrations()
-  const registration = registrations.filter(registration =>
-    registration.active && registration.active.scriptURL === swUrl)
-  registration && registration.unregister(registration)
-  */
-}
-
-window.unregisterSyncServiceWorker = unregisterSyncServiceWorker

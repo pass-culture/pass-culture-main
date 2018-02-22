@@ -37,6 +37,12 @@ class Sign extends Component {
           placeholder='password'
           type='password' />
         <SubmitButton getBody={form => form.usersById[NEW]}
+          getIsDisabled={form => !form ||
+            !form.usersById ||
+            !form.usersById[NEW] ||
+            !form.usersById[NEW].identifier ||
+            !form.usersById[NEW].password
+          }
           path='users/signin'
           storeKey='users'
           text='Connecter' />
