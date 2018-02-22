@@ -5,8 +5,10 @@ import { Carousel } from 'react-responsive-carousel'
 import { compose } from 'redux'
 
 import Card from './Card'
+import Loading from './Loading'
 import SearchInput from '../components/SearchInput'
 import { requestData } from '../reducers/data'
+import { closeLoading, showLoading } from '../reducers/loading'
 
 class Explorer extends Component {
   constructor () {
@@ -16,6 +18,14 @@ class Explorer extends Component {
       hasRequested: false,
       selectedItem: 0
     }
+  }
+  handleLoading = props => {
+    const { closeLoading, elements, showLoading } = props
+    if (!elements || elements.length === 0) {
+      showLoading()
+      return
+    }
+    closeLoading()
   }
   handleRequestData = props => {
     const { collectionName, requestData, userId } = props
@@ -38,6 +48,7 @@ class Explorer extends Component {
   }
   componentWillMount () {
     this.handleRequestData(this.props)
+    this.handleLoading(this.props)
   }
   componentDidMount () {
     const newState = {
@@ -49,11 +60,13 @@ class Explorer extends Component {
     }
   }
   componentWillReceiveProps (nextProps) {
-    if (nextProps.userId && (!this.props.userId || nextProps.userId !== this.props.userId)) {
+    const { elements, userId } = nextProps
+    if (userId && (!this.props.userId || userId !== this.props.userId)) {
       this.handleRequestData(nextProps)
     }
-    if (this.carousselElement && nextProps.elements !== this.props.elements) {
-      this.carousselElement.selectItem({ selectedItem: 0 })
+    if (this.carousselElement && elements !== this.props.elements) {
+      this.handleLoading(nextProps)
+      //this.carousselElement.selectItem({ selectedItem: 0 })
     }
   }
   render () {
@@ -76,29 +89,26 @@ class Explorer extends Component {
           transitionTime={250}
           onChange={this.onChange} >
           {
-            elements.map((element, index) =>
-              <Card {...this.state}
-                index={index}
-                itemsCount={elements.length}
-                key={index}
-                {...element}
-                {...element.mediation && element.mediation.offer}
-                {...element.offer} />
-            )
+            elements
+              ? elements.map((element, index) =>
+                  <Card {...this.state}
+                    index={index}
+                    itemsCount={elements.length}
+                    key={index}
+                    {...element}
+                    {...element.mediation && element.mediation.offer}
+                    {...element.offer} />
+                )
+              : (
+                <div className='card flex items-center justify-center'>
+                  <Loading />
+                </div>
+              )
           }
         </Carousel>
       </div>
     )
   }
-}
-
-Explorer.defaultProps = {
-  elements: [{
-    offer: {
-      name: 'Pas de propositions pour le moment',
-      work: {}
-    }
-  }]
 }
 
 export default compose(
@@ -107,6 +117,6 @@ export default compose(
       elements: state.data[ownProps.collectionName],
       userId: state.user && state.user.id
     }),
-    { requestData }
+    { closeLoading, requestData, showLoading }
   )
 )(Explorer)

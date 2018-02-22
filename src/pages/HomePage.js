@@ -18,9 +18,7 @@ class HomePage extends Component {
   }
   render () {
     return (
-      <main className='page home-page'>
-        Bienvenue sur le pass culture
-      </main>
+      <main className='page home-page' />
     )
   }
 }

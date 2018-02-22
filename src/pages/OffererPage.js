@@ -39,7 +39,7 @@ class OffererPage extends Component {
 }
 
 export default compose(
-  // withLogin,
+  withLogin,
   connect(
     state => ({ user: state.user }),
     { requestData, setUserOfferer }
