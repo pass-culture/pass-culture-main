@@ -43,7 +43,8 @@ class Sign extends Component {
         <div className='sign__error mt1'>
           {error && error.message}
         </div>
-        <button className='button button--alive' onClick={this.onSignupClick} >
+        <button className='button button--inversed absolute bottom-0 right-0 mb2 mr2'
+          onClick={this.onSignupClick} >
           Pas encore inscrit ?
         </button>
       </div>

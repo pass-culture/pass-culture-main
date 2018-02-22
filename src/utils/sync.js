@@ -10,3 +10,7 @@ export async function syncUserMediations () {
   const { data } = await fetchData('POST', 'userMediations')
   db.userMediations.bulkPut(data)
 }
+
+export async function clearUserMediations () {
+  db.userMediations.clear()
+}

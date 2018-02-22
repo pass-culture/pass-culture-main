@@ -1,6 +1,7 @@
-import { put, select, takeEvery } from 'redux-saga/effects'
+import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { setUser } from '../reducers/user'
+import { clearUserMediations } from '../utils/sync'
 
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false
@@ -9,6 +10,7 @@ function * fromWatchFailSignActions (action) {
 
 function * fromWatchSuccessGetSignoutActions () {
   yield put(setUser(null))
+  yield call(clearUserMediations)
 }
 
 function * fromWatchSuccessSignActions () {

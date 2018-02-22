@@ -13,14 +13,15 @@ class Modal extends Component {
   render () {
     const { ContentComponent,
       isActive,
-      isCloseButton
+      isCloseButton,
+      isUnclosable
     } = this.props
     return (
       <div className={classnames({
         'modal--active': isActive
       }, 'modal')}
         role='dialog'
-        onClick={this.onCloseClick}>
+        {...!isUnclosable && { onClick: this.onCloseClick } }>
         <div className='modal__dialog relative'
           role='document'
           onClick={e => {

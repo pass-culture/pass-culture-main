@@ -35,6 +35,7 @@ class Explorer extends Component {
     )
   }
   onChange = selectedItem => {
+    /*
     const { collectionName, elements, requestData } = this.props
     const { hasRequested } = this.state
     const newState = { selectedItem }
@@ -45,6 +46,7 @@ class Explorer extends Component {
       newState.hasRequested = false
     }
     this.setState(newState)
+    */
   }
   componentWillMount () {
     this.handleRequestData(this.props)
@@ -89,7 +91,7 @@ class Explorer extends Component {
           transitionTime={250}
           onChange={this.onChange} >
           {
-            elements
+            elements && elements.length > 0
               ? elements.map((element, index) =>
                   <Card {...this.state}
                     index={index}

@@ -18,7 +18,10 @@ const withLogin = WrappedComponent => {
       if (nextProps.user && nextProps.user !== this.props.user) {
         nextProps.closeModal()
       } else if (!nextProps.user) {
-        nextProps.showModal(<Sign />, { isCloseButton: false })
+        nextProps.showModal(<Sign />, {
+          isCloseButton: false,
+          isUnclosable: true
+        })
       }
     }
     render () {

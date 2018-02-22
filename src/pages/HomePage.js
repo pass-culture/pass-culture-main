@@ -6,7 +6,7 @@ import { compose } from 'redux'
 class HomePage extends Component {
   handleRedirect = props => {
     const { history: { push }, user } = props
-    push(user.userOfferers && user.userOfferers ? '/pro' : '/decouverte')
+    push(user.isPro > 0 ? '/pro' : '/decouverte')
   }
   componentWillMount () {
     this.props.user && this.handleRedirect(this.props)
