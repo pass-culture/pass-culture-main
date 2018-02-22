@@ -23,13 +23,14 @@ class SearchInput extends Component {
   }
   handleRequestData = event => {
     const { target: { value } } = event
-    const { requestData } = this.props
-    requestData('GET', `offers?search=${value}`)
+    const { collectionName, hook, requestData } = this.props
+    this.props.showLoading()
+    requestData('GET', `${collectionName}?search=${value}`, { hook, value })
     this._isDebouncing = false
   }
   onChange = event => {
     event.persist()
-    !this._isDebouncing && this.props.showLoading()
+    //!this._isDebouncing && this.props.showLoading()
     this._isDebouncing = true
     this.handleDebouncedRequestData(event)
   }
@@ -39,6 +40,7 @@ class SearchInput extends Component {
         key={0}
         onChange={this.onChange}
         placeholder='tape ta recherche'
+        ref={_element => this._element = _element }
         type='text' />
     ]
     window.location.pathname.includes('/gestion') && children.push(
@@ -56,6 +58,8 @@ SearchInput.defaultProps = {
 }
 
 export default connect(
-  state => ({ offers: state.data.offers }),
+  (state, ownProps) => ({
+    [ownProps.collectionName]: state.data[ownProps.collectionName]
+  }),
   { closeLoading, requestData, showLoading }
 )(SearchInput)

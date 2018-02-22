@@ -1,4 +1,4 @@
-import { syncUserMediations } from './utils/sync'
+import { syncUserMediations } from './utils/dexie'
 
 self.addEventListener('sync', function (event) {
   if (event.tag === 'user_mediations') {

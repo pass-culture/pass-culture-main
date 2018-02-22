@@ -71,7 +71,7 @@ class Card extends Component {
     this.setState({ position: null, isDragging: true })
   }
   onStop = (event, data) => {
-    const { carousselElement,
+    const { carouselElement,
       filterData,
       id,
       index,
@@ -97,7 +97,7 @@ class Card extends Component {
       //  type,
       //  userId
       //}})
-      carousselElement.selectItem({ selectedItem: (index < itemsCount - 1)
+      carouselElement.selectItem({ selectedItem: (index < itemsCount - 1)
         ? index
         : index -1
       })

@@ -30,7 +30,7 @@ class OffererPage extends Component {
         <div className='flex items-center flex-start mt2 mb2'>
           <OfferNewButton />
           <OffererEditButton />
-          <SearchInput />
+          <SearchInput collectionName='offers' isLoading />
         </div>
         <OffersList />
       </main>

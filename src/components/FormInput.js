@@ -17,7 +17,6 @@ class FormInput extends Component {
   }
   onChange = event => {
     event.persist()
-    console.log('event', event.target.value)
     this.handleDebouncedMergeForm(event)
     this.setState({ localValue: event.target.value })
   }

@@ -5,7 +5,7 @@ import { Carousel } from 'react-responsive-carousel'
 import { compose } from 'redux'
 
 import Card from './Card'
-import Loading from './Loading'
+import LoadingCard from './LoadingCard'
 import SearchInput from '../components/SearchInput'
 import { requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
@@ -13,7 +13,7 @@ import { closeLoading, showLoading } from '../reducers/loading'
 class Explorer extends Component {
   constructor () {
     super()
-    this.state = { carousselElement: null,
+    this.state = { carouselElement: null,
       carousselNode: null,
       hasRequested: false,
       selectedItem: 0
@@ -54,8 +54,10 @@ class Explorer extends Component {
   }
   componentDidMount () {
     const newState = {
-      carousselElement: this.carousselElement,
-      carousselNode: findDOMNode(this.carousselElement)
+      carouselElement: this.carouselElement,
+      carousselNode: findDOMNode(this.carouselElement),
+      // searchElement: this.searchElement,
+      // searchNode: findDOMNode(this.searchElement)
     }
     if (Object.keys(newState).length > 0) {
       this.setState(newState)
@@ -66,22 +68,29 @@ class Explorer extends Component {
     if (userId && (!this.props.userId || userId !== this.props.userId)) {
       this.handleRequestData(nextProps)
     }
-    if (this.carousselElement && elements !== this.props.elements) {
+    if (this.carouselElement && elements !== this.props.elements) {
       this.handleLoading(nextProps)
-      //this.carousselElement.selectItem({ selectedItem: 0 })
+      //this.carouselElement.selectItem({ selectedItem: 0 })
     }
   }
   render () {
-    const { elements } = this.props
+    const { collectionName,
+      elements,
+      isLoadingActive,
+      searchCollectionName,
+      searchHook
+    } = this.props
     const { selectedItem } = this.state
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
-          <SearchInput />
+          <SearchInput collectionName={searchCollectionName || collectionName}
+            hook={searchHook}
+            ref={element => this.searchElement = element} />
         </div>
         <Carousel axis='horizontal'
           emulateTouch
-          ref={_element => this.carousselElement = _element}
+          ref={element => this.carouselElement = element}
           selectedItem={selectedItem}
           showArrows={true}
           swipeScrollTolerance={100}
@@ -91,7 +100,7 @@ class Explorer extends Component {
           transitionTime={250}
           onChange={this.onChange} >
           {
-            elements && elements.length > 0
+            !isLoadingActive && elements && elements.length > 0
               ? elements.map((element, index) =>
                   <Card {...this.state}
                     index={index}
@@ -101,11 +110,7 @@ class Explorer extends Component {
                     {...element.mediation && element.mediation.offer}
                     {...element.offer} />
                 )
-              : (
-                <div className='card flex items-center justify-center'>
-                  <Loading />
-                </div>
-              )
+              : <LoadingCard />
           }
         </Carousel>
       </div>
@@ -117,6 +122,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       elements: state.data[ownProps.collectionName],
+      isLoadingActive: state.loading.isActive,
       userId: state.user && state.user.id
     }),
     { closeLoading, requestData, showLoading }
