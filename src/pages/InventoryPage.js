@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
+import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 
 class InventoryPage extends Component {
@@ -13,7 +15,10 @@ class InventoryPage extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({ a: 1 }),
-  { requestData }
+export default compose(
+  withLogin({ isRequired: true }),
+  connect(
+    (state, ownProps) => ({ a: 1 }),
+    { requestData }
+  )
 )(InventoryPage)

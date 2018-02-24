@@ -1,6 +1,7 @@
 import React from 'react'
 
 import OfferersGrid from '../components/OfferersGrid'
+import withLogin from '../hocs/withLogin'
 
 const ProfessionalPage = () => {
   return (
@@ -13,4 +14,4 @@ const ProfessionalPage = () => {
   )
 }
 
-export default ProfessionalPage
+export default withLogin({ isRequired: true })(ProfessionalPage)

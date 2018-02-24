@@ -5,7 +5,6 @@ import { compose } from 'redux'
 import { createSelector } from 'reselect'
 
 import OfferItem from '../components/OfferItem'
-import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 
 class OffersList extends Component {
@@ -58,7 +57,6 @@ const getSortOffers = createSelector(state => state.data.offers,
 
 export default compose(
   withRouter,
-  withLogin,
   connect(
     state =>({
       offers: getSortOffers(state),

@@ -7,7 +7,7 @@ db.version(1).stores({
   userMediations: 'id'
 })
 
-export async function bulk (method, path, data) {
+export async function bulkData (method, path, data) {
   let dbMethod = method.toLowerCase()
   dbMethod = `bulk${dbMethod[0].toUpperCase()}${dbMethod.slice(1)}`
   const collectionName = path.split('?')[0]
@@ -19,9 +19,13 @@ export async function clear () {
   Promise.all(db.tables.map(async table => table.clear()))
 }
 
-export async function sync (method, path) {
-  const result = await fetchData(method, path)
-  if (result.data) {
-    return bulk(method, path, result.data)
-  }
+export async function sync () {
+  Promise.all(db.tables.map(async table => {
+    const method = 'PUT'
+    const path = table.name
+    const result = await fetchData(method, path)
+    if (result.data) {
+      return bulkData(method, path, result.data)
+    }
+  }))
 }

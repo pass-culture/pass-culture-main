@@ -5,7 +5,8 @@ import Sign from '../components/Sign'
 import { closeModal, showModal } from '../reducers/modal'
 import { requestData } from '../reducers/data'
 
-const withLogin = WrappedComponent => {
+const withLogin = (config = {}) => WrappedComponent => {
+  const { isRequired } = config
   class _withLogin extends Component {
     componentWillMount = () => {
       // be sure that user is not defined yet by waiting a bit
@@ -17,7 +18,7 @@ const withLogin = WrappedComponent => {
     componentWillReceiveProps = nextProps => {
       if (nextProps.user && nextProps.user !== this.props.user) {
         nextProps.closeModal()
-      } else if (!nextProps.user) {
+      } else if (isRequired && !nextProps.user) {
         nextProps.showModal(<Sign />, {
           isCloseButton: false,
           isUnclosable: true

@@ -7,7 +7,6 @@ import './utils/styles'
 
 import Root from './Root'
 import registerCacheServiceWorker from './utils/registerCacheServiceWorker'
-import registerSyncServiceWorker from './utils/registerSyncServiceWorker'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
 if (module.hot) {
@@ -21,4 +20,3 @@ if (module.hot) {
   })
 }
 registerCacheServiceWorker()
-registerSyncServiceWorker()

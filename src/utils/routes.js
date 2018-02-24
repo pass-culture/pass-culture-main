@@ -1,6 +1,5 @@
 import React from 'react'
 
-import ActivitiesPage from '../pages/ActivitiesPage'
 import ClientOfferPage from '../pages/ClientOfferPage'
 import DiscoveryPage from '../pages/DiscoveryPage'
 import InventoryPage from '../pages/InventoryPage'
@@ -15,11 +14,6 @@ const routes = [
     exact: true,
     path: '/',
     render: () => <HomePage />
-  },
-  {
-    exact: true,
-    path: '/activities',
-    render: () => <ActivitiesPage />
   },
   {
     exact: true,

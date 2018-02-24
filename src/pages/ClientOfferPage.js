@@ -22,7 +22,7 @@ class ClientOfferPage extends Component {
 }
 
 export default compose(
-  withLogin,
+  withLogin(),
   connect(
     (state, ownProps) => ({
       offer: state.data['offers/'+ownProps.offerId] &&

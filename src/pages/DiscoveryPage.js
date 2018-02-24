@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Explorer from '../components/Explorer'
+import withLogin from '../hocs/withLogin'
 
 const DiscoveryPage = () => {
   return (
@@ -10,4 +11,4 @@ const DiscoveryPage = () => {
   )
 }
 
-export default DiscoveryPage
+export default withLogin()(DiscoveryPage)

@@ -1,32 +1,33 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
-import { requestData } from '../reducers/data'
 import { setUser } from '../reducers/user'
 import { clear } from '../utils/dexie'
+import registerSyncServiceWorker from '../utils/registerSyncServiceWorker'
+
+let syncRegistration
 
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false
   yield put(setUser(false))
   yield call(clear)
-  // this will download examples of userMediations
-  // for not connected user
-  yield put(requestData('PUT', 'userMediations', { sync: true }))
+  if (syncRegistration) {
+    yield call(syncRegistration.unregister)
+  }
 }
 
 function * fromWatchSuccessGetSignoutActions () {
   yield put(setUser(null))
   yield call(clear)
-  // this will download examples of userMediations
-  // for not connected user
-  yield put(requestData('PUT', 'userMediations', { sync: true }))
+  if (syncRegistration) {
+    yield call(syncRegistration.unregister)
+  }
 }
 
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     yield put(setUser(user))
-    // that one will fetch specified userMediations
-    yield put(requestData('PUT', 'userMediations', { sync: true }))
+    syncRegistration = yield call(registerSyncServiceWorker)
   }
 }
 

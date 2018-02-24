@@ -8,7 +8,7 @@ import { compose } from 'redux'
 import Card from './Card'
 import LoadingCard from './LoadingCard'
 import SearchInput from '../components/SearchInput'
-import { requestData } from '../reducers/data'
+import { assignData, requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
 
 class Explorer extends Component {
@@ -27,34 +27,62 @@ class Explorer extends Component {
     }
     closeLoading()
   }
-  handleSearchHook = (method, path, result, config) => {
-    const { assignData, requestData } = this.props
+  handleRequestData = props => {
+    const { userId, requestData } = this.props
+    // if there is a user we gonnat get directly
+    // in the dexie local db else we ask directly to
+    // the backend
+    requestData('GET',
+      userId ? 'userMediations' : 'randomOffers',
+      {
+        hook: !userId && this.handleOfferToUserMediation,
+        sync: userId
+      }
+    )
+  }
+  handleOfferToUserMediation = (method, path, result, config) => {
+    const { assignData,
+      userId,
+      userMediations,
+      requestData
+    } = this.props
     if (!result.data) {
       return
     }
-    if (config.value &&  config.value.length > 0) {
-      const userMediations = result.data.map(offer => ({
+    if (!userId || (config.value && config.value.length > 0)) {
+      let nextUserMediations = result.data.map(offer => ({
         isClicked: false,
         isFavorite: false,
         offer
       }))
-      assignData({ userMediations })
-    } else {
+      if (!userId) {
+        nextUserMediations = (userMediations &&
+          userMediations.concat(nextUserMediations)) ||
+          nextUserMediations
+      }
+      assignData({ userMediations: nextUserMediations })
+    } else if (userId) {
       requestData('PUT', 'userMediations', { sync: true })
     }
   }
   onChange = selectedItem => {
     const { requestData,
+      userId,
       userMediations
     } = this.props
     const newState = { selectedItem }
-    // update dateRead for previous item
-    const { id, isFavorite } = userMediations[selectedItem - 1]
-    const body = [{ dateRead: moment().toISOString(), id, isFavorite }]
-    requestData('PUT', 'userMediations', { body, sync: true })
+    if (userId) {
+      // update dateRead for previous item
+      const { id, isFavorite } = userMediations[selectedItem - 1]
+      const body = [{ dateRead: moment().toISOString(), id, isFavorite }]
+      requestData('PUT', 'userMediations', { body, sync: true })
+    } else if (selectedItem === userMediations.length - 1) {
+      requestData('GET', 'randomOffers', { hook: this.handleOfferToUserMediation })
+    }
     this.setState(newState)
   }
   componentWillMount () {
+    this.handleRequestData()
     this.handleLoading(this.props)
   }
   componentDidMount () {
@@ -69,10 +97,13 @@ class Explorer extends Component {
     }
   }
   componentWillReceiveProps (nextProps) {
-    const { userMediations } = nextProps
+    const { userId, userMediations } = nextProps
     if (this.carouselElement && userMediations !== this.props.userMediations) {
       this.handleLoading(nextProps)
       //this.carouselElement.selectItem({ selectedItem: 0 })
+    }
+    if (userId && userId !== this.props.userId) {
+      this.handleRequestData()
     }
   }
   render () {
@@ -84,7 +115,7 @@ class Explorer extends Component {
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
           <SearchInput collectionName='offers'
-            hook={this.handleSearchHook}
+            hook={this.handleOfferToUserMediation}
             ref={element => this.searchElement = element} />
         </div>
         <Carousel axis='horizontal'
@@ -120,9 +151,10 @@ class Explorer extends Component {
 export default compose(
   connect(
     (state, ownProps) => ({
-      userMediations: state.data.userMediations,
-      loadingTag: state.loading.tag
+      loadingTag: state.loading.tag,
+      userId: state.user && state.user.id,
+      userMediations: state.data.userMediations
     }),
-    { closeLoading, requestData, showLoading }
+    { assignData, closeLoading, requestData, showLoading }
   )
 )(Explorer)

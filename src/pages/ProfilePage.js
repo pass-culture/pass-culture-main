@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
@@ -8,7 +9,9 @@ import { requestData } from '../reducers/data'
 
 class ProfilePage extends Component {
   onSignOutClick = () => {
-    this.props.requestData('GET', 'users/signout')
+    const { push, requestData } = this.props
+    requestData('GET', 'users/signout')
+    push('/')
   }
   render () {
     const { user } = this.props
@@ -31,7 +34,8 @@ class ProfilePage extends Component {
 }
 
 export default compose(
-  withLogin,
+  withLogin({ isRequired: true }),
+  withRouter,
   connect(
     state => ({ user: state.user }),
     { requestData }

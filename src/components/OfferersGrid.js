@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import OffererItem from './OffererItem'
-import withLogin from '../hocs/withLogin'
 
 const OfferersGrid = ({ offerers }) => {
   return (
@@ -18,7 +17,6 @@ const OfferersGrid = ({ offerers }) => {
 }
 
 export default compose(
-  withLogin,
   connect(
     state => ({ offerers: state.user && state.user.userOfferers })
   )

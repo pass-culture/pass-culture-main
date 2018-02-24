@@ -33,19 +33,25 @@ class Menu extends Component {
             </Link>
           )
         }
-        <Link className={classnames('link block menu__link mb2', {
-            'menu__link--active': window.location.pathname === '/inventaire'
-          })}
-          onClick={() => this.onLinkClick('/inventaire')}
-        >
-          Inventaire
-        </Link>
-        <Link className={classnames('link block menu__link mb2', {
-            'menu__link--active': window.location.pathname === '/profile'
-          })}
-          onClick={() => this.onLinkClick('/profile')}>
-          Profile
-        </Link>
+        {
+          user && [
+            <Link className={classnames('link block menu__link mb2', {
+                'menu__link--active': window.location.pathname === '/inventaire'
+              })}
+              key={0}
+              onClick={() => this.onLinkClick('/inventaire')}
+            >
+              Inventaire
+            </Link>,
+            <Link className={classnames('link block menu__link mb2', {
+                'menu__link--active': window.location.pathname === '/profile'
+              })}
+              key={1}
+              onClick={() => this.onLinkClick('/profile')}>
+              Profile
+            </Link>
+          ]
+        }
       </div>
     )
   }
