@@ -51,7 +51,6 @@ export async function fetchData (method, path, config = {}) {
 }
 
 export async function syncData (method, path, config = {}) {
-  console.log('path', path)
   const data = await db[path].toArray()
   return { data }
 }

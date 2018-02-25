@@ -9,7 +9,6 @@ export default async function registerDexieServiceWorker() {
     if (!navigator.serviceWorker.ready) {
       return
     }
-    console.log('ON REGISTER', registration)
     registration.sync.register('dexie-pull')
     return registration
   }

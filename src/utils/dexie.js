@@ -34,9 +34,7 @@ export async function pull () {
     if (query) {
       path = `${path}?${query}`
     }
-    console.log('ET LA', path)
     const result = await fetchData(method, path)
-    console.log('from sync', result)
     if (result.data) {
       return bulkData(method, path, result.data)
     }

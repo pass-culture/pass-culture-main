@@ -13,25 +13,24 @@ function * fromWatchFailSignActions (action) {
   yield put(setUser(false))
   yield call(clear)
   if (dexieRegistration) {
-    yield call(dexieRegistration.unregister)
+    // yield call(dexieRegistration.unregister)
   }
-  yield put(resetData())
 }
 
 function * fromWatchSuccessGetSignoutActions () {
-  yield put(setUser(null))
+  yield put(resetData())
+  yield put(setUser(false))
   yield call(clear)
   if (dexieRegistration) {
-    yield call(dexieRegistration.unregister)
+    // yield call(dexieRegistration.unregister)
   }
-  yield put(resetData)
 }
 
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     dexieRegistration = yield call(registerDexieServiceWorker)
-    //yield call(pull, { userMediations: 'unread' })
+    yield call(pull)
     yield put(setUser(user))
   }
 }
