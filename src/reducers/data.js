@@ -1,6 +1,7 @@
 // ACTIONS
 const ASSIGN_DATA = 'ASSIGN_DATA'
 const FILTER_DATA = 'FILTER_DATA'
+const RESET_DATA = 'RESET_DATA'
 
 // INITIAL STATE
 const initialState = { isOptimist: false }
@@ -21,6 +22,8 @@ const data = (state = initialState, action) => {
       return Object.assign({}, state, nextState)
     }
     return Object.assign({}, state, nextState)
+  } else if (action.type === RESET_DATA) {
+    return initialState
   } else if (/SUCCESS_DATA_(GET|POST|PUT)_(.*)/.test(action.type)) {
     const key = action.config.key || action.path.replace(/\/$/, '').replace(/\?.*$/, '')
     const nextState = { isOptimist: false }
@@ -114,6 +117,10 @@ export const requestData = (method, path, config) => ({
   method,
   path,
   type: `REQUEST_DATA_${method.toUpperCase()}_${path.toUpperCase()}`
+})
+
+export const resetData = () => ({
+  type: RESET_DATA
 })
 
 export const successData = (method, path, data, config={}) => ({

@@ -206,8 +206,8 @@ module.exports = {
       template: paths.appHtml,
     }),
     new ServiceWorkerWebpackPlugin({
-      entry: require.resolve(paths.appSrc+'/sync-service-worker.js'),
-      filename: 'sync-service-worker.js',
+      entry: require.resolve(paths.appSrc+'/dexie-service-worker.js'),
+      filename: 'dexie-service-worker.js',
       publicPath: publicPath
     }),
     // Add module names to factory functions so they appear in browser profiler.

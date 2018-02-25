@@ -6,6 +6,7 @@ export const db = new Dexie("pass_culture")
 db.version(1).stores({
   userMediations: 'id'
 })
+const config = { userMediations: 'unread' }
 
 export async function bulkData (method, path, data) {
   let dbMethod = method.toLowerCase()
@@ -16,14 +17,26 @@ export async function bulkData (method, path, data) {
 }
 
 export async function clear () {
-  Promise.all(db.tables.map(async table => table.clear()))
+  return Promise.all(db.tables.map(async table => table.clear()))
 }
 
-export async function sync () {
-  Promise.all(db.tables.map(async table => {
+export async function fetch () {
+  const results = await Promise.all(db.tables.map(async table =>
+    await table.toArray()))
+  return results
+}
+
+export async function pull () {
+  return Promise.all(db.tables.map(async table => {
     const method = 'PUT'
-    const path = table.name
+    let path = table.name
+    const query = config[table.name]
+    if (query) {
+      path = `${path}?${query}`
+    }
+    console.log('ET LA', path)
     const result = await fetchData(method, path)
+    console.log('from sync', result)
     if (result.data) {
       return bulkData(method, path, result.data)
     }

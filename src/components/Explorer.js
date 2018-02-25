@@ -28,61 +28,65 @@ class Explorer extends Component {
     closeLoading()
   }
   handleRequestData = props => {
-    const { userId, requestData } = this.props
-    // if there is a user we gonnat get directly
-    // in the dexie local db else we ask directly to
-    // the backend
+    const { user, requestData } = props
+    // wait that we test already if there is a user
+    if (user === null) {
+      return
+    }
+    // if there is a user we gonna get directly
+    // in the dexie local db
+    // else if user is false we ask directly to the backend
     requestData('GET',
-      userId ? 'userMediations' : 'randomOffers',
+      user ? 'userMediations' : 'anonymousOffers',
       {
-        hook: !userId && this.handleOfferToUserMediation,
-        sync: userId
+        hook: !user && this.handleOfferToUserMediation,
+        sync: user
       }
     )
   }
   handleOfferToUserMediation = (method, path, result, config) => {
     const { assignData,
-      userId,
+      user,
       userMediations,
       requestData
     } = this.props
     if (!result.data) {
       return
     }
-    if (!userId || (config.value && config.value.length > 0)) {
+    if (!user || (config.value && config.value.length > 0)) {
       let nextUserMediations = result.data.map(offer => ({
         isClicked: false,
         isFavorite: false,
         offer
       }))
-      if (!userId) {
+      if (!user) {
         nextUserMediations = (userMediations &&
           userMediations.concat(nextUserMediations)) ||
           nextUserMediations
       }
       assignData({ userMediations: nextUserMediations })
-    } else if (userId) {
+    } else if (user) {
       requestData('PUT', 'userMediations', { sync: true })
     }
   }
   onChange = selectedItem => {
     const { requestData,
-      userId,
+      user,
       userMediations
     } = this.props
     const newState = { selectedItem }
-    if (userId) {
+    if (user && selectedItem > this.state.selectedItem) {
       // update dateRead for previous item
       const { id, isFavorite } = userMediations[selectedItem - 1]
       const body = [{ dateRead: moment().toISOString(), id, isFavorite }]
       requestData('PUT', 'userMediations', { body, sync: true })
     } else if (selectedItem === userMediations.length - 1) {
-      requestData('GET', 'randomOffers', { hook: this.handleOfferToUserMediation })
+      requestData('GET', 'anonymousOffers', { hook: this.handleOfferToUserMediation })
     }
     this.setState(newState)
   }
   componentWillMount () {
-    this.handleRequestData()
+    this.handleRequestData(this.props)
     this.handleLoading(this.props)
   }
   componentDidMount () {
@@ -97,13 +101,13 @@ class Explorer extends Component {
     }
   }
   componentWillReceiveProps (nextProps) {
-    const { userId, userMediations } = nextProps
+    const { user, userMediations } = nextProps
     if (this.carouselElement && userMediations !== this.props.userMediations) {
       this.handleLoading(nextProps)
       //this.carouselElement.selectItem({ selectedItem: 0 })
     }
-    if (userId && userId !== this.props.userId) {
-      this.handleRequestData()
+    if (user !== this.props.user) {
+      this.handleRequestData(nextProps)
     }
   }
   render () {
@@ -152,7 +156,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       loadingTag: state.loading.tag,
-      userId: state.user && state.user.id,
+      user: state.user,
       userMediations: state.data.userMediations
     }),
     { assignData, closeLoading, requestData, showLoading }

@@ -34,7 +34,7 @@ class OfferInfo extends Component {
         { description }
         <div className='clearfix' />
         <div className='sellerInfos'>
-          <b>{ sortedPrices && sortedPrices[0].value }&nbsp;€</b><br/>
+          <b>{ sortedPrices && sortedPrices[0] && sortedPrices[0].value }&nbsp;€</b><br/>
           {
             type === "book"
               ? "À la librairie"

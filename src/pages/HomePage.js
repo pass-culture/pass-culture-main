@@ -3,13 +3,15 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import withLogin from '../hocs/withLogin'
+
 class HomePage extends Component {
   handleRedirect = props => {
     const { history: { push }, user } = props
-    push(user.isPro > 0 ? '/pro' : '/decouverte')
+    push(user && user.isPro ? '/pro' : '/decouverte')
   }
   componentWillMount () {
-    this.props.user && this.handleRedirect(this.props)
+    this.handleRedirect(this.props)
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.user !== this.props.user) {
@@ -25,6 +27,7 @@ class HomePage extends Component {
 
 export default compose(
   withRouter,
+  withLogin(),
   connect(
     state => ({ user: state.user })
   )
