@@ -15,7 +15,7 @@ function * fromWatchFailSignActions (action) {
   if (dexieRegistration) {
     yield call(dexieRegistration.unregister)
   }
-  yield put(resetData)
+  yield put(resetData())
 }
 
 function * fromWatchSuccessGetSignoutActions () {
