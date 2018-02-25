@@ -8,6 +8,7 @@ import { compose } from 'redux'
 import Card from './Card'
 import LoadingCard from './LoadingCard'
 import SearchInput from '../components/SearchInput'
+import withSelectors from '../hocs/withSelectors'
 import { assignData, requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
 
@@ -77,8 +78,18 @@ class Explorer extends Component {
     const newState = { selectedItem }
     if (user && selectedItem > this.state.selectedItem) {
       // update dateRead for previous item
-      const { id, isFavorite } = userMediations[selectedItem - 1]
-      const body = [{ dateRead: moment().toISOString(), id, isFavorite }]
+      const { dateRead, id, isFavorite } = userMediations[selectedItem - 1]
+      // not update if already have one
+      if (dateRead) {
+        return
+      }
+      const nowDate = moment().toISOString()
+      const body = [{
+        dateRead: nowDate,
+        dateUpdated: nowDate,
+        id,
+        isFavorite
+      }]
       requestData('PUT', 'userMediations', { body, sync: true })
     } else if (selectedItem === userMediations.length - 1) {
       requestData('GET', 'anonymousOffers', { hook: this.handleOfferToUserMediation })
@@ -115,6 +126,8 @@ class Explorer extends Component {
       userMediations
     } = this.props
     const { selectedItem } = this.state
+
+    console.log('userMediations', userMediations)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
@@ -152,6 +165,20 @@ class Explorer extends Component {
   }
 }
 
+function groupBy(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
+}
+
 export default compose(
   connect(
     (state, ownProps) => ({
@@ -160,5 +187,23 @@ export default compose(
       userMediations: state.data.userMediations
     }),
     { assignData, closeLoading, requestData, showLoading }
-  )
+  ),
+  withSelectors({
+    userMediations: [
+      ownProps => ownProps.userMediations,
+      userMediations => {
+        if (!userMediations) {
+          return
+        }
+        const groupe = groupBy(userMediations,
+          um => um.dateRead === null)
+        const notReadUms = groupe.get(true)
+        const readUms = groupe.get(false)
+        readUms.forEach(readUm => readUm.momentDateRead = moment(readUm.dateRead))
+        return readUms.sort((um1, um2) => um1.momentDateRead - um2.momentDateRead)
+                      .concat(notReadUms)
+        return userMediations
+      }
+    ]
+  }),
 )(Explorer)
