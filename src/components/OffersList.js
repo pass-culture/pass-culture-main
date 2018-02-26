@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+// import { List } from 'react-virtualized'
 import { compose } from 'redux'
 import { createSelector } from 'reselect'
 
@@ -28,13 +29,34 @@ class OffersList extends Component {
     return (
       <div className='md-col-9 mx-auto'>
         {
+          /*
+          offers && <List
+            width={1200}
+            height={1500}
+            rowCount={offers.length}
+            rowHeight={300}
+            rowRenderer={({ index, key, style }) => (
+              <div key={index} style={style}>
+                <OfferItem isMediations
+                  isModify
+                  isPrices
+                  {...offers[index]}/>
+                {
+                  (index !== offers.length -1) &&
+                  <div className='sep mb2' key={`sep-${index}`}/>
+                }
+              </div>
+            )}
+          />
+          */
+        }
+        {
           offers && offers.map((offer, index) => [
             <OfferItem isMediations
               isModify
               isPrices
               key={index}
-              {...offer}
-            />,
+              {...offer} />,
             (index !== offers.length -1) && <div className='sep mb2' key={`sep-${index}`}/>
           ])
         }
