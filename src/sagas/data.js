@@ -34,7 +34,7 @@ function * fromWatchRequestDataActions (action) {
       yield call(hook, method, path, result, config)
     }
     if (result.data) {
-      if (sync && (method === 'POST' || method === 'PUT')) {
+      if (sync && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
         yield call(bulkData, method, path, result.data, config)
       }
       yield put(successData(method, path, result.data, config))
@@ -59,5 +59,5 @@ function * fromWatchSuccessDataActions (action) {
 export function * watchDataActions () {
   yield takeEvery(({ type }) => /REQUEST_DATA_(.*)/.test(type), fromWatchRequestDataActions)
   yield takeEvery(({ type }) => /FAIL_DATA_(.*)/.test(type), fromWatchFailDataActions)
-  yield takeEvery(({ type }) => /SUCCESS_DATA_(POST|PUT)_(.*)/.test(type), fromWatchSuccessDataActions)
+  yield takeEvery(({ type }) => /SUCCESS_DATA_(POST|PUT|PATCH)_(.*)/.test(type), fromWatchSuccessDataActions)
 }

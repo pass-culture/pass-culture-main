@@ -13,7 +13,7 @@ const data = (state = initialState, action) => {
   } else if (action.type === FILTER_DATA) {
     const filteredElements = state[action.key].filter(action.filter)
     return Object.assign({}, state, { [action.key]: filteredElements })
-  }  else if (/REQUEST_DATA_(POST|PUT|DELETE)_(.*)/.test(action.type)) {
+  }  else if (/REQUEST_DATA_(POST|PUT|DELETE|PATCH)_(.*)/.test(action.type)) {
     const nextState = { isOptimist: true, previousOptimistState: state }
     if (action.config && action.config.getOptimistState) {
       const nextState = { isOptimist: true, previousOptimistState: state }
@@ -24,7 +24,7 @@ const data = (state = initialState, action) => {
     return Object.assign({}, state, nextState)
   } else if (action.type === RESET_DATA) {
     return initialState
-  } else if (/SUCCESS_DATA_(GET|POST|PUT)_(.*)/.test(action.type)) {
+  } else if (/SUCCESS_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
     const key = action.config.key || action.path.replace(/\/$/, '').replace(/\?.*$/, '')
     const nextState = { isOptimist: false }
     // force to cast into array
@@ -71,7 +71,7 @@ const data = (state = initialState, action) => {
       }
     }
     // clear the optimist when it is the POST PUT success
-    if (action.method === 'POST' || action.method === 'PUT') {
+    if (action.method === 'POST' || action.method === 'PUT' || action.method === 'PATCH') {
       nextState.previousOptimistState = null
     }
     // last
