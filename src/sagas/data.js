@@ -30,7 +30,6 @@ function * fromWatchRequestDataActions (action) {
       path,
       { body, position, token }
     )
-    console.log(path, 'result', result)
     if (hook) {
       yield call(hook, method, path, result, config)
     }

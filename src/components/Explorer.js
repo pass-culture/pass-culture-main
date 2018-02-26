@@ -55,6 +55,7 @@ class Explorer extends Component {
       return
     }
     if (!user || (config.value && config.value.length > 0)) {
+      console.log('esult.data', result.data)
       let nextUserMediations = result.data.map(offer => ({
         isClicked: false,
         isFavorite: false,
@@ -126,8 +127,6 @@ class Explorer extends Component {
       userMediations
     } = this.props
     const { selectedItem } = this.state
-
-    console.log('userMediations', userMediations)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
@@ -193,16 +192,18 @@ export default compose(
       ownProps => ownProps.userMediations,
       userMediations => {
         if (!userMediations) {
-          return
+          return userMediations
         }
         const groupe = groupBy(userMediations,
           um => um.dateRead === null)
         const notReadUms = groupe.get(true)
         const readUms = groupe.get(false)
+        if (!readUms) {
+          return notReadUms
+        }
         readUms.forEach(readUm => readUm.momentDateRead = moment(readUm.dateRead))
-        return readUms.sort((um1, um2) => um1.momentDateRead - um2.momentDateRead)
-                      .concat(notReadUms)
-        return userMediations
+        readUms.sort((um1, um2) => um1.momentDateRead - um2.momentDateRead)
+        return notReadUms ? readUms.concat(notReadUms) : readUms
       }
     ]
   }),
