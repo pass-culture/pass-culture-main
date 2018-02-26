@@ -51,7 +51,7 @@ class OfferModify extends Component {
                 return { modifyOfferId: action.data.id }
               }
             }}
-            method={isNew ? 'POST' : 'PUT'}
+            method={isNew ? 'POST' : 'PATCH'}
             path={'offers/' + (isNew ? '' : id)}
             storeKey='offers'
             text={isNew ? 'Enregistrer' : 'Modifer'}
