@@ -8,11 +8,15 @@ import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 
 class ProfilePage extends Component {
-  
   onSignOutClick = () => {
-    const { history: { push }, requestData } = this.props
-    push('/')
+    const { requestData } = this.props
     requestData('GET', 'users/signout')
+  }
+  componentWillReceiveProps (nextProps) {
+    const { history: { push }, user } = nextProps
+    if (user === false && this.props.user) {
+      push('/')
+    }
   }
   render () {
     const { user } = this.props

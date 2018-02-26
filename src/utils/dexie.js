@@ -28,7 +28,7 @@ export async function fetch () {
 }
 
 export async function pull (config = {}) {
-  const sinceDate = config.sinceDate || moment().subtract(1, 'd').toISOString()
+  const sinceDate = config.sinceDate || moment().subtract(1, 'minutes').toISOString()
   return Promise.all(db.tables.map(async table => {
     const method = 'PUT'
     let path = table.name

@@ -4,7 +4,7 @@ const FILTER_DATA = 'FILTER_DATA'
 const RESET_DATA = 'RESET_DATA'
 
 // INITIAL STATE
-const initialState = { isOptimist: false }
+const initialState = { referenceDate: null, isOptimist: false }
 
 // REDUCER
 const data = (state = initialState, action) => {

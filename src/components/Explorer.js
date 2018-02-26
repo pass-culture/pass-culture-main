@@ -17,6 +17,7 @@ class Explorer extends Component {
     super()
     this.state = { carouselElement: null,
       carousselNode: null,
+      forcedItem: null,
       selectedItem: 0
     }
   }
@@ -29,11 +30,13 @@ class Explorer extends Component {
     closeLoading()
   }
   handleRequestData = props => {
-    const { user, requestData } = props
+    const { assignData, user, requestData } = props
     // wait that we test already if there is a user
     if (user === null) {
       return
     }
+    // set the ref date
+    assignData({ referenceDate: moment().subtract(1, 'minutes') })
     // if there is a user we gonna get directly
     // in the dexie local db
     // else if user is false we ask directly to the backend
@@ -71,7 +74,9 @@ class Explorer extends Component {
     }
   }
   onChange = selectedItem => {
-    const { hasFirstItem,
+    const { assignData,
+      hasFirstItem,
+      referenceDate,
       requestData,
       user,
       userMediations
@@ -80,31 +85,51 @@ class Explorer extends Component {
     const previousSelectedItem = selectedItem - 1
     if (user && selectedItem > (hasFirstItem ? 0 : 1) && previousSelectedItem === this.state.selectedItem) {
       // update dateRead for previous item
-      const { dateRead, id, isFavorite } = userMediations[previousSelectedItem]
-      // not update if already have one
-      if (!dateRead) {
-        const nowDate = moment().toISOString()
-        const body = [{
-          dateRead: nowDate,
-          dateUpdated: nowDate,
-          id,
-          isFavorite
-        }]
-        requestData('PUT', 'userMediations', { body, sync: true })
+      const previousUserMediation = userMediations[previousSelectedItem]
+      if (previousUserMediation) {
+        const { dateRead, id, isFavorite } = previousUserMediation
+        // not update if already have one
+        if (!dateRead) {
+          const nowDate = moment().toISOString()
+          const body = [{
+            dateRead: nowDate,
+            dateUpdated: nowDate,
+            id,
+            isFavorite
+          }]
+          requestData('PUT', 'userMediations', { body, sync: true })
+        }
+      } else {
+        console.warn('previousUserMediation not found')
       }
-    } else if (!user && userMediations && selectedItem === userMediations.length - 1) {
-      requestData('GET', 'anonymousOffers', { hook: this.handleOfferToUserMediation })
+    } else if (!user &&
+      userMediations &&
+      selectedItem === userMediations.length &&
+      this.state.selectedItem === userMediations.length - 1
+    ) {
+      const removedIds = userMediations.map(um =>
+        um.offer && um.offer.id || um.mediation.offer.id).join('-')
+      // wait a bit to make clear that we load a new set
+      setTimeout(() => {
+        requestData('GET',
+          `anonymousOffers?removedIds=${removedIds}`,
+          { hook: this.handleOfferToUserMediation }
+        )
+      }, 500)
+
     }
     // Ask for older items
     if (!hasFirstItem && selectedItem === 0 && this.state.selectedItem === 1) {
-      console.log('userMediations[0]', userMediations[0])
-      const unreadOrChangedSince = (userMediations[0].momentDateRead || moment())
-                                      .subtract(1, 'd')
+      /*
+      const unreadOrChangedSince = (userMediations[0].momentDateRead || referenceDate)
+                                      .subtract(1, 'm')
                                       .toISOString()
+      assignData({ referenceDate: unreadOrChangedSince })
       requestData('PUT',
         `userMediations?unreadOrChangedSince=${unreadOrChangedSince}`,
         { sync: true }
       )
+      */
     }
     // update selectedItem
     this.setState(newState)
@@ -130,29 +155,43 @@ class Explorer extends Component {
     } = nextProps
     if (this.carouselElement && userMediations !== this.props.userMediations) {
       this.handleLoading(nextProps)
+      if (userMediations &&
+        this.props.userMediations &&
+        this.props.userMediations.length < userMediations.length &&
+        this.props.userMediations[0]
+      ) {
+        let forcedItem = userMediations &&
+          userMediations.indexOf(this.props.userMediations[0])
+        if (forcedItem > 0) {
+          if (!hasFirstItem) {
+            forcedItem = forcedItem - 1
+          }
+          this.setState({ forcedItem })
+          return
+        }
+      }
     }
     if (user !== this.props.user) {
       this.handleRequestData(nextProps)
     }
     // get directly to the not read
-    if (this.state.selectedItem === 0) {
+    if (user && this.state.selectedItem === 0) {
       // shift
-      console.log('hasFirstItem', hasFirstItem, firstNotReadItem)
       const selectedItem = (firstNotReadItem || 0) + (hasFirstItem ? 0 : 1)
-      console.log('selectedItem', selectedItem)
       this.setState({ selectedItem })
     }
     if (user === false && this.props.user) {
       this.setState({ selectedItem: 1 })
     }
+    this.setState({ forcedItem: null })
   }
   render () {
     const { loadingTag,
       user,
       userMediations
     } = this.props
-    const { selectedItem } = this.state
-    console.log('userMediations', userMediations)
+    const { forcedItem, selectedItem } = this.state
+    console.log(selectedItem, 'userMediations', userMediations)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
@@ -162,7 +201,7 @@ class Explorer extends Component {
         <Carousel axis='horizontal'
           emulateTouch
           ref={element => this.carouselElement = element}
-          selectedItem={selectedItem}
+          selectedItem={forcedItem || selectedItem}
           showArrows={true}
           swipeScrollTolerance={100}
           showStatus={false}
@@ -208,6 +247,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       loadingTag: state.loading.tag,
+      referenceDate: state.data.referenceDate,
       user: state.user,
       userMediations: state.data.userMediations
     }),
@@ -215,31 +255,43 @@ export default compose(
   ),
   withSelectors({
     userMediations: [
+      ownProps => ownProps.referenceDate,
+      ownProps => ownProps.user,
       ownProps => ownProps.userMediations,
-      userMediations => {
+      (referenceDate, user, userMediations) => {
+        // leave if undefined
         if (!userMediations) {
           return userMediations
         }
+        // not sort/filter if it is from not connected user
+        if (!user) {
+          return userMediations
+        }
+        console.log('AVANT', userMediations)
         // sort given dateRead
         const groupe = groupBy(userMediations,
           um => um.dateRead === null)
         let notReadUms = groupe.get(true)
+        // make sure that the isFirst is at the beginning
         const firstNotRead = notReadUms && notReadUms.find(um => um.isFirst)
         if (firstNotRead) {
           notReadUms = [firstNotRead].concat(notReadUms)
         }
+        // sort the read ones
         let readUms = groupe.get(false)
         if (!readUms) {
           return notReadUms
         }
         readUms.forEach(readUm => readUm.momentDateRead = moment(readUm.dateRead))
         readUms.sort((um1, um2) => um1.momentDateRead - um2.momentDateRead)
-        // filter too old date Read items (later than one day)
-        const tooOldThresholDate = moment().subtract(1, 'd')
-        const firstReadUmIndex = readUms && readUms
+        // filter too old date Read items
+        const readUmTuples = readUms && readUms
           .map((readUm, index) => [readUm.momentDateRead, index])
-          .find(tuple => tuple[0] > tooOldThresholDate)[1]
-        readUms = readUms.slice(firstReadUmIndex)
+        const firstReadUmTuple = readUmTuples.reverse()
+          .find(tuple => tuple[0] < referenceDate)
+        if (firstReadUmTuple) {
+          readUms = readUms.slice(firstReadUmTuple[1])
+        }
         // return read - not read items
         return notReadUms ? readUms.concat(notReadUms) : readUms
       }

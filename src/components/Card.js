@@ -95,10 +95,11 @@ class Card extends Component {
       //  type,
       //  userId
       //}})
-      carouselElement.selectItem({ selectedItem: (index < itemsCount - 1)
+      const selectedItem = (index < itemsCount - 1)
         ? index
         : index -1
-      })
+      console.log('WTF', selectedItem)
+      carouselElement.selectItem({ selectedItem })
       filterData('offers', offer => offer.id !== id)
     }
     this.setState({
