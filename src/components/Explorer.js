@@ -31,6 +31,24 @@ class Explorer extends Component {
     }
     closeLoading()
   }
+  handleRequestPrevious = props => {
+    const { hasFirstItem, userMediations } = props
+    if (userMediations &&
+      this.props.userMediations &&
+      this.props.userMediations.length < userMediations.length &&
+      this.props.userMediations[0]
+    ) {
+      let forcedItem = userMediations &&
+        userMediations.indexOf(this.props.userMediations[0])
+      if (forcedItem > 0) {
+        if (!hasFirstItem) {
+          forcedItem = forcedItem - 1
+        }
+        this.setState({ forcedItem })
+        return
+      }
+    }
+  }
   handleRequestData = props => {
     const { assignData, user, requestData } = props
     // wait that we test already if there is a user
@@ -87,10 +105,11 @@ class Explorer extends Component {
       userMediations
     } = this.props
     const newState = { selectedItem }
-    const previousSelectedItem = selectedItem - 1
-    if (user && selectedItem > (hasFirstItem ? 0 : 1) && previousSelectedItem === this.state.selectedItem) {
+    if (user && selectedItem > (hasFirstItem ? 0 : 1) && (selectedItem - 1) === this.state.selectedItem) {
       // update dateRead for previous item
-      const previousUserMediation = userMediations[previousSelectedItem]
+      const previousUserMediationIndex = selectedItem - (hasFirstItem ? 1 : 2)
+      console.log('previousUserMediationIndex', previousUserMediationIndex)
+      const previousUserMediation = userMediations[previousUserMediationIndex]
       if (previousUserMediation) {
         const { dateRead, id, isFavorite } = previousUserMediation
         // not update if already have one
@@ -104,6 +123,7 @@ class Explorer extends Component {
           }]
           // wait a bit to make clear that we load a new set
           setTimeout(() => {
+            console.log('previousUserMediation', previousUserMediation)
             requestData('PUT', 'userMediations', { body, sync: true })
           }, 500)
         }
@@ -128,16 +148,17 @@ class Explorer extends Component {
     }
     // Ask for older items
     if (!hasFirstItem && selectedItem === 0 && this.state.selectedItem === 1) {
-      /*
       const unreadOrChangedSince = (userMediations[0].momentDateRead || referenceDate)
                                       .subtract(1, 'm')
                                       .toISOString()
-      assignData({ referenceDate: unreadOrChangedSince })
-      requestData('PUT',
-        `userMediations?unreadOrChangedSince=${unreadOrChangedSince}`,
-        { sync: true }
-      )
-      */
+      // wait a bit to make clear that we load a new set
+      setTimeout(() => {
+        assignData({ referenceDate: unreadOrChangedSince })
+        requestData('PUT',
+          `userMediations?unreadOrChangedSince=${unreadOrChangedSince}`,
+          { sync: true }
+        )
+      })
     }
     // update selectedItem
     this.setState(newState)
@@ -163,20 +184,9 @@ class Explorer extends Component {
     } = nextProps
     if (this.carouselElement && userMediations !== this.props.userMediations) {
       this.handleLoading(nextProps)
-      if (userMediations &&
-        this.props.userMediations &&
-        this.props.userMediations.length < userMediations.length &&
-        this.props.userMediations[0]
-      ) {
-        let forcedItem = userMediations &&
-          userMediations.indexOf(this.props.userMediations[0])
-        if (forcedItem > 0) {
-          if (!hasFirstItem) {
-            forcedItem = forcedItem - 1
-          }
-          this.setState({ forcedItem })
-          return
-        }
+      this.handleRequestPrevious(nextProps)
+      if (userMediations.slice(-1)[0].isLast) {
+        this.setState({ isLastItem: true })
       }
     }
     if (user !== this.props.user) {
@@ -185,21 +195,28 @@ class Explorer extends Component {
     // get directly to the not read
     if (user && this.state.selectedItem === 0) {
       // shift
-      const selectedItem = (firstNotReadItem || 0) + (hasFirstItem ? 0 : 1)
+      const selectedItem = Math.max(firstNotReadItem || 0, 0) + (hasFirstItem === false ? 1 : 0)
+      console.log('BEN QUOI', hasFirstItem, firstNotReadItem, selectedItem)
       this.setState({ selectedItem })
     }
     if (user === false && this.props.user) {
       this.setState({ selectedItem: 1 })
     }
+    console.log('BEEEEEE')
+    if (userMediations && this.state.selectedItem > userMediations.length) {
+      console.log('OUAI', userMediations.length)
+      // this.setState({ selectedItem: userMediations.length })
+    }
     this.setState({ forcedItem: null })
   }
   render () {
-    const { loadingTag,
+    const { hasFirstItem,
+      loadingTag,
       user,
       userMediations
     } = this.props
     const { forcedItem, isLastItem, selectedItem } = this.state
-    console.log(selectedItem, 'userMediations', userMediations)
+    console.log(selectedItem, 'userMediations', userMediations, 'isLastItem', isLastItem)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
@@ -219,7 +236,10 @@ class Explorer extends Component {
           onChange={this.onChange} >
           {
             loadingTag !== 'search' && userMediations && userMediations.length > 0
-              ? ((user && [<LoadingCard key='first' isForceActive />]) || []).concat(
+              ? (
+                  (user && !hasFirstItem &&
+                    [<LoadingCard key='first' isForceActive />]) || []
+                ).concat(
                   userMediations.map((userMediation, index) =>
                     <Card {...this.state}
                       index={index}
@@ -285,10 +305,7 @@ export default compose(
           um => um.dateRead === null)
         let notReadUms = groupe.get(true)
         // make sure that the isFirst is at the beginning
-        const firstNotRead = notReadUms && notReadUms.find(um => um.isFirst)
-        if (firstNotRead) {
-          notReadUms = [firstNotRead].concat(notReadUms)
-        }
+        notReadUms && notReadUms.sort((um1, um2) => um1.isFirst || um2.isFirst)
         // sort the read ones
         let readUms = groupe.get(false)
         if (!readUms) {
@@ -302,10 +319,16 @@ export default compose(
         const firstReadUmTuple = readUmTuples.reverse()
           .find(tuple => tuple[0] < referenceDate)
         if (firstReadUmTuple) {
+          console.log('firstReadUmTuple', firstReadUmTuple)
           readUms = readUms.slice(firstReadUmTuple[1])
         }
+        // check if there is nothing to read new
+        if (!notReadUms) {
+          readUms.slice(-1)[0].isLast = true
+          return readUms
+        }
         // return read - not read items
-        return notReadUms ? readUms.concat(notReadUms) : readUms
+        return readUms.concat(notReadUms)
       }
     ],
     firstNotReadItem: [
