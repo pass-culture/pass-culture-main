@@ -2,19 +2,19 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import ProviderItem from './ProviderItem'
+import SourceItem from './SourceItem'
 import withSelectors from '../hocs/withSelectors'
 
-const OffererForm = ({ providers }) => {
+const OffererForm = ({ sources }) => {
   return (
-    <div className='offer-setting'>
+    <div className='offerer-form'>
       <div className='h2 mb1'>
         Mes sources
       </div>
       <div className='p3' >
       {
-        providers && providers.map((provider, index) =>
-          <ProviderItem key={index} {...provider} />)
+        sources && sources.map((source, index) =>
+          <SourceItem key={index} {...source} />)
       }
       </div>
     </div>
@@ -24,23 +24,20 @@ const OffererForm = ({ providers }) => {
 export default compose(
   connect(
     state => Object.assign({
-      offerProviders: state.data.offerers && state.data.offerers[0] &&
-        state.data.offerers[0].offerProviders,
+      offererProviders: state.data.offerers && state.data.offerers[0] &&
+        state.data.offerers[0].offererProviders,
       providers: state.data.providers
     }, state.user && state.user.offerer)
   ),
   withSelectors({
-    providers: [
+    sources: [
       ownProps => ownProps.providers,
-      ownProps => ownProps.offerProviders,
-      (providers, offerProviders) => {
-        const offerProviderPairs = offerProviders && offerProviders
-          .map(offerProvider => offerProvider.split(':'))
-        return providers.map(({ id, name }) => {
+      ownProps => ownProps.offererProviders,
+      (providers, offererProviders) => {
+        return providers.map(({ localClass, name }) => {
           return {
-            ids: offerProviderPairs && offerProviderPairs
-              .filter(offerProviderPair => offerProviderPair[0] === id)
-              .map(offerProviderPair => offerProviderPair[1]),
+            offererProviders: offererProviders && offererProviders
+              .filter(offererProvider => offererProvider.provider.localClass === localClass),
             name
           }
         })
