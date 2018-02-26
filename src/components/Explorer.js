@@ -6,6 +6,7 @@ import { Carousel } from 'react-responsive-carousel'
 import { compose } from 'redux'
 
 import Card from './Card'
+import LastCard from './LastCard'
 import LoadingCard from './LoadingCard'
 import SearchInput from '../components/SearchInput'
 import withSelectors from '../hocs/withSelectors'
@@ -18,6 +19,7 @@ class Explorer extends Component {
     this.state = { carouselElement: null,
       carousselNode: null,
       forcedItem: null,
+      lastItem: false,
       selectedItem: 0
     }
   }
@@ -64,6 +66,9 @@ class Explorer extends Component {
         offer
       }))
       if (!user) {
+        if (nextUserMediations.length === 0) {
+          this.setState({ isLastItem: true })
+        }
         nextUserMediations = (userMediations &&
           userMediations.concat(nextUserMediations)) ||
           nextUserMediations
@@ -97,7 +102,10 @@ class Explorer extends Component {
             id,
             isFavorite
           }]
-          requestData('PUT', 'userMediations', { body, sync: true })
+          // wait a bit to make clear that we load a new set
+          setTimeout(() => {
+            requestData('PUT', 'userMediations', { body, sync: true })
+          }, 500)
         }
       } else {
         console.warn('previousUserMediation not found')
@@ -190,7 +198,7 @@ class Explorer extends Component {
       user,
       userMediations
     } = this.props
-    const { forcedItem, selectedItem } = this.state
+    const { forcedItem, isLastItem, selectedItem } = this.state
     console.log(selectedItem, 'userMediations', userMediations)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
@@ -220,7 +228,11 @@ class Explorer extends Component {
                       {...userMediation}
                       {...userMediation.mediation && userMediation.mediation.offer}
                       {...userMediation.offer} />
-                  )).concat([<LoadingCard key='next' isForceActive />])
+                  )).concat([
+                      isLastItem
+                        ? <LastCard key='last' />
+                        : <LoadingCard key='next' isForceActive />
+                  ])
               : <LoadingCard />
           }
         </Carousel>
