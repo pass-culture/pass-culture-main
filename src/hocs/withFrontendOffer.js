@@ -13,8 +13,9 @@ const withFrontendOffer = withSelectors({
     (description, thingOrEvent) => description || thingOrEvent.description
   ],
   name: [
+    ownProps => ownProps.name,
     (ownProps, nextState) => nextState.thingOrEvent,
-    thingOrEvent => thingOrEvent.name
+    (name, thingOrEvent) => name || thingOrEvent.name
   ],
   thumbUrl: [
     ownProps => ownProps.thumbCount,
