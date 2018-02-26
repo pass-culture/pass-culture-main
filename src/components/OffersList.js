@@ -11,7 +11,6 @@ class OffersList extends Component {
   handleRequestData = props => {
     const { match: { params: { offererId } }, requestData, user } = props
     if (!this.hasRequired && user) {
-      console.log('user', user)
       requestData('GET', `offers?offererId=${offererId}`)
       this.hasRequired = true
     }

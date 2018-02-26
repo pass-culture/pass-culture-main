@@ -16,7 +16,7 @@ class OfferNewButton extends Component {
   }
   render () {
     return (
-      <button className='button button--alive button--rounded mr1'
+      <button className='button button--alive button--rounded ml2 mr1'
         onClick={this.onClick}
       >
         <Icon name='add' />

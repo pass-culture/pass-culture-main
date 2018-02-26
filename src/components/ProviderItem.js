@@ -12,7 +12,7 @@ class ProviderItem extends Component {
       : this.props.offerProviders.concat(offerProvider)
     console.log('offerProviders', offerProviders)
     */
-    const offerProviders = ids.map(id => `${name}:${id}`)
+    const offerProviders = ids && ids.map(id => `${name}:${id}`)
     // requestData('PUT', 'offerer', { body: { offerProviders } })
   }
   render () {
@@ -20,14 +20,14 @@ class ProviderItem extends Component {
     return (
       <div className='flex flex-start items-center mb1'>
         <input className='input--checkbox mr1'
-          defaultChecked={ids.length > 0}
+          defaultChecked={ids && ids.length > 0}
           onClick={this.onToggleClick}
           type='checkbox' />
         <div className='mr2'>
           {name}
         </div>
         {
-          ids.map((id, index) => (
+          ids && ids.map((id, index) => (
             <input className='input' key={index} value={id}/>
           ))
         }

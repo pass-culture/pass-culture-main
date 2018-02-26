@@ -24,6 +24,8 @@ const OffererForm = ({ providers }) => {
 export default compose(
   connect(
     state => Object.assign({
+      offerProviders: state.data.offerers && state.data.offerers[0] &&
+        state.data.offerers[0].offerProviders,
       providers: state.data.providers
     }, state.user && state.user.offerer)
   ),
@@ -32,10 +34,11 @@ export default compose(
       ownProps => ownProps.providers,
       ownProps => ownProps.offerProviders,
       (providers, offerProviders) => {
-        const offerProviderPairs = offerProviders.map(offerProvider => offerProvider.split(':'))
+        const offerProviderPairs = offerProviders && offerProviders
+          .map(offerProvider => offerProvider.split(':'))
         return providers.map(({ id, name }) => {
           return {
-            ids: offerProviderPairs
+            ids: offerProviderPairs && offerProviderPairs
               .filter(offerProviderPair => offerProviderPair[0] === id)
               .map(offerProviderPair => offerProviderPair[1]),
             name

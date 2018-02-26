@@ -16,12 +16,17 @@ class OffererPage extends Component {
     user && user.userOfferers && setUserOfferer(offererId)
   }
   componentWillMount () {
-    this.props.requestData('GET', 'providers')
+    const { requestData } = this.props
+    requestData('GET', 'providers')
     this.handleSetUserOfferer(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    if (nextProps.user && nextProps.user.userOfferers !== (this.props.user && this.props.user.userOfferers)) {
+    const { offererId, requestData, user } = nextProps
+    if (user && user.userOfferers !== (this.props.user && this.props.user.userOfferers)) {
       this.handleSetUserOfferer(nextProps)
+    }
+    if (user && this.props.user) {
+      requestData('GET', `offerers/${offererId}`, { key: 'offerers' })
     }
   }
   render () {
