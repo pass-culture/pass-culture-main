@@ -14,7 +14,7 @@ class SignButton extends Component {
   render () {
     return (
       <button className='button button--alive' onClick={this.onClick} >
-        Login
+        Se connecter
       </button>
     )
   }

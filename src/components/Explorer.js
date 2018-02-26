@@ -55,7 +55,6 @@ class Explorer extends Component {
       return
     }
     if (!user || (config.value && config.value.length > 0)) {
-      console.log('esult.data', result.data)
       let nextUserMediations = result.data.map(offer => ({
         isClicked: false,
         isFavorite: false,
@@ -77,22 +76,22 @@ class Explorer extends Component {
       userMediations
     } = this.props
     const newState = { selectedItem }
-    if (user && selectedItem > this.state.selectedItem) {
+    const previousSelectedItem = selectedItem - 1
+    if (user && selectedItem > 0 && previousSelectedItem === this.state.selectedItem) {
       // update dateRead for previous item
-      const { dateRead, id, isFavorite } = userMediations[selectedItem - 1]
+      const { dateRead, id, isFavorite } = userMediations[previousSelectedItem]
       // not update if already have one
-      if (dateRead) {
-        return
+      if (!dateRead) {
+        const nowDate = moment().toISOString()
+        const body = [{
+          dateRead: nowDate,
+          dateUpdated: nowDate,
+          id,
+          isFavorite
+        }]
+        requestData('PUT', 'userMediations', { body, sync: true })
       }
-      const nowDate = moment().toISOString()
-      const body = [{
-        dateRead: nowDate,
-        dateUpdated: nowDate,
-        id,
-        isFavorite
-      }]
-      requestData('PUT', 'userMediations', { body, sync: true })
-    } else if (selectedItem === userMediations.length - 1) {
+    } else if (!user && selectedItem === userMediations.length - 1) {
       requestData('GET', 'anonymousOffers', { hook: this.handleOfferToUserMediation })
     }
     this.setState(newState)
@@ -105,21 +104,25 @@ class Explorer extends Component {
     const newState = {
       carouselElement: this.carouselElement,
       carousselNode: findDOMNode(this.carouselElement),
-      // searchElement: this.searchElement,
-      // searchNode: findDOMNode(this.searchElement)
     }
     if (Object.keys(newState).length > 0) {
       this.setState(newState)
     }
   }
   componentWillReceiveProps (nextProps) {
-    const { user, userMediations } = nextProps
+    const { firstNotReadItem, user, userMediations } = nextProps
     if (this.carouselElement && userMediations !== this.props.userMediations) {
       this.handleLoading(nextProps)
-      //this.carouselElement.selectItem({ selectedItem: 0 })
     }
     if (user !== this.props.user) {
       this.handleRequestData(nextProps)
+    }
+    // get directly to the not read
+    if (firstNotReadItem && this.state.selectedItem === 0) {
+      this.setState({ selectedItem: firstNotReadItem })
+    }
+    if (user === false && this.props.user) {
+      this.setState({ selectedItem: 0 })
     }
   }
   render () {
@@ -131,8 +134,7 @@ class Explorer extends Component {
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
           <SearchInput collectionName='offers'
-            hook={this.handleOfferToUserMediation}
-            ref={element => this.searchElement = element} />
+            hook={this.handleOfferToUserMediation} />
         </div>
         <Carousel axis='horizontal'
           emulateTouch
@@ -205,6 +207,11 @@ export default compose(
         readUms.sort((um1, um2) => um1.momentDateRead - um2.momentDateRead)
         return notReadUms ? readUms.concat(notReadUms) : readUms
       }
+    ],
+    firstNotReadItem: [
+      (ownProps, nextState) => nextState.userMediations,
+      userMediations => userMediations && userMediations.map(um => um.dateRead)
+                                                        .indexOf(null)
     ]
   }),
 )(Explorer)

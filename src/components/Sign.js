@@ -25,7 +25,7 @@ class Sign extends Component {
     return (
       <div className='sign'>
         <div className='h1 mb3'>
-          Login!
+          Connecte-toi!
         </div>
         <FormInput className={inputClassName}
           collectionName='users'

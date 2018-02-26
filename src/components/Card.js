@@ -35,7 +35,7 @@ class Card extends Component {
     history.push(`/decouverte/${id}`)
   }
   onDeleteClick = () => {
-    const { id, requestData } = this.props
+    // const { id, requestData } = this.props
     //TODO: remove favorite status
     //requestData('DELETE', `pins/offerId:${id}`, {
     //  getOptimistState: (state, action) => {
@@ -76,11 +76,9 @@ class Card extends Component {
       id,
       index,
       itemsCount,
-      // nextButtonElement,
-      // prevButtonElement,
-      requestData,
+      // requestData,
       thresholdDragRatio,
-      userId
+      // userId
     } = this.props
     const { isFavorite } = this.state
     const { y } = data
@@ -102,7 +100,6 @@ class Card extends Component {
         : index -1
       })
       filterData('offers', offer => offer.id !== id)
-      // nextButtonElement.click()
     }
     this.setState({
       dislikedOpacity: 0,
