@@ -1,4 +1,5 @@
 import Dexie from 'dexie'
+import moment from 'moment'
 
 import { fetchData } from './request'
 
@@ -6,7 +7,7 @@ export const db = new Dexie("pass_culture")
 db.version(1).stores({
   userMediations: 'id'
 })
-const config = { userMediations: 'unread' }
+const queriesByTableName = { userMediations: 'unreadOrChangedSince={{sinceDate}}' }
 
 export async function bulkData (method, path, data) {
   let dbMethod = method.toLowerCase()
@@ -26,13 +27,14 @@ export async function fetch () {
   return results
 }
 
-export async function pull () {
+export async function pull (config = {}) {
+  const sinceDate = config.sinceDate || moment().subtract(1, 'd').toISOString()
   return Promise.all(db.tables.map(async table => {
     const method = 'PUT'
     let path = table.name
-    const query = config[table.name]
+    const query = queriesByTableName[table.name]
     if (query) {
-      path = `${path}?${query}`
+      path = `${path}?${query.replace(/\{\{sinceDate\}\}/g, sinceDate)}`
     }
     const result = await fetchData(method, path)
     if (result.data) {

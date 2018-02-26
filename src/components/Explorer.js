@@ -71,13 +71,14 @@ class Explorer extends Component {
     }
   }
   onChange = selectedItem => {
-    const { requestData,
+    const { hasFirstItem,
+      requestData,
       user,
       userMediations
     } = this.props
     const newState = { selectedItem }
     const previousSelectedItem = selectedItem - 1
-    if (user && selectedItem > 0 && previousSelectedItem === this.state.selectedItem) {
+    if (user && selectedItem > (hasFirstItem ? 0 : 1) && previousSelectedItem === this.state.selectedItem) {
       // update dateRead for previous item
       const { dateRead, id, isFavorite } = userMediations[previousSelectedItem]
       // not update if already have one
@@ -91,9 +92,21 @@ class Explorer extends Component {
         }]
         requestData('PUT', 'userMediations', { body, sync: true })
       }
-    } else if (!user && selectedItem === userMediations.length - 1) {
+    } else if (!user && userMediations && selectedItem === userMediations.length - 1) {
       requestData('GET', 'anonymousOffers', { hook: this.handleOfferToUserMediation })
     }
+    // Ask for older items
+    if (!hasFirstItem && selectedItem === 0 && this.state.selectedItem === 1) {
+      console.log('userMediations[0]', userMediations[0])
+      const unreadOrChangedSince = (userMediations[0].momentDateRead || moment())
+                                      .subtract(1, 'd')
+                                      .toISOString()
+      requestData('PUT',
+        `userMediations?unreadOrChangedSince=${unreadOrChangedSince}`,
+        { sync: true }
+      )
+    }
+    // update selectedItem
     this.setState(newState)
   }
   componentWillMount () {
@@ -110,7 +123,11 @@ class Explorer extends Component {
     }
   }
   componentWillReceiveProps (nextProps) {
-    const { firstNotReadItem, user, userMediations } = nextProps
+    const { firstNotReadItem,
+      hasFirstItem,
+      user,
+      userMediations
+    } = nextProps
     if (this.carouselElement && userMediations !== this.props.userMediations) {
       this.handleLoading(nextProps)
     }
@@ -118,18 +135,24 @@ class Explorer extends Component {
       this.handleRequestData(nextProps)
     }
     // get directly to the not read
-    if (firstNotReadItem && this.state.selectedItem === 0) {
-      this.setState({ selectedItem: firstNotReadItem })
+    if (this.state.selectedItem === 0) {
+      // shift
+      console.log('hasFirstItem', hasFirstItem, firstNotReadItem)
+      const selectedItem = (firstNotReadItem || 0) + (hasFirstItem ? 0 : 1)
+      console.log('selectedItem', selectedItem)
+      this.setState({ selectedItem })
     }
     if (user === false && this.props.user) {
-      this.setState({ selectedItem: 0 })
+      this.setState({ selectedItem: 1 })
     }
   }
   render () {
     const { loadingTag,
+      user,
       userMediations
     } = this.props
     const { selectedItem } = this.state
+    console.log('userMediations', userMediations)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
@@ -149,15 +172,16 @@ class Explorer extends Component {
           onChange={this.onChange} >
           {
             loadingTag !== 'search' && userMediations && userMediations.length > 0
-              ? userMediations.map((userMediation, index) =>
-                  <Card {...this.state}
-                    index={index}
-                    itemsCount={userMediations.length}
-                    key={index}
-                    {...userMediation}
-                    {...userMediation.mediation && userMediation.mediation.offer}
-                    {...userMediation.offer} />
-                ).concat([<LoadingCard key='last' isForceActive />])
+              ? ((user && [<LoadingCard key='first' isForceActive />]) || []).concat(
+                  userMediations.map((userMediation, index) =>
+                    <Card {...this.state}
+                      index={index}
+                      itemsCount={userMediations.length}
+                      key={index}
+                      {...userMediation}
+                      {...userMediation.mediation && userMediation.mediation.offer}
+                      {...userMediation.offer} />
+                  )).concat([<LoadingCard key='next' isForceActive />])
               : <LoadingCard />
           }
         </Carousel>
@@ -196,15 +220,27 @@ export default compose(
         if (!userMediations) {
           return userMediations
         }
+        // sort given dateRead
         const groupe = groupBy(userMediations,
           um => um.dateRead === null)
-        const notReadUms = groupe.get(true)
-        const readUms = groupe.get(false)
+        let notReadUms = groupe.get(true)
+        const firstNotRead = notReadUms && notReadUms.find(um => um.isFirst)
+        if (firstNotRead) {
+          notReadUms = [firstNotRead].concat(notReadUms)
+        }
+        let readUms = groupe.get(false)
         if (!readUms) {
           return notReadUms
         }
         readUms.forEach(readUm => readUm.momentDateRead = moment(readUm.dateRead))
         readUms.sort((um1, um2) => um1.momentDateRead - um2.momentDateRead)
+        // filter too old date Read items (later than one day)
+        const tooOldThresholDate = moment().subtract(1, 'd')
+        const firstReadUmIndex = readUms && readUms
+          .map((readUm, index) => [readUm.momentDateRead, index])
+          .find(tuple => tuple[0] > tooOldThresholDate)[1]
+        readUms = readUms.slice(firstReadUmIndex)
+        // return read - not read items
         return notReadUms ? readUms.concat(notReadUms) : readUms
       }
     ],
@@ -212,6 +248,10 @@ export default compose(
       (ownProps, nextState) => nextState.userMediations,
       userMediations => userMediations && userMediations.map(um => um.dateRead)
                                                         .indexOf(null)
+    ],
+    hasFirstItem: [
+      (ownProps, nextState) => nextState.userMediations,
+      userMediations => userMediations && userMediations[0] && userMediations[0].isFirst
     ]
   }),
 )(Explorer)
