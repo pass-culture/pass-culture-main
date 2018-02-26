@@ -29,7 +29,7 @@ function * fromWatchSuccessGetSignoutActions () {
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
-    dexieRegistration = yield call(registerDexieServiceWorker)
+//    dexieRegistration = yield call(registerDexieServiceWorker)
     yield call(pull)
     yield put(setUser(user))
   }

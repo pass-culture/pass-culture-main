@@ -7,7 +7,7 @@ import DeleteButton from './DeleteButton'
 import OfferForm from './OfferForm'
 import OfferJoinForm from './OfferJoinForm'
 import SubmitButton from '../components/SubmitButton'
-import WorkItem from './WorkItem'
+import ThingItem from './ThingItem'
 import { assignData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 import { NEW } from '../utils/config'
@@ -20,12 +20,12 @@ class OfferModify extends Component {
     this.props.assignData({ modifyOfferId: null })
   }
   render () {
-    const { id, work } = this.props
+    const { id, thing } = this.props
     const isNew = id === NEW
     return (
       <div className='offer-modify p2'>
         <div className='h2 mt2 mb2'> Offre </div>
-        <WorkItem extraClass='mb2' {...work} />
+        <ThingItem extraClass='mb2' {...thing} />
         <OfferForm {...this.props} />
         <div>
           <SubmitButton add='append'
@@ -42,7 +42,7 @@ class OfferModify extends Component {
             }
             getOptimistState={(state, action) => {
               const modifyOffer = Object.assign({ id,
-                work
+                thing
               }, action.config.body)
               return { offers: state.offers.concat(modifyOffer) }
             }}
@@ -52,7 +52,8 @@ class OfferModify extends Component {
               }
             }}
             method={isNew ? 'POST' : 'PUT'}
-            path='offers'
+            path={'offers/' + (isNew ? '' : id)}
+            storeKey='offers'
             text={isNew ? 'Enregistrer' : 'Modifer'}
           />
           <DeleteButton className={classnames('button button--alive mb2', {

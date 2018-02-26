@@ -7,7 +7,7 @@ import { mergeForm } from '../reducers/form'
 import { requestData } from '../reducers/data'
 import { NEW } from '../utils/config'
 
-class WorkDetector extends Component {
+class ThingDetector extends Component {
   constructor () {
     super()
     this.state = {
@@ -19,21 +19,21 @@ class WorkDetector extends Component {
     this.setState({ identifier: value })
   }
   onOptionClick = ({ target: { value } }) => {
-    this.props.mergeForm('works', NEW, 'category', value)
+    this.props.mergeForm('things', NEW, 'category', value)
     this.setState({ selectedCategory: value })
   }
   onSearchClick = () => {
     const { identifier } = this.state
-    this.props.requestData('GET', `works/book:${identifier}`, { key: 'works'})
+    this.props.requestData('GET', `things/book:${identifier}`, { key: 'things'})
   }
   render () {
     const { identifier, selectedCategory } = this.state
-    const { options, work } = this.props
+    const { options, thing } = this.props
     const isDisabled = identifier.trim() === ''
     return (
-      <div className='work-detector p2'>
+      <div className='thing-detector p2'>
         {
-          !work && <Select className='select mb2'
+          !thing && <Select className='select mb2'
             defaultLabel='-- choisir une catégorie --'
             onOptionClick={this.onOptionClick}
             options={options}
@@ -72,7 +72,7 @@ class WorkDetector extends Component {
   }
 }
 
-WorkDetector.defaultProps = {
+ThingDetector.defaultProps = {
   options: [
     { value: 'book', label: 'Livre' },
     { value: 'theater', label: 'Theâtre' }
@@ -80,6 +80,6 @@ WorkDetector.defaultProps = {
 }
 
 export default connect(
-  state => ({ work: state.data.works && state.data.works[0] }),
+  state => ({ thing: state.data.things && state.data.things[0] }),
   { mergeForm, requestData }
-)(WorkDetector)
+)(ThingDetector)

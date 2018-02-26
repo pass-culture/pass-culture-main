@@ -4,30 +4,30 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import OfferModify from './OfferModify'
-import WorkDetector from './WorkDetector'
+import ThingDetector from './ThingDetector'
 import { mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class OfferNew extends Component {
   componentWillReceiveProps (nextProps) {
-    const { mergeForm, work } = nextProps
-    if (work && work !== this.props.work) {
+    const { mergeForm, thing } = nextProps
+    if (thing && thing !== this.props.thing) {
       const now = moment()
       const endDate = now.add(1, 'd').utc().format()
       const startDate = now.utc().format()
       mergeForm('prices', NEW, 'endDate', endDate)
       mergeForm('prices', NEW, 'startDate', startDate)
-      mergeForm('offers', NEW, 'workId', work.id)
+      mergeForm('offers', NEW, 'thingId', thing.id)
     }
   }
   render () {
-    const { work } = this.props
+    const { thing } = this.props
     return (
-      <div className={classnames('offer-new', { 'offer-new--work-detector mt2 flex items-center': !work })}>
+      <div className={classnames('offer-new', { 'offer-new--thing-detector mt2 flex items-center': !thing })}>
         {
-          work
-            ? <OfferModify work={work} />
-            : <WorkDetector />
+          thing
+            ? <OfferModify thing={thing} />
+            : <ThingDetector />
         }
       </div>
     )
@@ -35,6 +35,6 @@ class OfferNew extends Component {
 }
 
 export default connect(
-  state => ({ work: state.data.works && state.data.works[0] }),
+  state => ({ thing: state.data.things && state.data.things[0] }),
   { mergeForm }
 )(OfferNew)
