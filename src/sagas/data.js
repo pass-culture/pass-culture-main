@@ -37,6 +37,7 @@ function * fromWatchRequestDataActions (action) {
       if (sync && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
         yield call(bulkData, method, path, result.data, config)
       }
+      console.log('DATA', result.data)
       yield put(successData(method, path, result.data, config))
     } else {
       console.warn(result.error)
