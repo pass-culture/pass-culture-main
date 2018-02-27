@@ -8,7 +8,7 @@ import withLogin from '../hocs/withLogin'
 class HomePage extends Component {
   handleRedirect = props => {
     const { history: { push }, user } = props
-    push(user && user.isPro ? '/pro' : '/decouverte')
+    user && push(user.isPro ? '/pro' : '/decouverte')
   }
   componentWillMount () {
     this.handleRedirect(this.props)
