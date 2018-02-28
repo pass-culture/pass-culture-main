@@ -1,31 +1,31 @@
 import { IS_DEV } from './config'
-import { clear, db, fetch, pull } from './dexie'
+import { clear, config, db, fetch, pull } from './dexie'
+import store from './store'
+import { requestData } from '../reducers/data'
 
 const dexieSwUrl = `${process.env.PUBLIC_URL}/dexie-service-worker.js`
 
-// use messagechannel to communicate
-function sendMessageToServiceWorker (message) {
-  return new Promise((resolve, reject) => {
-    // Create a Message Channel
-    const swMessageChannel = new MessageChannel()
-    // Handler for recieving message reply from service worker
-    swMessageChannel.port1.onmessage = event => {
-      if(event.data.error) {
-        reject(event.data.error)
-      } else {
-        console.log('SA MERE', event.data)
-        resolve(event.data)
-      }
-    }
-    navigator.serviceWorker.controller.postMessage(message, [swMessageChannel.port2])
-  })
-}
-
-// send message to serviceWorker
-// you can see that i add a parse argument
-// this is use to tell the serviceworker how to parse our data
+// Message Channel that triggers the sync between
+// dexie pull callback and redux update
 export function sync (key, store) {
-  return sendMessageToServiceWorker({ key, store, type: 'sync' })
+  if (!navigator.serviceWorker.controller) {
+    return
+  }
+  const dexieMessageChannel = new MessageChannel()
+  dexieMessageChannel.port1.onmessage = event => {
+    if(event.data.error) {
+      console.warn(event.data.error)
+    } else {
+      Object.keys(config.description)
+            .forEach(collectionName => {
+              store.dispatch(requestData('GET', collectionName, { sync: true }))
+            })
+    }
+  }
+  return navigator.serviceWorker.controller.postMessage(
+    { key, store, type: 'sync' },
+    [dexieMessageChannel.port2]
+  )
 }
 
 export default async function registerDexieServiceWorker() {
@@ -34,16 +34,15 @@ export default async function registerDexieServiceWorker() {
     if (!navigator.serviceWorker.ready) {
       return
     }
-    sync("dexie-init", { text: "allez OUAI" })
+    sync("dexie-init")
     return registration
   }
 }
-
-
 
 if (IS_DEV) {
   window.clearDexie = clear
   window.dexieDb = db
   window.fetchDexie = fetch
   window.pullDexie = pull
+  window.syncDexiePull = () => sync('dexie-pull')
 }

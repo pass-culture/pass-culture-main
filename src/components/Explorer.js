@@ -13,6 +13,8 @@ import SearchInput from '../components/SearchInput'
 import withSelectors from '../hocs/withSelectors'
 import { assignData, requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
+import { IS_DEV } from '../utils/config'
+import { sync } from '../utils/registerDexieServiceWorker'
 
 class Explorer extends Component {
   constructor () {
@@ -143,6 +145,9 @@ class Explorer extends Component {
   componentWillMount () {
     this.handleRequestData(this.props)
     this.handleLoading(this.props)
+    if (IS_DEV) {
+      // this.dexiePullIntervall = setInterval(() => sync('dexie-pull'), 5000)
+    }
   }
   componentDidMount () {
     const newState = {
@@ -197,6 +202,11 @@ class Explorer extends Component {
         selectedItem: 0,
         selectedUserMediation: null
       })
+    }
+  }
+  componentWillUnmount () {
+    if (IS_DEV) {
+      //this.dexiePullIntervall && clearInterval(this.dexiePullIntervall)
     }
   }
   render () {

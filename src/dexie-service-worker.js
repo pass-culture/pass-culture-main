@@ -1,36 +1,42 @@
 import { db, pull } from './utils/dexie'
 
 const store = {}
-let port = null
+let initPort = null
 
-async function dexiePull () {
+async function dexiePull (port) {
   // pull
-  await pull()
+  await pull(store)
   // post
-  console.log('port', port)
-  port.postMessage({ text: "Hey I just got a fetch from you!" })
+  port && port.postMessage({ text: "Hey I just got a fetch from you!" })
 }
 
 self.addEventListener('message', event => {
   const { key, type } = event.data
   if (type === 'sync') {
+    // check
     if (!key) {
       console.warn('you need to define a key in event.data')
       return
     }
-    console.log('key', key)
+    // switch
     if (key === 'dexie-init') {
-      port = event.ports[0]
+      initPort = event.ports[0]
       self.registration.sync.register(key)
+    } else if (key === 'dexie-pull') {
+      event.waitUntil(dexiePull(event.ports[0]))
+    } else if (key === 'dexie-stop') {
+      initPort = null
+      self.registration.unregister()
     }
-    console.log('event.data.store', event.data.store)
-    Object.keys(event.data.store).length > 0 && Object.assign(store, event.data.store)
+    // update
+    event.data.store &&
+      Object.keys(event.data.store).length > 0 &&
+      Object.assign(store, event.data.store)
   }
 })
 
 self.addEventListener('sync', function (event) {
   if (event.tag === 'dexie-init') {
-    console.log('store', store)
-    event.waitUntil(dexiePull())
+    event.waitUntil(dexiePull(initPort))
   }
 })
