@@ -11,4 +11,4 @@ const DiscoveryPage = () => {
   )
 }
 
-export default withLogin()(DiscoveryPage)
+export default withLogin({ isRequired: true })(DiscoveryPage)

@@ -5,7 +5,8 @@ import { fetchData } from './request'
 
 export const db = new Dexie("pass_culture")
 db.version(1).stores({
-  userMediations: 'id'
+  userMediations: 'id',
+  configs: 'id'
 })
 const queriesByTableName = { userMediations: 'unreadOrChangedSince={{sinceDate}}' }
 
@@ -14,7 +15,7 @@ export async function bulkData (method, path, data) {
   dbMethod = `bulk${dbMethod[0].toUpperCase()}${dbMethod.slice(1)}`
   const collectionName = path.split('?')[0]
   const table = db[collectionName]
-  return table && table[dbMethod](data)
+  table && table[dbMethod](data)
 }
 
 export async function clear () {
@@ -28,6 +29,9 @@ export async function fetch () {
 }
 
 export async function pull (config = {}) {
+  db.configs.add({ id: Math.random() })
+  // db.configs.put({ id: 1, path: moment().toISOString() })
+  /*
   const sinceDate = config.sinceDate || moment().subtract(1, 'minutes').toISOString()
   return Promise.all(db.tables.map(async table => {
     const method = 'PUT'
@@ -41,4 +45,5 @@ export async function pull (config = {}) {
       return bulkData(method, path, result.data)
     }
   }))
+  */
 }

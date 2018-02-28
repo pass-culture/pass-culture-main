@@ -181,7 +181,7 @@ class Explorer extends Component {
       this.state.selectedItem === 0
     ) {
       // get directly to the not read
-      let selectedItem = firstNotReadUserMediationIndex
+      let selectedItem = firstNotReadItem
       let selectedUserMediation = userMediations[firstNotReadUserMediationIndex]
       // but if there is no more card to be read... go to the last one
       if (firstNotReadUserMediationIndex === -1) {
