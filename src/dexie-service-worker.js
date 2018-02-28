@@ -1,36 +1,36 @@
 import { db, pull } from './utils/dexie'
 
-function send_message_to_client(client, msg){
-    return new Promise(function(resolve, reject){
-        var msg_chan = new MessageChannel();
+const store = {}
+let port = null
 
-        msg_chan.port1.onmessage = function(event){
-            if(event.data.error){
-                reject(event.data.error);
-            }else{
-                resolve(event.data);
-            }
-        };
-
-        client.postMessage("SW Says: '"+msg+"'", [msg_chan.port2]);
-    });
+async function dexiePull () {
+  // pull
+  await pull()
+  // post
+  console.log('port', port)
+  port.postMessage({ text: "Hey I just got a fetch from you!" })
 }
 
-function send_message_to_all_clients(msg){
-    clients.matchAll().then(clients => {
-        clients.forEach(client => {
-            send_message_to_client(client, msg).then(m => console.log("SW Received Message: "+m));
-        })
-    })
-}
+self.addEventListener('message', event => {
+  const { key, type } = event.data
+  if (type === 'sync') {
+    if (!key) {
+      console.warn('you need to define a key in event.data')
+      return
+    }
+    console.log('key', key)
+    if (key === 'dexie-init') {
+      port = event.ports[0]
+      self.registration.sync.register(key)
+    }
+    console.log('event.data.store', event.data.store)
+    Object.keys(event.data.store).length > 0 && Object.assign(store, event.data.store)
+  }
+})
 
 self.addEventListener('sync', function (event) {
-  if (event.tag === 'dexie-pull') {
-    console.log('event.ta', event.tag)
-    db.configs.add({ id: Math.random() }).then((f) => {
-      console.log('f', f)
-      send_message_to_all_clients('Hello ' + f)
-    })
-    // event.waitUntil(pull)
+  if (event.tag === 'dexie-init') {
+    console.log('store', store)
+    event.waitUntil(dexiePull())
   }
 })

@@ -33,6 +33,7 @@ class OfferItem extends Component {
       prices,
       thumbUrl
     } = this.props
+    console.log('mediations', mediations)
     return (
       <div className={classnames(
         'offer-item flex items-center justify-between p1 mb1', {

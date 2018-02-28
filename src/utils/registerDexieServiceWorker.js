@@ -3,31 +3,38 @@ import { clear, db, fetch, pull } from './dexie'
 
 const dexieSwUrl = `${process.env.PUBLIC_URL}/dexie-service-worker.js`
 
+// use messagechannel to communicate
+function sendMessageToServiceWorker (message) {
+  return new Promise((resolve, reject) => {
+    // Create a Message Channel
+    const swMessageChannel = new MessageChannel()
+    // Handler for recieving message reply from service worker
+    swMessageChannel.port1.onmessage = event => {
+      if(event.data.error) {
+        reject(event.data.error)
+      } else {
+        console.log('SA MERE', event.data)
+        resolve(event.data)
+      }
+    }
+    navigator.serviceWorker.controller.postMessage(message, [swMessageChannel.port2])
+  })
+}
+
+// send message to serviceWorker
+// you can see that i add a parse argument
+// this is use to tell the serviceworker how to parse our data
+export function sync (key, store) {
+  return sendMessageToServiceWorker({ key, store, type: 'sync' })
+}
+
 export default async function registerDexieServiceWorker() {
-
-
-  // db.configs.add({ id: Math.random() })
-  db.configs.hook('creating', function (modifications, primKey, obj, transaction) {
-    console.log('OUSQDQDS')
-  })
-  /*
-  db.configs.hook('updating', function (modifications, primKey, obj, transaction) {
-    console.log('OUSQDQDS')
-  })
-  */
-
   if ('serviceWorker' in navigator) {
     const registration = await navigator.serviceWorker.register(dexieSwUrl)
-
-    navigator.serviceWorker.addEventListener('message', function (event) {
-      console.log("Client 1 Received Message: " + event.data)
-      // event.ports[0].postMessage("Client 1 Says 'Hello back!'");
-    })
-
     if (!navigator.serviceWorker.ready) {
       return
     }
-    registration.sync.register('dexie-pull')
+    sync("dexie-init", { text: "allez OUAI" })
     return registration
   }
 }

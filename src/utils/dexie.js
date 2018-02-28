@@ -29,7 +29,7 @@ export async function fetch () {
 }
 
 export async function pull (config = {}) {
-  db.configs.add({ id: Math.random() })
+  //db.configs.add({ id: Math.random() })
   // db.configs.put({ id: 1, path: moment().toISOString() })
   /*
   const sinceDate = config.sinceDate || moment().subtract(1, 'minutes').toISOString()
@@ -46,4 +46,5 @@ export async function pull (config = {}) {
     }
   }))
   */
+  console.log('dqsdqsdqsd')
 }

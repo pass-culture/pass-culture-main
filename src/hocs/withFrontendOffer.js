@@ -3,7 +3,7 @@ import { API_URL, THUMBS_URL } from '../utils/config'
 
 const withFrontendOffer = withSelectors({
   thingOrEvent: [
-    ownProps => ownProps.thing,
+    ownProps => { console.log('ownProps', ownProps); return ownProps.thing },
     ownProps => ownProps.event,
     (thing, event) => thing || event
   ],
