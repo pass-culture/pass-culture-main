@@ -69,7 +69,7 @@ elif [[ "$CMD" == "restart-backend" ]]; then
        rm -rf api/postgres_data;
        docker-compose up'
 elif [[ "$CMD" == "reset-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",offerer,event,mediation,offer,price,provider,user_mediation,user_offerer,venue,thing CASCADE;\""'
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing CASCADE;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
   if [[ "$1" == "" ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
