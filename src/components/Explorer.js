@@ -22,6 +22,7 @@ class Explorer extends Component {
       firstCard,
       lastCard,
       loadingTag,
+      onChange,
       searchCollectionName,
       searchHook,
       selectedItem
@@ -42,7 +43,7 @@ class Explorer extends Component {
           showIndicators={false}
           showThumbs={false}
           transitionTime={250}
-          onChange={this.onChange} >
+          onChange={onChange} >
           {
             loadingTag !== 'search' && cards && cards.length > 0
               ? ((!firstCard && [<LoadingCard key='first' isForceActive />]) || [])

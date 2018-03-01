@@ -1,12 +1,12 @@
 import { IS_DEV } from './config'
-import { clear, config, db, fetch, pull } from './dexie'
+import { clear, config, db, fetch, pushPull } from './dexie'
 import store from './store'
 import { requestData } from '../reducers/data'
 
 const dexieSwUrl = `${process.env.PUBLIC_URL}/dexie-service-worker.js`
 
 // Message Channel that triggers the sync between
-// dexie pull callback and redux update
+// dexie push pull callback and redux update
 export function sync (key, state) {
   if (!navigator.serviceWorker.controller) {
     return
@@ -41,6 +41,6 @@ if (IS_DEV) {
   window.clearDexie = clear
   window.dexieDb = db
   window.fetchDexie = fetch
-  window.pullDexie = pull
-  window.syncDexiePull = () => sync('dexie-pull')
+  window.pushPullDexie = pushPull
+  window.syncDexiePushPull = () => sync('dexie-push-pull')
 }

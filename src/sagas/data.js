@@ -3,7 +3,6 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { assignData, failData, successData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
 import { setGeolocationPosition } from '../reducers/geolocation'
-import { bulkData } from '../utils/dexie'
 import { fetchData, syncData } from '../utils/request'
 import { getGeolocationPosition } from '../utils/geolocation'
 
@@ -22,8 +21,8 @@ function * fromWatchRequestDataActions (action) {
   const token = yield type && select(state => state.data[`${type}Token`])
   // DATA
   try {
-    const dataMethod = method === 'GET'
-      ? (sync && syncData) || fetchData
+    const dataMethod = sync
+      ? syncData
       : fetchData
     const result = yield call(dataMethod,
       method,
@@ -34,9 +33,11 @@ function * fromWatchRequestDataActions (action) {
       yield call(hook, method, path, result, config)
     }
     if (result.data) {
+      /*
       if (sync && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
         yield call(bulkData, method, path, result.data, config)
       }
+      */
       yield put(successData(method, path, result.data, config))
     } else {
       console.warn(result.error)

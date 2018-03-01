@@ -1,7 +1,7 @@
 import 'fetch-everywhere'
 
 import { API_URL } from './config'
-import { db } from './dexie'
+import { db, putData } from './dexie'
 
 export const isRequestAction = ({ type }) => /REQUEST_(.*)/.test(type)
 
@@ -51,6 +51,13 @@ export async function fetchData (method, path, config = {}) {
 }
 
 export async function syncData (method, path, config = {}) {
-  const data = await db[path].toArray()
+  // unpack
+  const { body } = config
+  let data
+  if (method === 'GET') {
+    data = await db[path].toArray()
+  } else {
+    data = await putData('update', path, body)
+  }
   return { data }
 }

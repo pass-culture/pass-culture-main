@@ -43,6 +43,7 @@ class UserMediationsExplorer extends Component {
       previousSelectedItem: this.state.selectedItem,
       selectedItem
     }
+    console.log('PUAAAA')
     // NEXT NAVIGATION
     if (selectedItem === this.state.selectedItem + 1) {
       // UPDATE IF THE PREVIOUS UM WAS NOT READ
@@ -54,13 +55,8 @@ class UserMediationsExplorer extends Component {
           id: this.state.selectedCard.id,
           isFavorite: this.state.selectedCard.isFavorite
         }]
-        /*
         // wait a bit to make clear that we load a new set
-        requestData('PUT',
-          `${collectionName}?around=${}`,
-          { body, sync: true }
-        )
-        */
+        requestData('PUT', 'userMediations', { body, sync: true })
       }
       // UPDATE SELECTED UM
       const cardIndex = selectedItem - (firstCard ? 0 : 1)
@@ -162,6 +158,7 @@ class UserMediationsExplorer extends Component {
   render () {
     return <Explorer {...this.props}
       {...this.state}
+      onChange={this.onChange}
       searchCollectionName='offers'
       searchHook={this.searchHook} />
   }

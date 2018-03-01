@@ -1,11 +1,11 @@
-import { db, pull } from './utils/dexie'
+import { db, pushPull } from './utils/dexie'
 
 const state = {}
 let initPort = null
 
-async function dexiePull (port) {
+async function dexiePushPull (port) {
   // pull
-  await pull(state)
+  await pushPull(state)
   // post
   port && port.postMessage({ text: "Hey I just got a fetch from you!" })
 }
@@ -22,8 +22,8 @@ self.addEventListener('message', event => {
     if (key === 'dexie-init') {
       initPort = event.ports[0]
       self.registration.sync.register(key)
-    } else if (key === 'dexie-pull') {
-      event.waitUntil(dexiePull(event.ports[0]))
+    } else if (key === 'dexie-push-pull') {
+      event.waitUntil(dexiePushPull(event.ports[0]))
     } else if (key === 'dexie-stop') {
       initPort = null
       self.registration.unregister()
@@ -37,6 +37,6 @@ self.addEventListener('message', event => {
 
 self.addEventListener('sync', function (event) {
   if (event.tag === 'dexie-init') {
-    event.waitUntil(dexiePull(initPort))
+    event.waitUntil(dexiePushPull(initPort))
   }
 })

@@ -21,7 +21,7 @@ function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     yield put(setUser(user))
-    yield call(sync, 'dexie-pull')
+    yield call(sync, 'dexie-push-pull')
   }
 }
 
