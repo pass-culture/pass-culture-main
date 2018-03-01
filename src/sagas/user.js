@@ -2,14 +2,18 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { resetData } from '../reducers/data'
 import { setUser } from '../reducers/user'
+import { clear } from '../utils/dexie'
+import { sync } from '../utils/registerDexieServiceWorker'
 
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false
+  yield call(clear)
   yield put(setUser(false))
 }
 
 function * fromWatchSuccessGetSignoutActions () {
   yield put(resetData())
+  yield call(clear)
   yield put(setUser(false))
 }
 
@@ -17,6 +21,7 @@ function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     yield put(setUser(user))
+    yield call(sync, 'dexie-pull')
   }
 }
 

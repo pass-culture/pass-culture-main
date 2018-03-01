@@ -10,12 +10,16 @@ class SourceItem extends Component {
     const { offererProviders, showModal } = this.props
     showModal(<SourceModify providers={offererProviders} />)
   }
+  /*
   onToggle = () => {
-    const { requestData, offererProviders } = this.props
+    const { offererProviders,
+      requestData
+    } = this.props
     const body = offererProviders.map(({ id, isActive }) =>
       ({ id, isActive: !isActive }))
-    // requestData('PUT', `providers`, { body })
+    requestData('PUT', `providers`, { body })
   }
+  */
   render () {
     const { name, offererProviders } = this.props
     return (

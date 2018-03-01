@@ -2,31 +2,31 @@ import withSelectors from './withSelectors'
 import { API_URL, THUMBS_URL } from '../utils/config'
 
 const withFrontendOffer = withSelectors({
-  thingOrEvent: [
-    ownProps => { console.log('ownProps', ownProps); return ownProps.thing },
-    ownProps => ownProps.event,
-    (thing, event) => thing || event
+  thingOrEventOccurence: [
+    ownProps => ownProps.eventOccurence,
+    ownProps => ownProps.thing,
+    (eventOccurence, thing) => eventOccurence || thing
   ],
   description: [
     ownProps => ownProps.description,
-    (ownProps, nextState) => nextState.thingOrEvent,
-    (description, thingOrEvent) => description || thingOrEvent.description
+    (ownProps, nextState) => nextState.thingOrEventOccurence,
+    (description, thingOrEventOccurence) => description || thingOrEventOccurence.description
   ],
   name: [
     ownProps => ownProps.name,
-    (ownProps, nextState) => nextState.thingOrEvent,
-    (name, thingOrEvent) => name || thingOrEvent.name
+    (ownProps, nextState) => nextState.thingOrEventOccurence,
+    (name, thingOrEventOccurence) => name || thingOrEventOccurence.name
   ],
   thumbUrl: [
     ownProps => ownProps.thumbCount,
     ownProps => ownProps.id,
-    ownProps => ownProps.event,
+    ownProps => ownProps.eventOccurence,
     ownProps => ownProps.thing,
-    (thumbCount, id, event, thing) => thumbCount > 0
+    (thumbCount, id, eventOccurence, thing) => thumbCount > 0
       ? `${THUMBS_URL}/offers/${id}`
       : (
-        event && event.thumbCount > 0
-          ? `${THUMBS_URL}/events/${event.id}`
+        eventOccurence && eventOccurence.thumbCount > 0
+          ? `${THUMBS_URL}/events/${eventOccurence.id}`
           : (
             thing && thing.thumbCount > 0
             ? `${THUMBS_URL}/things/${thing.id}`
@@ -35,9 +35,9 @@ const withFrontendOffer = withSelectors({
       )
   ],
   type: [
-    (ownProps, nextState) => nextState.thingOrEvent,
-    thingOrEvent => thingOrEvent.type
-  ],
+    (ownProps, nextState) => nextState.thingOrEventOccurence,
+    thingOrEventOccurence => thingOrEventOccurence.type
+  ]
 })
 
 

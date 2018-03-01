@@ -1,11 +1,11 @@
 import { db, pull } from './utils/dexie'
 
-const store = {}
+const state = {}
 let initPort = null
 
 async function dexiePull (port) {
   // pull
-  await pull(store)
+  await pull(state)
   // post
   port && port.postMessage({ text: "Hey I just got a fetch from you!" })
 }
@@ -29,9 +29,9 @@ self.addEventListener('message', event => {
       self.registration.unregister()
     }
     // update
-    event.data.store &&
-      Object.keys(event.data.store).length > 0 &&
-      Object.assign(store, event.data.store)
+    event.data.state &&
+      Object.keys(event.data.state).length > 0 &&
+      Object.assign(state, event.data.state)
   }
 })
 

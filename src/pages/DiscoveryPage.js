@@ -1,12 +1,12 @@
 import React from 'react'
 
-import Explorer from '../components/Explorer'
+import UserMediationsExplorer from '../components/UserMediationsExplorer'
 import withLogin from '../hocs/withLogin'
 
 const DiscoveryPage = () => {
   return (
     <main className='page discovery-page center'>
-      <Explorer />
+      <UserMediationsExplorer />
     </main>
   )
 }

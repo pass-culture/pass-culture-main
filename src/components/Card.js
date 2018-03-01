@@ -7,7 +7,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import MediationItem from './MediationItem'
-import withFrontendOffer from '../hocs/withFrontendOffer'
 import { filterData, requestData } from '../reducers/data'
 
 class Card extends Component {
@@ -119,7 +118,7 @@ class Card extends Component {
     const { carousselNode,
       id,
       index,
-      mediations,
+      mediation,
       selectedItem,
       thumbUrl
     } = this.props
@@ -177,9 +176,7 @@ class Card extends Component {
               </div>
               <div className='flex items-center justify-center'>
               {
-                mediations && mediations.map((mediation, index) =>
-                  <MediationItem key={index} {...mediation} />
-                )
+                mediation && <MediationItem key={index} {...mediation} />
               }
               </div>
             </div>
@@ -196,7 +193,6 @@ Card.defaultProps = {
 
 export default compose(
   withRouter,
-  withFrontendOffer,
   connect(
     state => ({ userId: state.user && state.user.id }),
     { filterData, requestData }

@@ -1,5 +1,4 @@
 import Dexie from 'dexie'
-import moment from 'moment'
 
 import { fetchData } from './request'
 
@@ -47,13 +46,13 @@ export async function fetch (config = {}) {
   return results
 }
 
-export async function pull (store = {}) {
+export async function pull (state = {}) {
   return Promise.all(config.collections.map(async ({ name, query }) => {
     const table = db[name]
     const method = 'PUT'
     let path = table.name
     if (query) {
-      const pathQuery = typeof query === 'function' ? query(store) : query
+      const pathQuery = typeof query === 'function' ? query(state) : query
       if (pathQuery && pathQuery !== '') {
         path = `${path}?${pathQuery}`
       }

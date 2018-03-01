@@ -7,7 +7,7 @@ const dexieSwUrl = `${process.env.PUBLIC_URL}/dexie-service-worker.js`
 
 // Message Channel that triggers the sync between
 // dexie pull callback and redux update
-export function sync (key, store) {
+export function sync (key, state) {
   if (!navigator.serviceWorker.controller) {
     return
   }
@@ -16,14 +16,12 @@ export function sync (key, store) {
     if(event.data.error) {
       console.warn(event.data.error)
     } else {
-      Object.keys(config.description)
-            .forEach(collectionName => {
-              store.dispatch(requestData('GET', collectionName, { sync: true }))
-            })
+      config.collections.forEach(({ name }) =>
+        store.dispatch(requestData('GET', name, { sync: true })))
     }
   }
   return navigator.serviceWorker.controller.postMessage(
-    { key, store, type: 'sync' },
+    { key, state, type: 'sync' },
     [dexieMessageChannel.port2]
   )
 }

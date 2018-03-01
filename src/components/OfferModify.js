@@ -86,7 +86,7 @@ OfferModify.defaultProps = {
 const getModifyOffer = createSelector(state => state.data.offers,
   (state, ownProps) =>
     state.data.modifyOfferId || ownProps.id,
-  (offers, offerId) => offers.find(({ id }) => id === offerId)
+  (offers, offerId) => offers && offers.find(({ id }) => id === offerId)
 )
 
 export default connect(
