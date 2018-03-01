@@ -30,22 +30,6 @@ class UserMediationsExplorer extends Component {
     }
     closeLoading()
   }
-  handleRequestData = props => {
-    const { assignData,
-      requestData,
-      user
-    } = props
-    // wait that we test already if there is a user
-    if (user === null) {
-      return
-    }
-    // set the ref date
-    assignData({ referenceDate: moment().subtract(1, 'minutes') })
-    // if there is a user we gonna get directly
-    // in the dexie local db
-    // else if user is false we ask directly to the backend
-    requestData('GET', 'userMediations', { sync: true })
-  }
   onChange = selectedItem => {
     const { assignData,
       cards,
@@ -128,7 +112,6 @@ class UserMediationsExplorer extends Component {
     }
   }
   componentWillMount () {
-    this.handleRequestData(this.props)
     this.handleLoading(this.props)
     if (IS_DEV) {
       // this.dexiePullIntervall = setInterval(() => sync('dexie-pull'), 5000)
@@ -146,9 +129,6 @@ class UserMediationsExplorer extends Component {
       this.setState({
         selectedCard: cards[firstNotReadIndex]
       })
-    }
-    if (user !== this.props.user) {
-      this.handleRequestData(nextProps)
     }
     // init shift
     if (user &&
@@ -224,9 +204,6 @@ export default compose(
         }
         // return read - not read items
         return readCards.concat(notReadCards)
-        // make sure that the isFirst is at the beginning
-        notReadCards && notReadCards.sort((card1, card2) =>
-          card1.isFirst || card2.isFirst)
       }
     ],
     firstCard: [

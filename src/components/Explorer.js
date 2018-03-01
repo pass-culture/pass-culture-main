@@ -26,7 +26,6 @@ class Explorer extends Component {
       searchHook,
       selectedItem
     } = this.props
-    console.log('render', selectedItem, cards, 'firstCard', firstCard, 'lastCard', lastCard)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
