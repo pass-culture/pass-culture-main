@@ -59,6 +59,8 @@ elif [[ "$CMD" == "install" ]]; then
        cd webapp && yarn'
 elif [[ "$CMD" == "psql" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture $*"'
+elif [[ "$CMD" == "python" ]]; then
+  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
        rm -rf api/postgres_data'
