@@ -70,11 +70,11 @@ class Card extends Component {
     this.setState({ position: null, isDragging: true })
   }
   onStop = (event, data) => {
-    const { carouselElement,
+    const { cardsCount,
+      carouselElement,
       filterData,
       id,
       index,
-      itemsCount,
       // requestData,
       thresholdDragRatio,
       // userId
@@ -94,7 +94,7 @@ class Card extends Component {
       //  type,
       //  userId
       //}})
-      const selectedItem = (index < itemsCount - 1)
+      const selectedItem = (index < cardsCount - 1)
         ? index
         : index -1
       console.log('WTF', selectedItem)
@@ -115,7 +115,9 @@ class Card extends Component {
     this.handlePinHighlight(nextProps)
   }
   render () {
-    const { carousselNode,
+    const { cardsLength,
+      carousselNode,
+      dateRead,
       id,
       index,
       mediation,
@@ -172,7 +174,7 @@ class Card extends Component {
           }} onDoubleClick={this.onContentClick}>
             <div className='card__content__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
               <div className='mb1'>
-                à {(20-id)*15}m
+                {index + 1} / {cardsLength} {dateRead && 'vue'}
               </div>
               <div className='flex items-center justify-center'>
               {

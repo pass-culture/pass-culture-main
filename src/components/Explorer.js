@@ -50,8 +50,8 @@ class Explorer extends Component {
                 .concat(
                   cards.map((card, index) =>
                     <Card {...this.state}
+                      cardsLength={cards.length}
                       index={index}
-                      itemsCount={cards.length}
                       key={index}
                       {...card} />
                   )).concat([

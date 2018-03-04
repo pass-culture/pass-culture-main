@@ -43,7 +43,6 @@ class UserMediationsExplorer extends Component {
       previousSelectedItem: this.state.selectedItem,
       selectedItem
     }
-    console.log('PUAAAA')
     // NEXT NAVIGATION
     if (selectedItem === this.state.selectedItem + 1) {
       // UPDATE IF THE PREVIOUS UM WAS NOT READ
