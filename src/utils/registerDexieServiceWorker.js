@@ -17,7 +17,8 @@ export function sync (key, state) {
       console.warn(event.data.error)
     } else {
       config.collections.forEach(({ name }) =>
-        store.dispatch(requestData('GET', name, { sync: true })))
+        name !== 'differences' && store.dispatch(
+          requestData('GET', name, { sync: true })))
     }
   }
   return navigator.serviceWorker.controller.postMessage(

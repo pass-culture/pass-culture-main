@@ -10,13 +10,12 @@ import { assignData, requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
 import { getCardFromUserMediation } from '../utils/cards'
 import { IS_DEV } from '../utils/config'
-// import { sync } from '../utils/registerDexieServiceWorker'
+import { sync } from '../utils/registerDexieServiceWorker'
 
 class UserMediationsExplorer extends Component {
   constructor () {
     super()
-    this.state = { carouselElement: null,
-      carousselNode: null,
+    this.state = { hasPushPullRequested: false,
       previousSelectedItem: null,
       selectedCard: null,
       selectedItem: 0
@@ -30,56 +29,50 @@ class UserMediationsExplorer extends Component {
     }
     closeLoading()
   }
-  onChange = selectedItem => {
+  onChange = nextSelectedItem => {
     const { assignData,
       cards,
       firstCard,
+      loadingTimeout,
       referenceDate,
       requestData,
       user
     } = this.props
+    const { selectedCard, selectedItem } = this.state
     // init
-    const newState = {
-      previousSelectedItem: this.state.selectedItem,
-      selectedItem
+    const newState = { previousSelectedItem: selectedItem,
+      selectedItem: nextSelectedItem
     }
     // NEXT NAVIGATION
-    if (selectedItem === this.state.selectedItem + 1) {
+    if (nextSelectedItem === selectedItem + 1) {
       // UPDATE IF THE PREVIOUS UM WAS NOT READ
-      if (!this.state.selectedCard.dateRead) {
+      console.log('selectedCard', selectedCard)
+      if (selectedCard && !selectedCard.dateRead) {
         const nowDate = moment().toISOString()
         const body = [{
           dateRead: nowDate,
           dateUpdated: nowDate,
-          id: this.state.selectedCard.id,
-          isFavorite: this.state.selectedCard.isFavorite
+          id: selectedCard.id,
+          isFavorite: selectedCard.isFavorite
         }]
         // wait a bit to make clear that we load a new set
         requestData('PUT', 'userMediations', { body, sync: true })
       }
-      // UPDATE SELECTED UM
-      const cardIndex = selectedItem - (firstCard ? 0 : 1)
-      const selectedCard = cards && cards[cardIndex]
-      if (selectedCard) {
-        newState.selectedCard = selectedCard
-      }
     }
     // LEFT NAVIGATION
-    /*
-    if (!firstCard && selectedItem === 0 && this.state.selectedItem === 1) {
-      const unreadOrChangedSince = (cards[0].momentDateRead || referenceDate)
-                                      .subtract(1, 'm')
-                                      .toISOString()
-      // wait a bit to make clear that we load a new set
-      setTimeout(() => {
-        assignData({ referenceDate: unreadOrChangedSince })
-        requestData('PUT',
-          `cards?unreadOrChangedSince=${unreadOrChangedSince}`,
-          { sync: true }
-        )
-      })
+    if (nextSelectedItem === selectedItem - 1) {
+      if (!firstCard && nextSelectedItem === 0 && selectedItem === 1) {
+        // wait a bit to make clear that we load a new set
+        setTimeout(() =>
+          sync('dexie-push-pull', { around: cards[0].id }), loadingTimeout)
+      }
     }
-    */
+    // UPDATE SELECTED UM
+    const nextCardIndex = nextSelectedItem - (firstCard ? 0 : 1)
+    const nextSelectedCard = cards && cards[nextCardIndex]
+    if (nextSelectedCard) {
+      newState.selectedCard = nextSelectedCard
+    }
     // UPDATE
     this.setState(newState)
   }
@@ -116,14 +109,22 @@ class UserMediationsExplorer extends Component {
     const { cards,
       firstNotReadIndex,
       firstCard,
+      loadingTimeout,
       user
     } = nextProps
-    if (this.carouselElement && cards !== this.props.cards) {
+    const { hasPushPullRequested, selectedItem } = this.state
+    if (cards !== this.props.cards) {
       this.handleLoading(nextProps)
       // be sure to sync the selectedCard with the first not read
-      this.setState({
-        selectedCard: cards[firstNotReadIndex]
-      })
+      this.setState({ selectedCard: cards[firstNotReadIndex] })
+      // ALMOST END NAVIGATION
+      if (!hasPushPullRequested && selectedItem > cards.length - 1) {
+        // wait a bit to make clear that we load a new set
+        setTimeout(() => sync('dexie-push-pull'), loadingTimeout)
+        this.setState({ hasPushPullRequested: true })
+      } else {
+        this.setState({ hasPushPullRequested: false })
+      }
     }
     // init shift
     if (user &&
@@ -153,6 +154,7 @@ class UserMediationsExplorer extends Component {
     if (IS_DEV) {
       //this.dexiePullIntervall && clearInterval(this.dexiePullIntervall)
     }
+    console.log('ON SE CASSE')
   }
   render () {
     return <Explorer {...this.props}
@@ -161,6 +163,10 @@ class UserMediationsExplorer extends Component {
       searchCollectionName='offers'
       searchHook={this.searchHook} />
   }
+}
+
+UserMediationsExplorer.defaultProps = {
+  loadingTimeout: 500
 }
 
 export default compose(
@@ -177,38 +183,36 @@ export default compose(
     cards: [
       ownProps => ownProps.userMediations,
       userMediations => {
-        const cards = userMediations && userMediations.map(getCardFromUserMediation)
-          .filter(card => card)
-        // leave if undefined
-        if (!cards) {
-          return cards
+        // init
+        if (!userMediations) {
+          return
         }
-        // sort given dateRead
-        const group = groupBy(cards, card => card.dateRead === null)
-        let notReadCards = group[true]
+        let cards
+        // convert and group
+        const group = groupBy(userMediations.map(getCardFromUserMediation),
+          card => card.dateRead === null)
         // sort the read ones
-        let readCards = group[false]
-        if (!readCards) {
-          return notReadCards
+        const readCards = group[false]
+        if (readCards) {
+          readCards.forEach(readCard =>
+            readCard.momentDateRead = moment(readCard.dateRead))
+          readCards.sort((card1, card2) =>
+            card1.momentDateRead - card2.momentDateRead)
+          cards = readCards
+        } else {
+          cards = []
         }
-        readCards.forEach(readCard => readCard.momentDateRead = moment(readCard.dateRead))
-        readCards.sort((card1, card2) => card1.momentDateRead - card2.momentDateRead)
-        // check if there is nothing to read new
-        if (!notReadCards) {
-          readCards.slice(-1)[0].isLast = true
-          return readCards
+        const notReadCards = group[true]
+        if (notReadCards) {
+          cards = cards.concat(notReadCards)
         }
-        // return read - not read items
-        return readCards.concat(notReadCards)
+        // return
+        return cards
       }
     ],
     firstCard: [
       (ownProps, nextState) => nextState.cards,
       cards => cards && cards.find(card => card.isFirst)
-    ],
-    lastCard: [
-      (ownProps, nextState) => nextState.cards,
-      cards => cards && cards.find(card => card.isLast)
     ],
     firstNotReadIndex: [
       (ownProps, nextState) => nextState.cards,
