@@ -58,7 +58,7 @@ elif [[ "$CMD" == "install" ]]; then
 			 ./pc symlink;
        cd webapp && yarn'
 elif [[ "$CMD" == "psql" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture $*"'
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
 elif [[ "$CMD" == "python" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 elif [[ "$CMD" == "rebuild-backend" ]]; then
@@ -75,7 +75,7 @@ elif [[ "$CMD" == "reset-all-db" ]]; then
 elif [[ "$CMD" == "reset-um-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE mediation,user_mediation RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
-  if [[ "$1" == "" ]]; then
+  if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
     exit
   fi
@@ -86,16 +86,20 @@ elif [[ "$CMD" == "start-backend" ]]; then
 elif [[ "$CMD" == "start-frontend" ]]; then
   RUN='cd webapp && yarn start'
 elif [[ "$CMD" == "symlink" ]]; then
-	RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
+  RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
 elif [[ "$CMD" == "test-backend" ]]; then
-   read -p "Warning: your database will be wiped. Is this OK (y/n): " -n 1 -r
-   echo
-   if [[ ! $REPLY =~ ^[Yy]$ ]]
-   then
-     exit
-   fi
-  "$ROOT_PATH"/pc -e $ENV reset-db
-  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest tests/*"'
+  if [[ $# == 0 ]]; then
+    read -p "Warning: your database will be wiped. Is this OK (y/n): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+      exit
+    fi
+     "$ROOT_PATH"/pc -e $ENV reset-db
+     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest tests/*"'
+  else
+     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest '"$*"'"'
+  fi
 elif [[ "$CMD" == "testcafe" ]]; then
   RUN='cd webapp && ./scripts/pc.js testcafe '"$*"
 else
