@@ -174,7 +174,7 @@ class Card extends Component {
           }} onDoubleClick={this.onContentClick}>
             <div className='card__content__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
               <div className='mb1'>
-                {index + 1} / {cardsLength} {dateRead && 'vue'}
+                ({id}) {index + 1} / {cardsLength} {dateRead && 'vue'}
               </div>
               <div className='flex items-center justify-center'>
               {
