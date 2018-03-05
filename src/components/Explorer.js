@@ -22,8 +22,10 @@ class Explorer extends Component {
       firstCard,
       firstNotReadItem,
       hasPushPullRequested,
+      isFading,
       isLast,
-      isNavigating,
+      isNewReading,
+      isReordering,
       loadingTag,
       onChange,
       searchCollectionName,
@@ -31,46 +33,56 @@ class Explorer extends Component {
       selectedCard,
       selectedItem
     } = this.props
-    console.log('selectedCard', selectedCard, 'selectedItem', selectedItem,
-      cards && cards.map(({ id, dateUpdated, dateRead }) => ({ id, dateUpdated, dateRead })))
-    console.log('isNavigating', isNavigating)
-    console.log('firstCard', firstCard)
-    console.log('isLast', isLast)
+    console.log(cards &&
+      cards.map(({ id, dateUpdated, dateRead }) =>
+        ({ id, dateUpdated, dateRead })))
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
           <SearchInput collectionName={searchCollectionName}
             hook={searchHook} />
         </div>
-        <Carousel axis='horizontal'
-          emulateTouch
-          ref={element => this.carouselElement = element}
-          selectedItem={selectedItem}
-          showArrows={!hasPushPullRequested}
-          swipeScrollTolerance={100}
-          showStatus={false}
-          showIndicators={false}
-          showThumbs={false}
-          transitionTime={250}
-          onChange={onChange} >
-          {
-            loadingTag !== 'search' && cards && cards.length > 0
-              ? ((!firstCard && [<LoadingCard key='first' isForceActive />]) || [])
-                .concat(
-                  cards.map((card, index) =>
-                    <Card {...this.state}
-                      cardsLength={cards.length}
-                      index={index}
-                      key={index}
-                      {...card} />
-                  )).concat([
-                    firstNotReadItem === -1
-                      ? <LastCard key='last' />
-                      : <LoadingCard key='next' isForceActive />
-                  ])
-              : <LoadingCard />
-          }
-        </Carousel>
+        {
+          !isReordering
+            ? (
+              <Carousel axis='horizontal'
+                emulateTouch
+                ref={element => this.carouselElement = element}
+                selectedItem={selectedItem}
+                showArrows={!isFading && !isReordering && !isNewReading && !hasPushPullRequested}
+                swipeScrollTolerance={100}
+                showStatus={false}
+                showIndicators={false}
+                showThumbs={false}
+                transitionTime={250}
+                onChange={onChange} >
+                {
+                  loadingTag !== 'search' && cards && cards.length > 0
+                    ? ((!firstCard && [<LoadingCard key='first' isForceActive />]) || [])
+                      .concat(
+                        cards.map((card, index) =>
+                          <Card {...this.state}
+                            cardsLength={cards.length}
+                            index={index}
+                            isHidden={isFading}
+                            key={index}
+                            {...card}
+                          />
+                        )).concat([
+                          firstNotReadItem === -1
+                            ? <LastCard key='last' />
+                            : <LoadingCard key='next' isForceActive />
+                        ])
+                    : <LoadingCard />
+                }
+              </Carousel>
+            )
+          : (
+            <div className='carousel'>
+              <LoadingCard isForceActive />
+            </div>
+          )
+        }
       </div>
     )
   }

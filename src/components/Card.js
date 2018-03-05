@@ -97,7 +97,6 @@ class Card extends Component {
       const selectedItem = (index < cardsCount - 1)
         ? index
         : index -1
-      console.log('WTF', selectedItem)
       carouselElement.selectItem({ selectedItem })
       filterData('offers', offer => offer.id !== id)
     }
@@ -120,6 +119,7 @@ class Card extends Component {
       dateRead,
       id,
       index,
+      isHidden,
       mediation,
       selectedItem,
       thumbUrl
@@ -167,7 +167,8 @@ class Card extends Component {
           onStart={this.onStart}
           onStop={this.onStop}
           position={position} >
-          <div className='card__content relative' style={{
+          <div className={classnames('card__content relative', {
+            'card__content--hidden': isHidden })} style={{
             backgroundImage: `url(${thumbUrl})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover'

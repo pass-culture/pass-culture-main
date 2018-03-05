@@ -15,16 +15,17 @@ import { sync } from '../utils/registerDexieServiceWorker'
 class UserMediationsExplorer extends Component {
   constructor () {
     super()
-    this.state = { cards: null,
-      hasPushPullRequested: false,
+    this.state = { hasPushPullRequested: false,
+      isFading: false,
       isLast: false,
-      isNavigating: false,
+      isNewReading: false,
+      isReordering: false,
       previousSelectedItem: null,
       selectedCard: null,
       selectedItem: 0
     }
   }
-  handleLoading = props => {
+  handleInitLoading = props => {
     const { cards, closeLoading, showLoading } = props
     if (!cards || cards.length === 0) {
       showLoading()
@@ -32,11 +33,35 @@ class UserMediationsExplorer extends Component {
     }
     closeLoading()
   }
+  handleReorderLoading = nextProps => {
+    const { cards,
+      closeLoading,
+      firstNotReadItem,
+      showLoading
+    } = nextProps
+    this.setState({ cards: this.props.cards,
+      isFading: true
+    })
+    showLoading()
+    setTimeout(() => {
+      this.setState({ isReordering: true })
+      setTimeout(() => {
+        closeLoading()
+        this.setState({
+          cards,
+          isFading: false,
+          isReordering: false,
+          selectedItem: firstNotReadItem
+        })
+      }, 500)
+    }, 500)
+  }
   onChange = nextSelectedItem => {
     const { assignData,
       cards,
       firstCard,
       loadingTimeout,
+      newReadingTimeout,
       referenceDate,
       requestData,
       user
@@ -46,16 +71,15 @@ class UserMediationsExplorer extends Component {
     const newState = { previousSelectedItem: selectedItem,
       selectedItem: nextSelectedItem
     }
-    // NAVIGATION
-    if (nextSelectedItem === selectedItem + 1 || nextSelectedItem === selectedItem - 1) {
-      newState.isNavigating = true
-    } else {
-      newState.isNavigating = false
-    }
     // NEXT NAVIGATION
     if (nextSelectedItem === selectedItem + 1) {
       // UPDATE IF THE PREVIOUS UM WAS NOT READ
       if (selectedCard && !selectedCard.dateRead) {
+        // FORCE TO STAY A BIT
+        newState.isNewReading = true
+        setTimeout(() =>
+          this.setState({ isNewReading: false }), newReadingTimeout)
+        // UPDATE DEXIE
         const nowDate = moment().toISOString()
         const body = [{
           dateRead: nowDate,
@@ -63,7 +87,6 @@ class UserMediationsExplorer extends Component {
           id: selectedCard.id,
           isFavorite: selectedCard.isFavorite
         }]
-        // wait a bit to make clear that we load a new set
         requestData('PUT', 'userMediations', { body, sync: true })
       }
     }
@@ -108,43 +131,36 @@ class UserMediationsExplorer extends Component {
     }
   }
   componentWillMount () {
-    this.handleLoading(this.props)
-    if (IS_DEV) {
-      // this.dexiePullIntervall = setInterval(() => sync('dexie-pull'), 5000)
-    }
+    this.handleInitLoading(this.props)
   }
   componentWillReceiveProps (nextProps) {
     const { cards,
+      closeLoading,
       firstNotReadIndex,
       firstNotReadItem,
       firstCard,
       loadingTimeout,
       pushPullIndex,
+      showLoading,
       user
     } = nextProps
     const { hasPushPullRequested,
       isLast,
-      isNavigating,
       previousSelectedItem,
+      selectedCard,
       selectedItem
     } = this.state
     if (cards !== this.props.cards) {
-      this.handleLoading(nextProps)
+      this.handleInitLoading(nextProps)
       // init new state and be sure to sync the selectedCard with the first not read
       const selectedCard = cards[firstNotReadIndex]
       const newState = {
-        isNew: false,
         selectedCard
       }
-
-      console.log('CHANSDSQD', isNavigating)
-      newState.cards = isNavigating
-        ? this.props.cards
-        : null
-      console.log('selectedItem', selectedItem, firstNotReadIndex, firstNotReadItem)
+      // we need to reorder and that transition is ont smooth
+      // so let's assume it
       if (firstNotReadItem > -1 && selectedItem > firstNotReadItem) {
-        newState.selectedItem = firstNotReadItem
-        // newState.isNew = true
+        this.handleReorderLoading(nextProps)
       }
       // ALMOST END NAVIGATION
       if (selectedItem > cards.length - pushPullIndex) {
@@ -159,11 +175,10 @@ class UserMediationsExplorer extends Component {
         }
         // the blobs is going to have more un read elements
         // so we need to sync again the selected item by going back
-        console.log('firstNotReadIndex', firstNotReadIndex, 'selectedItem', selectedItem, 'firstNotReadItem', firstNotReadItem, cards.length)
         if (selectedItem > firstNotReadItem) {
           if (firstNotReadIndex > -1) {
-            newState.selectedItem = firstNotReadItem
-            newState.isNew = true
+            // newState.selectedItem = firstNotReadItem
+            this.handleReorderLoading(nextProps)
           }
         }
       } else {
@@ -189,6 +204,7 @@ class UserMediationsExplorer extends Component {
       // update
       this.setState({ selectedItem, selectedCard })
     }
+    // reset when reset user
     if (user === false && this.props.user) {
       this.setState({ previousSelectedItem: null,
         selectedItem: 0,
@@ -196,24 +212,18 @@ class UserMediationsExplorer extends Component {
       })
     }
   }
-  componentWillUnmount () {
-    if (IS_DEV) {
-      //this.dexiePullIntervall && clearInterval(this.dexiePullIntervall)
-    }
-  }
   render () {
     return <Explorer {...this.props}
-        {...this.state}
-        cards={this.state.cards || this.props.cards}
-        key={this.state.isNew ? '0': '1'}
-        onChange={this.onChange}
-        searchCollectionName='offers'
-        searchHook={this.searchHook} />
+      {...this.state}
+      onChange={this.onChange}
+      searchCollectionName='offers'
+      searchHook={this.searchHook} />
   }
 }
 
 UserMediationsExplorer.defaultProps = {
   loadingTimeout: 500,
+  newReadingTimeout: 500,
   pushPullIndex: 10,
 }
 
