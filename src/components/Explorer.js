@@ -33,9 +33,11 @@ class Explorer extends Component {
       selectedCard,
       selectedItem
     } = this.props
+    /*
     console.log(cards &&
       cards.map(({ id, dateUpdated, dateRead }) =>
         ({ id, dateUpdated, dateRead })))
+    */
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>

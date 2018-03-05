@@ -25,6 +25,39 @@ class UserMediationsExplorer extends Component {
       selectedItem: 0
     }
   }
+  handleAskMoreCards = props => {
+    // unpack
+    const { cards,
+      loadingTimeout,
+      pushPullIndex
+    } = props
+    const { isLast,
+      hasPushPullRequested,
+      selectedItem
+    } = this.state
+    const newState = {}
+    // ALMOST END NAVIGATION
+    // when we have few still cards in the end
+    // meaning we should force a dexie push pull
+    // in order to ask for more cards
+    if (selectedItem > cards.length - pushPullIndex) {
+      // be sure that we have not yet asked for that
+      if (!isLast && !hasPushPullRequested) {
+        // wait a bit to make clear that we load a new set
+        setTimeout(() => sync('dexie-push-pull'), loadingTimeout)
+        // be sure to not request one more time
+        // when one push pull is already triggered
+        newState.hasPushPullRequested = true
+      } else {
+        newState.hasPushPullRequested = false
+        newState.isLast = true
+      }
+    } else {
+      newState.hasPushPullRequested = false
+    }
+    // update
+    this.setState(newState)
+  }
   handleInitLoading = props => {
     const { cards, closeLoading, showLoading } = props
     if (!cards || cards.length === 0) {
@@ -33,30 +66,87 @@ class UserMediationsExplorer extends Component {
     }
     closeLoading()
   }
+  handleInitFirstItem = props => {
+    // unpack
+    const { cards,
+      firstCard,
+      firstNotReadIndex,
+      user
+    } = props
+    const { previousSelectedItem,
+      selectedItem
+    } = this.state
+    // VERY FIRST SITUATION
+    // when cards are just first loaded
+    // we trigger the fact to go
+    if (user && cards &&
+      !previousSelectedItem &&
+      selectedItem === 0 &&
+      firstNotReadIndex > -1
+    ) {
+      // get directly to the not read
+      let selectedItem = firstNotReadIndex + (firstCard ? 0 : 1)
+      let selectedCard = cards[firstNotReadIndex]
+      // but if there is no more card to be read... go to the last one
+      if (firstNotReadIndex === -1) {
+        selectedItem = cards.length - 1 + (firstCard ? 0 : 1)
+        selectedCard = cards[cards.length - 1]
+      }
+      // update
+      this.setState({ selectedItem, selectedCard })
+    }
+  }
   handleReorderLoading = nextProps => {
+    // unpack
     const { cards,
       closeLoading,
       firstNotReadItem,
       showLoading
     } = nextProps
-    this.setState({ cards: this.props.cards,
-      isFading: true
-    })
-    showLoading()
-    setTimeout(() => {
-      this.setState({ isReordering: true })
+    const { selectedItem } = this.state
+    // TRANSITION OF BLOBS
+    // when the actual item is actually after the firstNotReadItem
+    // it is actually a transition situation
+    // we should not be there
+    if (firstNotReadItem > -1 && selectedItem > firstNotReadItem) {
+      // put in buffer the previous cards
+      // there will be overriden the props.cards one
+      // during a certain moment
+      // preventing the Carousel to update the view
+      this.setState({ cards: this.props.cards,
+        isFading: true
+      })
+      showLoading()
+      // first timeout to trigger the fade out
+      // of the current carousel
       setTimeout(() => {
-        closeLoading()
-        this.setState({
-          cards,
-          isFading: false,
-          isReordering: false,
-          selectedItem: firstNotReadItem
-        })
+        this.setState({ isReordering: true })
+        // second timeout to trigger the next new fresh
+        // carousel with the new cards at the good cursor
+        setTimeout(() => {
+          closeLoading()
+          this.setState({
+            cards,
+            isFading: false,
+            isReordering: false,
+            selectedItem: firstNotReadItem
+          })
+        }, 500)
       }, 500)
-    }, 500)
+    }
+  }
+  handleLogoutUser = props => {
+    const { user } = props
+    // reset when reset user
+    if (user === false && this.props.user) {
+      this.setState({ previousSelectedItem: null,
+        selectedItem: 0,
+        selectedCard: null
+      })
+    }
   }
   onChange = nextSelectedItem => {
+    // unpack
     const { assignData,
       cards,
       firstCard,
@@ -75,7 +165,7 @@ class UserMediationsExplorer extends Component {
     if (nextSelectedItem === selectedItem + 1) {
       // UPDATE IF THE PREVIOUS UM WAS NOT READ
       if (selectedCard && !selectedCard.dateRead) {
-        // FORCE TO STAY A BIT
+        // FORCE TO STAY A BIT HERE BY SETTING a state variable
         newState.isNewReading = true
         setTimeout(() =>
           this.setState({ isNewReading: false }), newReadingTimeout)
@@ -98,7 +188,7 @@ class UserMediationsExplorer extends Component {
           sync('dexie-push-pull', { around: cards[0].id }), loadingTimeout)
       }
     }
-    // UPDATE SELECTED UM
+    // UPDATE THE SELECTED CARD
     const nextCardIndex = nextSelectedItem - (firstCard ? 0 : 1)
     const nextSelectedCard = cards && cards[nextCardIndex]
     if (nextSelectedCard) {
@@ -134,83 +224,16 @@ class UserMediationsExplorer extends Component {
     this.handleInitLoading(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    const { cards,
-      closeLoading,
-      firstNotReadIndex,
-      firstNotReadItem,
-      firstCard,
-      loadingTimeout,
-      pushPullIndex,
-      showLoading,
-      user
-    } = nextProps
-    const { hasPushPullRequested,
-      isLast,
-      previousSelectedItem,
-      selectedCard,
-      selectedItem
-    } = this.state
+    // unpack
+    const { cards } = nextProps
+    // when the cards have changed
     if (cards !== this.props.cards) {
       this.handleInitLoading(nextProps)
-      // init new state and be sure to sync the selectedCard with the first not read
-      const selectedCard = cards[firstNotReadIndex]
-      const newState = {
-        selectedCard
-      }
-      // we need to reorder and that transition is ont smooth
-      // so let's assume it
-      if (firstNotReadItem > -1 && selectedItem > firstNotReadItem) {
-        this.handleReorderLoading(nextProps)
-      }
-      // ALMOST END NAVIGATION
-      if (selectedItem > cards.length - pushPullIndex) {
-        if (!isLast && !hasPushPullRequested) {
-          // wait a bit to make clear that we load a new set
-          setTimeout(() => sync('dexie-push-pull'), loadingTimeout)
-          // be sure to not request one more time when one push pull is already triggered
-          newState.hasPushPullRequested = true
-        } else {
-          newState.hasPushPullRequested = false
-          newState.isLast = true
-        }
-        // the blobs is going to have more un read elements
-        // so we need to sync again the selected item by going back
-        if (selectedItem > firstNotReadItem) {
-          if (firstNotReadIndex > -1) {
-            // newState.selectedItem = firstNotReadItem
-            this.handleReorderLoading(nextProps)
-          }
-        }
-      } else {
-        newState.hasPushPullRequested = false
-      }
-      // update
-      this.setState(newState)
+      this.handleReorderLoading(nextProps)
+      this.handleAskMoreCards(nextProps)
     }
-    // init shift
-    if (user && cards &&
-      !previousSelectedItem &&
-      selectedItem === 0 &&
-      firstNotReadIndex > -1
-    ) {
-      // get directly to the not read
-      let selectedItem = firstNotReadIndex + (firstCard ? 0 : 1)
-      let selectedCard = cards[firstNotReadIndex]
-      // but if there is no more card to be read... go to the last one
-      if (firstNotReadIndex === -1) {
-        selectedItem = cards.length - 1 + (firstCard ? 0 : 1)
-        selectedCard = cards[cards.length - 1]
-      }
-      // update
-      this.setState({ selectedItem, selectedCard })
-    }
-    // reset when reset user
-    if (user === false && this.props.user) {
-      this.setState({ previousSelectedItem: null,
-        selectedItem: 0,
-        selectedCard: null
-      })
-    }
+    this.handleInitFirstItem(nextProps)
+    this.handleLogoutUser(nextProps)
   }
   render () {
     return <Explorer {...this.props}
@@ -223,7 +246,8 @@ class UserMediationsExplorer extends Component {
 
 UserMediationsExplorer.defaultProps = {
   loadingTimeout: 500,
-  newReadingTimeout: 500,
+  newReadingTimeout: 10,
+  //newReadingTimeout: 500,
   pushPullIndex: 10,
 }
 
