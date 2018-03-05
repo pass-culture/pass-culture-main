@@ -15,7 +15,10 @@ import { sync } from '../utils/registerDexieServiceWorker'
 class UserMediationsExplorer extends Component {
   constructor () {
     super()
-    this.state = { hasPushPullRequested: false,
+    this.state = { cards: null,
+      hasPushPullRequested: false,
+      isLast: false,
+      isNavigating: false,
       previousSelectedItem: null,
       selectedCard: null,
       selectedItem: 0
@@ -43,10 +46,15 @@ class UserMediationsExplorer extends Component {
     const newState = { previousSelectedItem: selectedItem,
       selectedItem: nextSelectedItem
     }
+    // NAVIGATION
+    if (nextSelectedItem === selectedItem + 1 || nextSelectedItem === selectedItem - 1) {
+      newState.isNavigating = true
+    } else {
+      newState.isNavigating = false
+    }
     // NEXT NAVIGATION
     if (nextSelectedItem === selectedItem + 1) {
       // UPDATE IF THE PREVIOUS UM WAS NOT READ
-      console.log('selectedCard', selectedCard)
       if (selectedCard && !selectedCard.dateRead) {
         const nowDate = moment().toISOString()
         const body = [{
@@ -108,29 +116,67 @@ class UserMediationsExplorer extends Component {
   componentWillReceiveProps (nextProps) {
     const { cards,
       firstNotReadIndex,
+      firstNotReadItem,
       firstCard,
       loadingTimeout,
+      pushPullIndex,
       user
     } = nextProps
-    const { hasPushPullRequested, selectedItem } = this.state
+    const { hasPushPullRequested,
+      isLast,
+      isNavigating,
+      previousSelectedItem,
+      selectedItem
+    } = this.state
     if (cards !== this.props.cards) {
       this.handleLoading(nextProps)
-      // be sure to sync the selectedCard with the first not read
-      this.setState({ selectedCard: cards[firstNotReadIndex] })
-      // ALMOST END NAVIGATION
-      if (!hasPushPullRequested && selectedItem > cards.length - 1) {
-        // wait a bit to make clear that we load a new set
-        setTimeout(() => sync('dexie-push-pull'), loadingTimeout)
-        this.setState({ hasPushPullRequested: true })
-      } else {
-        this.setState({ hasPushPullRequested: false })
+      // init new state and be sure to sync the selectedCard with the first not read
+      const selectedCard = cards[firstNotReadIndex]
+      const newState = {
+        isNew: false,
+        selectedCard
       }
+
+      console.log('CHANSDSQD', isNavigating)
+      newState.cards = isNavigating
+        ? this.props.cards
+        : null
+      console.log('selectedItem', selectedItem, firstNotReadIndex, firstNotReadItem)
+      if (firstNotReadItem > -1 && selectedItem > firstNotReadItem) {
+        newState.selectedItem = firstNotReadItem
+        // newState.isNew = true
+      }
+      // ALMOST END NAVIGATION
+      if (selectedItem > cards.length - pushPullIndex) {
+        if (!isLast && !hasPushPullRequested) {
+          // wait a bit to make clear that we load a new set
+          setTimeout(() => sync('dexie-push-pull'), loadingTimeout)
+          // be sure to not request one more time when one push pull is already triggered
+          newState.hasPushPullRequested = true
+        } else {
+          newState.hasPushPullRequested = false
+          newState.isLast = true
+        }
+        // the blobs is going to have more un read elements
+        // so we need to sync again the selected item by going back
+        console.log('firstNotReadIndex', firstNotReadIndex, 'selectedItem', selectedItem, 'firstNotReadItem', firstNotReadItem, cards.length)
+        if (selectedItem > firstNotReadItem) {
+          if (firstNotReadIndex > -1) {
+            newState.selectedItem = firstNotReadItem
+            newState.isNew = true
+          }
+        }
+      } else {
+        newState.hasPushPullRequested = false
+      }
+      // update
+      this.setState(newState)
     }
     // init shift
-    if (user &&
-      cards &&
-      !this.state.previousSelectedItem &&
-      this.state.selectedItem === 0
+    if (user && cards &&
+      !previousSelectedItem &&
+      selectedItem === 0 &&
+      firstNotReadIndex > -1
     ) {
       // get directly to the not read
       let selectedItem = firstNotReadIndex + (firstCard ? 0 : 1)
@@ -154,19 +200,21 @@ class UserMediationsExplorer extends Component {
     if (IS_DEV) {
       //this.dexiePullIntervall && clearInterval(this.dexiePullIntervall)
     }
-    console.log('ON SE CASSE')
   }
   render () {
     return <Explorer {...this.props}
-      {...this.state}
-      onChange={this.onChange}
-      searchCollectionName='offers'
-      searchHook={this.searchHook} />
+        {...this.state}
+        cards={this.state.cards || this.props.cards}
+        key={this.state.isNew ? '0': '1'}
+        onChange={this.onChange}
+        searchCollectionName='offers'
+        searchHook={this.searchHook} />
   }
 }
 
 UserMediationsExplorer.defaultProps = {
-  loadingTimeout: 500
+  loadingTimeout: 500,
+  pushPullIndex: 10,
 }
 
 export default compose(
@@ -204,6 +252,10 @@ export default compose(
         }
         const notReadCards = group[true]
         if (notReadCards) {
+          notReadCards.forEach(notReadCard =>
+            notReadCard.momentDateUpdated = moment(notReadCard.dateUpdated))
+          notReadCards.sort((card1, card2) =>
+            card1.momentDateUpdated - card2.momentDateUpdated)
           cards = cards.concat(notReadCards)
         }
         // return
@@ -217,6 +269,11 @@ export default compose(
     firstNotReadIndex: [
       (ownProps, nextState) => nextState.cards,
       cards => cards && cards.map(card => card.dateRead).indexOf(null)
+    ],
+    firstNotReadItem: [
+      (ownProps, nextState) => nextState.firstCard,
+      (ownProps, nextState) => nextState.firstNotReadIndex,
+      (firstCard, firstNotReadIndex) => firstNotReadIndex + (firstCard ? 0 : 1)
     ]
   })
 )(UserMediationsExplorer)
