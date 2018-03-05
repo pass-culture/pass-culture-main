@@ -5,14 +5,14 @@ import Icon from './Icon'
 
 class MediationItem extends Component {
   render () {
-    const { description,
+    const { text,
       // tag
     } = this.props
     return (
       <div className='mediation-item flex items-center p1'>
         <Icon name='favorite-outline' />
         <div className='ml2'>
-          { description }
+          { text }
         </div>
       </div>
     )

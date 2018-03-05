@@ -20,13 +20,22 @@ class Explorer extends Component {
   render () {
     const { cards,
       firstCard,
-      lastCard,
+      firstNotReadItem,
+      hasPushPullRequested,
+      isLast,
+      isNavigating,
       loadingTag,
       onChange,
       searchCollectionName,
       searchHook,
+      selectedCard,
       selectedItem
     } = this.props
+    console.log('selectedCard', selectedCard, 'selectedItem', selectedItem,
+      cards && cards.map(({ id, dateUpdated, dateRead }) => ({ id, dateUpdated, dateRead })))
+    console.log('isNavigating', isNavigating)
+    console.log('firstCard', firstCard)
+    console.log('isLast', isLast)
     return (
       <div className='explorer mx-auto p2' id='explorer'>
         <div className='explorer__search absolute'>
@@ -37,7 +46,7 @@ class Explorer extends Component {
           emulateTouch
           ref={element => this.carouselElement = element}
           selectedItem={selectedItem}
-          showArrows={true}
+          showArrows={!hasPushPullRequested}
           swipeScrollTolerance={100}
           showStatus={false}
           showIndicators={false}
@@ -55,7 +64,7 @@ class Explorer extends Component {
                       key={index}
                       {...card} />
                   )).concat([
-                    lastCard
+                    firstNotReadItem === -1
                       ? <LastCard key='last' />
                       : <LoadingCard key='next' isForceActive />
                   ])
