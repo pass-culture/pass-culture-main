@@ -19,11 +19,9 @@ class Card extends Component {
     const leftThreshold = - 0.1 * deckElement.offsetWidth
     const rightThreshold = 0.1 * deckElement.offsetWidth
     if (x < leftThreshold) {
-      console.log('X')
       onNext(-1)
       this.setState({ position: null })
     } else if (x > rightThreshold) {
-      console.log('Y')
       onNext(1)
       this.setState({ position: null })
     } else {
@@ -40,7 +38,6 @@ class Card extends Component {
     if (!deckElement) {
       return
     }
-    console.log('cursor', cursor)
     const halfWidth = 0.5 * deckElement.offsetWidth
     const leftOrRightWidth = halfWidth * (1 - widthRatio)
     const asideWidth = leftOrRightWidth/size
@@ -50,15 +47,16 @@ class Card extends Component {
     } else if (item < size + 1) {
       style = {
         left: (item - 1) * asideWidth,
-        transform: 'perspective( 600px ) rotateY( 45deg )',
+        transform: `perspective( 600px ) rotateY( 45deg )`,
         width: asideWidth
       }
     } else if (item === size + 1) {
       style = {
         left: leftOrRightWidth,
         right: leftOrRightWidth,
-        transform: 'perspective( 600px ) rotateY( 45deg )',
+        transform: `perspective( 600px ) rotateY( ${-cursor*45}deg )`,
       }
+      console.log('style', style)
     } else if (item < 2 * size + 2) {
       style = {
         right: `${(2 * size + 1 - item) * asideWidth}px`,
@@ -68,14 +66,12 @@ class Card extends Component {
     } else {
       style = { right: '-100%' }
     }
-    // console.log(item, 'style', style)
     this.setState({ style })
   }
   componentWillMount () {
     this.handleStyle(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    // console.log(nextProps.item)
     if ( (nextProps.deckElement && !this.props.deckElement)
       || (nextProps.item !== this.props.item)
       || (nextProps.cursor !== this.props.cursor)
@@ -92,10 +88,11 @@ class Card extends Component {
     const { position, style } = this.state
     const isCenter = item === size + 1
     const cardElement = (
-      <div className={classnames('card absolute', {
+      <div className={classnames('card', {
         'card--center': isCenter,
-        'card--aside': !isCenter
-      })} style={style} >
+        'card--aside absolute': !isCenter
+      })}
+        style={style}>
         {index}
       </div>
     )
@@ -107,7 +104,9 @@ class Card extends Component {
         position={position}
         onDrag={this.onDrag}
         onStop={this.onStop}>
-          {cardElement}
+          <span className='card--span absolute' style={style}>
+            {cardElement}
+          </span>
       </Draggable>
     )
   }

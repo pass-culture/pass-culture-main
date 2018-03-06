@@ -6,4 +6,8 @@
   &--aside {
     transition: left 1s, right 1s;
   }
+  &--span {
+    height: 100%;
+    z-index: 1000;
+  }
 }

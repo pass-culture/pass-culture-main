@@ -21,7 +21,9 @@ class Deck extends Component {
   }
   onNextCard = diffIndex => {
     const { items } = this.state
-    this.setState({ items: items.map(index => index + diffIndex) })
+    this.setState({ cursor: 0,
+      items: items.map(index => index + diffIndex)
+    })
   }
   componentWillMount () {
     this.handleIndexes(this.props)
