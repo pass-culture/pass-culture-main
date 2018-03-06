@@ -1,135 +1,120 @@
+import classnames from 'classnames'
+import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 
 class Card extends Component {
-  render () {
-    const { index, size } = this.props
+  constructor () {
+    super()
+    this.state = { position: null, style: null }
+  }
+  onDrag = (event, data) => {
+    const { deckElement, onDrag } = this.props
+    const { x, y } = data
+    console.log('x, y, deckElement.width', x,y, deckElement && deckElement.offsetWidth)
+    onDrag(event, data)
+  }
+  onStop = (event, data) => {
+    const { deckElement, onNext } = this.props
+    const { x } = data
+    const leftThreshold = - 0.1 * deckElement.offsetWidth
+    const rightThreshold = 0.1 * deckElement.offsetWidth
+    if (x < leftThreshold) {
+      console.log('X')
+      onNext(-1)
+      this.setState({ position: null })
+    } else if (x > rightThreshold) {
+      console.log('Y')
+      onNext(1)
+      this.setState({ position: null })
+    } else {
+      this.setState({ position: { x: 0, y: 0 } })
+    }
+  }
+  handleStyle = props => {
+    const { cursor,
+      deckElement,
+      item,
+      size,
+      widthRatio
+    } = props
+    if (!deckElement) {
+      return
+    }
+    console.log('cursor', cursor)
+    const halfWidth = 0.5 * deckElement.offsetWidth
+    const leftOrRightWidth = halfWidth * (1 - widthRatio)
+    const asideWidth = leftOrRightWidth/size
     let style = {}
-    if (index === 0) {
+    if (item < 1) {
       style = { left: '-100%' }
-    } else if (index < size + 1) {
-      style = { left: `${index * 10}px` }
-    } else if (index === size + 1) {
-      style = { left: '100px', right: '100px' }
-    } else if (index < 2 * size + 2) {
-      style = { right: `${(2 * size + 2 - index) * 10}px` }
+    } else if (item < size + 1) {
+      style = {
+        left: (item - 1) * asideWidth,
+        transform: 'perspective( 600px ) rotateY( 45deg )',
+        width: asideWidth
+      }
+    } else if (item === size + 1) {
+      style = {
+        left: leftOrRightWidth,
+        right: leftOrRightWidth,
+        transform: 'perspective( 600px ) rotateY( 45deg )',
+      }
+    } else if (item < 2 * size + 2) {
+      style = {
+        right: `${(2 * size + 1 - item) * asideWidth}px`,
+        transform: 'perspective( 600px ) rotateY( -45deg )',
+        width: asideWidth
+      }
     } else {
       style = { right: '-100%' }
     }
+    // console.log(item, 'style', style)
+    this.setState({ style })
   }
-  onContentClick = () => {
-    const { history, id, mediation } = this.props
-    if (mediation) {
-      history.push(`/decouverte/${id}/${mediation.id}`)
-    }
-    else {
-      history.push(`/decouverte/${id}`)
-    }
-  }
-  onDeleteClick = () => {
-    // const { id, requestData } = this.props
-    //TODO: remove favorite status
-    //requestData('DELETE', `pins/offerId:${id}`, {
-    //  getOptimistState: (state, action) => {
-    //    const offerIds = state.offers.map(offer => offer.id)
-    //    const offerIndex = offerIds.indexOf(id)
-    //    const optimistOffers = [...state.offers]
-    //    optimistOffers[offerIndex] = Object.assign({}, optimistOffers[offerIndex])
-    //    delete optimistOffers[offerIndex].pin
-    //    return {
-    //      offers: optimistOffers
-    //    }
-    //  },
-    //  getSuccessState: (state, action) => {
-    //    const offerIds = state.offers.map(({ id }) => id)
-    //    const offerIndex = offerIds.indexOf(id)
-    //    const nextOffers = [...state.offers]
-    //    nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex])
-    //    delete nextOffers[offerIndex].pin
-    //    return { offers: nextOffers }
-    //  }
-    //})
-  }
-  onDrag = (event, data) => {
-    const { thresholdDragRatio } = this.props
-    const { y } = data
-    const ratio = -y / (thresholdDragRatio * this._element.offsetHeight)
-    this.setState({
-      dislikedOpacity: Math.max(0, -ratio),
-      interestingOpacity: Math.max(0, ratio)
-    })
-  }
-  onStart = () => {
-    this.setState({ position: null, isDragging: true })
-  }
-  onStop = (event, data) => {
-    const { cardsCount,
-      carouselElement,
-      filterData,
-      id,
-      index,
-      // requestData,
-      thresholdDragRatio,
-      // userId
-    } = this.props
-    const { isFavorite } = this.state
-    const { y } = data
-    let type
-    if (y < -thresholdDragRatio * this._element.offsetHeight) {
-      type = 'interesting'
-    } else if (y > thresholdDragRatio * this._element.offsetHeight) {
-      type = 'disliked'
-    }
-    if (type) {
-      //TODO: mark item as favorite
-      //requestData('POST', 'pins', { body: {
-      //  offerId: id,
-      //  type,
-      //  userId
-      //}})
-      const selectedItem = (index < cardsCount - 1)
-        ? index
-        : index -1
-      carouselElement.selectItem({ selectedItem })
-      filterData('offers', offer => offer.id !== id)
-    }
-    this.setState({
-      dislikedOpacity: 0,
-      interestingOpacity: isFavorite ? 1 : 0,
-      isDragging: false,
-      position: { x: 0, y: 0 }
-    })
-  }
-  componentDidMount () {
-    this.handlePinHighlight(this.props)
+  componentWillMount () {
+    this.handleStyle(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    this.handlePinHighlight(nextProps)
+    // console.log(nextProps.item)
+    if ( (nextProps.deckElement && !this.props.deckElement)
+      || (nextProps.item !== this.props.item)
+      || (nextProps.cursor !== this.props.cursor)
+    ) {
+      this.handleStyle(nextProps)
+    }
+    // console.log('OK')
   }
   render () {
-    const { cardsLength,
-      carousselNode,
-      dateRead,
-      id,
-      index,
-      isHidden,
-      mediation,
-      selectedItem,
-      thumbUrl
+    const { index,
+      item,
+      size
     } = this.props
-    const { dislikedOpacity,
-      interestingOpacity,
-      isDisabled,
-      isDragging,
-      isFavorite,
-      position
-    } = this.state
-    return (
-      <div className='card absolute'
-        style={style} >
+    const { position, style } = this.state
+    const isCenter = item === size + 1
+    const cardElement = (
+      <div className={classnames('card absolute', {
+        'card--center': isCenter,
+        'card--aside': !isCenter
+      })} style={style} >
         {index}
       </div>
+    )
+    if (!isCenter) {
+      return cardElement
+    }
+    return (
+      <Draggable axis='x'
+        position={position}
+        onDrag={this.onDrag}
+        onStop={this.onStop}>
+          {cardElement}
+      </Draggable>
     )
   }
 }
 
+
+Card.defaultProps = {
+  widthRatio: 0.75
+}
 export default Card

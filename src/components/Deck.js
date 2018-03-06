@@ -5,14 +5,51 @@ import { compose } from 'redux'
 import Card from './Card'
 
 class Deck extends Component {
+  constructor () {
+    super()
+    this.state = { cursor: 0,
+      deckElement: null,
+      items: null
+    }
+  }
+  handleIndexes = props => {
+    const { size } = props
+    this.setState({ items: [...Array(2* size + 3).keys()] })
+  }
+  onDragCard = (event, data) => {
+    this.setState({ cursor: data.x / (this._element.offsetWidth / 2) })
+  }
+  onNextCard = diffIndex => {
+    const { items } = this.state
+    this.setState({ items: items.map(index => index + diffIndex) })
+  }
+  componentWillMount () {
+    this.handleIndexes(this.props)
+  }
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.size !== this.props.size) {
+      this.handleIndexes(nextProps)
+    }
+  }
+  componentDidMount () {
+    this.setState({ deckElement: this._element })
+  }
   render () {
     const { size } = this.props
+    const { cursor, deckElement, items } = this.state
+    console.log('items', items)
     return (
-      <div className='deck relative'>
+      <div className='deck relative m3'
+        ref={_element => this._element = _element }>
         {
-          [...Array(2* size + 3).keys()].map(index =>
-            <Card index={index}
+          items.map((item, index) =>
+            <Card cursor={cursor}
+              deckElement={deckElement}
+              index={index}
+              item={item}
               key={index}
+              onDrag={this.onDragCard}
+              onNext={this.onNextCard}
               size={size} />
           )
         }
@@ -26,48 +63,3 @@ Deck.defaultProps = {
 }
 
 export default Deck
-/*
-export default compose(
-  connect(
-    state => ({
-      cards: state.data.userMediations
-    })
-  ),
-  withSelectors({
-    cards: [
-      ownProps => ownProps.userMediations,
-      userMediations => {
-        // init
-        if (!userMediations) {
-          return
-        }
-        let cards
-        // convert and group
-        const group = groupBy(userMediations.map(getCardFromUserMediation),
-          card => card.dateRead === null)
-        // sort the read ones
-        const readCards = group[false]
-        if (readCards) {
-          readCards.forEach(readCard =>
-            readCard.momentDateRead = moment(readCard.dateRead))
-          readCards.sort((card1, card2) =>
-            card1.momentDateRead - card2.momentDateRead)
-          cards = readCards
-        } else {
-          cards = []
-        }
-        const notReadCards = group[true]
-        if (notReadCards) {
-          notReadCards.forEach(notReadCard =>
-            notReadCard.momentDateUpdated = moment(notReadCard.dateUpdated))
-          notReadCards.sort((card1, card2) =>
-            card1.momentDateUpdated - card2.momentDateUpdated)
-          cards = cards.concat(notReadCards)
-        }
-        // return
-        return cards
-      }
-    ]
-  })
-)(Deck)
-*/
