@@ -12,6 +12,8 @@ import { getCardFromUserMediation } from '../utils/cards'
 import { IS_DEV } from '../utils/config'
 import { sync } from '../utils/registerDexieServiceWorker'
 
+const pushPullIndex = 10
+
 class UserMediationsExplorer extends Component {
   constructor () {
     super()
@@ -29,13 +31,16 @@ class UserMediationsExplorer extends Component {
     // unpack
     const { cards,
       loadingTimeout,
-      pushPullIndex
+      // pushPullIndex
     } = props
     const { isLast,
       hasPushPullRequested,
       selectedItem
     } = this.state
     const newState = {}
+
+
+    // .slice(0, cards.length - pushPullIndex)
     // ALMOST END NAVIGATION
     // when we have few still cards in the end
     // meaning we should force a dexie push pull
@@ -96,6 +101,58 @@ class UserMediationsExplorer extends Component {
       this.setState({ selectedItem, selectedCard })
     }
   }
+  handleLeftCard = nextSelectedItem => {
+    // unpack
+    const { cards,
+      firstCard,
+      loadingTimeout
+    } = this.props
+    const { selectedItem } = this.state
+    // LEFT NAVIGATION
+    if (nextSelectedItem === selectedItem - 1) {
+      if (!firstCard && nextSelectedItem === 0 && selectedItem === 1) {
+        // wait a bit to make clear that we load a new set
+        setTimeout(() =>
+          sync('dexie-push-pull', { around: cards[0].id }), loadingTimeout)
+      }
+    }
+  }
+  handleLogoutUser = props => {
+    const { user } = props
+    // reset when reset user
+    if (user === false && this.props.user) {
+      this.setState({ previousSelectedItem: null,
+        selectedItem: 0,
+        selectedCard: null
+      })
+    }
+  }
+  handleRightCard = nextSelectedItem => {
+    // unpack
+    const { newReadingTimeout, requestData } = this.props
+    const { selectedCard,
+      selectedItem
+    } = this.state
+    // NEXT NAVIGATION
+    if (nextSelectedItem === selectedItem + 1) {
+      // UPDATE IF THE PREVIOUS UM WAS NOT READ
+      if (selectedCard && !selectedCard.dateRead) {
+        // FORCE TO STAY A BIT HERE BY SETTING a state variable
+        this.setState({ isNewReading: true })
+        setTimeout(() =>
+          this.setState({ isNewReading: false }), newReadingTimeout)
+        // UPDATE DEXIE
+        const nowDate = moment().toISOString()
+        const body = [{
+          dateRead: nowDate,
+          dateUpdated: nowDate,
+          id: selectedCard.id,
+          isFavorite: selectedCard.isFavorite
+        }]
+        requestData('PUT', 'userMediations', { body, sync: true })
+      }
+    }
+  }
   handleReorderLoading = nextProps => {
     // unpack
     const { cards,
@@ -135,16 +192,6 @@ class UserMediationsExplorer extends Component {
       }, 500)
     }
   }
-  handleLogoutUser = props => {
-    const { user } = props
-    // reset when reset user
-    if (user === false && this.props.user) {
-      this.setState({ previousSelectedItem: null,
-        selectedItem: 0,
-        selectedCard: null
-      })
-    }
-  }
   onChange = nextSelectedItem => {
     // unpack
     const { assignData,
@@ -157,45 +204,19 @@ class UserMediationsExplorer extends Component {
       user
     } = this.props
     const { selectedCard, selectedItem } = this.state
-    // init
+    // sync the current item and card
     const newState = { previousSelectedItem: selectedItem,
       selectedItem: nextSelectedItem
     }
-    // NEXT NAVIGATION
-    if (nextSelectedItem === selectedItem + 1) {
-      // UPDATE IF THE PREVIOUS UM WAS NOT READ
-      if (selectedCard && !selectedCard.dateRead) {
-        // FORCE TO STAY A BIT HERE BY SETTING a state variable
-        newState.isNewReading = true
-        setTimeout(() =>
-          this.setState({ isNewReading: false }), newReadingTimeout)
-        // UPDATE DEXIE
-        const nowDate = moment().toISOString()
-        const body = [{
-          dateRead: nowDate,
-          dateUpdated: nowDate,
-          id: selectedCard.id,
-          isFavorite: selectedCard.isFavorite
-        }]
-        requestData('PUT', 'userMediations', { body, sync: true })
-      }
-    }
-    // LEFT NAVIGATION
-    if (nextSelectedItem === selectedItem - 1) {
-      if (!firstCard && nextSelectedItem === 0 && selectedItem === 1) {
-        // wait a bit to make clear that we load a new set
-        setTimeout(() =>
-          sync('dexie-push-pull', { around: cards[0].id }), loadingTimeout)
-      }
-    }
-    // UPDATE THE SELECTED CARD
     const nextCardIndex = nextSelectedItem - (firstCard ? 0 : 1)
     const nextSelectedCard = cards && cards[nextCardIndex]
     if (nextSelectedCard) {
       newState.selectedCard = nextSelectedCard
     }
-    // UPDATE
     this.setState(newState)
+    // special updates
+    this.handleLeftCard(nextSelectedItem)
+    this.handleRightCard(nextSelectedItem)
   }
   // from a search this function helps to wrap
   // the data into convenient user mediations
@@ -248,7 +269,7 @@ UserMediationsExplorer.defaultProps = {
   loadingTimeout: 500,
   newReadingTimeout: 10,
   //newReadingTimeout: 500,
-  pushPullIndex: 10,
+  // pushPullIndex: 10,
 }
 
 export default compose(

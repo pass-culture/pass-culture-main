@@ -1,32 +1,19 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
-import Draggable from 'react-draggable'
-import { Portal } from 'react-portal'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
-
-import MediationItem from './MediationItem'
-import { filterData, requestData } from '../reducers/data'
 
 class Card extends Component {
-  constructor () {
-    super ()
-    this.state = {
-      dislikedOpacity: 0,
-      interestingOpacity: 0,
-      isDragging: false,
-      isFavorite: false,
-      position: null,
-      type: null
-    }
-  }
-  handlePinHighlight = props => {
-    const { index, pin, selectedItem } = props
-    if (pin && pin.type === 'interesting' && index === selectedItem) {
-      this.setState({ interestingOpacity: 1, isFavorite: true })
+  render () {
+    const { index, size } = this.props
+    let style = {}
+    if (index === 0) {
+      style = { left: '-100%' }
+    } else if (index < size + 1) {
+      style = { left: `${index * 10}px` }
+    } else if (index === size + 1) {
+      style = { left: '100px', right: '100px' }
+    } else if (index < 2 * size + 2) {
+      style = { right: `${(2 * size + 2 - index) * 10}px` }
     } else {
-      this.setState({ interestingOpacity: 0, isFavorite: false })
+      style = { right: '-100%' }
     }
   }
   onContentClick = () => {
@@ -137,72 +124,12 @@ class Card extends Component {
       position
     } = this.state
     return (
-      <div className='card flex items-center justify-center'
-        ref={_element => this._element = _element}>
-        {
-          selectedItem === index && [
-            <Portal key='interesting' node={carousselNode}>
-              <div className={classnames('card__typed card__typed--interesting absolute p2 relative', {
-                'card__typed--interesting--active': interestingOpacity >= 1 })}
-                style={{ opacity: interestingOpacity }}>
-                {
-                  isFavorite && !isDragging && (
-                    <button className='button button--alive button--reversed card__typed__delete absolute'
-                      onClick={this.onDeleteClick}>
-                      X
-                    </button>
-                  )
-                }
-                pourquoi pas
-              </div>
-            </Portal>,
-            <Portal key='disliked' node={carousselNode}>
-              <div className={classnames('card__typed card__typed--disliked absolute p2', {
-                'card__typed--disliked--active': dislikedOpacity >= 1
-              })}
-                style={{ opacity: dislikedOpacity }} >
-                pas pour moi
-              </div>
-            </Portal>
-          ]
-        }
-        <Draggable axis='y'
-          disabled={isDisabled}
-          onDrag={this.onDrag}
-          onStart={this.onStart}
-          onStop={this.onStop}
-          position={position} >
-          <div className={classnames('card__content relative', {
-            'card__content--hidden': isHidden })} style={{
-            backgroundImage: `url(${thumbUrl})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover'
-          }} onDoubleClick={this.onContentClick}>
-            <div className='card__content__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
-              <div className='mb1'>
-                ({id}) {index + 1} / {cardsLength} {dateRead && 'vue'}
-              </div>
-              <div className='flex items-center justify-center'>
-              {
-                mediation && <MediationItem key={index} {...mediation} />
-              }
-              </div>
-            </div>
-          </div>
-        </Draggable>
+      <div className='card absolute'
+        style={style} >
+        {index}
       </div>
     )
   }
 }
 
-Card.defaultProps = {
-  thresholdDragRatio: 0.3
-}
-
-export default compose(
-  withRouter,
-  connect(
-    state => ({ userId: state.user && state.user.id }),
-    { filterData, requestData }
-  )
-)(Card)
+export default Card
