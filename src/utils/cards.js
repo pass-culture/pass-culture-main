@@ -1,6 +1,10 @@
 import { API_URL, THUMBS_URL } from '../utils/config'
 
 export function getCardFromUserMediation (userMediation) {
+  // check and unpack
+  if (!userMediation) {
+    return
+  }
   const { mediation,
     userMediationOffers
   } = userMediation

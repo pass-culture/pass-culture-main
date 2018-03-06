@@ -2,36 +2,55 @@ import classnames from 'classnames'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 
+import Recto from './Recto'
+
 class Card extends Component {
   constructor () {
     super()
-    this.state = { position: null, style: null }
+    this.state = { isCenter: false,
+      position: null,
+      style: null
+    }
   }
   onDrag = (event, data) => {
-    const { deckElement, onDrag } = this.props
-    const { x, y } = data
-    console.log('x, y, deckElement.width', x,y, deckElement && deckElement.offsetWidth)
-    onDrag(event, data)
+    // unpack
+    const { isCenter, onDrag } = this.props
+    // hook with the Deck on Drag method
+    isCenter && onDrag(event, data)
   }
   onStop = (event, data) => {
-    const { deckElement, onNext } = this.props
+    // unpack
+    const { deckElement,
+      isFirst,
+      isLast,
+      onNext,
+      perspective,
+      rotation
+    } = this.props
+    const { style } = this.state
     const { x } = data
+    const newState = { position: { x: 0, y: 0 } }
+    // thresholds
     const leftThreshold = - 0.1 * deckElement.offsetWidth
     const rightThreshold = 0.1 * deckElement.offsetWidth
-    if (x < leftThreshold) {
+    if (!isLast && x < leftThreshold) {
       onNext(-1)
-      this.setState({ position: null })
-    } else if (x > rightThreshold) {
+      newState.transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+    } else if (!isFirst && x > rightThreshold) {
       onNext(1)
-      this.setState({ position: null })
+      newState.transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     } else {
-      this.setState({ position: { x: 0, y: 0 } })
+      newState.transform = ''
     }
+    // return
+    this.setState(newState)
   }
   handleStyle = props => {
     const { cursor,
       deckElement,
       item,
+      perspective,
+      rotation,
       size,
       widthRatio
     } = props
@@ -42,31 +61,31 @@ class Card extends Component {
     const leftOrRightWidth = halfWidth * (1 - widthRatio)
     const asideWidth = leftOrRightWidth/size
     let style = {}
+    let transform
     if (item < 1) {
       style = { left: '-100%' }
     } else if (item < size + 1) {
       style = {
         left: (item - 1) * asideWidth,
-        transform: `perspective( 600px ) rotateY( 45deg )`,
         width: asideWidth
       }
+      transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
     } else if (item === size + 1) {
       style = {
         left: leftOrRightWidth,
-        right: leftOrRightWidth,
-        transform: `perspective( 600px ) rotateY( ${-cursor*45}deg )`,
+        right: leftOrRightWidth
       }
-      console.log('style', style)
+      transform = `perspective( ${perspective}px ) rotateY( ${-cursor*45}deg )`
     } else if (item < 2 * size + 2) {
       style = {
         right: `${(2 * size + 1 - item) * asideWidth}px`,
-        transform: 'perspective( 600px ) rotateY( -45deg )',
         width: asideWidth
       }
+      transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     } else {
       style = { right: '-100%' }
     }
-    this.setState({ style })
+    this.setState({ style, transform })
   }
   componentWillMount () {
     this.handleStyle(this.props)
@@ -78,42 +97,43 @@ class Card extends Component {
     ) {
       this.handleStyle(nextProps)
     }
-    // console.log('OK')
   }
   render () {
-    const { index,
+    const { onDrag, onStop } = this
+    const { content,
+      index,
+      isCenter,
       item,
       size
     } = this.props
-    const { position, style } = this.state
-    const isCenter = item === size + 1
-    const cardElement = (
-      <div className={classnames('card', {
-        'card--center': isCenter,
-        'card--aside absolute': !isCenter
-      })}
-        style={style}>
-        {index}
-      </div>
-    )
-    if (!isCenter) {
-      return cardElement
-    }
+    const { position,
+      style,
+      transform
+    } = this.state
     return (
       <Draggable axis='x'
         position={position}
-        onDrag={this.onDrag}
-        onStop={this.onStop}>
-          <span className='card--span absolute' style={style}>
-            {cardElement}
+        {...isCenter && {
+          onDrag,
+          onStop
+        }}>
+          <span className={classnames('card absolute', {
+            'card--center': isCenter,
+            'card--hidden': !content
+          })} style={style}>
+            <div className='card__container' style={{ transform }}>
+              <Recto {...content} />
+            </div>
           </span>
       </Draggable>
     )
   }
 }
 
-
 Card.defaultProps = {
+  perspective: 600,
+  rotation: 45,
   widthRatio: 0.75
 }
+
 export default Card

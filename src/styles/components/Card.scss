@@ -1,13 +1,21 @@
 .card {
-  background-color: $very-very-light-grey;
-  border-radius: $border-radius;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   height: 100%;
-  &--aside {
-    transition: left 1s, right 1s;
+  transition: left 1s, right 1s;
+  &--center {
+    z-index: 500;
+  }
+  &--hidden {
+    display: none;
   }
   &--span {
     height: 100%;
     z-index: 1000;
+  }
+  &__container {
+    background-color: $very-very-light-grey;
+    border-radius: $border-radius;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
   }
 }

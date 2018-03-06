@@ -1,13 +1,12 @@
 import React from 'react'
 
-import Deck from '../components/Deck'
-// import Deck from '../components/Deck'
+import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
 
 const DiscoveryPage = () => {
   return (
     <main className='page discovery-page center'>
-      <Deck />
+      <UserMediationsDeck />
     </main>
   )
 }

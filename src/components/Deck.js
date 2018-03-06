@@ -37,16 +37,22 @@ class Deck extends Component {
     this.setState({ deckElement: this._element })
   }
   render () {
-    const { size } = this.props
-    const { cursor, deckElement, items } = this.state
-    console.log('items', items)
+    const { contents, size } = this.props
+    const { cursor,
+      deckElement,
+      items
+    } = this.state
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>
         {
           items.map((item, index) =>
-            <Card cursor={cursor}
+            <Card content={contents && contents[index]}
+              cursor={cursor}
               deckElement={deckElement}
+              isFirst={contents && contents[index] && !contents[index - 1]}
+              isCenter={item === size + 1}
+              isLast={contents && contents[index] && !contents[index + 1]}
               index={index}
               item={item}
               key={index}
