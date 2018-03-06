@@ -95,13 +95,19 @@ elif [[ "$CMD" == "test-backend" ]]; then
     then
       exit
     fi
-     "$ROOT_PATH"/pc -e $ENV reset-db
+     "$ROOT_PATH"/pc -e $ENV reset-all-db
      RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest tests/*"'
   else
      RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest '"$*"'"'
   fi
 elif [[ "$CMD" == "testcafe" ]]; then
   RUN='cd webapp && ./scripts/pc.js testcafe '"$*"
+elif [[ "$CMD" == "update-mocks" ]]; then
+  RUN='cd "$ROOT_PATH";
+       cd api/mock/spreadsheet_exp;
+       wget -O Lieux.csv "https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Lieux";
+       wget -O Evenements.csv "https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Evenements"
+      '
 else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
