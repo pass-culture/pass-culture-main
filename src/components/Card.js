@@ -112,6 +112,7 @@ class Card extends Component {
     } = this.state
     return (
       <Draggable axis='x'
+        disabled={!isCenter}
         position={position}
         {...isCenter && {
           onDrag,
