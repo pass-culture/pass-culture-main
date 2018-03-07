@@ -30,8 +30,13 @@ class Card extends Component {
     }
   }
   onContentClick = () => {
-    const { history, id } = this.props
-    history.push(`/decouverte/${id}`)
+    const { history, id, mediation } = this.props
+    if (mediation) {
+      history.push(`/decouverte/${id}/${mediation.id}`)
+    }
+    else {
+      history.push(`/decouverte/${id}`)
+    }
   }
   onDeleteClick = () => {
     // const { id, requestData } = this.props
