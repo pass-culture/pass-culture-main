@@ -20,8 +20,8 @@ class Deck extends Component {
                 .map(index => -((contents.length - 1)/2) + index)
     })
   }
-  onDragCard = (event, data) => {
-    this.setState({ cursor: data.x / (this._element.offsetWidth / 2) })
+  onDragCard = (event, data, cursor) => {
+    // this.setState({ cursor })
   }
   onNextCard = diffIndex => {
     // unpack
@@ -61,12 +61,13 @@ class Deck extends Component {
       deckElement,
       items
     } = this.state
+    console.log('contents', contents)
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>
         {
           contents && contents.map((content, index) =>
-            <Card content={content}
+            content && <Card content={content}
               contentLength={contents.length}
               cursor={cursor}
               deckElement={deckElement}

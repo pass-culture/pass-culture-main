@@ -3,8 +3,11 @@ import React from 'react'
 import Loading from './Loading'
 import MediationItem from './MediationItem'
 
-const Recto = ({ id,
+const Recto = ({ contentLength,
+  id,
+  index,
   isLoading,
+  item,
   mediation,
   thumbUrl
 }) => {
@@ -24,7 +27,7 @@ const Recto = ({ id,
           : (
             <div className='recto__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
               <div className='mb1'>
-                {id}
+                {id} {index}/{contentLength} {item}
               </div>
               <div className='flex items-center justify-center'>
               {

@@ -4,6 +4,12 @@ import React, { Component } from 'react'
 
 import Recto from './Recto'
 
+const CURRENT = 'current'
+const ASIDE_LEFT = 'aside-left'
+const ASIDE_RIGHT = 'aside-right'
+const HAND_LEFT = 'hand-left'
+const HAND_RIGHT = 'hand-right'
+
 class Card extends Component {
   constructor () {
     super()
@@ -14,7 +20,11 @@ class Card extends Component {
   }
   onDrag = (event, data) => {
     // unpack
-    const { onDrag } = this.props
+    const { deckElement, onDrag } = this.props
+    // compute the cursor
+    const cursor = data.x / (deckElement.offsetWidth / 2)
+    this.setState({ cursor })
+    this.handleSetStyle(this.props)
     // hook
     onDrag && onDrag(event, data)
   }
@@ -23,96 +33,118 @@ class Card extends Component {
     const { deckElement,
       isFirst,
       isLast,
+      item,
       onNext,
       perspective,
       rotation
     } = this.props
+    const { stylesByType, transformsByType } = this.state
     const { x } = data
-    const newState = { position: { x: 0, y: 0 } }
+    const newState = {
+      cursor: 0,
+      position: { x: 0, y: 0 }
+    }
     // thresholds
     const leftThreshold = - 0.1 * deckElement.offsetWidth
     const rightThreshold = 0.1 * deckElement.offsetWidth
     if (!isLast && x < leftThreshold) {
+      // newState.transform = transformsByType[HAND_LEFT]
+      // newState.style = stylesByType[HAND_LEFT]
+      // setTimeout(() => onNext(-1), 1000)
+      // console.log('OUAIIIII')
+      // this.item = item - 1
+      // this.handleSetStyle(this.props)
       onNext(-1)
-      newState.transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
     } else if (!isFirst && x > rightThreshold) {
+      // newState.transform = transformsByType[HAND_RIGHT]
+      // newState.style = stylesByType[HAND_RIGHT]
+      // setTimeout(() => onNext(1), 1000)
+      // this.item = item + 1
+      // this.handleSetStyle(this.props)
       onNext(1)
-      newState.transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     } else {
-      newState.transform = ''
+      newState.transform = transformsByType[CURRENT]
     }
     // return
     this.setState(newState)
   }
-  handleSetType = props => {
-    const { contentLength, handLength, item } = props
-    this.type = null
-    if (item === 0) {
-      this.type = 'current'
-    } else if (item < 0) {
-      if (item >= - handLength) {
-        this.type = 'hand-left'
-      } else {
-        this.type = 'aside-left'
-      }
-    } else if (item <= handLength) {
-      this.type = 'hand-right'
-    } else {
-      this.type = 'aside-right'
-    }
-  }
   handleSetStyle = props => {
     // unpack and check
-    const { type } = this
-    const { cursor,
+    const { contentLength,
       deckElement,
-      item,
       perspective,
       rotation,
       handLength,
       widthRatio
     } = props
+    // cursor is defined in state if it is the current card
+    // or possibly in props given by the deck parent component
+    const cursor = this.state.cursor || props.cursor
+    const item = this.item || props.item
     if (!deckElement) {
       return
     }
+    // determine the type of the card
+    let type
+    if (item === 0) {
+      type = 'current'
+    } else if (item < 0) {
+      if (item >= - handLength) {
+        type = 'hand-left'
+      } else {
+        type = 'aside-left'
+      }
+    } else if (item <= handLength) {
+      type = 'hand-right'
+    } else {
+      type = 'aside-right'
+    }
     // compute the size of the container
     const halfWidth = 0.5 * deckElement.offsetWidth
-    const leftOrRightWidth = halfWidth * (1 - widthRatio)
-    const handWidth = leftOrRightWidth / handLength
+    const leftOrRightCurrentWidth = halfWidth * (1 - widthRatio)
+    const currentWidth = deckElement.offsetWidth - 2 * leftOrRightCurrentWidth
+    const handWidth = leftOrRightCurrentWidth / handLength
     // determine style and transform given the type of the card
-    let style = {}
-    let transform
-    switch (type) {
-      case 'aside-left':
-        style = { left: -100 }
-        break
-      case 'hand-left':
-        style = {
-          left: leftOrRightWidth - 0.1*halfWidth + (item + 1) * handWidth,
-          width: handWidth
-        }
-        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
-        break
-      case 'current':
-        style = {
-          left: leftOrRightWidth,
-          right: leftOrRightWidth
-        }
-        transform = `perspective( ${perspective}px ) rotateY( ${-cursor*45}deg )`
-        break
-      case 'hand-right':
-        style = {
-          right: leftOrRightWidth - 0.1*halfWidth - (item - 1) * handWidth,
-          width: handWidth
-        }
-        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
-        break
-      case 'aside-right':
-        style = { right: 100 }
-      default:
-        return
+    const stylesByType = {}
+    const transformsByType = {}
+    // aside left
+    stylesByType[ASIDE_LEFT] = {
+      left: -100,
+      width: handWidth
     }
-    this.setState({ style, transform })
+    transformsByType[ASIDE_LEFT] = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+    // hand left
+    stylesByType[HAND_LEFT] = {
+      left: leftOrRightCurrentWidth + item * handWidth,
+      width: handWidth
+    }
+    transformsByType[HAND_LEFT] = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+    // current
+    stylesByType[CURRENT] = {
+      left: leftOrRightCurrentWidth,
+      // right: leftOrRightCurrentWidth,
+      width: currentWidth
+    }
+    transformsByType[CURRENT] = `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
+    // hand right
+    stylesByType[HAND_RIGHT] = {
+      left: deckElement.offsetWidth - leftOrRightCurrentWidth + (item - 1) * handWidth,
+      // right: leftOrRightCurrentWidth - 0.1 * halfWidth - (item - 1) * handWidth,
+      width: handWidth
+    }
+    transformsByType[HAND_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+    // aside right
+    stylesByType[ASIDE_RIGHT] = {
+      left: deckElement.offsetWidth + 100,
+      // right: -100,
+      width: handWidth
+    }
+    transformsByType[ASIDE_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+    // update
+    this.setState({ stylesByType,
+      transformsByType,
+      type
+    })
   }
   handleCheckRead = props => {
     // unpack and check
@@ -121,15 +153,15 @@ class Card extends Component {
       onRead,
       readTimeout
     } = props
-    if (!content || this.type === 'current') { return }
+    const { type } = this.state
+    if (!content || type !== CURRENT) { return }
     // wait a bit to trigger the fact that we stay on the same card
     setTimeout(() => {
       // check that type is still current
-      this.type === 'current' && onRead && onRead(props)
+      this.state.type === CURRENT && onRead && onRead(props)
     }, readTimeout)
   }
   componentWillMount () {
-    this.handleSetType(this.props)
     this.handleSetStyle(this.props)
     this.handleCheckRead(this.props)
   }
@@ -139,22 +171,26 @@ class Card extends Component {
       || (nextProps.cursor !== this.props.cursor)
       || (nextProps.content !== this.props.content)
     ) {
-      this.handleSetType(nextProps)
       this.handleSetStyle(nextProps)
       this.handleCheckRead(nextProps)
     }
   }
   render () {
-    const { type, onDrag, onStop } = this
+    const { onDrag, onStop } = this
     const { content,
+      contentLength,
       handLength,
       index,
       item
     } = this.props
     const { position,
-      style,
-      transform
+      stylesByType,
+      transformsByType,
+      type
     } = this.state
+    const style = stylesByType[type]
+    const transform = transformsByType[type]
+    content.id === 'A4' && console.log(content.id, 'style', style)
     return (
       <Draggable axis='x'
         disabled={type !== 'current'}
@@ -162,11 +198,13 @@ class Card extends Component {
         onDrag={onDrag}
         onStop={onStop} >
           <span className={classnames('card absolute', {
-            'card--current': type === 'current',
-            'card--hidden': !content || Object.keys(content).length === 0
+            'card--current': type === CURRENT
           })} style={style}>
             <div className='card__container' style={{ transform }}>
-              <Recto {...content} />
+              <Recto {...content}
+                contentLength={contentLength}
+                index={index}
+                item={item} />
             </div>
           </span>
       </Draggable>
