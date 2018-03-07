@@ -1,9 +1,9 @@
 [submodule "api"]
 	path = api
-	url = git@github.com:sgmap/pass-culture-api.git
+	url = git@github.com:betagouv/pass-culture-api.git
 [submodule "webapp"]
 	path = webapp
-	url = git@github.com:sgmap/pass-culture-browser.git
+	url = git@github.com:betagouv/pass-culture-browser.git
 [submodule "doc"]
 	path = doc
-	url = git@github.com:sgmap/pass-culture-doc.git
+	url = git@github.com:betagouv/pass-culture-doc.git
