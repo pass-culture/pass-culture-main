@@ -8,4 +8,7 @@
     background-color: $very-very-light-grey;
     border-radius: $border-radius;
   }
+  &__loading {
+    height: 100%;
+  }
 }

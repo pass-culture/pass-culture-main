@@ -63,8 +63,8 @@ class Deck extends Component {
             <Card content={contents && contents[index]}
               cursor={cursor}
               deckElement={deckElement}
+              isAround={item === size + 1}
               isFirst={contents && contents[index] && !contents[index - 1]}
-              isCenter={item === size + 1}
               isLast={contents && contents[index] && !contents[index + 1]}
               index={index}
               item={item}

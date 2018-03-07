@@ -7,16 +7,16 @@ import Recto from './Recto'
 class Card extends Component {
   constructor () {
     super()
-    this.state = { isCenter: false,
+    this.state = { isAround: false,
       position: null,
       style: null
     }
   }
   onDrag = (event, data) => {
     // unpack
-    const { isCenter, onDrag } = this.props
+    const { isAround, onDrag } = this.props
     // hook with the Deck on Drag method
-    isCenter && onDrag(event, data)
+    isAround && onDrag(event, data)
   }
   onStop = (event, data) => {
     // unpack
@@ -98,7 +98,7 @@ class Card extends Component {
   }
   componentWillMount () {
     this.handleStyle(this.props)
-    if (this.props.content && this.props.isCenter) {
+    if (this.props.content && this.props.isAround) {
       this.handleRead(this.props)
     }
   }
@@ -110,8 +110,8 @@ class Card extends Component {
       this.handleStyle(nextProps)
     }
     if (
-      (nextProps.isCenter && nextProps.content) &&
-      (!this.props.content || !this.props.isCenter)
+      (nextProps.isAround && nextProps.content) &&
+      (!this.props.content || !this.props.isAround)
     ) {
       this.handleRead(nextProps)
     }
@@ -120,7 +120,7 @@ class Card extends Component {
     const { onDrag, onStop } = this
     const { content,
       index,
-      isCenter,
+      isAround,
       item,
       size
     } = this.props
@@ -130,14 +130,14 @@ class Card extends Component {
     } = this.state
     return (
       <Draggable axis='x'
-        disabled={!isCenter}
+        disabled={!isAround}
         position={position}
-        {...isCenter && {
+        {...isAround && {
           onDrag,
           onStop
         }}>
           <span className={classnames('card absolute', {
-            'card--center': isCenter,
+            'card--around': isAround,
             'card--hidden': !content
           })} style={style}>
             <div className='card__container' style={{ transform }}>

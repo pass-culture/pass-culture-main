@@ -1,8 +1,10 @@
 import React from 'react'
 
+import Loading from './Loading'
 import MediationItem from './MediationItem'
 
 const Recto = ({ id,
+  isLoading,
   mediation,
   thumbUrl
 }) => {
@@ -12,16 +14,26 @@ const Recto = ({ id,
       backgroundRepeat: 'no-repeat',
       backgroundSize: 'cover'
     }}>
-      <div className='recto__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
-        <div className='mb1'>
-          {id}
-        </div>
-        <div className='flex items-center justify-center'>
-        {
-          mediation && <MediationItem {...mediation} />
-        }
-        </div>
-      </div>
+      {
+        isLoading
+          ? (
+            <div className='recto__loading flex items-center justify-center'>
+              <Loading isForceActive />
+            </div>
+          )
+          : (
+            <div className='recto__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
+              <div className='mb1'>
+                {id}
+              </div>
+              <div className='flex items-center justify-center'>
+              {
+                mediation && <MediationItem {...mediation} />
+              }
+              </div>
+            </div>
+          )
+      }
     </div>
   )
 }

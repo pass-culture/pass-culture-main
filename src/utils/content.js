@@ -9,11 +9,11 @@ export function getContentFromUserMediation (userMediation) {
     userMediationOffers
   } = userMediation
   // choose one of the offer
-  const offer = userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
+  const offer = userMediationOffers &&
+    userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
   // check
   if (!offer && !mediation) {
-    console.warn('no offer neither mediation here!')
-    return null
+    return userMediation
   }
   // choose an image
   let source
