@@ -45,7 +45,7 @@ class UserMediationsDeck extends Component {
           ],
           hasSyncRequested: true
         })
-        // sync('dexie-push-pull', { around: aroundContent.id })
+        sync('dexie-push-pull', { around: aroundContent.id })
         return
       } else if (!hasSyncRequested) {
         this.setState({ hasSyncRequested: false })
@@ -59,7 +59,7 @@ class UserMediationsDeck extends Component {
       // it means we need to do ask the backend
       // to update the dexie blob at the good current around
       if (!content && !hasSyncRequested) {
-        afterContents[index] = { isLoading: true }
+        afterContents[size - 1 - index] = { isLoading: true }
         this.setState({ contents: [
             ...beforeContents,
             aroundContent,
@@ -67,7 +67,7 @@ class UserMediationsDeck extends Component {
           ],
           hasSyncRequested: true
         })
-        // sync('dexie-push-pull', { around: aroundContent.id })
+        sync('dexie-push-pull', { around: aroundContent.id })
         return
       } else if (!hasSyncRequested) {
         this.setState({ hasSyncRequested: false })
@@ -102,18 +102,12 @@ class UserMediationsDeck extends Component {
       return
     }
     // before and after
-    console.log(this.aroundIndex, 'this.aroundContent', this.aroundContent && this.aroundContent.id)
-    this.beforeContents = [...Array(userMediations.length - 2).keys()]
-      .map(index => userMediations[this.aroundIndex - index - 1])
+    this.beforeContents = [...Array(size + 1).keys()]
+      .map(index => userMediations[this.aroundIndex - size - 1 + index])
       .map(getContentFromUserMediation)
-    this.beforeContents.reverse()
-    console.log('beforeContents', this.beforeContents && this.beforeContents.map(content =>
-      content && content.id))
-    this.afterContents = [...Array(userMediations.length - 2).keys()]
+    this.afterContents = [...Array(size + 1).keys()]
       .map(index => userMediations[this.aroundIndex + 1 + index])
       .map(getContentFromUserMediation)
-    console.log('afterContents', this.afterContents && this.afterContents.map(content =>
-      content && content.id))
     // concat
     this.contents = [
       ...this.beforeContents,
@@ -124,7 +118,6 @@ class UserMediationsDeck extends Component {
     this.setState({ contents: this.contents })
   }
   onNextCard = (diffIndex, deckProps, deckState) => {
-    /*
     console.log('AVANT this.contents', this.contents.map(content => content && content.id))
     console.log('deckState.items', deckState.items)
     setTimeout(() => {
@@ -136,7 +129,7 @@ class UserMediationsDeck extends Component {
       console.log('APRES this.contents', this.contents.map(content => content && content.id))
       // this.setState({ items: [...Array(2* size + 3).keys()] })
     }, 2000)
-    */
+
     /*
     console.log('this.state.contents', this.state.contents.map(content =>
       content && content.id))

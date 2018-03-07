@@ -11,14 +11,8 @@ class Deck extends Component {
     }
   }
   handleSetItems = props => {
-    const { contents } = props
-    if (!contents) {
-      return
-    }
-    this.setState({
-      items: [...Array(contents.length).keys()]
-                .map(index => -((contents.length - 1)/2) + index)
-    })
+    const { items, size } = props
+    this.setState({ items: items || [...Array(2* size + 3).keys()] })
   }
   onDragCard = (event, data) => {
     this.setState({ cursor: data.x / (this._element.offsetWidth / 2) })
@@ -44,7 +38,7 @@ class Deck extends Component {
     this.handleSetItems(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    if (nextProps.contents !== this.props.contents) {
+    if (nextProps.size !== this.props.size) {
       this.handleSetItems(nextProps)
     }
   }
@@ -56,7 +50,7 @@ class Deck extends Component {
       onNextCard,
       onReadCard
     } = this
-    const { contents, handLength } = this.props
+    const { contents, size } = this.props
     const { cursor,
       deckElement,
       items
@@ -65,20 +59,20 @@ class Deck extends Component {
       <div className='deck relative m3'
         ref={_element => this._element = _element }>
         {
-          contents && contents.map((content, index) =>
-            <Card content={content}
-              contentLength={contents.length}
+          items.map((item, index) =>
+            <Card content={contents && contents[index]}
               cursor={cursor}
               deckElement={deckElement}
-              handLength={handLength}
-              isFirst={content && !contents[index - 1]}
-              isLast={content && !contents[index + 1]}
+              isAround={item === size + 1}
+              isFirst={contents && contents[index] && !contents[index - 1]}
+              isLast={contents && contents[index] && !contents[index + 1]}
               index={index}
-              item={items[index]}
+              item={item}
               key={index}
               onDrag={onDragCard}
               onNext={onNextCard}
-              onRead={onReadCard} />
+              onRead={onReadCard}
+              size={size} />
           )
         }
       </div>
@@ -87,7 +81,7 @@ class Deck extends Component {
 }
 
 Deck.defaultProps = {
-  handLength: 2
+  size: 2
 }
 
 export default Deck

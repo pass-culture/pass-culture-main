@@ -1,7 +1,7 @@
 .card {
   height: 100%;
   transition: left 1s, right 1s;
-  &--around {
+  &--current {
     z-index: 500;
   }
   &--hidden {

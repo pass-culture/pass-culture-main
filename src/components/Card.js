@@ -7,16 +7,16 @@ import Recto from './Recto'
 class Card extends Component {
   constructor () {
     super()
-    this.state = { isAround: false,
-      position: null,
+    this.state = { position: null,
+      transform: null,
       style: null
     }
   }
   onDrag = (event, data) => {
     // unpack
-    const { isAround, onDrag } = this.props
-    // hook with the Deck on Drag method
-    isAround && onDrag(event, data)
+    const { onDrag } = this.props
+    // hook
+    onDrag && onDrag(event, data)
   }
   onStop = (event, data) => {
     // unpack
@@ -27,7 +27,6 @@ class Card extends Component {
       perspective,
       rotation
     } = this.props
-    const { style } = this.state
     const { x } = data
     const newState = { position: { x: 0, y: 0 } }
     // thresholds
@@ -45,84 +44,112 @@ class Card extends Component {
     // return
     this.setState(newState)
   }
-  handleStyle = props => {
+  handleSetType = props => {
+    const { contentLength, handLength, item } = props
+    this.type = null
+    if (item === 0) {
+      this.type = 'current'
+    } else if (item < 0) {
+      if (item >= - handLength) {
+        this.type = 'hand-left'
+      } else {
+        this.type = 'aside-left'
+      }
+    } else if (item <= handLength) {
+      this.type = 'hand-right'
+    } else {
+      this.type = 'aside-right'
+    }
+  }
+  handleSetStyle = props => {
+    // unpack and check
+    const { type } = this
     const { cursor,
       deckElement,
       item,
       perspective,
       rotation,
-      size,
+      handLength,
       widthRatio
     } = props
     if (!deckElement) {
       return
     }
+    // compute the size of the container
     const halfWidth = 0.5 * deckElement.offsetWidth
     const leftOrRightWidth = halfWidth * (1 - widthRatio)
-    const asideWidth = leftOrRightWidth/size
+    const handWidth = leftOrRightWidth / handLength
+    // determine style and transform given the type of the card
     let style = {}
     let transform
-    if (item < 1) {
-      style = { left: '-100%' }
-    } else if (item < size + 1) {
-      style = {
-        left: (item - 1) * asideWidth,
-        width: asideWidth
-      }
-      transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
-    } else if (item === size + 1) {
-      style = {
-        left: leftOrRightWidth,
-        right: leftOrRightWidth
-      }
-      transform = `perspective( ${perspective}px ) rotateY( ${-cursor*45}deg )`
-    } else if (item < 2 * size + 2) {
-      style = {
-        right: `${(2 * size + 1 - item) * asideWidth}px`,
-        width: asideWidth
-      }
-      transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
-    } else {
-      style = { right: '-100%' }
+    switch (type) {
+      case 'aside-left':
+        style = { left: -100 }
+        break
+      case 'hand-left':
+        style = {
+          left: leftOrRightWidth - 0.1*halfWidth + (item + 1) * handWidth,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+        break
+      case 'current':
+        style = {
+          left: leftOrRightWidth,
+          right: leftOrRightWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${-cursor*45}deg )`
+        break
+      case 'hand-right':
+        style = {
+          right: leftOrRightWidth - 0.1*halfWidth - (item - 1) * handWidth,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+        break
+      case 'aside-right':
+        style = { right: 100 }
+      default:
+        return
     }
     this.setState({ style, transform })
   }
-  handleRead = props => {
-    const { index,
+  handleCheckRead = props => {
+    // unpack and check
+    const { content,
+      index,
       onRead,
       readTimeout
     } = props
+    if (!content || this.type === 'current') { return }
+    // wait a bit to trigger the fact that we stay on the same card
     setTimeout(() => {
-      onRead && onRead(props)
+      // check that type is still current
+      this.type === 'current' && onRead && onRead(props)
     }, readTimeout)
   }
   componentWillMount () {
-    this.handleStyle(this.props)
-    if (this.props.content && this.props.isAround) {
-      this.handleRead(this.props)
-    }
+    this.handleSetType(this.props)
+    this.handleSetStyle(this.props)
+    this.handleCheckRead(this.props)
   }
   componentWillReceiveProps (nextProps) {
     if ( (nextProps.deckElement && !this.props.deckElement)
       || (nextProps.item !== this.props.item)
       || (nextProps.cursor !== this.props.cursor)
+      || (nextProps.content !== this.props.content)
     ) {
-      this.handleStyle(nextProps)
-    }
-    if (
-      (nextProps.isAround && nextProps.content) &&
-      (!this.props.content || !this.props.isAround)
-    ) {
-      this.handleRead(nextProps)
+      this.handleSetType(nextProps)
+      this.handleSetStyle(nextProps)
+      this.handleCheckRead(nextProps)
     }
   }
   render () {
-    const { onDrag, onStop } = this
+    const { type, onDrag, onStop } = this
     const { content,
+      handLength,
       index,
-      isAround,
-      item,
-      size
+      item
     } = this.props
     const { position,
       style,
@@ -130,15 +157,13 @@ class Card extends Component {
     } = this.state
     return (
       <Draggable axis='x'
-        disabled={!isAround}
+        disabled={type !== 'current'}
         position={position}
-        {...isAround && {
-          onDrag,
-          onStop
-        }}>
+        onDrag={onDrag}
+        onStop={onStop} >
           <span className={classnames('card absolute', {
-            'card--around': isAround,
-            'card--hidden': !content
+            'card--current': type === 'current',
+            'card--hidden': !content || Object.keys(content).length === 0
           })} style={style}>
             <div className='card__container' style={{ transform }}>
               <Recto {...content} />

@@ -3,7 +3,7 @@ import { API_URL, THUMBS_URL } from '../utils/config'
 export function getContentFromUserMediation (userMediation) {
   // check and unpack
   if (!userMediation) {
-    return
+    return {}
   }
   const { mediation,
     userMediationOffers
@@ -13,7 +13,7 @@ export function getContentFromUserMediation (userMediation) {
     userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
   // check
   if (!offer && !mediation) {
-    return userMediation
+    return {}
   }
   // choose an image
   let source
