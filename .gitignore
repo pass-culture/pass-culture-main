@@ -95,6 +95,7 @@ ftp_mirrors
 postgres_data
 
 # Secret
+private
 secret.py
 
 # Store
