@@ -10,9 +10,9 @@ class Deck extends Component {
       items: null
     }
   }
-  handleIndexes = props => {
-    const { size } = props
-    this.setState({ items: [...Array(2* size + 3).keys()] })
+  handleSetItems = props => {
+    const { items, size } = props
+    this.setState({ items: items || [...Array(2* size + 3).keys()] })
   }
   onDragCard = (event, data) => {
     this.setState({ cursor: data.x / (this._element.offsetWidth / 2) })
@@ -26,7 +26,7 @@ class Deck extends Component {
       items: items.map(index => index + diffIndex)
     })
     // hook if Deck has parent manager component
-    onNextCard && onNextCard(diffIndex)
+    onNextCard && onNextCard(diffIndex, this.props, this.state)
   }
   onReadCard = card => {
     // unpack
@@ -35,11 +35,11 @@ class Deck extends Component {
     onReadCard && onReadCard(card)
   }
   componentWillMount () {
-    this.handleIndexes(this.props)
+    this.handleSetItems(this.props)
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.size !== this.props.size) {
-      this.handleIndexes(nextProps)
+      this.handleSetItems(nextProps)
     }
   }
   componentDidMount () {

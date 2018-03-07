@@ -13,7 +13,10 @@ import { sync } from '../utils/registerDexieServiceWorker'
 class UserMediationsDeck extends Component {
   constructor() {
     super()
-    this.state = { contents: null, hasSyncRequested: false }
+    this.state = { contents: null,
+      hasSyncRequested: false,
+      items: null
+    }
   }
   handleCheckContent = props => {
     // unpack and check
@@ -114,15 +117,23 @@ class UserMediationsDeck extends Component {
     // update
     this.setState({ contents: this.contents })
   }
-  onNextCard = diffIndex => {
+  onNextCard = (diffIndex, deckProps, deckState) => {
+    console.log('AVANT this.contents', this.contents.map(content => content && content.id))
+    console.log('deckState.items', deckState.items)
+    setTimeout(() => {
+      const { size, userMediations } = this.props
+      this.aroundIndex = this.aroundIndex - diffIndex
+      this.aroundContent = getContentFromUserMediation(userMediations[this.aroundIndex])
+      this.handleSetContents(this.props)
+      // this.handleCheckContent(this.props)
+      console.log('APRES this.contents', this.contents.map(content => content && content.id))
+      // this.setState({ items: [...Array(2* size + 3).keys()] })
+    }, 2000)
+
     /*
-    this.aroundIndex = this.aroundIndex - diffIndex
-    this.aroundContent = getContentFromUserMediation(userMediations[this.aroundIndex])
-    this.handleSetContents(nextProps)
-    this.handleCheckContent(nextProps)
-    */
     console.log('this.state.contents', this.state.contents.map(content =>
       content && content.id))
+    */
   }
   onReadCard = card => {
     // unpack
