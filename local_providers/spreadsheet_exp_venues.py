@@ -1,0 +1,82 @@
+from datetime import datetime
+from flask import current_app as app
+from os import path
+from pandas import read_csv
+from pathlib import Path
+import requests
+
+
+DATE_FORMAT = "%d/%m/%Y %Hh%M"
+
+
+def read_date(date):
+    return datetime.strptime(date.lower(), DATE_FORMAT)
+
+
+Venue = app.model.Venue
+Offerer = app.model.Offerer
+
+
+class SpreadsheetExpVenues(app.model.LocalProvider):
+    help = "Pas d'aide pour le moment"
+    identifierDescription = "Pas d'identifiant nécessaire"\
+                            + "(on synchronise tout)"
+    identifierRegexp = None
+    isActive = True
+    name = "Experimentation Spreadsheet (Lieux)"
+    objectType = Venue
+    canCreate = True
+
+    def __init__(self, offerer, mock=False):
+        super().__init__(offerer)
+        if mock:
+            self.df = read_csv(Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'spreadsheet_exp' / 'Lieux.csv')
+        else:
+            self.df = read_csv('https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Lieux')
+        self.lines = self.df.iterrows()
+        self.mock = mock
+
+    def __next__(self):
+        self.line = self.lines.__next__()[1]
+
+        p_info_venue = app.model.ProvidableInfo()
+        p_info_venue.type = Venue
+        p_info_venue.idAtProviders = str(self.line['Ref Lieu'])
+        p_info_venue.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+
+        p_info_offerer = app.model.ProvidableInfo()
+        p_info_offerer.type = Offerer
+        p_info_offerer.idAtProviders = str(self.line['Ref Lieu'])
+        p_info_offerer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+
+        return p_info_venue, p_info_offerer
+
+    def updateObject(self, obj):
+        assert obj.idAtProviders == str(self.line['Ref Lieu'])
+
+        obj.name = self.line['Nom']
+        obj.address = self.line['Adresse']
+
+        if isinstance(obj, Venue):
+            obj.latitude = self.line['Latitude']
+            obj.longitude = self.line['Longitude']
+        else:
+            obj.venue = self.providables[0]
+
+    def getDeactivatedObjectIds(self):
+        return []
+
+    def getObjectThumb(self, obj, index):
+        assert obj.idAtProviders == str(self.line['Ref Lieu'])
+        thumb_request = requests.get(self.line['Lien Image'])
+        if thumb_request.status_code == 200:
+            return thumb_request.content
+
+    def getObjectThumbDates(self, obj):
+        if self.mock:
+            return []
+        if self.line['Lien Image'].replace(' ', '') != '':
+            return [read_date(self.line['Date MAJ'])]
+
+
+app.local_providers.SpreadsheetExpVenues = SpreadsheetExpVenues

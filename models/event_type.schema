@@ -1,0 +1,22 @@
+# Copy and paste from  http://schema.org/docs/full.html to update
+BusinessEvent
+ChildrensEvent
+ComedyEvent
+CourseInstance
+DanceEvent
+DeliveryEvent
+EducationEvent
+ExhibitionEvent
+Festival
+FoodEvent
+LiteraryEvent
+MusicEvent
+PublicationEvent
+    BroadcastEvent
+    OnDemandEvent
+SaleEvent
+ScreeningEvent
+SocialEvent
+SportsEvent
+TheaterEvent
+VisualArtsEvent
