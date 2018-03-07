@@ -2,20 +2,31 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
+import MediationCardBack from '../components/MediationCardBack'
 import OfferInfo from '../components/OfferInfo'
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 
 class ClientOfferPage extends Component {
   componentWillMount = () => {
-    const { requestData, offerId } = this.props;
+    const { requestData, offerId, mediationId } = this.props;
     requestData('GET', 'offers/' + offerId)
   }
   render = () => {
-    const { offer } = this.props;
+    const { offer, offerId, mediationId } = this.props
+    var mediation
+    if (mediationId) {
+      for (var m of (offer.thing ? offer.thing.mediations : offer.event.mediations)) {
+        if (m.id === mediationId) {
+          mediation = m
+          break
+        }
+      }
+    }
     return (
       <main className='page client-offer-page flex flex-column'>
-        { offer && <OfferInfo {...offer} /> }
+        { mediation && <MediationCardBack {...mediation} /> }
+        { offer && offerId !== '0' && <OfferInfo {...offer} /> }
       </main>
     )
   }
