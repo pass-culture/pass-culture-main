@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
 
 import Card from './Card'
 
@@ -20,10 +18,21 @@ class Deck extends Component {
     this.setState({ cursor: data.x / (this._element.offsetWidth / 2) })
   }
   onNextCard = diffIndex => {
+    // unpack
+    const { onNextCard } = this.props
     const { items } = this.state
+    // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
     })
+    // hook if Deck has parent manager component
+    onNextCard && onNextCard(diffIndex)
+  }
+  onReadCard = card => {
+    // unpack
+    const { onReadCard } = this.props
+    // hook if Deck has parent manager component
+    onReadCard && onReadCard(card)
   }
   componentWillMount () {
     this.handleIndexes(this.props)
@@ -37,6 +46,10 @@ class Deck extends Component {
     this.setState({ deckElement: this._element })
   }
   render () {
+    const { onDragCard,
+      onNextCard,
+      onReadCard
+    } = this
     const { contents, size } = this.props
     const { cursor,
       deckElement,
@@ -56,8 +69,9 @@ class Deck extends Component {
               index={index}
               item={item}
               key={index}
-              onDrag={this.onDragCard}
-              onNext={this.onNextCard}
+              onDrag={onDragCard}
+              onNext={onNextCard}
+              onRead={onReadCard}
               size={size} />
           )
         }

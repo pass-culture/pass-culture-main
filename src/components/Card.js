@@ -87,8 +87,20 @@ class Card extends Component {
     }
     this.setState({ style, transform })
   }
+  handleRead = props => {
+    const { index,
+      onRead,
+      readTimeout
+    } = props
+    setTimeout(() => {
+      onRead && onRead(props)
+    }, readTimeout)
+  }
   componentWillMount () {
     this.handleStyle(this.props)
+    if (this.props.content && this.props.isCenter) {
+      this.handleRead(this.props)
+    }
   }
   componentWillReceiveProps (nextProps) {
     if ( (nextProps.deckElement && !this.props.deckElement)
@@ -96,6 +108,12 @@ class Card extends Component {
       || (nextProps.cursor !== this.props.cursor)
     ) {
       this.handleStyle(nextProps)
+    }
+    if (
+      (nextProps.isCenter && nextProps.content) &&
+      (!this.props.content || !this.props.isCenter)
+    ) {
+      this.handleRead(nextProps)
     }
   }
   render () {
@@ -133,6 +151,7 @@ class Card extends Component {
 
 Card.defaultProps = {
   perspective: 600,
+  readTimeout: 3000,
   rotation: 45,
   widthRatio: 0.75
 }
