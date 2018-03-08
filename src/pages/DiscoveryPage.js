@@ -6,7 +6,7 @@ import withLogin from '../hocs/withLogin'
 const DiscoveryPage = () => {
   return (
     <main className='page discovery-page center'>
-      <UserMediationsDeck />
+      <UserMediationsDeck isBlobModel />
     </main>
   )
 }

@@ -13,10 +13,7 @@ const HAND_RIGHT = 'hand-right'
 class Card extends Component {
   constructor () {
     super()
-    this.state = { cursor: null,
-      item: null,
-      isTransitioning: false,
-      position: null,
+    this.state = { position: null,
       transform: null,
       style: null
     }
@@ -55,6 +52,7 @@ class Card extends Component {
     } else if (!isFirst && x > rightThreshold) {
       onNext(1)
     } else {
+      console.log('ICI')
       newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
     }
     // return
@@ -64,8 +62,6 @@ class Card extends Component {
     // unpack and check
     const { contentLength,
       deckElement,
-      isContentChanging,
-      nextTimeout,
       perspective,
       rotation,
       handLength,
@@ -74,24 +70,24 @@ class Card extends Component {
     // cursor is defined in state if it is the current card
     // or possibly in props given by the deck parent component
     const cursor = this.state.cursor || props.cursor
-    const item = this.state.item || props.item
+    const item = this.item || props.item
     if (!deckElement) {
       return
     }
     // determine the type of the card
     let type
     if (item === 0) {
-      type = CURRENT
+      type = 'current'
     } else if (item < 0) {
       if (item >= - handLength) {
-        type = HAND_LEFT
+        type = 'hand-left'
       } else {
-        type = ASIDE_LEFT
+        type = 'aside-left'
       }
     } else if (item <= handLength) {
-      type = HAND_RIGHT
+      type = 'hand-right'
     } else {
-      type = ASIDE_RIGHT
+      type = 'aside-right'
     }
     // compute the size of the container
     const halfWidth = 0.5 * deckElement.offsetWidth
@@ -136,10 +132,6 @@ class Card extends Component {
     transformsByType[ASIDE_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     // update
     const style = stylesByType[type]
-    console.log('isContentChanging', isContentChanging)
-    style.transition = isContentChanging
-      ? 'none'
-      : `left ${nextTimeout}ms, width ${nextTimeout}ms, right ${nextTimeout}ms, transform 0s`
     const transform = transformsByType[type]
     this.setState({ style,
       stylesByType,
@@ -163,22 +155,8 @@ class Card extends Component {
       this.state.type === CURRENT && onRead && onRead(props)
     }, readTimeout)
   }
-  handleSetIsTransitioning = props => {
-    const { isBlobModel, nextTimeout } = props
-    if (isBlobModel) {
-      return
-    }
-    // SLOT MODEL
-    // we can here be sure that the user
-    // will not swipe too fast... because the slot model
-    // takes the transition timeout to do animation + refresh of the extreme contents
-    // This is possible by setting a isTransitioning disabling the dragging
-    this.setState({ isTransitioning: true })
-    setTimeout(() => this.setState({ isTransitioning: false }), nextTimeout)
-  }
   componentWillMount () {
     this.handleSetStyle(this.props)
-    this.handleSetIsTransitioning(this.props)
     this.handleCheckRead(this.props)
   }
   componentWillReceiveProps (nextProps) {
@@ -189,7 +167,6 @@ class Card extends Component {
     ) {
       this.handleSetStyle(nextProps)
       this.handleCheckRead(nextProps)
-      this.handleSetIsTransitioning(nextProps)
     }
   }
   render () {
@@ -200,22 +177,20 @@ class Card extends Component {
       index,
       item
     } = this.props
-    const { isTransitioning,
-      position,
+    const { position,
       style,
       transform,
       type
     } = this.state
-    const isDraggable = type === 'current' && !isTransitioning
+    console.log('item', item, content, type)
     return (
       <Draggable axis='x'
-        disabled={!isDraggable}
+        disabled={type !== 'current'}
         position={position}
         onDrag={onDrag}
         onStop={onStop} >
           <span className={classnames('card absolute', {
-            'card--current': type === CURRENT,
-            'card--draggable': isDraggable
+            'card--current': type === CURRENT
           })} style={style}>
             <div className='card__container' style={{ transform }}>
               <Recto {...content}
@@ -230,7 +205,6 @@ class Card extends Component {
 }
 
 Card.defaultProps = {
-  nextTimeout: 500,
   perspective: 600,
   readTimeout: 3000,
   rotation: 45,

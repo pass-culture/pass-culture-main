@@ -7,18 +7,35 @@ class Deck extends Component {
     super()
     this.state = { cursor: 0,
       deckElement: null,
+      isContentChanging: false,
       items: null
     }
   }
   handleSetItems = props => {
-    const { contents } = props
-    if (!contents) {
-      return
+    // unpack
+    const { contents,
+      handLength,
+      isBlobModel
+    } = props
+    // we need to determine the dynamic mapping
+    // of the deck
+    if (isBlobModel && contents) {
+      // BLOB MODEL
+      // the deck has 2 * contents.length
+      this.setState({
+        items: [...Array(contents.length).keys()]
+          .map(index => -((contents.length - 1)/2) + index),
+      })
+    } else {
+      // SLOT MODEL
+      // the deck has 2 * handLength
+      // + 2 extra slots helping for buffering on each side
+      this.setState({
+        items: [...Array(2 * handLength + 3).keys()]
+          .map(index => - handLength - 1 + index),
+        isContentChanging: true
+      })
     }
-    this.setState({
-      items: [...Array(contents.length).keys()]
-                .map(index => -((contents.length - 1)/2) + index)
-    })
   }
   onDragCard = (event, data, cursor) => {
     // this.setState({ cursor })
@@ -45,37 +62,58 @@ class Deck extends Component {
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.contents !== this.props.contents) {
-      this.handleSetItems(nextProps)
+      this.handleSetItems(this.props)
     }
   }
   componentDidMount () {
     this.setState({ deckElement: this._element })
+    if (this.state.isContentChanging) {
+      setTimeout(() => this.setState({ isContentChanging: false }), 10)
+    }
+  }
+  componentDidUpdate (prevProps, prevState) {
+    // unpack
+    const { isContentChanging } = this.state
+    // the deck updated because we changed the contents
+    // so we need to wait just the refresh of the children
+    // card to reset to false the isContentChanging
+    if (isContentChanging && !prevState.isContentChanging) {
+      setTimeout(() => this.setState({ isContentChanging: false }), 10)
+    }
   }
   render () {
     const { onDragCard,
       onNextCard,
       onReadCard
     } = this
-    const { contents, handLength } = this.props
+    const { contents,
+      handLength,
+      isBlobModel,
+      nextTimeout
+    } = this.props
     const { cursor,
       deckElement,
+      isContentChanging,
       items
     } = this.state
-    console.log('contents', contents)
+    console.log('BEN', isContentChanging)
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>
         {
-          contents && contents.map((content, index) =>
-            content && <Card content={content}
-              contentLength={contents.length}
+          items && items.map((item, index) =>
+            contents && contents[index] && <Card content={contents && contents[index]}
+              contentLength={contents && contents.length}
               cursor={cursor}
               deckElement={deckElement}
               handLength={handLength}
-              isFirst={content && !contents[index - 1]}
-              isLast={content && !contents[index + 1]}
+              isBlobModel={isBlobModel}
+              isContentChanging={isContentChanging}
+              isFirst={contents && !contents[index - 1]}
+              isLast={contents && !contents[index + 1]}
               index={index}
-              item={items[index]}
+              item={item}
+              nextTimeout={nextTimeout}
               key={index}
               onDrag={onDragCard}
               onNext={onNextCard}
@@ -87,8 +125,10 @@ class Deck extends Component {
   }
 }
 
-Deck.defaultProps = {
-  handLength: 2
+Deck.defaultProps = { deckKey: 0,
+  handLength: 2,
+  isBlobModel: false,
+  nextTimeout: 500
 }
 
 export default Deck

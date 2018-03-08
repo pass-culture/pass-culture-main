@@ -1,8 +1,11 @@
 .card {
+  cursor: pointer;
   height: 100%;
-  transition: left 0.5s, width 0.5s, right 0.5s, transform 0s;
   &--current {
     z-index: 500;
+  }
+  &--draggable {
+    cursor: -webkit-grab;
   }
   &--span {
     height: 100%;
