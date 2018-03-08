@@ -48,22 +48,12 @@ class Card extends Component {
     const leftThreshold = - 0.1 * deckElement.offsetWidth
     const rightThreshold = 0.1 * deckElement.offsetWidth
     if (!isLast && x < leftThreshold) {
-      // newState.transform = transformsByType[HAND_LEFT]
-      // newState.style = stylesByType[HAND_LEFT]
-      // setTimeout(() => onNext(-1), 1000)
-      // console.log('OUAIIIII')
-      // this.item = item - 1
-      // this.handleSetStyle(this.props)
       onNext(-1)
     } else if (!isFirst && x > rightThreshold) {
-      // newState.transform = transformsByType[HAND_RIGHT]
-      // newState.style = stylesByType[HAND_RIGHT]
-      // setTimeout(() => onNext(1), 1000)
-      // this.item = item + 1
-      // this.handleSetStyle(this.props)
       onNext(1)
     } else {
-      newState.transform = transformsByType[CURRENT]
+      console.log('ICI')
+      newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
     }
     // return
     this.setState(newState)
@@ -141,7 +131,11 @@ class Card extends Component {
     }
     transformsByType[ASIDE_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     // update
-    this.setState({ stylesByType,
+    const style = stylesByType[type]
+    const transform = transformsByType[type]
+    this.setState({ style,
+      stylesByType,
+      transform,
       transformsByType,
       type
     })
@@ -184,13 +178,10 @@ class Card extends Component {
       item
     } = this.props
     const { position,
-      stylesByType,
-      transformsByType,
+      style,
+      transform,
       type
     } = this.state
-    const style = stylesByType[type]
-    const transform = transformsByType[type]
-    content.id === 'A4' && console.log(content.id, 'style', style)
     return (
       <Draggable axis='x'
         disabled={type !== 'current'}
