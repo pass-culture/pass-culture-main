@@ -36,7 +36,6 @@ class Card extends Component {
     const { deckElement,
       isFirst,
       isLast,
-      item,
       onNext,
       perspective,
       rotation
@@ -136,7 +135,6 @@ class Card extends Component {
     transformsByType[ASIDE_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     // update
     const style = stylesByType[type]
-    console.log('isContentChanging', isContentChanging)
     style.transition = isContentChanging
       ? 'none'
       : `left ${nextTimeout}ms, width ${nextTimeout}ms, right ${nextTimeout}ms, transform 0s`

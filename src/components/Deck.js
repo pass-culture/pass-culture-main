@@ -96,7 +96,6 @@ class Deck extends Component {
       isContentChanging,
       items
     } = this.state
-    console.log('BEN', isContentChanging)
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>

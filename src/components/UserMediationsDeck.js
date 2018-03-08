@@ -4,74 +4,104 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import Deck from './Deck'
-import withSelectors from '../hocs/withSelectors'
 import { requestData } from '../reducers/data'
-import { closeLoading, showLoading } from '../reducers/loading'
 import { getContentFromUserMediation } from '../utils/content'
 import { sync } from '../utils/registerDexieServiceWorker'
 
 class UserMediationsDeck extends Component {
   constructor() {
     super()
-    this.state = { contents: null,
+    this.state = { aroundIndex: null,
+      contents: null,
       hasSyncRequested: false,
       items: null
     }
   }
   handleCheckContent = props => {
     // unpack and check
-    const { afterContents,
-      aroundContent,
-      beforeContents
-    } = this
-    const { requestData, handLength } = this.props
-    const { hasSyncRequested } = this.state
-    if (!aroundContent) {
+    const { countBeforeSync,
+      isBlobModel,
+      requestData,
+      handLength,
+      userMediations
+    } = props
+    const { aroundIndex,
+      contents,
+      hasSyncRequested
+    } = this.state
+    if (aroundIndex === null) {
       return
     }
     // from the present to the past
     // meet the first not well defined content
-    for (let index of [...Array(handLength + 1).keys()]) {
-      const content = beforeContents[handLength - 1 - index]
-      // if it is not defined
-      // it means we need to do ask the backend
-      // to update the dexie blob at the good current around
-      if (!content && !hasSyncRequested) {
-        beforeContents[handLength - 1 - index] = { isLoading: true }
-        this.setState({ contents: [
-            ...beforeContents,
-            aroundContent,
-            ...afterContents
-          ],
-          hasSyncRequested: true
-        })
-        // sync('dexie-push-pull', { around: aroundContent.id })
-        return
-      } else if (!hasSyncRequested) {
-        this.setState({ hasSyncRequested: false })
-      }
+    let pastIndex
+    let pastVariable
+    if (isBlobModel) {
+      pastIndex = countBeforeSync
+      pastVariable = contents[pastIndex]
+    } else {
+      pastIndex = 0
+      pastVariable = userMediations[aroundIndex - (userMediations.length / 2)]
     }
-    // from the present to the future
-    // meet the first not well defined content
-    for (let index of [...Array(handLength + 1).keys()]) {
-      const content = afterContents[index]
-      // if it is not defined
-      // it means we need to do ask the backend
-      // to update the dexie blob at the good current around
-      if (!content && !hasSyncRequested) {
-        afterContents[index] = { isLoading: true }
-        this.setState({ contents: [
-            ...beforeContents,
-            aroundContent,
-            ...afterContents
+    // if it is not defined
+    // it means we need to do ask the backend
+    // to update the dexie blob at the good current around
+    if (!pastVariable && !hasSyncRequested) {
+      this.setState({ contents:
+        isBlobModel
+          ? [
+              ...contents.slice(0, pastIndex),
+              { isLoading: true },
+              ...contents.slice(pastIndex + 1)
+            ]
+          : [
+              { isLoading: true },
+              ...contents.slice(1)
           ],
-          hasSyncRequested: true
-        })
-        // sync('dexie-push-pull', { around: aroundContent.id })
-        return
-      } else if (!hasSyncRequested) {
-        this.setState({ hasSyncRequested: false })
-      }
+        hasSyncRequested: true
+      })
+      // sync('dexie-push-pull', { around: aroundContent.id })
+      return
+    } else if (!hasSyncRequested) {
+      this.setState({ hasSyncRequested: false })
+    }
+
+
+    // from the present to the past
+    // meet the first not well defined content
+    let futureIndex
+    let futureVariable
+    if (isBlobModel) {
+      futureIndex = contents.length - countBeforeSync
+      futureVariable = contents[futureIndex]
+    } else {
+      futureIndex = 2 * handLength + 2
+      futureVariable = futureVariable[aroundIndex + (userMediations.length / 2)]
+    }
+    // if it is not defined
+    // it means we need to do ask the backend
+    // to update the dexie blob at the good current around
+    console.log('futureIndex', futureIndex, contents)
+    console.log('futureVariable', futureVariable)
+    if (!futureVariable && !hasSyncRequested) {
+      this.setState({ contents:
+        isBlobModel
+          ? [
+              ...contents.slice(0, futureIndex),
+              { isLoading: true },
+              ...contents.slice(futureIndex + 1)
+            ]
+          : [
+              ...contents.slice(0, -1),
+              { isLoading: true }
+          ],
+        hasSyncRequested: true
+      })
+      console.log('TRIGGER PUSH PULL')
+      // sync('dexie-push-pull', { around: aroundContent.id })
+      return
+    } else if (!hasSyncRequested) {
+      this.setState({ hasSyncRequested: false })
     }
   }
   handleSetContents = props => {
@@ -135,7 +165,7 @@ class UserMediationsDeck extends Component {
     } = this.props
     const { aroundIndex, contents } = this.state
     if (isBlobModel) {
-
+      this.handleCheckContent(this.props)
     } else {
       // SLOT MODEL
       setTimeout(() => this.setState({
@@ -152,23 +182,6 @@ class UserMediationsDeck extends Component {
         }), nextTimeout)
     }
   }
-  /*
-  console.log('AVANT this.contents', this.contents.map(content => content && content.id))
-  console.log('deckState.items', deckState.items)
-  setTimeout(() => {
-    const { handLength, userMediations } = this.props
-    this.aroundIndex = this.aroundIndex - diffIndex
-    this.aroundContent = getContentFromUserMediation(userMediations[this.aroundIndex])
-    this.handleSetContents(this.props)
-    // this.handleCheckContent(this.props)
-    console.log('APRES this.contents', this.contents.map(content => content && content.id))
-    // this.setState({ items: [...Array(2* handLength + 3).keys()] })
-  }, 2000)
-  */
-  /*
-  console.log('this.state.contents', this.state.contents.map(content =>
-    content && content.id))
-  */
   onReadCard = card => {
     // unpack
     const { requestData } = this.props
@@ -201,7 +214,8 @@ class UserMediationsDeck extends Component {
   }
 }
 
-UserMediationsDeck.defaultProps = { handLength: 2,
+UserMediationsDeck.defaultProps = { countBeforeSync: 10,
+  handLength: 2,
   isBlobModel: false,
   nextTimeout: 500
 }
