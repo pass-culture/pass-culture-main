@@ -93,10 +93,6 @@ class Deck extends Component {
     }
     // update
     this.setState(newState)
-    // parent hook
-    /*
-    onTransitionEnd && onTransitionEnd(event, cardProps, this.props)
-    */
   }
   onTransitionStart = (event, cardProps) => {
     // unpack

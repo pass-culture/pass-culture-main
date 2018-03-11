@@ -210,8 +210,7 @@ class UserMediationsDeck extends Component {
     return <Deck {...this.props}
       {...this.state}
       onNextCard={this.onNextCard}
-      onReadCard={this.onReadCard}
-      onTransitionEnd={this.onTransitionEnd} />
+      onReadCard={this.onReadCard} />
   }
 }
 

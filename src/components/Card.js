@@ -16,7 +16,6 @@ class Card extends Component {
     this.state = { cursor: null,
       item: null,
       isRead: false,
-      isTransitioning: false,
       position: null,
       transform: null,
       style: null
@@ -27,6 +26,7 @@ class Card extends Component {
     const { contentLength,
       deckElement,
       handLength,
+      isBlobModel,
       isCheckRead,
       isContentChanging,
       onTransitionStart,
@@ -95,8 +95,6 @@ class Card extends Component {
       width: handWidth
     }
     transformsByType[ASIDE_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
-    // set is transitioning
-    this.handleSetIsTransitioning(props)
     // check read
     isCheckRead && type === CURRENT && this.handleCheckRead(props)
     // determine style
@@ -105,16 +103,16 @@ class Card extends Component {
       ? 'none'
       : `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
     const transform = transformsByType[type]
-    // transition start
-    style.transition !== 'none' &&
-      this.state.style &&
-      onTransitionStart &&
-      Object.keys(style).forEach(key => {
-      if (key !== 'transition' && style[key] !== this.state.style[key]) {
-        // console.log(type, key, props.content.id, props.item, props.index)
-        onTransitionStart({ propertyName: key }, this.props)
-      }
-    })
+    // transition happened when the style has been already set once
+    // and that the new style has a not none transform
+    if (this.state.style && style.transition !== 'none') {
+      onTransitionStart && Object.keys(style).forEach(key => {
+        if (key !== 'transition' && style[key] !== this.state.style[key]) {
+          // console.log(type, key, props.content.id, props.item, props.index)
+          onTransitionStart({ propertyName: key }, this.props)
+        }
+      })
+    }
     // update
     this.setState({ isRead: false,
       style,
@@ -140,19 +138,6 @@ class Card extends Component {
       // check that type is still current
       this.state.type === CURRENT && onRead && onRead(props)
     }, readTimeout)
-  }
-  handleSetIsTransitioning = props => {
-    const { isBlobModel, transitionTimeout } = props
-    if (isBlobModel) {
-      return
-    }
-    // we can here be sure that the user
-    // will not swipe too fast...
-    // takes the transition timeout to do animation + refresh of the extreme contents
-    // This is possible by setting a isTransitioning disabling the dragging
-    this.setState({ isTransitioning: true })
-    setTimeout(() => this.setState({ isTransitioning: false }),
-      transitionTimeout)
   }
   onDrag = (event, data) => {
     // unpack
@@ -227,10 +212,10 @@ class Card extends Component {
       contentLength,
       handLength,
       index,
+      isTransitioning,
       item
     } = this.props
-    const { isTransitioning,
-      position,
+    const { position,
       style,
       transform,
       type
