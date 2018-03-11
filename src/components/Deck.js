@@ -1,6 +1,7 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 
-import Card from './Card'
+import Card, { CURRENT } from './Card'
 
 class Deck extends Component {
   constructor () {
@@ -9,9 +10,40 @@ class Deck extends Component {
       cursor: 0,
       deckElement: null,
       isContentChanging: false,
+      isFirstCard: false,
+      isLastCard: false,
       isTransitioning: false,
       items: null
     }
+  }
+  handleSetTypeCard = (type, cardProps) => {
+    if (type !== CURRENT) {
+      return
+    }
+    const newState = {
+      isFirstCard: false,
+      isLastCard: false
+    }
+    if (cardProps.isFirst) {
+      newState.isFirstCard = true
+    } else if (cardProps.isLast) {
+      newState.isLastCard = true
+    }
+    this.setState(newState)
+  }
+  handleNextItemCard = diffIndex => {
+    // unpack
+    const { handleNextItemCard,
+      onTransition,
+      transitionTimeout
+    } = this.props
+    const { items } = this.state
+    // update by shifting the items
+    this.setState({ cursor: 0,
+      items: items.map(index => index + diffIndex)
+    })
+    // hook if Deck has parent manager component
+    handleNextItemCard && handleNextItemCard(diffIndex, this.props, this.state)
   }
   handleSetItems = props => {
     // unpack
@@ -46,28 +78,14 @@ class Deck extends Component {
     // update
     this.setState(newState)
   }
+  handleSetReadCard = card => {
+    // unpack
+    const { handleSetReadCard } = this.props
+    // hook if Deck has parent manager component
+    handleSetReadCard && handleSetReadCard(card)
+  }
   onDragCard = (event, data, cursor) => {
     // this.setState({ cursor })
-  }
-  onNextCard = diffIndex => {
-    // unpack
-    const { onNextCard,
-      onTransition,
-      transitionTimeout
-    } = this.props
-    const { items } = this.state
-    // update by shifting the items
-    this.setState({ cursor: 0,
-      items: items.map(index => index + diffIndex)
-    })
-    // hook if Deck has parent manager component
-    onNextCard && onNextCard(diffIndex, this.props, this.state)
-  }
-  onReadCard = card => {
-    // unpack
-    const { onReadCard } = this.props
-    // hook if Deck has parent manager component
-    onReadCard && onReadCard(card)
   }
   onTransitionEnd = (event, cardProps) => {
     // check and unpack
@@ -158,9 +176,11 @@ class Deck extends Component {
     }
   }
   render () {
-    const { onDragCard,
-      onNextCard,
-      onReadCard,
+    const { handleSetTypeCard,
+      handleLastCard,
+      handleSetReadCard,
+      handleNextItemCard,
+      onDragCard,
       onTransitionEnd,
       onTransitionStart
     } = this
@@ -173,20 +193,27 @@ class Deck extends Component {
       cursor,
       deckElement,
       isContentChanging,
+      isFirstCard,
+      isLastCard,
       items
     } = this.state
+    console.log('isFirstCard', isFirstCard)
     // console.log('RENDER this.state.bufferContents', this.state.bufferContents)
     // console.log('this.props.contents', this.props.contents)
     const contents = this.state.bufferContents || this.props.contents
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>
-        <button className='deck__next deck__next--left button absolute'
-          onClick={() => onNextCard(1)}>
+        <button className={classnames('deck__next deck__next--left button absolute', {
+          'button--disabled': isFirstCard })}
+          onClick={() => handleNextItemCard(1)}
+          disabled={isFirstCard} >
           {'<'}
         </button>
-        <button className='deck__next deck__next--right button absolute'
-          onClick={() => onNextCard(-1)}>
+        <button className={classnames('deck__next deck__next--right button absolute', {
+          'button--disabled': isLastCard })}
+          onClick={() => handleNextItemCard(-1)}
+          disabled={isLastCard} >
           {'>'}
         </button>
         {
@@ -196,6 +223,9 @@ class Deck extends Component {
               cursor={cursor}
               deckElement={deckElement}
               handLength={handLength}
+              handleNextItem={handleNextItemCard}
+              handleSetRead={handleSetReadCard}
+              handleSetType={handleSetTypeCard}
               isBlobModel={isBlobModel}
               isContentChanging={isContentChanging}
               isFirst={contents && !contents[index - 1]}
@@ -205,8 +235,6 @@ class Deck extends Component {
               transitionTimeout={transitionTimeout}
               key={index}
               onDrag={onDragCard}
-              onNext={onNextCard}
-              onRead={onReadCard}
               onTransitionEnd={onTransitionEnd}
               onTransitionStart={onTransitionStart}
               readTimeout={readTimeout} />

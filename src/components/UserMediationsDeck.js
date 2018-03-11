@@ -92,9 +92,9 @@ class UserMediationsDeck extends Component {
         hasSyncRequested: true,
         isKeepItems: true
       }, () => this.setState({ isKeepItems: false }))
-      // console.log('TRIGGER PUSH PULL')
+      console.log('TRIGGER PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
-      sync('dexie-push-pull', { around: aroundContent.id })
+      // sync('dexie-push-pull', { around: aroundContent.id })
     } else if (!hasSyncRequested) {
       this.setState({ hasSyncRequested: false })
     }
@@ -201,7 +201,7 @@ class UserMediationsDeck extends Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.userMediations !== this.props.userMediations) {
       this.handleSetContents(nextProps)
-      // this.handleCheckContent(nextProps)
+      this.handleCheckContent(nextProps)
     }
   }
   render () {

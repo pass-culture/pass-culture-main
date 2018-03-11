@@ -4,11 +4,11 @@ import React, { Component } from 'react'
 
 import Recto from './Recto'
 
-const CURRENT = 'current'
-const ASIDE_LEFT = 'aside-left'
-const ASIDE_RIGHT = 'aside-right'
-const HAND_LEFT = 'hand-left'
-const HAND_RIGHT = 'hand-right'
+export const CURRENT = 'current'
+export const ASIDE_LEFT = 'aside-left'
+export const ASIDE_RIGHT = 'aside-right'
+export const HAND_LEFT = 'hand-left'
+export const HAND_RIGHT = 'hand-right'
 
 class Card extends Component {
   constructor () {
@@ -21,13 +21,33 @@ class Card extends Component {
       style: null
     }
   }
-  handleSetStyle = props => {
+  handleSetRead = props => {
+    // unpack and check
+    const { content,
+      index,
+      handleSetRead,
+      readTimeout
+    } = props
+    const { isRead } = this.state
+    if (!content || isRead) { return }
+    // wait a bit to trigger the fact that we stay on the same card
+    setTimeout(() => {
+      // make sure we are not going to do it circularly
+      this.setState({ isRead: true })
+      // check that type is still current
+      this.state.type === CURRENT && handleSetRead && handleSetRead(props)
+    }, readTimeout)
+  }
+  handleSetType = props => {
     // unpack and check
     const { contentLength,
       deckElement,
       handLength,
+      handleSetType,
       isBlobModel,
-      isCheckRead,
+      isFirst,
+      isLast,
+      isSetRead,
       isContentChanging,
       onTransitionStart,
       transitionTimeout,
@@ -63,46 +83,54 @@ class Card extends Component {
     const currentWidth = deckElement.offsetWidth - 2 * leftOrRightCurrentWidth
     const handWidth = leftOrRightCurrentWidth / handLength
     // determine style and transform given the type of the card
-    const stylesByType = {}
-    const transformsByType = {}
+    let style, transform
+    switch (type) {
+      case ASIDE_LEFT:
+        style = {
+          left: -100,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+        break
+      case HAND_LEFT:
+        style = {
+          left: leftOrRightCurrentWidth + item * handWidth,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+        break
+      case CURRENT:
+        style = {
+          left: leftOrRightCurrentWidth,
+          width: currentWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
+        break
+      case HAND_RIGHT:
+        style = {
+          left: deckElement.offsetWidth - leftOrRightCurrentWidth + (item - 1) * handWidth,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+        break
+      case ASIDE_RIGHT:
+        style = {
+          left: deckElement.offsetWidth + 100,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+        break
+      default:
+        break
+    }
     // aside left
-    stylesByType[ASIDE_LEFT] = {
-      left: -100,
-      width: handWidth
-    }
-    transformsByType[ASIDE_LEFT] = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
     // hand left
-    stylesByType[HAND_LEFT] = {
-      left: leftOrRightCurrentWidth + item * handWidth,
-      width: handWidth
-    }
-    transformsByType[HAND_LEFT] = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
-    // current
-    stylesByType[CURRENT] = {
-      left: leftOrRightCurrentWidth,
-      width: currentWidth
-    }
-    transformsByType[CURRENT] = `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
-    // hand right
-    stylesByType[HAND_RIGHT] = {
-      left: deckElement.offsetWidth - leftOrRightCurrentWidth + (item - 1) * handWidth,
-      width: handWidth
-    }
-    transformsByType[HAND_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
-    // aside right
-    stylesByType[ASIDE_RIGHT] = {
-      left: deckElement.offsetWidth + 100,
-      width: handWidth
-    }
-    transformsByType[ASIDE_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     // check read
-    isCheckRead && type === CURRENT && this.handleCheckRead(props)
+    isSetRead && type === CURRENT && this.handleSetRead(props)
     // determine style
-    const style = stylesByType[type]
     style.transition = isContentChanging
       ? 'none'
       : `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
-    const transform = transformsByType[type]
     // transition happened when the style has been already set once
     // and that the new style has a not none transform
     if (this.state.style && style.transition !== 'none') {
@@ -113,31 +141,14 @@ class Card extends Component {
         }
       })
     }
+    // inform parent about the new current card
+    handleSetType && handleSetType(type, props)
     // update
     this.setState({ isRead: false,
       style,
-      stylesByType,
       transform,
-      transformsByType,
       type
     })
-  }
-  handleCheckRead = props => {
-    // unpack and check
-    const { content,
-      index,
-      onRead,
-      readTimeout
-    } = props
-    const { isRead } = this.state
-    if (!content || isRead) { return }
-    // wait a bit to trigger the fact that we stay on the same card
-    setTimeout(() => {
-      // make sure we are not going to do it circularly
-      this.setState({ isRead: true })
-      // check that type is still current
-      this.state.type === CURRENT && onRead && onRead(props)
-    }, readTimeout)
   }
   onDrag = (event, data) => {
     // unpack
@@ -145,7 +156,7 @@ class Card extends Component {
     // compute the cursor
     const cursor = data.x / (deckElement.offsetWidth / 2)
     this.setState({ cursor })
-    this.handleSetStyle(this.props)
+    this.handleSetType(this.props)
     // hook
     onDrag && onDrag(event, data)
   }
@@ -156,9 +167,9 @@ class Card extends Component {
   onStop = (event, data) => {
     // unpack
     const { deckElement,
+      handleNextItem,
       isFirst,
       isLast,
-      onNext,
       perspective,
       rotation
     } = this.props
@@ -172,9 +183,9 @@ class Card extends Component {
     const leftThreshold = - 0.1 * deckElement.offsetWidth
     const rightThreshold = 0.1 * deckElement.offsetWidth
     if (!isLast && x < leftThreshold) {
-      onNext(-1)
+      handleNextItem(-1)
     } else if (!isFirst && x > rightThreshold) {
-      onNext(1)
+      handleNextItem(1)
     } else {
       newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
     }
@@ -188,15 +199,19 @@ class Card extends Component {
     )
   }
   componentWillMount () {
-    this.handleSetStyle(this.props)
+    this.handleSetType(this.props)
   }
   componentWillReceiveProps (nextProps, nextState) {
-    if ( (nextProps.deckElement && !this.props.deckElement)
-      || (nextProps.item !== this.props.item)
-      || (nextProps.cursor !== this.props.cursor)
+    const { cursor,
+      deckElement,
+      item
+    } = nextProps
+    if ( (deckElement && !this.props.deckElement)
+      || (item !== this.props.item)
+      || (cursor !== this.props.cursor)
     ) {
       // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
-      this.handleSetStyle(nextProps)
+      this.handleSetType(nextProps)
     }
   }
   componentWillUnmount () {
@@ -246,7 +261,7 @@ class Card extends Component {
   }
 }
 
-Card.defaultProps = { isCheckRead: true,
+Card.defaultProps = { isSetRead: true,
   perspective: 600,
   readTimeout: 3000,
   rotation: 45,
