@@ -14,6 +14,7 @@ class UserMediationsDeck extends Component {
     this.state = { aroundIndex: null,
       contents: null,
       hasSyncRequested: false,
+      isKeepItems: false,
       items: null
     }
   }
@@ -46,6 +47,7 @@ class UserMediationsDeck extends Component {
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
+    /*
     if (!pastVariable && !hasSyncRequested) {
       this.setState({ contents:
         isBlobModel
@@ -65,41 +67,34 @@ class UserMediationsDeck extends Component {
     } else if (!hasSyncRequested) {
       this.setState({ hasSyncRequested: false })
     }
-
+    */
 
     // from the present to the past
     // meet the first not well defined content
-    let futureIndex
-    let futureVariable
+    let isFutureSync
     if (isBlobModel) {
-      futureIndex = contents.length - countBeforeSync
-      futureVariable = contents[futureIndex]
+      console.log('aroundIndex', aroundIndex, (contents.length / 2) - countBeforeSync)
+      isFutureSync = aroundIndex > (contents.length / 2) - countBeforeSync
     } else {
-      futureIndex = 2 * handLength + 2
-      futureVariable = futureVariable[aroundIndex + (userMediations.length / 2)]
+      isFutureSync = typeof userMediations[
+        aroundIndex + (userMediations.length / 2)
+      ] === 'undefined'
     }
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    console.log('futureIndex', futureIndex, contents)
-    console.log('futureVariable', futureVariable)
-    if (!futureVariable && !hasSyncRequested) {
-      this.setState({ contents:
-        isBlobModel
-          ? [
-              ...contents.slice(0, futureIndex),
-              { isLoading: true },
-              ...contents.slice(futureIndex + 1)
-            ]
-          : [
-              ...contents.slice(0, -1),
-              { isLoading: true }
-          ],
-        hasSyncRequested: true
-      })
+    console.log('isFutureSync', isFutureSync, hasSyncRequested)
+    if (isFutureSync && !hasSyncRequested) {
+      this.setState({ contents: [
+          ...contents.slice(0, -1),
+          { isLoading: true }
+        ],
+        hasSyncRequested: true,
+        isKeepItems: true
+      }, () => this.setState({ isKeepItems: false }))
       console.log('TRIGGER PUSH PULL')
-      // sync('dexie-push-pull', { around: aroundContent.id })
-      return
+      const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
+      sync('dexie-push-pull', { around: aroundContent.id })
     } else if (!hasSyncRequested) {
       this.setState({ hasSyncRequested: false })
     }
@@ -110,43 +105,40 @@ class UserMediationsDeck extends Component {
       handLength,
       userMediations
     } = props
+    let { aroundIndex } = this.state
     if (!userMediations) {
       return
     }
-    // determine automatically what should the actual aroundIndex
+    // if aroundIndex is not yet defined
+    // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
     // is the centered card
-    let aroundContent, aroundIndex
-    const dateReads = userMediations.map(userMediation =>
-      userMediation.dateRead)
-    const firstNotReadIndex = dateReads.indexOf(null)
-    if (firstNotReadIndex === -1) {
-      const lastReadIndex = dateReads.indexOf(Math.max(...dateReads))
-      aroundIndex = lastReadIndex
-    } else {
-      aroundIndex = firstNotReadIndex
+    if (aroundIndex === null) {
+      const dateReads = userMediations.map(userMediation =>
+        userMediation.dateRead)
+      const firstNotReadIndex = dateReads.indexOf(null)
+      if (firstNotReadIndex === -1) {
+        const lastReadIndex = dateReads.indexOf(Math.max(...dateReads))
+        aroundIndex = lastReadIndex
+      } else {
+        aroundIndex = firstNotReadIndex
+      }
     }
-    aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
+    const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
     // determine the before and after
-    let afterContents, beforeContents
-    // BLOB MODEL
-    if (isBlobModel) {
-      beforeContents = [...Array(userMediations.length - 2).keys()]
-        .map(index => userMediations[aroundIndex - index - 1])
+    const beforeOrAfterContentsLength = isBlobModel
+      ? userMediations.length - 2
+      : handLength + 1
+    const beforeContents = [...Array(beforeOrAfterContentsLength).keys()]
+        .map(index => userMediations[isBlobModel
+          ? aroundIndex - index - 1
+          : aroundIndex - handLength - 1 + index
+        ])
         .map(getContentFromUserMediation)
-      beforeContents.reverse()
-      afterContents = [...Array(userMediations.length - 2).keys()]
+      isBlobModel && beforeContents.reverse()
+    const afterContents = [...Array(beforeOrAfterContentsLength).keys()]
         .map(index => userMediations[aroundIndex + 1 + index])
         .map(getContentFromUserMediation)
-    } else {
-      // SLOT MODEL
-      beforeContents = [...Array(handLength + 1).keys()]
-        .map(index => userMediations[aroundIndex - handLength - 1 + index])
-        .map(getContentFromUserMediation)
-      afterContents = [...Array(handLength + 1).keys()]
-        .map(index => userMediations[aroundIndex + 1 + index])
-        .map(getContentFromUserMediation)
-    }
     // concat
     const contents = [
       ...beforeContents,
@@ -154,37 +146,42 @@ class UserMediationsDeck extends Component {
       ...afterContents
     ]
     // update
+    console.log('SET CONTENTS')
     this.setState({ aroundIndex, contents })
   }
   onNextCard = (diffIndex, deckProps, deckState) => {
     // unpack
     const { handLength,
       isBlobModel,
-      nextTimeout,
+      transitionTimeout,
       userMediations
     } = this.props
-    const { aroundIndex, contents } = this.state
+    const { contents } = this.state
+    // update around
+    const aroundIndex = this.state.aroundIndex - diffIndex
+    // set state
     if (isBlobModel) {
+      this.setState({ aroundIndex })
       this.handleCheckContent(this.props)
     } else {
       // SLOT MODEL
       setTimeout(() => this.setState({
-          aroundIndex: aroundIndex - diffIndex,
-          contents: diffIndex === -1
-            ? [
-              ...contents.slice(1),
-              getContentFromUserMediation(userMediations[aroundIndex + handLength + 2])
-            ]
-            : [
-              getContentFromUserMediation(userMediations[aroundIndex - handLength - 2]),
-              ...contents.slice(0, -1)
-            ]
-        }), nextTimeout)
+        aroundIndex,
+        contents: diffIndex === -1
+          ? [
+            ...contents.slice(1),
+            getContentFromUserMediation(userMediations[aroundIndex + handLength + 2])
+          ]
+          : [
+            getContentFromUserMediation(userMediations[aroundIndex - handLength - 2]),
+            ...contents.slice(0, -1)
+          ]
+      }), transitionTimeout)
     }
   }
   onReadCard = card => {
     // unpack
-    const { requestData } = this.props
+    const { isCheckRead, requestData } = this.props
     // update dexie
     const nowDate = moment().toISOString()
     const body = [{
@@ -193,7 +190,13 @@ class UserMediationsDeck extends Component {
       id: card.content.id,
       isFavorite: card.content.isFavorite
     }]
-    // requestData('PUT', 'userMediations', { body, sync: true })
+    // request
+    console.log('PUT')
+    // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
+  }
+  onTransitionEnd = (event, cardProps, deckProps) => {
+    console.log('qsdqsd', this.state.contents)
+    // this.setState({ contents: [...deckProps.contents]})
   }
   componentWillMount () {
     this.handleSetContents(this.props)
@@ -210,14 +213,17 @@ class UserMediationsDeck extends Component {
     return <Deck {...this.props}
       {...this.state}
       onNextCard={this.onNextCard}
-      onReadCard={this.onReadCard} />
+      onReadCard={this.onReadCard}
+      onTransitionEnd={this.onTransitionEnd} />
   }
 }
 
 UserMediationsDeck.defaultProps = { countBeforeSync: 10,
   handLength: 2,
   isBlobModel: false,
-  nextTimeout: 500
+  isCheckRead: true,
+  readTimeout: 10,
+  transitionTimeout: 500
 }
 
 export default compose(

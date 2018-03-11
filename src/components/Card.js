@@ -15,59 +15,24 @@ class Card extends Component {
     super()
     this.state = { cursor: null,
       item: null,
+      isRead: false,
       isTransitioning: false,
       position: null,
       transform: null,
       style: null
     }
   }
-  onDrag = (event, data) => {
-    // unpack
-    const { deckElement, onDrag } = this.props
-    // compute the cursor
-    const cursor = data.x / (deckElement.offsetWidth / 2)
-    this.setState({ cursor })
-    this.handleSetStyle(this.props)
-    // hook
-    onDrag && onDrag(event, data)
-  }
-  onStop = (event, data) => {
-    // unpack
-    const { deckElement,
-      isFirst,
-      isLast,
-      onNext,
-      perspective,
-      rotation
-    } = this.props
-    const { stylesByType, transformsByType } = this.state
-    const { x } = data
-    const newState = {
-      cursor: 0,
-      position: { x: 0, y: 0 }
-    }
-    // thresholds
-    const leftThreshold = - 0.1 * deckElement.offsetWidth
-    const rightThreshold = 0.1 * deckElement.offsetWidth
-    if (!isLast && x < leftThreshold) {
-      onNext(-1)
-    } else if (!isFirst && x > rightThreshold) {
-      onNext(1)
-    } else {
-      newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
-    }
-    // return
-    this.setState(newState)
-  }
   handleSetStyle = props => {
     // unpack and check
     const { contentLength,
       deckElement,
+      handLength,
+      isCheckRead,
       isContentChanging,
-      nextTimeout,
+      onTransitionStart,
+      transitionTimeout,
       perspective,
       rotation,
-      handLength,
       widthRatio
     } = props
     // cursor is defined in state if it is the current card
@@ -115,30 +80,39 @@ class Card extends Component {
     // current
     stylesByType[CURRENT] = {
       left: leftOrRightCurrentWidth,
-      // right: leftOrRightCurrentWidth,
       width: currentWidth
     }
     transformsByType[CURRENT] = `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
     // hand right
     stylesByType[HAND_RIGHT] = {
       left: deckElement.offsetWidth - leftOrRightCurrentWidth + (item - 1) * handWidth,
-      // right: leftOrRightCurrentWidth - 0.1 * halfWidth - (item - 1) * handWidth,
       width: handWidth
     }
     transformsByType[HAND_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
     // aside right
     stylesByType[ASIDE_RIGHT] = {
       left: deckElement.offsetWidth + 100,
-      // right: -100,
       width: handWidth
     }
     transformsByType[ASIDE_RIGHT] = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
-    // update
+    // set is transitioning
+    this.handleSetIsTransitioning(props)
+    // check read
+    isCheckRead && type === CURRENT && this.handleCheckRead(props)
+    // determine style
     const style = stylesByType[type]
     style.transition = isContentChanging
       ? 'none'
-      : `left ${nextTimeout}ms, width ${nextTimeout}ms, right ${nextTimeout}ms, transform 0s`
+      : `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
     const transform = transformsByType[type]
+    // transition start
+    this.state.style && onTransitionStart && Object.keys(style).forEach(key => {
+      if (key !== 'transition' && style[key] !== this.state.style[key]) {
+        // console.log(key, props.content.id, props.index)
+        onTransitionStart({ propertyName: key }, this.props)
+      }
+    })
+    // update
     this.setState({ style,
       stylesByType,
       transform,
@@ -153,45 +127,98 @@ class Card extends Component {
       onRead,
       readTimeout
     } = props
-    const { type } = this.state
-    if (!content || type !== CURRENT) { return }
+    const { isRead } = this.state
+    if (!content || isRead) { return }
     // wait a bit to trigger the fact that we stay on the same card
     setTimeout(() => {
+      // make sure we are not going to do it circularly
+      this.setState({ isRead: true })
       // check that type is still current
       this.state.type === CURRENT && onRead && onRead(props)
     }, readTimeout)
   }
   handleSetIsTransitioning = props => {
-    const { isBlobModel, nextTimeout } = props
+    const { isBlobModel, transitionTimeout } = props
     if (isBlobModel) {
       return
     }
-    // SLOT MODEL
     // we can here be sure that the user
-    // will not swipe too fast... because the slot model
+    // will not swipe too fast...
     // takes the transition timeout to do animation + refresh of the extreme contents
     // This is possible by setting a isTransitioning disabling the dragging
     this.setState({ isTransitioning: true })
-    setTimeout(() => this.setState({ isTransitioning: false }), nextTimeout)
+    setTimeout(() => this.setState({ isTransitioning: false }),
+      transitionTimeout)
+  }
+  onDrag = (event, data) => {
+    // unpack
+    const { deckElement, onDrag } = this.props
+    // compute the cursor
+    const cursor = data.x / (deckElement.offsetWidth / 2)
+    this.setState({ cursor })
+    this.handleSetStyle(this.props)
+    // hook
+    onDrag && onDrag(event, data)
+  }
+  onTransitionEnd = event => {
+    const { onTransitionEnd } = this.props
+    onTransitionEnd && onTransitionEnd(event, this.props)
+  }
+  onStop = (event, data) => {
+    // unpack
+    const { deckElement,
+      isFirst,
+      isLast,
+      onNext,
+      perspective,
+      rotation
+    } = this.props
+    const { stylesByType, transformsByType } = this.state
+    const { x } = data
+    const newState = {
+      cursor: 0,
+      position: { x: 0, y: 0 }
+    }
+    // thresholds
+    const leftThreshold = - 0.1 * deckElement.offsetWidth
+    const rightThreshold = 0.1 * deckElement.offsetWidth
+    if (!isLast && x < leftThreshold) {
+      onNext(-1)
+    } else if (!isFirst && x > rightThreshold) {
+      onNext(1)
+    } else {
+      newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
+    }
+    // return
+    this.setState(newState)
+  }
+  componentDidMount () {
+    this.onTransitionEndListener = this.cardElement.addEventListener(
+      'transitionend',
+      this.onTransitionEnd
+    )
   }
   componentWillMount () {
     this.handleSetStyle(this.props)
-    this.handleSetIsTransitioning(this.props)
-    this.handleCheckRead(this.props)
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps (nextProps, nextState) {
     if ( (nextProps.deckElement && !this.props.deckElement)
       || (nextProps.item !== this.props.item)
       || (nextProps.cursor !== this.props.cursor)
       || (nextProps.content !== this.props.content)
     ) {
       this.handleSetStyle(nextProps)
-      this.handleCheckRead(nextProps)
-      this.handleSetIsTransitioning(nextProps)
     }
   }
+  componentWillUnmount () {
+    this.cardElement.removeEventListener('transitionend',
+      this.onTransitionEnd)
+  }
   render () {
-    const { onDrag, onStop } = this
+    const { onDrag,
+      onStop,
+      onTransitionEnd
+    } = this
     const { content,
       contentLength,
       handLength,
@@ -212,9 +239,12 @@ class Card extends Component {
         onDrag={onDrag}
         onStop={onStop} >
           <span className={classnames('card absolute', {
-            'card--current': type === CURRENT,
-            'card--draggable': isDraggable
-          })} style={style}>
+              'card--current': type === CURRENT,
+              'card--draggable': isDraggable
+            })}
+            ref={element => this.cardElement = element}
+            style={style}
+          >
             <div className='card__container' style={{ transform }}>
               <Recto {...content}
                 contentLength={contentLength}
@@ -227,11 +257,11 @@ class Card extends Component {
   }
 }
 
-Card.defaultProps = {
-  nextTimeout: 500,
+Card.defaultProps = { isCheckRead: true,
   perspective: 600,
   readTimeout: 3000,
   rotation: 45,
+  transitionTimeout: 500,
   widthRatio: 0.75
 }
 
