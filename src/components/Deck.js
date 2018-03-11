@@ -197,7 +197,6 @@ class Deck extends Component {
       isLastCard,
       items
     } = this.state
-    console.log('isFirstCard', isFirstCard)
     // console.log('RENDER this.state.bufferContents', this.state.bufferContents)
     // console.log('this.props.contents', this.props.contents)
     const contents = this.state.bufferContents || this.props.contents

@@ -74,18 +74,24 @@ class UserMediationsDeck extends Component {
     let isFutureSync
     if (isBlobModel) {
       // console.log('aroundIndex', aroundIndex, (contents.length / 2) - countBeforeSync)
-      isFutureSync = aroundIndex > (contents.length / 2) - countBeforeSync
+      isFutureSync = aroundIndex > userMediations.length - countBeforeSync
     } else {
       isFutureSync = typeof userMediations[
         aroundIndex + (userMediations.length / 2)
       ] === 'undefined'
     }
+    console.log('isFutureSync', isFutureSync,
+      aroundIndex, userMediations.length,
+      userMediations.length - countBeforeSync,
+      userMediations[aroundIndex].id
+    )
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
     // console.log('isFutureSync', isFutureSync, hasSyncRequested)
     if (isFutureSync && !hasSyncRequested) {
-      this.setState({ contents: [
+      this.setState({ aroundIndex: null,
+        contents: [
           ...contents.slice(0, -1),
           { isLoading: true }
         ],
@@ -94,7 +100,7 @@ class UserMediationsDeck extends Component {
       }, () => this.setState({ isKeepItems: false }))
       console.log('TRIGGER PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
-      // sync('dexie-push-pull', { around: aroundContent.id })
+      sync('dexie-push-pull', { around: aroundContent.id })
     } else if (!hasSyncRequested) {
       this.setState({ hasSyncRequested: false })
     }
@@ -114,14 +120,19 @@ class UserMediationsDeck extends Component {
     // ie the index inside de userMediations dexie blob that
     // is the centered card
     if (aroundIndex === null) {
-      const dateReads = userMediations.map(userMediation =>
-        userMediation.dateRead)
-      const firstNotReadIndex = dateReads.indexOf(null)
-      if (firstNotReadIndex === -1) {
-        const lastReadIndex = dateReads.indexOf(Math.max(...dateReads))
-        aroundIndex = lastReadIndex
+      const isReads = userMediations.map(userMediation =>
+        userMediation.dateRead !== null)
+      isReads.reverse()
+      const reversedFirstReadIndex = isReads.indexOf(true)
+      if (reversedFirstReadIndex === -1) {
+        aroundIndex = 0
       } else {
-        aroundIndex = firstNotReadIndex
+        const dateReads = userMediations.map(userMediation =>
+          userMediation.dateRead && moment(userMediation.dateRead))
+            .filter(dateRead => dateRead)
+        const lastDateRead = moment.max(dateReads)
+        const lastReadIndex = dateReads.indexOf(lastDateRead)
+        aroundIndex = lastReadIndex
       }
     }
     const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
@@ -150,7 +161,7 @@ class UserMediationsDeck extends Component {
       contents
     })
   }
-  onNextCard = (diffIndex, deckProps, deckState) => {
+  handleNextItemCard = (diffIndex, deckProps, deckState) => {
     // unpack
     const { handLength,
       isBlobModel,
@@ -180,7 +191,7 @@ class UserMediationsDeck extends Component {
       }), transitionTimeout)
     }
   }
-  onReadCard = card => {
+  handleSetReadCard = card => {
     // unpack
     const { isCheckRead, requestData } = this.props
     // update dexie
@@ -200,17 +211,19 @@ class UserMediationsDeck extends Component {
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.userMediations !== this.props.userMediations) {
+      console.log('')
+      console.log('nextProps.userMediations', nextProps.userMediations && nextProps.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
+      console.log('this.props.userMediations', this.props.userMediations && this.props.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
       this.handleSetContents(nextProps)
-      this.handleCheckContent(nextProps)
     }
   }
   render () {
-    //console.log('RENDER this.state.contents', this.state.contents && this.state.contents.map(content =>
-    //  content && content.id))
+    console.log('RENDER this.state.contents', this.state.contents && this.state.contents.map(content =>
+    content && `${content.id} ${content.dateRead}`))
     return <Deck {...this.props}
       {...this.state}
-      onNextCard={this.onNextCard}
-      onReadCard={this.onReadCard} />
+      handleNextItemCard={this.handleNextItemCard}
+      handleSetReadCard={this.handleSetReadCard} />
   }
 }
 
