@@ -106,14 +106,18 @@ class Card extends Component {
       : `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
     const transform = transformsByType[type]
     // transition start
-    this.state.style && onTransitionStart && Object.keys(style).forEach(key => {
+    style.transition !== 'none' &&
+      this.state.style &&
+      onTransitionStart &&
+      Object.keys(style).forEach(key => {
       if (key !== 'transition' && style[key] !== this.state.style[key]) {
-        // console.log(key, props.content.id, props.index)
+        // console.log(type, key, props.content.id, props.item, props.index)
         onTransitionStart({ propertyName: key }, this.props)
       }
     })
     // update
-    this.setState({ style,
+    this.setState({ isRead: false,
+      style,
       stylesByType,
       transform,
       transformsByType,
@@ -205,8 +209,8 @@ class Card extends Component {
     if ( (nextProps.deckElement && !this.props.deckElement)
       || (nextProps.item !== this.props.item)
       || (nextProps.cursor !== this.props.cursor)
-      || (nextProps.content !== this.props.content)
     ) {
+      // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
       this.handleSetStyle(nextProps)
     }
   }

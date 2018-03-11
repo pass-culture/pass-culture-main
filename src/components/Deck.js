@@ -5,7 +5,8 @@ import Card from './Card'
 class Deck extends Component {
   constructor () {
     super()
-    this.state = { cursor: 0,
+    this.state = { bufferContents: null,
+      cursor: 0,
       deckElement: null,
       isContentChanging: false,
       isTransitioning: false,
@@ -23,7 +24,9 @@ class Deck extends Component {
     // isContentChanging to true helps
     // the card to know that they should not remount with a style transition
     // because they are already at the good place
-    const newState = { isContentChanging: true }
+    const newState = { bufferContents: null,
+      isContentChanging: true
+    }
     // we need to determine the dynamic mapping
     // of the deck
     if (isBlobModel) {
@@ -55,8 +58,7 @@ class Deck extends Component {
     const { items } = this.state
     // update by shifting the items
     this.setState({ cursor: 0,
-      items: items.map(index => index + diffIndex),
-      isTransitioning: true
+      items: items.map(index => index + diffIndex)
     })
     // hook if Deck has parent manager component
     onNextCard && onNextCard(diffIndex, this.props, this.state)
@@ -87,7 +89,7 @@ class Deck extends Component {
     if (newTransitions.every((newTransition, index) => !newTransition)) {
       newState.isTransitioning = false
       this.transitions = null
-      console.log('TRANSITIONS IS OFF')
+      // console.log('TRANSITIONS IS OFF')
     }
     // update
     this.setState(newState)
@@ -107,7 +109,7 @@ class Deck extends Component {
     if (!transitions) {
       newTransitions = [...new Array(contents.length)]
       newState.isTransitioning = true
-      console.log('TRANSITIONS IS ON')
+      // console.log('TRANSITIONS IS ON')
     } else {
       newTransitions = [...transitions]
     }
@@ -129,9 +131,18 @@ class Deck extends Component {
   }
   componentWillReceiveProps (nextProps) {
     const { isTransitioning } = this.state
-    if (!isTransitioning && !nextProps.isKeepItems &&
-      nextProps.contents !== this.props.contents) {
-      this.handleSetItems(nextProps)
+    if (nextProps.contents !== this.props.contents) {
+      //console.log(isTransitioning, nextProps.contents.map(content =>
+      //  content && `${content.dateRead} ${content.id}` ))
+      //console.log(this.props.contents && this.props.contents.map(content =>
+      //  content && `${content.dateRead} ${content.id}` ))
+      if (isTransitioning) {
+        //console.log('WE NOT YET SET ITEMS')
+        this.setState({ bufferContents: this.props.contents })
+      } else if (!nextProps.isKeepItems) {
+        //console.log('WE SET ITEMS')
+        this.handleSetItems(nextProps)
+      }
     }
   }
   componentDidMount () {
@@ -157,17 +168,20 @@ class Deck extends Component {
       onTransitionEnd,
       onTransitionStart
     } = this
-    const { contents,
-      handLength,
+    const { handLength,
       isBlobModel,
       transitionTimeout,
       readTimeout
     } = this.props
-    const { cursor,
+    const { bufferContents,
+      cursor,
       deckElement,
       isContentChanging,
       items
     } = this.state
+    // console.log('RENDER this.state.bufferContents', this.state.bufferContents)
+    // console.log('this.props.contents', this.props.contents)
+    const contents = this.state.bufferContents || this.props.contents
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>

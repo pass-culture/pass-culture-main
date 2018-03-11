@@ -73,7 +73,7 @@ class UserMediationsDeck extends Component {
     // meet the first not well defined content
     let isFutureSync
     if (isBlobModel) {
-      console.log('aroundIndex', aroundIndex, (contents.length / 2) - countBeforeSync)
+      // console.log('aroundIndex', aroundIndex, (contents.length / 2) - countBeforeSync)
       isFutureSync = aroundIndex > (contents.length / 2) - countBeforeSync
     } else {
       isFutureSync = typeof userMediations[
@@ -83,7 +83,7 @@ class UserMediationsDeck extends Component {
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    console.log('isFutureSync', isFutureSync, hasSyncRequested)
+    // console.log('isFutureSync', isFutureSync, hasSyncRequested)
     if (isFutureSync && !hasSyncRequested) {
       this.setState({ contents: [
           ...contents.slice(0, -1),
@@ -92,7 +92,7 @@ class UserMediationsDeck extends Component {
         hasSyncRequested: true,
         isKeepItems: true
       }, () => this.setState({ isKeepItems: false }))
-      console.log('TRIGGER PUSH PULL')
+      // console.log('TRIGGER PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
       sync('dexie-push-pull', { around: aroundContent.id })
     } else if (!hasSyncRequested) {
@@ -146,8 +146,9 @@ class UserMediationsDeck extends Component {
       ...afterContents
     ]
     // update
-    console.log('SET CONTENTS')
-    this.setState({ aroundIndex, contents })
+    this.setState({ aroundIndex,
+      contents
+    })
   }
   onNextCard = (diffIndex, deckProps, deckState) => {
     // unpack
@@ -191,12 +192,8 @@ class UserMediationsDeck extends Component {
       isFavorite: card.content.isFavorite
     }]
     // request
-    console.log('PUT')
-    // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
-  }
-  onTransitionEnd = (event, cardProps, deckProps) => {
-    console.log('qsdqsd', this.state.contents)
-    // this.setState({ contents: [...deckProps.contents]})
+    // console.log('READ CARD', card.index, card.item, card.content.id)
+    isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
   }
   componentWillMount () {
     this.handleSetContents(this.props)
@@ -208,8 +205,8 @@ class UserMediationsDeck extends Component {
     }
   }
   render () {
-    console.log('RENDER this.state.contents', this.state.contents && this.state.contents.map(content =>
-      content && content.id))
+    //console.log('RENDER this.state.contents', this.state.contents && this.state.contents.map(content =>
+    //  content && content.id))
     return <Deck {...this.props}
       {...this.state}
       onNextCard={this.onNextCard}
@@ -222,7 +219,7 @@ UserMediationsDeck.defaultProps = { countBeforeSync: 10,
   handLength: 2,
   isBlobModel: false,
   isCheckRead: true,
-  readTimeout: 10,
+  readTimeout: 2000,
   transitionTimeout: 500
 }
 

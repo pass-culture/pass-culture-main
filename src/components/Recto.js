@@ -4,6 +4,7 @@ import Loading from './Loading'
 import MediationItem from './MediationItem'
 
 const Recto = ({ contentLength,
+  dateRead,
   id,
   index,
   isLoading,
@@ -27,7 +28,8 @@ const Recto = ({ contentLength,
           : (
             <div className='recto__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
               <div className='mb1'>
-                {id} {index}/{contentLength} {item}
+                {id} {index}/{contentLength} {item} <br/>
+                {dateRead}
               </div>
               <div className='flex items-center justify-center'>
               {
