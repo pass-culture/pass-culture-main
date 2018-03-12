@@ -35,6 +35,7 @@ export async function putData (dexieMethod, path, data) {
     return
   }
   if (dexieMethod === 'bulk') {
+    console.log('data', data)
     await table.clear()
     await table.bulkPut(data)
   } else if (dexieMethod === 'update') {

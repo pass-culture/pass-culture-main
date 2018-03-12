@@ -65,8 +65,11 @@ class Deck extends Component {
       // BLOB MODEL
       // the deck has 2 * contents.length
       if (contents) {
+        // const halfLength = Math.floor((contents.length + 1)/2)
+        // newState.items = [...Array(contents.length).keys()]
+        //  .map(index => - halfLength - 1 + index)
         newState.items = [...Array(contents.length).keys()]
-          .map(index => -((contents.length - 1)/2) + index)
+          .map(index => - handLength - 1 + index)
       }
     } else {
       // SLOT MODEL
@@ -199,6 +202,7 @@ class Deck extends Component {
     } = this.state
     // console.log('RENDER this.state.bufferContents', this.state.bufferContents)
     // console.log('this.props.contents', this.props.contents)
+    // console.log('RENDER Deck', 'this.state.items', this.state.items)
     const contents = this.state.bufferContents || this.props.contents
     return (
       <div className='deck relative m3'

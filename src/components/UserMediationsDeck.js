@@ -73,25 +73,20 @@ class UserMediationsDeck extends Component {
     // meet the first not well defined content
     let isFutureSync
     if (isBlobModel) {
-      // console.log('aroundIndex', aroundIndex, (contents.length / 2) - countBeforeSync)
-      isFutureSync = aroundIndex > userMediations.length - countBeforeSync
+      console.log('aroundIndex', aroundIndex, 'limit', userMediations.length - 1 - countBeforeSync)
+      isFutureSync = aroundIndex > userMediations.length - 1 - countBeforeSync
     } else {
       isFutureSync = typeof userMediations[
         aroundIndex + (userMediations.length / 2)
       ] === 'undefined'
     }
-    console.log('isFutureSync', isFutureSync,
-      aroundIndex, userMediations.length,
-      userMediations.length - countBeforeSync,
-      userMediations[aroundIndex].id
-    )
+    console.log('isFutureSync', isFutureSync, userMediations[aroundIndex].id)
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
     // console.log('isFutureSync', isFutureSync, hasSyncRequested)
     if (isFutureSync && !hasSyncRequested) {
-      this.setState({ aroundIndex: null,
-        contents: [
+      this.setState({ contents: [
           ...contents.slice(0, -1),
           { isLoading: true }
         ],
@@ -105,7 +100,7 @@ class UserMediationsDeck extends Component {
       this.setState({ hasSyncRequested: false })
     }
   }
-  handleSetContents = props => {
+  handleSetContents = (props, prevProps) => {
     // unpack and check
     const { isBlobModel,
       handLength,
@@ -119,7 +114,7 @@ class UserMediationsDeck extends Component {
     // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
     // is the centered card
-    if (aroundIndex === null) {
+    if (prevProps === null || aroundIndex === null) {
       const isReads = userMediations.map(userMediation =>
         userMediation.dateRead !== null)
       isReads.reverse()
@@ -127,27 +122,42 @@ class UserMediationsDeck extends Component {
       if (reversedFirstReadIndex === -1) {
         aroundIndex = 0
       } else {
+        aroundIndex = userMediations.length - 1 - reversedFirstReadIndex + 1
+        /*
         const dateReads = userMediations.map(userMediation =>
           userMediation.dateRead && moment(userMediation.dateRead))
             .filter(dateRead => dateRead)
         const lastDateRead = moment.max(dateReads)
         const lastReadIndex = dateReads.indexOf(lastDateRead)
         aroundIndex = lastReadIndex
+        */
       }
+    } else {
+      // if we have already an aroundIndex
+      // make sure to find the equivalent in the new userMediations
+      // by matching ids
+      const aroundId = prevProps.userMediations[aroundIndex].id
+      aroundIndex = userMediations.map(userMediation => userMediation.id)
+                                  .indexOf(aroundId)
     }
     const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
     // determine the before and after
-    const beforeOrAfterContentsLength = isBlobModel
-      ? userMediations.length - 2
+    const beforeContentsLength = isBlobModel
+      // ? userMediations.length - 2
+      ? aroundIndex + handLength + 1
       : handLength + 1
-    const beforeContents = [...Array(beforeOrAfterContentsLength).keys()]
+    const afterContentsLength = isBlobModel
+      // ? userMediations.length - 2
+      ? userMediations.length + handLength - aroundIndex
+      : handLength + 1
+    const beforeContents = [...Array(beforeContentsLength).keys()]
         .map(index => userMediations[isBlobModel
           ? aroundIndex - index - 1
           : aroundIndex - handLength - 1 + index
         ])
         .map(getContentFromUserMediation)
-      isBlobModel && beforeContents.reverse()
-    const afterContents = [...Array(beforeOrAfterContentsLength).keys()]
+    isBlobModel && beforeContents.reverse()
+    const afterContents = [...Array(afterContentsLength).keys()]
         .map(index => userMediations[aroundIndex + 1 + index])
         .map(getContentFromUserMediation)
     // concat
@@ -178,7 +188,6 @@ class UserMediationsDeck extends Component {
     } else {
       // SLOT MODEL
       setTimeout(() => this.setState({
-        aroundIndex,
         contents: diffIndex === -1
           ? [
             ...contents.slice(1),
@@ -214,12 +223,16 @@ class UserMediationsDeck extends Component {
       console.log('')
       console.log('nextProps.userMediations', nextProps.userMediations && nextProps.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
       console.log('this.props.userMediations', this.props.userMediations && this.props.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
-      this.handleSetContents(nextProps)
+      this.handleSetContents(nextProps, this.props)
     }
   }
   render () {
-    console.log('RENDER this.state.contents', this.state.contents && this.state.contents.map(content =>
-    content && `${content.id} ${content.dateRead}`))
+    console.log('RENDER this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
+      this.props.userMediations && this.props.userMediations.map(um =>
+        um && `${um.id} ${um.dateRead}`))
+    // console.log('RENDER this.state.contents', this.state.contents && this.state.contents.length,
+    //  this.state.contents && this.state.contents.map(content =>
+    //    content && `${content.id} ${content.dateRead}`))
     return <Deck {...this.props}
       {...this.state}
       handleNextItemCard={this.handleNextItemCard}
@@ -227,10 +240,10 @@ class UserMediationsDeck extends Component {
   }
 }
 
-UserMediationsDeck.defaultProps = { countBeforeSync: 10,
+UserMediationsDeck.defaultProps = { countBeforeSync: 5,
   handLength: 2,
   isBlobModel: false,
-  isCheckRead: true,
+  isCheckRead: false,
   readTimeout: 2000,
   transitionTimeout: 500
 }

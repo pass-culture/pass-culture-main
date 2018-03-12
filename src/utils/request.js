@@ -57,6 +57,7 @@ export async function syncData (method, path, config = {}) {
   let data
   if (method === 'GET') {
     data = await db[path].toArray()
+    console.log('GET', data)
   } else {
     data = await putData('update', path, body)
   }
