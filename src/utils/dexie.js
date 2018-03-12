@@ -9,7 +9,7 @@ export const config = {
   name: "pass_culture",
   collections: [
     {
-      description: 'id',
+      description: 'index',
       name: 'userMediations',
       query: ({ around }) => around && `around=${around}`
     },
@@ -29,17 +29,33 @@ export const db = new Dexie(config.name)
 db.version(config.version).stores(storesConfig)
 
 export async function putData (dexieMethod, path, data) {
+  // check the table
   const collectionName = path.split('?')[0]
   const table = db[collectionName]
   if (!table) {
     return
   }
+  // choose the put method
   if (dexieMethod === 'bulk') {
-    console.log('data', data)
+    // bulk is when we replace everything and index by the index in the array data
     await table.clear()
-    await table.bulkPut(data)
+    await table.bulkPut(data.map((datum, index) =>
+      Object.assign({ index }, datum)))
   } else if (dexieMethod === 'update') {
-    await Promise.all(data.map(datum => table.update(datum.id, datum)))
+    // update is when we want to update certain elements in the array
+    const storedData = await table.toArray()
+    for (let datum of data) {
+      // find if it is already in the db
+      const storedDatum = storedData.find(({ id }) => id === datum.id)
+      // find the corresponding index matching the id
+      const putIndex = storedDatum
+        ? storedDatum.index
+        : storedData.length
+      // make sure to update the local temp of data
+      storedData[putIndex] = Object.assign(storedData[putIndex], datum)
+      // update
+      await table.update(putIndex, datum)
+    }
     await db.differences.add({
       id: uuid(),
       name: collectionName,
