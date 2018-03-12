@@ -1,20 +1,23 @@
 import classnames from 'classnames'
+import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 
 import Card, { CURRENT } from './Card'
 
 class Deck extends Component {
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state = { bufferContents: null,
       cursor: 0,
       deckElement: null,
       isContentChanging: false,
       isFirstCard: false,
       isLastCard: false,
+      isResizing: false,
       isTransitioning: false,
       items: null
     }
+    this.onDebouncedResize = debounce(this.onResize, props.resizeTimeout)
   }
   handleSetTypeCard = (type, cardProps) => {
     if (type !== CURRENT) {
@@ -92,6 +95,10 @@ class Deck extends Component {
   onDragCard = (event, data, cursor) => {
     // this.setState({ cursor })
   }
+  onResize = event => {
+    console.log('ON A RESIZE')
+    this.setState({ isResizing: true })
+  }
   onTransitionEnd = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
@@ -167,16 +174,23 @@ class Deck extends Component {
     if (this.state.isContentChanging) {
       setTimeout(() => this.setState({ isContentChanging: false }), 10)
     }
+    window.addEventListener('resize', this.onDebouncedResize)
   }
   componentDidUpdate (prevProps, prevState) {
     // unpack
-    const { isContentChanging } = this.state
+    const { isContentChanging, isResizing } = this.state
     // the deck updated because we changed the contents
     // so we need to wait just the refresh of the children
     // card to reset to false the isContentChanging
     if (isContentChanging && !prevState.isContentChanging) {
       setTimeout(() => this.setState({ isContentChanging: false }), 10)
     }
+    if (isResizing && !prevState.isResizing) {
+      this.setState({ isResizing: false })
+    }
+  }
+  componentWillUnmount () {
+    window.removeEventListener('resize', this.onDebouncedResize)
   }
   render () {
     const { handleSetTypeCard,
@@ -198,6 +212,7 @@ class Deck extends Component {
       isContentChanging,
       isFirstCard,
       isLastCard,
+      isResizing,
       items
     } = this.state
     // console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents)
@@ -235,6 +250,7 @@ class Deck extends Component {
               isFirst={contents && !contents[index - 1]}
               isLast={contents && !contents[index + 1]}
               index={index}
+              isResizing={isResizing}
               item={item}
               transitionTimeout={transitionTimeout}
               key={index}
@@ -253,6 +269,7 @@ Deck.defaultProps = { deckKey: 0,
   handLength: 2,
   isBlobModel: false,
   readTimeout: 3000,
+  resizeTimeout: 500,
   transitionTimeout: 500
 }
 

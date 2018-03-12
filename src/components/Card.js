@@ -204,11 +204,13 @@ class Card extends Component {
   componentWillReceiveProps (nextProps, nextState) {
     const { cursor,
       deckElement,
+      isResizing,
       item
     } = nextProps
     if ( (deckElement && !this.props.deckElement)
       || (item !== this.props.item)
       || (cursor !== this.props.cursor)
+      || (isResizing && !this.props.isResizing)
     ) {
       // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
       this.handleSetType(nextProps)
