@@ -55,18 +55,22 @@ def update_user_mediations():
         app.db.session.execute(update_query)
     app.db.session.commit()
     # GET AROUND THE CURSOR ID PLUS SOME NOT READ YET
-    query = UserMediation.query.filter_by(userId=user_id)\
-                               .order_by(UserMediation.id)
+    query = UserMediation.query.filter_by(userId=user_id)
     unread_ums = query.filter_by(dateRead=None)
     # CHECK AROUND
     before_around_after_ids = []
+    before_ums = None
     ums = []
     if around_um is not None:
         # BEFORE AND AFTER QUERIES
         before_ums = query.filter(UserMediation.id < dehumanize(around))\
-                          .limit(BEFORE_AFTER_LIMIT)
+                          .order_by(UserMediation.id.desc())\
+                          .limit(BEFORE_AFTER_LIMIT)\
+                          .from_self()\
+                          .order_by(UserMediation.id)
         print('(before) count', before_ums.count())
         after_ums = query.filter(UserMediation.id > dehumanize(around))\
+                         .order_by(UserMediation.id)\
                          .limit(BEFORE_AFTER_LIMIT)
         print('(after) count', after_ums.count())
         # BEFORE AND AROUND AND AFTER IDS
@@ -86,17 +90,24 @@ def update_user_mediations():
     # DETERMINE IF WE NEED TO CREATE NEW RECO
     print('(before around after) count', len(before_around_after_ids))
     unread_complementary_length = BLOB_SIZE - len(before_around_after_ids)
-    print('(need) unread compl.', unread_complementary_length)
-    unread_ums = unread_ums.filter(~UserMediation.id.in_(before_around_after_ids))
-    print('(update) unread count', unread_ums.count())
+    print('(unread) count need', unread_complementary_length)
+    #unread_ums = unread_ums.filter(~UserMediation.id.in_(before_around_after_ids))\
+    if len(before_around_after_ids) > 0:
+        unread_ums = unread_ums.filter(UserMediation.id > before_around_after_ids[-1])
+    unread_ums = unread_ums.order_by(UserMediation.id)
+    print('(unread) count', unread_ums.count())
     if unread_ums.count() < unread_complementary_length:
         print('(check) create ' + str(unread_complementary_length) + ' unread ums')
         make_new_recommendations(current_user,unread_complementary_length)
     # LIMIT UN READ
     unread_ums = unread_ums.order_by(UserMediation.dateUpdated.desc())\
                            .limit(BLOB_SIZE)
-    print('(limit) unread count', unread_ums.count())
+    # ADD SOME PREVIOUS BEFORE IF NOT ALREADY
+    #if before_ums is None:
+        #unread_ums = BEFORE_AFTER_LIMIT
+    # ADD
     ums += list(unread_ums)
+    print('(unread) ids', [humanize(unread_um.id) for unread_um in unread_ums])
     # CONCAT
     ums = [um._asdict(include=um_include) for um in ums]
     print([(um['id'], um['dateRead']) for um in ums], len(ums))
