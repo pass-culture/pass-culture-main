@@ -5,14 +5,14 @@ import json
 from pprint import pprint
 
 def listify (query, **kwargs):
-    include_joins = kwargs.get('include_joins', [])
+    include = kwargs.get('include', [])
     if isinstance(query, collections.Iterable):
         elements = list(map(
-            lambda obj: obj._asdict(include_joins=include_joins),
+            lambda obj: obj._asdict(include=include),
             query
         ))
     else:
-        elements = [query._asdict(include_joins=include_joins)]
+        elements = [query._asdict(include=include)]
     return elements
 
 class BytesEncoder(json.JSONEncoder):

@@ -6,7 +6,6 @@ from pprint import pprint
 
 @app.manager.command
 def get(url, authenticated=False):
-    print(authenticated)
     if authenticated:
         r = req_with_auth.get(API_URL+url)
     else:

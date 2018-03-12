@@ -9,7 +9,7 @@ from utils.human_ids import dehumanize, humanize
 
 UserMediation = app.model.UserMediation
 
-include_joins = [
+um_include = [
     {
         "key": "mediation",
         "sub_joins": ["event", "thing"]
@@ -99,7 +99,7 @@ def update_user_mediations():
     print('(limit) unread count', unread_ums.count())
     ums += list(unread_ums)
     # CONCAT
-    ums = [um._asdict(include_joins=include_joins) for um in ums]
+    ums = [um._asdict(include=um_include) for um in ums]
     print([um['dateRead'] for um in ums], len(ums))
     print([um['dateUpdated'] for um in ums], len(ums))
     # RETURN

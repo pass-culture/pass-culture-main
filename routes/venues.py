@@ -34,7 +34,7 @@ def store_public_venue_objects(venueId, json):
 
 @app.route('/venues', methods=['GET'])
 def list_venues():
-    return handle_rest_get_list(venueModel, request)
+    return handle_rest_get_list(venueModel)
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
@@ -52,7 +52,7 @@ def create_venue():
 
     if 'thumb_content' in request.json:
         store_public_venue_objects(new_venue.id, request.json)
-    return jsonify(new_venue._asdict()), 201
+    return humanize(new_venue.id), 201
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
@@ -65,4 +65,4 @@ def edit_venue(venueId):
     update(venue, updated_venue_dict)
     app.model.PcObject.check_and_save(venue)
     store_public_venue_objects(venue.id, request.json)
-    return jsonify(venue._asdict()), 200;
+    return venueId, 200;

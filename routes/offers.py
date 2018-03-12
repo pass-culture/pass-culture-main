@@ -1,13 +1,14 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 from sqlalchemy.sql.expression import and_, or_
+from sqlalchemy.orm import aliased
 
 from reco.offers import get_recommended_offers
 from routes.offerers import check_offerer_user
-from utils.human_ids import dehumanize
+from utils.human_ids import dehumanize, humanize
 from utils.rest import ensure_provider_can_update,\
                        expect_json_data,\
-                       get,\
+                       handle_rest_get_list,\
                        login_or_api_key_required,\
                        update
 from utils.search import get_ts_queries, LANGUAGE
@@ -20,11 +21,13 @@ Offerer = app.model.Offerer
 Thing = app.model.Thing
 Venue = app.model.Venue
 
-include_joins = [
+offer_include = [
     {"key": 'eventOccurence',
      "sub_joins": [{"key": 'event',
                     "sub_joins": ['mediations']},
                    "venue"]},
+    "occurencesAtVenue",
+    "offerer",
     {"key": 'thing',
      "sub_joins": ['mediations']},
     "venue"
@@ -59,12 +62,10 @@ def query_offers(ts_query):
     )
 
 
-def refine_offers(query):
+def make_offer_query():
+    query = Offer.query
     # FILTERS
     filters = request.args.copy()
-    # RECO
-    if 'recommended' in filters:
-        return get_recommended_offers(current_user)
     # SEARCH
     if 'search' in filters and filters['search'].strip() != '':
         ts_queries = get_ts_queries(filters['search'])
@@ -76,8 +77,6 @@ def refine_offers(query):
     # PRICE
     if 'hasPrice' in filters and filters['hasPrice'].lower() == 'true':
         query = query.filter(Offer.price != None)
-    # PAGINATE
-    query = query.limit(50)
     # RETURN
     return query
 
@@ -85,16 +84,17 @@ def refine_offers(query):
 @app.route('/offers', methods=['GET'])
 @login_or_api_key_required
 def list_offers():
-    return get(Offer,
-               include_joins=include_joins,
-               refine=refine_offers)
+    return handle_rest_get_list(Offer,
+                                query=make_offer_query(),
+                                include=offer_include,
+                                paginate=50)
 
 
 @app.route('/offers/<offer_id>', methods=['GET'],
                                  defaults={'mediation_id': None})
 @app.route('/offers/<offer_id>/<mediation_id>', methods=['GET'])
 def get_offer(offer_id, mediation_id):
-    query = Offer.query.filter_by(id=dehumanize(offer_id))
+    query = make_offer_query().filter_by(id=dehumanize(offer_id))
     if offer_id == '0':
         if mediation_id is None:
             return "", 404
@@ -108,7 +108,7 @@ def get_offer(offer_id, mediation_id):
         return jsonify(offer)
     else:
         offer = query.first_or_404()
-        return jsonify(offer._asdict(include_joins=include_joins))
+        return jsonify(offer._asdict(include=offer_include))
 
 
 @app.route('/offers', methods=['POST'])
@@ -117,7 +117,7 @@ def get_offer(offer_id, mediation_id):
 def create_offer():
     new_offer = Offer(from_dict=request.json)
     app.model.PcObject.check_and_save(new_offer)
-    return jsonify(new_offer._asdict(include_joins=include_joins)), 201
+    return humanize(new_offer.id), 201
 
 
 @app.route('/offers/<offer_id>', methods=['PATCH'])
@@ -130,4 +130,4 @@ def edit_offer(offer_id):
     ensure_provider_can_update(offer)
     update(offer, updated_offer_dict)
     app.model.PcObject.check_and_save(offer)
-    return jsonify(offer._asdict(include_joins=include_joins)), 200
+    return offer_id, 200

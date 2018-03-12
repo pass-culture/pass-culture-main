@@ -14,4 +14,4 @@ def get_thing(ofType, identifier):
 
 @app.route('/things', methods=['GET'])
 def list_things():
-    return handle_rest_get_list(thingModel, request)
+    return handle_rest_get_list(thingModel)

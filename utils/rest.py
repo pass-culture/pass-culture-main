@@ -60,24 +60,30 @@ def add_table_if_missing(sql_identifier, modelClass):
     return sql_identifier
 
 
-def handle_rest_get_list(modelClass, request, **options):
-    # QUERY
-    objects = modelClass.query
+def handle_rest_get_list(modelClass, query=None, filter_fn=None,
+                         refine=None, order_by=None, flask_request=None,
+                         include=None, resolve=None, print_elements=None,
+                         paginate=None, page=None):
+    if flask_request is None:
+        flask_request = request
+    if query is None:
+        query = modelClass.query
     # DELETED
     if hasattr(modelClass, 'deleted'):
-        objects = objects.filter_by(deleted=False)
+        query = query.filter_by(deleted=False)
     # FILTER
-    filters = request.args.copy()
-    if 'filter_fn' in options:
-        objects = options['filter_fn'](objects, filters)
+    filters = flask_request.args.copy()
+    if filter_fn:
+        query = filter_fn(query, filters)
+    # REFINE
+    if refine:
+        query = refine(query)
     # ORDER BY
-    if 'order_by' in options:
+    if order_by:
         try:
-            if not isinstance(options['order_by'], list):
-                order_by = [options['order_by']]
-            else:
-                order_by = options['order_by']
-            objects = objects.order_by(*order_by)
+            order_by = [order_by] if not isinstance(order_by, list)\
+                       else order_by
+            query = query.order_by(*order_by)
         except ProgrammingError as e:
             field = re.search('column "?(.*?)"? does not exist', e._message, re.IGNORECASE)
             if field:
@@ -87,39 +93,24 @@ def handle_rest_get_list(modelClass, request, **options):
             else:
                 raise e
     # PAGINATE
-    if 'paginate' in options:
-        objects = objects.paginate(1, per_page=20, error_out=False)\
-                         .items
+    if paginate:
+        page = 'page' in filters and filters['page']
+        query = query.paginate(page, per_page=paginate, error_out=False)\
+                     .items
     # DICTIFY
     elements = list(map(
         lambda o: o._asdict(
-            include_joins='include_joins' in options and options['include_joins'],
+            include=include,
+            resolve=resolve,
             filters=filters
         ),
-        objects))
+        query))
     # PRINT
-    if options.get('print_elements'):
+    if print_elements:
         print(elements)
     # RETURN
     return jsonify(elements), 200
 
-def get(modelClass, **options):
-    # QUERY
-    query = modelClass.query
-    # DELETED
-    if hasattr(modelClass, 'deleted'):
-        query = query.filter_by(deleted=False)
-    # FILTER
-    if 'refine' in options:
-        query = options['refine'](query)
-    # DICTIFY
-    include_joins = 'include_joins' in options and options['include_joins']
-    elements = [obj._asdict(include_joins=include_joins) for obj in query]
-    # PRINT
-    if options.get('print_elements'):
-        print(elements)
-    # RETURN
-    return jsonify(elements), 200
 
 def ensure_provider_can_update(obj):
     if request.provider\

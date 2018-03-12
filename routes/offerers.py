@@ -11,28 +11,24 @@ UserOfferer = app.model.UserOfferer
 RightsType = app.model.RightsType
 
 
-def clean_provider_dict(p, filters):
-    del p['apiKey']
-    del p['apiKeyGenerationDate']
-    return p
-
 def check_offerer_user(query):
     query.userOfferers.filter_by(userId=current_user.id).first_or_404()
 
-include_joins = [{
-    'key': 'offererProviders',
-    'sub_joins': [{
-        'key': 'provider',
-        'resolve': clean_provider_dict
-    }]
-}]
+
+offerer_include = [
+# TODO
+#    {'key': 'providers',
+#     'sub_joins': ['-apiKey',
+#                   '-apiKeyGenerationDate']
+#    }
+]
+
 
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
     return handle_rest_get_list(Offerer,
-                                request,
-                                include_joins=include_joins)
+                                include=offerer_include)
 
 
 @app.route('/offerers/<offererId>', methods=['GET'])
@@ -41,7 +37,7 @@ def get_offerer(offererId):
     query = Offerer.query.filter_by(id=dehumanize(offererId))\
                          .first_or_404()
     check_offerer_user(query)
-    return jsonify(query._asdict(include_joins=include_joins))
+    return jsonify(query._asdict(include=offerer_include))
 
 
 @app.route('/offerers', methods=['POST'])

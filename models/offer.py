@@ -80,7 +80,12 @@ class Offer(app.model.PcObject,
     def object(self):
         return self.thing or self.eventOccurence
 
-
+    def occurencesAtVenue(self):
+        if self.eventOccurence is None:
+            return None
+        #FIXME: try to turn this into a join
+        return list(filter(lambda eo: eo.venueId == self.eventOccurence.venueId,
+                           self.eventOccurence.event.occurences))
 
 
 app.model.Offer = Offer

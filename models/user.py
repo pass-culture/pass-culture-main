@@ -14,8 +14,8 @@ class User(app.model.PcObject,
     firstname = db.Column(db.String(100))
     lastname = db.Column(db.String(100))
 
-    userOfferers = db.relationship(app.model.UserOfferer,
-                                   back_populates="user")
+    offerers = db.relationship(lambda: app.model.Offerer,
+                               secondary='user_offerer')
 
     account = db.Column(db.Numeric(10,2))
 
@@ -53,6 +53,5 @@ class User(app.model.PcObject,
     def setPassword(self, newpass):
         self.password = bcrypt.hashpw(newpass.encode('utf-8'),
                                       bcrypt.gensalt())
-
 
 app.model.User = User

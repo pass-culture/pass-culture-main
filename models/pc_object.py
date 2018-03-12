@@ -11,6 +11,24 @@ from utils.human_ids import dehumanize, humanize
 db = app.db
 
 
+def serialize(value):
+    if isinstance(value, Enum):
+        return value.name
+    elif isinstance(value, datetime):
+        return value.isoformat()
+    elif isinstance(value, DateTimeRange):
+        return {'start': value.lower,
+               'end': value.upper}
+    elif isinstance(value, list)\
+            and len(value)>0\
+            and isinstance(value[0], DateTimeRange):
+        return list(map(lambda d: {'start': d.lower,
+                                   'end': d.upper},
+                        value))
+    else:
+        return value
+
+
 class PcObject():
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -23,27 +41,20 @@ class PcObject():
     def _asdict(self, **options):
         result = OrderedDict()
         for key in self.__mapper__.c.keys():
+            if options and options['include']\
+               and "-"+key in options['include']:
+                continue
             value = getattr(self, key)
-            if isinstance(value, Enum):
-                result[key] = value.name
-            elif isinstance(value, datetime):
-                result[key] = value.isoformat()
-            elif isinstance(value, DateTimeRange):
-                result[key] = {'start': value.lower,
-                               'end': value.upper}
-            elif isinstance(value, list)\
-                 and len(value)>0\
-                 and isinstance(value[0], DateTimeRange):
-                result[key] = list(map(lambda d: {'start': d.lower,
-                                                  'end': d.upper},
-                                       value))
-            elif key == 'id' or key.endswith('Id'):
+            if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
-            elif not key == 'thumb':  # FIXME: get rid of blobs properly
-                result[key] = value
-        if options and options['include_joins']:
-            for join in options['include_joins']:
-                if isinstance(join, dict):
+            else:
+                result[key] = serialize(value)
+        if options and options['include']:
+            for join in options['include']:
+                if isinstance(join, str) and\
+                   join.startswith('-'):
+                    continue
+                elif isinstance(join, dict):
                     key = join['key']
                     refine = join.get('refine')
                     resolve = join.get('resolve')
@@ -53,10 +64,18 @@ class PcObject():
                     refine = None
                     resolve = None
                     sub_joins = None
-                if hasattr(self, key):
+                print("KEY",key)
+                try:
                     value = getattr(self, key)
-                if not value is None:
-                    if isinstance(value, InstrumentedList) or value.__class__.__name__=='AppenderBaseQuery':
+                    print("HASKEY")
+                except AttributeError:
+                    continue
+                if callable(value):
+                    value = value()
+                if value is not None:
+                    if isinstance(value, InstrumentedList)\
+                       or value.__class__.__name__=='AppenderBaseQuery'\
+                       or isinstance(value, list):
                         if refine is None:
                             final_value = value
                         else:
@@ -64,7 +83,7 @@ class PcObject():
                         result[key] = list(
                             map(
                                 lambda attr: attr._asdict(
-                                    include_joins=sub_joins
+                                    include=sub_joins
                                 ),
                                 final_value
                             )
@@ -74,12 +93,17 @@ class PcObject():
                                                    result[key]))
                     else:
                         result[key] = value._asdict(
-                            include_joins=sub_joins
+                            include=sub_joins
                         )
                         if resolve != None:
                             result[key] = resolve(result[key], options.get('filters', {}))
 
-        return result
+        if options and\
+           'resolve' in options and\
+           options['resolve']:
+            return options['resolve'](result, options.get('filters', {}))
+        else:
+            return result
 
     def dump(self):
         pprint(vars(self))

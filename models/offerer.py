@@ -1,5 +1,4 @@
 from flask import current_app as app
-from sqlalchemy.dialects.postgresql import ARRAY
 
 db = app.db
 
@@ -14,7 +13,8 @@ class Offerer(app.model.PcObject,
 
     address = db.Column(db.String(200), nullable=True)
 
-    userOfferers = db.relationship("UserOfferer", back_populates="offerer", lazy='dynamic')
+    users = db.relationship(lambda: app.model.User,
+                            secondary='user_offerer')
 
     offererProviders = db.relationship(lambda: app.model.OffererProvider,
                                        back_populates="offerer")
