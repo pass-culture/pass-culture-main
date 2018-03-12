@@ -20,7 +20,8 @@ class UserMediationsDeck extends Component {
   }
   handleCheckContent = props => {
     // unpack and check
-    const { countBeforeSync,
+    const { countFutureSync,
+      countPastSync,
       isBlobModel,
       userMediations
     } = props
@@ -35,8 +36,8 @@ class UserMediationsDeck extends Component {
     // meet the first not well defined content
     let isPastSync
     if (isBlobModel) {
-      console.log('PAST', 'aroundIndex', aroundIndex, 'limit', countBeforeSync)
-      isPastSync = aroundIndex < countBeforeSync
+      console.log('PAST', 'aroundIndex', aroundIndex, 'limit', countPastSync)
+      isPastSync = aroundIndex < countPastSync + 1
     }
     // if it is not defined
     // it means we need to do ask the backend
@@ -51,15 +52,15 @@ class UserMediationsDeck extends Component {
       }, () => this.setState({ isKeepItems: false }))
       console.log('PAST PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
-      // sync('dexie-push-pull', { around: aroundContent.id })
+      sync('dexie-push-pull', { around: aroundContent.id })
       return
     }
     // from the present to the past
     // meet the first not well defined content
     let isFutureSync
     if (isBlobModel) {
-      console.log('FUTURE', 'aroundIndex', aroundIndex, 'limit', userMediations.length - 1 - countBeforeSync)
-      isFutureSync = aroundIndex > userMediations.length - 1 - countBeforeSync
+      // console.log('FUTURE', 'aroundIndex', aroundIndex, 'limit', userMediations.length - 1 - countFutureSync)
+      isFutureSync = aroundIndex > userMediations.length - 1 - countFutureSync
     } else {
       isFutureSync = typeof userMediations[
         aroundIndex + (userMediations.length / 2)
@@ -76,7 +77,7 @@ class UserMediationsDeck extends Component {
         hasSyncRequested: true,
         isKeepItems: true
       }, () => this.setState({ isKeepItems: false }))
-      console.log('FUTURE PUSH PULL')
+      // console.log('FUTURE PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
       sync('dexie-push-pull', { around: aroundContent.id })
       return
@@ -123,7 +124,12 @@ class UserMediationsDeck extends Component {
       // if we have already an aroundIndex
       // make sure to find the equivalent in the new userMediations
       // by matching ids
-      const aroundId = prevProps.userMediations[aroundIndex].id
+      const aroundUserMediation = prevProps.userMediations[aroundIndex]
+      if (!aroundUserMediation) {
+        console.warn('aroundUserMediation is not defined')
+        return
+      }
+      const aroundId = aroundUserMediation.id
       aroundIndex = userMediations.map(userMediation => userMediation.id)
                                   .indexOf(aroundId)
     }
@@ -198,7 +204,7 @@ class UserMediationsDeck extends Component {
       isFavorite: card.content.isFavorite
     }]
     // request
-    console.log('READ CARD', card.index, card.item, card.content.id)
+    // console.log('READ CARD', card.index, card.item, card.content.id)
     // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
   }
   componentWillMount () {
@@ -226,7 +232,8 @@ class UserMediationsDeck extends Component {
   }
 }
 
-UserMediationsDeck.defaultProps = { countBeforeSync: 5,
+UserMediationsDeck.defaultProps = { countFutureSync: 5,
+  countPastSync: 1,
   handLength: 2,
   isBlobModel: false,
   isCheckRead: false,
