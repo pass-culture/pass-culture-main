@@ -49,9 +49,9 @@ class UserMediationsDeck extends Component {
         hasSyncRequested: true,
         isKeepItems: true
       }, () => this.setState({ isKeepItems: false }))
-      console.log('TRIGGER PUSH PULL')
+      console.log('PAST PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
-      sync('dexie-push-pull', { around: aroundContent.id })
+      // sync('dexie-push-pull', { around: aroundContent.id })
       return
     }
     // from the present to the past
@@ -76,7 +76,7 @@ class UserMediationsDeck extends Component {
         hasSyncRequested: true,
         isKeepItems: true
       }, () => this.setState({ isKeepItems: false }))
-      console.log('TRIGGER PUSH PULL')
+      console.log('FUTURE PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
       sync('dexie-push-pull', { around: aroundContent.id })
       return
@@ -198,8 +198,8 @@ class UserMediationsDeck extends Component {
       isFavorite: card.content.isFavorite
     }]
     // request
-    // console.log('READ CARD', card.index, card.item, card.content.id)
-    isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
+    console.log('READ CARD', card.index, card.item, card.content.id)
+    // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
   }
   componentWillMount () {
     this.handleSetContents(this.props)

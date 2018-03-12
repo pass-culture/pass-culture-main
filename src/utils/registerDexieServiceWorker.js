@@ -16,6 +16,7 @@ export function sync (key, state) {
     if(event.data.error) {
       console.warn(event.data.error)
     } else {
+      console.log('SYNC')
       config.collections.forEach(({ name }) =>
         name !== 'differences' && store.dispatch(
           requestData('GET', name, { sync: true })))
