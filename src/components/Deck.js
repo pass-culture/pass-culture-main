@@ -36,10 +36,7 @@ class Deck extends Component {
   }
   handleNextItemCard = diffIndex => {
     // unpack
-    const { handleNextItemCard,
-      onTransition,
-      transitionTimeout
-    } = this.props
+    const { handleNextItemCard } = this.props
     const { items } = this.state
     // update by shifting the items
     this.setState({ cursor: 0,
@@ -55,7 +52,6 @@ class Deck extends Component {
       handLength,
       isBlobModel,
     } = props
-    const { isContentChanging } = this.state
     // init new state
     // isContentChanging to true helps
     // the card to know that they should not remount with a style transition
@@ -96,13 +92,11 @@ class Deck extends Component {
     // this.setState({ cursor })
   }
   onResize = event => {
-    console.log('ON A RESIZE')
     this.setState({ isResizing: true })
   }
   onTransitionEnd = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
-    const { contents, onTransitionEnd } = this.props
     // update the transitions store
     if (!transitions) {
       console.warn('transitions is null while we try to update transition end...? weird')
@@ -142,7 +136,6 @@ class Deck extends Component {
     // for this particular card, maybe the transition
     // exists alreay or not
     // console.log('START',event.propertyName, cardProps.content.id, cardProps.index)
-    const transition = newTransitions[cardProps.index]
     if (!newTransitions[cardProps.index]) {
       newTransitions[cardProps.index] = { [event.propertyName]: true }
     } else {
@@ -194,7 +187,6 @@ class Deck extends Component {
   }
   render () {
     const { handleSetTypeCard,
-      handleLastCard,
       handleSetReadCard,
       handleNextItemCard,
       onDragCard,
@@ -206,8 +198,7 @@ class Deck extends Component {
       transitionTimeout,
       readTimeout
     } = this.props
-    const { bufferContents,
-      cursor,
+    const { cursor,
       deckElement,
       isContentChanging,
       isFirstCard,

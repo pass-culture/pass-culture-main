@@ -22,8 +22,6 @@ class UserMediationsDeck extends Component {
     // unpack and check
     const { countBeforeSync,
       isBlobModel,
-      requestData,
-      handLength,
       userMediations
     } = props
     const { aroundIndex,
@@ -125,11 +123,9 @@ class UserMediationsDeck extends Component {
       // if we have already an aroundIndex
       // make sure to find the equivalent in the new userMediations
       // by matching ids
-      console.log('REFIND', aroundIndex, prevProps.userMediations[aroundIndex])
       const aroundId = prevProps.userMediations[aroundIndex].id
       aroundIndex = userMediations.map(userMediation => userMediation.id)
                                   .indexOf(aroundId)
-      console.log('NEW aroundIndex', aroundIndex)
     }
     newState.aroundIndex = aroundIndex
     const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])

@@ -24,7 +24,6 @@ class Card extends Component {
   handleSetRead = props => {
     // unpack and check
     const { content,
-      index,
       handleSetRead,
       readTimeout
     } = props
@@ -40,13 +39,9 @@ class Card extends Component {
   }
   handleSetType = props => {
     // unpack and check
-    const { contentLength,
-      deckElement,
+    const { deckElement,
       handLength,
       handleSetType,
-      isBlobModel,
-      isFirst,
-      isLast,
       isSetRead,
       isContentChanging,
       onTransitionStart,
@@ -170,10 +165,8 @@ class Card extends Component {
       handleNextItem,
       isFirst,
       isLast,
-      perspective,
-      rotation
+      perspective
     } = this.props
-    const { stylesByType, transformsByType } = this.state
     const { x } = data
     const newState = {
       cursor: 0,
@@ -222,12 +215,10 @@ class Card extends Component {
   }
   render () {
     const { onDrag,
-      onStop,
-      onTransitionEnd
+      onStop
     } = this
     const { content,
       contentLength,
-      handLength,
       index,
       isTransitioning,
       item
