@@ -47,7 +47,8 @@ class Deck extends Component {
   }
   handleSetItems = props => {
     // unpack
-    const { contents,
+    const { aroundIndex,
+      contents,
       handLength,
       isBlobModel,
     } = props
@@ -68,8 +69,9 @@ class Deck extends Component {
         // const halfLength = Math.floor((contents.length + 1)/2)
         // newState.items = [...Array(contents.length).keys()]
         //  .map(index => - halfLength - 1 + index)
+        console.log('AROUND INDEX', aroundIndex)
         newState.items = [...Array(contents.length).keys()]
-          .map(index => - handLength - 1 + index)
+          .map(index => - handLength - 1 - (aroundIndex || 0) + index)
       }
     } else {
       // SLOT MODEL
@@ -94,8 +96,11 @@ class Deck extends Component {
     // check and unpack
     const { transitions } = this
     const { contents, onTransitionEnd } = this.props
-    const newState = {}
     // update the transitions store
+    if (!transitions) {
+      console.warn('transitions is null while we try to update transition end...? weird')
+      return
+    }
     const newTransitions = [...transitions]
     const transition = newTransitions[cardProps.index]
     // console.log('END', event.propertyName, cardProps.content.id, cardProps.index)
@@ -108,24 +113,21 @@ class Deck extends Component {
     this.transitions = newTransitions
     // check
     if (newTransitions.every((newTransition, index) => !newTransition)) {
-      newState.isTransitioning = false
+      this.setState({ isTransitioning: false })
       this.transitions = null
       // console.log('TRANSITIONS IS OFF')
     }
-    // update
-    this.setState(newState)
   }
   onTransitionStart = (event, cardProps) => {
     // unpack
     const { transitions } = this
     const { contents } = this.props
-    const newState = {}
     // at the first time one of the card is transitioning
     // we init a new array
     let newTransitions
     if (!transitions) {
       newTransitions = [...new Array(contents.length)]
-      newState.isTransitioning = true
+      this.setState({ isTransitioning: true })
       // console.log('TRANSITIONS IS ON')
     } else {
       newTransitions = [...transitions]
@@ -140,8 +142,6 @@ class Deck extends Component {
       newTransitions[cardProps.index][event.propertyName] = true
     }
     this.transitions = newTransitions
-    // update
-    this.setState(newState)
   }
   componentWillMount () {
     this.handleSetItems(this.props)
@@ -200,9 +200,10 @@ class Deck extends Component {
       isLastCard,
       items
     } = this.state
-    // console.log('RENDER this.state.bufferContents', this.state.bufferContents)
-    // console.log('this.props.contents', this.props.contents)
-    // console.log('RENDER Deck', 'this.state.items', this.state.items)
+    // console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents)
+    // console.log('RENDER DECK this.props.contents', this.props.contents && this.props.contents.length,
+    // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
+    // console.log('RENDER DECK', 'this.state.items', this.state.items)
     const contents = this.state.bufferContents || this.props.contents
     return (
       <div className='deck relative m3'

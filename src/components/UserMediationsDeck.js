@@ -35,56 +35,41 @@ class UserMediationsDeck extends Component {
     }
     // from the present to the past
     // meet the first not well defined content
-    let pastIndex
-    let pastVariable
+    let isPastSync
     if (isBlobModel) {
-      pastIndex = countBeforeSync
-      pastVariable = contents[pastIndex]
-    } else {
-      pastIndex = 0
-      pastVariable = userMediations[aroundIndex - (userMediations.length / 2)]
+      console.log('PAST', 'aroundIndex', aroundIndex, 'limit', countBeforeSync)
+      isPastSync = aroundIndex < countBeforeSync
     }
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    /*
-    if (!pastVariable && !hasSyncRequested) {
-      this.setState({ contents:
-        isBlobModel
-          ? [
-              ...contents.slice(0, pastIndex),
-              { isLoading: true },
-              ...contents.slice(pastIndex + 1)
-            ]
-          : [
-              { isLoading: true },
-              ...contents.slice(1)
-          ],
-        hasSyncRequested: true
-      })
-      // sync('dexie-push-pull', { around: aroundContent.id })
+    if (isPastSync && !hasSyncRequested) {
+      this.setState({ contents: [
+          { isLoading: true },
+          ...contents.slice(1)
+        ],
+        hasSyncRequested: true,
+        isKeepItems: true
+      }, () => this.setState({ isKeepItems: false }))
+      console.log('TRIGGER PUSH PULL')
+      const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
+      sync('dexie-push-pull', { around: aroundContent.id })
       return
-    } else if (!hasSyncRequested) {
-      this.setState({ hasSyncRequested: false })
     }
-    */
-
     // from the present to the past
     // meet the first not well defined content
     let isFutureSync
     if (isBlobModel) {
-      console.log('aroundIndex', aroundIndex, 'limit', userMediations.length - 1 - countBeforeSync)
+      console.log('FUTURE', 'aroundIndex', aroundIndex, 'limit', userMediations.length - 1 - countBeforeSync)
       isFutureSync = aroundIndex > userMediations.length - 1 - countBeforeSync
     } else {
       isFutureSync = typeof userMediations[
         aroundIndex + (userMediations.length / 2)
       ] === 'undefined'
     }
-    console.log('isFutureSync', isFutureSync, userMediations[aroundIndex].id)
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    // console.log('isFutureSync', isFutureSync, hasSyncRequested)
     if (isFutureSync && !hasSyncRequested) {
       this.setState({ contents: [
           ...contents.slice(0, -1),
@@ -96,7 +81,10 @@ class UserMediationsDeck extends Component {
       console.log('TRIGGER PUSH PULL')
       const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
       sync('dexie-push-pull', { around: aroundContent.id })
-    } else if (!hasSyncRequested) {
+      return
+    }
+    // update
+    if (hasSyncRequested) {
       this.setState({ hasSyncRequested: false })
     }
   }
@@ -110,6 +98,7 @@ class UserMediationsDeck extends Component {
     if (!userMediations) {
       return
     }
+    const newState = {}
     // if aroundIndex is not yet defined
     // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
@@ -136,10 +125,13 @@ class UserMediationsDeck extends Component {
       // if we have already an aroundIndex
       // make sure to find the equivalent in the new userMediations
       // by matching ids
+      console.log('REFIND', aroundIndex, prevProps.userMediations[aroundIndex])
       const aroundId = prevProps.userMediations[aroundIndex].id
       aroundIndex = userMediations.map(userMediation => userMediation.id)
                                   .indexOf(aroundId)
+      console.log('NEW aroundIndex', aroundIndex)
     }
+    newState.aroundIndex = aroundIndex
     const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
     // determine the before and after
     const beforeContentsLength = isBlobModel
@@ -161,15 +153,13 @@ class UserMediationsDeck extends Component {
         .map(index => userMediations[aroundIndex + 1 + index])
         .map(getContentFromUserMediation)
     // concat
-    const contents = [
+    newState.contents = [
       ...beforeContents,
       aroundContent,
       ...afterContents
     ]
     // update
-    this.setState({ aroundIndex,
-      contents
-    })
+    this.setState(newState)
   }
   handleNextItemCard = (diffIndex, deckProps, deckState) => {
     // unpack
@@ -220,17 +210,17 @@ class UserMediationsDeck extends Component {
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.userMediations !== this.props.userMediations) {
-      console.log('')
-      console.log('nextProps.userMediations', nextProps.userMediations && nextProps.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
-      console.log('this.props.userMediations', this.props.userMediations && this.props.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
+      // console.log('')
+      // console.log('nextProps.userMediations', nextProps.userMediations && nextProps.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
+      // console.log('this.props.userMediations', this.props.userMediations && this.props.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
       this.handleSetContents(nextProps, this.props)
     }
   }
   render () {
-    console.log('RENDER this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
+    console.log('RENDER USERMEDIATIONSDECK this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
       this.props.userMediations && this.props.userMediations.map(um =>
         um && `${um.id} ${um.dateRead}`))
-    // console.log('RENDER this.state.contents', this.state.contents && this.state.contents.length,
+    //console.log('RENDER USERMEDIATIONSDECK this.state.contents', this.state.contents && this.state.contents.length,
     //  this.state.contents && this.state.contents.map(content =>
     //    content && `${content.id} ${content.dateRead}`))
     return <Deck {...this.props}
