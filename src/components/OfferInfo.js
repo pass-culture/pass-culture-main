@@ -16,9 +16,11 @@ class OfferInfo extends Component {
       eventOccurence,
       id,
       name,
+      occurencesAtVenue,
       price,
       sellersFavorites,
       thing,
+      thingOrEventOccurence,
       thumbUrl,
       venue,
     } = this.props
@@ -28,15 +30,15 @@ class OfferInfo extends Component {
         <img alt='' className='offerPicture' src={thumbUrl} />
         <div className='offer-price'>{ price }&nbsp;€</div>
         { description }
-        { thing && <VenueInfo {...venue} /> }
+        { thing && [ thing.description, <VenueInfo {...venue} /> ] }
+        { eventOccurence && [ eventOccurence.event.description, <VenueInfo {...eventOccurence.venue} /> ] }
         { eventOccurence &&
            <ul className='dates'>
              {
-               eventOccurence.event.eventOccurences.map((offerer) =>
+               occurencesAtVenue.map((occurence) =>
                                          (
                                            <li>
-                                             <span> { eventOccurence.beginningDateTime } </span>
-                                             <VenueInfo {...venue} />
+                                             <span> { occurence.beginningDatetime } </span>
                                            </li>
                                          ))
              }
