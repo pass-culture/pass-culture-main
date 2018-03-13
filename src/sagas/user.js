@@ -10,20 +10,30 @@ function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false
   yield call(clear)
   yield put(setUser(false))
+  yield call(sync, 'dexie-signout')
 }
 
 function * fromWatchSuccessGetSignoutActions () {
   yield put(resetData())
   yield call(clear)
   yield put(setUser(false))
+  yield call(sync, 'dexie-signout')
 }
 
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
+  console.log('USER', user)
   if (user) {
     yield put(setUser(user))
+    // call the dexie-user event
+    // either the sync service worker has already in state the user
+    // then it just sync the redux with the dexie state
+    // else it asks for a dexie push pull to also feed
+    // the dexie with the backend
     const rememberToken = Cookies.getItem('remember_token')
-    yield call(sync, 'dexie-user', { rememberToken, user })
+    yield call(sync, 'dexie-signin', { rememberToken, user })
+  } else {
+    yield call(fromWatchFailSignActions)
   }
 }
 

@@ -11,7 +11,8 @@ export const config = {
     {
       description: 'index',
       name: 'userMediations',
-      query: ({ around }) => around && `around=${around}`
+      query: ({ around }) => around && `around=${around}`,
+      isSync: true
     },
     {
       description: 'id',
@@ -38,7 +39,6 @@ export async function getData (collectionName, query) {
   if (!table) {
     return
   }
-  console.log('query', query)
   // return
   return await table.filter(element =>
     Object.keys(query).every(key => element[key] === query[key])).toArray()
@@ -106,9 +106,9 @@ export async function setUser (state = {}) {
 }
 
 export async function pushPull (state = {}) {
-  return Promise.all(config.collections.map(async ({ name, query }) => {
-    // remove differences
-    if (name === 'differences') {
+  return Promise.all(config.collections.map(async ({ isSync, name, query }) => {
+    // just do that for the collection with isSync 
+    if (!isSync) {
       return
     }
     // table
