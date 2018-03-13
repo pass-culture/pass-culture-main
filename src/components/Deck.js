@@ -19,12 +19,15 @@ class Deck extends Component {
     }
     this.onDebouncedResize = debounce(this.onResize, props.resizeTimeout)
   }
-  handleSetTypeCard = (type, cardProps) => {
-    if (type !== CURRENT) {
+  handleSetTypeCard = (cardProps, cardState) => {
+    // only set things for the current Card
+    if (cardState.type !== CURRENT) {
       return
     }
-    const newState = {
-      isFirstCard: false,
+    // no need to set in state the current cardProps
+    this.currentCardProps = cardProps
+    this.currentCardState = cardState
+    const newState = { isFirstCard: false,
       isLastCard: false
     }
     if (cardProps.isFirst) {
@@ -32,6 +35,7 @@ class Deck extends Component {
     } else if (cardProps.isLast) {
       newState.isLastCard = true
     }
+    // update
     this.setState(newState)
   }
   handleNextItemCard = diffIndex => {
@@ -39,6 +43,7 @@ class Deck extends Component {
     const { contents, handLength, handleNextItemCard } = this.props
     const { items } = this.state
     // check
+    /*
     console.log('items[0]', items[0], contents.length)
     console.log('items.slice(-1)[0]', items.slice(-1)[0], contents.length)
     if (diffIndex > 0 && items[0] < -contents.length - handLength) {
@@ -46,12 +51,13 @@ class Deck extends Component {
     } else if (diffIndex < 0 && items.slice(-1)[0] > contents.length + handLength) {
       console.log('STOP 2')
     }
+    */
     // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
     })
     // hook if Deck has parent manager component
-    handleNextItemCard && handleNextItemCard(diffIndex, this.props, this.state)
+    handleNextItemCard && handleNextItemCard(diffIndex, this)
   }
   handleSetItems = props => {
     // unpack
@@ -221,6 +227,7 @@ class Deck extends Component {
       isFirstCard,
       isLastCard,
       isResizing,
+      isTransitioning,
       items
     } = this.state
     const contents = this.state.bufferContents || this.props.contents
@@ -236,15 +243,15 @@ class Deck extends Component {
       <div className='deck relative m3'
         ref={_element => this._element = _element }>
         <button className={classnames('deck__next deck__next--left button absolute', {
-          'button--disabled': isFirstCard })}
+          'button--disabled': isFirstCard || isTransitioning })}
           onClick={() => handleNextItemCard(1)}
-          disabled={isFirstCard} >
+          disabled={isFirstCard || isTransitioning} >
           {'<'}
         </button>
         <button className={classnames('deck__next deck__next--right button absolute', {
-          'button--disabled': isLastCard })}
+          'button--disabled': isLastCard || isTransitioning })}
           onClick={() => handleNextItemCard(-1)}
-          disabled={isLastCard} >
+          disabled={isLastCard || isTransitioning} >
           {'>'}
         </button>
         {

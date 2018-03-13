@@ -137,13 +137,15 @@ class Card extends Component {
       })
     }
     // inform parent about the new current card
-    handleSetType && handleSetType(type, props)
-    // update
-    this.setState({ isRead: false,
+    const newState = { isRead: false,
       style,
       transform,
       type
-    })
+    }
+    // update
+    this.setState(newState)
+    // hook
+    handleSetType && handleSetType(props, newState)
   }
   onDrag = (event, data) => {
     // unpack
@@ -165,7 +167,8 @@ class Card extends Component {
       handleNextItem,
       isFirst,
       isLast,
-      perspective
+      perspective,
+      rotation
     } = this.props
     const { x } = data
     const newState = {

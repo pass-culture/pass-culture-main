@@ -28,7 +28,7 @@ class UserMediationsDeck extends Component {
       contents,
       hasSyncRequested
     } = this.state
-    if (aroundIndex === null) {
+    if (aroundIndex === null || aroundIndex < 0) {
       return
     }
     // from the present to the past
@@ -70,7 +70,7 @@ class UserMediationsDeck extends Component {
       contents,
       hasSyncRequested
     } = this.state
-    if (aroundIndex === null) {
+    if (aroundIndex === null || aroundIndex > userMediations.length) {
       return
     }
     // from the present to the past
@@ -182,7 +182,7 @@ class UserMediationsDeck extends Component {
     // update
     this.setState(newState)
   }
-  handleNextItemCard = (diffIndex, deckProps, deckState) => {
+  handleNextItemCard = (diffIndex, deckElement) => {
     // unpack
     const { handLength,
       isBlobModel,
@@ -191,14 +191,15 @@ class UserMediationsDeck extends Component {
     } = this.props
     const { contents } = this.state
     // update around
+    console.log('currentCardElement', deckElement.currentCardProps)
     const aroundIndex = this.state.aroundIndex - diffIndex
     // set state
     if (isBlobModel) {
       this.setState({ aroundIndex })
       if (!this.isHandlingContent) {
         diffIndex > 0
-          ? aroundIndex > 0 && this.handleBeforeContent(diffIndex, deckProps, deckState)
-          : aroundIndex < contents.length - 1 && this.handleAfterContent(diffIndex, deckProps, deckState)
+          ? this.handleBeforeContent()
+          : this.handleAfterContent()
       }
     } else {
       // SLOT MODEL

@@ -1,3 +1,4 @@
+import Cookies from 'js-cookies'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -12,7 +13,15 @@ const withLogin = (config = {}) => WrappedComponent => {
       // be sure that user is not defined yet by waiting a bit
       setTimeout(() => {
         const { user, requestData } = this.props
-        !user && requestData('GET', 'users/me', { key: 'users' })
+        if (!user) {
+          // ask to dexie if we don't have the user in storage
+          const rememberToken = Cookies.getItem('remember_token')
+          if (rememberToken) {
+            requestData('GET', `users/me?rememberToken=${rememberToken}`,
+              { key: 'users', sync: true })
+          }
+        }
+        // !user && requestData('GET', 'users/me', { key: 'users' })
       }, 1000)
     }
     componentWillReceiveProps = nextProps => {

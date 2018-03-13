@@ -1,3 +1,4 @@
+import Cookies from 'js-cookies'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { resetData } from '../reducers/data'
@@ -21,7 +22,8 @@ function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   if (user) {
     yield put(setUser(user))
-    yield call(sync, 'dexie-push-pull', { around: null })
+    const rememberToken = Cookies.getItem('remember_token')
+    yield call(sync, 'dexie-user', { rememberToken, user })
   }
 }
 

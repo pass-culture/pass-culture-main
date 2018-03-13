@@ -16,6 +16,10 @@ export const config = {
     {
       description: 'id',
       name: 'differences'
+    },
+    {
+      description: 'rememberToken',
+      name: 'users'
     }
   ],
   version: 1
@@ -28,9 +32,20 @@ config.collections.forEach(({ description, name }) =>
 export const db = new Dexie(config.name)
 db.version(config.version).stores(storesConfig)
 
-export async function putData (dexieMethod, path, data) {
+export async function getData (collectionName, query) {
+  // check
+  const table = db[collectionName]
+  if (!table) {
+    return
+  }
+  console.log('query', query)
+  // return
+  return await table.filter(element =>
+    Object.keys(query).every(key => element[key] === query[key])).toArray()
+}
+
+export async function putData (dexieMethod, collectionName, data) {
   // check the table
-  const collectionName = path.split('?')[0]
   const table = db[collectionName]
   if (!table) {
     return
@@ -78,6 +93,16 @@ export async function fetch (config = {}) {
     console.log(results)
   }
   return results
+}
+
+export async function setUser (state = {}) {
+  const { rememberToken, user } = state
+  if (!user || !rememberToken) {
+    console.warn('We set user in dexie but user or rememberToken are not defined')
+  }
+  console.log('state', state)
+  await db.users.clear()
+  await db.users.add(Object.assign({ rememberToken }, user))
 }
 
 export async function pushPull (state = {}) {
