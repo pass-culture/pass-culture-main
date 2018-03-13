@@ -107,7 +107,7 @@ export async function setUser (state = {}) {
 
 export async function pushPull (state = {}) {
   return Promise.all(config.collections.map(async ({ isSync, name, query }) => {
-    // just do that for the collection with isSync 
+    // just do that for the collection with isSync
     if (!isSync) {
       return
     }
@@ -137,7 +137,9 @@ export async function pushPull (state = {}) {
     const result = await fetchData(method, path, config)
     // bulk
     if (result.data) {
-      return putData('bulk', path, result.data, { isClear: true })
+      const [pathWithoutQuery, queryString] = path.split('?')
+      const collectionName = pathWithoutQuery.split('/')[0]
+      return putData('bulk', collectionName, result.data, { isClear: true })
     } else {
       console.warn(result.error)
     }

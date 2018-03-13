@@ -11,7 +11,8 @@ const withLogin = (config = {}) => WrappedComponent => {
   class _withLogin extends Component {
     constructor () {
       super ()
-      this.state = { hasDexieRequested: false }
+      this.state = { hasBackendRequested: false,
+        hasDexieRequested: false }
     }
     componentWillMount = () => {
       // be sure that user is not defined yet by waiting a bit
@@ -33,15 +34,16 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
     componentWillReceiveProps = nextProps => {
       const { requestData } = this.props
-      const { hasDexieRequested } = this.state
+      const { hasBackendRequested, hasDexieRequested } = this.state
       if (nextProps.user && nextProps.user !== this.props.user) {
         nextProps.closeModal()
       } else if (isRequired && !nextProps.user) {
         if (hasDexieRequested) {
           requestData('GET', 'users/me', { key: 'users' })
           this.setState({ hasBackendRequested: true })
+          return
         }
-        nextProps.showModal(<Sign />, {
+        hasBackendRequested && nextProps.showModal(<Sign />, {
           isCloseButton: false,
           isUnclosable: true
         })

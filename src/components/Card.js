@@ -45,6 +45,7 @@ class Card extends Component {
       isSetRead,
       isContentChanging,
       onTransitionStart,
+      transition,
       transitionTimeout,
       perspective,
       rotation,
@@ -123,9 +124,8 @@ class Card extends Component {
     // check read
     isSetRead && type === CURRENT && this.handleSetRead(props)
     // determine style
-    style.transition = isContentChanging
-      ? 'none'
-      : `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
+    style.transition = transition ||
+      `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
     // transition happened when the style has been already set once
     // and that the new style has a not none transform
     if (this.state.style && style.transition !== 'none') {

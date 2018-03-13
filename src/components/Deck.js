@@ -10,7 +10,7 @@ class Deck extends Component {
     this.state = { bufferContents: null,
       cursor: 0,
       deckElement: null,
-      isContentChanging: false,
+      transition: null,
       isFirstCard: false,
       isLastCard: false,
       isResizing: false,
@@ -59,20 +59,14 @@ class Deck extends Component {
     // hook if Deck has parent manager component
     handleNextItemCard && handleNextItemCard(diffIndex, this)
   }
-  handleSetItems = props => {
+  handleResetItems = props => {
     // unpack
     const { aroundIndex,
       contents,
       handLength,
       isBlobModel,
     } = props
-    // init new state
-    // isContentChanging to true helps
-    // the card to know that they should not remount with a style transition
-    // because they are already at the good place
-    const newState = { bufferContents: null,
-      isContentChanging: true
-    }
+    const newState = { bufferContents: null }
     // we need to determine the dynamic mapping
     // of the deck
     if (isBlobModel) {
@@ -157,7 +151,7 @@ class Deck extends Component {
     this.transitions = newTransitions
   }
   componentWillMount () {
-    this.handleSetItems(this.props)
+    this.handleResetItems(this.props)
   }
   componentWillReceiveProps (nextProps) {
     const { isTransitioning } = this.state
@@ -171,25 +165,31 @@ class Deck extends Component {
         this.setState({ bufferContents: this.props.contents })
       } else if (!nextProps.isKeepItems) {
         //console.log('WE SET ITEMS')
-        this.handleSetItems(nextProps)
+        this.handleResetItems(nextProps)
+        // init new state
+        // transition to 'none' helps
+        // the card to know that they should not remount with a style transition
+        // because they are already at the good place
+        this.setState({ transition: 'none' })
       }
     }
   }
   componentDidMount () {
     this.setState({ deckElement: this._element })
-    if (this.state.isContentChanging) {
-      setTimeout(() => this.setState({ isContentChanging: false }), 10)
-    }
     window.addEventListener('resize', this.onDebouncedResize)
   }
   componentDidUpdate (prevProps, prevState) {
     // unpack
-    const { isContentChanging, isResizing, isTransitioning } = this.state
+    const { transition,
+      isResizing,
+      isTransitioning,
+      items
+    } = this.state
     // the deck updated because we changed the contents
     // so we need to wait just the refresh of the children
-    // card to reset to false the isContentChanging
-    if (isContentChanging && !prevState.isContentChanging) {
-      setTimeout(() => this.setState({ isContentChanging: false }), 10)
+    // card to reset to false the transition
+    if (transition === 'none') {
+      this.setState({ transition: null })
     }
     // as the deck element has a dynamical width
     // we need to trigger again the set of the style
@@ -201,7 +201,7 @@ class Deck extends Component {
     // and now we can peacefully release the next one
     // by also sync the items again
     if (!isTransitioning && prevState.isTransitioning) {
-      this.handleSetItems(this.props)
+      this.handleResetItems(this.props)
       this.setState({ bufferContents: null })
     }
   }
@@ -223,7 +223,7 @@ class Deck extends Component {
     } = this.props
     const { cursor,
       deckElement,
-      isContentChanging,
+      transition,
       isFirstCard,
       isLastCard,
       isResizing,
@@ -232,13 +232,13 @@ class Deck extends Component {
     } = this.state
     const contents = this.state.bufferContents || this.props.contents
     // console.log('')
-    // console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
-    // this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
+    //console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
+    //this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
     // console.log('RENDER DECK this.props.contents', this.props.contents && this.props.contents.length,
     // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
-    // console.log('RENDER DECK contents', contents && contents.length,
-    // contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
-    // console.log('RENDER DECK', 'this.state.items', this.state.items)
+    //console.log('RENDER DECK contents', contents && contents.length,
+    //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
+    //console.log('RENDER DECK', 'this.state.items', this.state.items)
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>
@@ -265,7 +265,7 @@ class Deck extends Component {
               handleSetRead={handleSetReadCard}
               handleSetType={handleSetTypeCard}
               isBlobModel={isBlobModel}
-              isContentChanging={isContentChanging}
+              transition={transition}
               isFirst={contents && !contents[index - 1]}
               isLast={contents && !contents[index + 1]}
               index={index}

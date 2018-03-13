@@ -191,7 +191,6 @@ class UserMediationsDeck extends Component {
     } = this.props
     const { contents } = this.state
     // update around
-    console.log('currentCardElement', deckElement.currentCardProps)
     const aroundIndex = this.state.aroundIndex - diffIndex
     // set state
     if (isBlobModel) {
