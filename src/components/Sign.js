@@ -21,7 +21,7 @@ class Sign extends Component {
     history.push('/inscription')
   }
   render () {
-    const { error } = this.props
+    const { errors } = this.props
     return (
       <div className='sign'>
         <div className='h1 mb3'>
@@ -47,7 +47,7 @@ class Sign extends Component {
           storeKey='users'
           text='Connecter' />
         <div className='sign__error mt1'>
-          {error && error.message}
+          {errors}
         </div>
         <button className='button button--inversed absolute bottom-0 right-0 mb2 mr2'
           onClick={this.onSignupClick} >
@@ -61,7 +61,7 @@ class Sign extends Component {
 export default compose(
   withRouter,
   connect(
-    ({ data, form }) => ({ error: data.error, form }),
+    ({ data, form }) => ({ errors: data.errors && data.errors.global, form }),
     { assignData, closeModal }
   )
 )(Sign)

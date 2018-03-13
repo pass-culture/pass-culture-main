@@ -99,9 +99,9 @@ export const assignData = patch => ({
   type: ASSIGN_DATA
 })
 
-export const failData = (method, path, error, config) => ({
+export const failData = (method, path, errors, config) => ({
   config,
-  error,
+  errors,
   method,
   path,
   type: `FAIL_DATA_${method.toUpperCase()}_${path.toUpperCase()}`

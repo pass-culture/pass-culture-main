@@ -43,10 +43,11 @@ export async function fetchData (method, path, config = {}) {
   }
   // fetch
   const result = await fetch(`${API_URL}/${path}`, init)
+  const collectionName = path.split('?')[0]
   if (result.status === 200 || result.status === 201) {
     return { data: await result.json() }
   } else {
-    return { error: await result.json() }
+    return { errors: await result.json() }
   }
 }
 

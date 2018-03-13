@@ -21,31 +21,32 @@ class FormInput extends Component {
     this.setState({ localValue: event.target.value })
   }
   handleMergeForm = ({ target: { value } }) => {
-    const { collectionName, id, mergeForm, name, type } = this.props
+    const { collectionName, entityId, mergeForm, name, type } = this.props
     // be sure to cast to the good type
     const mergedValue = type === 'number'
       ? Number(value)
       : value
     // merge
-    mergeForm(collectionName, id, name, mergedValue)
+    mergeForm(collectionName, entityId, name, mergedValue)
   }
   componentWillMount () {
     // fill automatically the form when it is a NEW POST action
-    const { defaultValue, id } = this.props
-    defaultValue && id === NEW && this.handleMergeForm(defaultValue)
+    const { defaultValue, entityId } = this.props
+    defaultValue && entityId === NEW && this.handleMergeForm(defaultValue)
   }
   render () {
     const { className,
       defaultValue,
-      isRequired,
+      entityId,
+      id,
       placeholder,
       type,
       value
     } = this.props
     const { localValue } = this.state
     return (
-      <span>
         <input className={className || 'input'}
+          id={id}
           onChange={this.onChange}
           placeholder={placeholder}
           type={type}
@@ -54,20 +55,13 @@ class FormInput extends Component {
             ? localValue
             : value || defaultValue || ''
           } />
-        {isRequired && <span className='form-input__required'> (*) </span>}
-      </span>
     )
   }
 }
 
 FormInput.defaultProps = {
   debounceTimeout: 500,
-  id: NEW
-}
-
-FormInput.propTypes = {
-  collectionName: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired
+  entityId: NEW
 }
 
 export default connect(

@@ -40,17 +40,17 @@ function * fromWatchRequestDataActions (action) {
       */
       yield put(successData(method, path, result.data, config))
     } else {
-      console.warn(result.error)
-      yield put(failData(method, path, result.error, config))
+      console.warn(result.errors)
+      yield put(failData(method, path, result.errors, config))
     }
   } catch (error) {
     console.warn('error', error)
-    yield put(failData(method, path, error, config))
+    yield put(failData(method, path, [error], config))
   }
 }
 
 function * fromWatchFailDataActions (action) {
-  yield put(assignData({ error: action.error }))
+  yield put(assignData({ errors: action.errors }))
 }
 
 function * fromWatchSuccessDataActions (action) {

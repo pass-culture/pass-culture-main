@@ -39,7 +39,7 @@ class OfferForm extends Component {
           <FormInput className='input col-12'
             collectionName='offers'
             defaultValue={name}
-            id={id}
+            entityId={id}
             name='name'
             placeholder="titre de l'offre"
           />
@@ -51,7 +51,7 @@ class OfferForm extends Component {
           <FormTextarea className='textarea offer-form__textarea'
             collectionName='offers'
             defaultValue={description}
-            id={id}
+            entityId={id}
             maxLength={1000}
             name='description'
             placeholder="Vous pouvez écrire une description ici" />

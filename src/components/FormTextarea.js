@@ -12,16 +12,17 @@ class FormTextarea extends Component {
     defaultValue && method === 'POST' && this.handleMergeForm(defaultValue)
   }
   onChange = ({ target: { value } }) => {
-    const { collectionName, id, mergeForm, name, maxLength } = this.props
+    const { collectionName, entityId, mergeForm, name, maxLength } = this.props
     if (value.length < maxLength) {
-      mergeForm(collectionName, id, name, value)
+      mergeForm(collectionName, entityId, name, value)
     } else {
       console.warn('value reached maxLength')
     }
   }
   render () {
-    const { className, defaultValue, placeholder, type, value } = this.props
+    const { className, defaultValue, id, placeholder, type, value } = this.props
     return <textarea className={className || 'textarea'}
+      id={id}
       onChange={this.onChange}
       placeholder={placeholder}
       ref={_element => this._element = _element}
@@ -31,7 +32,7 @@ class FormTextarea extends Component {
 }
 
 FormTextarea.defaultProps = {
-  id: NEW,
+  entityId: NEW,
   maxLength: 200
 }
 
