@@ -19,9 +19,9 @@ export function sync (key, state, config = {}) {
   }
   const dexieMessageChannel = new MessageChannel()
   dexieMessageChannel.port1.onmessage = event => {
-    if(event.data.error) {
+    if (event.data.error) {
       console.warn(event.data.error)
-    } else {
+    } else if (event.data.isSyncRedux) {
       syncRedux()
     }
   }

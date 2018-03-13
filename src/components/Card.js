@@ -167,8 +167,7 @@ class Card extends Component {
       handleNextItem,
       isFirst,
       isLast,
-      perspective,
-      rotation
+      perspective
     } = this.props
     const { x } = data
     const newState = {

@@ -11,13 +11,12 @@ const withLogin = (config = {}) => WrappedComponent => {
   class _withLogin extends Component {
     constructor () {
       super ()
-      this.state = { hasDexieRequested: false, hasBackendRequested: false }
+      this.state = { hasDexieRequested: false }
     }
     componentWillMount = () => {
       // be sure that user is not defined yet by waiting a bit
       setTimeout(() => {
         const { user, requestData } = this.props
-        const { hasDexieRequested } = this.state
         if (!user) {
           // ask to dexie if we don't have the user in storage
           const rememberToken = Cookies.getItem('remember_token')
@@ -28,18 +27,17 @@ const withLogin = (config = {}) => WrappedComponent => {
           } else {
             // else ask to the backend
             requestData('GET', 'users/me', { key: 'users' })
-            this.setState({ hasBackendRequested: true })
           }
         }
       }, 1000)
     }
     componentWillReceiveProps = nextProps => {
       const { requestData } = this.props
-      const { hasBackendRequested } = this.state
+      const { hasDexieRequested } = this.state
       if (nextProps.user && nextProps.user !== this.props.user) {
         nextProps.closeModal()
       } else if (isRequired && !nextProps.user) {
-        if (!hasBackendRequested) {
+        if (hasDexieRequested) {
           requestData('GET', 'users/me', { key: 'users' })
           this.setState({ hasBackendRequested: true })
         }

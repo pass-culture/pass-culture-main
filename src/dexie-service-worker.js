@@ -14,7 +14,9 @@ async function dexiePushPull (port) {
   // state.user && await pushPull(state)
   await pushPull(state)
   // post
-  port && port.postMessage({ text: "Hey I just got a fetch from you!" })
+  port && port.postMessage({ isSyncRedux: true,
+    text: "dexiePushPull"
+  })
 }
 
 async function dexieSignin (port) {
@@ -25,13 +27,19 @@ async function dexieSignin (port) {
   }
   // get the matching user
   const users = await getData('users', { rememberToken })
-  if (users.length === 0) {
-    await pushPull(state)
+  console.log('users', users)
+  if (users.length === 0 || user.rememberToken !== state.user.rememberToken) {
+    // trigger a first push pull to feed the dexie
+    await dexiePushPull(port)
+  } else {
+    // if the user is already here we need just to trigger a
+    // sync of the redux state
+    port && port.postMessage({ isSyncRedux: true })
   }
   // setUser to set for the first time or just sync
   state.user && await setUser(state)
   // post
-  port && port.postMessage({ text: "Hey I just set your user!" })
+  port && port.postMessage({ text: "dexieSignin" })
 }
 
 async function dexieSignout (port) {
@@ -42,7 +50,7 @@ async function dexieSignout (port) {
   state.user = null
   db.users.clear()
   // post
-  port && port.postMessage({ text: "Hey I just set your user!" })
+  port && port.postMessage({ text: "dexieSignout" })
 }
 
 self.addEventListener('message', event => {
