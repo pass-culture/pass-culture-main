@@ -36,8 +36,16 @@ class Deck extends Component {
   }
   handleNextItemCard = diffIndex => {
     // unpack
-    const { handleNextItemCard } = this.props
+    const { contents, handLength, handleNextItemCard } = this.props
     const { items } = this.state
+    // check
+    console.log('items[0]', items[0], contents.length)
+    console.log('items.slice(-1)[0]', items.slice(-1)[0], contents.length)
+    if (diffIndex > 0 && items[0] < -contents.length - handLength) {
+      console.log('STOP 1')
+    } else if (diffIndex < 0 && items.slice(-1)[0] > contents.length + handLength) {
+      console.log('STOP 2')
+    }
     // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
@@ -68,9 +76,8 @@ class Deck extends Component {
         // const halfLength = Math.floor((contents.length + 1)/2)
         // newState.items = [...Array(contents.length).keys()]
         //  .map(index => - halfLength - 1 + index)
-        console.log('AROUND INDEX', aroundIndex)
         newState.items = [...Array(contents.length).keys()]
-          .map(index => - handLength - 1 - (aroundIndex || 0) + index)
+          .map(index => - handLength - 1 - (aroundIndex > 0 ? aroundIndex : 0) + index)
       }
     } else {
       // SLOT MODEL
@@ -171,15 +178,25 @@ class Deck extends Component {
   }
   componentDidUpdate (prevProps, prevState) {
     // unpack
-    const { isContentChanging, isResizing } = this.state
+    const { isContentChanging, isResizing, isTransitioning } = this.state
     // the deck updated because we changed the contents
     // so we need to wait just the refresh of the children
     // card to reset to false the isContentChanging
     if (isContentChanging && !prevState.isContentChanging) {
       setTimeout(() => this.setState({ isContentChanging: false }), 10)
     }
+    // as the deck element has a dynamical width
+    // we need to trigger again the set of the style
+    //o the children when we resize the window
     if (isResizing && !prevState.isResizing) {
       this.setState({ isResizing: false })
+    }
+    // during the transition maybe we kept some buffer contents
+    // and now we can peacefully release the next one
+    // by also sync the items again
+    if (!isTransitioning && prevState.isTransitioning) {
+      this.handleSetItems(this.props)
+      this.setState({ bufferContents: null })
     }
   }
   componentWillUnmount () {
@@ -206,11 +223,15 @@ class Deck extends Component {
       isResizing,
       items
     } = this.state
-    // console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents)
+    const contents = this.state.bufferContents || this.props.contents
+    // console.log('')
+    // console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
+    // this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
     // console.log('RENDER DECK this.props.contents', this.props.contents && this.props.contents.length,
     // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
+    // console.log('RENDER DECK contents', contents && contents.length,
+    // contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     // console.log('RENDER DECK', 'this.state.items', this.state.items)
-    const contents = this.state.bufferContents || this.props.contents
     return (
       <div className='deck relative m3'
         ref={_element => this._element = _element }>

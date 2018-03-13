@@ -18,13 +18,12 @@ class UserMediationsDeck extends Component {
       items: null
     }
   }
-  handleCheckContent = props => {
+  handleBeforeContent = (diffIndex, deckProps, deckState) => {
     // unpack and check
-    const { countFutureSync,
-      countPastSync,
+    const { countBeforeSync,
       isBlobModel,
       userMediations
-    } = props
+    } = this.props
     const { aroundIndex,
       contents,
       hasSyncRequested
@@ -34,15 +33,15 @@ class UserMediationsDeck extends Component {
     }
     // from the present to the past
     // meet the first not well defined content
-    let isPastSync
+    let isBeforeSync
     if (isBlobModel) {
-      console.log('PAST', 'aroundIndex', aroundIndex, 'limit', countPastSync)
-      isPastSync = aroundIndex < countPastSync + 1
+      console.log('BEFORE', 'aroundIndex', aroundIndex, 'limit', countBeforeSync)
+      isBeforeSync = aroundIndex < countBeforeSync + 1
     }
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    if (isPastSync && !hasSyncRequested) {
+    if (isBeforeSync && !hasSyncRequested) {
       this.setState({ contents: [
           { isLoading: true },
           ...contents.slice(1)
@@ -50,26 +49,45 @@ class UserMediationsDeck extends Component {
         hasSyncRequested: true,
         isKeepItems: true
       }, () => this.setState({ isKeepItems: false }))
-      console.log('PAST PUSH PULL')
-      const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
+      // console.log('BEFORE PUSH PULL')
+      const aroundUserMediation = userMediations[Math.max(0, aroundIndex)]
+      const aroundContent = getContentFromUserMediation(aroundUserMediation)
       sync('dexie-push-pull', { around: aroundContent.id })
+      return
+    }
+    // update
+    if (hasSyncRequested) {
+      this.setState({ hasSyncRequested: false })
+    }
+  }
+  handleAfterContent = (diffIndex, deckProps, deckState) => {
+    // unpack and check
+    const { countAfterSync,
+      isBlobModel,
+      userMediations
+    } = this.props
+    const { aroundIndex,
+      contents,
+      hasSyncRequested
+    } = this.state
+    if (aroundIndex === null) {
       return
     }
     // from the present to the past
     // meet the first not well defined content
-    let isFutureSync
+    let isAfterSync
     if (isBlobModel) {
-      // console.log('FUTURE', 'aroundIndex', aroundIndex, 'limit', userMediations.length - 1 - countFutureSync)
-      isFutureSync = aroundIndex > userMediations.length - 1 - countFutureSync
+      console.log('FUTURE', 'aroundIndex', aroundIndex, 'limit', userMediations.length - 1 - countAfterSync)
+      isAfterSync = aroundIndex > userMediations.length - 1 - countAfterSync
     } else {
-      isFutureSync = typeof userMediations[
+      isAfterSync = typeof userMediations[
         aroundIndex + (userMediations.length / 2)
       ] === 'undefined'
     }
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    if (isFutureSync && !hasSyncRequested) {
+    if (isAfterSync && !hasSyncRequested) {
       this.setState({ contents: [
           ...contents.slice(0, -1),
           { isLoading: true }
@@ -77,8 +95,9 @@ class UserMediationsDeck extends Component {
         hasSyncRequested: true,
         isKeepItems: true
       }, () => this.setState({ isKeepItems: false }))
-      // console.log('FUTURE PUSH PULL')
-      const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
+      // console.log('AFTER PUSH PULL')
+      const aroundUserMediation = userMediations[Math.min(userMediations.length - 1, aroundIndex)]
+      const aroundContent = getContentFromUserMediation(aroundUserMediation)
       sync('dexie-push-pull', { around: aroundContent.id })
       return
     }
@@ -176,7 +195,11 @@ class UserMediationsDeck extends Component {
     // set state
     if (isBlobModel) {
       this.setState({ aroundIndex })
-      this.handleCheckContent(this.props)
+      if (!this.isHandlingContent) {
+        diffIndex > 0
+          ? aroundIndex > 0 && this.handleBeforeContent(diffIndex, deckProps, deckState)
+          : aroundIndex < contents.length - 1 && this.handleAfterContent(diffIndex, deckProps, deckState)
+      }
     } else {
       // SLOT MODEL
       setTimeout(() => this.setState({
@@ -232,8 +255,8 @@ class UserMediationsDeck extends Component {
   }
 }
 
-UserMediationsDeck.defaultProps = { countFutureSync: 5,
-  countPastSync: 1,
+UserMediationsDeck.defaultProps = { countAfterSync: 5,
+  countBeforeSync: 1,
   handLength: 2,
   isBlobModel: false,
   isCheckRead: false,
