@@ -5,32 +5,36 @@ db = app.db
 
 
 class User(app.model.PcObject,
-            db.Model,
-            app.model.HasThumbMixin
-        ):
+           db.Model,
+           app.model.HasThumbMixin
+           ):
     email = db.Column(db.String(120), nullable=False)
     password = db.Column(db.Binary(60), nullable=False)
 
-    firstname = db.Column(db.String(100))
-    lastname = db.Column(db.String(100))
+    publicName = db.Column(db.String(100), nullable=False)
 
     offerers = db.relationship(lambda: app.model.Offerer,
                                secondary='user_offerer')
 
     account = db.Column(db.Numeric(10,2))
 
+    clearTextPassword = None
+
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 
     def errors(self):
         errors = super(User, self).errors()
+        if self.publicName:
+            errors.checkMinLength('password', self.publicName, 3)
         if self.email:
             errors.checkEmail('email', self.email)
-        if self.firstname:
-            errors.checkMinLength('firstname', self.firstname, 2)
-        if self.lastname:
-            errors.checkMinLength('lastname', self.lastname, 2)
-        # TODO: check password length >=8
+#        if self.firstname:
+#            errors.checkMinLength('firstname', self.firstname, 2)
+#        if self.lastname:
+#            errors.checkMinLength('lastname', self.lastname, 2)
+        if self.clearTextPassword:
+            errors.checkMinLength('password', self.clearTextPassword, 8)
         return errors
 
     def get_id(self):
@@ -51,6 +55,7 @@ class User(app.model.PcObject,
             self.setPassword(dct['password'])
 
     def setPassword(self, newpass):
+        self.clearTextPassword = newpass
         self.password = bcrypt.hashpw(newpass.encode('utf-8'),
                                       bcrypt.gensalt())
 

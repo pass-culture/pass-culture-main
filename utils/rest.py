@@ -31,6 +31,7 @@ def login_or_api_key_required(f):
     def wrapper(*args, **kwds):
         request.provider = get_provider_from_api_key()
         if request.provider is None:
+            print(current_user)
             if not current_user.is_authenticated:
                 return "API key or login required", 403
         return f(*args, **kwds)
@@ -88,7 +89,7 @@ def handle_rest_get_list(modelClass, query=None, filter_fn=None,
             field = re.search('column "?(.*?)"? does not exist', e._message, re.IGNORECASE)
             if field:
                 errors = ApiErrors()
-                errors.addError(field='order_by', errtype='unknown', error='order_by value references an unknown field : '+field.group(1))
+                errors.addError('order_by', 'order_by value references an unknown field : '+field.group(1))
                 raise errors
             else:
                 raise e

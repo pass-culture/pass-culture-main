@@ -24,6 +24,7 @@ def do_init():
 
     # un jeune client qui veut profiter du pass-culture
     client_user = model.User()
+    client_user.publicName = "Arnaud Bétrémieux"
     client_user.account = 100
     client_user.email = "arnaud.betremieux@beta.gouv.fr"
     client_user.setPassword("arnaud")
@@ -34,6 +35,7 @@ def do_init():
     # dans un petit libraire (a la mano) - un libraire moyen (via e-paging)
     # un conservatoire (via spreadsheet)
     pro_user = model.User()
+    pro_user.publicName = "Erwan Ledoux"
     pro_user.email = "erwan.ledoux@beta.gouv.fr"
     pro_user.setPassword("erwan")
     check_and_save(pro_user)

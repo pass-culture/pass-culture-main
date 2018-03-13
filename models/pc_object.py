@@ -64,10 +64,8 @@ class PcObject():
                     refine = None
                     resolve = None
                     sub_joins = None
-                print("KEY",key)
                 try:
                     value = getattr(self, key)
-                    print("HASKEY")
                 except AttributeError:
                     continue
                 if callable(value):
@@ -121,32 +119,27 @@ class PcObject():
                and not col.primary_key\
                and col.default is None\
                and val is None:
-                errors.addError(field=key, errtype='missing', error='is mandatory')
+                errors.addError(key, 'Cette information est obligatoire')
             if val is None:
                 continue
             if (isinstance(col.type, db.String) or isinstance(col.type, db.CHAR))\
                and not isinstance(col.type, db.Enum)\
                and not isinstance(val, str):
-                errors.addError(field=key, errtype='format', error='should be a string')
+                errors.addError(key, 'doit être une chaîne de caractères')
             if (isinstance(col.type, db.String) or isinstance(col.type, db.CHAR))\
                and isinstance(val, str)\
                and col.type.length\
                and len(val)>col.type.length:
-                errors.addError(field=key,
-                                errtype='length',
-                                error='should be less than '
+                errors.addError(key,
+                                'Vous devez saisir moins de '
                                       + str(col.type.length)
-                                      + ' characters long')
+                                      + ' caractères')
             if isinstance(col.type, db.Integer)\
                and not isinstance(val, int):
-                errors.addError(field=key,
-                                errtype='format',
-                                error='should be an integer')
+                errors.addError(key, 'doit être un entier')
             if isinstance(col.type, db.Float)\
                and not isinstance(val, float):
-                errors.addError(field=key,
-                                errtype='format',
-                                error='should be a float')
+                errors.addError(key, 'doit être un nombre')
         return errors
 
     def abortIfErrors(self):

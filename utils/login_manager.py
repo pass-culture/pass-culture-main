@@ -1,37 +1,42 @@
 from flask import current_app as app, request
 from flask_login import LoginManager, login_user
+from models.api_errors import ApiErrors
 
 app.login_manager = LoginManager()
 app.login_manager.init_app(app)
 User = app.model.User
 
-def get_user_with_credentials (identifier, password):
-    if identifier is None or password is None:
-        abort(400) # missing arguments
+
+def get_user_with_credentials(identifier, password):
+    errors = ApiErrors()
+
+    if identifier is None:
+        errors.addError('identifier', 'Identifiant manquant')
+    if password is None:
+        errors.addError('password', 'Mot de passe manquant')
+    errors.maybeRaise()
 
     user = User.query.filter_by(email=identifier).first()
+    print("USER", user)
 
     if not user:
-        print("Wrong identifier")
-        return {
-            "error": 401,
-            "message": "Le password ou l'identifiant est invalide"
-        }
-    if user.checkPassword(password):
-        login_user(user)
-        return user
-    else:
-        print("Wrong password")
-        return {
-            "error": 401,
-            "message": "Le password ou l'identifiant est invalide"
-        }
+        errors.addError('identifier', 'Identifiant incorrect')
+        raise errors
+    if not user.checkPassword(password):
+        errors.addError('password', 'Mot de passe incorrect')
+        raise errors
+
+    login_user(user)
+    return user
+
 
 app.get_user_with_credentials = get_user_with_credentials
+
 
 @app.login_manager.user_loader
 def get_user_with_id(user_id):
     return User.query.get(user_id)
+
 
 @app.login_manager.request_loader
 def get_user_with_request(request):

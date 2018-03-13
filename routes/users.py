@@ -23,7 +23,7 @@ def get_profile():
                                 .first()\
                                 ._asdict(include=user_include)
         return jsonify(user), 200
-    return jsonify({"message": "no current user"}), 401
+    return jsonify({"global": "Pas d'utilisateur connecté"}), 401
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -31,27 +31,22 @@ def signin():
     json = request.get_json()
     identifier = json.get("identifier")
     password = json.get("password")
-    # special auth defined in utils/login_manager
-    # that is also used for now for api outside browser requests
     user = app.get_user_with_credentials(identifier, password)
-    if not isinstance(user, dict):
-        user = user._asdict(include=user_include)
-    error = user.get('error')
-    return jsonify(user), error or 200;
+    return jsonify(user._asdict(include=user_include)), 200
 
 
 @login_required
 @app.route("/users/signout", methods=["GET"])
 def signout():
     logout_user()
-    return jsonify({"text": "Logged out"})
+    return jsonify({"global": "Deconnecté"})
 
 
-@app.route("/users/signup", methods=["POST"])
+@app.route("/users", methods=["POST"])
 def signup():
     new_user = User(from_dict=request.json)
     if (User.query.filter_by(email=new_user.email).count())>0:
-        return jsonify({"message": "Already an account with this email"}), 400;
+        return jsonify({"global": "Un compte lié à cet email existe déjà"}), 400;
     new_user.id = None
     app.model.PcObject.check_and_save(new_user)
     # thumb
@@ -62,4 +57,4 @@ def signup():
             b64decode(request.json['thumb_content']),
             request.json['thumb_content_type']
         )
-    return jsonify(new_user._asdict(include=user_include)), 201;
+    return jsonify(new_user._asdict(include=user_include)), 201

@@ -31,7 +31,7 @@ def test_12_create_venue():
     r_create = req_with_auth.post(API_URL + '/venues/',
                                   json=venue_data)
     assert r_create.status_code == 201
-    id = r_create.text
+    id = r_create.json()['id']
     r_check = req_with_auth.get(API_URL + '/venues/'+id)
     assert r_check.status_code == 200
     created_venue_data = r_check.json()

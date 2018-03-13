@@ -52,7 +52,7 @@ def create_venue():
 
     if 'thumb_content' in request.json:
         store_public_venue_objects(new_venue.id, request.json)
-    return humanize(new_venue.id), 201
+    return jsonify(new_venue._asdict()), 201
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
@@ -65,4 +65,4 @@ def edit_venue(venueId):
     update(venue, updated_venue_dict)
     app.model.PcObject.check_and_save(venue)
     store_public_venue_objects(venue.id, request.json)
-    return venueId, 200;
+    return jsonify(venue._asdict()), 200

@@ -117,7 +117,7 @@ def get_offer(offer_id, mediation_id):
 def create_offer():
     new_offer = Offer(from_dict=request.json)
     app.model.PcObject.check_and_save(new_offer)
-    return humanize(new_offer.id), 201
+    return jsonify(new_offer._asdict(include=offer_include)), 201
 
 
 @app.route('/offers/<offer_id>', methods=['PATCH'])
@@ -130,4 +130,4 @@ def edit_offer(offer_id):
     ensure_provider_can_update(offer)
     update(offer, updated_offer_dict)
     app.model.PcObject.check_and_save(offer)
-    return offer_id, 200
+    return jsonify(offer._asdict(include=offer_include)), 200
