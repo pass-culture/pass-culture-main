@@ -45,6 +45,7 @@ class SignPage extends Component {
                    name='contact_ok'
                    type='checkbox'
                    label='Pass Culture est en phase d&apos;expérimentation. En créant mon compte pendant cette phase, j&apos;accèpte d&apos;être contacté par email pour donner mon avis.' />
+        <div class='form-global__errors'>{errors}</div>
         <SubmitButton getBody={form => form.usersById[NEW]}
           path='users'
           storeKey='users'
@@ -58,6 +59,6 @@ class SignPage extends Component {
 }
 
 export default connect(
-  ({ form }) => ({ form }),
+  (state, ownProps) => ({ errors: state.data.errors && state.data.errors['global'], form: state.form }),
   { showModal }
 )(SignPage)
