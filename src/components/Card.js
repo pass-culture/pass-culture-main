@@ -137,7 +137,6 @@ class Card extends Component {
       default:
         break
     }
-    console.log('style', style)
     // check read
     isSetRead && type === CURRENT && this.handleSetRead(props)
     // transition happened when the style has been already set once

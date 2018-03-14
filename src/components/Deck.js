@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Card, { CURRENT } from './Card'
+import Clue from './Clue'
 
 class Deck extends Component {
   constructor (props) {
@@ -247,28 +248,29 @@ class Deck extends Component {
         ref={_element => this._element = _element }>
         {
           items && items.map((item, index) =>
-            contents && contents[index] && <Card content={contents && contents[index]}
-              contentLength={contents && contents.length}
-              cursor={cursor}
-              deckElement={deckElement}
-              handLength={handLength}
-              handleNextItem={handleNextItemCard}
-              handleSetRead={handleSetReadCard}
-              handleSetType={handleSetTypeCard}
-              isBlobModel={isBlobModel}
-              transition={transition}
-              isFirst={contents && !contents[index - 1]}
-              isFullWidth={isFullWidth}
-              isLast={contents && !contents[index + 1]}
-              index={index}
-              isResizing={isResizing}
-              item={item}
-              transitionTimeout={transitionTimeout}
-              key={index}
-              onDrag={onDragCard}
-              onTransitionEnd={onTransitionEnd}
-              onTransitionStart={onTransitionStart}
-              readTimeout={readTimeout} />
+            contents && contents[index] &&
+              <Card content={contents && contents[index]}
+                contentLength={contents && contents.length}
+                cursor={cursor}
+                deckElement={deckElement}
+                handLength={handLength}
+                handleNextItem={handleNextItemCard}
+                handleSetRead={handleSetReadCard}
+                handleSetType={handleSetTypeCard}
+                isBlobModel={isBlobModel}
+                transition={transition}
+                isFirst={contents && !contents[index - 1]}
+                isFullWidth={isFullWidth}
+                isLast={contents && !contents[index + 1]}
+                index={index}
+                isResizing={isResizing}
+                item={item}
+                transitionTimeout={transitionTimeout}
+                key={index}
+                onDrag={onDragCard}
+                onTransitionEnd={onTransitionEnd}
+                onTransitionStart={onTransitionStart}
+                readTimeout={readTimeout} />
           )
         }
         <div className='deck__control absolute'>
@@ -284,6 +286,13 @@ class Deck extends Component {
             disabled={isLastCard || isTransitioning} >
             {'>'}
           </button>
+          {
+            items && items.map((item, index) =>
+              item > -2 && item < 2 && contents && contents[index] &&
+              <Clue content={contents && contents[index]}
+                key={index}
+                item={item} />)
+          }
         </div>
       </div>
     )
