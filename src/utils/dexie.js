@@ -100,7 +100,6 @@ export async function setUser (state = {}) {
   if (!user || !rememberToken) {
     console.warn('We set user in dexie but user or rememberToken are not defined')
   }
-  console.log('state', state)
   await db.users.clear()
   await db.users.add(Object.assign({ rememberToken }, user))
 }

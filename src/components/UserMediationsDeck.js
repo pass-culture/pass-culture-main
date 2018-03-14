@@ -173,11 +173,26 @@ class UserMediationsDeck extends Component {
     const afterContents = [...Array(afterContentsLength).keys()]
         .map(index => userMediations[aroundIndex + 1 + index])
         .map(getContentFromUserMediation)
+    // loop for completing the blob if we are closed to the end
+    let loopContents = []
+    const lastUserMediation = userMediations.slice(-1)[0]
+    console.log('lastUserMediation', lastUserMediation)
+    if (lastUserMediation.isLast) {
+      if (prevProps.userMediations) {
+        console.log(lastUserMediation.blobSize, userMediations.length)
+        loopContents = prevProps.userMediations.slice(0,
+          lastUserMediation.blobSize - prevProps.userMediations.length)
+      } else {
+        // should request loop data
+      }
+    }
+    console.log('loopContents', loopContents)
     // concat
     newState.contents = [
       ...beforeContents,
       aroundContent,
-      ...afterContents
+      ...afterContents,
+      ...loopContents
     ]
     // update
     this.setState(newState)

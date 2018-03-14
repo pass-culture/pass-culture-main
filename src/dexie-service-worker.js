@@ -4,9 +4,7 @@ import { db,
   setUser
 } from './utils/dexie'
 
-const state = { rememberToken: null,
-  user: null
-}
+const state = {}
 let initPort = null
 
 async function dexiePushPull (port) {
@@ -27,7 +25,6 @@ async function dexieSignin (port) {
   }
   // get the matching user
   const users = await getData('users', { rememberToken })
-  console.log('users', users)
   if (users.length === 0 || user.rememberToken !== state.user.rememberToken) {
     // trigger a first push pull to feed the dexie
     await dexiePushPull(port)
@@ -46,8 +43,7 @@ async function dexieSignout (port) {
   // check
   const { rememberToken, user } = state
   // clear
-  state.rememberToken = null
-  state.user = null
+  Object.keys(state).forEach(key => delete state[key])
   db.users.clear()
   // post
   port && port.postMessage({ text: "dexieSignout" })

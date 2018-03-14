@@ -7,9 +7,10 @@ import { clear } from '../utils/dexie'
 import { sync } from '../utils/registerDexieServiceWorker'
 
 function * fromWatchFailSignActions (action) {
-  // force to update by changing value null to false
+  // force to update by changing value null to false or false to null
   yield call(clear)
-  yield put(setUser(false))
+  const user = yield select(state => state.user)
+  yield put(setUser(user === false ? null : false))
   yield call(sync, 'dexie-signout')
 }
 
@@ -22,7 +23,6 @@ function * fromWatchSuccessGetSignoutActions () {
 
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
-  console.log('USER', user)
   if (user) {
     yield put(setUser(user))
     // call the dexie-user event

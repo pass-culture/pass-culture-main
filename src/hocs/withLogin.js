@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import Sign from '../components/Sign'
 import { closeModal, showModal } from '../reducers/modal'
-import { requestData } from '../reducers/data'
+import { assignData, requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
   const { isRequired } = config
@@ -33,22 +33,32 @@ const withLogin = (config = {}) => WrappedComponent => {
       }, 1000)
     }
     componentWillReceiveProps = nextProps => {
-      const { requestData } = this.props
+      const { assignData, requestData } = this.props
       const { hasBackendRequested, hasDexieRequested } = this.state
       if (nextProps.user && nextProps.user !== this.props.user) {
         nextProps.closeModal()
-      } else if (isRequired && !nextProps.user) {
-        if (hasDexieRequested) {
-          requestData('GET', 'users/me', { key: 'users' })
-          this.setState({ hasBackendRequested: true })
-          return
+        return
+      } else if (isRequired) {
+        if (nextProps.user === false && this.props.user === null) {
+          if (hasDexieRequested) {
+            requestData('GET', 'users/me', { key: 'users' })
+            this.setState({ hasBackendRequested: true })
+            return
+          } else {
+            nextProps.showModal(<Sign />, {
+              isCloseButton: false,
+              isUnclosable: true
+            })
+          }
+        } else if (nextProps.user === null && this.props.user === false) {
+          nextProps.showModal(<Sign />, {
+            isCloseButton: false,
+            isUnclosable: true
+          })
         }
-        hasBackendRequested && nextProps.showModal(<Sign />, {
-          isCloseButton: false,
-          isUnclosable: true
-        })
       }
     }
+    component
     render () {
       return <WrappedComponent {...this.props} />
     }
