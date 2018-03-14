@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import Deck from './Deck'
 import { requestData } from '../reducers/data'
 import { getContentFromUserMediation } from '../utils/content'
-import { sync } from '../utils/registerDexieServiceWorker'
+import { dexieWorker } from '../utils/registerDexieServiceWorker'
 
 class UserMediationsDeck extends Component {
   constructor() {
@@ -52,7 +52,8 @@ class UserMediationsDeck extends Component {
       // console.log('BEFORE PUSH PULL')
       const aroundUserMediation = userMediations[Math.max(0, aroundIndex)]
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
-      sync('dexie-push-pull', { around: aroundContent.id })
+      dexieWorker.postMessage({ key: 'dexie-push-pull',
+        state: { around: aroundContent.id }})
       return
     }
     // update
@@ -98,7 +99,8 @@ class UserMediationsDeck extends Component {
       // console.log('AFTER PUSH PULL')
       const aroundUserMediation = userMediations[Math.min(userMediations.length - 1, aroundIndex)]
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
-      sync('dexie-push-pull', { around: aroundContent.id })
+      dexieWorker.postMessage({ key: 'dexie-push-pull',
+        state: { around: aroundContent.id }})
       return
     }
     // update

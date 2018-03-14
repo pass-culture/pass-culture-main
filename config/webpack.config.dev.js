@@ -9,7 +9,6 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const path = require('path');
 const paths = require('./paths');
-const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const webpack = require('webpack');
 
@@ -190,6 +189,10 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' }
+      }
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
     ],
@@ -205,11 +208,13 @@ module.exports = {
       inject: true,
       template: paths.appHtml,
     }),
+    /*
     new ServiceWorkerWebpackPlugin({
       entry: require.resolve(paths.appSrc+'/dexie-service-worker.js'),
       filename: 'dexie-service-worker.js',
       publicPath: publicPath
     }),
+    */
     // Add module names to factory functions so they appear in browser profiler.
     new webpack.NamedModulesPlugin(),
     // Makes some environment variables available to the JS code, for example:
