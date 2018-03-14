@@ -47,6 +47,7 @@ class Card extends Component {
       isFullWidth,
       onTransitionStart,
       transition,
+      transitionDelay,
       transitionTimeout,
       perspective,
       rotation,
@@ -90,58 +91,66 @@ class Card extends Component {
     switch (type) {
       case ASIDE_LEFT:
         style = {
-          left: -100,
-          width: handWidth
+          left: - (isFullWidth ? currentWidth : handWidth),
+          transition: transition ||
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+          width: isFullWidth ? currentWidth : handWidth
         }
-        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
         break
       case HAND_LEFT:
         style = {
-          left: leftOrRightCurrentWidth + item * handWidth,
-          width: handWidth
+          left: - currentWidth + leftOrRightCurrentWidth + (isFullWidth ? 0 : item * handWidth),
+          transition: transition ||
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+          width: isFullWidth ? currentWidth : handWidth
         }
-        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
         break
       case CURRENT:
         style = {
           left: leftOrRightCurrentWidth,
+          transition: transition ||
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: currentWidth
         }
-        transform = `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
+        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
         break
       case HAND_RIGHT:
         style = {
-          left: deckElement.offsetWidth - leftOrRightCurrentWidth + (item - 1) * handWidth,
-          width: handWidth
+          left: deckElement.offsetWidth - leftOrRightCurrentWidth + (isFullWidth ? 0 : (item - 1) * handWidth),
+          transition: transition ||
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+          width: isFullWidth ? currentWidth : handWidth
         }
-        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
         break
       case ASIDE_RIGHT:
         style = {
-          left: deckElement.offsetWidth + 100,
-          width: handWidth
+          left: deckElement.offsetWidth + (isFullWidth ? currentWidth : handWidth),
+          transition: transition ||
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+          width: isFullWidth ? currentWidth : handWidth
         }
-        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
         break
       default:
         break
     }
-    // aside left
-    // hand left
+    console.log('style', style)
     // check read
     isSetRead && type === CURRENT && this.handleSetRead(props)
-    // determine style
-    style.transition = transition ||
-      `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
     // transition happened when the style has been already set once
     // and that the new style has a not none transform
     if (this.state.style && style.transition !== 'none') {
-      onTransitionStart && Object.keys(style).forEach(key => {
-        if (key !== 'transition' && style[key] !== this.state.style[key]) {
-          // console.log(type, key, props.content.id, props.item, props.index)
-          onTransitionStart({ propertyName: key }, this.props)
-        }
-      })
+      onTransitionStart && Object.keys(style)
+       .filter(key => !/transition(.*)/.test(key))
+       .forEach(key => {
+          if (style[key] !== this.state.style[key]) {
+            // console.log(type, key, props.content.id, props.item, props.index)
+            onTransitionStart({ propertyName: key }, this.props)
+          }
+        })
     }
     // inform parent about the new current card
     const newState = { isRead: false,
@@ -267,6 +276,7 @@ Card.defaultProps = { isSetRead: true,
   perspective: 600,
   readTimeout: 3000,
   rotation: 45,
+  transitionDelay: 100,
   transitionTimeout: 500,
   widthRatio: 0.75
 }

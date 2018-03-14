@@ -10,13 +10,13 @@
     z-index: 100;
   }
   &__next {
-    top: 50%;
+    top: 25%;
     z-index: 1000;
     &--left {
-      left: -20px;
+      left: 10%;
     }
     &--right {
-      right: -20px;
+      right: 10%;
     }
     &:focus {
       background-color: $very-very-light-grey;

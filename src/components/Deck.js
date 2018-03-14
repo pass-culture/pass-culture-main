@@ -243,7 +243,7 @@ class Deck extends Component {
     //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
     return (
-      <div className={classnames('deck relative', { 'm3': !isFullWidth })}
+      <div className='deck relative'
         ref={_element => this._element = _element }>
         {
           items && items.map((item, index) =>
