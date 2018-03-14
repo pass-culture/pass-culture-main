@@ -6,7 +6,7 @@ import { requestData } from '../reducers/data'
 
 export const dexieWorker = new Worker()
 
-export default function register() {  
+export default function register() {
   dexieWorker.onmessage = event => {
     if (event.data.error) {
       console.warn(event.data.error)

@@ -10,7 +10,7 @@ async function dexiePushPull () {
   // pull
   state.user && await pushPull(state)
   // post
-  self && self.postMessage({ isSyncRedux: true,
+  postMessage({ isSyncRedux: true,
     text: "dexiePushPull"
   })
 }
@@ -29,12 +29,12 @@ async function dexieSignin () {
   } else {
     // if the user is already here we need just to trigger a
     // sync of the redux state
-    self && self.postMessage({ isSyncRedux: true })
+    postMessage({ isSyncRedux: true })
   }
   // setUser to set for the first time or just sync
   state.user && await setUser(state)
   // post
-  self && self.postMessage({ text: "dexieSignin" })
+  postMessage({ text: "dexieSignin" })
 }
 
 async function dexieSignout () {
@@ -44,9 +44,10 @@ async function dexieSignout () {
   Object.keys(state).forEach(key => delete state[key])
   db.users.clear()
   // post
-  self && self.postMessage({ text: "dexieSignout" })
+  postMessage({ text: "dexieSignout" })
 }
 
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('message', event => {
   const { key, type } = event.data
   // check
@@ -61,7 +62,7 @@ self.addEventListener('message', event => {
   // switch
   if (key === 'dexie-init') {
     /*
-    self.addEventListener('sync', function (event) {
+    addEventListener('sync', function (event) {
       dexiePushPull()
     })
     */
@@ -73,3 +74,6 @@ self.addEventListener('message', event => {
     dexieSignout()
   }
 })
+
+const bobMoran = {}
+export default bobMoran
