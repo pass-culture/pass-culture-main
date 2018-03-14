@@ -26,7 +26,7 @@ def get_user_with_credentials(identifier, password):
         errors.addError('password', 'Mot de passe incorrect')
         raise errors
 
-    login_user(user)
+    login_user(user, remember=True)
     return user
 
 app.get_user_with_credentials = get_user_with_credentials
