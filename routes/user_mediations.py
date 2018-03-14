@@ -1,6 +1,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from sqlalchemy import func, update
+import time
 
 from reco import make_new_recommendations
 from utils.rest import expect_json_data
@@ -32,6 +33,7 @@ um_include = [
 @login_required
 @expect_json_data
 def update_user_mediations():
+    #time.sleep(3)
     print('current_user', current_user)
     user_id = current_user.get_id()
     # DETERMINE AROUND
@@ -101,16 +103,16 @@ def update_user_mediations():
         make_new_recommendations(current_user,unread_complementary_length)
     # LIMIT UN READ
     unread_ums = unread_ums.order_by(UserMediation.dateUpdated.desc())\
-                           .limit(BLOB_SIZE)
-    # ADD SOME PREVIOUS BEFORE IF NOT ALREADY
-    #if before_ums is None:
-        #unread_ums = BEFORE_AFTER_LIMIT
-    # ADD
-    ums += list(unread_ums)
+                           .limit(unread_complementary_length)
     print('(unread) ids', [humanize(unread_um.id) for unread_um in unread_ums])
-    # CONCAT
+    ums += list(unread_ums)
+    # AS DICT
     ums = [um._asdict(include=um_include) for um in ums]
     print([(um['id'], um['dateRead']) for um in ums], len(ums))
     #print('dateUpdated', [um['dateUpdated'] for um in ums], len(ums))
+    # ADD SOME PREVIOUS BEFORE IF NOT ALREADY
+    if len(ums) < BLOB_SIZE:
+        ums[-1]['isLast'] = True
+        ums[-1]['blobSize'] = BLOB_SIZE
     # RETURN
     return jsonify(ums),200

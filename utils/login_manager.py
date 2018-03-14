@@ -6,6 +6,7 @@ app.login_manager = LoginManager()
 app.login_manager.init_app(app)
 User = app.model.User
 
+app.config['REMEMBER_COOKIE_DURATION'] = 365 * 24 * 3600
 
 def get_user_with_credentials(identifier, password):
     errors = ApiErrors()
@@ -29,9 +30,7 @@ def get_user_with_credentials(identifier, password):
     login_user(user)
     return user
 
-
 app.get_user_with_credentials = get_user_with_credentials
-
 
 @app.login_manager.user_loader
 def get_user_with_id(user_id):
