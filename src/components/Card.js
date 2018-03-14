@@ -219,12 +219,17 @@ class Card extends Component {
     } = nextProps
     if ( (deckElement && !this.props.deckElement)
       || (item !== this.props.item)
-      || (cursor !== this.props.cursor)
       || (isResizing && !this.props.isResizing)
     ) {
       // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
       this.handleSetType(nextProps)
     }
+    /*
+    console.log(cursor)
+    if ((item === - 1 || item === 1) && cursor !== this.props.cursor) {
+      console.log('OUUUAAA')
+    }
+    */
   }
   componentWillUnmount () {
     this.cardElement.removeEventListener('transitionend',

@@ -98,7 +98,8 @@ class Deck extends Component {
     handleSetReadCard && handleSetReadCard(card)
   }
   onDragCard = (event, data, cursor) => {
-    // this.setState({ cursor })
+    console.log('cursor', cursor)
+    this.setState({ cursor })
   }
   onResize = event => {
     this.setState({ isResizing: true })
