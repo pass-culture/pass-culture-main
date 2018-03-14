@@ -265,11 +265,6 @@ module.exports = {
         minifyURLs: true,
       },
     }),
-    new ServiceWorkerWebpackPlugin({
-      entry: require.resolve(paths.appSrc+'/dexie-service-worker.js'),
-      filename: 'dexie-service-worker.js',
-      publicPath: publicPath
-    }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
     // It is absolutely essential that NODE_ENV was set to production here.
