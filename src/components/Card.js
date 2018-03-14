@@ -44,6 +44,7 @@ class Card extends Component {
       handleSetType,
       isSetRead,
       isContentChanging,
+      isFullWidth,
       onTransitionStart,
       transition,
       transitionTimeout,
@@ -74,10 +75,16 @@ class Card extends Component {
       type = ASIDE_RIGHT
     }
     // compute the size of the container
-    const halfWidth = 0.5 * deckElement.offsetWidth
-    const leftOrRightCurrentWidth = halfWidth * (1 - widthRatio)
+    let handWidth, leftOrRightCurrentWidth
+    if (isFullWidth) {
+      leftOrRightCurrentWidth = 0
+      handWidth = handLength * deckElement.offsetWidth
+    } else {
+      const halfWidth = 0.5 * deckElement.offsetWidth
+      leftOrRightCurrentWidth = halfWidth * (1 - widthRatio)
+      handWidth = leftOrRightCurrentWidth / handLength
+    }
     const currentWidth = deckElement.offsetWidth - 2 * leftOrRightCurrentWidth
-    const handWidth = leftOrRightCurrentWidth / handLength
     // determine style and transform given the type of the card
     let style, transform
     switch (type) {

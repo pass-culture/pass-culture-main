@@ -1,5 +1,14 @@
 .deck {
   min-height: calc(100vh - #{$header-height});
+  overflow: hidden;
+  &__control {
+    background-color: black;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    z-index: 100;
+  }
   &__next {
     top: 50%;
     z-index: 1000;

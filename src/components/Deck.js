@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import Card, { CURRENT } from './Card'
 
@@ -216,8 +217,10 @@ class Deck extends Component {
       onTransitionEnd,
       onTransitionStart
     } = this
-    const { handLength,
+    const { browser,
+      handLength,
       isBlobModel,
+      isFullWidth,
       transitionTimeout,
       readTimeout
     } = this.props
@@ -240,20 +243,8 @@ class Deck extends Component {
     //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
     return (
-      <div className='deck relative m3'
+      <div className={classnames('deck relative', { 'm3': !isFullWidth })}
         ref={_element => this._element = _element }>
-        <button className={classnames('deck__next deck__next--left button absolute', {
-          'button--disabled': isFirstCard || isTransitioning })}
-          onClick={() => handleNextItemCard(1)}
-          disabled={isFirstCard || isTransitioning} >
-          {'<'}
-        </button>
-        <button className={classnames('deck__next deck__next--right button absolute', {
-          'button--disabled': isLastCard || isTransitioning })}
-          onClick={() => handleNextItemCard(-1)}
-          disabled={isLastCard || isTransitioning} >
-          {'>'}
-        </button>
         {
           items && items.map((item, index) =>
             contents && contents[index] && <Card content={contents && contents[index]}
@@ -267,6 +258,7 @@ class Deck extends Component {
               isBlobModel={isBlobModel}
               transition={transition}
               isFirst={contents && !contents[index - 1]}
+              isFullWidth={isFullWidth}
               isLast={contents && !contents[index + 1]}
               index={index}
               isResizing={isResizing}
@@ -279,6 +271,20 @@ class Deck extends Component {
               readTimeout={readTimeout} />
           )
         }
+        <div className='deck__control absolute'>
+          <button className={classnames('deck__next deck__next--left button absolute', {
+            'button--disabled': isFirstCard || isTransitioning })}
+            onClick={() => handleNextItemCard(1)}
+            disabled={isFirstCard || isTransitioning} >
+            {'<'}
+          </button>
+          <button className={classnames('deck__next deck__next--right button absolute', {
+            'button--disabled': isLastCard || isTransitioning })}
+            onClick={() => handleNextItemCard(-1)}
+            disabled={isLastCard || isTransitioning} >
+            {'>'}
+          </button>
+        </div>
       </div>
     )
   }
@@ -292,4 +298,6 @@ Deck.defaultProps = { deckKey: 0,
   transitionTimeout: 500
 }
 
-export default Deck
+export default connect(
+  state => ({ isFullWidth: state.browser.lessThan.medium })
+)(Deck)
