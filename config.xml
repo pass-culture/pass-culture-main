@@ -13,4 +13,6 @@
       Pass Culture
   </author>
 
+  <access origin="*" />
+
 </widget>
