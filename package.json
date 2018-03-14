@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "js-cookies": "^1.0.4",
+    "query-string": "^5.1.0"
+  }
+}

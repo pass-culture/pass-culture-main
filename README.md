@@ -9,20 +9,11 @@ C'est tout le framework du Pass Culture!
 
   Installer docker (https://docs.docker.com/install/) et docker-compose (https://docs.docker.com/compose/install/#install-compose)
 
-  Installer yarn (voir le README dans le dépot pass-culture-webapp)
-  Then
+  Installer yarn (voir le README dans le dépot pass-culture-webapp), puis:
+
   ```bash
     ./pc install
   ```
-
-  Pour obtenir un certificat et le mettre dans le nginx (remplacer <domaine> par le domaine souhaité, qui doit pointer vers la machine hébergeant les docker)
-  docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt       -v ~/pass-culture-main/certs-data:/data/letsencrypt       deliverous/certbot       certonly       --verb
-ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
-
-  Puis mettre dans /etc/crontab pour le renouvellement :
-
-  0 0 * * * docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt       -v ~/pass-culture-main/certs-data:/data/letsencrypt       deliverous/certbot       renew       --verbose
- --webroot --webroot-path=/data/letsencrypt
 
 ### Init
   Pour obtenir une base de données minimale.
@@ -44,21 +35,20 @@ ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
 ## Developer
 
 ### Rebuild
-  When you feel that all the backend is broken/unsynchronized, niginx config changing...
+  Pour reconstruire l'image docker sans cache
   ```bash
     ./pc rebuild-backend
   ```
 
 ### Restart
-  When you feel that the database needs to be completely deleted and completely reset so as the flask reinstanciates:
+  Pour effacer la base de données complétement, et relancer tous les containers:
   ```bash
     ./pc restart-backend
   ```
 
 ### Reset
-  When all is running and you need just to wash/clear peacefully
-  all your db and maybe feed it by something else:
-  It will reset the database:
+  Si vos serveurs de dev tournent, et que vous souhaitez juste effacer
+  les tables de la db:
   ```bash
     ./pc reset-all-db
   ```
@@ -68,23 +58,24 @@ ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
   ```
 
 ### Migrate
-  We use alembic, so just pass al the classic alembic options after a ./pc alembic cli, like
+  Vous pouvez passer toutes les cli classiques d'alembic
+  comme ceci:
   ```bash
     ./pc alembic upgrade
   ```
 
 ### Test
-  Using pytest and hypothesis for testing backend apis:
+  Pour tester les apis du backend:
   ```bash
     ./pc test-backend
   ```
 
-  Using jest to do unit testing on frontend javascript functions:
+  Pour tester les apis du frontend:
   ```bash
     ./pc test-frontend
   ```
 
-  Using testcafe for testing browser navigation of the app (default is on the development chrome brower)
+  Pour tester la navigation du site web
   ```bash
     ./pc testcafe -b firefox -e production
   ```
@@ -102,8 +93,8 @@ ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
   --webroot --webroot-path=/data/letsencrypt
 
 ### Push
-  When you need to update a new version of the app
-  (Please be careful to not deploy in prod without authorization !)
+  Pour déployer une nouvelle version:
+  (Attention de ne pas déployer sur la prod sans authorisation !)
   ```bash
     ./pc rebuild-frontend
     ./pc deploy-frontend
