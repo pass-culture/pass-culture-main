@@ -244,7 +244,7 @@ class Deck extends Component {
     //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
     return (
-      <div className='deck relative'
+      <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
         ref={_element => this._element = _element }>
         {
           items && items.map((item, index) =>
@@ -290,7 +290,9 @@ class Deck extends Component {
             items && items.map((item, index) =>
               item > -2 && item < 2 && contents && contents[index] &&
               <Clue content={contents && contents[index]}
+                contentLength={contents && contents.length}
                 key={index}
+                index={index}
                 item={item} />)
           }
         </div>
@@ -303,7 +305,7 @@ Deck.defaultProps = { deckKey: 0,
   handLength: 2,
   isBlobModel: false,
   readTimeout: 3000,
-  resizeTimeout: 500,
+  resizeTimeout: 250,
   transitionTimeout: 500
 }
 

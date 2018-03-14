@@ -8,6 +8,12 @@
     right: 0;
     height: 30%;
     z-index: 100;
+    @media(min-width: $sm) {
+      bottom: 10px;
+      border-radius: $border-radius;
+      left: 33.33%;
+      right: 33.33%;
+    }
   }
   &__next {
     top: 25%;

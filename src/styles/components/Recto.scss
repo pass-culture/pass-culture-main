@@ -1,9 +1,7 @@
 .recto {
   height: 100%;
-  overflow: hidden;
   width: 100%;
-  &__info {
-    background-color: $very-very-light-grey;
+  &--small {
     border-radius: $border-radius;
   }
   &__loading {

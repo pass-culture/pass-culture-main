@@ -100,7 +100,7 @@ class Card extends Component {
         break
       case HAND_LEFT:
         style = {
-          left: - currentWidth + leftOrRightCurrentWidth + (isFullWidth ? 0 : item * handWidth),
+          left: leftOrRightCurrentWidth + (isFullWidth ? - currentWidth : item * handWidth),
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
@@ -237,6 +237,7 @@ class Card extends Component {
     const { content,
       contentLength,
       index,
+      isFullWidth,
       isTransitioning,
       item
     } = this.props
@@ -254,16 +255,20 @@ class Card extends Component {
         onStop={onStop} >
           <span className={classnames('card absolute', {
               'card--current': type === CURRENT,
-              'card--draggable': isDraggable
+              'card--draggable': isDraggable,
+              'card--small': !isFullWidth
             })}
             ref={element => this.cardElement = element}
             style={style}
           >
-            <div className='card__container' style={{ transform }}>
+            <div className={classnames('card__container', {
+              'card__container--small': !isFullWidth
+            })} style={{ transform }}>
               <Recto {...content}
                 contentLength={contentLength}
                 index={index}
-                item={item} />
+                item={item}
+                isFullWidth={isFullWidth} />
             </div>
           </span>
       </Draggable>
