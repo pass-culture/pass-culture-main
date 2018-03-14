@@ -1,13 +1,52 @@
-import { db, pushPull } from './utils/dexie'
+import { db,
+  getData,
+  pushPull,
+  setUser
+} from './utils/dexie'
 
 const state = {}
 let initPort = null
 
 async function dexiePushPull (port) {
   // pull
+  // state.user && await pushPull(state)
   await pushPull(state)
   // post
-  port && port.postMessage({ text: "Hey I just got a fetch from you!" })
+  port && port.postMessage({ isSyncRedux: true,
+    text: "dexiePushPull"
+  })
+}
+
+async function dexieSignin (port) {
+  // check
+  const { rememberToken, user } = state
+  if (!rememberToken || !user) {
+    return
+  }
+  // get the matching user
+  const users = await getData('users', { rememberToken })
+  if (users.length === 0 || user.rememberToken !== state.user.rememberToken) {
+    // trigger a first push pull to feed the dexie
+    await dexiePushPull(port)
+  } else {
+    // if the user is already here we need just to trigger a
+    // sync of the redux state
+    port && port.postMessage({ isSyncRedux: true })
+  }
+  // setUser to set for the first time or just sync
+  state.user && await setUser(state)
+  // post
+  port && port.postMessage({ text: "dexieSignin" })
+}
+
+async function dexieSignout (port) {
+  // check
+  const { rememberToken, user } = state
+  // clear
+  Object.keys(state).forEach(key => delete state[key])
+  db.users.clear()
+  // post
+  port && port.postMessage({ text: "dexieSignout" })
 }
 
 self.addEventListener('message', event => {
@@ -18,6 +57,10 @@ self.addEventListener('message', event => {
       console.warn('you need to define a key in event.data')
       return
     }
+    // update
+    event.data.state &&
+      Object.keys(event.data.state).length > 0 &&
+      Object.assign(state, event.data.state)
     // switch
     if (key === 'dexie-init') {
       initPort = event.ports[0]
@@ -27,11 +70,11 @@ self.addEventListener('message', event => {
     } else if (key === 'dexie-stop') {
       initPort = null
       self.registration.unregister()
+    } else if (key === 'dexie-signin') {
+      event.waitUntil(dexieSignin(event.ports[0]))
+    } else if (key === 'dexie-signout') {
+      event.waitUntil(dexieSignout(event.ports[0]))
     }
-    // update
-    event.data.state &&
-      Object.keys(event.data.state).length > 0 &&
-      Object.assign(state, event.data.state)
   }
 })
 

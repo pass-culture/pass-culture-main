@@ -9,13 +9,18 @@ export const config = {
   name: "pass_culture",
   collections: [
     {
-      description: 'id',
+      description: 'index',
       name: 'userMediations',
-      query: ({ around }) => around && `around=${around}`
+      query: ({ around }) => around && `around=${around}`,
+      isSync: true
     },
     {
       description: 'id',
       name: 'differences'
+    },
+    {
+      description: 'rememberToken',
+      name: 'users'
     }
   ],
   version: 1
@@ -28,17 +33,44 @@ config.collections.forEach(({ description, name }) =>
 export const db = new Dexie(config.name)
 db.version(config.version).stores(storesConfig)
 
-export async function putData (dexieMethod, path, data) {
-  const collectionName = path.split('?')[0]
+export async function getData (collectionName, query) {
+  // check
   const table = db[collectionName]
   if (!table) {
     return
   }
+  // return
+  return await table.filter(element =>
+    Object.keys(query).every(key => element[key] === query[key])).toArray()
+}
+
+export async function putData (dexieMethod, collectionName, data) {
+  // check the table
+  const table = db[collectionName]
+  if (!table) {
+    return
+  }
+  // choose the put method
   if (dexieMethod === 'bulk') {
+    // bulk is when we replace everything and index by the index in the array data
     await table.clear()
-    await table.bulkPut(data)
+    await table.bulkPut(data.map((datum, index) =>
+      Object.assign({ index }, datum)))
   } else if (dexieMethod === 'update') {
-    await Promise.all(data.map(datum => table.update(datum.id, datum)))
+    // update is when we want to update certain elements in the array
+    const storedData = await table.toArray()
+    for (let datum of data) {
+      // find if it is already in the db
+      const storedDatum = storedData.find(({ id }) => id === datum.id)
+      // find the corresponding index matching the id
+      const putIndex = storedDatum
+        ? storedDatum.index
+        : storedData.length
+      // make sure to update the local temp of data
+      storedData[putIndex] = Object.assign(storedData[putIndex], datum)
+      // update
+      await table.update(putIndex, datum)
+    }
     await db.differences.add({
       id: uuid(),
       name: collectionName,
@@ -63,10 +95,19 @@ export async function fetch (config = {}) {
   return results
 }
 
+export async function setUser (state = {}) {
+  const { rememberToken, user } = state
+  if (!user || !rememberToken) {
+    console.warn('We set user in dexie but user or rememberToken are not defined')
+  }
+  await db.users.clear()
+  await db.users.add(Object.assign({ rememberToken }, user))
+}
+
 export async function pushPull (state = {}) {
-  return Promise.all(config.collections.map(async ({ name, query }) => {
-    // remove differences
-    if (name === 'differences') {
+  return Promise.all(config.collections.map(async ({ isSync, name, query }) => {
+    // just do that for the collection with isSync
+    if (!isSync) {
       return
     }
     // table
@@ -95,7 +136,9 @@ export async function pushPull (state = {}) {
     const result = await fetchData(method, path, config)
     // bulk
     if (result.data) {
-      return putData('bulk', path, result.data, { isClear: true })
+      const [pathWithoutQuery, queryString] = path.split('?')
+      const collectionName = pathWithoutQuery.split('/')[0]
+      return putData('bulk', collectionName, result.data, { isClear: true })
     } else {
       console.warn(result.error)
     }

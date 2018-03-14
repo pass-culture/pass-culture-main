@@ -5,20 +5,24 @@ import { requestData } from '../reducers/data'
 
 const dexieSwUrl = `${process.env.PUBLIC_URL}/dexie-service-worker.js`
 
+export function syncRedux () {
+  config.collections.forEach(({ name }) =>
+    name !== 'differences' && store.dispatch(
+      requestData('GET', name, { sync: true })))
+}
+
 // Message Channel that triggers the sync between
 // dexie push pull callback and redux update
-export function sync (key, state) {
+export function sync (key, state, config = {}) {
   if (!navigator.serviceWorker.controller) {
     return
   }
   const dexieMessageChannel = new MessageChannel()
   dexieMessageChannel.port1.onmessage = event => {
-    if(event.data.error) {
+    if (event.data.error) {
       console.warn(event.data.error)
-    } else {
-      config.collections.forEach(({ name }) =>
-        name !== 'differences' && store.dispatch(
-          requestData('GET', name, { sync: true })))
+    } else if (event.data.isSyncRedux) {
+      syncRedux()
     }
   }
   return navigator.serviceWorker.controller.postMessage(

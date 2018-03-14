@@ -1,0 +1,17 @@
+.deck {
+  min-height: calc(100vh - #{$header-height});
+  &__next {
+    top: 50%;
+    z-index: 1000;
+    &--left {
+      left: -20px;
+    }
+    &--right {
+      right: -20px;
+    }
+    &:focus {
+      background-color: $very-very-light-grey;
+      color: black;
+    }
+  }
+}

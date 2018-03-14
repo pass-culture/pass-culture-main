@@ -1,208 +1,267 @@
 import classnames from 'classnames'
-import React, { Component } from 'react'
 import Draggable from 'react-draggable'
-import { Portal } from 'react-portal'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
+import React, { Component } from 'react'
 
-import MediationItem from './MediationItem'
-import { filterData, requestData } from '../reducers/data'
+import Recto from './Recto'
+
+export const CURRENT = 'current'
+export const ASIDE_LEFT = 'aside-left'
+export const ASIDE_RIGHT = 'aside-right'
+export const HAND_LEFT = 'hand-left'
+export const HAND_RIGHT = 'hand-right'
 
 class Card extends Component {
   constructor () {
-    super ()
-    this.state = {
-      dislikedOpacity: 0,
-      interestingOpacity: 0,
-      isDragging: false,
-      isFavorite: false,
+    super()
+    this.state = { cursor: null,
+      item: null,
+      isRead: false,
       position: null,
-      type: null
+      transform: null,
+      style: null
     }
   }
-  handlePinHighlight = props => {
-    const { index, pin, selectedItem } = props
-    if (pin && pin.type === 'interesting' && index === selectedItem) {
-      this.setState({ interestingOpacity: 1, isFavorite: true })
+  handleSetRead = props => {
+    // unpack and check
+    const { content,
+      handleSetRead,
+      readTimeout
+    } = props
+    const { isRead } = this.state
+    if (!content || isRead) { return }
+    // wait a bit to trigger the fact that we stay on the same card
+    setTimeout(() => {
+      // make sure we are not going to do it circularly
+      this.setState({ isRead: true })
+      // check that type is still current
+      this.state.type === CURRENT && handleSetRead && handleSetRead(props)
+    }, readTimeout)
+  }
+  handleSetType = props => {
+    // unpack and check
+    const { deckElement,
+      handLength,
+      handleSetType,
+      isSetRead,
+      isContentChanging,
+      onTransitionStart,
+      transition,
+      transitionTimeout,
+      perspective,
+      rotation,
+      widthRatio
+    } = props
+    // cursor is defined in state if it is the current card
+    // or possibly in props given by the deck parent component
+    const cursor = this.state.cursor || props.cursor
+    const item = this.state.item || props.item
+    if (!deckElement) {
+      return
+    }
+    // determine the type of the card
+    let type
+    if (item === 0) {
+      type = CURRENT
+    } else if (item < 0) {
+      if (item >= - handLength) {
+        type = HAND_LEFT
+      } else {
+        type = ASIDE_LEFT
+      }
+    } else if (item <= handLength) {
+      type = HAND_RIGHT
     } else {
-      this.setState({ interestingOpacity: 0, isFavorite: false })
+      type = ASIDE_RIGHT
     }
-  }
-  onContentClick = () => {
-    const { history, id, mediation } = this.props
-    if (mediation) {
-      history.push(`/decouverte/${id}/${mediation.id}`)
+    // compute the size of the container
+    const halfWidth = 0.5 * deckElement.offsetWidth
+    const leftOrRightCurrentWidth = halfWidth * (1 - widthRatio)
+    const currentWidth = deckElement.offsetWidth - 2 * leftOrRightCurrentWidth
+    const handWidth = leftOrRightCurrentWidth / handLength
+    // determine style and transform given the type of the card
+    let style, transform
+    switch (type) {
+      case ASIDE_LEFT:
+        style = {
+          left: -100,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+        break
+      case HAND_LEFT:
+        style = {
+          left: leftOrRightCurrentWidth + item * handWidth,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
+        break
+      case CURRENT:
+        style = {
+          left: leftOrRightCurrentWidth,
+          width: currentWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
+        break
+      case HAND_RIGHT:
+        style = {
+          left: deckElement.offsetWidth - leftOrRightCurrentWidth + (item - 1) * handWidth,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+        break
+      case ASIDE_RIGHT:
+        style = {
+          left: deckElement.offsetWidth + 100,
+          width: handWidth
+        }
+        transform = `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
+        break
+      default:
+        break
     }
-    else {
-      history.push(`/decouverte/${id}`)
+    // aside left
+    // hand left
+    // check read
+    isSetRead && type === CURRENT && this.handleSetRead(props)
+    // determine style
+    style.transition = transition ||
+      `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`
+    // transition happened when the style has been already set once
+    // and that the new style has a not none transform
+    if (this.state.style && style.transition !== 'none') {
+      onTransitionStart && Object.keys(style).forEach(key => {
+        if (key !== 'transition' && style[key] !== this.state.style[key]) {
+          // console.log(type, key, props.content.id, props.item, props.index)
+          onTransitionStart({ propertyName: key }, this.props)
+        }
+      })
     }
-  }
-  onDeleteClick = () => {
-    // const { id, requestData } = this.props
-    //TODO: remove favorite status
-    //requestData('DELETE', `pins/offerId:${id}`, {
-    //  getOptimistState: (state, action) => {
-    //    const offerIds = state.offers.map(offer => offer.id)
-    //    const offerIndex = offerIds.indexOf(id)
-    //    const optimistOffers = [...state.offers]
-    //    optimistOffers[offerIndex] = Object.assign({}, optimistOffers[offerIndex])
-    //    delete optimistOffers[offerIndex].pin
-    //    return {
-    //      offers: optimistOffers
-    //    }
-    //  },
-    //  getSuccessState: (state, action) => {
-    //    const offerIds = state.offers.map(({ id }) => id)
-    //    const offerIndex = offerIds.indexOf(id)
-    //    const nextOffers = [...state.offers]
-    //    nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex])
-    //    delete nextOffers[offerIndex].pin
-    //    return { offers: nextOffers }
-    //  }
-    //})
+    // inform parent about the new current card
+    const newState = { isRead: false,
+      style,
+      transform,
+      type
+    }
+    // update
+    this.setState(newState)
+    // hook
+    handleSetType && handleSetType(props, newState)
   }
   onDrag = (event, data) => {
-    const { thresholdDragRatio } = this.props
-    const { y } = data
-    const ratio = -y / (thresholdDragRatio * this._element.offsetHeight)
-    this.setState({
-      dislikedOpacity: Math.max(0, -ratio),
-      interestingOpacity: Math.max(0, ratio)
-    })
+    // unpack
+    const { deckElement, onDrag } = this.props
+    // compute the cursor
+    const cursor = data.x / (deckElement.offsetWidth / 2)
+    this.setState({ cursor })
+    this.handleSetType(this.props)
+    // hook
+    onDrag && onDrag(event, data)
   }
-  onStart = () => {
-    this.setState({ position: null, isDragging: true })
+  onTransitionEnd = event => {
+    const { onTransitionEnd } = this.props
+    onTransitionEnd && onTransitionEnd(event, this.props)
   }
   onStop = (event, data) => {
-    const { cardsCount,
-      carouselElement,
-      filterData,
-      id,
-      index,
-      // requestData,
-      thresholdDragRatio,
-      // userId
+    // unpack
+    const { deckElement,
+      handleNextItem,
+      isFirst,
+      isLast,
+      perspective
     } = this.props
-    const { isFavorite } = this.state
-    const { y } = data
-    let type
-    if (y < -thresholdDragRatio * this._element.offsetHeight) {
-      type = 'interesting'
-    } else if (y > thresholdDragRatio * this._element.offsetHeight) {
-      type = 'disliked'
-    }
-    if (type) {
-      //TODO: mark item as favorite
-      //requestData('POST', 'pins', { body: {
-      //  offerId: id,
-      //  type,
-      //  userId
-      //}})
-      const selectedItem = (index < cardsCount - 1)
-        ? index
-        : index -1
-      carouselElement.selectItem({ selectedItem })
-      filterData('offers', offer => offer.id !== id)
-    }
-    this.setState({
-      dislikedOpacity: 0,
-      interestingOpacity: isFavorite ? 1 : 0,
-      isDragging: false,
+    const { x } = data
+    const newState = {
+      cursor: 0,
       position: { x: 0, y: 0 }
-    })
+    }
+    // thresholds
+    const leftThreshold = - 0.1 * deckElement.offsetWidth
+    const rightThreshold = 0.1 * deckElement.offsetWidth
+    if (!isLast && x < leftThreshold) {
+      handleNextItem(-1)
+    } else if (!isFirst && x > rightThreshold) {
+      handleNextItem(1)
+    } else {
+      newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
+    }
+    // return
+    this.setState(newState)
   }
   componentDidMount () {
-    this.handlePinHighlight(this.props)
+    this.onTransitionEndListener = this.cardElement.addEventListener(
+      'transitionend',
+      this.onTransitionEnd
+    )
   }
-  componentWillReceiveProps (nextProps) {
-    this.handlePinHighlight(nextProps)
+  componentWillMount () {
+    this.handleSetType(this.props)
+  }
+  componentWillReceiveProps (nextProps, nextState) {
+    const { cursor,
+      deckElement,
+      isResizing,
+      item
+    } = nextProps
+    if ( (deckElement && !this.props.deckElement)
+      || (item !== this.props.item)
+      || (cursor !== this.props.cursor)
+      || (isResizing && !this.props.isResizing)
+    ) {
+      // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
+      this.handleSetType(nextProps)
+    }
+  }
+  componentWillUnmount () {
+    this.cardElement.removeEventListener('transitionend',
+      this.onTransitionEnd)
   }
   render () {
-    const { cardsLength,
-      carousselNode,
-      dateRead,
-      id,
+    const { onDrag,
+      onStop
+    } = this
+    const { content,
+      contentLength,
       index,
-      isHidden,
-      mediation,
-      selectedItem,
-      thumbUrl
+      isTransitioning,
+      item
     } = this.props
-    const { dislikedOpacity,
-      interestingOpacity,
-      isDisabled,
-      isDragging,
-      isFavorite,
-      position
+    const { position,
+      style,
+      transform,
+      type
     } = this.state
+    const isDraggable = type === 'current' && !isTransitioning
     return (
-      <div className='card flex items-center justify-center'
-        ref={_element => this._element = _element}>
-        {
-          selectedItem === index && [
-            <Portal key='interesting' node={carousselNode}>
-              <div className={classnames('card__typed card__typed--interesting absolute p2 relative', {
-                'card__typed--interesting--active': interestingOpacity >= 1 })}
-                style={{ opacity: interestingOpacity }}>
-                {
-                  isFavorite && !isDragging && (
-                    <button className='button button--alive button--reversed card__typed__delete absolute'
-                      onClick={this.onDeleteClick}>
-                      X
-                    </button>
-                  )
-                }
-                pourquoi pas
-              </div>
-            </Portal>,
-            <Portal key='disliked' node={carousselNode}>
-              <div className={classnames('card__typed card__typed--disliked absolute p2', {
-                'card__typed--disliked--active': dislikedOpacity >= 1
-              })}
-                style={{ opacity: dislikedOpacity }} >
-                pas pour moi
-              </div>
-            </Portal>
-          ]
-        }
-        <Draggable axis='y'
-          disabled={isDisabled}
-          onDrag={this.onDrag}
-          onStart={this.onStart}
-          onStop={this.onStop}
-          position={position} >
-          <div className={classnames('card__content relative', {
-            'card__content--hidden': isHidden })} style={{
-            backgroundImage: `url(${thumbUrl})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover'
-          }} onDoubleClick={this.onContentClick}>
-            <div className='card__content__info absolute bottom-0 left-0 right-0 m2 p1 relative'>
-              <div className='mb1'>
-                ({id}) {index + 1} / {cardsLength} {dateRead && 'vue'}
-              </div>
-              <div className='flex items-center justify-center'>
-              {
-                mediation && <MediationItem key={index} {...mediation} />
-              }
-              </div>
+      <Draggable axis='x'
+        disabled={!isDraggable}
+        position={position}
+        onDrag={onDrag}
+        onStop={onStop} >
+          <span className={classnames('card absolute', {
+              'card--current': type === CURRENT,
+              'card--draggable': isDraggable
+            })}
+            ref={element => this.cardElement = element}
+            style={style}
+          >
+            <div className='card__container' style={{ transform }}>
+              <Recto {...content}
+                contentLength={contentLength}
+                index={index}
+                item={item} />
             </div>
-          </div>
-        </Draggable>
-      </div>
+          </span>
+      </Draggable>
     )
   }
 }
 
-Card.defaultProps = {
-  thresholdDragRatio: 0.3
+Card.defaultProps = { isSetRead: true,
+  perspective: 600,
+  readTimeout: 3000,
+  rotation: 45,
+  transitionTimeout: 500,
+  widthRatio: 0.75
 }
 
-export default compose(
-  withRouter,
-  connect(
-    state => ({ userId: state.user && state.user.id }),
-    { filterData, requestData }
-  )
-)(Card)
+export default Card

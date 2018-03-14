@@ -1,7 +1,8 @@
 import 'fetch-everywhere'
+import { parse } from 'query-string'
 
 import { API_URL } from './config'
-import { db, putData } from './dexie'
+import { getData, putData } from './dexie'
 
 export const isRequestAction = ({ type }) => /REQUEST_(.*)/.test(type)
 
@@ -55,10 +56,15 @@ export async function syncData (method, path, config = {}) {
   // unpack
   const { body } = config
   let data
+  // check the table
+  const [pathWithoutQuery, queryString] = path.split('?')
+  const collectionName = pathWithoutQuery.split('/')[0]
+  // call the good protocol api
   if (method === 'GET') {
-    data = await db[path].toArray()
+    data = await getData(collectionName, parse(queryString))
   } else {
-    data = await putData('update', path, body)
+    data = await putData('update', collectionName, body)
   }
+  // return data
   return { data }
 }

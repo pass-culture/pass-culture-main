@@ -10,8 +10,8 @@ import { closeLoading, showLoading } from '../reducers/loading'
 class SearchInput extends Component {
   constructor (props) {
     super (props)
-    this.handleDebouncedRequestData = debounce(
-      this.handleRequestData,
+    this.onDebouncedRequestData = debounce(
+      this.onRequestData,
       props.debounceTimeout
     )
   }
@@ -21,7 +21,7 @@ class SearchInput extends Component {
       closeLoading()
     }
   }
-  handleRequestData = event => {
+  onRequestData = event => {
     const { target: { value } } = event
     const { collectionName,
       hook,
@@ -36,7 +36,7 @@ class SearchInput extends Component {
     event.persist()
     //!this._isDebouncing && this.props.showLoading()
     this._isDebouncing = true
-    this.handleDebouncedRequestData(event)
+    this.onDebouncedRequestData(event)
   }
   render () {
     const children = [

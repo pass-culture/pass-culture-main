@@ -71,9 +71,7 @@ class Explorer extends Component {
                             {...card}
                           />
                         )).concat([
-                          firstNotReadItem === -1
-                            ? <LastCard key='last' />
-                            : <LoadingCard key='next' isForceActive />
+                          <LoadingCard key='next' isForceActive />
                         ])
                     : <LoadingCard />
                 }

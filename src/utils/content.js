@@ -1,15 +1,19 @@
 import { API_URL, THUMBS_URL } from '../utils/config'
 
-export function getCardFromUserMediation (userMediation) {
+export function getContentFromUserMediation (userMediation) {
+  // check and unpack
+  if (!userMediation) {
+    return
+  }
   const { mediation,
     userMediationOffers
   } = userMediation
   // choose one of the offer
-  const offer = userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
+  const offer = userMediationOffers &&
+    userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
   // check
   if (!offer && !mediation) {
-    console.warn('no offer neither mediation here!')
-    return null
+    return
   }
   // choose an image
   let source

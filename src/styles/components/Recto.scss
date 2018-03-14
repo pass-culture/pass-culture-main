@@ -1,0 +1,14 @@
+.recto {
+  border-radius: $border-radius;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+  height: 100%;
+  width: 100%;
+  &__info {
+    background-color: $very-very-light-grey;
+    border-radius: $border-radius;
+  }
+  &__loading {
+    height: 100%;
+  }
+}
