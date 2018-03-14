@@ -15,15 +15,10 @@ def make_user_query():
     return query
 
 
-@login_required
 @app.route("/users/me", methods=["GET"])
+@login_required
 def get_profile():
-    if current_user.is_authenticated:
-        user = make_user_query().filter_by(id=current_user.id)\
-                                .first()\
-                                ._asdict(include=user_include)
-        return jsonify(user), 200
-    return jsonify({"global": "Pas d'utilisateur connecté"}), 401
+    return jsonify(current_user._asdict(include=user_include))
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -35,8 +30,8 @@ def signin():
     return jsonify(user._asdict(include=user_include)), 200
 
 
-@login_required
 @app.route("/users/signout", methods=["GET"])
+@login_required
 def signout():
     logout_user()
     return jsonify({"global": "Deconnecté"})

@@ -1,4 +1,4 @@
-from flask import current_app as app, request
+from flask import current_app as app, jsonify, request
 from flask_login import LoginManager, login_user
 from models.api_errors import ApiErrors
 
@@ -7,6 +7,7 @@ app.login_manager.init_app(app)
 User = app.model.User
 
 app.config['REMEMBER_COOKIE_DURATION'] = 365 * 24 * 3600
+
 
 def get_user_with_credentials(identifier, password):
     errors = ApiErrors()
@@ -43,3 +44,10 @@ def get_user_with_request(request):
         return None
     user = get_user_with_credentials(auth.username, auth.password)
     return user
+
+
+@app.login_manager.unauthorized_handler
+def send_401():
+    e = ApiErrors()
+    e.addError('global', 'Authentification nécessaire')
+    return jsonify(e.errors), 401

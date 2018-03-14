@@ -1,4 +1,4 @@
-from utils.config import BLOB_LIMIT
+from utils.config import BLOB_SIZE
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req, req_with_auth
 
@@ -10,8 +10,8 @@ def test_10_put_user_mediations_should_work_only_when_logged_in():
     assert r.status_code == 401
 
 
-def test_11_put_user_mediations_should_return_a_list_of_ums():
-    r = req_with_auth().put(UM_URL+'?around='+humanize(10), json={})
+def test_11_put_user_mediations_should_return_a_list_of_ums(capsys):
+    r = req_with_auth().put(UM_URL+'?around='+humanize(1), json={})
     assert r.status_code == 200
     ums = r.json()
-    assert len(ums) >= BLOB_LIMIT
+    assert len(ums) <= BLOB_SIZE
