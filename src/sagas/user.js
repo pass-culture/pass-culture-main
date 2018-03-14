@@ -42,7 +42,7 @@ export function * watchUserActions () {
     /FAIL_DATA_POST_USERS\/SIGN(.*)/.test(type) ||
     /FAIL_DATA_GET_USERS\/ME(.*)/.test(type), fromWatchFailSignActions)
   yield takeEvery(({ type }) =>
-    /SUCCESS_DATA_POST_USERS\/SIGN(.*)/.test(type) ||
+    /SUCCESS_DATA_POST_USERS/.test(type) ||
     /SUCCESS_DATA_GET_USERS\/ME(.*)/.test(type), fromWatchSuccessSignActions)
   yield takeEvery(({ type }) =>
     /SUCCESS_DATA_GET_USERS\/SIGNOUT(.*)/.test(type), fromWatchSuccessGetSignoutActions)

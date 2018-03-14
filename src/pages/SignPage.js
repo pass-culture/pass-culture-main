@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import { compose } from 'redux'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 import FormField from '../components/FormField'
 import Sign from '../components/Sign'
@@ -10,6 +12,12 @@ import { NEW } from '../utils/config'
 const inputClassName = 'input block col-12 mb2'
 
 class SignPage extends Component {
+  componentWillReceiveProps (nextProps) {
+    const { errors, history, user } = nextProps
+    if (user && !errors) {
+      history.push('/decouverte') 
+    }
+  }
   onSigninClick = () => {
     this.props.showModal(<Sign />, { isCloseButton: false })
   }
@@ -45,7 +53,7 @@ class SignPage extends Component {
                    name='contact_ok'
                    type='checkbox'
                    label='Pass Culture est en phase d&apos;expérimentation. En créant mon compte pendant cette phase, j&apos;accèpte d&apos;être contacté par email pour donner mon avis.' />
-        <div class='form-global__errors'>{errors}</div>
+        <div className='form-global__errors'>{errors}</div>
         <SubmitButton getBody={form => form.usersById[NEW]}
           path='users'
           storeKey='users'
@@ -58,7 +66,9 @@ class SignPage extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({ errors: state.data.errors && state.data.errors['global'], form: state.form }),
-  { showModal }
-)(SignPage)
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => ({ errors: state.data.errors && state.data.errors['global'], form: state.form, user:state.user }),
+    { showModal }
+  ))(SignPage)

@@ -45,7 +45,7 @@ function * fromWatchRequestDataActions (action) {
     }
   } catch (error) {
     console.warn('error', error)
-    yield put(failData(method, path, [error], config))
+    yield put(failData(method, path, [{'global': error}], config))
   }
 }
 
