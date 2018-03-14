@@ -1,8 +1,11 @@
 .card {
   cursor: pointer;
   height: 100%;
+  &--small {
+    height: 90%;
+  }
   &--current {
-    z-index: 500;
+    z-index: 50;
   }
   &--draggable {
     cursor: -webkit-grab;
@@ -12,10 +15,11 @@
     z-index: 1000;
   }
   &__container {
-    background-color: $very-very-light-grey;
-    border-radius: $border-radius;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     height: 100%;
     width: 100%;
+    &--small {
+      border-radius: $border-radius;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
   }
 }

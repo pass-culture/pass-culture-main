@@ -5962,7 +5962,7 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "^0.4.2"
 
-redux-responsive@^4.1.1:
+redux-responsive@^4.3.5:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/redux-responsive/-/redux-responsive-4.3.5.tgz#16b0c8448f87796c7aa594016e825a392a943b9d"
   dependencies:

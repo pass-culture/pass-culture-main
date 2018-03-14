@@ -1,0 +1,9 @@
+.clue {
+  left: 25%;
+  right: 25%;
+  transition: opacity 500ms;
+  top: 10%;
+  &--hidden {
+    opacity: 0;
+  }
+}

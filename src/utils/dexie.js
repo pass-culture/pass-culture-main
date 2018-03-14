@@ -136,7 +136,7 @@ export async function pushPull (state = {}) {
     const result = await fetchData(method, path, config)
     // bulk
     if (result.data) {
-      const [pathWithoutQuery, queryString] = path.split('?')
+      const pathWithoutQuery = path.split('?')[0]
       const collectionName = pathWithoutQuery.split('/')[0]
       return putData('bulk', collectionName, result.data, { isClear: true })
     } else {
