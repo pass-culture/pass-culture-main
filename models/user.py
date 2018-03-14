@@ -11,12 +11,10 @@ class User(app.model.PcObject,
     email = db.Column(db.String(120), nullable=False)
     password = db.Column(db.Binary(60), nullable=False)
 
-    publicName = db.Column(db.String(100), nullable=False)
+    publicName = db.Column(db.String(30), nullable=False)
 
     offerers = db.relationship(lambda: app.model.Offerer,
                                secondary='user_offerer')
-
-    account = db.Column(db.Numeric(10,2))
 
     clearTextPassword = None
 

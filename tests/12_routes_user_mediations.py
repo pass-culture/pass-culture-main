@@ -11,7 +11,7 @@ def test_10_put_user_mediations_should_work_only_when_logged_in():
 
 
 def test_11_put_user_mediations_should_return_a_list_of_ums():
-    r = req_with_auth.put(UM_URL+'?around='+humanize(10), json={})
+    r = req_with_auth().put(UM_URL+'?around='+humanize(10), json={})
     assert r.status_code == 200
     ums = r.json()
     assert len(ums) >= BLOB_LIMIT

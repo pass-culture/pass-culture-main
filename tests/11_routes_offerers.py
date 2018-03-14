@@ -7,7 +7,7 @@ def test_10_get_offerers_should_work_only_when_logged_in():
 
 
 def test_10_get_offerers_should_return_a_list_of_offerers():
-    r = req_with_auth.get(API_URL + '/offerers')
+    r = req_with_auth().get(API_URL + '/offerers')
     assert r.status_code == 200
     offerers = r.json()
     assert len(offerers) == 5

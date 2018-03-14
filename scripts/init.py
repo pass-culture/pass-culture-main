@@ -27,7 +27,7 @@ def do_init():
     client_user.publicName = "Arnaud Bétrémieux"
     client_user.account = 100
     client_user.email = "arnaud.betremieux@beta.gouv.fr"
-    client_user.setPassword("arnaud")
+    client_user.setPassword("arnaud123")
     check_and_save(client_user)
     set_from_mock("thumbs", client_user, 1)
 
@@ -37,7 +37,7 @@ def do_init():
     pro_user = model.User()
     pro_user.publicName = "Erwan Ledoux"
     pro_user.email = "erwan.ledoux@beta.gouv.fr"
-    pro_user.setPassword("erwan")
+    pro_user.setPassword("erwan123")
     check_and_save(pro_user)
     set_from_mock("thumbs", pro_user, 2)
 
