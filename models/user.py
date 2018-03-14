@@ -25,8 +25,11 @@ class User(app.model.PcObject,
 
     def errors(self):
         errors = super(User, self).errors()
+        if self.id is None\
+           and User.query.filter_by(email=self.email).count()>0:
+            errors.addError('email', 'Un compte lié à cet email existe déjà')
         if self.publicName:
-            errors.checkMinLength('password', self.publicName, 3)
+            errors.checkMinLength('publicName', self.publicName, 3)
         if self.email:
             errors.checkEmail('email', self.email)
 #        if self.firstname:

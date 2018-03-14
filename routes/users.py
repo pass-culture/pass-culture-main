@@ -1,6 +1,6 @@
 from base64 import b64decode
 from flask import current_app as app, jsonify, request
-from flask_login import current_user, login_required, logout_user
+from flask_login import current_user, login_required, logout_user, login_user
 from sqlalchemy.orm import aliased
 
 from utils.human_ids import humanize
@@ -45,8 +45,6 @@ def signout():
 @app.route("/users", methods=["POST"])
 def signup():
     new_user = User(from_dict=request.json)
-    if (User.query.filter_by(email=new_user.email).count())>0:
-        return jsonify({"global": "Un compte lié à cet email existe déjà"}), 400;
     new_user.id = None
     app.model.PcObject.check_and_save(new_user)
     # thumb
@@ -57,4 +55,5 @@ def signup():
             b64decode(request.json['thumb_content']),
             request.json['thumb_content_type']
         )
+    login_user(new_user)
     return jsonify(new_user._asdict(include=user_include)), 201
