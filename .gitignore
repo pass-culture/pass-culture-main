@@ -8,6 +8,7 @@
 
 # production
 /build
+target.zip
 
 # misc
 .DS_Store
