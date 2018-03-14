@@ -5,25 +5,38 @@ C'est tout le framework du Pass Culture!
 ## Minimal Process
 
 ### Install
-  Check the README in webapp to make sure you have yarn.
+  Il vous faudra une machine UNIX.
+
+  Installer docker (https://docs.docker.com/install/) et docker-compose (https://docs.docker.com/compose/install/#install-compose)
+
+  Installer yarn (voir le README dans le dépot pass-culture-webapp)
   Then
   ```bash
     ./pc install
   ```
 
-### Init with mock data
-  It will set a minimal database with some mock data:
+  Pour obtenir un certificat et le mettre dans le nginx (remplacer <domaine> par le domaine souhaité, qui doit pointer vers la machine hébergeant les docker)
+  docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt       -v ~/pass-culture-main/certs-data:/data/letsencrypt       deliverous/certbot       certonly       --verb
+ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
+
+  Puis mettre dans /etc/crontab pour le renouvellement :
+
+  0 0 * * * docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt       -v ~/pass-culture-main/certs-data:/data/letsencrypt       deliverous/certbot       renew       --verbose
+ --webroot --webroot-path=/data/letsencrypt
+
+### Init
+  Pour obtenir une base de données minimale.
   ```bash
     ./pc update_providables -m
     ./pc init
   ```
 
-### Start
-  Make the flask, postgres and nginx working:
+### Démarrage
+  Pour lancer l'API:
   ```bash
     ./pc start-backend
   ```
-  Make the webapp:
+  Pour lancer l'appli Web:
   ```bash
     ./pc start-frontend
   ```
