@@ -18,7 +18,6 @@ def get_user_with_credentials(identifier, password):
     errors.maybeRaise()
 
     user = User.query.filter_by(email=identifier).first()
-    print("USER", user)
 
     if not user:
         errors.addError('identifier', 'Identifiant incorrect')
