@@ -28,6 +28,7 @@ class Sign extends Component {
           Connecte-toi!
         </div>
         <FormInput className={inputClassName}
+          type='email'
           collectionName='users'
           name='identifier'
           placeholder='identifiant (email)' />

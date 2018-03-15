@@ -15,4 +15,6 @@
 
   <access origin="*" />
 
+  <plugin name="cordova-plugin-whitelist" spec="~1.3.3" />
+
 </widget>

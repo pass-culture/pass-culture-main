@@ -81,9 +81,9 @@ function downloadApps() {
   pgb_do(function(e, api) {
            api.get('/apps/3048468/android', function(e, data) {
              console.log('Downloading android app')
-             fs.writeFileSync('android.apk', data);
-           });
+             fs.writeFileSync('android.apk', data, 'binary');
          });
+       });
 }
 
 createZip();
