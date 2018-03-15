@@ -4,7 +4,6 @@ import { IS_DEV } from '../utils/config'
 import { config } from '../utils/dexie.data'
 import store from '../utils/store'
 
-console.log('process.env.HAS_WORKERS', process.env.HAS_WORKERS)
 export const worker = new DexieWorker()
 
 export default function register() {
