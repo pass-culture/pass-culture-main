@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import FormInput from './FormInput'
+import FormField from './FormField'
 import SubmitButton from './SubmitButton'
 import { assignData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
@@ -27,11 +27,12 @@ class Sign extends Component {
         <div className='h1 mb3'>
           Connecte-toi!
         </div>
-        <FormInput className={inputClassName}
+        <FormField className={inputClassName}
+          type='email'
           collectionName='users'
           name='identifier'
           placeholder='identifiant (email)' />
-        <FormInput className={inputClassName}
+        <FormField className={inputClassName}
           collectionName='users'
           name='password'
           placeholder='password'
