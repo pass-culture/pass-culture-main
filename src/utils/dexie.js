@@ -4,6 +4,7 @@ import uniq from 'lodash.uniq'
 import uuid from 'uuid'
 
 import { fetchData } from './request'
+import { IS_DEV } from '../utils/config'
 
 export const config = {
   name: "pass_culture",
@@ -144,3 +145,13 @@ export async function pushPull (state = {}) {
     }
   }))
 }
+
+
+// if (IS_DEV) {
+if (typeof window !== 'undefined') {
+  window.clearDexie = clear
+  window.dexieDb = db
+  window.fetchDexie = fetch
+  window.pushPullDexie = pushPull
+}
+// }

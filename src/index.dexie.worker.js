@@ -49,7 +49,7 @@ async function dexieSignout () {
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener('message', event => {
-  const { key, type } = event.data
+  const { key, log, type } = event.data
   // check
   if (!key) {
     console.warn('you need to define a key in event.data')
@@ -66,6 +66,9 @@ self.addEventListener('message', event => {
       dexiePushPull()
     })
     */
+  } else if (key === 'dexie-ping') {
+    console.log('DEXIE WORKER PING!')
+    postMessage({ log: "dexiePing" })
   } else if (key === 'dexie-push-pull') {
     dexiePushPull()
   } else if (key === 'dexie-signin') {
