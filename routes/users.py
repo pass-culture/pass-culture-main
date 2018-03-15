@@ -3,6 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 from sqlalchemy.orm import aliased
 
+from models.api_errors import ApiErrors
 from utils.human_ids import humanize
 from utils.object_storage import store_public_object
 
@@ -39,6 +40,12 @@ def signout():
 
 @app.route("/users", methods=["POST"])
 def signup():
+    if 'contact_ok' not in request.json or\
+       request.json['contact_ok']!='true':
+        e = ApiErrors()
+        e.addError('contact_ok', 'Vous devez obligatoirement cocher cette case')
+        return jsonify(e.errors), 400
+
     new_user = User(from_dict=request.json)
     new_user.id = None
     app.model.PcObject.check_and_save(new_user)

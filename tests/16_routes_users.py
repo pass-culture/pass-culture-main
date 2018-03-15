@@ -4,13 +4,14 @@ from utils.test_utils import API_URL, req, req_with_auth
 BASE_DATA = {
              'email': 'toto@toto.com',
              'publicName': 'Toto',
-             'password': 'toto12345678'
+             'password': 'toto12345678',
+             'contact_ok': 'true'
             }
 
 
 def assert_signup_error(data, err_field):
     r_signup = req_with_auth().post(API_URL + '/users',
-                                  json=data)
+                                    json=data)
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert err_field in error
@@ -55,9 +56,21 @@ def test_10_signup_should_not_work_with_invalid_password():
     assert_signup_error(data, 'password')
 
 
+def test_10_signup_should_not_work_without_contact_ok():
+    data = BASE_DATA.copy()
+    del(data['contact_ok'])
+    assert_signup_error(data, 'contact_ok')
+
+
+def test_10_signup_should_not_work_with_invalid_contact_ok():
+    data = BASE_DATA.copy()
+    data['contact_ok'] = 't'
+    assert_signup_error(data, 'contact_ok')
+
+
 def test_11_signup():
     r_signup = req_with_auth().post(API_URL + '/users',
-                                  json=BASE_DATA)
+                                    json=BASE_DATA)
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
 
