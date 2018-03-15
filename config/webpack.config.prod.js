@@ -230,8 +230,8 @@ module.exports = {
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
             },
-          },
-        ]).concat(
+          }
+        ].concat(
           process.env.HAS_WORKERS
             ? [{
               test: /\.worker\.js$/,
