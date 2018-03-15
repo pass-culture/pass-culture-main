@@ -188,14 +188,18 @@ module.exports = {
             },
           },
         ],
-      },
-      {
-        test: /\.worker\.js$/,
-        loader: require.resolve('worker-loader')
       }
+    ].concat(
+      process.env.HAS_WORKERS
+        ? [{
+          test: /\.worker\.js$/,
+          loader: require.resolve('worker-loader')
+        }]
+        : []
+    ).concat([
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
-    ],
+    ])
   },
   plugins: [
     // Makes some environment variables available in index.html.
