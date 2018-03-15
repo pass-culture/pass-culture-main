@@ -31,6 +31,10 @@ C'est tout le framework du Pass Culture!
   ```bash
     ./pc start-frontend
   ```
+  avec le dexie worker
+  ```bash
+    ./export HAS_WORKERS=true && pc start-frontend
+  ```
 
 ## Developer
 
@@ -77,7 +81,7 @@ C'est tout le framework du Pass Culture!
 
   Pour tester la navigation du site web
   ```bash
-    ./pc -e production testcafe -b firefox 
+    ./pc -e production testcafe -b firefox
   ```
 
 ## Deploy
