@@ -120,9 +120,6 @@
     ]
   },
   "eslintConfig": {
-    "rules": {
-      "import/prefer-default-export": "off"
-    },
     "extends": "react-app"
   },
   "homepage": "."
