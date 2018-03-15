@@ -2,7 +2,7 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { resetData } from '../reducers/data'
 import { setUser } from '../reducers/user'
-import { clear } from '../utils/dexie'
+import { clear } from '../utils/dexie.data'
 import { worker } from '../workers/dexie'
 
 function * fromWatchFailSignActions (action) {

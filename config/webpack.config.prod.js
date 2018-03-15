@@ -231,14 +231,18 @@ module.exports = {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
-          {
-            test: /\.worker\.js$/,
-            loader: require.resolve('worker-loader'),
-            options: { inline: true }
-          }
+        ]).concat(
+          process.env.HAS_WORKERS
+            ? [{
+              test: /\.worker\.js$/,
+              loader: require.resolve('worker-loader'),
+              options: { inline: true }
+            }]
+            : []
+        ).concat([
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.
-        ],
+        ])
       },
     ],
   },

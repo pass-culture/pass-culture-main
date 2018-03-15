@@ -102,7 +102,6 @@ export async function setUser (state = {}) {
     console.warn('We set user in dexie but user is not defined')
   }
   await db.users.clear()
-  console.log('user', user)
   await db.users.add(user)
 }
 

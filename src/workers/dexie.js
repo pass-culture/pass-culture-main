@@ -1,8 +1,15 @@
-import DexieWorker from '../index.dexie.worker.js'
 import { requestData } from '../reducers/data'
 import { IS_DEV } from '../utils/config'
-import { config } from '../utils/dexie'
+import { config } from '../utils/dexie.data'
 import store from '../utils/store'
+
+// console.log('process.env.HAS_WORKERS', process.env.HAS_WORKERS)
+let DexieWorker
+if (process.env.HAS_WORKERS) {
+  DexieWorker = require('../index.dexie.worker.js')
+} else {
+  DexieWorker = require('../utils/dexie.wrapper').default
+}
 
 export const worker = new DexieWorker()
 
