@@ -1,4 +1,3 @@
-import Cookies from 'js-cookies'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { resetData } from '../reducers/data'
@@ -30,11 +29,7 @@ function * fromWatchSuccessSignActions () {
     // then it just sync the redux with the dexie state
     // else it asks for a dexie push pull to also feed
     // the dexie with the backend
-    const rememberToken = Cookies.getItem('remember_token')
-    worker.postMessage({
-      key: 'dexie-signin',
-      state: { rememberToken, user }
-    })
+    worker.postMessage({ key: 'dexie-signin', state: { user } })
   } else {
     yield call(fromWatchFailSignActions)
   }

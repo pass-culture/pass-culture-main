@@ -17,13 +17,14 @@ async function dexiePushPull () {
 
 async function dexieSignin () {
   // check
-  const { rememberToken, user } = state
-  if (!rememberToken || !user) {
+  const { user } = state
+  console.log('USER DEXIE', user)
+  if (!user) {
     return
   }
   // get the matching user
-  const users = await getData('users', { rememberToken })
-  if (users.length === 0 || user.rememberToken !== state.user.rememberToken) {
+  const users = await getData('users', { id: user.id })
+  if (users.length === 0) {
     // trigger a first push pull to feed the dexie
     await dexiePushPull()
   } else {
@@ -38,8 +39,6 @@ async function dexieSignin () {
 }
 
 async function dexieSignout () {
-  // check
-  const { rememberToken, user } = state
   // clear
   Object.keys(state).forEach(key => delete state[key])
   db.users.clear()

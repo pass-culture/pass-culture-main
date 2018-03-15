@@ -20,7 +20,7 @@ export const config = {
       name: 'differences'
     },
     {
-      description: 'rememberToken',
+      description: 'id',
       name: 'users'
     }
   ],
@@ -97,12 +97,13 @@ export async function fetch (config = {}) {
 }
 
 export async function setUser (state = {}) {
-  const { rememberToken, user } = state
-  if (!user || !rememberToken) {
-    console.warn('We set user in dexie but user or rememberToken are not defined')
+  const { user } = state
+  if (!user) {
+    console.warn('We set user in dexie but user is not defined')
   }
   await db.users.clear()
-  await db.users.add(Object.assign({ rememberToken }, user))
+  console.log('user', user)
+  await db.users.add(user)
 }
 
 export async function pushPull (state = {}) {
