@@ -77,7 +77,7 @@ C'est tout le framework du Pass Culture!
 
   Pour tester la navigation du site web
   ```bash
-    ./pc testcafe -b firefox -e production
+    ./pc -e production testcafe -b firefox 
   ```
 
 ## Deploy
@@ -93,11 +93,11 @@ C'est tout le framework du Pass Culture!
   --webroot --webroot-path=/data/letsencrypt
 
 ### Push
-  Pour déployer une nouvelle version:
+  Pour déployer une nouvelle version, par exemple en staging:
   (Attention de ne pas déployer sur la prod sans authorisation !)
   ```bash
     ./pc rebuild-frontend
-    ./pc deploy-frontend
+    ./pc -e staging deploy-frontend
   ```
 
   ```bash

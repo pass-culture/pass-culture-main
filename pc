@@ -41,7 +41,7 @@ elif [[ "$CMD" == "deploy-backend" ]]; then
 	cd dockerfiles/nginx/conf.d && rm flaskapp.conf && ln -s flaskapp_ssl flaskapp.conf && cd;
 	git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
 elif [[ "$CMD" == "deploy-frontend" ]]; then
-  RUN='cd webapp && netlify deploy -e '"$ENV"
+  RUN='cd $ROOT_PATH/webapp && netlify deploy -e '"$ENV"
 elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
        docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
@@ -56,19 +56,19 @@ elif [[ "$CMD" == "install" ]]; then
        git submodules update;
        git submodules foreach git checkout origin master;
 			 ./pc symlink;
-       cd webapp && yarn'
+       cd $ROOT_PATH/webapp && yarn'
 elif [[ "$CMD" == "psql" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
 elif [[ "$CMD" == "python" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
-       rm -rf api/postgres_data'
+       rm -rf $ROOT_PATH/api/postgres_data'
 elif [[ "$CMD" == "rebuild-frontend" ]]; then
-	RUN='cd webapp && npm run build'
+	RUN='cd $ROOT_PATH/webapp && npm run build'
 elif [[ "$CMD" == "restart-backend" ]]; then
-  RUN='rm -rf api/static/object_store_data;
-       rm -rf api/postgres_data;
+  RUN='rm -rf $ROOT_PATH/api/static/object_store_data;
+       rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up'
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
@@ -84,7 +84,7 @@ elif [[ "$CMD" == "restore-db" ]]; then
 elif [[ "$CMD" == "start-backend" ]]; then
   RUN='docker-compose up'
 elif [[ "$CMD" == "start-frontend" ]]; then
-  RUN='cd webapp && yarn start'
+  RUN='cd $ROOT_PATH/webapp && yarn start'
 elif [[ "$CMD" == "symlink" ]]; then
   RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
 elif [[ "$CMD" == "test-backend" ]]; then
