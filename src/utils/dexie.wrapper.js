@@ -25,7 +25,7 @@ class DexieWrapper {
     // pull
     this.state.user && await pushPull(this.state)
     // post
-    (this.isWorker ? this.worker.postMessage : this.onmessage)({ isSyncRedux: true,
+    this.receiveMessage({ isSyncRedux: true,
       text: "dexiePushPull"
     })
   }
@@ -37,20 +37,15 @@ class DexieWrapper {
     }
     // get the matching user
     const users = await getData('users', { id: user.id })
-    if (users.length === 0) {
+    if (users.length === 0 || users[0].id !== user.id) {
       // trigger a first push pull to feed the dexie
-      await this.dexiePushPull()
-    } else if (users[0].id === user.id) {
-      // if the user is already here we need just to trigger a
-      // sync of the redux state
-      this.receiveMessage({ isSyncRedux: true })
-    } else {
-      console.warn('signin with a different user from the dexie!')
+      // or user has changed so trigger it also
+      await pushPull(this.state)
     }
     // setUser to set for the first time or just sync
     this.state.user && await setUser(this.state)
-    // post
-    this.receiveMessage({ text: "dexieSignin" })
+    // sync the redux state
+    this.receiveMessage({ isSyncRedux: true, text: "dexieSignin" })
   }
   dexieSignout () {
     // clear

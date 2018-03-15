@@ -179,7 +179,7 @@ class UserMediationsDeck extends Component {
     let loopContents = []
     const lastUserMediation = userMediations.slice(-1)[0]
     console.log('lastUserMediation', lastUserMediation)
-    if (lastUserMediation.isLast) {
+    if (lastUserMediation && lastUserMediation.isLast) {
       if (prevProps.userMediations) {
         console.log(lastUserMediation.blobSize, userMediations.length)
         loopContents = prevProps.userMediations.slice(0,

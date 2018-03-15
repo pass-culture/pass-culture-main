@@ -1,5 +1,14 @@
+/* global self */
+/* eslint no-restricted-globals: ["off", "self"] */
+
 import DexieWrapper from './utils/dexie.wrapper'
 
-const dexieWrapper = new DexieWrapper(self)
+let DexieWorker
+if (process.env.HAS_WORKERS) {
+  const dexieWrapper = new DexieWrapper(self)
+  self.addEventListener('message', dexieWrapper.onMessage)
+} else {
+  DexieWorker = DexieWrapper
+}
 
-self.addEventListener('message', dexieWrapper.onMessage)
+export default DexieWorker
