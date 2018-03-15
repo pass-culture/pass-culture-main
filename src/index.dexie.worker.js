@@ -74,6 +74,3 @@ self.addEventListener('message', event => {
     dexieSignout()
   }
 })
-
-const bobMoran = {}
-export default bobMoran

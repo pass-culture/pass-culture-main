@@ -6,8 +6,8 @@ import './styles/index.scss'
 import './utils/styles'
 
 import Root from './Root'
-import registerCacheServiceWorker from './utils/registerCacheServiceWorker'
-import registerDexieServiceWorker from './utils/registerDexieServiceWorker'
+// import registerCacheServiceWorker from './utils/registerCacheServiceWorker'
+import registerDexieServiceWorker from './workers/dexie'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
 if (module.hot) {
@@ -20,5 +20,5 @@ if (module.hot) {
     ), document.getElementById('root'))
   })
 }
-registerCacheServiceWorker()
+// registerCacheServiceWorker()
 registerDexieServiceWorker()

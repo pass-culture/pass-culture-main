@@ -4,21 +4,21 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { resetData } from '../reducers/data'
 import { setUser } from '../reducers/user'
 import { clear } from '../utils/dexie'
-import { dexieWorker } from '../utils/registerDexieServiceWorker'
+import { worker } from '../workers/dexie'
 
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false or false to null
   yield call(clear)
   const user = yield select(state => state.user)
   yield put(setUser(user === false ? null : false))
-  dexieWorker.postMessage({ key: 'dexie-signout' })
+  worker.postMessage({ key: 'dexie-signout' })
 }
 
 function * fromWatchSuccessGetSignoutActions () {
   yield put(resetData())
   yield call(clear)
   yield put(setUser(false))
-  dexieWorker.postMessage({ key: 'dexie-signout' })
+  worker.postMessage({ key: 'dexie-signout' })
 }
 
 function * fromWatchSuccessSignActions () {
@@ -31,7 +31,7 @@ function * fromWatchSuccessSignActions () {
     // else it asks for a dexie push pull to also feed
     // the dexie with the backend
     const rememberToken = Cookies.getItem('remember_token')
-    dexieWorker.postMessage({
+    worker.postMessage({
       key: 'dexie-signin',
       state: { rememberToken, user }
     })

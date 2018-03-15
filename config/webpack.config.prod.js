@@ -146,6 +146,7 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
+            exclude: /index.(.*).worker.js/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
@@ -232,7 +233,8 @@ module.exports = {
           },
           {
             test: /\.worker\.js$/,
-            use: { loader: 'worker-loader', options: { inline: true } }
+            loader: require.resolve('worker-loader'),
+            options: { inline: true }
           }
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.

@@ -1,13 +1,13 @@
-import { IS_DEV } from './config'
-import { clear, config, db, fetch, pushPull } from './dexie'
-import store from './store'
-import Worker from '../dexie.service.worker.js'
+import DexieWorker from '../index.dexie.worker.js'
 import { requestData } from '../reducers/data'
+import { IS_DEV } from '../utils/config'
+import { clear, config, db, fetch, pushPull } from '../utils/dexie'
+import store from '../utils/store'
 
-export const dexieWorker = new Worker()
+export const worker = new DexieWorker()
 
 export default function register() {
-  dexieWorker.onmessage = event => {
+  worker.onmessage = event => {
     if (event.data.error) {
       console.warn(event.data.error)
     } else if (event.data.isSyncRedux) {
@@ -28,5 +28,5 @@ if (IS_DEV) {
   window.fetchDexie = fetch
   window.pushPullDexie = pushPull
   window.syncDexiePushPull = () =>
-    dexieWorker.postMessage({ key: 'dexie-push-pull' })
+    worker.postMessage({ key: 'dexie-push-pull' })
 }
