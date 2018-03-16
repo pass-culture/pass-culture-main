@@ -39,7 +39,8 @@ class Card extends Component {
   }
   handleSetType = props => {
     // unpack and check
-    const { deckElement,
+    const { cursor,
+      deckElement,
       handLength,
       handleSetType,
       isSetRead,
@@ -53,9 +54,6 @@ class Card extends Component {
       rotation,
       widthRatio
     } = props
-    // cursor is defined in state if it is the current card
-    // or possibly in props given by the deck parent component
-    const cursor = this.state.cursor || props.cursor
     const item = this.state.item || props.item
     if (!deckElement) {
       return
@@ -88,7 +86,6 @@ class Card extends Component {
     const currentWidth = deckElement.offsetWidth - 2 * leftOrRightCurrentWidth
     // determine style and transform given the type of the card
     let style, transform
-    console.log('cursor', cursor, item)
     switch (type) {
       case ASIDE_LEFT:
         style = {
@@ -174,21 +171,14 @@ class Card extends Component {
   onDrag = (event, data) => {
     // unpack
     const { deckElement,
-      isFirst,
-      onDrag
+      handleSetCursor,
+      isFirst
     } = this.props
     const { x, y } = data
     // compute the cursor
     const cursor = x / deckElement.offsetWidth
-    console.log('isFirst', isFirst, x)
-    this.setState({ cursor,
-      //position: isFirst
-      //  ? { x: Math.max(0, x), y: 0 }
-      //  : { x, y }
-    })
-    // this.handleSetType(this.props)
     // hook
-    onDrag && onDrag(event, data, cursor)
+    handleSetCursor && handleSetCursor(cursor)
   }
   onTransitionEnd = event => {
     const { onTransitionEnd } = this.props
@@ -198,34 +188,30 @@ class Card extends Component {
     // unpack
     const { deckElement,
       handleNextItem,
+      handleRelaxItem,
       isFirst,
       isLast,
+      transitionTimeout,
       perspective
     } = this.props
     const { x } = data
-    const newState = {
-      cursor: 0,
-      position: { x: 0, y: 0 }
-    }
-    newState.style = Object.assign({}, this.state.style, { left: x })
+    // special reset for the CURRENT CARD
+    // we need to clear the position given by x and y
+    // and transfer the position state into the style state one
+    this.setState({
+      position: { x:0, y:0 },
+      style: Object.assign({}, this.state.style, { left: x })
+    })
     // thresholds
     const leftThreshold = - 0.1 * deckElement.offsetWidth
     const rightThreshold = 0.1 * deckElement.offsetWidth
     if (!isLast && x < leftThreshold) {
       handleNextItem(-1)
-      // newState.position = { x, y: 0 }
-      // newState.style = Object.assign({}, this.state.style, { left: x })
     } else if (!isFirst && x > rightThreshold) {
       handleNextItem(1)
-      // newState.position = { x, y: 0 }
-      // newState.style = Object.assign({}, this.state.style, { left: x })
     } else {
-      newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
-      // delete newState.position
-      // delete newState.style
+      handleRelaxItem && handleRelaxItem(data)
     }
-    // return
-    this.setState(newState)
   }
   componentDidMount () {
     this.onTransitionEndListener = this.cardElement.addEventListener(
@@ -245,11 +231,9 @@ class Card extends Component {
     if ( (deckElement && !this.props.deckElement)
       || (item !== this.props.item)
       || (isResizing && !this.props.isResizing)
+      || (cursor !== this.props.cursor && item > - 2 && item < 2)
     ) {
       // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
-      this.handleSetType(nextProps)
-    }
-    if ((item === - 1 || item === 0 || item === 1) && cursor !== this.props.cursor) {
       this.handleSetType(nextProps)
     }
   }
@@ -291,6 +275,7 @@ class Card extends Component {
     } else if (isLast) {
       bounds.left = 0
     }
+    type === CURRENT && console.log('RENDER position', position, style)
     return (
       <Draggable axis='x'
         bounds={bounds}

@@ -44,22 +44,15 @@ class Deck extends Component {
     // unpack
     const { contents, handLength, handleNextItemCard } = this.props
     const { items } = this.state
-    // check
-    /*
-    console.log('items[0]', items[0], contents.length)
-    console.log('items.slice(-1)[0]', items.slice(-1)[0], contents.length)
-    if (diffIndex > 0 && items[0] < -contents.length - handLength) {
-      console.log('STOP 1')
-    } else if (diffIndex < 0 && items.slice(-1)[0] > contents.length + handLength) {
-      console.log('STOP 2')
-    }
-    */
     // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
     })
     // hook if Deck has parent manager component
     handleNextItemCard && handleNextItemCard(diffIndex, this)
+  }
+  handleRelaxItemCard = data => {
+    this.setState({ cursor: 0 })
   }
   handleResetItems = props => {
     // unpack
@@ -97,13 +90,13 @@ class Deck extends Component {
     // hook if Deck has parent manager component
     handleSetReadCard && handleSetReadCard(card)
   }
-  onDragCard = (event, data, cursor) => {
+  handleSetCursorCard = cursor => {
     this.setState({ cursor, transition: 'none' })
   }
   onResize = event => {
     this.setState({ isResizing: true })
   }
-  onTransitionEnd = (event, cardProps) => {
+  onTransitionEndCard = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
     // update the transitions store
@@ -128,7 +121,7 @@ class Deck extends Component {
       // console.log('TRANSITIONS IS OFF')
     }
   }
-  onTransitionStart = (event, cardProps) => {
+  onTransitionStartCard = (event, cardProps) => {
     // unpack
     const { transitions } = this
     const { contents } = this.props
@@ -211,12 +204,13 @@ class Deck extends Component {
     window.removeEventListener('resize', this.onDebouncedResize)
   }
   render () {
-    const { handleSetTypeCard,
+    const { handleNextItemCard,
+      handleRelaxItemCard,
+      handleSetCursorCard,
+      handleSetTypeCard,
       handleSetReadCard,
-      handleNextItemCard,
-      onDragCard,
-      onTransitionEnd,
-      onTransitionStart
+      onTransitionEndCard,
+      onTransitionStartCard
     } = this
     const { browser,
       handLength,
@@ -255,6 +249,8 @@ class Deck extends Component {
                 deckElement={deckElement}
                 handLength={handLength}
                 handleNextItem={handleNextItemCard}
+                handleRelaxItem={handleRelaxItemCard}
+                handleSetCursor={handleSetCursorCard}
                 handleSetRead={handleSetReadCard}
                 handleSetType={handleSetTypeCard}
                 isBlobModel={isBlobModel}
@@ -267,9 +263,8 @@ class Deck extends Component {
                 item={item}
                 transitionTimeout={transitionTimeout}
                 key={index}
-                onDrag={onDragCard}
-                onTransitionEnd={onTransitionEnd}
-                onTransitionStart={onTransitionStart}
+                onTransitionEnd={onTransitionEndCard}
+                onTransitionStart={onTransitionStartCard}
                 readTimeout={readTimeout} />
           )
         }
