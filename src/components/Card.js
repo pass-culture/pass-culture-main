@@ -3,6 +3,7 @@ import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 import { Portal } from 'react-portal'
 
+import Clue from './Clue'
 import Recto from './Recto'
 import Verso from './Verso'
 
@@ -298,11 +299,19 @@ class Card extends Component {
             </span>
         </Draggable>,
         item === 0 && (
-          <Portal key={1} node={document && document.getElementById('deck__board')}>
+          <Portal key={1} node={document && document.getElementById('deck')}>
             <Verso {...content}
               isFlipped={isVerso} />
             </Portal>
-          )
+          ),
+        item > -2 && item < 2 && (
+          <Portal key={2} node={document && document.getElementById('deck__board')}>
+            <Clue {...content}
+              contentLength={contentLength}
+              index={index}
+              item={item} />
+          </Portal>
+        )
       ]
     )
   }

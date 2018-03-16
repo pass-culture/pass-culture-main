@@ -1,7 +1,8 @@
 import classnames from 'classnames'
 import React from 'react'
 
-const Clue = ({ content: { dateRead, id },
+const Clue = ({ dateRead,
+  id,
   contentLength,
   index,
   item

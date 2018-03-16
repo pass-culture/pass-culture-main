@@ -4,7 +4,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Card, { CURRENT } from './Card'
-import Clue from './Clue'
 
 class Deck extends Component {
   constructor (props) {
@@ -243,7 +242,6 @@ class Deck extends Component {
     //console.log('RENDER DECK contents', contents && contents.length,
     //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
-    console.log('isVerso', isVerso)
     return (
       <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
         id='deck'
@@ -283,7 +281,7 @@ class Deck extends Component {
                 readTimeout={readTimeout} />
           )
         }
-        <div className='deck__board absolute'>
+        <div className='deck__board absolute' id='deck__board'>
           <div className='deck__board__control flex justify-around mt2'>
             <button className={classnames('deck__next deck__next--left button', {
               'button--disabled': isFirstCard || isTransitioning })}
@@ -303,15 +301,6 @@ class Deck extends Component {
               {'>'}
             </button>
           </div>
-          {
-            items && items.map((item, index) =>
-              item > -2 && item < 2 && contents && contents[index] &&
-              <Clue content={contents && contents[index]}
-                contentLength={contents && contents.length}
-                key={index}
-                index={index}
-                item={item} />)
-          }
         </div>
       </div>
     )
