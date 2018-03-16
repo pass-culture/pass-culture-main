@@ -88,6 +88,7 @@ class Card extends Component {
     const currentWidth = deckElement.offsetWidth - 2 * leftOrRightCurrentWidth
     // determine style and transform given the type of the card
     let style, transform
+    console.log('cursor', cursor, item)
     switch (type) {
       case ASIDE_LEFT:
         style = {
@@ -100,7 +101,11 @@ class Card extends Component {
         break
       case HAND_LEFT:
         style = {
-          left: leftOrRightCurrentWidth + (isFullWidth ? - currentWidth : item * handWidth),
+          left: leftOrRightCurrentWidth + (
+            isFullWidth
+              ? - (1 - cursor) * currentWidth
+              : item * handWidth
+          ),
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
@@ -118,7 +123,11 @@ class Card extends Component {
         break
       case HAND_RIGHT:
         style = {
-          left: deckElement.offsetWidth - leftOrRightCurrentWidth + (isFullWidth ? 0 : (item - 1) * handWidth),
+          left: deckElement.offsetWidth - leftOrRightCurrentWidth + (
+            isFullWidth
+              ? cursor * currentWidth
+              : (item - 1) * handWidth
+          ),
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
@@ -164,13 +173,22 @@ class Card extends Component {
   }
   onDrag = (event, data) => {
     // unpack
-    const { deckElement, onDrag } = this.props
+    const { deckElement,
+      isFirst,
+      onDrag
+    } = this.props
+    const { x, y } = data
     // compute the cursor
-    const cursor = data.x / (deckElement.offsetWidth / 2)
-    this.setState({ cursor })
-    this.handleSetType(this.props)
+    const cursor = x / deckElement.offsetWidth
+    console.log('isFirst', isFirst, x)
+    this.setState({ cursor,
+      //position: isFirst
+      //  ? { x: Math.max(0, x), y: 0 }
+      //  : { x, y }
+    })
+    // this.handleSetType(this.props)
     // hook
-    onDrag && onDrag(event, data)
+    onDrag && onDrag(event, data, cursor)
   }
   onTransitionEnd = event => {
     const { onTransitionEnd } = this.props
@@ -189,15 +207,22 @@ class Card extends Component {
       cursor: 0,
       position: { x: 0, y: 0 }
     }
+    newState.style = Object.assign({}, this.state.style, { left: x })
     // thresholds
     const leftThreshold = - 0.1 * deckElement.offsetWidth
     const rightThreshold = 0.1 * deckElement.offsetWidth
     if (!isLast && x < leftThreshold) {
       handleNextItem(-1)
+      // newState.position = { x, y: 0 }
+      // newState.style = Object.assign({}, this.state.style, { left: x })
     } else if (!isFirst && x > rightThreshold) {
       handleNextItem(1)
+      // newState.position = { x, y: 0 }
+      // newState.style = Object.assign({}, this.state.style, { left: x })
     } else {
       newState.transform = `perspective( ${perspective}px ) rotateY( 0deg )`
+      // delete newState.position
+      // delete newState.style
     }
     // return
     this.setState(newState)
@@ -224,12 +249,18 @@ class Card extends Component {
       // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
       this.handleSetType(nextProps)
     }
-    /*
-    console.log(cursor)
-    if ((item === - 1 || item === 1) && cursor !== this.props.cursor) {
-      console.log('OUUUAAA')
+    if ((item === - 1 || item === 0 || item === 1) && cursor !== this.props.cursor) {
+      this.handleSetType(nextProps)
     }
-    */
+  }
+  componentDidUpdate (prevProps, prevState) {
+    const { type } = this.state
+    if (type === CURRENT) {
+      console.log(this.state.style.left, prevState.style.left)
+      if (this.state.style.left !== prevState.style.left) {
+        // this.setState({ style: prevState.style })
+      }
+    }
   }
   componentWillUnmount () {
     this.cardElement.removeEventListener('transitionend',
@@ -242,7 +273,9 @@ class Card extends Component {
     const { content,
       contentLength,
       index,
+      isFirst,
       isFullWidth,
+      isLast,
       isTransitioning,
       item
     } = this.props
@@ -252,8 +285,15 @@ class Card extends Component {
       type
     } = this.state
     const isDraggable = type === 'current' && !isTransitioning
+    const bounds = {}
+    if (isFirst) {
+      bounds.right = 0
+    } else if (isLast) {
+      bounds.left = 0
+    }
     return (
       <Draggable axis='x'
+        bounds={bounds}
         disabled={!isDraggable}
         position={position}
         onDrag={onDrag}
