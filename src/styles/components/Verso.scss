@@ -1,0 +1,13 @@
+.verso {
+  background-color: $very-very-light-grey;
+  bottom: -100%;
+  left: 0;
+  right: 0;
+  transition: bottom 250ms, top 250ms;
+  top: 100%;
+  z-index: 500;
+  &--flipped {
+    bottom: 0;
+    top: 25%;
+  }
+}

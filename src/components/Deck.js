@@ -17,6 +17,7 @@ class Deck extends Component {
       isLastCard: false,
       isResizing: false,
       isTransitioning: false,
+      isVerso: false,
       items: null
     }
     this.onDebouncedResize = debounce(this.onResize, props.resizeTimeout)
@@ -92,6 +93,9 @@ class Deck extends Component {
   }
   handleSetCursorCard = cursor => {
     this.setState({ cursor, transition: 'none' })
+  }
+  handleFlipCard = () => {
+    this.setState({ isVerso: !this.state.isVerso })
   }
   onResize = event => {
     this.setState({ isResizing: true })
@@ -204,7 +208,8 @@ class Deck extends Component {
     window.removeEventListener('resize', this.onDebouncedResize)
   }
   render () {
-    const { handleNextItemCard,
+    const { handleFlipCard,
+      handleNextItemCard,
       handleRelaxItemCard,
       handleSetCursorCard,
       handleSetTypeCard,
@@ -226,6 +231,7 @@ class Deck extends Component {
       isLastCard,
       isResizing,
       isTransitioning,
+      isVerso,
       items
     } = this.state
     const contents = this.state.bufferContents || this.props.contents
@@ -237,9 +243,17 @@ class Deck extends Component {
     //console.log('RENDER DECK contents', contents && contents.length,
     //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
+    console.log('isVerso', isVerso)
     return (
       <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
+        id='deck'
         ref={_element => this._element = _element }>
+        <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0 mt2', {
+          'button--hidden': !isVerso,
+          'button--disabled': isTransitioning })}
+          onClick={handleFlipCard} >
+          X
+        </button>
         {
           items && items.map((item, index) =>
             contents && contents[index] &&
@@ -260,6 +274,7 @@ class Deck extends Component {
                 isLast={contents && !contents[index + 1]}
                 index={index}
                 isResizing={isResizing}
+                isVerso={isVerso}
                 item={item}
                 transitionTimeout={transitionTimeout}
                 key={index}
@@ -268,19 +283,26 @@ class Deck extends Component {
                 readTimeout={readTimeout} />
           )
         }
-        <div className='deck__control absolute'>
-          <button className={classnames('deck__next deck__next--left button absolute', {
-            'button--disabled': isFirstCard || isTransitioning })}
-            onClick={() => handleNextItemCard(1)}
-            disabled={isFirstCard || isTransitioning} >
-            {'<'}
-          </button>
-          <button className={classnames('deck__next deck__next--right button absolute', {
-            'button--disabled': isLastCard || isTransitioning })}
-            onClick={() => handleNextItemCard(-1)}
-            disabled={isLastCard || isTransitioning} >
-            {'>'}
-          </button>
+        <div className='deck__board absolute'>
+          <div className='deck__board__control flex justify-around mt2'>
+            <button className={classnames('deck__next deck__next--left button', {
+              'button--disabled': isFirstCard || isTransitioning })}
+              onClick={() => handleNextItemCard(1)}
+              disabled={isFirstCard || isTransitioning} >
+              {'<'}
+            </button>
+            <button className={classnames('deck__to-recto button', {
+              'button--disabled': isTransitioning })}
+              onClick={handleFlipCard} >
+              ^
+            </button>
+            <button className={classnames('deck__next deck__next--right button', {
+              'button--disabled': isLastCard || isTransitioning })}
+              onClick={() => handleNextItemCard(-1)}
+              disabled={isLastCard || isTransitioning} >
+              {'>'}
+            </button>
+          </div>
           {
             items && items.map((item, index) =>
               item > -2 && item < 2 && contents && contents[index] &&

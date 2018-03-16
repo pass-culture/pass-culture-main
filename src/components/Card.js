@@ -1,8 +1,10 @@
 import classnames from 'classnames'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
+import { Portal } from 'react-portal'
 
 import Recto from './Recto'
+import Verso from './Verso'
 
 export const CURRENT = 'current'
 export const ASIDE_LEFT = 'aside-left'
@@ -237,15 +239,6 @@ class Card extends Component {
       this.handleSetType(nextProps)
     }
   }
-  componentDidUpdate (prevProps, prevState) {
-    const { type } = this.state
-    if (type === CURRENT) {
-      console.log(this.state.style.left, prevState.style.left)
-      if (this.state.style.left !== prevState.style.left) {
-        // this.setState({ style: prevState.style })
-      }
-    }
-  }
   componentWillUnmount () {
     this.cardElement.removeEventListener('transitionend',
       this.onTransitionEnd)
@@ -261,6 +254,7 @@ class Card extends Component {
       isFullWidth,
       isLast,
       isTransitioning,
+      isVerso,
       item
     } = this.props
     const { position,
@@ -275,33 +269,41 @@ class Card extends Component {
     } else if (isLast) {
       bounds.left = 0
     }
-    type === CURRENT && console.log('RENDER position', position, style)
     return (
-      <Draggable axis='x'
-        bounds={bounds}
-        disabled={!isDraggable}
-        position={position}
-        onDrag={onDrag}
-        onStop={onStop} >
-          <span className={classnames('card absolute', {
-              'card--current': type === CURRENT,
-              'card--draggable': isDraggable,
-              'card--small': !isFullWidth
-            })}
-            ref={element => this.cardElement = element}
-            style={style}
-          >
-            <div className={classnames('card__container', {
-              'card__container--small': !isFullWidth
-            })} style={{ transform }}>
-              <Recto {...content}
-                contentLength={contentLength}
-                index={index}
-                item={item}
-                isFullWidth={isFullWidth} />
-            </div>
-          </span>
-      </Draggable>
+      [
+        <Draggable axis='x'
+          bounds={bounds}
+          disabled={!isDraggable}
+          key={0}
+          position={position}
+          onDrag={onDrag}
+          onStop={onStop} >
+            <span className={classnames('card absolute', {
+                'card--current': type === CURRENT,
+                'card--draggable': isDraggable,
+                'card--small': !isFullWidth
+              })}
+              ref={element => this.cardElement = element}
+              style={style}
+            >
+              <div className={classnames('card__container', {
+                'card__container--small': !isFullWidth
+              })} style={{ transform }}>
+                <Recto {...content}
+                  contentLength={contentLength}
+                  index={index}
+                  item={item}
+                  isFullWidth={isFullWidth} />
+              </div>
+            </span>
+        </Draggable>,
+        item === 0 && (
+          <Portal key={1} node={document && document.getElementById('deck__board')}>
+            <Verso {...content}
+              isFlipped={isVerso} />
+            </Portal>
+          )
+      ]
     )
   }
 }

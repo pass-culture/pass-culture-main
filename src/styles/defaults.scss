@@ -51,6 +51,9 @@ html,body {
   &--disabled {
     opacity: 0.25;
   }
+  &--hidden {
+    opacity: 0;
+  }
   &--inversed {
     background-color: white !important;
     border-color: $identity-color !important;
