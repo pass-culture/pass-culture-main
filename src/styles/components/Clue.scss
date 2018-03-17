@@ -1,8 +1,5 @@
 .clue {
-  left: 25%;
-  right: 25%;
   transition: opacity 500ms;
-  top: 40%;
   &--hidden {
     opacity: 0;
   }

@@ -8,7 +8,7 @@ const Clue = ({ dateRead,
   item
 }) => {
   return (
-    <div className={classnames('clue absolute', { 'clue--hidden': item !== 0 })}>
+    <div className={classnames('clue', { 'clue--hidden': item !== 0 })}>
       {id} {index}/{contentLength} <br/>
       {dateRead}
     </div>

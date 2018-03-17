@@ -14,15 +14,9 @@
       left: 33.33%;
       right: 33.33%;
     }
-    &__control {
-      z-index: 400;
-      &:focus {
-        background-color: $very-very-light-grey;
-        color: black;
-      }
+    &__to-verso {
+      z-index: 1100;
     }
   }
-  &__to-verso {
-    z-index: 1100;
-  }
+
 }

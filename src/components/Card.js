@@ -1,6 +1,6 @@
 import classnames from 'classnames'
-import Draggable from 'react-draggable'
 import React, { Component } from 'react'
+import Draggable from 'react-draggable'
 import { Portal } from 'react-portal'
 
 import Clue from './Clue'

@@ -13,6 +13,7 @@ class Deck extends Component {
       deckElement: null,
       transition: null,
       isFirstCard: false,
+      isFlipping: false,
       isLastCard: false,
       isResizing: false,
       isTransitioning: false,
@@ -96,6 +97,30 @@ class Deck extends Component {
   handleFlipCard = () => {
     this.setState({ isVerso: !this.state.isVerso })
   }
+  onMouseMove = (event, data) => {
+    const { isFlipping, y } = this.state
+    if (!isFlipping) {
+      return
+    }
+    console.log(y, event.pageY)
+    // event.stopPropagation()
+    // event.preventDefault()
+  }
+  onMouseDown = event => {
+    this.setState({ isFlipping: true, y: event.pageY })
+    // event.stopPropagation()
+    // event.preventDefault()
+  }
+  onMouseLeave = event => {
+    console.log('LEAVEEEE')
+    // this.boardElement.hide()
+    this.setState({ isFlipping: false, y: 0 })
+  }
+  onMouseUp = event => {
+    this.setState({ isFlipping: false, y: 0 })
+    // event.stopPropagation()
+    // event.preventDefault()
+  }
   onResize = event => {
     this.setState({ isResizing: true })
   }
@@ -173,7 +198,7 @@ class Deck extends Component {
     }
   }
   componentDidMount () {
-    this.setState({ deckElement: this._element })
+    this.setState({ deckElement: this.element })
     window.addEventListener('resize', this.onDebouncedResize)
   }
   componentDidUpdate (prevProps, prevState) {
@@ -213,6 +238,10 @@ class Deck extends Component {
       handleSetCursorCard,
       handleSetTypeCard,
       handleSetReadCard,
+      onMouseDown,
+      onMouseLeave,
+      onMouseMove,
+      onMouseUp,
       onTransitionEndCard,
       onTransitionStartCard
     } = this
@@ -245,7 +274,7 @@ class Deck extends Component {
     return (
       <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
         id='deck'
-        ref={_element => this._element = _element }>
+        ref={element => this.element = element }>
         <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0 mt2', {
           'button--hidden': !isVerso,
           'button--disabled': isTransitioning })}
@@ -281,20 +310,26 @@ class Deck extends Component {
                 readTimeout={readTimeout} />
           )
         }
-        <div className='deck__board absolute' id='deck__board'>
+        <div className='deck__board absolute'
+          id='deck__board'
+          onMouseDown={onMouseDown}
+          onMouseLeave={onMouseLeave}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          ref={element => this.boardElement = element} >
           <div className='deck__board__control flex justify-around mt2'>
-            <button className={classnames('deck__next deck__next--left button', {
+            <button className={classnames('button', {
               'button--disabled': isFirstCard || isTransitioning })}
               onClick={() => handleNextItemCard(1)}
               disabled={isFirstCard || isTransitioning} >
               {'<'}
             </button>
-            <button className={classnames('deck__to-recto button', {
+            <button className={classnames('deck__board__to-recto button', {
               'button--disabled': isTransitioning })}
               onClick={handleFlipCard} >
               ^
             </button>
-            <button className={classnames('deck__next deck__next--right button', {
+            <button className={classnames('button', {
               'button--disabled': isLastCard || isTransitioning })}
               onClick={() => handleNextItemCard(-1)}
               disabled={isLastCard || isTransitioning} >
