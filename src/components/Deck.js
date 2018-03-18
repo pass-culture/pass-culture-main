@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
+import Draggable from 'react-draggable'
 import { connect } from 'react-redux'
 
 import Card, { CURRENT } from './Card'
@@ -97,29 +98,22 @@ class Deck extends Component {
   handleFlipCard = () => {
     this.setState({ isVerso: !this.state.isVerso })
   }
-  onMouseMove = (event, data) => {
-    const { isFlipping, y } = this.state
-    if (!isFlipping) {
-      return
+  onStart = (event, data) => {
+    this.setState({ isFlipping: true, clientY: event.clientY })
+  }
+  onDrag = (event, data) => {
+    const { flipRatio } = this.props
+    const { deckElement, isVerso } = this.state
+    const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
+    if (
+      (!isVerso && cursor < -flipRatio) ||
+      (isVerso && cursor > flipRatio)
+    ) {
+      this.handleFlipCard()
     }
-    console.log(y, event.pageY)
-    // event.stopPropagation()
-    // event.preventDefault()
   }
-  onMouseDown = event => {
-    this.setState({ isFlipping: true, y: event.pageY })
-    // event.stopPropagation()
-    // event.preventDefault()
-  }
-  onMouseLeave = event => {
-    console.log('LEAVEEEE')
-    // this.boardElement.hide()
-    this.setState({ isFlipping: false, y: 0 })
-  }
-  onMouseUp = event => {
-    this.setState({ isFlipping: false, y: 0 })
-    // event.stopPropagation()
-    // event.preventDefault()
+  onStop = (event, data) => {
+    this.setState({ isFlipping: false, y: null })
   }
   onResize = event => {
     this.setState({ isResizing: true })
@@ -238,10 +232,9 @@ class Deck extends Component {
       handleSetCursorCard,
       handleSetTypeCard,
       handleSetReadCard,
-      onMouseDown,
-      onMouseLeave,
-      onMouseMove,
-      onMouseUp,
+      onDrag,
+      onStart,
+      onStop,
       onTransitionEndCard,
       onTransitionStartCard
     } = this
@@ -256,6 +249,7 @@ class Deck extends Component {
       deckElement,
       transition,
       isFirstCard,
+      isFlipping,
       isLastCard,
       isResizing,
       isTransitioning,
@@ -272,77 +266,82 @@ class Deck extends Component {
     //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
     return (
-      <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
-        id='deck'
-        ref={element => this.element = element }>
-        <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0 mt2', {
-          'button--hidden': !isVerso,
-          'button--disabled': isTransitioning })}
-          onClick={handleFlipCard} >
-          X
-        </button>
-        {
-          items && items.map((item, index) =>
-            contents && contents[index] &&
-              <Card content={contents && contents[index]}
-                contentLength={contents && contents.length}
-                cursor={cursor}
-                deckElement={deckElement}
-                handLength={handLength}
-                handleNextItem={handleNextItemCard}
-                handleRelaxItem={handleRelaxItemCard}
-                handleSetCursor={handleSetCursorCard}
-                handleSetRead={handleSetReadCard}
-                handleSetType={handleSetTypeCard}
-                isBlobModel={isBlobModel}
-                transition={transition}
-                isFirst={contents && !contents[index - 1]}
-                isFullWidth={isFullWidth}
-                isLast={contents && !contents[index + 1]}
-                index={index}
-                isResizing={isResizing}
-                isVerso={isVerso}
-                item={item}
-                transitionTimeout={transitionTimeout}
-                key={index}
-                onTransitionEnd={onTransitionEndCard}
-                onTransitionStart={onTransitionStartCard}
-                readTimeout={readTimeout} />
-          )
-        }
-        <div className='deck__board absolute'
-          id='deck__board'
-          onMouseDown={onMouseDown}
-          onMouseLeave={onMouseLeave}
-          onMouseMove={onMouseMove}
-          onMouseUp={onMouseUp}
-          ref={element => this.boardElement = element} >
-          <div className='deck__board__control flex justify-around mt2'>
-            <button className={classnames('button', {
-              'button--disabled': isFirstCard || isTransitioning })}
-              onClick={() => handleNextItemCard(1)}
-              disabled={isFirstCard || isTransitioning} >
-              {'<'}
-            </button>
-            <button className={classnames('deck__board__to-recto button', {
-              'button--disabled': isTransitioning })}
-              onClick={handleFlipCard} >
-              ^
-            </button>
-            <button className={classnames('button', {
-              'button--disabled': isLastCard || isTransitioning })}
-              onClick={() => handleNextItemCard(-1)}
-              disabled={isLastCard || isTransitioning} >
-              {'>'}
-            </button>
+      <Draggable axis='y'
+        bounds={{bottom: 0, top: 0}}
+        onDrag={onDrag}
+        onStart={onStart}
+        onStop={onStop} >
+        <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
+          id='deck'
+          ref={element => this.element = element }>
+          <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0 mt2', {
+            'button--hidden': !isVerso,
+            'button--disabled': isTransitioning })}
+            onClick={handleFlipCard} >
+            X
+          </button>
+          {
+            items && items.map((item, index) =>
+              contents && contents[index] &&
+                <Card content={contents && contents[index]}
+                  contentLength={contents && contents.length}
+                  cursor={cursor}
+                  deckElement={deckElement}
+                  handLength={handLength}
+                  handleFlip={handleFlipCard}
+                  handleNextItem={handleNextItemCard}
+                  handleRelaxItem={handleRelaxItemCard}
+                  handleSetCursor={handleSetCursorCard}
+                  handleSetRead={handleSetReadCard}
+                  handleSetType={handleSetTypeCard}
+                  isBlobModel={isBlobModel}
+                  transition={transition}
+                  isFirst={contents && !contents[index - 1]}
+                  isFlipping={isFlipping}
+                  isFullWidth={isFullWidth}
+                  isLast={contents && !contents[index + 1]}
+                  index={index}
+                  isResizing={isResizing}
+                  isVerso={isVerso}
+                  item={item}
+                  transitionTimeout={transitionTimeout}
+                  key={index}
+                  onTransitionEnd={onTransitionEndCard}
+                  onTransitionStart={onTransitionStartCard}
+                  readTimeout={readTimeout} />
+            )
+          }
+            <div className='deck__board absolute'
+              id='deck__board'
+              ref={element => this.boardElement = element} >
+              <div className='deck__board__control flex justify-around mt2'>
+                <button className={classnames('button', {
+                  'button--disabled': isFirstCard || isTransitioning })}
+                  onClick={() => handleNextItemCard(1)}
+                  disabled={isFirstCard || isTransitioning} >
+                  {'<'}
+                </button>
+                <button className={classnames('deck__board__to-recto button', {
+                  'button--disabled': isTransitioning })}
+                  onClick={handleFlipCard} >
+                  ^
+                </button>
+                <button className={classnames('button', {
+                  'button--disabled': isLastCard || isTransitioning })}
+                  onClick={() => handleNextItemCard(-1)}
+                  disabled={isLastCard || isTransitioning} >
+                  {'>'}
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    )
-  }
+        </Draggable>
+      )
+    }
 }
 
 Deck.defaultProps = { deckKey: 0,
+  flipRatio: 0.25,
   handLength: 2,
   isBlobModel: false,
   readTimeout: 3000,

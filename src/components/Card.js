@@ -250,8 +250,11 @@ class Card extends Component {
     } = this
     const { content,
       contentLength,
+      deckElement,
+      handleFlipCard,
       index,
       isFirst,
+      isFlipping,
       isFullWidth,
       isLast,
       isTransitioning,
@@ -263,7 +266,10 @@ class Card extends Component {
       transform,
       type
     } = this.state
-    const isDraggable = type === 'current' && !isTransitioning
+    const isDraggable = type === 'current' &&
+      !isTransitioning &&
+      !isVerso &&
+      !isFlipping
     const bounds = {}
     if (isFirst) {
       bounds.right = 0
@@ -285,8 +291,7 @@ class Card extends Component {
                 'card--small': !isFullWidth
               })}
               ref={element => this.cardElement = element}
-              style={style}
-            >
+              style={style}>
               <div className={classnames('card__container', {
                 'card__container--small': !isFullWidth
               })} style={{ transform }}>
@@ -301,9 +306,11 @@ class Card extends Component {
         item === 0 && (
           <Portal key={1} node={document && document.getElementById('deck')}>
             <Verso {...content}
+              deckElement={deckElement}
+              handleFlipCard={handleFlipCard}
               isFlipped={isVerso} />
-            </Portal>
-          ),
+          </Portal>
+        ),
         item > -2 && item < 2 && (
           <Portal key={2} node={document && document.getElementById('deck__board')}>
             <Clue {...content}

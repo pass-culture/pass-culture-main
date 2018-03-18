@@ -1,16 +1,17 @@
 import classnames from 'classnames'
-import React from 'react'
+import React, { Component } from 'react'
 
-const Verso = ({
-  isFlipped
-}) => {
-  return (
-    <div className={classnames('verso absolute', {
-      'verso--flipped': isFlipped
-    })}>
-      QSDSQD
-    </div>
-  )
+class Verso extends Component {
+  render () {
+    const { deckElement, isFlipped } = this.props
+    return (
+      <div className={classnames('verso absolute', {
+        'verso--flipped': isFlipped
+      })}>
+        QSDSQD
+      </div>
+    )
+  }
 }
 
 export default Verso
