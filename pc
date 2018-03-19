@@ -50,6 +50,8 @@ elif [[ "$CMD" == "ftp_mirrors" ]]; then
   sshfs -o allow_other,idmap=user deploy@pc-api.btmx.fr:/home/deploy/pass-culture-main/api/ftp_mirrors "$ROOT_PATH/api/ftp_mirrors"\
     && echo "FTP mirrors mounted, please restart flask docker container"
   exit
+elif [[ "$CMD" == "grep" ]]; then
+  RUN='grep --exclude-dir ftp_mirrors --exclude-dir node_modules --exclude-dir build --exclude-dir postgres_data --exclude-dir .hypothesis -r "'"$*"'" .'
 elif [[ "$CMD" == "install" ]]; then
   RUN='yarn global add concurrently;
        git submodules init;
