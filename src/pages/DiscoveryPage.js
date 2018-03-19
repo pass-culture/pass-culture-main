@@ -43,6 +43,10 @@ class DiscoveryPage extends Component {
     this.setState({ aroundIndex })
   }
   handleUserMediationChange = userMediation => {
+    if (!userMediation) {
+      console.warn('userMediation is not defined')
+      return
+    }
     const { id, mediation, userMediationOffers } = userMediation
     const { match: { params: { offerId } },
       history,
