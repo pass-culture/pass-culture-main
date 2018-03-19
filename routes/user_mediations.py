@@ -1,13 +1,14 @@
+""" user mediations routes """
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
-from sqlalchemy import func, update
-import time
+from sqlalchemy import update
 
 from reco import make_new_recommendations
 from utils.rest import expect_json_data
 from utils.config import BEFORE_AFTER_LIMIT, BLOB_SIZE
 from utils.human_ids import dehumanize, humanize
 
+Offer = app.model.Offer
 UserMediation = app.model.UserMediation
 
 um_include = [
@@ -33,8 +34,7 @@ um_include = [
 @login_required
 @expect_json_data
 def update_user_mediations():
-    #time.sleep(3)
-    print('current_user', current_user)
+    # USER
     user_id = current_user.get_id()
     # DETERMINE AROUND
     around = request.args.get('around')
@@ -43,6 +43,23 @@ def update_user_mediations():
     if around is not None:
         around_um = UserMediation.query.filter_by(id=dehumanize(around)).first()
         print('(found) around_um', around_um)
+    else :
+        # MAYBE WE PRECISED THE MEDIATION OR OFFER ID IN THE REQUEST
+        # IN ORDER TO FIND THE MATCHING USER MEDIATION
+        offer_id = request.args.get('offerId')
+        mediation_id = request.args.get('mediationId')
+        if mediation_id is not None:
+            around_um = UserMediation.query.filter_by(mediation_id=dehumanize(mediation_id),
+                userId=user_id).first()
+            around = around_um.id
+        elif offer_id is not None:
+            around_um = UserMediation.query.filter(
+                UserMediation.userMediationOffers.any(
+                    Offer.id != dehumanize(offer_id)
+                )
+            ).first()
+            around = around_um.id
+            pass
     # UPDATE FROM CLIENT LOCAL BUFFER
     print('(update) maybe')
     for um in request.json:
