@@ -7,7 +7,9 @@ class Booking extends Component {
   render () {
     return (
       <div>
-        C est ici que oui on dit j'achete allez ma gueule.
+        <div className='mb2'>
+          C est ici que oui on dit j'achete allez ma gueule.
+        </div>
         <button className='button button--alive'
           onClick={this.onClickConfirm}>
           Confirmer

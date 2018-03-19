@@ -7,7 +7,7 @@ import { showModal } from '../reducers/modal'
 import Icon from './Icon'
 
 class ControlBar extends Component {
-  onBookClick = () => {
+  onClickBook = () => {
     const { id, showModal } = this.props
     showModal(<Booking id={id} />)
   }
@@ -23,11 +23,11 @@ class ControlBar extends Component {
       <div className='flex items-center flex-justify justify-around p2'>
         <button className='button button--alive mr1'
           onClick={onClickFavorite}>
-          <Icon icon='heart' />
+          <img src='/icons/ico-like-w.svg' />
         </button>
         <button className='button button--alive mr1'
           onClick={onClickShare} >
-          <Icon icon='share' />
+          <img src='/icons/ico-share-w.svg' />
         </button>
         <button className='button button--alive'
           onClick={onClickBook} >
