@@ -117,7 +117,6 @@ class LocalProvider(Iterator):
         try:
             thumb_dates = self.getObjectThumbDates(obj)
             need_save = False
-            print(thumb_dates)
             for index, thumb_date in enumerate(thumb_dates):
                 self.checkedThumbs += 1
                 if thumb_date is None:

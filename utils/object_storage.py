@@ -44,6 +44,7 @@ def delete_public_object(bucket, id):
     if os.path.isfile(lpath):
         os.remove(lpath)
 
+
 def get_public_object_date(bucket, id):
     lpath = local_path(bucket, id)
     if not os.path.isfile(lpath):
