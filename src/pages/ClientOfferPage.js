@@ -36,8 +36,8 @@ export default compose(
   withLogin(),
   connect(
     (state, ownProps) => ({
-      offer: state.data['offers/'+ownProps.offerId] &&
-        state.data['offers/'+ownProps.offerId][0]
+      offer: state.data['offers/'+ ownProps.offerId] &&
+        state.data['offers/'+ ownProps.offerId][0]
     }),
     { requestData }
   )

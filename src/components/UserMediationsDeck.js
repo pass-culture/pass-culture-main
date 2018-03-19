@@ -114,7 +114,7 @@ class UserMediationsDeck extends Component {
       handLength,
       userMediations
     } = props
-    let { aroundIndex } = this.state
+    let aroundIndex = props.aroundIndex || this.state.aroundIndex
     if (!userMediations) {
       return
     }
@@ -141,8 +141,8 @@ class UserMediationsDeck extends Component {
         aroundIndex = lastReadIndex
         */
       }
-    } else {
-      // if we have already an aroundIndex
+    } else if (prevProps.userMediations) {
+      // if we have already an aroundIndex from a previous user mediations
       // make sure to find the equivalent in the new userMediations
       // by matching ids
       const aroundUserMediation = prevProps.userMediations[aroundIndex]
@@ -178,7 +178,6 @@ class UserMediationsDeck extends Component {
     // loop for completing the blob if we are closed to the end
     let loopContents = []
     const lastUserMediation = userMediations.slice(-1)[0]
-    console.log('lastUserMediation', lastUserMediation)
     if (lastUserMediation && lastUserMediation.isLast) {
       if (prevProps.userMediations) {
         console.log(lastUserMediation.blobSize, userMediations.length)
@@ -188,7 +187,6 @@ class UserMediationsDeck extends Component {
         // should request loop data
       }
     }
-    console.log('loopContents', loopContents)
     // concat
     newState.contents = [
       ...beforeContents,
@@ -251,17 +249,28 @@ class UserMediationsDeck extends Component {
     this.handleSetContents(this.props)
   }
   componentWillReceiveProps (nextProps) {
-    if (nextProps.userMediations !== this.props.userMediations) {
+    if (
+      nextProps.userMediations !== this.props.userMediations ||
+      nextProps.aroundIndex !== this.props.aroundIndex
+    ) {
       // console.log('')
       // console.log('nextProps.userMediations', nextProps.userMediations && nextProps.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
       // console.log('this.props.userMediations', this.props.userMediations && this.props.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
       this.handleSetContents(nextProps, this.props)
     }
   }
+  componentDidUpdate (prevProps, prevState) {
+    const { handleUserMediationChange, userMediations } = this.props
+    const { aroundIndex } = this.state
+    if (aroundIndex !== prevState.aroundIndex) {
+      const aroundUserMediation = userMediations[aroundIndex]
+      handleUserMediationChange && handleUserMediationChange(aroundUserMediation)
+    }
+  }
   render () {
-    console.log('RENDER USERMEDIATIONSDECK this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
-      this.props.userMediations && this.props.userMediations.map(um =>
-        um && `${um.id} ${um.dateRead}`))
+    // console.log('RENDER USERMEDIATIONSDECK this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
+    //  this.props.userMediations && this.props.userMediations.map(um =>
+    //    um && `${um.id} ${um.dateRead}`))
     //console.log('RENDER USERMEDIATIONSDECK this.state.contents', this.state.contents && this.state.contents.length,
     //  this.state.contents && this.state.contents.map(content =>
     //    content && `${content.id} ${content.dateRead}`))

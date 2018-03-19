@@ -23,8 +23,8 @@ const routes = [
   {
     exact: true,
     path: '/decouverte/:offerId/:mediationId?',
-    render: props => <ClientOfferPage offerId={props.match.params.offerId}
-                                     mediationId={props.match.params.mediationId} />
+    render: ({ match: { mediationId, offerId }}) =>
+      <DiscoveryPage mediationId={mediationId} offerId={offerId}/>
   },
   {
     exact: true,
