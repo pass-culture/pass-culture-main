@@ -123,7 +123,7 @@ class UserMediationsDeck extends Component {
     // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
     // is the centered card
-    if (prevProps === null || aroundIndex === null) {
+    if (!prevProps || aroundIndex === null) {
       const isReads = userMediations.map(userMediation =>
         userMediation.dateRead !== null)
       isReads.reverse()

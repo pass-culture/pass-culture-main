@@ -320,18 +320,18 @@ class Deck extends Component {
                   'button--disabled': isFirstCard || isTransitioning })}
                   onClick={() => handleNextItemCard(1)}
                   disabled={isFirstCard || isTransitioning} >
-                  <img src='icons/ico-prev-w.svg' />
+                  <img src='/icons/ico-prev-w.svg' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isTransitioning })}
                   onClick={handleFlipCard} >
-                  <img src='icons/ico-slideup-w.svg' />
+                  <img src='/icons/ico-slideup-w.svg' />
                 </button>
                 <button className={classnames('deck__board__next button', {
                   'button--disabled': isLastCard || isTransitioning })}
                   onClick={() => handleNextItemCard(-1)}
                   disabled={isLastCard || isTransitioning} >
-                  <img src='icons/ico-prev-w.svg' className='flip-horiz' />
+                  <img src='/icons/ico-prev-w.svg' className='flip-horiz' />
                 </button>
               </div>
             </div>
