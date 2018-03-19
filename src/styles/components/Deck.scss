@@ -16,22 +16,38 @@
       }
     }
     .button {
-        padding: 0;
-        border: 0;
-        border-radius: 0;
-        background-color: transparent;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background-color: transparent;
+      position: absolute;
+      img {
+        width: 100%;
+      }
+      &.deck__board__prev {
+        left: 5.07vw;
+      }
+      &.deck__board__next {
+        right: 5.07vw;
+      }
+      &.deck__board__prev, &.deck__board__next {
+        top: 3.10vw;
+        width: 23.2vw;
+      }
+      &.deck__board__to-recto {
+        top: 3.10vw;
+        width: 11.73vw;
+        height: 11.66vw;
         img {
-          width: 100%;
+          width: 5.6vw;
         }
-        &.deck__board__prev, &.deck__board__next {
-          width: 23.2vw;
-        }
-        &.deck__board__to-recto {
-          width: 11.73vw;
-          img {
-            width: 5.6vw;
-          }
-        }
+      }
+    }
+    .clue {
+      position: absolute;
+      top: 18vw;
+      left: 50vw;
+      transform: translate(-50%, 0);
     }
     background-color: black;
     bottom: 0;

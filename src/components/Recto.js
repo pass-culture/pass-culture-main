@@ -10,8 +10,12 @@ const Recto = ({ isFullWidth,
   return (
     <div className={classnames('recto', { 'recto--small': !isFullWidth })} style={{
       backgroundImage: `url(${thumbUrl})`,
+      overflowX: 'hidden ! important',
+      overflowY: 'hidden ! important',
+      backgroundColor: '#f8f8f8',
+      backgroundSize: 'contain',
       backgroundRepeat: 'no-repeat',
-      backgroundSize: 'contain'
+      backgroundPosition: 'left top',
     }}>
       {
         isLoading && (
