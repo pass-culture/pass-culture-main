@@ -138,7 +138,6 @@ label {
 .page {
   background-color: $very-very-light-grey;
   min-height: 100vh;
-  padding-top: $header-height;
 }
 
 select {
@@ -193,4 +192,13 @@ select {
   color: $light-grey;
   font-style: italic;
   opacity: 1;
+}
+
+.flip-horiz {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
 }

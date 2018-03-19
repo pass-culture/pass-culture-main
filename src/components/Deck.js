@@ -274,7 +274,7 @@ class Deck extends Component {
         <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
           id='deck'
           ref={element => this.element = element }>
-          <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0 mt2', {
+          <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0', {
             'button--hidden': !isVerso,
             'button--disabled': isTransitioning })}
             onClick={handleFlipCard} >
@@ -283,7 +283,8 @@ class Deck extends Component {
           {
             items && items.map((item, index) =>
               contents && contents[index] &&
-                <Card content={contents && contents[index]}
+                <Card
+                  content={contents && contents[index]}
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
@@ -314,23 +315,23 @@ class Deck extends Component {
             <div className='deck__board absolute'
               id='deck__board'
               ref={element => this.boardElement = element} >
-              <div className='deck__board__control flex justify-around mt2'>
-                <button className={classnames('button', {
+              <div className='deck__board__control flex justify-around'>
+                <button className={classnames('deck__board__prev button', {
                   'button--disabled': isFirstCard || isTransitioning })}
                   onClick={() => handleNextItemCard(1)}
                   disabled={isFirstCard || isTransitioning} >
-                  {'<'}
+                  <img src='icons/ico-prev-w.svg' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isTransitioning })}
                   onClick={handleFlipCard} >
-                  ^
+                  <img src='icons/ico-slideup-w.svg' />
                 </button>
-                <button className={classnames('button', {
+                <button className={classnames('deck__board__next button', {
                   'button--disabled': isLastCard || isTransitioning })}
                   onClick={() => handleNextItemCard(-1)}
                   disabled={isLastCard || isTransitioning} >
-                  {'>'}
+                  <img src='icons/ico-prev-w.svg' className='flip-horiz' />
                 </button>
               </div>
             </div>

@@ -42,7 +42,8 @@ class Card extends Component {
   }
   handleSetType = props => {
     // unpack and check
-    const { cursor,
+    const { backgroundColor,
+      cursor,
       deckElement,
       handLength,
       handleSetType,
@@ -107,7 +108,7 @@ class Card extends Component {
               : item * handWidth
           ),
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `background-color ${transitionTimeout}ms, left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
@@ -116,7 +117,7 @@ class Card extends Component {
         style = {
           left: leftOrRightCurrentWidth,
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `background-color ${transitionTimeout}ms, left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: currentWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
@@ -129,7 +130,7 @@ class Card extends Component {
               : (item - 1) * handWidth
           ),
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `background-color ${transitionTimeout}ms,left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
@@ -138,7 +139,7 @@ class Card extends Component {
         style = {
           left: deckElement.offsetWidth + (isFullWidth ? currentWidth : handWidth),
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `background-color ${transitionTimeout}ms, left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
@@ -248,7 +249,8 @@ class Card extends Component {
     const { onDrag,
       onStop
     } = this
-    const { content,
+    const {
+      content,
       contentLength,
       deckElement,
       handleFlipCard,
@@ -324,7 +326,8 @@ class Card extends Component {
   }
 }
 
-Card.defaultProps = { isSetRead: true,
+Card.defaultProps = {
+  isSetRead: true,
   perspective: 600,
   readTimeout: 3000,
   rotation: 45,

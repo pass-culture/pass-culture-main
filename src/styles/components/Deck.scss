@@ -1,18 +1,51 @@
 .deck {
-  min-height: calc(100vh - #{$header-height});
+  min-height: 100vh;
   overflow: hidden;
   &__board {
+    &::before {
+      content: "";
+      background: linear-gradient(transparent, black);
+      height: 26.6vw;
+      margin-top: -26.6vw;
+      z-index: 100;
+      width: 100vw;
+      display: block;
+      @media(min-width: $sm) {
+        right: 33.33%;
+        width: auto;
+      }
+    }
+    .button {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background-color: transparent;
+        img {
+          width: 100%;
+        }
+        &.deck__board__prev, &.deck__board__next {
+          width: 23.2vw;
+        }
+        &.deck__board__to-recto {
+          width: 11.73vw;
+          img {
+            width: 5.6vw;
+          }
+        }
+    }
     background-color: black;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 30%;
+    height: calc(100vh - 133vw);
+    min-height: 26.6vw;
     z-index: 100;
     @media(min-width: $sm) {
       bottom: 10px;
-      border-radius: $border-radius;
       left: 33.33%;
       right: 33.33%;
+      height: 30%;
+      min-height: auto;
     }
   }
   &__to-verso {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="23px" height="34px" viewBox="0 0 23 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>209D9CFF-F333-41B5-95FA-7EEEB7E2303A</title>
+    <desc>Created with sketchtool.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BLOCKS/nav4" transform="translate(-178.000000, -103.000000)">
+            <g id="BLOCKS/nav2" transform="translate(18.000000, 98.000000)">
+                <g id="ICONS/ico-slideup-w" transform="translate(149.000000, 1.000000)">
+                    <path d="" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square"></path>
+                    <rect id="crop" x="0" y="0" width="44" height="44"></rect>
+                    <g id="ICONS/ico-like-w" stroke-width="1" fill-rule="evenodd" transform="translate(12.000000, 5.000000)" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline id="Rectangle-4" stroke-width="2" opacity="0.600000024" points="0 21 10.5 11 21 21"></polyline>
+                        <polyline id="Rectangle-4-Copy-2" stroke-width="2" opacity="0.300000012" points="0 32 10.5 22 21 32"></polyline>
+                        <polyline id="Rectangle-4-Copy" stroke-width="2" points="0 10 10.5 3.90798505e-14 21 10"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

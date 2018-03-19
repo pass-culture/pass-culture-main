@@ -4,10 +4,9 @@ import Header from './components/Header'
 import Menu from './components/Menu'
 import Modal from './components/Modal'
 
-const App = ({ children }) => {
+const App = ({ children, user }) => {
   return (
     <div className='app'>
-      <Header />
       {children}
       <Menu />
       <Modal />

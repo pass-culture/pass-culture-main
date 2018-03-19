@@ -1,3 +1,4 @@
+import { rgb_to_hsv } from 'colorsys'
 import { API_URL, THUMBS_URL } from '../utils/config'
 
 export function getContentFromUserMediation (userMediation) {
@@ -35,12 +36,18 @@ export function getContentFromUserMediation (userMediation) {
       sourceCollectionName = 'things'
     }
   }
-  const thumbUrl = mediation && mediation.thumbCount > 0
-    ? `${THUMBS_URL}/mediations/${mediation.id}`
-    : (
-      source && source.thumbCount > 0
-        ? `${THUMBS_URL}/${sourceCollectionName}/${source.id}`
-        : `${API_URL}/static/images/default_thumb.png`
-    )
-  return Object.assign({ source, thumbUrl }, userMediation)
+  let backgroundColor
+  let thumbUrl
+  // TODO: colorsys.rgb_to_hsv({ r: 255, g: 255, b: 255 }) ...
+  if (mediation && mediation.thumbCount > 0) {
+    thumbUrl = `${THUMBS_URL}/mediations/${mediation.id}`
+    backgroundColor = mediation.firstThumbDominantColor
+  } else if (source && source.thumbCount > 0) {
+    thumbUrl = `${THUMBS_URL}/${sourceCollectionName}/${source.id}`
+    backgroundColor = source.firstThumbDominantColor
+  } else {
+    thumbUrl = `${API_URL}/static/images/default_thumb.png`
+    backgroundColor = [0, 0, 0]
+  }
+  return Object.assign({ backgroundColor, source, thumbUrl }, userMediation)
 }

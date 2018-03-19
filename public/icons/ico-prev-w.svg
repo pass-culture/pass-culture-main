@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="86px" height="42px" viewBox="0 0 86 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>89D86CF4-2769-4788-8A28-7CA6CA186B27</title>
+    <desc>Created with sketchtool.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BLOCKS/nav4" transform="translate(-18.000000, -98.000000)">
+            <g id="BLOCKS/nav2" transform="translate(18.000000, 98.000000)">
+                <g id="ico-prev-w-group">
+                    <rect id="crop" x="0" y="0" width="86" height="52"></rect>
+                    <g id="ICONS/ico-prev-w" transform="translate(0.000000, 8.000000)" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <polyline id="Stroke-1" points="9.58455714 11 0.999842857 21.8035714 9.58455714 32.6071429"></polyline>
+                        <path d="M43,21.8035714 L1,21.8035714" id="Stroke-3"></path>
+                    </g>
+                    <path d="M50,29.507574 C58.3621984,28.6259095 65.5807979,25.675722 71.6557983,20.6570114 C77.7307987,15.6383009 82.014724,9.08596378 84.507574,1" id="Line-2" stroke="#FFFFFF" stroke-width="2" opacity="0.200000018" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3,6"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
