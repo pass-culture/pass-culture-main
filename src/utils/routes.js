@@ -1,6 +1,5 @@
 import React from 'react'
 
-import ClientOfferPage from '../pages/ClientOfferPage'
 import DiscoveryPage from '../pages/DiscoveryPage'
 import InventoryPage from '../pages/InventoryPage'
 import HomePage from '../pages/HomePage'
