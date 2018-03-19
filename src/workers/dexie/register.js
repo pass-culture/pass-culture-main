@@ -1,8 +1,8 @@
-import DexieWorker from '../index.dexie.worker.js'
-import { requestData } from '../reducers/data'
-import { IS_DEV } from '../utils/config'
-import { config } from '../utils/dexie.data'
-import store from '../utils/store'
+import DexieWorker from './index.js'
+import config from './config'
+import { requestData } from '../../reducers/data'
+import { IS_DEV } from '../../utils/config'
+import store from '../../utils/store'
 
 export const worker = new DexieWorker()
 

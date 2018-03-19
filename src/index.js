@@ -8,7 +8,7 @@ import 'typeface-barlow'
 
 import Root from './Root'
 import registerCacheWorker from './workers/cache'
-import registerDexieWorker from './workers/dexie'
+import registerDexieWorker from './workers/dexie/register'
 
 ReactDOM.render(<Root />, document.getElementById('root'))
 if (module.hot) {

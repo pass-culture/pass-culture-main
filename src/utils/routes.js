@@ -1,6 +1,5 @@
 import React from 'react'
 
-import ClientOfferPage from '../pages/ClientOfferPage'
 import DiscoveryPage from '../pages/DiscoveryPage'
 import InventoryPage from '../pages/InventoryPage'
 import HomePage from '../pages/HomePage'
@@ -23,8 +22,8 @@ const routes = [
   {
     exact: true,
     path: '/decouverte/:offerId/:mediationId?',
-    render: props => <ClientOfferPage offerId={props.match.params.offerId}
-                                     mediationId={props.match.params.mediationId} />
+    render: ({ match: { mediationId, offerId }}) =>
+      <DiscoveryPage mediationId={mediationId} offerId={offerId}/>
   },
   {
     exact: true,

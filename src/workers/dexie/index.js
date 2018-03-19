@@ -1,10 +1,11 @@
+/* global self */
+/* eslint no-restricted-globals: ["off", "self"] */
 import { db,
   getData,
   pushPull,
   setUser
-} from './dexie.data'
+} from './data'
 
-// in the case where we don't actually
 class DexieWrapper {
   constructor (worker) {
     this.state = {}
@@ -81,4 +82,12 @@ class DexieWrapper {
   }
 }
 
-export default DexieWrapper
+let DexieWorker
+if (process.env.HAS_WORKERS) {
+  const dexieWrapper = new DexieWrapper(self)
+  self.addEventListener('message', dexieWrapper.onMessage)
+} else {
+  DexieWorker = DexieWrapper
+}
+
+export default DexieWorker

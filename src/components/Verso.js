@@ -1,17 +1,25 @@
 import classnames from 'classnames'
-import React, { Component } from 'react'
+import React from 'react'
 
-class Verso extends Component {
-  render () {
-    const { deckElement, isFlipped } = this.props
-    return (
-      <div className={classnames('verso absolute', {
-        'verso--flipped': isFlipped
-      })}>
-        QSDSQD
-      </div>
-    )
-  }
+import ControlBar from './ControlBar'
+import MediationCardBack from '../components/MediationCardBack'
+import OfferInfo from '../components/OfferInfo'
+
+const Verso = props => {
+  const { deckElement,
+    isFlipped,
+    mediation,
+    userMediationOffers
+  } = props
+  return (
+    <div className={classnames('verso absolute', {
+      'verso--flipped': isFlipped
+    })}>
+      <ControlBar {...props} />
+      <MediationCardBack {...mediation} />
+      <OfferInfo {...userMediationOffers[0]} />
+    </div>
+  )
 }
 
 export default Verso

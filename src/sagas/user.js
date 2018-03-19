@@ -2,8 +2,8 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { resetData } from '../reducers/data'
 import { setUser } from '../reducers/user'
-import { clear } from '../utils/dexie.data'
-import { worker } from '../workers/dexie'
+import { clear } from '../workers/dexie/data'
+import { worker } from '../workers/dexie/register'
 
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false or false to null

@@ -3,29 +3,9 @@ import flatten from 'lodash.flatten'
 import uniq from 'lodash.uniq'
 import uuid from 'uuid'
 
-import { fetchData } from './request'
-import { IS_DEV } from '../utils/config'
-
-export const config = {
-  name: "pass_culture",
-  collections: [
-    {
-      description: 'index',
-      name: 'userMediations',
-      query: ({ around }) => around && `around=${around}`,
-      isSync: true
-    },
-    {
-      description: 'id',
-      name: 'differences'
-    },
-    {
-      description: 'id',
-      name: 'users'
-    }
-  ],
-  version: 1
-}
+import config from './config'
+import { fetchData } from '../../utils/request'
+import { IS_DEV } from '../../utils/config'
 
 const storesConfig = {}
 config.collections.forEach(({ description, name }) =>
@@ -146,12 +126,11 @@ export async function pushPull (state = {}) {
   }))
 }
 
-
-// if (IS_DEV) {
-if (typeof window !== 'undefined') {
-  window.clearDexie = clear
-  window.dexieDb = db
-  window.fetchDexie = fetch
-  window.pushPullDexie = pushPull
+if (IS_DEV) {
+  if (typeof window !== 'undefined') {
+    window.clearDexie = clear
+    window.dexieDb = db
+    window.fetchDexie = fetch
+    window.pushPullDexie = pushPull
+  }
 }
-// }
