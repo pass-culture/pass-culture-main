@@ -6,8 +6,8 @@ db = app.db
 
 
 class Booking(app.model.PcObject,
-                  db.Model,
-                  app.model.DeactivableMixin):
+              db.Model,
+              app.model.DeactivableMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -27,17 +27,12 @@ class Booking(app.model.PcObject,
     quantity = db.Column(db.Numeric(10, 2),
                          nullable=False)
 
-    _token = db.Column('token', db.String(10))
+    referenceId = db.Column(db.BigInteger,
+                            db.ForeignKey("reference.id"),
+                            nullable=False)
 
-    @property
-    def token(self):
-        return self._token
-
-    @token.setter
-    def token(self, value):
-        if len(value) < 6:
-            raise Exception("Value too short")
-        self._token = value
+    reference = db.relationship(lambda: app.model.Reference,
+                                foreign_keys=[referenceId])
 
     userId = db.Column(db.BigInteger,
                        db.ForeignKey('user.id'),

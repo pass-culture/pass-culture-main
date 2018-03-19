@@ -19,5 +19,5 @@ def get_booking(booking_id):
 @expect_json_data
 def post_booking():
     user_id = current_user.get_id()
-    pass
+    #Booking.filter()
     return jsonify({}, 200

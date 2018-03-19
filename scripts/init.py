@@ -5,6 +5,7 @@ from pprint import pprint
 import traceback
 
 from utils.mock import set_from_mock
+from utils.token import get_all_tokens
 
 @app.manager.command
 def init():

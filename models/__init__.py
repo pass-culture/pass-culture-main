@@ -35,6 +35,7 @@ import models.offerer_provider
 import models.local_provider_event
 import models.local_provider
 import models.provider
+import models.reference
 import models.thing
 import models.user_mediation
 import models.user_mediation_offer
