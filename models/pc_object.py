@@ -47,6 +47,8 @@ class PcObject():
             value = getattr(self, key)
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
+            elif key == 'firstThumbDominantColor' and value:
+                result[key] = list(value)
             else:
                 result[key] = serialize(value)
         if options and options['include']:

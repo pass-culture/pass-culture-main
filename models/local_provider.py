@@ -9,9 +9,6 @@ import sys
 import traceback
 
 from utils.human_ids import humanize
-from utils.object_storage import delete_public_object,\
-                                 get_public_object_date,\
-                                 store_public_object
 from utils.string_processing import inflect_engine
 
 
@@ -119,32 +116,28 @@ class LocalProvider(Iterator):
             return
         try:
             thumb_dates = self.getObjectThumbDates(obj)
+            need_save = False
+            print(thumb_dates)
             for index, thumb_date in enumerate(thumb_dates):
                 self.checkedThumbs += 1
-                thumb_storage_id = inflect_engine.plural(obj.__class__.__name__.lower()) + "/"\
-                                   + humanize(obj.id)\
-                                   + (('_' + str(index)) if index > 0 else '')
                 if thumb_date is None:
                     continue
-                existing_date = get_public_object_date("thumbs", thumb_storage_id)
+                existing_date = obj.thumb_date(index)
                 if existing_date is None\
                    or existing_date < thumb_date:
                     thumb = self.getObjectThumb(obj, index)
                     if thumb is None:
                         continue
+                    need_save = True
                     if existing_date is not None:
-                        delete_public_object("thumbs", thumb_storage_id)
+                        obj.delete_thumb(thumb, index)
                         print("    Updating thumb #"+str(index)+" for "+str(obj))
                         self.updatedThumbs += 1
                     else:
                         print("    Creating thumb #"+str(index)+" for "+str(obj))
                         self.createdThumbs += 1
-                    store_public_object("thumbs",
-                                        thumb_storage_id,
-                                        thumb,
-                                        "image/jpeg")
-            if (len(thumb_dates) > (obj.thumbCount or 0)):
-                obj.thumbCount = len(thumb_dates)
+                    obj.save_thumb(thumb, index)
+            if need_save:
                 app.model.PcObject.check_and_save(obj)
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)

@@ -1,5 +1,6 @@
 alembic
 bcrypt
+colorthief
 dateparser
 Flask
 flask_cors
