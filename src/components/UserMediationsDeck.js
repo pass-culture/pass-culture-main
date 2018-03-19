@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import Deck from './Deck'
 import { requestData } from '../reducers/data'
 import { getContentFromUserMediation } from '../utils/content'
-import { worker } from '../workers/dexie'
+import { worker } from '../workers/dexie/register'
 
 class UserMediationsDeck extends Component {
   constructor() {

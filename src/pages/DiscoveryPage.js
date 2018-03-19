@@ -5,7 +5,7 @@ import { compose } from 'redux'
 
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
-import { worker } from '../workers/dexie'
+import { worker } from '../workers/dexie/register'
 
 class DiscoveryPage extends Component {
   constructor () {
@@ -38,7 +38,7 @@ class DiscoveryPage extends Component {
     // we need to request around him then
     if (!userMediation) {
       worker.postMessage({ key: 'dexie-push-pull',
-        state: { around: userMediation.id }})
+        state: { mediationId, offerId }})
     }
     this.setState({ aroundIndex })
   }

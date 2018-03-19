@@ -2,7 +2,7 @@ import 'fetch-everywhere'
 import { parse } from 'query-string'
 
 import { API_URL } from './config'
-import { getData, putData } from './dexie.data'
+import { getData, putData } from '../workers/dexie/data'
 
 export const isRequestAction = ({ type }) => /REQUEST_(.*)/.test(type)
 
