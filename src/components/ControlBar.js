@@ -8,8 +8,8 @@ import Icon from './Icon'
 
 class ControlBar extends Component {
   onClickBook = () => {
-    const { id, showModal } = this.props
-    showModal(<Booking id={id} />)
+    const { showModal } = this.props
+    showModal(<Booking {...this.props} />)
   }
   onClickFavorite = type => {
     const { id, requestData } = this.props
