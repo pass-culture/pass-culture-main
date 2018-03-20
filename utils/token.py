@@ -12,5 +12,4 @@ def random_token(length = 3):
 
 def get_all_tokens(length = 3):
     return map(tokenify,
-        itertools.product(*[range(1, 256) for index in range(length)])
-    )
+               itertools.product(*[range(1, 256) for index in range(length)]))

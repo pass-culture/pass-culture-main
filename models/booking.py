@@ -25,14 +25,12 @@ class Booking(app.model.PcObject,
                             foreign_keys=[offerId])
 
     quantity = db.Column(db.Numeric(10, 2),
-                         nullable=False)
+                         nullable=False,
+                         default=1)
 
-    referenceId = db.Column(db.BigInteger,
-                            db.ForeignKey("reference.id"),
-                            nullable=False)
-
-    reference = db.relationship(lambda: app.model.Reference,
-                                foreign_keys=[referenceId])
+    token = db.Column(db.String(6),
+                      unique=True,
+                      nullable=False)
 
     userId = db.Column(db.BigInteger,
                        db.ForeignKey('user.id'),
