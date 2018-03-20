@@ -3,29 +3,21 @@ import React from 'react'
 
 import Loading from './Loading'
 
-const Recto = ({ isFullWidth,
+const Recto = ({
+  firstThumbDominantColor,
+  isFullWidth,
   isLoading,
   thumbUrl
 }) => {
-  return (
-    <div className={classnames('recto', { 'recto--small': !isFullWidth })} style={{
-      backgroundImage: `url(${thumbUrl})`,
-      overflowX: 'hidden ! important',
-      overflowY: 'hidden ! important',
-      backgroundColor: '#f8f8f8',
-      backgroundSize: 'contain',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'left top',
-    }}>
-      {
-        isLoading && (
-          <div className='recto__loading flex items-center justify-center'>
-            <Loading isForceActive />
-          </div>
-        )
-      }
-    </div>
-  )
+  return isLoading ? (<div className='recto__loading flex items-center justify-center'>
+                   <Loading isForceActive />
+                 </div>)
+              : (<div className={classnames('recto', { 'recto--small': !isFullWidth })} >
+                   <div className="card-background" style={{ backgroundImage: `url('${thumbUrl}')`}} />
+                   <img draggable="false"
+                        src={thumbUrl} />
+                   <div className="card-gradient" />
+                 </div>)
 }
 
 export default Recto
