@@ -8,6 +8,12 @@ html,body {
   min-height: 100vh;
 }
 
+body {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
 .app {
   color: $dark-grey;
   font-family: $font-family;

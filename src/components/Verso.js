@@ -11,13 +11,18 @@ const Verso = props => {
     mediation,
     userMediationOffers
   } = props
+  const offer = userMediationOffers[0]
+  const object = offer.thing || offer.eventOccurence.event
   return (
     <div className={classnames('verso absolute', {
       'verso--flipped': isFlipped
     })}>
+      <h2>
+        <div>{object.name}</div>
+      </h2>
       <ControlBar {...props} />
-      <MediationCardBack {...mediation} />
       <OfferInfo {...userMediationOffers[0]} />
+      <MediationCardBack {...mediation} />
     </div>
   )
 }

@@ -2,13 +2,10 @@ import React from 'react'
 
 import Icon from './Icon'
 import VenueInfo from './VenueInfo'
-import withFrontendOffer from '../hocs/withFrontendOffer'
-import withSelectors from '../hocs/withSelectors'
 
 const OfferInfo = ({ description,
   eventOccurence,
   id,
-  name,
   occurencesAtVenue,
   price,
   sellersFavorites,
@@ -19,7 +16,6 @@ const OfferInfo = ({ description,
 }) => {
   return (
     <div>
-      <h2> { name } </h2>
       <img alt='' className='offerPicture' src={thumbUrl} />
       <div className='offer-price'>{ price }&nbsp;€</div>
       { description }
