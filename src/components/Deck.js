@@ -334,7 +334,7 @@ class Deck extends Component {
                   <img src='/icons/ico-prev-w.svg' className='flip-horiz' />
                 </button>
               </div>
-              <button className='deck__board__profile' style={{backgroundImage: "url('icons/pc_small.jpg')"}} />
+              <button className='deck__board__profile' style={{backgroundImage: "url('../icons/pc_small.jpg')"}} />
             </div>
           </div>
         </Draggable>
