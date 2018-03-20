@@ -1,4 +1,4 @@
-# pass-culture-flask
+# pass-culture-api
 
 C'est le backend de l'application Pass Culture.
 
