@@ -1,7 +1,6 @@
 import React from 'react'
 
 import Icon from './Icon'
-import VenueInfo from './VenueInfo'
 import withFrontendOffer from '../hocs/withFrontendOffer'
 import withSelectors from '../hocs/withSelectors'
 
@@ -15,39 +14,53 @@ const OfferInfo = ({ description,
   thing,
   thingOrEventOccurence,
   thumbUrl,
-  venue
+  venue,
+  children,
 }) => {
+  const [red, green, blue] = thing.firstThumbDominantColor;
   return (
-    <div>
-      <h2> { name } </h2>
-      <img alt='' className='offerPicture' src={thumbUrl} />
-      <div className='offer-price'>{ price }&nbsp;€</div>
-      { description }
-      {
-        thing && [
-          <span key={0}>
-            {thing.description}
-          </span>,
-          <VenueInfo key={1} {...venue} />
-        ]
-      }
-      {
-        eventOccurence && [
-          <span key={2}>
-            {eventOccurence.event.description}
-          </span>,
-          <VenueInfo key={3} {...eventOccurence.venue} />,
-          <ul key={4} className='dates'>
-            {
-              occurencesAtVenue.map((occurence, index) => (
+    <div className='offer-info'>
+      <div className='verso-header' style={{backgroundColor: `rgb(${red}, ${green}, ${blue})`}}>
+        <h2> { thing.name }, de { thing.extraData.author } </h2>
+        <h6> {venue.name} </h6>
+      </div>
+      {children}
+      <div className='content'>
+        {thing.description && (
+          <div className='description'>
+            { thing.description.split('\n').map(p => <p key={p}>{p}</p>) }
+          </div>
+        )}
+        {eventOccurence && (
+          <div>
+            <h3>Quoi ?</h3>
+            <p>{eventOccurence.event.description}</p>
+          </div>
+        )}
+        {occurencesAtVenue && (
+          <div>
+            <h3>Quand ?</h3>
+            <ul className='dates-info'>
+              { occurencesAtVenue.map((occurence, index) => (
                 <li key={index}>
                   <span> { occurence.beginningDatetime } </span>
                 </li>
-              ))
-            }
-          </ul>
-        ]
-      }
+              ))}
+            </ul>
+          </div>
+        )}
+        {venue.address && (
+          <div>
+            <h3>Où ?</h3>
+            <ul className='address-info'>
+              <li>{venue.name}</li>
+              {venue.address.split(/[,\n\r]/).map(el => (<li key={el}>{el}</li>))}
+            </ul>
+          </div>
+        )}
+        <p>
+        </p>
+      </div>
     </div>
   )
 }

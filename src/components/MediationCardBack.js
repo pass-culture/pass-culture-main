@@ -7,11 +7,11 @@ import Icon from './Icon'
 
 class MediationCardBack extends Component {
   render = () => {
-    const { 
+    const {
       backText
     } = this.props
     return (
-      <div>
+      <div className='card-back'>
         { backText }
       </div>
     )

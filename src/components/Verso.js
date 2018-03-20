@@ -15,9 +15,9 @@ const Verso = props => {
     <div className={classnames('verso absolute', {
       'verso--flipped': isFlipped
     })}>
-      <ControlBar {...props} />
-      <MediationCardBack {...mediation} />
-      <OfferInfo {...userMediationOffers[0]} />
+      <OfferInfo {...userMediationOffers[0]}>
+        <ControlBar {...props} />
+      </OfferInfo>
     </div>
   )
 }

@@ -18,18 +18,18 @@ class ControlBar extends Component {
   }
   render () {
     return (
-      <div className='flex items-center flex-justify justify-around p2'>
-        <button className='button button--alive mr1'
+      <div className='control-bar'>
+        <button className='button'
           onClick={() => this.onPinClick('dislike')}>
           Jeter
         </button>
-        <button className='button button--alive mr1'
+        <button className='button'
           onClick={() => this.onPinClick('interesting')} >
           Garder de côté
         </button>
-        <button className='button button--alive'
+        <button className='button'
           onClick={() => this.onBookClick} >
-          Réserver
+          J'y vais !
         </button>
       </div>
     )
