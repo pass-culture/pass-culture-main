@@ -27,7 +27,7 @@ class HomePage extends Component {
 
 export default compose(
   withRouter,
-  withLogin(),
+  withLogin({ isRequired: true }),
   connect(
     state => ({ user: state.user })
   )
