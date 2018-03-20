@@ -54,9 +54,9 @@ elif [[ "$CMD" == "grep" ]]; then
   RUN='grep --exclude-dir ftp_mirrors --exclude-dir node_modules --exclude-dir build --exclude-dir postgres_data --exclude-dir .hypothesis -r "'"$*"'" .'
 elif [[ "$CMD" == "install" ]]; then
   RUN='yarn global add concurrently;
-       git submodules init;
-       git submodules update;
-       git submodules foreach git checkout origin master;
+       git submodule init;
+       git submodule update;
+       git submodule foreach git checkout origin master;
 			 ./pc symlink;
        cd $ROOT_PATH/webapp && yarn'
 elif [[ "$CMD" == "psql" ]]; then
