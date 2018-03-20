@@ -21,7 +21,7 @@ um_include = [
         "sub_joins": [
             {
                 "key": "offer",
-                "sub_joins": ["eventOccurence","thing"]
+                "sub_joins": ["eventOccurence", "thing", "venue"]
             }
         ]
     }
