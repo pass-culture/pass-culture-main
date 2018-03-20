@@ -37,6 +37,7 @@ import models.local_provider
 import models.provider
 import models.thing
 import models.user_mediation
+import models.user_mediation_booking
 import models.user_mediation_offer
 import models.user_offerer
 import models.user

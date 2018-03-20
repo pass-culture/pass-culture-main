@@ -12,6 +12,7 @@ Offer = app.model.Offer
 UserMediation = app.model.UserMediation
 
 um_include = [
+    "bookings",
     {
         "key": "mediation",
         "sub_joins": ["event", "thing"]
@@ -22,9 +23,17 @@ um_include = [
         "sub_joins": [
             {
                 "key": "offer",
-                "sub_joins": ["eventOccurence", "thing", "venue"]
+                "sub_joins": [
+                    "eventOccurence",
+                    "thing",
+                    "venue"
+                ]
             }
         ]
+    },
+    {
+        "key": "userMediationBookings",
+        "resolve": (lambda element, filters: element['booking']),
     }
 ]
 

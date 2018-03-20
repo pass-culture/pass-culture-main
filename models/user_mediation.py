@@ -19,6 +19,9 @@ class UserMediation(app.model.PcObject, db.Model):
                            foreign_keys=[userId],
                            backref='userMediations')
 
+    userMediationBookings = db.relationship(lambda: app.model.UserMediationBooking,
+                                            back_populates="userMediation")
+
     userMediationOffers = db.relationship(lambda: app.model.UserMediationOffer,
                                           back_populates="userMediation")
 
