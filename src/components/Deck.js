@@ -352,5 +352,5 @@ Deck.defaultProps = { deckKey: 0,
 }
 
 export default connect(
-  state => ({ isFullWidth: state.browser.lessThan.medium })
+  state => ({ isFullWidth: true })
 )(Deck)

@@ -1,6 +1,12 @@
 import * as reactIconPack from 'react-icons/lib/md';
+import React, { Component } from 'react'
 
 export default ( props ) => {
-  const iconName = 'Md' + props.name.replace(/(^|-)(\w)/g, (m0, m1, m2) => m2.toUpperCase());
-  return reactIconPack[iconName]();
+  if (props.svg) {
+    return <img src={`/icons/${props.svg}.svg`} />
+  } else {
+    const iconName = 'Md' + props.name.replace(/(^|-)(\w)/g, (m0, m1, m2) => m2.toUpperCase());
+    return reactIconPack[iconName]();
+  }
+
 }

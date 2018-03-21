@@ -1,43 +1,55 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import Booking from './Booking'
 import { requestData } from '../reducers/data'
+import { showModal } from '../reducers/modal'
 import Icon from './Icon'
 
 class ControlBar extends Component {
-  onBookClick = () => {
-    // here we implement the api
-    // to boo an offer...
+  onClickBook = () => {
+    const { showModal } = this.props
+    showModal(<Booking {...this.props} />)
   }
-  onPinClick = type => {
-    const { offerId, requestData, userId } = this.props
-    requestData('POST', 'pins', {
-      offerId,
-      type,
-      userId
-    })
+  onClickFavorite = type => {
+    const { id, requestData } = this.props
+    requestData('POST', 'userMediations', { body: [{ id,
+      isFavorite: true
+    }] })
   }
   render () {
+    const { onClickBook,
+      onClickFavorite,
+      onClickShare
+    } = this
+    const { booking, userMediationBookings } = this.props
     return (
       <ul className='control-bar'>
         <li><small className='pass-label'>Mon pass</small><span className='pass-value'>476€</span></li>
         <li>
           <button className='button button--icon button--xlarge'
-            onClick={() => this.onPinClick('interesting')} >
-            <Icon name={this.props.isFavorite ? 'Favorite' : 'FavoriteOutline'} />
+            onClick={onClickFavorite} >
+            <Icon svg={this.props.isFavorite ? 'ico-like-w' : 'ico-like-w'} />
           </button>
         </li>
         <li>
           <button className='button button--icon button--xlarge'
-            onClick={() => this.onPinClick('dislike')}>
-            <Icon name='PresentToAll' />
+            onClick={onClickShare}>
+            <Icon svg='ico-share-w' />
           </button>
         </li>
         <li>
           <button className='button button-go'
-            onClick={() => this.onBookClick} >
+            onClick={onClickBook} >
             <span className='price'>{`${this.props.userMediationOffers[0].price}€`}</span>
-            J'y vais !
+            {
+              (
+                booking ||
+                (userMediationBookings && userMediationBookings.length > 0)
+              )
+                ? 'Mes réservations'
+                : 'J\'y vais!'
+            }
           </button>
         </li>
       </ul>
@@ -46,6 +58,9 @@ class ControlBar extends Component {
 }
 
 export default connect(
-  state => ({ userId: state.user && state.user.id }),
-  { requestData }
+  state => ({
+    booking: state.data.bookings && state.data.bookings[0],
+    userId: state.user && state.user.id
+  }),
+  { requestData, showModal }
 )(ControlBar)

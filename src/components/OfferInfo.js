@@ -8,7 +8,6 @@ import { rgb_to_hsv } from 'colorsys'
 const OfferInfo = ({ description,
   eventOccurence,
   id,
-  name,
   occurencesAtVenue,
   price,
   sellersFavorites,
@@ -32,6 +31,7 @@ const OfferInfo = ({ description,
       </div>
       {children}
       <div className='content'>
+        <img alt='' className='offerPicture' src={thumbUrl} />
         {thing.description && (
           <div className='description'>
             { thing.description.split('\n').map(p => <p key={p}>{p}</p>) }
