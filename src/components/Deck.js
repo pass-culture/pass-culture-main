@@ -127,6 +127,7 @@ class Deck extends Component {
   onTransitionEndCard = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
+    const { handleTransitionEnd } = this.props
     // update the transitions store
     if (!transitions) {
       console.warn('transitions is null while we try to update transition end...? weird')
@@ -144,6 +145,7 @@ class Deck extends Component {
     this.transitions = newTransitions
     // check
     if (newTransitions.every((newTransition, index) => !newTransition)) {
+      handleTransitionEnd && handleTransitionEnd()
       this.setState({ isTransitioning: false })
       this.transitions = null
       // console.log('TRANSITIONS IS OFF')

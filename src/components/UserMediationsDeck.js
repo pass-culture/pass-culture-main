@@ -14,8 +14,10 @@ class UserMediationsDeck extends Component {
     this.state = { aroundIndex: null,
       contents: null,
       hasSyncRequested: false,
+      isDirty: false,
       isKeepItems: false,
-      items: null
+      items: null,
+      previousUserMediations: null
     }
   }
   handleBeforeContent = (diffIndex, deckProps, deckState) => {
@@ -108,13 +110,14 @@ class UserMediationsDeck extends Component {
       this.setState({ hasSyncRequested: false })
     }
   }
-  handleSetContents = (props, prevProps) => {
+  handleSetContents = () => {
     // unpack and check
     const { isBlobModel,
       handLength,
       userMediations
-    } = props
-    let aroundIndex = props.aroundIndex || this.state.aroundIndex
+    } = this.props
+    const { previousUserMediations } = this.state
+    let aroundIndex = this.props.aroundIndex || this.state.aroundIndex
     if (!userMediations) {
       return
     }
@@ -141,11 +144,11 @@ class UserMediationsDeck extends Component {
         aroundIndex = lastReadIndex
         */
       }
-    } else if (prevProps && prevProps.userMediations) {
+    } else if (previousUserMediations) {
       // if we have already an aroundIndex from a previous user mediations
       // make sure to find the equivalent in the new userMediations
       // by matching ids
-      const aroundUserMediation = prevProps.userMediations[aroundIndex]
+      const aroundUserMediation = previousUserMediations[aroundIndex]
       if (!aroundUserMediation) {
         console.warn('aroundUserMediation is not defined')
         return
@@ -179,10 +182,10 @@ class UserMediationsDeck extends Component {
     let loopContents = []
     const lastUserMediation = userMediations.slice(-1)[0]
     if (lastUserMediation && lastUserMediation.isLast) {
-      if (prevProps && prevProps.userMediations) {
+      if (previousUserMediations) {
         console.log(lastUserMediation.blobSize, userMediations.length)
-        loopContents = prevProps.userMediations.slice(0,
-          lastUserMediation.blobSize - prevProps.userMediations.length)
+        loopContents = previousUserMediations.slice(0,
+          lastUserMediation.blobSize - previousUserMediations.length)
       } else {
         // should request loop data
       }
@@ -248,23 +251,40 @@ class UserMediationsDeck extends Component {
     // console.log('READ CARD', card.index, card.item, card.content.id)
     // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
   }
+  handleTransitionEnd = () => {
+    console.log('OK C EST BON', this.props.userMediations, this.state.isDirty)
+    if (this.state.isDirty) {
+      this.handleSetContents()
+      this.setState({ isDirty: false })
+    }
+  }
   componentWillMount () {
-    // this.handleSetContents(this.props)
+    this.handleSetContents()
   }
   componentWillReceiveProps (nextProps) {
+    const { userMediations } = nextProps
     if (
-      nextProps.userMediations !== this.props.userMediations ||
-      nextProps.aroundIndex !== this.props.aroundIndex
+      userMediations !== this.props.userMediations // ||
+      // aroundIndex !== this.props.aroundIndex
     ) {
-      // console.log('')
-      // console.log('nextProps.userMediations', nextProps.userMediations && nextProps.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
-      // console.log('this.props.userMediations', this.props.userMediations && this.props.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
-      // this.handleSetContents(nextProps, this.props)
+      this.setState({ isDirty: true,
+        previousUserMediations: this.props.userMediations
+      })
     }
   }
   componentDidUpdate (prevProps, prevState) {
+    // unpack
     const { handleUserMediationChange, userMediations } = this.props
     const { aroundIndex } = this.state
+    // for the first time we have data
+    // we can set peacefully content without
+    // having fear of transitions in the deck
+    if (userMediations && !prevProps.userMediations) {
+      this.handleSetContents()
+    }
+    // if the aroundIndex has changed we can call
+    // a parent method that will do things
+    // like updating the url by replacing the userMediationId in the path
     if (aroundIndex !== prevState.aroundIndex) {
       const aroundUserMediation = userMediations[aroundIndex]
       handleUserMediationChange && handleUserMediationChange(aroundUserMediation)
@@ -274,11 +294,12 @@ class UserMediationsDeck extends Component {
     // console.log('RENDER USERMEDIATIONSDECK this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
     //  this.props.userMediations && this.props.userMediations.map(um =>
     //    um && `${um.id} ${um.dateRead}`))
-    //console.log('RENDER USERMEDIATIONSDECK this.state.contents', this.state.contents && this.state.contents.length,
-    //  this.state.contents && this.state.contents.map(content =>
-    //    content && `${content.id} ${content.dateRead}`))
+    console.log('RENDER USERMEDIATIONSDECK this.state.contents', this.state.contents && this.state.contents.length,
+      this.state.contents && this.state.contents.map(content =>
+        content && `${content.id} ${content.dateRead}`))
     return <Deck {...this.props}
       {...this.state}
+      handleTransitionEnd={this.handleTransitionEnd}
       handleNextItemCard={this.handleNextItemCard}
       handleSetReadCard={this.handleSetReadCard} />
   }
