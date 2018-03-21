@@ -18,7 +18,11 @@ class ControlBar extends Component {
     }] })
   }
   render () {
-    const { onClickBook, onClickFavorite, onClickShare } = this
+    const { onClickBook,
+      onClickFavorite,
+      onClickShare
+    } = this
+    const { userMediationBookings } = this.props
     return (
       <div className='flex items-center flex-justify justify-around p2'>
         <button className='button button--alive mr1'
@@ -31,7 +35,11 @@ class ControlBar extends Component {
         </button>
         <button className='button button--alive'
           onClick={onClickBook} >
-          Réserver
+          {
+            userMediationBookings && userMediationBookings.length > 0
+              ? 'Mes réservations'
+              : 'J\'y vais!'
+          }
         </button>
       </div>
     )
