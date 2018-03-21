@@ -123,7 +123,7 @@ class UserMediationsDeck extends Component {
     // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
     // is the centered card
-    if (!prevProps || aroundIndex === null) {
+    if (aroundIndex === null) {
       const isReads = userMediations.map(userMediation =>
         userMediation.dateRead !== null)
       isReads.reverse()
@@ -141,7 +141,7 @@ class UserMediationsDeck extends Component {
         aroundIndex = lastReadIndex
         */
       }
-    } else if (prevProps.userMediations) {
+    } else if (prevProps && prevProps.userMediations) {
       // if we have already an aroundIndex from a previous user mediations
       // make sure to find the equivalent in the new userMediations
       // by matching ids
@@ -179,7 +179,7 @@ class UserMediationsDeck extends Component {
     let loopContents = []
     const lastUserMediation = userMediations.slice(-1)[0]
     if (lastUserMediation && lastUserMediation.isLast) {
-      if (prevProps.userMediations) {
+      if (prevProps && prevProps.userMediations) {
         console.log(lastUserMediation.blobSize, userMediations.length)
         loopContents = prevProps.userMediations.slice(0,
           lastUserMediation.blobSize - prevProps.userMediations.length)

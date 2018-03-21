@@ -12,7 +12,7 @@ const config = {
         : (
           mediationId
             ? `mediationId=${mediationId}`
-            : `offerId=${offerId}`
+            : (offerId && `offerId=${offerId}`) || ''
         ),
       isSync: true
     },

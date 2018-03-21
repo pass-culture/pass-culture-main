@@ -9,22 +9,25 @@ export function getContentFromUserMediation (userMediation) {
   const { mediation,
     userMediationOffers
   } = userMediation
-  // choose one of the offer
-  const offer = userMediationOffers &&
+  // choose one of the associated offer
+  // for now we just pick randomly one of them
+  // and this is actually what we want for the case where we have an event
+  // proposed by several ticketers
+  const chosenOffer = userMediationOffers &&
     userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
   // check
-  if (!offer && !mediation) {
+  if (!chosenOffer && !mediation) {
     return
   }
   // choose an image
   let source
   let sourceCollectionName
-  if (offer) {
-    if (offer.eventOccurence) {
-      source = offer.eventOccurence
+  if (chosenOffer) {
+    if (chosenOffer.eventOccurence) {
+      source = chosenOffer.eventOccurence
       sourceCollectionName = 'eventOccurences'
     } else {
-      source = offer.thing
+      source = chosenOffer.thing
       sourceCollectionName = 'things'
     }
   } else {
@@ -49,5 +52,9 @@ export function getContentFromUserMediation (userMediation) {
     thumbUrl = `${API_URL}/static/images/default_thumb.png`
     backgroundColor = [0, 0, 0]
   }
-  return Object.assign({ backgroundColor, source, thumbUrl }, userMediation)
+  return Object.assign({ backgroundColor,
+    chosenOffer,
+    source,
+    thumbUrl
+  }, userMediation)
 }
