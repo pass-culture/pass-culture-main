@@ -22,7 +22,7 @@ class ControlBar extends Component {
       onClickFavorite,
       onClickShare
     } = this
-    const { userMediationBookings } = this.props
+    const { booking, userMediationBookings } = this.props
     return (
       <div className='flex items-center flex-justify justify-around p2'>
         <button className='button button--alive mr1'
@@ -36,7 +36,10 @@ class ControlBar extends Component {
         <button className='button button--alive'
           onClick={onClickBook} >
           {
-            userMediationBookings && userMediationBookings.length > 0
+            (
+              booking || 
+              (userMediationBookings && userMediationBookings.length > 0)
+            )
               ? 'Mes réservations'
               : 'J\'y vais!'
           }
@@ -47,6 +50,9 @@ class ControlBar extends Component {
 }
 
 export default connect(
-  state => ({ userId: state.user && state.user.id }),
+  state => ({
+    booking: state.data.bookings && state.data.bookings[0],
+    userId: state.user && state.user.id
+  }),
   { requestData, showModal }
 )(ControlBar)
