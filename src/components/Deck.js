@@ -265,8 +265,8 @@ class Deck extends Component {
       items
     } = this.state
     const contents = this.state.bufferContents || this.props.contents
-    const isAfterDisabled = !items || isFirstCard || isTransitioning
-    const isBeforeDisabled = !items || isLastCard || isTransitioning
+    const isAfterDisabled = !items || isLastCard || isTransitioning
+    const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isFlipDisabled = !items || isTransitioning
     var style = {backgroundColor: 'black',
                  transition: `background-color ${transitionTimeout}ms`}
@@ -325,15 +325,16 @@ class Deck extends Component {
                   handleSetRead={handleSetReadCard}
                   handleSetType={handleSetTypeCard}
                   isBlobModel={isBlobModel}
-                  transition={transition}
                   isFirst={contents && !contents[index - 1]}
                   isFlipping={isFlipping}
                   isFullWidth={isFullWidth}
                   isLast={contents && !contents[index + 1]}
                   index={index}
                   isResizing={isResizing}
+                  isTransitioning={isTransitioning}
                   isVerso={isVerso}
                   item={item}
+                  transition={transition}
                   transitionTimeout={transitionTimeout}
                   key={index}
                   onTransitionEnd={onTransitionEndCard}
@@ -346,7 +347,7 @@ class Deck extends Component {
               id='deck__board'
               ref={element => this.boardElement = element} >
               <div className='deck__board__control flex justify-around'>
-                <button className={classnames('deck__board__prev button', {
+                <button className={classnames('deck__board__before button', {
                   'button--disabled': isBeforeDisabled })}
                   disabled={isBeforeDisabled}
                   onClick={() => handleNextItemCard(1)}>
@@ -357,7 +358,7 @@ class Deck extends Component {
                   onClick={handleFlipCard} >
                   <Icon svg='ico-slideup-w' />
                 </button>
-                <button className={classnames('deck__board__next button', {
+                <button className={classnames('deck__board__after button', {
                   'button--disabled': isAfterDisabled })}
                   onClick={() => handleNextItemCard(-1)}
                   disabled={isAfterDisabled}  >
