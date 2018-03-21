@@ -1,8 +1,17 @@
 .deck {
   height: 100vh;
   overflow: hidden;
+  .deck-gradient {
+    height: 0;
+    margin-top: 106.4%;
+    padding-bottom: 26.6%;
+    z-index: 100;
+    width: 100%;
+    position: relative
+  }
   &__board {
     background-color: transparent;
+    background-image: url('/mosaic-w.svg');
     margin-top: 133%;
     width:100%;
     z-index: 100;

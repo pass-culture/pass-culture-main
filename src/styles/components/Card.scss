@@ -1,5 +1,4 @@
 .card {
-  background-color: black;
   cursor: pointer;
   height: 100%;
   &--small {
@@ -13,7 +12,7 @@
   }
   &--span {
     height: 100%;
-    z-index: 1000;
+    z-index: 1;
   }
   &__container {
     height: 100%;

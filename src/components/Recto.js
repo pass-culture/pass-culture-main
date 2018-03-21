@@ -16,7 +16,6 @@ const Recto = ({
                    <div className="card-background" style={{ backgroundImage: `url('${thumbUrl}')`}} />
                    <img draggable="false"
                         src={thumbUrl} />
-                   <div className="card-gradient" />
                  </div>)
 }
 

@@ -42,7 +42,7 @@ class Card extends Component {
   }
   handleSetType = props => {
     // unpack and check
-    const { backgroundColor,
+    const { 
       cursor,
       deckElement,
       handLength,
@@ -108,7 +108,7 @@ class Card extends Component {
               : item * handWidth
           ),
           transition: transition ||
-            `background-color ${transitionTimeout}ms, left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
@@ -117,7 +117,7 @@ class Card extends Component {
         style = {
           left: leftOrRightCurrentWidth,
           transition: transition ||
-            `background-color ${transitionTimeout}ms, left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: currentWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
@@ -130,7 +130,7 @@ class Card extends Component {
               : (item - 1) * handWidth
           ),
           transition: transition ||
-            `background-color ${transitionTimeout}ms,left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
@@ -139,7 +139,7 @@ class Card extends Component {
         style = {
           left: deckElement.offsetWidth + (isFullWidth ? currentWidth : handWidth),
           transition: transition ||
-            `background-color ${transitionTimeout}ms, left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
+            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
           width: isFullWidth ? currentWidth : handWidth
         }
         transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
@@ -314,7 +314,7 @@ class Card extends Component {
             </Portal>),
           ( <Portal key={2} node={document && document.getElementById('deck__board')}>
               <div className='deck__board__recto-infos'>
-                { (""+content.userMediationOffers[0].price).replace('.', ',') }&nbsp;€ TODO
+                { (""+content.userMediationOffers[0].price).replace('.', ',') }&nbsp;€ <span style={{fontFamily: 'sans'}}>&middot;</span> TODO
               </div>
             </Portal>)
         ],
