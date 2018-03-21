@@ -7,7 +7,7 @@ const Recto = ({
   firstThumbDominantColor,
   isFullWidth,
   isLoading,
-  thumbUrl
+  thumbUrl,
 }) => {
   return isLoading ? (<div className='recto__loading flex items-center justify-center'>
                    <Loading isForceActive />

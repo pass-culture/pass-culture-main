@@ -6,6 +6,8 @@
     margin-top: 133%;
     width:100%;
     z-index: 100;
+    bottom: 0;
+    top: 0;
     .button {
       padding: 0;
       border: 0;
@@ -36,25 +38,34 @@
       }
     }
     .clue {
+      position: absolute;
       text-align:center;
-      margin-top: 18%;
-      margin-left: auto;
-      margin-right: auto;
+      top: 28%;
+      width: 100%;
+    }
+    .deck__board__recto-infos {
+      padding-top: 8%;
+      height: 0;
+      font-size: 120%;
+      position: absolute;
+      width: 100%;
+      bottom: 47%;
     }
     .deck__board__profile {
+      border: 0;
       background-repeat: no-repeat;
       background-position: 50%;
       border-radius: 50%;
       width: 11.76%;
       height: 0;
-      padding-top: 5.88%;
-      padding-bottom: 5.88%;
+      padding-top: 11.76%;
       background-size:cover;
       position: absolute;
       left: 0;
       right: 0;
       bottom: 3.18%;
       margin: 0 auto;
+      cursor: pointer;
       }
   }
   &__to-verso {
