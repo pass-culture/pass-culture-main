@@ -3,6 +3,7 @@ def with_app_context(app):
         # IMPORT
         import models
         import reco
+        import routes
 
         # ADAPT SQL ALCHEMY TO INSERT APP CONTEXT INSIDE QUERY
         def call_with_app_context(func):

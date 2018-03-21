@@ -236,11 +236,13 @@ def do_init():
     check_and_save(umo)
 
     ## BOOKINGS
-    from utils.human_ids import humanize
-    print(humanize(offer.id))
     booking = model.Booking()
     booking.user = client_user
     booking.offer = offer
     booking.token = 'FUUEEM'
     booking.userMediation = user_mediation
     check_and_save(user_mediation)
+    umb = model.UserMediationBooking()
+    umb.booking = booking
+    umb.userMediation = user_mediation
+    check_and_save(umb)

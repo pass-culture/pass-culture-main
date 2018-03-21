@@ -18,8 +18,7 @@ class Booking(app.model.PcObject,
                              default=datetime.now)
 
     userMediationId = db.Column(db.BigInteger,
-                                db.ForeignKey("user_mediation.id"),
-                                nullable=True)
+                                db.ForeignKey("user_mediation.id"))
 
     userMediation = db.relationship(lambda: app.model.UserMediation,
                                     foreign_keys=[userMediationId])

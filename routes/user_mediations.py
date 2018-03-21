@@ -12,10 +12,18 @@ Offer = app.model.Offer
 UserMediation = app.model.UserMediation
 
 um_include = [
-    "bookings",
     {
         "key": "mediation",
         "sub_joins": ["event", "thing"]
+    },
+    {
+        "key": "userMediationBookings",
+        "resolve": (lambda element, filters: element['booking']),
+        "sub_joins": [
+            {
+                "key": "booking"
+            }
+        ]
     },
     {
         "key": "userMediationOffers",
@@ -30,13 +38,9 @@ um_include = [
                 ]
             }
         ]
-    },
-    {
-        "key": "userMediationBookings",
-        "resolve": (lambda element, filters: element['booking']),
     }
 ]
-
+app.um_include = um_include
 
 
 @app.route('/userMediations', methods=['PUT'])
