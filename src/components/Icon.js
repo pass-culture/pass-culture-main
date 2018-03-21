@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 
 export default ( props ) => {
   const { svg, ...imgProps } = props;
-  console.log(imgProps);
   if (svg) {
     return <img src={`/icons/${svg}.svg`} alt={svg} {...imgProps} />
   } else {
