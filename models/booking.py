@@ -7,7 +7,8 @@ db = app.db
 
 class Booking(app.model.PcObject,
               db.Model,
-              app.model.DeactivableMixin):
+              app.model.DeactivableMixin,
+              app.model.VersionedMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -30,7 +31,7 @@ class Booking(app.model.PcObject,
     offer = db.relationship(lambda: app.model.Offer,
                             foreign_keys=[offerId])
 
-    quantity = db.Column(db.Numeric(10, 2),
+    quantity = db.Column(db.Integer,
                          nullable=False,
                          default=1)
 
