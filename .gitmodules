@@ -7,3 +7,6 @@
 [submodule "doc"]
 	path = doc
 	url = git@github.com:betagouv/pass-culture-doc.git
+[submodule "webapp-packed-staging"]
+	path = webapp-packed-staging
+	url = git@github.com:betagouv/pass-culture-app-staging.git
