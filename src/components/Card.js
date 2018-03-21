@@ -314,7 +314,7 @@ class Card extends Component {
             </Portal>),
           ( <Portal key={2} node={document && document.getElementById('deck__board')}>
               <div className='deck__board__recto-infos'>
-                { (""+content.userMediationOffers[0].price).replace('.', ',') }&nbsp;€ · TODO
+                { (""+content.userMediationOffers[0].price).replace('.', ',') }&nbsp;€ TODO
               </div>
             </Portal>)
         ],

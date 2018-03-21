@@ -4,20 +4,21 @@
   padding: 0;
 }
 
-html,body {
-  min-height: 100vh;
+html {
+  min-height: 100%;
 }
 
 body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
+    min-height: 100%;
 }
 
 .app {
   color: $dark-grey;
   font-family: $font-family;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 .button {
@@ -143,7 +144,7 @@ label {
 
 .page {
   background-color: $very-very-light-grey;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 select {
