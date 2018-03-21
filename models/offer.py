@@ -1,13 +1,7 @@
 """ offer model """
 from datetime import datetime
 from flask import current_app as app
-from sqlalchemy import Index
-from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import cast
-from sqlalchemy.sql.functions import coalesce
-
-from utils.search import create_tsvector
 
 db = app.db
 
@@ -15,8 +9,7 @@ db = app.db
 class Offer(app.model.PcObject,
             db.Model,
             app.model.DeactivableMixin,
-            app.model.ProvidableMixin
-            ):
+            app.model.ProvidableMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,

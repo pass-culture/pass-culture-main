@@ -5,6 +5,7 @@ from pprint import pprint
 import traceback
 
 from utils.mock import set_from_mock
+from utils.token import get_all_tokens
 
 @app.manager.command
 def init():
@@ -201,7 +202,8 @@ def do_init():
     user_mediation.isFavorite = True
     mediation = model.Mediation()
     mediation.author = pro_user
-    mediation.text = "Pour se réconcilier une bonne fois pour toute avec Jean-Jacques"
+    mediation.backText = "On se demandera toujours pourquoi Jean-Jacques n'avait plus d'amis à la fin de sa vie. Ce mec là avait un bon fond tout de même."
+    mediation.frontText = "Pour se réconcilier une bonne fois pour toute avec Jean-Jacques"
     mediation.thing = thing3
     check_and_save(mediation)
     user_mediation.mediation = mediation
@@ -223,7 +225,8 @@ def do_init():
     user_mediation = model.UserMediation()
     mediation = model.Mediation()
     mediation.author = pro_user
-    mediation.text = "Histoire de voyager sans augmenter son bilan carbone"
+    mediation.backText = "Jules Verne savait-il déjà que le voyage en ballon serait le transport du futur ?"
+    mediation.frontText = "Histoire de voyager sans augmenter son bilan carbone"
     mediation.thing = thing4
     user_mediation.mediation = mediation
     user_mediation.user = client_user
@@ -233,3 +236,15 @@ def do_init():
     umo.offer = offer
     umo.userMediation = user_mediation
     check_and_save(umo)
+
+    ## BOOKINGS
+    booking = model.Booking()
+    booking.user = client_user
+    booking.offer = offer
+    booking.token = 'FUUEEM'
+    booking.userMediation = user_mediation
+    check_and_save(user_mediation)
+    umb = model.UserMediationBooking()
+    umb.booking = booking
+    umb.userMediation = user_mediation
+    check_and_save(umb)

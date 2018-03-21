@@ -25,6 +25,7 @@ import models.extra_data_mixin
 import models.has_thumb_mixin
 import models.providable_mixin
 
+import models.booking
 import models.event
 import models.event_occurence
 import models.mediation
@@ -36,6 +37,7 @@ import models.local_provider
 import models.provider
 import models.thing
 import models.user_mediation
+import models.user_mediation_booking
 import models.user_mediation_offer
 import models.user_offerer
 import models.user
