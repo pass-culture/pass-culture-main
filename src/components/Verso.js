@@ -6,7 +6,8 @@ import MediationCardBack from '../components/MediationCardBack'
 import OfferInfo from '../components/OfferInfo'
 
 const Verso = props => {
-  const { deckElement,
+  const {
+    // deckElement,
     isFlipped,
     mediation,
     userMediationOffers

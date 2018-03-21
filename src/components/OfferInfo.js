@@ -1,6 +1,5 @@
 import React from 'react'
 
-import Icon from './Icon'
 import VenueInfo from './VenueInfo'
 
 const OfferInfo = ({ description,

@@ -1,5 +1,4 @@
 import debounce from 'lodash.debounce'
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -37,7 +36,6 @@ class FormInput extends Component {
   render () {
     const { className,
       defaultValue,
-      entityId,
       id,
       placeholder,
       type,
