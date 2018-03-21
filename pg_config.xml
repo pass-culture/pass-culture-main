@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <widget xmlns   = "http://www.w3.org/ns/widgets"
     xmlns:gap   = "http://phonegap.com/ns/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     id          = "fr.gouv.beta.passculture"
     versionCode = "10"
     version     = "1.0.0" >
@@ -17,4 +18,8 @@
 
   <plugin name="cordova-plugin-whitelist" spec="~1.3.3" />
 
+  <gap:config-file platform="android" parent="/manifest">
+    <application android:debuggable="true" />
+  </gap:config-file>
 </widget>
+
