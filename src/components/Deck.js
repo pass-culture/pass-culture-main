@@ -48,6 +48,10 @@ class Deck extends Component {
     // unpack
     const { handleNextItemCard } = this.props
     const { items } = this.state
+    if (!items) {
+      console.warn('items is not defined')
+      return
+    }
     // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
@@ -259,6 +263,9 @@ class Deck extends Component {
       items
     } = this.state
     const contents = this.state.bufferContents || this.props.contents
+    const isAfterDisabled = !items || isFirstCard || isTransitioning
+    const isBeforeDisabled = !items || isLastCard || isTransitioning
+    const isFlipDisabled = !items || isTransitioning
     var style = {backgroundColor: 'black',
                  transition: `background-color ${transitionTimeout}ms`}
     var gradientStyle = {background: 'linear-gradient(transparent, black)',
@@ -338,20 +345,20 @@ class Deck extends Component {
               ref={element => this.boardElement = element} >
               <div className='deck__board__control flex justify-around'>
                 <button className={classnames('deck__board__prev button', {
-                  'button--disabled': isFirstCard || isTransitioning })}
-                  onClick={() => handleNextItemCard(1)}
-                  disabled={isFirstCard || isTransitioning} >
+                  'button--disabled': isBeforeDisabled })}
+                  disabled={isBeforeDisabled}
+                  onClick={() => handleNextItemCard(1)}>
                   <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
-                  'button--disabled': isTransitioning })}
+                  'button--disabled': isFlipDisabled })}
                   onClick={handleFlipCard} >
                   <Icon svg='ico-slideup-w' />
                 </button>
                 <button className={classnames('deck__board__next button', {
-                  'button--disabled': isLastCard || isTransitioning })}
+                  'button--disabled': isAfterDisabled })}
                   onClick={() => handleNextItemCard(-1)}
-                  disabled={isLastCard || isTransitioning} >
+                  disabled={isAfterDisabled}  >
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
               </div>

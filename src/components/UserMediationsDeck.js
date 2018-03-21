@@ -249,7 +249,7 @@ class UserMediationsDeck extends Component {
     // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
   }
   componentWillMount () {
-    this.handleSetContents(this.props)
+    // this.handleSetContents(this.props)
   }
   componentWillReceiveProps (nextProps) {
     if (
@@ -259,7 +259,7 @@ class UserMediationsDeck extends Component {
       // console.log('')
       // console.log('nextProps.userMediations', nextProps.userMediations && nextProps.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
       // console.log('this.props.userMediations', this.props.userMediations && this.props.userMediations.map(um => um && `${um.id} ${um.dateRead}`))
-      this.handleSetContents(nextProps, this.props)
+      // this.handleSetContents(nextProps, this.props)
     }
   }
   componentDidUpdate (prevProps, prevState) {
