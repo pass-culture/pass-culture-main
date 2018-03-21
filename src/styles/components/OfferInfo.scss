@@ -3,7 +3,7 @@
   text-align: left;
   background-image: url(/mosaic-k.svg);
   background-color: $very-very-light-grey;
-  height: 100%;
+  min-height: 100%;
   .verso-header {
     background-color: $black;
     padding: 1rem;

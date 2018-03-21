@@ -3,6 +3,7 @@ import React from 'react'
 import Icon from './Icon'
 import withFrontendOffer from '../hocs/withFrontendOffer'
 import withSelectors from '../hocs/withSelectors'
+import { rgb_to_hsv } from 'colorsys'
 
 const OfferInfo = ({ description,
   eventOccurence,
@@ -17,10 +18,15 @@ const OfferInfo = ({ description,
   venue,
   children,
 }) => {
-  const [red, green, blue] = thing.firstThumbDominantColor;
+  let style;
+  if (thing.firstThumbDominantColor) {
+    const [red, green, blue] = thing.firstThumbDominantColor;
+    const {h, s, v} = rgb_to_hsv(red, green, blue);
+    style = {backgroundColor: `hsl(${h}, 100%, 15%)`};
+  }
   return (
     <div className='offer-info'>
-      <div className='verso-header' style={{backgroundColor: `rgb(${red}, ${green}, ${blue})`}}>
+      <div className='verso-header' style={style}>
         <h2> { thing.name }, de { thing.extraData.author } </h2>
         <h6> {venue.name} </h6>
       </div>

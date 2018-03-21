@@ -5,14 +5,14 @@
   border-top-right-radius: 2rem;
   border-bottom-left-radius: 2rem;
   border-bottom-right-radius: 2rem;
-  color: white;
+  color: $white;
   cursor: pointer;
   display: inline-block;
   fill: white;
   font-family: $font-family;
   font-size: 10px;
   font-weight: 500;
-  padding: 0.5em 1em;
+  padding: 0.5rem 1rem;
   text-decoration: none;
   text-align: center;
   transition: all 0.4s ease-out;
@@ -64,6 +64,22 @@
       box-shadow: $box-shadow-hover;
     }
     transition: all 0.4s ease-out;
+  }
+  &--icon {
+    background-color: transparent;
+    color: $white;
+    padding: 0;
+    border: none;
+    height: 1em;
+    svg {
+      vertical-align: top !important; // TODO: investigate why there is vertical-align: middle inline
+    }
+  }
+  &--large {
+    font-size: 1.5em;
+  }
+  &--xlarge {
+    font-size: 2.5em;
   }
   &[disabled] {
     cursor: not-allowed;

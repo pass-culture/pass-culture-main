@@ -1,4 +1,38 @@
-.control-bar {
+ul.control-bar {
+  list-style: none;
   background-color: $menu-red;
   padding: 1rem;
+  color: $white;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  li {
+    display: inline-block;
+    text-align: center;
+    .pass-label {
+      display: block;
+    }
+    .pass-value {
+      display: block;
+      font-size: 1.5em;
+    }
+    .button-go {
+      background-color: $white;
+      color: $menu-red;
+      border-top-right-radius: 0;
+      font-weight: 500;
+      font-size: 1.2em;
+      .price {
+        font-weight: normal;
+        border-right: thin solid;
+        margin-right: 10px;
+        padding-right: 10px;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        margin-top: -0.5em;
+        margin-bottom: -0.5em;
+      }
+    }
+  }
 }

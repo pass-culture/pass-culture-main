@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { requestData } from '../reducers/data'
+import Icon from './Icon'
 
 class ControlBar extends Component {
   onBookClick = () => {
@@ -18,20 +19,28 @@ class ControlBar extends Component {
   }
   render () {
     return (
-      <div className='control-bar'>
-        <button className='button'
-          onClick={() => this.onPinClick('dislike')}>
-          Jeter
-        </button>
-        <button className='button'
-          onClick={() => this.onPinClick('interesting')} >
-          Garder de côté
-        </button>
-        <button className='button'
-          onClick={() => this.onBookClick} >
-          J'y vais !
-        </button>
-      </div>
+      <ul className='control-bar'>
+        <li><small className='pass-label'>Mon pass</small><span className='pass-value'>476€</span></li>
+        <li>
+          <button className='button button--icon button--xlarge'
+            onClick={() => this.onPinClick('interesting')} >
+            <Icon name={this.props.isFavorite ? 'Favorite' : 'FavoriteOutline'} />
+          </button>
+        </li>
+        <li>
+          <button className='button button--icon button--xlarge'
+            onClick={() => this.onPinClick('dislike')}>
+            <Icon name='PresentToAll' />
+          </button>
+        </li>
+        <li>
+          <button className='button button-go'
+            onClick={() => this.onBookClick} >
+            <span className='price'>{`${this.props.userMediationOffers[0].price}€`}</span>
+            J'y vais !
+          </button>
+        </li>
+      </ul>
     )
   }
 }
