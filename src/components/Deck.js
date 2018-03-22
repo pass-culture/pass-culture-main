@@ -6,6 +6,7 @@ import React, { Component } from 'react'
 import { rgb_to_hsv } from 'colorsys'
 
 import Card, { CURRENT } from './Card'
+import Icon from './Icon'
 
 class Deck extends Component {
   constructor (props) {
@@ -340,18 +341,18 @@ class Deck extends Component {
                   'button--disabled': isFirstCard || isTransitioning })}
                   onClick={() => handleNextItemCard(1)}
                   disabled={isFirstCard || isTransitioning} >
-                  <img src='/icons/ico-prev-w.svg' />
+                  <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isTransitioning })}
                   onClick={handleFlipCard} >
-                  <img src='/icons/ico-slideup-w.svg' />
+                  <Icon svg='ico-slideup-w' />
                 </button>
                 <button className={classnames('deck__board__next button', {
                   'button--disabled': isLastCard || isTransitioning })}
                   onClick={() => handleNextItemCard(-1)}
                   disabled={isLastCard || isTransitioning} >
-                  <img src='/icons/ico-prev-w.svg' className='flip-horiz' />
+                  <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
               </div>
               <button className='deck__board__profile' style={{backgroundImage: "url('../icons/pc_small.jpg')"}} />

@@ -1,51 +1,95 @@
-import React from 'react'
+import React, { Component } from 'react'
 
 import Icon from './Icon'
-import VenueInfo from './VenueInfo'
+import { rgb_to_hsv } from 'colorsys'
 
-const OfferInfo = ({ description,
-  eventOccurence,
-  id,
-  occurencesAtVenue,
-  price,
-  sellersFavorites,
-  thing,
-  thingOrEventOccurence,
-  thumbUrl,
-  venue
-}) => {
-  return (
-    <div>
-      <img alt='' className='offerPicture' src={thumbUrl} />
-      <div className='offer-price'>{ price }&nbsp;€</div>
-      { description }
-      {
-        thing && [
-          <span key={0}>
-            {thing.description}
-          </span>,
-          <VenueInfo key={1} {...venue} />
-        ]
-      }
-      {
-        eventOccurence && [
-          <span key={2}>
-            {eventOccurence.event.description}
-          </span>,
-          <VenueInfo key={3} {...eventOccurence.venue} />,
-          <ul key={4} className='dates'>
-            {
-              occurencesAtVenue.map((occurence, index) => (
-                <li key={index}>
-                  <span> { occurence.beginningDatetime } </span>
-                </li>
-              ))
-            }
-          </ul>
-        ]
-      }
-    </div>
-  )
+class OfferInfo extends Component {
+
+  constructor () {
+    super ()
+    this.state = {
+      headerStyle: {},
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.firstThumbDominantColor !== nextProps.firstThumbDominantColor) {
+      this.setHeaderStyle(nextProps.firstThumbDominantColor);
+    }
+  }
+
+  setHeaderStyle(color) {
+    if (color) {
+      const [red, green, blue] = color;
+      const {h, _, __} = rgb_to_hsv(red, green, blue);
+      this.setState({
+        headerStyle: {backgroundColor: `hsl(${h}, 100%, 15%)`}
+      });
+    }
+  }
+
+  render() {
+    const {
+      description,
+      eventOccurence,
+      id,
+      occurencesAtVenue,
+      price,
+      sellersFavorites,
+      thing,
+      thingOrEventOccurence,
+      thumbUrl,
+      venue,
+      children,
+    } = this.props;
+
+    return (
+      <div className='offer-info'>
+        <div className='verso-header' style={this.state.headerStyle}>
+          <h2> { thing.name }, de { thing.extraData.author } </h2>
+          <h6> {venue.name} </h6>
+        </div>
+        {children}
+        <div className='content'>
+          <img alt='' className='offerPicture' src={thumbUrl} />
+          {thing.description && (
+            <div className='description'>
+              { thing.description.split('\n').map((p, index) => <p key={index}>{p}</p>) }
+            </div>
+          )}
+          {eventOccurence && (
+            <div>
+              <h3>Quoi ?</h3>
+              <p>{eventOccurence.event.description}</p>
+            </div>
+          )}
+          {occurencesAtVenue && (
+            <div>
+              <h3>Quand ?</h3>
+              <ul className='dates-info'>
+                { occurencesAtVenue.map((occurence, index) => (
+                  <li key={index}>
+                    <span> { occurence.beginningDatetime } </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {venue.address && (
+            <div>
+              <h3>Où ?</h3>
+              <ul className='address-info'>
+                <li>{venue.name}</li>
+                {venue.address.split(/[,\n\r]/).map((el, index) => (<li key={index}>{el}</li>))}
+              </ul>
+            </div>
+          )}
+          <p>
+          </p>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default OfferInfo
