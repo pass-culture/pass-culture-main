@@ -56,22 +56,23 @@ def update_user_mediations():
     if around is not None:
         around_um = UserMediation.query.filter_by(id=dehumanize(around)).first()
         print('(found) around_um', around_um)
-    else :
+    else:
         # MAYBE WE PRECISED THE MEDIATION OR OFFER ID IN THE REQUEST
         # IN ORDER TO FIND THE MATCHING USER MEDIATION
         offer_id = request.args.get('offerId')
         mediation_id = request.args.get('mediationId')
+        print('(special) offer_id', offer_id, 'mediation_id', mediation_id)
         if mediation_id is not None:
             around_um = UserMediation.query.filter_by(mediation_id=dehumanize(mediation_id),
                 userId=user_id).first()
-            around = around_um.id
+            around = humanize(around_um.id)
         elif offer_id is not None:
             around_um = UserMediation.query.filter(
                 UserMediation.userMediationOffers.any(
                     Offer.id != dehumanize(offer_id)
                 )
             ).first()
-            around = around_um.id
+            around = humanize(around_um.id)
             pass
     # UPDATE FROM CLIENT LOCAL BUFFER
     print('(update) maybe')
