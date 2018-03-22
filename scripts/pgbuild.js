@@ -4,6 +4,7 @@ const archiver = require('archiver');
 const { exec } = require('child_process')
 const fs = require('fs');
 const pgb_client = require('phonegap-build-api');
+const request = require('request')
 
 const APP_IDS = {'prod' : 3048468, 'staging' : 3059566 }
 
@@ -31,10 +32,9 @@ function createZipOrPushGit() {
     console.log('Pushing build to Github staging repo');
       const packed_dir = `"${__dirname}/../../webapp-packed-staging/"`
       exec(`git checkout master;
-            cp -r "${__dirname}/../build/"* ${packed_dir};
-            mv "${__dirname}/../pg_config_staging.xml ${packed_dir}/config.xml";
-            git commit -am "Automated commit";
-            git push origin master`,
+            cp -r ${__dirname}/../build/* ${packed_dir};
+            cp ${__dirname}/../pg_config-staging.xml ${packed_dir}/config.xml;
+            cd ${packed_dir}; git add .; git commit -am "Automated commit"; git push origin master; cd -`,
            function (error, stdout, stderr)
              {
              if (error) {
@@ -61,22 +61,28 @@ function createZipOrPushGit() {
     });
     
     archive.pipe(output);
-    archive.file('pg_config.xml', { name: 'config.xml' });
+    archive.file('pg_config-prod.xml', { name: 'config.xml' });
     archive.glob('**/**', {cwd: 'build'});
     archive.finalize();
   }
 }
 
 function triggerBuild() {
-  pgb_do(function(e, api) {
-    api.post('/apps/'+APP_ID+'/build',
-             function(e, data) {
-               console.log('error:', e);
-               console.log('data:', data);
-               if (!e) {
-                  monitorBuild()
-               }
-             });
+  var options = {
+    url: 'https://build.phonegap.com/apps/'+APP_ID+'/push',
+    auth: {
+        user: PGB_LOGIN,
+        password: PGB_PASSWORD
+    }
+  };
+
+  request(options, function (err, res, body) {
+    if (err) {
+      console.dir(err)
+      process.exit(2)
+    }
+    console.dir(body)
+    monitorBuild()
   });
 }
 
