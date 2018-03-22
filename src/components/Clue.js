@@ -14,15 +14,29 @@ const Clue = ({ chosenOffer,
         <span>
           { ("" + chosenOffer.price).replace('.', ',') }&nbsp;€
         </span>
-        <span style={{fontFamily: 'sans'}}>
+        <span className='clue__sep'>
           &middot;
         </span>
         <span>
           100m
         </span>
+        <span className='clue__sep'>
+          &middot;
+        </span>
+        <span>
+          {id} {index}/{contentLength}
+        </span>
+        {
+          dateRead && [
+            <span className='clue__sep' key={0}>
+              &middot;
+            </span>,
+            <span key={1}>
+              {dateRead}
+            </span>
+          ]
+        }
       </div>
-      {id} {index}/{contentLength} <br/>
-      {dateRead}
     </div>
   )
 }
