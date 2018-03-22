@@ -46,3 +46,5 @@ export const IS_LOCALHOST = Boolean(
       /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
     )
 );
+
+export const ROOT_PATH = Boolean(window.cordova) ? window.cordova.file.applicationDirectory : '';
