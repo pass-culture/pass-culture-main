@@ -6,8 +6,11 @@ import { connect } from 'react-redux'
 import { requestData } from '../reducers/data'
 
 class SubmitButton extends Component {
-  onSubmitClick = () => {
-    const { add,
+
+  onSubmitClick(e) {
+    e.preventDefault();
+    const {
+      add,
       form,
       getBody,
       getOptimistState,
@@ -17,7 +20,7 @@ class SubmitButton extends Component {
       path,
       storeKey,
       requestData
-    } = this.props
+    } = this.props;
     requestData(method, path, { add,
       body: (getBody && getBody(form)) || form,
       getOptimistState,
@@ -27,7 +30,8 @@ class SubmitButton extends Component {
     onClick && onClick()
     //resetForm()
   }
-  render () {
+
+  render() {
     const { className, extraClass, getIsDisabled, form, text } = this.props
     const isDisabled = getIsDisabled(form)
     return (
@@ -36,7 +40,7 @@ class SubmitButton extends Component {
           [extraClass]: extraClass
         })}
         disabled={isDisabled}
-        onClick={this.onSubmitClick}
+        onClick={e => this.onSubmitClick(e)}
       >
         { text }
       </button>
