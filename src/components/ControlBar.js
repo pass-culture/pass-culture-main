@@ -22,10 +22,14 @@ class ControlBar extends Component {
       onClickFavorite,
       onClickShare
     } = this
-    const { booking, userMediationBookings } = this.props
+    const {
+      booking,
+      userMediationBookings,
+      chosenOffer,
+     } = this.props
     return (
       <ul className='control-bar'>
-        <li><small className='pass-label'>Mon pass</small><span className='pass-value'>476€</span></li>
+        <li><small className='pass-label'>Mon pass</small><span className='pass-value'>0€</span></li>
         <li>
           <button className='button button--icon button--xlarge'
             onClick={onClickFavorite} >
@@ -41,7 +45,7 @@ class ControlBar extends Component {
         <li>
           <button className='button button-go'
             onClick={onClickBook} >
-            <span className='price'>{`${this.props.userMediationOffers[0].price}€`}</span>
+            <span className='price'>{`${chosenOffer.price}€`}</span>
             {
               (
                 booking ||
