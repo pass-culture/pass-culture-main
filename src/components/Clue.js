@@ -6,10 +6,12 @@ const Clue = ({ chosenOffer,
   id,
   contentLength,
   index,
-  item
+  item,
+  transitionTimeout
 }) => {
   return (
-    <div className={classnames('clue', { 'clue--hidden': item !== 0 })}>
+    <div className={classnames('clue', { 'clue--hidden': item !== 0 })}
+      style={{ transition: `opacity ${transitionTimeout}ms`}}>
       <div>
         <span>
           { ("" + chosenOffer.price).replace('.', ',') }&nbsp;€
@@ -24,7 +26,7 @@ const Clue = ({ chosenOffer,
           &middot;
         </span>
         <span>
-          {id} {index}/{contentLength}
+          {id} {chosenOffer.id} {index}/{contentLength}
         </span>
         {
           dateRead && [
@@ -39,6 +41,10 @@ const Clue = ({ chosenOffer,
       </div>
     </div>
   )
+}
+
+Clue.defaultProps = {
+  transitionTimeout: 250
 }
 
 export default Clue

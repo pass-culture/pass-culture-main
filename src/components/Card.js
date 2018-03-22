@@ -265,7 +265,8 @@ class Card extends Component {
       isLast,
       isTransitioning,
       isVerso,
-      item
+      item,
+      transitionTimeout
     } = this.props
     const { position,
       style,
@@ -322,7 +323,8 @@ class Card extends Component {
             <Clue {...content}
               contentLength={contentLength}
               index={index}
-              item={item} />
+              item={item}
+              transitionTimeout={transitionTimeout} />
           </Portal>
         )
       ]
@@ -336,7 +338,7 @@ Card.defaultProps = {
   readTimeout: 3000,
   rotation: 45,
   transitionDelay: 100,
-  transitionTimeout: 500,
+  transitionTimeout: 250,
   widthRatio: 0.75
 }
 

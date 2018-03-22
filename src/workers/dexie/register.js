@@ -26,6 +26,6 @@ export function syncRedux () {
       requestData('GET', name, { sync: true })))
 }
 
-// if (IS_DEV) {
+if (IS_DEV) {
   window.dexieWorker = worker
-// }
+}

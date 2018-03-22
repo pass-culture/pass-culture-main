@@ -299,6 +299,7 @@ class Deck extends Component {
     const isAfterDisabled = !items || isLastCard || isTransitioning
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isFlipDisabled = !items || isTransitioning
+    const buttonStyle = { transition: `opacity ${transitionTimeout}ms` }
     var style = {backgroundColor: 'black',
                  transition: `background-color ${transitionTimeout}ms`}
     var gradientStyle = {background: 'linear-gradient(transparent, black)',
@@ -321,8 +322,8 @@ class Deck extends Component {
     //this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
     // console.log('RENDER DECK this.props.contents', this.props.contents && this.props.contents.length,
     // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
-    console.log('RENDER DECK contents', contents && contents.length,
-    contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
+    // console.log('RENDER DECK contents', contents && contents.length,
+    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
     return (
       <Draggable axis='y'
@@ -381,22 +382,26 @@ class Deck extends Component {
                 <button className={classnames('deck__board__before button', {
                   'button--disabled': isBeforeDisabled })}
                   disabled={isBeforeDisabled}
-                  onClick={event => onNext(event, 1)}>
+                  onClick={event => onNext(event, 1)}
+                  style={buttonStyle}>
                   <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isFlipDisabled })}
-                  onClick={handleFlipCard} >
+                  onClick={handleFlipCard}
+                  style={buttonStyle} >
                   <Icon svg='ico-slideup-w' />
                 </button>
                 <button className={classnames('deck__board__after button', {
                   'button--disabled': isAfterDisabled })}
                   onClick={event => onNext(event, -1)}
-                  disabled={isAfterDisabled}  >
+                  disabled={isAfterDisabled}
+                  style={buttonStyle} >
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
               </div>
-              <button className='deck__board__profile' style={{backgroundImage: "url('../icons/pc_small.jpg')"}} />
+              <button className='deck__board__profile'
+                style={{backgroundImage: "url('../icons/pc_small.jpg')"}} />
             </div>
           </div>
         </Draggable>
