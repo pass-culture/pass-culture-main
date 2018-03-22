@@ -1,5 +1,4 @@
 import {
-  IS_DEV,
   IS_PROD,
   IS_LOCALHOST,
 } from '../utils/config'
