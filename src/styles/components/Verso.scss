@@ -1,13 +1,15 @@
 .verso {
-  background-color: $very-very-light-grey;
   bottom: -100%;
   left: 0;
   right: 0;
   transition: bottom 250ms, top 250ms;
-  top: 100%;
+  top: 110%;
   z-index: 500;
+  padding-top: 50%;
   &--flipped {
     bottom: 0;
-    top: 25%;
+    top: 0;
+    height: 100vh;
+    overflow: scroll;
   }
 }

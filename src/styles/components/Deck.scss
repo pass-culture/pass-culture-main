@@ -1,49 +1,43 @@
 .deck {
-  min-height: 100vh;
+  height: 100vh;
   overflow: hidden;
+  .deck-gradient {
+    height: 0;
+    margin-top: 106.4%;
+    padding-bottom: 26.6%;
+    z-index: 100;
+    width: 100%;
+    position: relative
+  }
   &__board {
-    &::before {
-      content: "";
-      background: linear-gradient(transparent, black);
-      padding-top: 13.3%;
-      padding-bottom: 13.3%;
-      height: 0;
-      margin-top: -26.6%;
-      z-index: 100;
-      width: 100%;
-      display: block;
-      @media(min-width: $sm) {
-        right: 33.33%;
-        width: auto;
-      }
-    }
+    background-color: transparent;
+    background-image: url('/mosaic-w.svg');
+    margin-top: 133%;
+    width:100%;
+    z-index: 100;
+    bottom: 0;
+    top: 0;
     .button {
       padding: 0;
       border: 0;
       border-radius: 0;
       background-color: transparent;
-      position: absolute;
       img {
         width: 100%;
       }
       &.deck__board__prev {
-        left: 5.07%;
+        margin-left: 5.07%;
       }
       &.deck__board__next {
-        right: 5.07%;
+        margin-right: 5.07%;
       }
       &.deck__board__prev, &.deck__board__next {
-        top:0;
         margin-top: 3.10%;
         width: 23.2%;
       }
       &.deck__board__to-recto {
         z-index: 1100;
         width: 11.73%;
-        height: 0;
-        left: 0;
-        right: 0;
-        top: 0;
         margin-top: 3.10%;
         margin-left: auto;
         margin-right: auto;
@@ -55,35 +49,34 @@
     .clue {
       position: absolute;
       text-align:center;
-      left: 0;
-      right: 0;
-      top: 0;
-      margin-top: 18%;
-      margin-left: auto;
-      margin-right: auto;
+      top: 28%;
+      width: 100%;
+    }
+    .deck__board__recto-infos {
+      height: 0;
+      font-size: 180%;
+      font-weight: 500;
+      color: white;
+      position: absolute;
+      width: 100%;
+      bottom: 47%;
     }
     .deck__board__profile {
+      border: 0;
       background-repeat: no-repeat;
       background-position: 50%;
       border-radius: 50%;
       width: 11.76%;
       height: 0;
-      padding-top: 5.88%;
-      padding-bottom: 5.88%;
+      padding-top: 11.76%;
       background-size:cover;
       position: absolute;
       left: 0;
       right: 0;
       bottom: 3.18%;
       margin: 0 auto;
+      cursor: pointer;
       }
-    background-color: black;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: calc(100vh - 133%);
-    min-height: 26.6%;
-    z-index: 100;
   }
   &__to-verso {
     z-index: 1100;
