@@ -60,6 +60,7 @@ elif [[ "$CMD" == "install" ]]; then
 			 ./pc symlink;
        cd $ROOT_PATH/webapp && yarn'
 elif [[ "$CMD" == "psql" ]]; then
+	COLUMNS=${COLUMS:-''};
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
 elif [[ "$CMD" == "python" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
@@ -73,9 +74,9 @@ elif [[ "$CMD" == "restart-backend" ]]; then
        rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up'
 elif [[ "$CMD" == "reset-all-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "reset-um-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE mediation,user_mediation RESTART IDENTITY CASCADE;\""'
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,mediation,user_mediation RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
   if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
