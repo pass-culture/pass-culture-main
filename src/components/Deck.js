@@ -174,7 +174,6 @@ class Deck extends Component {
       handleTransitionEnd && handleTransitionEnd()
       this.setState({ isTransitioning: false })
       this.transitions = null
-      // console.log('TRANSITIONS IS OFF')
     }
   }
   onTransitionStartCard = (event, cardProps) => {
@@ -190,13 +189,11 @@ class Deck extends Component {
       newTransitions = [...new Array(contents.length)]
       this.setState({ isTransitioning: true })
       handleTransitionStart && handleTransitionStart()
-      // console.log('TRANSITIONS IS ON')
     } else {
       newTransitions = [...transitions]
     }
     // for this particular card, maybe the transition
     // exists alreay or not
-    // console.log('START',event.propertyName, cardProps.content.id, cardProps.index)
     if (!newTransitions[cardProps.index]) {
       newTransitions[cardProps.index] = { [event.propertyName]: true }
     } else {
@@ -210,15 +207,9 @@ class Deck extends Component {
   componentWillReceiveProps (nextProps) {
     const { isTransitioning } = this.state
     if (nextProps.contents !== this.props.contents) {
-      //console.log(isTransitioning, nextProps.contents.map(content =>
-      //  content && `${content.dateRead} ${content.id}` ))
-      //console.log(this.props.contents && this.props.contents.map(content =>
-      //  content && `${content.dateRead} ${content.id}` ))
       if (isTransitioning) {
-        //console.log('WE NOT YET SET ITEMS')
         this.setState({ bufferContents: this.props.contents })
       } else if (!nextProps.isKeepItems) {
-        //console.log('WE SET ITEMS')
         this.handleResetItems(nextProps)
         // init new state
         // transition to 'none' helps
@@ -318,13 +309,13 @@ class Deck extends Component {
       }
     }
     // console.log('')
-    //console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
-    //this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
-    // console.log('RENDER DECK this.props.contents', this.props.contents && this.props.contents.length,
+    // console.log('RENDER: Deck this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
+    // this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
+    // console.log('RENDER: Deck this.props.contents', this.props.contents && this.props.contents.length,
     // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
-    // console.log('RENDER DECK contents', contents && contents.length,
+    // console.log('RENDER: Deck contents', contents && contents.length,
     // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
-    //console.log('RENDER DECK', 'this.state.items', this.state.items)
+    //console.log('RENDER: Deck', 'this.state.items', this.state.items)
     return (
       <Draggable axis='y'
         bounds={{bottom: 0, top: 0}}
@@ -413,7 +404,6 @@ Deck.defaultProps = { deckKey: 0,
   flipRatio: 0.25,
   handLength: 2,
   isBlobModel: false,
-  isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500

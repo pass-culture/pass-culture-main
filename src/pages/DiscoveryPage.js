@@ -10,7 +10,9 @@ import { worker } from '../workers/dexie/register'
 class DiscoveryPage extends Component {
   constructor () {
     super()
-    this.state = { aroundIndex: null }
+    this.state = { aroundIndex: null,
+      hasPushPullRequested: false
+    }
   }
   handleUserMediationRequest = props => {
     // unpack and check
@@ -18,7 +20,7 @@ class DiscoveryPage extends Component {
       match: { params: { mediationId, offerId } },
       userMediations
     } = props
-    let { aroundIndex } = this.state
+    let { aroundIndex, hasPushPullRequested } = this.state
     // no need to compute when there is no um
     // or if we have already computed once, no need to continue
     // again and again because UserMediationsDeck is taking over
@@ -52,12 +54,14 @@ class DiscoveryPage extends Component {
         })
       }
       // we need to request around it then
-      if (!aroundIndex) {
+      if (!aroundIndex && !hasPushPullRequested) {
         // debug
         isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
         // worker
         worker.postMessage({ key: 'dexie-push-pull',
           state: { around: null, mediationId, offerId }})
+        // update
+        this.setState({ hasPushPullRequested: true })
         // return
         return
       }
@@ -107,7 +111,6 @@ class DiscoveryPage extends Component {
     }
   }
   render () {
-    // console.log('DiscoveryPage aroundIndex', this.state.aroundIndex)
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
@@ -118,9 +121,6 @@ class DiscoveryPage extends Component {
   }
 }
 
-DiscoveryPage.defaultProps = {
-  isDebug: true
-}
 
 export default compose(
   withRouter,

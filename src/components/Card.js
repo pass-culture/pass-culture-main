@@ -157,7 +157,6 @@ class Card extends Component {
        .filter(key => !/transition(.*)/.test(key))
        .forEach(key => {
           if (style[key] !== this.state.style[key]) {
-            // console.log(type, key, props.content.id, props.item, props.index)
             onTransitionStart({ propertyName: key }, this.props)
           }
         })
@@ -241,7 +240,6 @@ class Card extends Component {
       || (isResizing && !this.props.isResizing)
       || (cursor !== this.props.cursor && item > - 2 && item < 2)
     ) {
-      // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
       this.handleSetType(nextProps)
     }
   }
