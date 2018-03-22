@@ -18,33 +18,20 @@
   const PQ_PGB_PASSWORD = process.env.PQ_PGB_PASSWORD
   const APP_ID = APP_IDS[PG_ENV]
 
-  const standardError = msg => error => {
+  const raiseAndKill = msg => error => {
     console.error(msg);
     if (error) console.error(error);
     process.exit(1);
   }
 
   if (!PQ_PGB_LOGIN || !PQ_PGB_PASSWORD)
-    standardError('Environment variables PQ_PGB_LOGIN and PQ_PGB_PASSWORD '+
+    raiseAndKill('Environment variables PQ_PGB_LOGIN and PQ_PGB_PASSWORD '+
                   'need to be set to your Phonegap Build credentials')();
 
   const pgb_do = () => promisify(pgb_client.auth)({
       username: PQ_PGB_LOGIN,
       password: PQ_PGB_PASSWORD,
-  }).catch(standardError('Phonegap API action error'))
-
-  // const pgb_do = () => new Promise((resolve, reject) => {
-  //   pgb_client.auth({
-  //     username: PQ_PGB_LOGIN,
-  //     password: PQ_PGB_PASSWORD,
-  //   }, (e, result) => {
-  //     if (e) {
-  //       return reject(e);
-  //     }
-  //     resolve(result);
-  //   })
-  // });
-
+  }).catch(raiseAndKill('Phonegap API authentication error'))
 
   const pushToGit = () => {
     console.log('Pushing build to Github staging repo');
@@ -61,7 +48,7 @@
     `).then(({stdout, stderr}) => {
       if (stderr) console.error(stderr);
       console.log(stdout);
-    }).catch(standardError('Error while executing commands:'))
+    }).catch(raiseAndKill('Error while executing commands'))
 
   };
 
@@ -75,7 +62,7 @@
     })
 
     let archive = archiver('zip');
-    archive.on('error', standardError('Could not build archive'));
+    archive.on('error', raiseAndKill('Could not build archive'));
     archive.pipe(output);
     archive.file('pg_config-prod.xml', { name: 'config.xml' });
     archive.glob('**/**', {cwd: 'build'});
@@ -94,7 +81,7 @@
     return promisify(request)(options)
       .then((res, body) => {
         return console.dir(body);
-      }).catch(standardError('Could not trigger build'))
+      }).catch(raiseAndKill('Could not trigger build'))
   }
 
   const uploadToPGB = (zipfile) => pgb_do()
@@ -109,47 +96,45 @@
       };
       return promisify(api.put)(`/apps/${APP_ID}`, options)
         .then(data => console.log('Upload result data:', data))
-        .catch(standardError('Could not send to PGB'))
+        .catch(raiseAndKill('Could not send to PGB'))
     });
 
-  const monitorBuild = () => pgb_do()
-    .then(api => promisify(api.get)(`/apps/${APP_ID}`)
-      .then(data => new Promise((resolve, reject) => {
+  const monitorBuild = () => new Promise((resolve, reject) => {
+    const checkLoop = () => pgb_do()
+      .then(api => promisify(api.get)(`/apps/${APP_ID}`))
+      .then(data => {
         if (data.status.android === 'pending') {
           console.log('Waiting for Android build, retrying in 1 second')
-          setTimeout(monitorBuild, 1000);
+          setTimeout(checkLoop, 1000);
         } else if (data.status.android === 'error') {
-          console.log(`PGB android build failed, check build log : https://build.phonegap.com/apps/${APP_ID}/logs/android/build/`)
           reject(data);
         } else {
-          console.log('Build data:', data);
-          console.log(`${PG_ENV} PGB android build DONE`)
-          resolve();
+          resolve(data);
         }
-      }))
-    )
+      });
+    checkLoop();
+  });
 
   const downloadApp = () => pgb_do()
     .then(api => promisify(api.get)(`/apps/${APP_ID}/android`))
     .then(data => {
       console.log('Downloading android app')
       fs.writeFileSync('android.apk', data, 'binary');
-      console.log('Android app downloaded')
-      return true;
     });
 
   const main = () => {
+    let promise;
     if (PG_ENV === 'staging') {
-      return pushToGit()
+      promise = pushToGit()
         .then(() => triggerGithubBuild())
-        .then(() => monitorBuild())
-        .catch(standardError('Staging PGB android build FAILED'))
     } else {
-      return uploadZip()
+      promise = uploadZip()
         .then(() => uploadToPGB())
-        .then(() => monitorBuild())
-        .catch(standardError('Production PGB android build FAILED'))
     }
+    return promise
+      .then(() => monitorBuild())
+      .then(data => console.log(`${PG_ENV} PGB Android build SUCCESS`, data))
+      .catch(error => console.error(`${PG_ENV} PGB Android build FAILED`, error))
   }
 
   main();
