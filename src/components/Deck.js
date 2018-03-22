@@ -46,12 +46,14 @@ class Deck extends Component {
   }
   handleNextItemCard = diffIndex => {
     // unpack
-    const { handleNextItemCard } = this.props
+    const { handleNextItemCard, isDebug } = this.props
     const { items } = this.state
     if (!items) {
       console.warn('items is not defined')
       return
     }
+    // debug
+    isDebug && console.log('DEBUG: Deck - handleNextItemCard')
     // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
@@ -127,7 +129,9 @@ class Deck extends Component {
   onTransitionEndCard = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
-    const { handleTransitionEnd } = this.props
+    const { handleTransitionEnd, isDebug } = this.props
+    // debug
+    isDebug && console.log('DEBUG: Deck - onTransitionEndCard')
     // update the transitions store
     if (!transitions) {
       console.warn('transitions is null while we try to update transition end...? weird')
@@ -135,7 +139,6 @@ class Deck extends Component {
     }
     const newTransitions = [...transitions]
     const transition = newTransitions[cardProps.index]
-    // console.log('END', event.propertyName, cardProps.content.id, cardProps.index)
     if (transition && transition[event.propertyName]) {
         delete transition[event.propertyName]
         if (Object.keys(transition).length === 0) {
@@ -154,7 +157,9 @@ class Deck extends Component {
   onTransitionStartCard = (event, cardProps) => {
     // unpack
     const { transitions } = this
-    const { contents } = this.props
+    const { contents, isDebug } = this.props
+    // debug
+    isDebug && console.log('DEBUG: Deck - onTransitionStartCard')
     // at the first time one of the card is transitioning
     // we init a new array
     let newTransitions
@@ -249,6 +254,7 @@ class Deck extends Component {
       // browser,
       handLength,
       isBlobModel,
+      isDebug,
       isFullWidth,
       transitionTimeout,
       readTimeout
@@ -330,6 +336,7 @@ class Deck extends Component {
                   isFullWidth={isFullWidth}
                   isLast={contents && !contents[index + 1]}
                   index={index}
+                  isDebug={isDebug}
                   isResizing={isResizing}
                   isTransitioning={isTransitioning}
                   isVerso={isVerso}
@@ -377,6 +384,7 @@ Deck.defaultProps = { deckKey: 0,
   flipRatio: 0.25,
   handLength: 2,
   isBlobModel: false,
+  isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500

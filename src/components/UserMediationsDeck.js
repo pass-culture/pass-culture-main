@@ -204,10 +204,13 @@ class UserMediationsDeck extends Component {
     // unpack
     const { handLength,
       isBlobModel,
+      isDebug,
       transitionTimeout,
       userMediations
     } = this.props
     const { contents } = this.state
+    // debug
+    isDebug && console.log('DEBUG: UserMediationsDeck - handleNextItemCard')
     // update around
     const aroundIndex = this.state.aroundIndex - diffIndex
     // set state
@@ -235,10 +238,8 @@ class UserMediationsDeck extends Component {
   }
   handleSetReadCard = card => {
     // unpack
-    // const {
-    //   isCheckRead,
-    //   requestData
-    // } = this.props
+    const { isCheckRead, isDebug, requestData } = this.props
+    isDebug && console.log('DEBUG: UserMediationsDeck - handleSetReadCard')
     // update dexie
     // const nowDate = moment().toISOString()
     // const body = [{
@@ -252,7 +253,7 @@ class UserMediationsDeck extends Component {
     // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
   }
   handleTransitionEnd = () => {
-    console.log('OK C EST BON', this.props.userMediations, this.state.isDirty)
+    console.log('DEBUG: UserMediationsDeck - handleTransitionEnd')
     if (this.state.isDirty) {
       this.handleSetContents()
       this.setState({ isDirty: false })
@@ -310,6 +311,7 @@ UserMediationsDeck.defaultProps = { countAfterSync: 5,
   handLength: 2,
   isBlobModel: false,
   isCheckRead: false,
+  isDebug: true,
   readTimeout: 2000,
   transitionTimeout: 500
 }
