@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import Sign from '../components/Sign'
 import { closeModal, showModal } from '../reducers/modal'
-import { assignData, requestData } from '../reducers/data'
+import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
   const { isRequired } = config

@@ -15,7 +15,6 @@ class DiscoveryPage extends Component {
   handleUserMediationRequest = props => {
     // unpack and check
     const { match: { params: { mediationId, offerId } },
-      requestData,
       userMediations
     } = props
     if (!userMediations) {

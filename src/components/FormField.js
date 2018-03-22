@@ -21,10 +21,10 @@ class FormField extends Component {
                           { label }
                           { required && <span className='form-input__required'> (*) </span>}
                         </label> )
-    const inputMarkup = type==='textarea' ? ( <FormTextarea {...this.props} id={inputId} key={inputId} /> ) : ( <FormInput {...this.props} id={inputId} key={inputId} /> )
+    const inputMarkup = type === 'textarea' ? ( <FormTextarea {...this.props} id={inputId} key={inputId} /> ) : ( <FormInput {...this.props} id={inputId} key={inputId} /> )
     return (
         <div className={'form-input' + (errors ? ' form-input-haserror' : '')}>
-          { type=='checkbox' ? [inputMarkup, labelMarkup] : [ labelMarkup, inputMarkup ] }
+          { type === 'checkbox' ? [inputMarkup, labelMarkup] : [ labelMarkup, inputMarkup ] }
           { errors && <ul className='form-input__errors'>
                        {errors && errors.map((e, index) => ( <li key={index}>{e}</li> ))}
                      </ul>

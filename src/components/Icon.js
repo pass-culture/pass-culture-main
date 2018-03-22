@@ -1,5 +1,5 @@
 import * as reactIconPack from 'react-icons/lib/md';
-import React, { Component } from 'react'
+import React from 'react'
 import { ROOT_PATH } from '../utils/config';
 
 export default ( props ) => {

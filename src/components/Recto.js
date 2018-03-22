@@ -15,7 +15,8 @@ const Recto = ({
               : (<div className={classnames('recto', { 'recto--small': !isFullWidth })} >
                    <div className="card-background" style={{ backgroundImage: `url('${thumbUrl}')`}} />
                    <img draggable="false"
-                        src={thumbUrl} />
+                        src={thumbUrl}
+                        alt='thumb' />
                  </div>)
 }
 

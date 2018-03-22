@@ -7,7 +7,7 @@ import OfferInfo from '../components/OfferInfo'
 
 const Verso = props => {
   const {
-    deckElement,
+    // deckElement,
     isFlipped,
     mediation,
     chosenOffer,

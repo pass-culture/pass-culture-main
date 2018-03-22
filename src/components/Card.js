@@ -42,17 +42,18 @@ class Card extends Component {
   }
   handleSetType = props => {
     // unpack and check
-    const { 
+    const {
+      // backgroundColor,
       cursor,
       deckElement,
       handLength,
       handleSetType,
       isSetRead,
-      isContentChanging,
+      // isContentChanging,
       isFullWidth,
       onTransitionStart,
       transition,
-      transitionDelay,
+      // transitionDelay,
       transitionTimeout,
       perspective,
       rotation,
@@ -176,9 +177,12 @@ class Card extends Component {
     // unpack
     const { deckElement,
       handleSetCursor,
-      isFirst
+      // isFirst
     } = this.props
-    const { x, y } = data
+    const {
+      x,
+      // y,
+    } = data
     // compute the cursor
     const cursor = x / deckElement.offsetWidth
     // hook
@@ -195,8 +199,8 @@ class Card extends Component {
       handleRelaxItem,
       isFirst,
       isLast,
-      transitionTimeout,
-      perspective
+      // transitionTimeout,
+      // perspective,
     } = this.props
     const { x } = data
     // special reset for the CURRENT CARD
