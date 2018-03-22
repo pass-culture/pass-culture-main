@@ -4,95 +4,21 @@
   padding: 0;
 }
 
-html,body {
-  min-height: 100vh;
+html {
+  min-height: 100%;
 }
 
 body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
+    min-height: 100%;
 }
 
 .app {
   color: $dark-grey;
   font-family: $font-family;
-  min-height: 100vh;
-}
-
-.button {
-  background-color: $identity-color;
-  border: 1px solid transparent;
-  border-top-left-radius: 2rem;
-  border-top-right-radius: 2rem;
-  border-bottom-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
-  color: white;
-  cursor: pointer;
-  display: inline-block;
-  fill: white;
-  font-family: $font-family;
-  font-size: 10px;
-  font-weight: 500;
-  padding: 0.5em 1em;
-  text-decoration: none;
-  text-align: center;
-  transition: all 0.4s ease-out;
-  @media (min-width: $mini) {
-    font-size: 14px;
-  }
-  @media (min-width: $lg) {
-    font-size: 18px;
-  }
-  &--alive {
-    &:hover,
-    &:focus {
-      transform: scale(1.04);
-      transition: all 0.4s ease-out;
-    }
-  }
-  &--cta {
-    min-width: 100px;
-  }
-  &--disabled {
-    opacity: 0.25;
-  }
-  &--hidden {
-    opacity: 0;
-  }
-  &--inversed {
-    background-color: white !important;
-    border-color: $identity-color !important;
-    color: $identity-color !important;
-    svg {
-      fill: $identity-color !important;
-    }
-  }
-  &--rounded {
-    border-radius: 50%;
-    font-weight: 500;
-    height: 30px;
-    padding: 0.25rem;
-    width: 30px;
-  }
-  &--selected {
-    box-shadow: $box-shadow-hover;
-    transform: scale(1.04);
-  }
-  &--shadow {
-    box-shadow: $box-shadow;
-    &:hover,
-    &:focus {
-      box-shadow: $box-shadow-hover;
-    }
-    transition: all 0.4s ease-out;
-  }
-  &[disabled] {
-    cursor: not-allowed;
-  }
-  &:focus {
-    outline: none;
-  }
+  min-height: 100%;
 }
 
 .h2 {
@@ -143,7 +69,7 @@ label {
 
 .page {
   background-color: $very-very-light-grey;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 select {

@@ -11,7 +11,7 @@ class MediationCardBack extends Component {
       backText
     } = this.props
     return (
-      <div>
+      <div className='card-back'>
         { backText }
       </div>
     )

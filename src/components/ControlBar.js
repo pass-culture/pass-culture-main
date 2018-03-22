@@ -22,29 +22,41 @@ class ControlBar extends Component {
       onClickFavorite,
       onClickShare
     } = this
-    const { booking, userMediationBookings } = this.props
+    const {
+      booking,
+      userMediationBookings,
+      chosenOffer,
+     } = this.props
     return (
-      <div className='flex items-center flex-justify justify-around p2'>
-        <button className='button button--alive mr1'
-          onClick={onClickFavorite}>
-          <img src='/icons/ico-like-w.svg' />
-        </button>
-        <button className='button button--alive mr1'
-          onClick={onClickShare} >
-          <img src='/icons/ico-share-w.svg' />
-        </button>
-        <button className='button button--alive'
-          onClick={onClickBook} >
-          {
-            (
-              booking || 
-              (userMediationBookings && userMediationBookings.length > 0)
-            )
-              ? 'Mes réservations'
-              : 'J\'y vais!'
-          }
-        </button>
-      </div>
+      <ul className='control-bar'>
+        <li><small className='pass-label'>Mon pass</small><span className='pass-value'>0€</span></li>
+        <li>
+          <button className='button button--icon button--xlarge'
+            onClick={onClickFavorite} >
+            <Icon svg={this.props.isFavorite ? 'ico-like-w' : 'ico-like-w'} />
+          </button>
+        </li>
+        <li>
+          <button className='button button--icon button--xlarge'
+            onClick={onClickShare}>
+            <Icon svg='ico-share-w' />
+          </button>
+        </li>
+        <li>
+          <button className='button button-go'
+            onClick={onClickBook} >
+            <span className='price'>{`${chosenOffer.price}€`}</span>
+            {
+              (
+                booking ||
+                (userMediationBookings && userMediationBookings.length > 0)
+              )
+                ? 'Mes réservations'
+                : 'J\'y vais!'
+            }
+          </button>
+        </li>
+      </ul>
     )
   }
 }
