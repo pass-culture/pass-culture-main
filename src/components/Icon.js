@@ -1,5 +1,5 @@
 import * as reactIconPack from 'react-icons/lib/md';
-import React, { Component } from 'react'
+import React from 'react'
 
 export default ( props ) => {
   const { svg, ...imgProps } = props;

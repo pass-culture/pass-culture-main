@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-
-import Icon from './Icon'
 import { rgb_to_hsv } from 'colorsys'
 
 class OfferInfo extends Component {
@@ -21,7 +19,7 @@ class OfferInfo extends Component {
   setHeaderStyle(color) {
     if (color) {
       const [red, green, blue] = color;
-      const {h, _, __} = rgb_to_hsv(red, green, blue);
+      const {h} = rgb_to_hsv(red, green, blue);
       this.setState({
         headerStyle: {backgroundColor: `hsl(${h}, 100%, 15%)`}
       });
@@ -30,14 +28,14 @@ class OfferInfo extends Component {
 
   render() {
     const {
-      description,
+      // description,
       eventOccurence,
-      id,
+      // id,
       occurencesAtVenue,
-      price,
-      sellersFavorites,
+      // price,
+      // sellersFavorites,
       thing,
-      thingOrEventOccurence,
+      // thingOrEventOccurence,
       thumbUrl,
       venue,
       children,

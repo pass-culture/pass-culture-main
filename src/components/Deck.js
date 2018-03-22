@@ -46,7 +46,7 @@ class Deck extends Component {
   }
   handleNextItemCard = diffIndex => {
     // unpack
-    const { contents, handLength, handleNextItemCard } = this.props
+    const { handleNextItemCard } = this.props
     const { items } = this.state
     // update by shifting the items
     this.setState({ cursor: 0,
@@ -202,7 +202,6 @@ class Deck extends Component {
     const { transition,
       isResizing,
       isTransitioning,
-      items
     } = this.state
     // the deck updated because we changed the contents
     // so we need to wait just the refresh of the children
@@ -240,7 +239,8 @@ class Deck extends Component {
       onTransitionEndCard,
       onTransitionStartCard
     } = this
-    const { browser,
+    const {
+      // browser,
       handLength,
       isBlobModel,
       isFullWidth,

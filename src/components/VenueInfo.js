@@ -1,10 +1,6 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
+import React from 'react'
 import { navigationLink } from '../utils/geolocation'
 import withFrontendVenue from '../hocs/withFrontendVenue'
-
-import Icon from './Icon'
 
 const VenueInfo = ({ address,
   description,

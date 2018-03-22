@@ -1,4 +1,4 @@
-import moment from 'moment'
+// import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -232,15 +232,18 @@ class UserMediationsDeck extends Component {
   }
   handleSetReadCard = card => {
     // unpack
-    const { isCheckRead, requestData } = this.props
+    // const {
+    //   isCheckRead,
+    //   requestData
+    // } = this.props
     // update dexie
-    const nowDate = moment().toISOString()
-    const body = [{
-      dateRead: nowDate,
-      dateUpdated: nowDate,
-      id: card.content.id,
-      isFavorite: card.content.isFavorite
-    }]
+    // const nowDate = moment().toISOString()
+    // const body = [{
+    //   dateRead: nowDate,
+    //   dateUpdated: nowDate,
+    //   id: card.content.id,
+    //   isFavorite: card.content.isFavorite
+    // }]
     // request
     // console.log('READ CARD', card.index, card.item, card.content.id)
     // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })

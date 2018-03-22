@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-import { navigationLink } from '../utils/geolocation'
+// import { connect } from 'react-redux'
+// import { compose } from 'redux'
+// import { navigationLink } from '../utils/geolocation'
 
-import Icon from './Icon'
+// import Icon from './Icon'
 
 class MediationCardBack extends Component {
   render = () => {
