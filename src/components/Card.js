@@ -309,19 +309,14 @@ class Card extends Component {
               </div>
             </span>
         </Draggable>,
-        item === 0 && [
-          ( <Portal key={1} node={document && document.getElementById('deck')}>
-              <Verso {...content}
-                deckElement={deckElement}
-                handleFlipCard={handleFlipCard}
-                isFlipped={isVerso} />
-            </Portal>),
-          ( <Portal key={2} node={document && document.getElementById('deck__board')}>
-              <div className='deck__board__recto-infos'>
-                { (""+content.userMediationOffers[0].price).replace('.', ',') }&nbsp;€ <span style={{fontFamily: 'sans'}}>&middot;</span> TODO
-              </div>
-            </Portal>)
-        ],
+        item === 0 && (
+          <Portal key={1} node={document && document.getElementById('deck')}>
+            <Verso {...content}
+              deckElement={deckElement}
+              handleFlipCard={handleFlipCard}
+              isFlipped={isVerso} />
+          </Portal>
+        ),
         item > -2 && item < 2 && (
           <Portal key={2} node={document && document.getElementById('deck__board')}>
             <Clue {...content}

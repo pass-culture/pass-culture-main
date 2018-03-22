@@ -1,7 +1,8 @@
 import classnames from 'classnames'
 import React from 'react'
 
-const Clue = ({ dateRead,
+const Clue = ({ chosenOffer,
+  dateRead,
   id,
   contentLength,
   index,
@@ -9,6 +10,17 @@ const Clue = ({ dateRead,
 }) => {
   return (
     <div className={classnames('clue', { 'clue--hidden': item !== 0 })}>
+      <div>
+        <span>
+          { ("" + chosenOffer.price).replace('.', ',') }&nbsp;€
+        </span>
+        <span style={{fontFamily: 'sans'}}>
+          &middot;
+        </span>
+        <span>
+          100m
+        </span>
+      </div>
       {id} {index}/{contentLength} <br/>
       {dateRead}
     </div>

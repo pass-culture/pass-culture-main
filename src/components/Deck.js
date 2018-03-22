@@ -290,8 +290,8 @@ class Deck extends Component {
     //this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
     // console.log('RENDER DECK this.props.contents', this.props.contents && this.props.contents.length,
     // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
-    //console.log('RENDER DECK contents', contents && contents.length,
-    //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
+    console.log('RENDER DECK contents', contents && contents.length,
+    contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
     //console.log('RENDER DECK', 'this.state.items', this.state.items)
     return (
       <Draggable axis='y'
