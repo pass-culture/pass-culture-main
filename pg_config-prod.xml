@@ -18,8 +18,7 @@
 
   <plugin name="cordova-plugin-whitelist" spec="~1.3.3" />
 
-  <gap:config-file platform="android" parent="/manifest">
-    <application android:debuggable="true" />
-  </gap:config-file>
+  <icon src="icons/pc_small.jpg" />
+
 </widget>
 

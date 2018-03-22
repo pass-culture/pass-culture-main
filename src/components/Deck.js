@@ -1,8 +1,9 @@
 import classnames from 'classnames'
+import { connect } from 'react-redux'
+import Draggable from 'react-draggable'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
-import Draggable from 'react-draggable'
-import { connect } from 'react-redux'
+import { rgb_to_hsv } from 'colorsys'
 
 import Card, { CURRENT } from './Card'
 
@@ -257,6 +258,23 @@ class Deck extends Component {
       items
     } = this.state
     const contents = this.state.bufferContents || this.props.contents
+    var style = {backgroundColor: 'black',
+                 transition: `background-color ${transitionTimeout}ms`}
+    var gradientStyle = {background: 'linear-gradient(transparent, black)',
+                         transition: `background ${transitionTimeout}ms`}
+    var hue;
+    if (items) {
+      const currentIndex = items.indexOf(0)
+      const currentContent = contents[currentIndex]
+      if (currentContent && currentContent.backgroundColor) {
+        const [red, green, blue] = currentContent.backgroundColor
+        hue = rgb_to_hsv({r: red, g: green, b: blue}).h
+        style['backgroundColor'] = `hsl(${hue}, 100%, 15%)`
+        gradientStyle['background'] = `linear-gradient(transparent, hsl(${hue}, 100%, 15%))`
+      } else {
+        console.error("No background color")
+      }
+    }
     // console.log('')
     //console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
     //this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
@@ -273,6 +291,7 @@ class Deck extends Component {
         onStop={onStop} >
         <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
           id='deck'
+          style={style}
           ref={element => this.element = element }>
           <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0', {
             'button--hidden': !isVerso,
@@ -312,6 +331,7 @@ class Deck extends Component {
                   readTimeout={readTimeout} />
             )
           }
+            <div className="deck-gradient" style={gradientStyle} />
             <div className='deck__board absolute'
               id='deck__board'
               ref={element => this.boardElement = element} >
