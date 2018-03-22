@@ -30,6 +30,8 @@ class Deck extends Component {
     if (cardState.type !== CURRENT) {
       return
     }
+    // debug
+    this.props.isDebug && console.log('DEBUG: Deck - handleSetTypeCard')
     // no need to set in state the current cardProps
     this.currentCardProps = cardProps
     this.currentCardState = cardState
@@ -57,11 +59,12 @@ class Deck extends Component {
     // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
-    })
+     })
     // hook if Deck has parent manager component
     handleNextItemCard && handleNextItemCard(diffIndex, this)
   }
   handleRelaxItemCard = data => {
+    this.props.isDebug && console.log('DEBUG: Deck - handleResetItemCard')
     this.setState({ cursor: 0 })
   }
   handleResetItems = props => {
@@ -96,22 +99,32 @@ class Deck extends Component {
   }
   handleSetReadCard = card => {
     // unpack
-    const { handleSetReadCard } = this.props
+    const { handleSetReadCard, isDebug } = this.props
+    // debug
+    isDebug && console.log('DEBUG: Deck - handleSetReadCard')
     // hook if Deck has parent manager component
     handleSetReadCard && handleSetReadCard(card)
   }
   handleSetCursorCard = cursor => {
+    // debug
+    this.props.isDebug && console.log('DEBUG: Deck - handleSetCursorCard')
+    // update
     this.setState({ cursor, transition: 'none' })
   }
   handleFlipCard = () => {
     this.setState({ isVerso: !this.state.isVerso })
   }
   onStart = (event, data) => {
+    this.props.isDebug && console.log('DEBUG: Deck - onStart')
     this.setState({ isFlipping: true, clientY: event.clientY })
   }
   onDrag = (event, data) => {
-    const { flipRatio } = this.props
+    // unpack
+    const { flipRatio, isDebug } = this.props
     const { deckElement, isVerso } = this.state
+    // debug
+    isDebug && console.log('DEBUG: Deck - onDrag')
+    // cursor
     const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
     if (
       (!isVerso && cursor < -flipRatio) ||
@@ -120,10 +133,20 @@ class Deck extends Component {
       this.handleFlipCard()
     }
   }
+  onNext = (event, diffIndex) => {
+    this.props.isDebug && console.log('DEBUG: Deck - onNext')
+    event.preventDefault()
+    event.stopPropagation()
+    this.handleNextItemCard(diffIndex)
+  }
   onStop = (event, data) => {
+    this.props.isDebug && console.log('DEBUG: Deck - onStop')
     this.setState({ isFlipping: false, y: null })
   }
   onResize = event => {
+    // debug
+    this.props.isDebug && console.log('DEBUG Deck - onResize')
+    // update
     this.setState({ isResizing: true })
   }
   onTransitionEndCard = (event, cardProps) => {
@@ -157,7 +180,7 @@ class Deck extends Component {
   onTransitionStartCard = (event, cardProps) => {
     // unpack
     const { transitions } = this
-    const { contents, isDebug } = this.props
+    const { contents, handleTransitionStart, isDebug } = this.props
     // debug
     isDebug && console.log('DEBUG: Deck - onTransitionStartCard')
     // at the first time one of the card is transitioning
@@ -166,6 +189,7 @@ class Deck extends Component {
     if (!transitions) {
       newTransitions = [...new Array(contents.length)]
       this.setState({ isTransitioning: true })
+      handleTransitionStart && handleTransitionStart()
       // console.log('TRANSITIONS IS ON')
     } else {
       newTransitions = [...transitions]
@@ -245,6 +269,7 @@ class Deck extends Component {
       handleSetTypeCard,
       handleSetReadCard,
       onDrag,
+      onNext,
       onStart,
       onStop,
       onTransitionEndCard,
@@ -318,8 +343,7 @@ class Deck extends Component {
           {
             items && items.map((item, index) =>
               contents && contents[index] &&
-                <Card
-                  content={contents && contents[index]}
+                <Card content={contents && contents[index]}
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
@@ -357,7 +381,7 @@ class Deck extends Component {
                 <button className={classnames('deck__board__before button', {
                   'button--disabled': isBeforeDisabled })}
                   disabled={isBeforeDisabled}
-                  onClick={() => handleNextItemCard(1)}>
+                  onClick={event => onNext(event, 1)}>
                   <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
@@ -367,7 +391,7 @@ class Deck extends Component {
                 </button>
                 <button className={classnames('deck__board__after button', {
                   'button--disabled': isAfterDisabled })}
-                  onClick={() => handleNextItemCard(-1)}
+                  onClick={event => onNext(event, -1)}
                   disabled={isAfterDisabled}  >
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>

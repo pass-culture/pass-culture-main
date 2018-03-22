@@ -16,11 +16,12 @@ class UserMediationsDeck extends Component {
       hasSyncRequested: false,
       isDirty: false,
       isKeepItems: false,
+      isTransitioning: false,
       items: null,
       previousUserMediations: null
     }
   }
-  handleBeforeContent = (diffIndex, deckProps, deckState) => {
+  handleBeforeContent = () => {
     // unpack and check
     const { countBeforeSync,
       isBlobModel,
@@ -63,16 +64,19 @@ class UserMediationsDeck extends Component {
       this.setState({ hasSyncRequested: false })
     }
   }
-  handleAfterContent = (diffIndex, deckProps, deckState) => {
+  handleAfterContent = () => {
     // unpack and check
     const { countAfterSync,
       isBlobModel,
+      isDebug,
       userMediations
     } = this.props
     const { aroundIndex,
       contents,
       hasSyncRequested
     } = this.state
+    // debug
+    console.log('DEBUG: UserMediationsDeck - handleAfterContent', 'arounIndex', aroundIndex)
     if (aroundIndex === null || aroundIndex > userMediations.length) {
       return
     }
@@ -113,6 +117,7 @@ class UserMediationsDeck extends Component {
   handleSetContents = () => {
     // unpack and check
     const { isBlobModel,
+      isDebug,
       handLength,
       userMediations
     } = this.props
@@ -122,6 +127,8 @@ class UserMediationsDeck extends Component {
       return
     }
     const newState = {}
+    // debug
+    isDebug && console.log('DEBUG: UserMediationsDeck - handleSetContents')
     // if aroundIndex is not yet defined
     // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
@@ -157,6 +164,7 @@ class UserMediationsDeck extends Component {
       aroundIndex = userMediations.map(userMediation => userMediation.id)
                                   .indexOf(aroundId)
     }
+    // set
     newState.aroundIndex = aroundIndex
     const aroundContent = getContentFromUserMediation(userMediations[aroundIndex])
     // determine the before and after
@@ -197,6 +205,8 @@ class UserMediationsDeck extends Component {
       ...afterContents,
       ...loopContents
     ]
+    // add isDirty to false
+    newState.isDirty = false
     // update
     this.setState(newState)
   }
@@ -253,21 +263,31 @@ class UserMediationsDeck extends Component {
     // isCheckRead && requestData('PUT', 'userMediations', { body, sync: true })
   }
   handleTransitionEnd = () => {
-    console.log('DEBUG: UserMediationsDeck - handleTransitionEnd')
+    console.log('DEBUG: UserMediationsDeck - handleTransitionEnd', 'isDirty', this.state.isDirty)
     if (this.state.isDirty) {
       this.handleSetContents()
-      this.setState({ isDirty: false })
     }
+    this.setState({ isTransitioning: false })
+  }
+  handleTransitionStart = () => {
+    this.setState({ isTransitioning: true })
   }
   componentWillMount () {
     this.handleSetContents()
   }
   componentWillReceiveProps (nextProps) {
-    const { userMediations } = nextProps
+    // check
+    const { isDebug, userMediations } = nextProps
+    // debug
+    isDebug && console.log('DEBUG: UserMediationsDeck - componentWillReceiveProps')
+    // check for different userMediations
     if (
       userMediations !== this.props.userMediations // ||
       // aroundIndex !== this.props.aroundIndex
     ) {
+      // debug
+      isDebug && console.log('DEBUG: UserMediationsDeck - componentWillReceiveProps, diff um')
+      // update
       this.setState({ isDirty: true,
         previousUserMediations: this.props.userMediations
       })
@@ -275,19 +295,33 @@ class UserMediationsDeck extends Component {
   }
   componentDidUpdate (prevProps, prevState) {
     // unpack
-    const { handleUserMediationChange, userMediations } = this.props
-    const { aroundIndex } = this.state
-    // for the first time we have data
-    // we can set peacefully content without
-    // having fear of transitions in the deck
-    if (userMediations && !prevProps.userMediations) {
-      this.handleSetContents()
+    const { handleUserMediationChange,
+      isDebug,
+      userMediations } = this.props
+    const { aroundIndex, isDirty, isTransitioning } = this.state
+    // check
+    if (isDirty) {
+      // debug
+      isDebug && console.log(`DEBUG: UserMediationsDeck - componentDidUpdate isDirty=${isDirty}`)
+      // for the first time we have data
+      // we can set peacefully content without
+      // having fear of transitions in the deck
+      if (!isTransitioning || !prevProps.userMediations) {
+        isDebug && console.log(`DEBUG: UserMediationsDeck - componentDidUpdate isTransitioning=${isTransitioning}`)
+        this.handleSetContents()
+      }
     }
-    // if the aroundIndex has changed we can call
-    // a parent method that will do things
-    // like updating the url by replacing the userMediationId in the path
+    // aroundIndex change
     if (aroundIndex !== prevState.aroundIndex) {
       const aroundUserMediation = userMediations[aroundIndex]
+      // if it is the first time of setting an aroundIndex
+      // we need to check that we are not on the edges
+      if (!prevState.aroundIndex) {
+        this.handleAfterContent()
+      }
+      // if the aroundIndex has changed we can call
+      // a parent method that will do things
+      // like updating the url by replacing the userMediationId in the path
       handleUserMediationChange && handleUserMediationChange(aroundUserMediation)
     }
   }
@@ -301,6 +335,7 @@ class UserMediationsDeck extends Component {
     return <Deck {...this.props}
       {...this.state}
       handleTransitionEnd={this.handleTransitionEnd}
+      handleTransitionStart={this.handleTransitionStart}
       handleNextItemCard={this.handleNextItemCard}
       handleSetReadCard={this.handleSetReadCard} />
   }
