@@ -11,6 +11,7 @@ app.config['REMEMBER_COOKIE_DURATION'] = 365 * 24 * 3600
 
 def get_user_with_credentials(identifier, password):
     errors = ApiErrors()
+    errors.status_code = 401
 
     if identifier is None:
         errors.addError('identifier', 'Identifiant manquant')
