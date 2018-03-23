@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import React from 'react'
 
 import RectoDebug from './RectoDebug'
@@ -6,8 +5,7 @@ import Loading from './Loading'
 import { IS_DEV } from '../utils/config'
 
 const Recto = props => {
-  const { firstThumbDominantColor,
-    isLoading,
+  const { isLoading,
     thumbUrl,
   } = props
   return isLoading

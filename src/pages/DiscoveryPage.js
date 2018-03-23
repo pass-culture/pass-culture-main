@@ -43,6 +43,7 @@ class DiscoveryPage extends Component {
             aroundIndex = index
             return true
           }
+          return false
         })
       } else {
         userMediations.find((um, index) => {
@@ -50,6 +51,7 @@ class DiscoveryPage extends Component {
             aroundIndex = index
             return true
           }
+          return false
         })
       }
       // we need to request around it then

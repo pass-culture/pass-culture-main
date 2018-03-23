@@ -33,7 +33,7 @@ class Card extends Component {
     const { isRead } = this.state
     if (!content || isRead) { return }
     // wait a bit to trigger the fact that we stay on the same card
-    setTimeout(() => {
+    this.readTimeout = setTimeout(() => {
       // make sure we are not going to do it circularly
       this.setState({ isRead: true })
       // check that type is still current
@@ -42,19 +42,13 @@ class Card extends Component {
   }
   handleSetType = props => {
     // unpack and check
-    const {
-      // backgroundColor,
-      cursor,
+    const { cursor,
       deckElement,
       handleSetType,
       isSetRead,
       onTransitionStart,
       transition,
-      // transitionDelay,
-      transitionTimeout,
-      perspective,
-      rotation,
-      widthRatio
+      transitionTimeout
     } = props
     const item = this.state.item || props.item
     if (!deckElement) {
@@ -148,13 +142,9 @@ class Card extends Component {
   onDrag = (event, data) => {
     // unpack
     const { deckElement,
-      handleSetCursor,
-      // isFirst
+      handleSetCursor
     } = this.props
-    const {
-      x,
-      // y,
-    } = data
+    const { x } = data
     // compute the cursor
     const cursor = x / deckElement.offsetWidth
     // hook
@@ -170,9 +160,7 @@ class Card extends Component {
       handleNextItem,
       handleRelaxItem,
       isFirst,
-      isLast,
-      // transitionTimeout,
-      // perspective,
+      isLast
     } = this.props
     const { x } = data
     // special reset for the CURRENT CARD
@@ -219,6 +207,7 @@ class Card extends Component {
   componentWillUnmount () {
     this.cardElement.removeEventListener('transitionend',
       this.onTransitionEnd)
+    this.readTimeout && clearTimeout(this.readTimeout)
   }
   render () {
     const { onDrag,
@@ -299,12 +288,9 @@ class Card extends Component {
 }
 
 Card.defaultProps = { isSetRead: true,
-  perspective: 600,
   readTimeout: 3000,
-  rotation: 45,
   transitionDelay: 100,
-  transitionTimeout: 250,
-  widthRatio: 0.75
+  transitionTimeout: 250
 }
 
 export default Card

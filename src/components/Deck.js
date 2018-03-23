@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import { connect } from 'react-redux'
 import Draggable from 'react-draggable'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
@@ -222,7 +221,7 @@ class Deck extends Component {
   componentWillReceiveProps (nextProps) {
     // unpack
     const { contents } = this.props
-    const { isTransitioning, items } = this.state
+    const { isTransitioning } = this.state
     // look for content change
     if (nextProps.contents !== contents) {
       if (!isTransitioning) {
@@ -249,7 +248,6 @@ class Deck extends Component {
     const { currentContent,
       transition,
       isResizing,
-      isTransitioning,
       items
     } = this.state
     // the deck updated because we changed the contents
@@ -298,7 +296,6 @@ class Deck extends Component {
       onTransitionStartCard
     } = this
     const { contents,
-      isDebug,
       transitionTimeout,
       readTimeout
     } = this.props

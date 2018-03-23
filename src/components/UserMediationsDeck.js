@@ -27,7 +27,6 @@ class UserMediationsDeck extends Component {
       userMediations
     } = this.props
     const { aroundIndex,
-      contents,
       hasSyncRequested
     } = this.state
     if (aroundIndex === null || aroundIndex < 0) {
@@ -64,7 +63,6 @@ class UserMediationsDeck extends Component {
       userMediations
     } = this.props
     const { aroundIndex,
-      contents,
       hasSyncRequested
     } = this.state
     isDebug && console.log(`DEBUG: UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex}`)
@@ -157,11 +155,7 @@ class UserMediationsDeck extends Component {
   }
   handleNextItemCard = (diffIndex, deckElement) => {
     // unpack
-    const { isDebug,
-      transitionTimeout,
-      userMediations
-    } = this.props
-    const { contents } = this.state
+    const { isDebug } = this.props
     isDebug && console.log('DEBUG: UserMediationsDeck - handleNextItemCard')
     // update around
     const aroundIndex = this.state.aroundIndex - diffIndex
