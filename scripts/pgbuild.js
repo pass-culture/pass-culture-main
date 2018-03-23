@@ -1,136 +1,141 @@
 'use strict';
 
-const archiver = require('archiver');
-const { exec } = require('child_process')
-const fs = require('fs');
-const pgb_client = require('phonegap-build-api');
-const request = require('request')
+(() => {
+  const archiver = require('archiver');
+  const { exec } = require('child_process')
+  const fs = require('fs');
+  const {promisify} = require('util');
+  const pgb_client = require('phonegap-build-api');
+  const request = require('request');
 
-const APP_IDS = {'prod' : 3048468, 'staging' : 3059566 }
+  const APP_IDS = {
+    prod: 3048468,
+    staging: 3059566
+  }
 
-const ENV = process.env.PG_ENV || 'staging'
+  const PG_ENV = process.env.PG_ENV || 'staging'
+  const PQ_PGB_LOGIN = process.env.PQ_PGB_LOGIN
+  const PQ_PGB_PASSWORD = process.env.PQ_PGB_PASSWORD
+  const APP_ID = APP_IDS[PG_ENV]
 
-const APP_ID = APP_IDS[ENV]
+  const raiseAndKill = msg => error => {
+    console.error(msg);
+    if (error) console.error(error);
+    process.exit(1);
+  }
 
-const PGB_LOGIN = process.env.PQ_PGB_LOGIN
-const PGB_PASSWORD = process.env.PQ_PGB_PASSWORD
+  if (!PQ_PGB_LOGIN || !PQ_PGB_PASSWORD)
+    raiseAndKill('Environment variables PQ_PGB_LOGIN and PQ_PGB_PASSWORD '+
+                  'need to be set to your Phonegap Build credentials')();
 
+  const pgb_do = () => promisify(pgb_client.auth)({
+      username: PQ_PGB_LOGIN,
+      password: PQ_PGB_PASSWORD,
+  }).catch(raiseAndKill('Phonegap API authentication error'))
 
-if (!PGB_LOGIN || !PGB_PASSWORD) {
-  console.log("Environment variables PQ_PGB_LOGIN and PQ_PGB_PASSWORD need to be set to your Phonegap Build credentials")
-  process.exit()
-}
-
-function pgb_do(callback) {
-  pgb_client.auth({ username: PGB_LOGIN, password: PGB_PASSWORD },
-                  callback);
-}
-
-
-function createZipOrPushGit() {
-  if (ENV === 'staging') {
+  const pushToGit = () => {
     console.log('Pushing build to Github staging repo');
-      const packed_dir = `"${__dirname}/../../webapp-packed-staging/"`
-      exec(`git checkout master;
-            cp -r ${__dirname}/../build/* ${packed_dir};
-            cp ${__dirname}/../pg_config-staging.xml ${packed_dir}/config.xml;
-            cd ${packed_dir}; git add .; git commit -am "Automated commit"; git push origin master; cd -`,
-           function (error, stdout, stderr)
-             {
-             if (error) {
-               console.error(error);
-               process.exit(1)
-             }
-             console.log(stdout);
-             console.error(stderr);
-             triggerBuild();
-             });
-        
-  } else {
+    const packed_dir = `${__dirname}/../../webapp-packed-staging/`
+    return promisify(exec)(`
+      cp -r ${__dirname}/../build/* ${packed_dir};
+      cp ${__dirname}/../pg_config-staging.xml ${packed_dir}/config.xml;
+      cd ${packed_dir};
+      git checkout master;
+      git add .;
+      git commit -am "Automated commit";
+      git push origin master;
+      cd -;
+    `).then(({stdout, stderr}) => {
+      if (stderr) console.error(stderr);
+      console.log(stdout);
+    }).catch(raiseAndKill('Error while executing commands'))
+
+  };
+
+  const uploadZip = () => new Promise((resolve, reject) => {
     console.log('Zipping build for PG Build');
-    var output = fs.createWriteStream('target.zip');
-    var archive = archiver('zip');
-    
-    output.on('close', function () {
-        console.log('Build zipped');
-        uploadToPGB('target.zip')
-    });
-    
-    archive.on('error', function(err){
-        throw err;
-    });
-    
+    let output = fs.createWriteStream('target.zip');
+
+    output.on('close', () => {
+      console.log('Build zipped');
+      resolve();
+    })
+
+    let archive = archiver('zip');
+    archive.on('error', raiseAndKill('Could not build archive'));
     archive.pipe(output);
     archive.file('pg_config-prod.xml', { name: 'config.xml' });
     archive.glob('**/**', {cwd: 'build'});
     archive.finalize();
+  })
+
+  const triggerGithubBuild = () => {
+    const options = {
+      url: `https://build.phonegap.com/apps/${APP_ID}/push`,
+      auth: {
+        user: PQ_PGB_LOGIN,
+        password: PQ_PGB_PASSWORD
+      }
+    };
+
+    return promisify(request)(options)
+      .then((res, body) => {
+        return console.dir(body);
+      }).catch(raiseAndKill('Could not trigger build'))
   }
-}
 
-function triggerBuild() {
-  var options = {
-    url: 'https://build.phonegap.com/apps/'+APP_ID+'/push',
-    auth: {
-        user: PGB_LOGIN,
-        password: PGB_PASSWORD
-    }
-  };
+  const uploadToPGB = (zipfile) => pgb_do()
+    .then(api => {
+      const options = {
+        form: {
+          data: {
+            debug: false
+          },
+          file: zipfile
+        }
+      };
+      return promisify(api.put)(`/apps/${APP_ID}`, options)
+        .then(data => console.log('Upload result data:', data))
+        .catch(raiseAndKill('Could not send to PGB'))
+    });
 
-  request(options, function (err, res, body) {
-    if (err) {
-      console.dir(err)
-      process.exit(2)
-    }
-    console.dir(body)
-    monitorBuild()
+  const monitorBuild = () => new Promise((resolve, reject) => {
+    const checkLoop = () => pgb_do()
+      .then(api => promisify(api.get)(`/apps/${APP_ID}`))
+      .then(data => {
+        if (data.status.android === 'pending') {
+          console.log('Waiting for Android build, retrying in 1 second')
+          setTimeout(checkLoop, 1000);
+        } else if (data.status.android === 'error') {
+          reject(data);
+        } else {
+          resolve(data);
+        }
+      });
+    checkLoop();
   });
-}
 
-function uploadToPGB(zipfile) {
-  pgb_do(function(e, api) {
-           var options = {
-               form: {
-                   data: {
-                       debug: false
-                   },
-                   file: zipfile
-               }
-           };
-           api.put('/apps/'+APP_ID, options,
-                   function(e, data) {
-                     console.log('error:', e);
-                     console.log('data:', data);
-                     if (!e) {
-                        monitorBuild()
-                     }
-           })
-         });
-}
+  const downloadApp = () => pgb_do()
+    .then(api => promisify(api.get)(`/apps/${APP_ID}/android`))
+    .then(data => {
+      console.log('Downloading android app')
+      fs.writeFileSync('android.apk', data, 'binary');
+    });
 
-function monitorBuild() {
-  pgb_do(function(e, api) {
-           api.get('/apps/'+APP_ID, function(e, data) {
-               console.log('error:', e);
-               console.log('data:', data);
-               if (data.status.android === 'pending') {
-                   console.log('Waiting for Android build')
-                   setTimeout(monitorBuild, 1000);
-               } else if (data.status.android === 'error') {
-                   console.log('PGB android build failed, check build log : https://build.phonegap.com/apps'+APP_ID+'/logs/android/build/')
-               } else {
-                   console.log('PGB android build DONE')
-               }
-           })
-         });
-}
+  const main = () => {
+    let promise;
+    if (PG_ENV === 'staging') {
+      promise = pushToGit()
+        .then(() => triggerGithubBuild())
+    } else {
+      promise = uploadZip()
+        .then(() => uploadToPGB())
+    }
+    return promise
+      .then(() => monitorBuild())
+      .then(data => console.log(`${PG_ENV} PGB Android build SUCCESS`, data))
+      .catch(error => console.error(`${PG_ENV} PGB Android build FAILED`, error))
+  }
 
-function downloadApps() {
-  pgb_do(function(e, api) {
-           api.get('/apps/'+APP_ID+'/android', function(e, data) {
-             console.log('Downloading android app')
-             fs.writeFileSync('android.apk', data, 'binary');
-         });
-       });
-}
-
-createZipOrPushGit();
+  main();
+})();
