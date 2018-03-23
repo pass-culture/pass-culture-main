@@ -85,19 +85,22 @@ class DiscoveryPage extends Component {
     const { aroundIndex } = this.state
     // debug
     isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id}`)
-    // we can replace the url but not when
+    // we can replace the url but only when
     // there is not yet an offer id (from a /decouverte just onboarding)
-    // there is an aroundIndex but the deck just init with a not correct matching id
-    // when we already went here one time, so we can set aroundIndex to false
+    // there is an aroundIndex and we just shift for the first time
+    // we already went here one time, so we can set aroundIndex to false
     // to make it not taken in account in the child Deck
     if (!offerId ||
-      (aroundIndex && userMediations[aroundIndex].id === id) ||
+      (aroundIndex && userMediations[aroundIndex].id !== id) ||
       aroundIndex === false
     ) {
       let url = `/decouverte/${userMediationOffers[0].id}`
       if (mediation) {
         url = `${url}/${mediation.id}`
       }
+      // debug
+      isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange replace`)
+      // replace
       history.replace(url)
       this.setState({ aroundIndex: false })
     }
@@ -111,16 +114,24 @@ class DiscoveryPage extends Component {
     }
   }
   render () {
+    console.log('RENDER: DiscoveryPage this.state.userMediations', this.state.userMediations && this.props.userMediations.length,
+      this.state.userMediations && this.state.userMediations.map(um =>
+        um && `${um.id} ${um.dateRead}`))
+    console.log('RENDER: DiscoveryPage this.state.aroundIndex', this.state.aroundIndex)
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange}
-          isBlobModel />
+          isBlobModel
+          isDebug />
       </main>
     )
   }
 }
 
+DiscoveryPage.defaultProps = {
+  isDebug: true
+}
 
 export default compose(
   withRouter,

@@ -46,11 +46,8 @@ class Card extends Component {
       // backgroundColor,
       cursor,
       deckElement,
-      handLength,
       handleSetType,
       isSetRead,
-      // isContentChanging,
-      isFullWidth,
       onTransitionStart,
       transition,
       // transitionDelay,
@@ -68,82 +65,58 @@ class Card extends Component {
     if (item === 0) {
       type = CURRENT
     } else if (item < 0) {
-      if (item >= - handLength) {
+      if (item >= - 2) {
         type = HAND_LEFT
       } else {
         type = ASIDE_LEFT
       }
-    } else if (item <= handLength) {
+    } else if (item <= 2) {
       type = HAND_RIGHT
     } else {
       type = ASIDE_RIGHT
     }
-    // compute the size of the container
-    let handWidth, leftOrRightCurrentWidth
-    if (isFullWidth) {
-      leftOrRightCurrentWidth = 0
-      handWidth = handLength * deckElement.offsetWidth
-    } else {
-      const halfWidth = 0.5 * deckElement.offsetWidth
-      leftOrRightCurrentWidth = halfWidth * (1 - widthRatio)
-      handWidth = leftOrRightCurrentWidth / handLength
-    }
-    const currentWidth = deckElement.offsetWidth - 2 * leftOrRightCurrentWidth
     // determine style and transform given the type of the card
     let style, transform
     switch (type) {
       case ASIDE_LEFT:
         style = {
-          left: - (isFullWidth ? currentWidth : handWidth),
+          left: - deckElement.offsetWidth,
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: isFullWidth ? currentWidth : handWidth
+          width: deckElement.offsetWidth
         }
-        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
         break
       case HAND_LEFT:
         style = {
-          left: leftOrRightCurrentWidth + (
-            isFullWidth
-              ? - (1 - cursor) * currentWidth
-              : item * handWidth
-          ),
+          left: - (1 - cursor) * deckElement.offsetWidth,
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: isFullWidth ? currentWidth : handWidth
+          width: deckElement.offsetWidth
         }
-        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${rotation}deg )`
         break
       case CURRENT:
         style = {
-          left: leftOrRightCurrentWidth,
+          left: 0,
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: currentWidth
+          width: deckElement.offsetWidth
         }
-        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( ${-cursor * rotation}deg )`
         break
       case HAND_RIGHT:
         style = {
-          left: deckElement.offsetWidth - leftOrRightCurrentWidth + (
-            isFullWidth
-              ? cursor * currentWidth
-              : (item - 1) * handWidth
-          ),
+          left: deckElement.offsetWidth + cursor * deckElement.offsetWidth,
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: isFullWidth ? currentWidth : handWidth
+          width: deckElement.offsetWidth
         }
-        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
         break
       case ASIDE_RIGHT:
         style = {
-          left: deckElement.offsetWidth + (isFullWidth ? currentWidth : handWidth),
+          left: 2 * deckElement.offsetWidth,
           transition: transition ||
             `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: isFullWidth ? currentWidth : handWidth
+          width: deckElement.offsetWidth
         }
-        transform = !isFullWidth && `perspective( ${perspective}px ) rotateY( -${rotation}deg )`
         break
       default:
         break
@@ -259,7 +232,6 @@ class Card extends Component {
       index,
       isFirst,
       isFlipping,
-      isFullWidth,
       isLast,
       isTransitioning,
       isVerso,
@@ -292,19 +264,15 @@ class Card extends Component {
           onStop={onStop} >
             <span className={classnames('card absolute', {
                 'card--current': type === CURRENT,
-                'card--draggable': isDraggable,
-                'card--small': !isFullWidth
+                'card--draggable': isDraggable
               })}
               ref={element => this.cardElement = element}
               style={style}>
-              <div className={classnames('card__container', {
-                'card__container--small': !isFullWidth
-              })} style={{ transform }}>
+              <div className='card__container' style={{ transform }}>
                 <Recto {...content}
                   contentLength={contentLength}
                   index={index}
-                  item={item}
-                  isFullWidth={isFullWidth} />
+                  item={item} />
               </div>
             </span>
         </Draggable>,

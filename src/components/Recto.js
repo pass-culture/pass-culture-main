@@ -1,14 +1,12 @@
 import classnames from 'classnames'
 import React from 'react'
 
-import Debug from './Debug'
+import RectoDebug from './RectoDebug'
 import Loading from './Loading'
 import { IS_DEV } from '../utils/config'
 
 const Recto = props => {
-  const {
-    firstThumbDominantColor,
-    isFullWidth,
+  const { firstThumbDominantColor,
     isLoading,
     thumbUrl,
   } = props
@@ -19,12 +17,12 @@ const Recto = props => {
       </div>
     )
     : (
-      <div className={classnames('recto', { 'recto--small': !isFullWidth })} >
+      <div className='recto'>
          <div className="card-background" style={{ backgroundImage: `url('${thumbUrl}')`}} />
          <img draggable="false"
               src={thumbUrl}
               alt='thumb' />
-         { IS_DEV && <Debug {...props} /> }
+         { IS_DEV && <RectoDebug {...props} /> }
        </div>
     )
 }
