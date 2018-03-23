@@ -298,8 +298,7 @@ class Card extends Component {
   }
 }
 
-Card.defaultProps = {
-  isSetRead: true,
+Card.defaultProps = { isSetRead: true,
   perspective: 600,
   readTimeout: 3000,
   rotation: 45,

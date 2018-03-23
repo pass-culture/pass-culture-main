@@ -31,7 +31,6 @@ class DiscoveryPage extends Component {
       this.setState({ userMediations })
       return
     }
-    // debug
     isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
     // offer not specified
     if (!offerId) {
@@ -55,18 +54,13 @@ class DiscoveryPage extends Component {
       }
       // we need to request around it then
       if (!aroundIndex && !hasPushPullRequested) {
-        // debug
         isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
-        // worker
         worker.postMessage({ key: 'dexie-push-pull',
           state: { around: null, mediationId, offerId }})
-        // update
         this.setState({ hasPushPullRequested: true })
-        // return
         return
       }
     }
-    // debug
     isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest aroundIndex=${aroundIndex}`)
     // update
     this.setState({ aroundIndex, userMediations })
@@ -83,22 +77,20 @@ class DiscoveryPage extends Component {
       userMediations
     } = this.props
     const { aroundIndex } = this.state
-    // debug
-    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id}`)
+    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
     // we can replace the url but only when
     // there is not yet an offer id (from a /decouverte just onboarding)
     // there is an aroundIndex and we just shift for the first time
     // we already went here one time, so we can set aroundIndex to false
     // to make it not taken in account in the child Deck
     if (!offerId ||
-      (aroundIndex && userMediations[aroundIndex].id !== id) ||
-      aroundIndex === false
+      aroundIndex === false ||
+      (aroundIndex !== null && userMediations[aroundIndex].id !== id)
     ) {
       let url = `/decouverte/${userMediationOffers[0].id}`
       if (mediation) {
         url = `${url}/${mediation.id}`
       }
-      // debug
       isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange replace`)
       // replace
       history.replace(url)
@@ -114,23 +106,22 @@ class DiscoveryPage extends Component {
     }
   }
   render () {
-    console.log('RENDER: DiscoveryPage this.state.userMediations', this.state.userMediations && this.props.userMediations.length,
-      this.state.userMediations && this.state.userMediations.map(um =>
-        um && `${um.id} ${um.dateRead}`))
-    console.log('RENDER: DiscoveryPage this.state.aroundIndex', this.state.aroundIndex)
+    // console.log('RENDER: DiscoveryPage this.state.userMediations', this.state.userMediations && this.props.userMediations.length,
+    //  this.state.userMediations && this.state.userMediations.map(um =>
+    //    um && `${um.id} ${um.dateRead}`))
+    // console.log('RENDER: DiscoveryPage this.state.aroundIndex', this.state.aroundIndex)
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange}
-          isBlobModel
-          isDebug />
+          isBlobModel />
       </main>
     )
   }
 }
 
 DiscoveryPage.defaultProps = {
-  isDebug: true
+  // isDebug: true
 }
 
 export default compose(

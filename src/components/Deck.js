@@ -31,7 +31,6 @@ class Deck extends Component {
     if (cardState.type !== CURRENT) {
       return
     }
-    // debug
     this.props.isDebug && console.log('DEBUG: Deck - handleSetTypeCard')
     // no need to set in state the current cardProps
     this.currentCardProps = cardProps
@@ -55,7 +54,6 @@ class Deck extends Component {
       console.warn('items is not defined')
       return
     }
-    // debug
     isDebug && console.log('DEBUG: Deck - handleNextItemCard')
     // new state
     this.items = items.map(index => index + diffIndex)
@@ -79,7 +77,6 @@ class Deck extends Component {
     if (!contents) {
       return
     }
-    // debug
     isDebug && console.log(`DEBUG: Deck - handleResetItems currentIndex=${currentIndex}`)
     // we need to determine the dynamic mapping of the deck
     const items = [...Array(contents.length).keys()]
@@ -92,7 +89,6 @@ class Deck extends Component {
     // unpack
     const { items } = this
     const { contents, isDebug } = this.props
-    // debug
     isDebug && console.log('DEBUG: Deck - handleSetCurrentContent')
     // find
     const currentIndex = items && items.indexOf(0)
@@ -174,7 +170,6 @@ class Deck extends Component {
     // check and unpack
     const { transitions } = this
     const { handleTransitionEnd, isDebug } = this.props
-    // debug
     isDebug && console.log('DEBUG: Deck - onTransitionEndCard')
     // update the transitions store
     if (!transitions) {
@@ -204,7 +199,6 @@ class Deck extends Component {
       handleTransitionStart,
       isDebug
     } = this.props
-    // debug
     isDebug && console.log('DEBUG: Deck - onTransitionStartCard')
     // at the first time one of the card is transitioning
     // we init a new array
@@ -270,7 +264,6 @@ class Deck extends Component {
     if (isResizing && !prevState.isResizing) {
       this.setState({ isResizing: false })
     }
-    // debug
     isDebug && console.log('DEBUG: Deck - componentDidUpdate')
     // adapt the items and current content
     if (contents !== prevProps.contents || items !== prevState.items) {
@@ -326,9 +319,9 @@ class Deck extends Component {
     const isAfterDisabled = !items || isLastCard || isTransitioning
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isFlipDisabled = !items || isTransitioning
-    console.log('RENDER: Deck contents', contents && contents.length,
-    contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
-    console.log('RENDER: Deck', 'this.state.items', this.state.items)
+    // console.log('RENDER: Deck contents', contents && contents.length,
+    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
+    // console.log('RENDER: Deck', 'this.state.items', this.state.items)
     return (
       <Draggable axis='y'
         bounds={{ bottom: 0, top: 0 }}
@@ -412,6 +405,7 @@ class Deck extends Component {
 
 Deck.defaultProps = { deckKey: 0,
   flipRatio: 0.25,
+  // isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500
