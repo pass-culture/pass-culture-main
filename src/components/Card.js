@@ -157,7 +157,6 @@ class Card extends Component {
        .filter(key => !/transition(.*)/.test(key))
        .forEach(key => {
           if (style[key] !== this.state.style[key]) {
-            // console.log(type, key, props.content.id, props.item, props.index)
             onTransitionStart({ propertyName: key }, this.props)
           }
         })
@@ -241,7 +240,6 @@ class Card extends Component {
       || (isResizing && !this.props.isResizing)
       || (cursor !== this.props.cursor && item > - 2 && item < 2)
     ) {
-      // console.log('nextProps.item', nextProps.item, 'this.props.item', this.props.item)
       this.handleSetType(nextProps)
     }
   }
@@ -265,7 +263,8 @@ class Card extends Component {
       isLast,
       isTransitioning,
       isVerso,
-      item
+      item,
+      transitionTimeout
     } = this.props
     const { position,
       style,
@@ -309,25 +308,21 @@ class Card extends Component {
               </div>
             </span>
         </Draggable>,
-        item === 0 && [
-          ( <Portal key={1} node={document && document.getElementById('deck')}>
-              <Verso {...content}
-                deckElement={deckElement}
-                handleFlipCard={handleFlipCard}
-                isFlipped={isVerso} />
-            </Portal>),
-          ( <Portal key={2} node={document && document.getElementById('deck__board')}>
-              <div className='deck__board__recto-infos'>
-                { (""+content.userMediationOffers[0].price).replace('.', ',') }&nbsp;€ <span style={{fontFamily: 'sans'}}>&middot;</span> TODO
-              </div>
-            </Portal>)
-        ],
+        item === 0 && (
+          <Portal key={1} node={document && document.getElementById('deck')}>
+            <Verso {...content}
+              deckElement={deckElement}
+              handleFlipCard={handleFlipCard}
+              isFlipped={isVerso} />
+          </Portal>
+        ),
         item > -2 && item < 2 && (
           <Portal key={2} node={document && document.getElementById('deck__board')}>
             <Clue {...content}
               contentLength={contentLength}
               index={index}
-              item={item} />
+              item={item}
+              transitionTimeout={transitionTimeout} />
           </Portal>
         )
       ]
@@ -341,7 +336,7 @@ Card.defaultProps = {
   readTimeout: 3000,
   rotation: 45,
   transitionDelay: 100,
-  transitionTimeout: 500,
+  transitionTimeout: 250,
   widthRatio: 0.75
 }
 

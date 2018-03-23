@@ -30,6 +30,8 @@ class Deck extends Component {
     if (cardState.type !== CURRENT) {
       return
     }
+    // debug
+    this.props.isDebug && console.log('DEBUG: Deck - handleSetTypeCard')
     // no need to set in state the current cardProps
     this.currentCardProps = cardProps
     this.currentCardState = cardState
@@ -46,16 +48,23 @@ class Deck extends Component {
   }
   handleNextItemCard = diffIndex => {
     // unpack
-    const { handleNextItemCard } = this.props
+    const { handleNextItemCard, isDebug } = this.props
     const { items } = this.state
+    if (!items) {
+      console.warn('items is not defined')
+      return
+    }
+    // debug
+    isDebug && console.log('DEBUG: Deck - handleNextItemCard')
     // update by shifting the items
     this.setState({ cursor: 0,
       items: items.map(index => index + diffIndex)
-    })
+     })
     // hook if Deck has parent manager component
     handleNextItemCard && handleNextItemCard(diffIndex, this)
   }
   handleRelaxItemCard = data => {
+    this.props.isDebug && console.log('DEBUG: Deck - handleResetItemCard')
     this.setState({ cursor: 0 })
   }
   handleResetItems = props => {
@@ -90,22 +99,32 @@ class Deck extends Component {
   }
   handleSetReadCard = card => {
     // unpack
-    const { handleSetReadCard } = this.props
+    const { handleSetReadCard, isDebug } = this.props
+    // debug
+    isDebug && console.log('DEBUG: Deck - handleSetReadCard')
     // hook if Deck has parent manager component
     handleSetReadCard && handleSetReadCard(card)
   }
   handleSetCursorCard = cursor => {
+    // debug
+    this.props.isDebug && console.log('DEBUG: Deck - handleSetCursorCard')
+    // update
     this.setState({ cursor, transition: 'none' })
   }
   handleFlipCard = () => {
     this.setState({ isVerso: !this.state.isVerso })
   }
   onStart = (event, data) => {
+    this.props.isDebug && console.log('DEBUG: Deck - onStart')
     this.setState({ isFlipping: true, clientY: event.clientY })
   }
   onDrag = (event, data) => {
-    const { flipRatio } = this.props
+    // unpack
+    const { flipRatio, isDebug } = this.props
     const { deckElement, isVerso } = this.state
+    // debug
+    isDebug && console.log('DEBUG: Deck - onDrag')
+    // cursor
     const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
     if (
       (!isVerso && cursor < -flipRatio) ||
@@ -114,15 +133,28 @@ class Deck extends Component {
       this.handleFlipCard()
     }
   }
+  onNext = (event, diffIndex) => {
+    this.props.isDebug && console.log('DEBUG: Deck - onNext')
+    event.preventDefault()
+    event.stopPropagation()
+    this.handleNextItemCard(diffIndex)
+  }
   onStop = (event, data) => {
+    this.props.isDebug && console.log('DEBUG: Deck - onStop')
     this.setState({ isFlipping: false, y: null })
   }
   onResize = event => {
+    // debug
+    this.props.isDebug && console.log('DEBUG Deck - onResize')
+    // update
     this.setState({ isResizing: true })
   }
   onTransitionEndCard = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
+    const { handleTransitionEnd, isDebug } = this.props
+    // debug
+    isDebug && console.log('DEBUG: Deck - onTransitionEndCard')
     // update the transitions store
     if (!transitions) {
       console.warn('transitions is null while we try to update transition end...? weird')
@@ -130,7 +162,6 @@ class Deck extends Component {
     }
     const newTransitions = [...transitions]
     const transition = newTransitions[cardProps.index]
-    // console.log('END', event.propertyName, cardProps.content.id, cardProps.index)
     if (transition && transition[event.propertyName]) {
         delete transition[event.propertyName]
         if (Object.keys(transition).length === 0) {
@@ -140,28 +171,29 @@ class Deck extends Component {
     this.transitions = newTransitions
     // check
     if (newTransitions.every((newTransition, index) => !newTransition)) {
+      handleTransitionEnd && handleTransitionEnd()
       this.setState({ isTransitioning: false })
       this.transitions = null
-      // console.log('TRANSITIONS IS OFF')
     }
   }
   onTransitionStartCard = (event, cardProps) => {
     // unpack
     const { transitions } = this
-    const { contents } = this.props
+    const { contents, handleTransitionStart, isDebug } = this.props
+    // debug
+    isDebug && console.log('DEBUG: Deck - onTransitionStartCard')
     // at the first time one of the card is transitioning
     // we init a new array
     let newTransitions
     if (!transitions) {
       newTransitions = [...new Array(contents.length)]
       this.setState({ isTransitioning: true })
-      // console.log('TRANSITIONS IS ON')
+      handleTransitionStart && handleTransitionStart()
     } else {
       newTransitions = [...transitions]
     }
     // for this particular card, maybe the transition
     // exists alreay or not
-    // console.log('START',event.propertyName, cardProps.content.id, cardProps.index)
     if (!newTransitions[cardProps.index]) {
       newTransitions[cardProps.index] = { [event.propertyName]: true }
     } else {
@@ -175,15 +207,9 @@ class Deck extends Component {
   componentWillReceiveProps (nextProps) {
     const { isTransitioning } = this.state
     if (nextProps.contents !== this.props.contents) {
-      //console.log(isTransitioning, nextProps.contents.map(content =>
-      //  content && `${content.dateRead} ${content.id}` ))
-      //console.log(this.props.contents && this.props.contents.map(content =>
-      //  content && `${content.dateRead} ${content.id}` ))
       if (isTransitioning) {
-        //console.log('WE NOT YET SET ITEMS')
         this.setState({ bufferContents: this.props.contents })
       } else if (!nextProps.isKeepItems) {
-        //console.log('WE SET ITEMS')
         this.handleResetItems(nextProps)
         // init new state
         // transition to 'none' helps
@@ -234,6 +260,7 @@ class Deck extends Component {
       handleSetTypeCard,
       handleSetReadCard,
       onDrag,
+      onNext,
       onStart,
       onStop,
       onTransitionEndCard,
@@ -243,6 +270,7 @@ class Deck extends Component {
       // browser,
       handLength,
       isBlobModel,
+      isDebug,
       isFullWidth,
       transitionTimeout,
       readTimeout
@@ -259,6 +287,10 @@ class Deck extends Component {
       items
     } = this.state
     const contents = this.state.bufferContents || this.props.contents
+    const isAfterDisabled = !items || isLastCard || isTransitioning
+    const isBeforeDisabled = !items || isFirstCard || isTransitioning
+    const isFlipDisabled = !items || isTransitioning
+    const buttonStyle = { transition: `opacity ${transitionTimeout}ms` }
     var style = {backgroundColor: 'black',
                  transition: `background-color ${transitionTimeout}ms`}
     var gradientStyle = {background: 'linear-gradient(transparent, black)',
@@ -277,13 +309,13 @@ class Deck extends Component {
       }
     }
     // console.log('')
-    //console.log('RENDER DECK this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
-    //this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
-    // console.log('RENDER DECK this.props.contents', this.props.contents && this.props.contents.length,
+    // console.log('RENDER: Deck this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
+    // this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
+    // console.log('RENDER: Deck this.props.contents', this.props.contents && this.props.contents.length,
     // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
-    //console.log('RENDER DECK contents', contents && contents.length,
-    //contents && contents.map(content => content && `${content.id} ${content.dateRead}`))
-    //console.log('RENDER DECK', 'this.state.items', this.state.items)
+    // console.log('RENDER: Deck contents', contents && contents.length,
+    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
+    //console.log('RENDER: Deck', 'this.state.items', this.state.items)
     return (
       <Draggable axis='y'
         bounds={{bottom: 0, top: 0}}
@@ -303,8 +335,7 @@ class Deck extends Component {
           {
             items && items.map((item, index) =>
               contents && contents[index] &&
-                <Card
-                  content={contents && contents[index]}
+                <Card content={contents && contents[index]}
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
@@ -316,15 +347,17 @@ class Deck extends Component {
                   handleSetRead={handleSetReadCard}
                   handleSetType={handleSetTypeCard}
                   isBlobModel={isBlobModel}
-                  transition={transition}
                   isFirst={contents && !contents[index - 1]}
                   isFlipping={isFlipping}
                   isFullWidth={isFullWidth}
                   isLast={contents && !contents[index + 1]}
                   index={index}
+                  isDebug={isDebug}
                   isResizing={isResizing}
+                  isTransitioning={isTransitioning}
                   isVerso={isVerso}
                   item={item}
+                  transition={transition}
                   transitionTimeout={transitionTimeout}
                   key={index}
                   onTransitionEnd={onTransitionEndCard}
@@ -337,25 +370,29 @@ class Deck extends Component {
               id='deck__board'
               ref={element => this.boardElement = element} >
               <div className='deck__board__control flex justify-around'>
-                <button className={classnames('deck__board__prev button', {
-                  'button--disabled': isFirstCard || isTransitioning })}
-                  onClick={() => handleNextItemCard(1)}
-                  disabled={isFirstCard || isTransitioning} >
+                <button className={classnames('deck__board__before button', {
+                  'button--disabled': isBeforeDisabled })}
+                  disabled={isBeforeDisabled}
+                  onClick={event => onNext(event, 1)}
+                  style={buttonStyle}>
                   <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
-                  'button--disabled': isTransitioning })}
-                  onClick={handleFlipCard} >
+                  'button--disabled': isFlipDisabled })}
+                  onClick={handleFlipCard}
+                  style={buttonStyle} >
                   <Icon svg='ico-slideup-w' />
                 </button>
-                <button className={classnames('deck__board__next button', {
-                  'button--disabled': isLastCard || isTransitioning })}
-                  onClick={() => handleNextItemCard(-1)}
-                  disabled={isLastCard || isTransitioning} >
+                <button className={classnames('deck__board__after button', {
+                  'button--disabled': isAfterDisabled })}
+                  onClick={event => onNext(event, -1)}
+                  disabled={isAfterDisabled}
+                  style={buttonStyle} >
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
               </div>
-              <button className='deck__board__profile' style={{backgroundImage: "url('../icons/pc_small.jpg')"}} />
+              <button className='deck__board__profile'
+                style={{backgroundImage: "url('../icons/pc_small.jpg')"}} />
             </div>
           </div>
         </Draggable>

@@ -1,6 +1,16 @@
 .clue {
-  transition: opacity 500ms;
+  bottom: 47%;
+  color: white;
+  height: 0;
+  font-size: 120%;
+  font-weight: 500;
+  text-align:center;
+  top: 28%;
+  width: 100%;
   &--hidden {
     opacity: 0;
+  }
+  &__sep {
+    font-family: 'sans';
   }
 }

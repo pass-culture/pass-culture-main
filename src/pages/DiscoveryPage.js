@@ -10,48 +10,81 @@ import { worker } from '../workers/dexie/register'
 class DiscoveryPage extends Component {
   constructor () {
     super()
-    this.state = { aroundIndex: null }
+    this.state = { aroundIndex: null,
+      hasPushPullRequested: false
+    }
   }
   handleUserMediationRequest = props => {
     // unpack and check
-    const { match: { params: { mediationId, offerId } },
+    const { isDebug,
+      match: { params: { mediationId, offerId } },
       userMediations
     } = props
+    let { aroundIndex, hasPushPullRequested } = this.state
+    // no need to compute when there is no um
+    // or if we have already computed once, no need to continue
+    // again and again because UserMediationsDeck is taking over
+    // the sync of aroundIndex
     if (!userMediations) {
       return
+    } else if (aroundIndex || aroundIndex === false) {
+      this.setState({ userMediations })
+      return
     }
-    // find the matching um in the dexie buffer
-    let aroundIndex
-    if (!mediationId) {
-      userMediations.find((um, index) => {
-        aroundIndex = index
-        return um.userMediationOffers.find(umo => umo.id === offerId)
-      })
+    // debug
+    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
+    // offer not specified
+    if (!offerId) {
+      aroundIndex = 0
     } else {
-      userMediations.find((um, index) => {
-        aroundIndex = index
-        return um.mediationId === mediationId
-      })
+      // find the matching um in the dexie buffer
+      if (!mediationId) {
+        userMediations.find((um, index) => {
+          if (um.userMediationOffers.find(umo => umo.id === offerId)) {
+            aroundIndex = index
+            return true
+          }
+        })
+      } else {
+        userMediations.find((um, index) => {
+          if (um.mediationId === mediationId) {
+            aroundIndex = index
+            return true
+          }
+        })
+      }
+      // we need to request around it then
+      if (!aroundIndex && !hasPushPullRequested) {
+        // debug
+        isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
+        // worker
+        worker.postMessage({ key: 'dexie-push-pull',
+          state: { around: null, mediationId, offerId }})
+        // update
+        this.setState({ hasPushPullRequested: true })
+        // return
+        return
+      }
     }
-    const userMediation = userMediations[aroundIndex]
-    // we need to request around him then
-    if (!userMediation) {
-      worker.postMessage({ key: 'dexie-push-pull',
-        state: { mediationId, offerId }})
-    }
-    this.setState({ aroundIndex })
+    // debug
+    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest aroundIndex=${aroundIndex}`)
+    // update
+    this.setState({ aroundIndex, userMediations })
   }
   handleUserMediationChange = userMediation => {
     if (!userMediation) {
       console.warn('userMediation is not defined')
       return
     }
+    const { isDebug } = this.props
     const { id, mediation, userMediationOffers } = userMediation
     const { match: { params: { offerId } },
       history,
       userMediations
     } = this.props
     const { aroundIndex } = this.state
+    // debug
+    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id}`)
     // we can replace the url but not when
     // there is not yet an offer id (from a /decouverte just onboarding)
     // there is an aroundIndex but the deck just init with a not correct matching id
@@ -82,11 +115,12 @@ class DiscoveryPage extends Component {
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange}
-          isBlobModel/>
+          isBlobModel />
       </main>
     )
   }
 }
+
 
 export default compose(
   withRouter,

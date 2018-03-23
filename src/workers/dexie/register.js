@@ -1,6 +1,7 @@
 import DexieWorker from './index.js'
 import config from './config'
 import { requestData } from '../../reducers/data'
+import { IS_DEV } from '../../utils/config'
 import store from '../../utils/store'
 
 export const worker = new DexieWorker()
@@ -26,6 +27,6 @@ export function syncRedux () {
       requestData('GET', name, { sync: true })))
 }
 
-// if (IS_DEV) {
+if (IS_DEV) {
   window.dexieWorker = worker
-// }
+}

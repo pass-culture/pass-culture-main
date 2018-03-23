@@ -14,7 +14,7 @@
     background-image: url('/mosaic-w.svg');
     background-size: 100% auto;
     margin-top: 133%;
-    width:100%;
+    width: 100%;
     z-index: 100;
     bottom: 0;
     top: 0;
@@ -26,13 +26,13 @@
       img {
         width: 100%;
       }
-      &.deck__board__prev {
+      &.deck__board__before {
         margin-left: 5.07%;
       }
-      &.deck__board__next {
+      &.deck__board__after {
         margin-right: 5.07%;
       }
-      &.deck__board__prev, &.deck__board__next {
+      &.deck__board__before, &.deck__board__after {
         margin-top: 3.10%;
         width: 23.2%;
       }
@@ -46,21 +46,6 @@
           width: 60%; //TODO: calculate actual percentage
         }
       }
-    }
-    .clue {
-      position: absolute;
-      text-align:center;
-      top: 28%;
-      width: 100%;
-    }
-    .deck__board__recto-infos {
-      height: 0;
-      font-size: 180%;
-      font-weight: 500;
-      color: white;
-      position: absolute;
-      width: 100%;
-      bottom: 47%;
     }
     .deck__board__profile {
       border: 0;
@@ -77,7 +62,7 @@
       bottom: 3.18%;
       margin: 0 auto;
       cursor: pointer;
-      }
+    }
   }
   &__to-verso {
     z-index: 1100;
