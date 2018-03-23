@@ -42,7 +42,6 @@ class Verso extends Component {
       isFlipped,
       chosenOffer,
       id,
-      userMediationBookings,
     } = this.props
     return (
       <div className={classnames('verso absolute', {
@@ -63,7 +62,6 @@ class Verso extends Component {
                 onClickFinish={e => this.props.handleFlipCard()}
                 chosenOffer={chosenOffer}
                 id={id}
-                userMediationBookings={userMediationBookings}
               />
             )}
           </div>

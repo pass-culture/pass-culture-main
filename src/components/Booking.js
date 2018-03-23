@@ -19,7 +19,6 @@ class Booking extends Component {
     this.setState({
       bookingInProgress: true
     })
-    console.log(this.props);
     const { chosenOffer, id, requestData } = this.props
     requestData('POST', 'bookings', {
       body: {
@@ -48,7 +47,7 @@ class Booking extends Component {
   }
 
   showForm() {
-    return !this.bookingInProgress && !this.token;
+    return !this.state.bookingInProgress && !this.token;
   }
 
   render () {
@@ -72,7 +71,7 @@ class Booking extends Component {
             )}
           </div>
         )}
-        {this.bookingInProgress && (<p>Réservation en cours ...</p>)}
+        {this.state.bookingInProgress && (<p>Réservation en cours ...</p>)}
         {this.token && (
           <div>
             <p>Votre réservation est validée.</p>
@@ -93,7 +92,7 @@ class Booking extends Component {
           {this.showForm() && this.state.date && this.state.time && (
             <li><button className='button button--primary' onClick={e => this.onClickConfirm(e)}>Valider</button></li>
           )}
-          {this.bookingInProgress && <li><Icon svg='loader-w' /></li>}
+          {this.state.bookingInProgress && <li><Icon svg='loader-w' /></li>}
           {this.token && <li><button className='button button--secondary' onClick={e => this.props.onClickFinish(e)}>OK</button></li>}
         </ul>
       </div>
