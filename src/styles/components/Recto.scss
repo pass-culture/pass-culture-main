@@ -21,7 +21,8 @@
   }
   .card-background {
     filter: blur(30px);
-    background-size: 100% 100%;
+    background-size: 150% 150%;
+    background-position: 50% 50%;
     position: absolute;
     top: 0;
     bottom: 0;
