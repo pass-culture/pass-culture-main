@@ -49,7 +49,7 @@ class ControlBar extends Component {
                 booking ||
                 (userMediationBookings && userMediationBookings.length > 0)
               )
-                ? 'Mes réservations'
+                ? 'Réservé'
                 : 'J\'y vais!'
             }
           </button>
