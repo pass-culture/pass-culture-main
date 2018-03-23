@@ -1,0 +1,26 @@
+.booking {
+  h6 {
+    font-weight: normal;
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 1rem;
+  }
+
+  input {
+    margin: auto;
+    display: block;
+    border: thin solid $menu-red;
+    border-radius: 50px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.2em;
+    small {
+      font-weight: normal;
+    }
+  }
+}

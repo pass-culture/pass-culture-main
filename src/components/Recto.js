@@ -7,7 +7,6 @@ import { IS_DEV } from '../utils/config'
 
 const Recto = props => {
   const {
-    firstThumbDominantColor,
     isFullWidth,
     isLoading,
     thumbUrl,
