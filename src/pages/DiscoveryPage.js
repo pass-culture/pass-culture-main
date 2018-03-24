@@ -143,8 +143,7 @@ class DiscoveryPage extends Component {
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
-          handleUserMediationChange={this.handleUserMediationChange}
-          isBlobModel />
+          handleUserMediationChange={this.handleUserMediationChange} />
       </main>
     )
   }

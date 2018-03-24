@@ -212,8 +212,7 @@ class Card extends Component {
     const { onDrag,
       onStop
     } = this
-    const {
-      content,
+    const { content,
       contentLength,
       deckElement,
       handleFlipCard,
@@ -241,6 +240,7 @@ class Card extends Component {
     } else if (isLast) {
       bounds.left = 0
     }
+    console.log('RENDER: Card content', content)
     return (
       [
         <Draggable axis='x'
@@ -264,7 +264,7 @@ class Card extends Component {
               </div>
             </span>
         </Draggable>,
-        item === 0 && (
+        item === 0 && !content.isLoading && (
           <Portal key={1} node={document && document.getElementById('deck')}>
             <Verso {...content}
               deckElement={deckElement}
@@ -272,7 +272,7 @@ class Card extends Component {
               isFlipped={isVerso} />
           </Portal>
         ),
-        item > -2 && item < 2 && (
+        item > -2 && item < 2 && !content.isLoading && (
           <Portal key={2} node={document && document.getElementById('deck__board')}>
             <Clue {...content}
               contentLength={contentLength}

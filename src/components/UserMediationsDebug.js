@@ -7,7 +7,7 @@ const UserMediationsDebug = ({ aroundIndex,
 }) => {
   return (
     <div className='user-mediations-debug absolute left-0 ml2 p2'>
-        ({countBeforeSync}) {aroundIndex} ({userMediations.length - countAfterSync}) / {userMediations.length}
+        ({countBeforeSync}) {aroundIndex + 1} ({userMediations.length - countAfterSync}) / {userMediations.length}
     </div>
   )
 }

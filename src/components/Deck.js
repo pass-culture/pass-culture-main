@@ -300,6 +300,8 @@ class Deck extends Component {
       onTransitionStartCard
     } = this
     const { contents,
+      isLoadingBefore,
+      isLoadingAfter,
       transitionTimeout,
       readTimeout
     } = this.props
@@ -323,9 +325,10 @@ class Deck extends Component {
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isFlipDisabled = !items || isTransitioning
-    // console.log('RENDER: Deck contents', contents && contents.length,
-    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
+    console.log('RENDER: Deck contents', contents && contents.length, contents,
+    contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: Deck', 'this.state.items', this.state.items)
+    // console.log(`RENDER: Deck isLoadingBefore ${isLoadingBefore} isLoadingAfter ${isLoadingAfter}`)
     return (
       <Draggable axis='y'
         bounds={{ bottom: 0, top: 0 }}
