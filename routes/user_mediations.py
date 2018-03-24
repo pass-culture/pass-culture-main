@@ -10,6 +10,7 @@ from utils.human_ids import dehumanize, humanize
 
 Offer = app.model.Offer
 UserMediation = app.model.UserMediation
+UserMediationOffer = app.model.UserMediationOffer
 
 um_include = [
     {
@@ -63,17 +64,18 @@ def update_user_mediations():
         mediation_id = request.args.get('mediationId')
         print('(special) offer_id', offer_id, 'mediation_id', mediation_id)
         if mediation_id is not None:
-            around_um = UserMediation.query.filter_by(mediation_id=dehumanize(mediation_id),
-                userId=user_id).first()
+            around_um = UserMediation.query\
+                            .filter_by(mediation_id=dehumanize(mediation_id),
+                                       userId=user_id).first()
             around = humanize(around_um.id)
         elif offer_id is not None:
-            around_um = UserMediation.query.filter(
-                UserMediation.userMediationOffers.any(
-                    Offer.id != dehumanize(offer_id)
-                )
-            ).first()
+            around_um = UserMediation.query\
+                .filter(UserMediation.userMediationOffers\
+                        .any(UserMediationOffer.offerId == dehumanize(offer_id)))\
+                .first()
             around = humanize(around_um.id)
-            pass
+        if around is not None:
+            print('(special) around_um', around_um)
     # UPDATE FROM CLIENT LOCAL BUFFER
     print('(update) maybe')
     for um in request.json:
@@ -118,6 +120,7 @@ def update_user_mediations():
         # CONCAT
         ums += list(before_ums)
         if around_um:
+            around_index = len(ums)
             ums += [around_um]
         ums += list(after_ums)
     # DETERMINE IF WE NEED TO CREATE NEW RECO
@@ -125,13 +128,13 @@ def update_user_mediations():
     unread_complementary_length = BLOB_SIZE - len(before_around_after_ids)
     print('(unread) count need', unread_complementary_length)
     #unread_ums = unread_ums.filter(~UserMediation.id.in_(before_around_after_ids))\
-    if len(before_around_after_ids) > 0:
+    if before_around_after_ids:
         unread_ums = unread_ums.filter(UserMediation.id > before_around_after_ids[-1])
     unread_ums = unread_ums.order_by(UserMediation.id)
     print('(unread) count', unread_ums.count())
     if unread_ums.count() < unread_complementary_length:
         print('(check) create ' + str(unread_complementary_length) + ' unread ums')
-        make_new_recommendations(current_user,unread_complementary_length)
+        make_new_recommendations(current_user, unread_complementary_length)
     # LIMIT UN READ
     unread_ums = unread_ums.order_by(UserMediation.dateUpdated.desc())\
                            .limit(unread_complementary_length)
@@ -145,5 +148,7 @@ def update_user_mediations():
     if len(ums) < BLOB_SIZE:
         ums[-1]['isLast'] = True
         ums[-1]['blobSize'] = BLOB_SIZE
+    if around_um:
+        ums[around_index]['isAround'] = True
     # RETURN
     return jsonify(ums),200
