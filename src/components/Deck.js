@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { rgb_to_hsv } from 'colorsys'
 
-import Card, { CURRENT } from './Card'
+import Card, { AROUND } from './Card'
 import Icon from './Icon'
 
 class Deck extends Component {
@@ -27,7 +27,7 @@ class Deck extends Component {
   }
   handleSetTypeCard = (cardProps, cardState) => {
     // only set things for the current Card
-    if (cardState.type !== CURRENT) {
+    if (cardState.type !== AROUND) {
       return
     }
     this.props.isDebug && console.log('DEBUG: Deck - handleSetTypeCard')
@@ -72,14 +72,14 @@ class Deck extends Component {
     // unpack
     const { isDebug } = this.props
     const contents = config.contents || this.props.contents
-    const currentIndex = config.currentIndex || this.props.currentIndex
+    const aroundIndex = config.aroundIndex || this.props.aroundIndex
     if (!contents) {
       return
     }
-    isDebug && console.log(`DEBUG: Deck - handleResetItems currentIndex=${currentIndex}`)
+    isDebug && console.log(`DEBUG: Deck - handleResetItems aroundIndex=${aroundIndex}`)
     // we need to determine the dynamic mapping of the deck
     const items = [...Array(contents.length).keys()]
-      .map(index => index - (currentIndex > 0 ? currentIndex : 0))
+      .map(index => index - (aroundIndex > 0 ? aroundIndex : 0))
     this.items = items
     // update
     this.setState({ items })
@@ -90,8 +90,8 @@ class Deck extends Component {
     const { contents, isDebug } = this.props
     isDebug && console.log('DEBUG: Deck - handleSetCurrentContent')
     // find
-    const currentIndex = items && items.indexOf(0)
-    const currentContent = contents && contents[currentIndex]
+    const aroundIndex = items && items.indexOf(0)
+    const currentContent = contents && contents[aroundIndex]
     this.currentContent = currentContent
     // update
     this.setState({ currentContent })

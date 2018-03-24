@@ -7,7 +7,7 @@ import Clue from './Clue'
 import Recto from './Recto'
 import Verso from './Verso'
 
-export const CURRENT = 'current'
+export const AROUND = 'around'
 export const ASIDE_LEFT = 'aside-left'
 export const ASIDE_RIGHT = 'aside-right'
 export const HAND_LEFT = 'hand-left'
@@ -36,8 +36,8 @@ class Card extends Component {
     this.readTimeout = setTimeout(() => {
       // make sure we are not going to do it circularly
       this.setState({ isRead: true })
-      // check that type is still current
-      this.state.type === CURRENT && handleSetRead && handleSetRead(props)
+      // check that type is still around
+      this.state.type === AROUND && handleSetRead && handleSetRead(props)
     }, readTimeout)
   }
   handleSetType = props => {
@@ -57,7 +57,7 @@ class Card extends Component {
     // determine the type of the card
     let type
     if (item === 0) {
-      type = CURRENT
+      type = AROUND
     } else if (item < 0) {
       if (item >= - 2) {
         type = HAND_LEFT
@@ -88,7 +88,7 @@ class Card extends Component {
           width: deckElement.offsetWidth
         }
         break
-      case CURRENT:
+      case AROUND:
         style = {
           left: 0,
           transition: transition ||
@@ -116,7 +116,7 @@ class Card extends Component {
         break
     }
     // check read
-    isSetRead && type === CURRENT && this.handleSetRead(props)
+    isSetRead && type === AROUND && this.handleSetRead(props)
     // transition happened when the style has been already set once
     // and that the new style has a not none transform
     if (this.state.style && style.transition !== 'none') {
@@ -128,7 +128,7 @@ class Card extends Component {
           }
         })
     }
-    // inform parent about the new current card
+    // inform parent about the new around card
     const newState = { isRead: false,
       style,
       transform,
@@ -163,7 +163,7 @@ class Card extends Component {
       isLast
     } = this.props
     const { x } = data
-    // special reset for the CURRENT CARD
+    // special reset for the AROUND CARD
     // we need to clear the position given by x and y
     // and transfer the position state into the style state one
     this.setState({
@@ -231,7 +231,7 @@ class Card extends Component {
       transform,
       type
     } = this.state
-    const isDraggable = type === 'current' &&
+    const isDraggable = type === 'around' &&
       !isTransitioning &&
       !isVerso &&
       !isFlipping
@@ -251,7 +251,7 @@ class Card extends Component {
           onDrag={onDrag}
           onStop={onStop} >
             <span className={classnames('card absolute', {
-                'card--current': type === CURRENT,
+                'card--around': type === AROUND,
                 'card--draggable': isDraggable
               })}
               ref={element => this.cardElement = element}

@@ -146,7 +146,6 @@ class UserMediationsDeck extends Component {
     }
     // set the current index
     Object.assign(newState, {
-      currentIndex: newState.aroundIndex,
       contents: userMediations.map(getContentFromUserMediation),
       dirtyUserMediations: null
     })
@@ -159,9 +158,8 @@ class UserMediationsDeck extends Component {
     isDebug && console.log('DEBUG: UserMediationsDeck - handleNextItemCard')
     // update around
     const aroundIndex = this.state.aroundIndex - diffIndex
-    const currentIndex = aroundIndex
     // set state
-    this.setState({ currentIndex, aroundIndex })
+    this.setState({ aroundIndex })
     // before or after
     diffIndex > 0
       ? this.handleBeforeContent(diffIndex)
@@ -260,7 +258,6 @@ class UserMediationsDeck extends Component {
     //    content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: UserMediationsDeck this.state.aroundUserMediation', this.props.userMediations && this.props.userMediations[this.state.aroundIndex] && this.props.userMediations[this.state.aroundIndex].id)
     // console.log('RENDER: UserMediationsDeck this.state.aroundIndex', this.state.aroundIndex)
-    // console.log('RENDER: UserMediationsDeck this.state.currentIndex', this.state.currentIndex)
     return [
         <Deck {...this.props}
           {...this.state}
