@@ -218,6 +218,9 @@ class Deck extends Component {
     }
     this.transitions = newTransitions
   }
+  componentWillMount() {
+    this.handleResetItems(this.props)
+  }
   componentWillReceiveProps (nextProps) {
     // unpack
     const { contents } = this.props
@@ -236,6 +239,7 @@ class Deck extends Component {
     }
   }
   componentDidMount () {
+    this.handleSetCurrentContent()
     this.setState({ deckElement: this.element })
     window.addEventListener('resize', this.onDebouncedResize)
   }

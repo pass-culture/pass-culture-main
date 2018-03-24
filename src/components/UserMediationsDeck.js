@@ -193,6 +193,9 @@ class UserMediationsDeck extends Component {
   handleTransitionStart = () => {
     this.setState({ isTransitioning: true })
   }
+  componentWillMount () {
+    this.handleSetContents(this.props)
+  }
   componentWillReceiveProps (nextProps) {
     // check
     const { aroundIndex, isDebug, userMediations } = this.props
@@ -201,6 +204,8 @@ class UserMediationsDeck extends Component {
     if (nextProps.userMediations !== userMediations) {
       isDebug && console.log('DEBUG: UserMediationsDeck - componentWillReceiveProps diff um')
       this.dirtyUserMediations = userMediations
+    } else {
+      this.dirtyUserMediations = null
     }
     // special case where the parent has forced the aroundIndex to be something
     if (nextProps.aroundIndex && !aroundIndex) {

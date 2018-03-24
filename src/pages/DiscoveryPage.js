@@ -12,7 +12,9 @@ import { worker } from '../workers/dexie/register'
 class DiscoveryPage extends Component {
   constructor () {
     super()
-    this.state = { aroundIndex: null }
+    this.state = { aroundIndex: null,
+      userMediations: null
+    }
   }
   handleUserMediationChange = userMediation => {
     if (!userMediation) {
