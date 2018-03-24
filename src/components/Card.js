@@ -205,8 +205,7 @@ class Card extends Component {
     }
   }
   componentWillUnmount () {
-    this.cardElement.removeEventListener('transitionend',
-      this.onTransitionEnd)
+    this.cardElement.removeEventListener('transitionend', this.onTransitionEnd)
     this.readTimeout && clearTimeout(this.readTimeout)
   }
   render () {

@@ -300,6 +300,7 @@ class Deck extends Component {
       readTimeout
     } = this.props
     const { buttonStyle,
+      currentContent,
       cursor,
       deckElement,
       gradientStyle,
@@ -314,7 +315,9 @@ class Deck extends Component {
       transition
     } = this.state
     const isAfterDisabled = !items || isLastCard || isTransitioning
+    const isAfterHidden = currentContent && currentContent.isLast
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
+    const isBeforeHidden = currentContent && currentContent.isFirst
     const isFlipDisabled = !items || isTransitioning
     // console.log('RENDER: Deck contents', contents && contents.length,
     // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
@@ -371,11 +374,12 @@ class Deck extends Component {
               ref={element => this.boardElement = element} >
               <div className='deck__board__control flex justify-around'>
                 <button className={classnames('deck__board__before button', {
-                  'button--disabled': isBeforeDisabled })}
+                  'button--disabled': isBeforeDisabled,
+                  'button--hidden': isBeforeHidden })}
                   disabled={isBeforeDisabled}
                   onClick={event => onNext(event, 1)}
                   style={buttonStyle}>
-                  <Icon svg='ico-prev-w' />
+                    <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isFlipDisabled })}
@@ -384,7 +388,8 @@ class Deck extends Component {
                   <Icon svg='ico-slideup-w' />
                 </button>
                 <button className={classnames('deck__board__after button', {
-                  'button--disabled': isAfterDisabled })}
+                  'button--disabled': isAfterDisabled,
+                  'button--hidden': isAfterHidden })}
                   onClick={event => onNext(event, -1)}
                   disabled={isAfterDisabled}
                   style={buttonStyle} >
