@@ -6,6 +6,7 @@ import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
 import currentBooking from '../selectors/currentBooking'
 import currentUserMediation from '../selectors/currentUserMediation'
+import currentOffer from '../selectors/currentOffer'
 
 class Booking extends Component {
   constructor () {
@@ -21,12 +22,11 @@ class Booking extends Component {
     this.setState({
       bookingInProgress: true
     })
-    const { chosenOffer, id, requestData } = this.props
-    requestData('POST', 'bookings', {
+    this.props.requestData('POST', 'bookings', {
       body: {
-        offerId: chosenOffer.id,
+        offerId: currentOffer.id,
         quantity: 1,
-        userMediationId: id
+        userMediationId: currentUserMediation.id
       }
     })
   }
@@ -47,7 +47,7 @@ class Booking extends Component {
             {this.state.date && this.state.time && (
               <div>
                 <p>
-                  Vous êtes sur le point de réserver cette offre pour ${this.props.price}.
+                  Vous êtes sur le point de réserver cette offre pour {this.props.currentOffer.price}€.
                 </p>
                 <p>
                   <small>Le montant sera déduit de votre pass. Il vous restera O€ après cette réservation.</small>
@@ -86,9 +86,10 @@ class Booking extends Component {
 }
 
 export default connect(
-  (state) => ({
+  state => ({
     currentBooking: currentBooking(state),
     currentUserMediation: currentUserMediation(state),
-  }),
-  {requestData},
-)(Booking)
+    currentOffer: currentOffer(state),
+  }), {
+  requestData
+})(Booking)

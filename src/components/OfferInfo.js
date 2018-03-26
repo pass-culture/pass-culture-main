@@ -1,20 +1,19 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
+import currentUserMediation from '../selectors/currentUserMediation'
+import currentOffer from '../selectors/currentOffer'
 
 class OfferInfo extends Component {
 
   render() {
     const {
-      // id,
-      // description,
-      // price,
-      // sellersFavorites,
-      // thingOrEventOccurence,
       eventOccurence,
       occurencesAtVenue,
       thing,
       thumbUrl,
       venue,
-    } = this.props;
+    } = this.props.currentOffer;
 
     return (
       <div className='offer-info'>
@@ -56,4 +55,8 @@ class OfferInfo extends Component {
   }
 }
 
-export default OfferInfo
+export default connect(
+  state => ({
+    currentOffer: currentOffer(state),
+    currentUserMediation: currentUserMediation(state),
+  }))(OfferInfo)

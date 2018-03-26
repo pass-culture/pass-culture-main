@@ -7,6 +7,7 @@ import OffererPage from '../pages/OffererPage'
 import ProfessionalPage from '../pages/ProfessionalPage'
 import ProfilePage from '../pages/ProfilePage'
 import SignPage from '../pages/SignPage'
+import BookingsPage from '../pages/BookingsPage'
 
 const routes = [
   {
@@ -44,6 +45,11 @@ const routes = [
     exact: true,
     path: '/inventaire',
     render: () => <InventoryPage />
+  },
+  {
+    exact: true,
+    path: '/reservations',
+    render: () => <BookingsPage />
   },
   {
     exact: true,
