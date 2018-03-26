@@ -14,7 +14,7 @@ class UserMediationsDeck extends Component {
     super()
     this.state = { aroundIndex: null,
       contents: null,
-      hasSyncRequested: false,
+      extraContents: null,
       isLoadingBefore: false,
       isLoadingAfter: false,
       isTransitioning: false
@@ -28,7 +28,7 @@ class UserMediationsDeck extends Component {
     } = this.props
     const { aroundIndex,
       contents,
-      hasSyncRequested
+      isLoadingBefore
     } = this.state
     if (aroundIndex === null || aroundIndex < 0) {
       return
@@ -42,26 +42,17 @@ class UserMediationsDeck extends Component {
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    if (isBeforeSync && !hasSyncRequested) {
-      const beforeContents = [...contents]
-      const beforeContent = beforeContents[0]
-      beforeContent.isLoading = true
-      console.log('OUAI')
-      // we update the first content
-      // with a isLoading attribute
-      this.setState({ contents: beforeContents,
-        isLoadingBefore: true,
-        hasSyncRequested: true })
+    if (isBeforeSync && !isLoadingBefore) {
+      const extraContents = contents.map((content, index) =>
+        index === 0 && { isLoading: true })
+      this.setState({ extraContents,
+        isLoadingBefore: true })
       const beforeAroundIndex = Math.max(0, aroundIndex - diffIndex)
       const aroundUserMediation = userMediations[beforeAroundIndex]
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
       worker.postMessage({ key: 'dexie-push-pull',
         state: { around: aroundContent.id }})
       return
-    }
-    // update
-    if (hasSyncRequested) {
-      this.setState({ hasSyncRequested: false })
     }
   }
   handleAfterContent = diffIndex => {
@@ -72,7 +63,8 @@ class UserMediationsDeck extends Component {
     } = this.props
     const { aroundIndex,
       contents,
-      hasSyncRequested
+      hasSyncRequested,
+      isLoadingAfter
     } = this.state
     isDebug && console.log(`DEBUG: UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex}`)
     if (aroundIndex === null || aroundIndex > userMediations.length) {
@@ -87,16 +79,11 @@ class UserMediationsDeck extends Component {
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    if (isAfterSync && !hasSyncRequested && !contents.slice(-1)[0].isLoading) {
-      // we update the last content
-      // with a isLoading attribute
-      const afterContents = [...contents]
-      const lastContent = afterContents.slice(0, -1)[0]
-      lastContent.isLoading = true
-      this.setState({ contents: contents.slice(0, -1).concat([{ isLoading: true }]),
-        isLoadingAfter: true,
-        hasSyncRequested: true,
-      })
+    if (isAfterSync && !isLoadingAfter) {
+      const extraContents = contents.map((content, index) =>
+        index === contents.length - 1 && { isLoading: true })
+      this.setState({ extraContents,
+        isLoadingAfter: true })
       const afterAroundIndex = Math.min(userMediations.length - 1,
         aroundIndex - diffIndex)
       const aroundUserMediation = userMediations[afterAroundIndex]
@@ -104,10 +91,6 @@ class UserMediationsDeck extends Component {
       worker.postMessage({ key: 'dexie-push-pull',
         state: { around: aroundContent.id }})
       return
-    }
-    // update
-    if (hasSyncRequested) {
-      this.setState({ hasSyncRequested: false })
     }
   }
   handleSetContents = (config = {}) => {
@@ -273,7 +256,7 @@ class UserMediationsDeck extends Component {
     //    content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: UserMediationsDeck this.state.aroundUserMediation', this.props.userMediations && this.props.userMediations[this.state.aroundIndex] && this.props.userMediations[this.state.aroundIndex].id)
     // console.log('RENDER: UserMediationsDeck this.state.aroundIndex', this.state.aroundIndex)
-    // console.log(`RENDER: UserMediationsDeck hasSyncRequested ${this.state.hasSyncRequested} isLoadingBefore ${this.state.isLoadingBefore} isLoadingAfter ${this.state.isLoadingAfter}`)
+    // console.log(`RENDER: UserMediationsDeck isLoadingBefore ${this.state.isLoadingBefore} isLoadingAfter ${this.state.isLoadingAfter}`)
     return [
         <Deck {...this.props}
           {...this.state}

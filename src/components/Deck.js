@@ -300,8 +300,7 @@ class Deck extends Component {
       onTransitionStartCard
     } = this
     const { contents,
-      isLoadingBefore,
-      isLoadingAfter,
+      extraContents,
       transitionTimeout,
       readTimeout
     } = this.props
@@ -349,7 +348,8 @@ class Deck extends Component {
             items && items.map((item, index) =>
               contents && contents[index] &&
               Math.abs(item) < 2 &&
-                <Card content={contents && contents[index]}
+                <Card content={contents && Object.assign({},
+                  contents[index], extraContents && extraContents[index])}
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
