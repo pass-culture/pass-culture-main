@@ -19,10 +19,11 @@ export function getContentFromUserMediation (userMediation) {
   if (!chosenOffer && !mediation) {
     return
   }
-  // choose an image
+  // source
   let source
   let sourceCollectionName
-  if (chosenOffer) {
+  let venue
+  if (!mediation && chosenOffer) {
     if (chosenOffer.eventOccurence) {
       source = chosenOffer.eventOccurence
       sourceCollectionName = 'eventOccurences'
@@ -34,11 +35,15 @@ export function getContentFromUserMediation (userMediation) {
     if (mediation.event) {
       source = mediation.event
       sourceCollectionName = 'events'
+      venue = chosenOffer.eventOccurence.venue
     } else {
       source = mediation.thing
       sourceCollectionName = 'things'
     }
   }
+  // venue
+  venue = venue || chosenOffer.venue || (source && source.venue)
+  // color
   let backgroundColor
   let thumbUrl
   // TODO: colorsys.rgb_to_hsv({ r: 255, g: 255, b: 255 }) ...
@@ -55,6 +60,7 @@ export function getContentFromUserMediation (userMediation) {
   return Object.assign({ backgroundColor,
     chosenOffer,
     source,
-    thumbUrl
+    thumbUrl,
+    venue
   }, userMediation)
 }
