@@ -1,11 +1,12 @@
+""" init script """
+#https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from flask import current_app as app
 from pprint import pprint
 import traceback
+from flask import current_app as app
 
 from utils.mock import set_from_mock
-from utils.token import get_all_tokens
 
 @app.manager.command
 def init():
@@ -111,14 +112,20 @@ def do_init():
     venue_museum.longitude = 2.3243727
     check_and_save(venue_museum)
 
+    venue_mc = model.Venue()
+    venue_mc.name = "Maison de la Culture de la Seine Saint-Denis"
+    venue_mc.address = "9 boulevard Lénine, 93000 Bobigny"
+    venue_mc.latitude = 48.9066951
+    venue_mc.longitude = 2.4400193
+    check_and_save(venue_museum)
+
 
     ## CONTENT 1
 
     thing1 = model.Thing()
-    thing1.type = model.ThingType.Book
     thing1.description = "Howard Phillips Lovecraft est sans nul doute l'auteur fantastique le plus influent du xxe siècle. Son imaginaire unique et terrifiant n'a cessé d'inspirer des générationsd'écrivains, de cinéastes, d'artistes ou de créateurs d'univers de jeux, de Neil Gaiman à Michel Houellebecq en passant par Metallica. Le mythe de Cthulhu est au coeur de cette oeuvre : un panthéon de dieux et d'êtres monstrueux venus du cosmos et de la nuit des temps ressurgissent pour reprendre possession de notre monde. Ceux qui en sont témoins sont voués à la folie et à la destruction. Les neuf récits essentiels du mythe sont ici réunis dans une toute nouvelle traduction. À votre tour, vous allez pousser la porte de la vieille bâtisse hantée qu'est la Maison de la Sorcière, rejoindre un mystérieux festival où l'on célèbre un rite impie, découvrir une cité antique enfouie sous le sable, ou échouer dans une ville portuaire dépeuplée dont les derniers habitants sont atrocement déformés.."
     thing1.name = "Cthulhu ; le mythe"
-    thing1.type = "Book"
+    thing1.type = model.ThingType.Book
     thing1.identifier = "9782352945536"
     thing1.extraData = {
         'author' : "Howard Phillips Lovecraft",
@@ -160,42 +167,50 @@ def do_init():
 
     ## CONTENT 2
 
-    event2 = model.Thing()
+    event2 = model.Event()
     event2.isActive = True
-    event2.idAtProviders = 1
     event2.dateModifiedAtLastProvider = '2018-03-05T13:00:00'
-    event2.name = "Atelier BD et dédicace avec Joann Sfar à la MC93"
     event2.description = "Atelier d'initiation avec la création d'une page (4 à 6 cases) sur un scénario collectif ou un scénario individuel imaginé par les participants.\n Le créateur du Chat du Rabbin et de Petit Vampire vous attend dans la Maison de la Culture du 93 pour un atelier bande dessinée suivi d’une séance de dédicace."
-    event2.lastProviderId = 1
+    event2.durationMinutes = 150
+    event2.name = "Atelier BD et dédicace avec Joann Sfar à la MC93"
+    event2.type = model.EventType.LiteraryEvent
     check_and_save(event2)
     set_from_mock("thumbs", event2, 1)
-    #Samedi 10 février  de 14h30 - 17h
+
+    eventOccurence2 = model.EventOccurence()
+    eventOccurence2.beginningDatetime = '2018-03-05T14:30:00'
+    eventOccurence2.event = event2
+    eventOccurence2.venue = venue_mc
+    check_and_save(eventOccurence2)
 
     offer2 = model.Offer()
     offer2.offerer = small_library_offerer
-    offer2.thing = event2
+    offer2.eventOccurence = eventOccurence2
     offer2.price = 10
-    offer2.venue = venue_bookshop
+
     check_and_save(offer2)
 
     ## CONTENT 3
 
-    event3 = model.Thing()
-    event3.isActive = True
-    event3.idAtProviders = 1
-    event3.dateModifiedAtLastProvider = '2018-03-05T13:00:00'
-    event3.name = "Visite Nocturne"
+    event3 = model.Event()
     event3.description = "Visite guidée de 1h30 du musée pour des groupes de minimum 15 personnes."
-    event3.lastProviderId = 1
+    event3.durationMinutes = 60
+    event3.isActive = True
+    event3.name = "Visite Nocturne"
+    event3.type = model.EventType.VisualArtsEvent
     check_and_save(event3)
     set_from_mock("thumbs", event3, 3)
-    # Tous les vendredis à 22h
+
+    eventOccurence3 = model.EventOccurence()
+    eventOccurence3.beginningDatetime = '2018-03-05T22:00:00'
+    eventOccurence3.event = event3
+    eventOccurence3.venue = venue_museum
+    check_and_save(eventOccurence3)
 
     offer3 = model.Offer()
     offer3.offerer = small_library_offerer
-    offer3.thing = event3
+    offer3.eventOccurence = eventOccurence3
     offer3.price = 8
-    offer3.venue = venue_museum
     check_and_save(offer3)
 
     mediation3 = model.Mediation()
@@ -204,6 +219,7 @@ def do_init():
     mediation3.event = event3
     mediation3.what = "Atelier d'initiation avec la création d'une page (4 à 6 cases) sur un scénario collectif ou un scénario individuel imaginé par les participants."
     check_and_save(mediation3)
+    set_from_mock("thumbs", mediation3, 2)
 
     user_mediation3 = model.UserMediation()
     user_mediation3.mediation = mediation3
@@ -215,20 +231,17 @@ def do_init():
     umo3.userMediation = user_mediation3
     check_and_save(umo3)
 
-
     ## CONTENT 4
 
     thing4 = model.Thing()
-    thing4.type = model.ThingType.Book
     thing4.description = "Roman d'aventures, écrit par Jules Verne, publié en 1872. Il raconte la course autour du monde d'un gentleman anglais, Phileas Fogg, qui a fait le pari d'y parvenir en 80 jours. Il est accompagné par Jean Passepartout, son serviteur français. L'ensemble du roman est un habile mélange entre récit de voyage (traditionnel pour Jules Verne) et données scientifiques comme celle utilisée pour le rebondissement de la chute du roman."
-    thing4.name = "Le Tour du monde en 80 jours (édition enrichie illustrée)"
-    thing4.type = "Book"
-    thing4.identifier = "2072534054"
     thing4.extraData = {
         'author' : "Jules Verne",
         'prix_livre' : "13.99"
     }
-    thing4.thumbCount = 1
+    thing4.identifier = "2072534054"
+    thing4.name = "Le Tour du monde en 80 jours (édition enrichie illustrée)"
+    thing4.type = model.ThingType.Book
     check_and_save(thing4)
     set_from_mock("thumbs", thing4, 4)
 
@@ -250,6 +263,7 @@ def do_init():
     user_mediation4.user = client_user
     user_mediation4.validUntilDate = datetime.now() + timedelta(days=2)
     check_and_save(user_mediation4)
+
     umo4 = model.UserMediationOffer()
     umo4.offer = offer4
     umo4.userMediation = user_mediation4
@@ -261,45 +275,8 @@ def do_init():
     booking4.token = 'FUUEEM'
     booking4.userMediation = user_mediation4
     check_and_save(user_mediation4)
+
     umb4 = model.UserMediationBooking()
     umb4.booking = booking4
     umb4.userMediation = user_mediation4
     check_and_save(umb4)
-
-    ## CONTENT 5
-
-    event5 = model.Event()
-    event5.isActive = True
-    event5.idAtProviders = 1
-    event5.dateModifiedAtLastProvider = '2018-03-05T13:00:00'
-    event5.name = "Visite Nocturne"
-    event5.description = "Visite guidée de 1h30 du musée pour des groupes de minimum 15 personnes."
-    event5.lastProviderId = 1
-    check_and_save(event5)
-    set_from_mock("thumbs", event5, 2)
-    # Tous les vendredis à 22h
-
-    offer5 = model.Offer()
-    offer5.offerer = small_library_offerer
-    offer5.thing = event5
-    offer5.price = 8
-    offer5.venue = venue_museum
-    check_and_save(offer5)
-
-    mediation5 = model.Mediation()
-    mediation5.author = pro_user
-    mediation5.backText = "En compagnie d’un accompagnateur, découvrez les dessous d’Orsay lors d’une séance nocturne de 1h30 où le musée est à vous. D’où viennent donc ces dinosaures dans L'angélus de Millet ?"
-    mediation5.event = event3
-    mediation5.what = "Atelier d'initiation avec la création d'une page (4 à 6 cases) sur un scénario collectif ou un scénario individuel imaginé par les participants."
-    check_and_save(mediation5)
-
-    user_mediation5 = model.UserMediation()
-    user_mediation5.mediation = mediation5
-    user_mediation5.user = client_user
-    user_mediation5.validUntilDate = datetime.now() + timedelta(days=2)
-    check_and_save(user_mediation5)
-
-    umo5 = model.UserMediationOffer()
-    umo5.offer = offer5
-    umo5.userMediation = user_mediation5
-    check_and_save(umo5)
