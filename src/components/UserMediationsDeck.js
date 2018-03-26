@@ -23,23 +23,20 @@ class UserMediationsDeck extends Component {
   }
   handleBeforeContent = diffIndex => {
     // unpack and check
-    const { countBeforeSync,
-      isDebug,
+    const { isDebug,
       userMediations
     } = this.props
     const { aroundIndex,
+      beforeLimit,
       contents,
       isLoadingBefore
     } = this.state
     if (aroundIndex === null || aroundIndex < 0) {
       return
     }
-    // from the present to the past
-    // meet the first not well defined content
-    const limit = countBeforeSync + 1
-    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} limit=${limit}`)
+    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} beforeLimit=${beforeLimit}`)
     // compute
-    const isBeforeSync = aroundIndex < limit
+    const isBeforeSync = aroundIndex < beforeLimit
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
@@ -58,11 +55,11 @@ class UserMediationsDeck extends Component {
   }
   handleAfterContent = diffIndex => {
     // check unpack
-    const { countAfterSync,
-      isDebug,
+    const { isDebug,
       userMediations
     } = this.props
-    const { aroundIndex,
+    const { afterLimit,
+      aroundIndex,
       contents,
       isLoadingAfter
     } = this.state
@@ -70,12 +67,9 @@ class UserMediationsDeck extends Component {
     if (aroundIndex === null || aroundIndex > userMediations.length) {
       return
     }
-    // from the present to the past
-    // meet the first not well defined content
-    const limit = userMediations.length - 2 - countAfterSync
-    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} limit=${limit}`)
+    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} afterLimit=${afterLimit}`)
     // compute
-    const isAfterSync = aroundIndex > limit
+    const isAfterSync = aroundIndex > afterLimit
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
@@ -143,8 +137,9 @@ class UserMediationsDeck extends Component {
       newState.aroundIndex = aroundIndex
     }
     // set the current index
-    Object.assign(newState, {
-      contents: userMediations.map(getContentFromUserMediation),
+    Object.assign(newState, { currentIndex: aroundIndex + 1,
+      contents: [{}].concat(userMediations.map(getContentFromUserMediation))
+        .concat([{}]),
       dirtyUserMediations: null
     })
     // update
@@ -162,6 +157,20 @@ class UserMediationsDeck extends Component {
     diffIndex > 0
       ? this.handleBeforeContent(diffIndex)
       : this.handleAfterContent(diffIndex)
+  }
+  handleSetAfterLimit = props => {
+    const { afterCount, userMediations } = props
+    if (!userMediations) {
+      return
+    }
+    let afterLimit = userMediations.length - 3 - afterCount
+    if (afterLimit < 1) { afterLimit = userMediations.length }
+    this.setState({ afterLimit })
+  }
+  handleSetBeforeLimit = props => {
+    const { beforeCount, userMediations } = props
+    const beforeLimit = Math.min(beforeCount + 1)
+    this.setState({ beforeLimit })
   }
   handleSetReadCard = card => {
     // unpack
@@ -191,10 +200,17 @@ class UserMediationsDeck extends Component {
   }
   componentWillMount () {
     this.handleSetContents(this.props)
+    this.handleSetAfterLimit(this.props)
+    this.handleSetBeforeLimit(this.props)
   }
   componentWillReceiveProps (nextProps) {
     // check
-    const { aroundIndex, isDebug, userMediations } = this.props
+    const { afterCount,
+      aroundIndex,
+      beforeCount,
+      isDebug,
+      userMediations
+    } = this.props
     isDebug && debug('UserMediationsDeck - componentWillReceiveProps')
     // check for different userMediations
     if (nextProps.userMediations !== userMediations) {
@@ -208,6 +224,12 @@ class UserMediationsDeck extends Component {
     if (nextProps.aroundIndex && !aroundIndex) {
       isDebug && debug(`UserMediationsDeck - componentWillReceiveProps parent aroundIndex`)
       this.handleSetContents(nextProps)
+    }
+    if (nextProps.beforeCount !== beforeCount) {
+      this.handleSetBeforeLimit(nextProps)
+    }
+    if (nextProps.userMediations !== userMediations || nextProps.afterCount !== afterCount) {
+      this.handleSetAfterLimit(nextProps)
     }
   }
   componentDidUpdate (prevProps, prevState) {
@@ -272,8 +294,8 @@ class UserMediationsDeck extends Component {
   }
 }
 
-UserMediationsDeck.defaultProps = { countAfterSync: 5,
-  countBeforeSync: 2,
+UserMediationsDeck.defaultProps = { afterCount: 5,
+  beforeCount: 2,
   isCheckRead: false,
   // isDebug: true,
   readTimeout: 2000,
