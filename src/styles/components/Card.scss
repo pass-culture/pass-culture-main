@@ -1,14 +1,14 @@
 .card {
   cursor: pointer;
   height: 100%;
-  &--small {
-    height: 90%;
-  }
-  &--current {
+  &--around {
     z-index: 50;
   }
   &--draggable {
     cursor: -webkit-grab;
+  }
+  &--small {
+    height: 90%;
   }
   &--span {
     height: 100%;
