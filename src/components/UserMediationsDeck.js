@@ -63,7 +63,6 @@ class UserMediationsDeck extends Component {
     } = this.props
     const { aroundIndex,
       contents,
-      hasSyncRequested,
       isLoadingAfter
     } = this.state
     isDebug && console.log(`DEBUG: UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex}`)
@@ -72,7 +71,7 @@ class UserMediationsDeck extends Component {
     }
     // from the present to the past
     // meet the first not well defined content
-    const limit = userMediations.length - 1 - countAfterSync
+    const limit = userMediations.length - 2 - countAfterSync
     isDebug && console.log(`DEBUG: UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} limit=${limit}`)
     // compute
     const isAfterSync = aroundIndex > limit
@@ -200,6 +199,7 @@ class UserMediationsDeck extends Component {
     if (nextProps.userMediations !== userMediations) {
       isDebug && console.log('DEBUG: UserMediationsDeck - componentWillReceiveProps diff um')
       this.dirtyUserMediations = userMediations
+      this.setState({ isLoadingBefore: false, isLoadingAfter: false })
     } else {
       this.dirtyUserMediations = null
     }
