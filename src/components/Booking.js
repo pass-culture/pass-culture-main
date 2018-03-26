@@ -1,15 +1,17 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import get from 'lodash.get';
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
+import currentBooking from '../selectors/currentBooking'
+import currentUserMediation from '../selectors/currentUserMediation'
 
 class Booking extends Component {
   constructor () {
     super ()
     this.state = {
       bookingInProgress: false,
-      booking: null,
       date: null,
       time: null,
     }
@@ -29,32 +31,14 @@ class Booking extends Component {
     })
   }
 
-  bookingsPropDidUpdate(props) {
-    this.setState({
-      booking: props.bookings.find(b => b.offerId === (props.chosenOffer && props.chosenOffer.id))
-    })
-  }
-
-  componentWillMount() {
-    if (this.props.bookings) {
-      this.bookingsPropDidUpdate(this.props)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.bookings !== this.props.bookings) {
-      this.bookingsPropDidUpdate(nextProps)
-    }
-  }
-
-  showForm() {
-    return !this.state.bookingInProgress && !(this.state.booking && this.state.booking.token);
-  }
-
   render () {
+    const token = get(this.props, 'currentBooking.token');
+    const inputStep = !this.state.bookingInProgress && !token;
+    const loadingStep = this.state.bookingInProgress && !token;
+    const confirmationStep = token;
     return (
       <div className='booking'>
-        {this.showForm() && (
+        {inputStep && (
           <div>
             <h6>Choisissez une date :</h6>
             <input type='date' className='input' onChange={e => this.setState({date: e.target.value})} />
@@ -72,8 +56,8 @@ class Booking extends Component {
             )}
           </div>
         )}
-        {this.state.bookingInProgress && (<p>Réservation en cours ...</p>)}
-        {this.state.booking && this.state.booking.token && (
+        {loadingStep && (<p>Réservation en cours ...</p>)}
+        {confirmationStep && (
           <div>
             <p>Votre réservation est validée.</p>
             <p>
@@ -81,20 +65,20 @@ class Booking extends Component {
               <br />
               <small>Présentez le code suivant sur place :</small>
             </p>
-            <p><big>{this.state.booking.token}</big></p>
+            <p><big>{token}</big></p>
             <p><small>Retrouvez ce code et les détails de l'offre dans la rubrique "Mes réservations" de votre compte.</small></p>
 
           </div>
         )}
         <ul className='bottom-bar'>
-          {this.showForm() && (
+          {inputStep && (
             <li><button className='button button--secondary' onClick={e => this.props.onClickCancel(e)}>Annuler</button></li>
           )}
-          {this.showForm() && this.state.date && this.state.time && (
+          {inputStep && this.state.date && this.state.time && (
             <li><button className='button button--primary' onClick={e => this.onClickConfirm(e)}>Valider</button></li>
           )}
-          {this.state.bookingInProgress && this.state.booking && <li><Icon svg='loader-w' /></li>}
-          {this.state.booking && this.state.booking.token && <li><button className='button button--secondary' onClick={e => this.props.onClickFinish(e)}>OK</button></li>}
+          {loadingStep && <li><Icon svg='loader-w' /></li>}
+          {token && <li><button className='button button--secondary' onClick={e => this.props.onClickFinish(e)}>OK</button></li>}
         </ul>
       </div>
     )
@@ -103,7 +87,8 @@ class Booking extends Component {
 
 export default connect(
   (state) => ({
-    bookings: state.data.bookings,
+    currentBooking: currentBooking(state),
+    currentUserMediation: currentUserMediation(state),
   }),
   {requestData},
 )(Booking)

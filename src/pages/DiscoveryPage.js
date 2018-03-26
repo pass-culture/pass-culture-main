@@ -117,6 +117,7 @@ class DiscoveryPage extends Component {
     if (!offerId) {
       const aroundUserMediation = userMediations.find(um => um.isAround)
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
+      if (!aroundContent) return;
       let url = `/decouverte/${aroundContent.chosenOffer.id}`
       if (aroundContent.mediation) {
         url = `${url}/${aroundContent.mediation.id}`

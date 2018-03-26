@@ -39,11 +39,11 @@
     opacity: 0;
   }
   &--inversed {
-    background-color: white !important;
-    border-color: $identity-color !important;
-    color: $identity-color !important;
+    background-color: white;
+    border-color: $identity-color;
+    color: $identity-color;
     svg {
-      fill: $identity-color !important;
+      fill: $identity-color;
     }
   }
   &--rounded {
@@ -82,6 +82,16 @@
     border-top-right-radius: 0;
     font-weight: 500;
     font-size: 1.2em;
+    &.button--inversed {
+      background-color: $menu-red;
+      color: $white;
+      border-color: $white;
+      border-top-right-radius: 2rem;
+      border-bottom-left-radius: 0;
+      svg {
+        fill: $white;
+      }
+    }
   }
   &--xlarge {
     font-size: 2.5em;

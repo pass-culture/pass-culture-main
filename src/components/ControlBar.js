@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import get from 'lodash.get';
 
 import { requestData } from '../reducers/data'
 import Icon from './Icon'
+import currentBooking from '../selectors/currentBooking'
+import currentUserMediation from '../selectors/currentUserMediation'
 
 class ControlBar extends Component {
 
@@ -20,6 +23,7 @@ class ControlBar extends Component {
     } = this
     const {
       onClickBook,
+      onClickViewBookings,
       booking,
       userMediationBookings,
       chosenOffer,
@@ -40,18 +44,21 @@ class ControlBar extends Component {
           </button>
         </li>
         <li>
-          <button className='button button--primary button--go'
-            onClick={onClickBook} >
-            <span className='price'>{`${chosenOffer.price}€`}</span>
-            {
-              (
-                booking ||
-                (userMediationBookings && userMediationBookings.length > 0)
-              )
-                ? 'Réservé'
-                : 'J\'y vais!'
-            }
-          </button>
+          { !this.props.currentBooking &&
+            <button className='button button--primary button--go'
+              onClick={onClickBook} >
+              <span className='price'>{`${chosenOffer.price}€`}</span>
+              J'y vais!
+            </button>
+          }
+          { this.props.currentBooking &&
+            <button className='button button--primary button--inversed button--go'
+              onClick={onClickViewBookings} >
+              <Icon name='Check' />
+              {' Réservé'}
+            </button>
+          }
+
         </li>
       </ul>
     )
@@ -60,8 +67,8 @@ class ControlBar extends Component {
 
 export default connect(
   state => ({
-    booking: state.data.bookings && state.data.bookings[0],
-    userId: state.user && state.user.id
+    currentBooking: currentBooking(state),
+    currentUserMediation: currentUserMediation(state),
   }),
   { requestData }
 )(ControlBar)
