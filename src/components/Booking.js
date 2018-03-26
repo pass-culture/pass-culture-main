@@ -29,25 +29,22 @@ class Booking extends Component {
     })
   }
 
-  handleSetToken(props) {
-    const { userMediationBookings } = props
-    let token = props.token
-    if (!token && userMediationBookings && userMediationBookings.length === 1) {
-      token = userMediationBookings[0].token
-    }
-    this.setState({ token })
-  }
+  // handleSetToken(props) {
+  //   if (!props.token && props.booking) {
+  //     this.setState({ props.booking.token })
+  //   }
+  // }
 
-  componentWillMount () {
-    this.handleSetToken(this.props)
-  }
+  // componentWillMount () {
+  //   this.handleSetToken(this.props)
+  // }
 
-  componentWillReceiveProps (nextProps) {
-    this.handleSetToken(nextProps)
-  }
+  // componentWillReceiveProps (nextProps) {
+  //   this.handleSetToken(nextProps)
+  // }
 
   showForm() {
-    return !this.state.bookingInProgress && !this.token;
+    return !this.state.bookingInProgress && !this.props.token;
   }
 
   render () {
@@ -101,6 +98,9 @@ class Booking extends Component {
 }
 
 export default connect(
-  state => (state.data.bookings && state.data.bookings[0]) || {},
-  { requestData }
+  state => ({
+    booking: state.data.bookings && state.data.bookings[0],
+    token: state.data.bookings[0].token
+  }),
+  {requestData},
 )(Booking)
