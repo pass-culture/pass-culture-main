@@ -7,6 +7,7 @@ import UserMediationsDebug from './UserMediationsDebug'
 import { requestData } from '../reducers/data'
 import { IS_DEV } from '../utils/config'
 import { getContentFromUserMediation } from '../utils/content'
+import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
 
 class UserMediationsDeck extends Component {
@@ -36,7 +37,7 @@ class UserMediationsDeck extends Component {
     // from the present to the past
     // meet the first not well defined content
     const limit = countBeforeSync + 1
-    isDebug && console.log(`DEBUG: UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} limit=${limit}`)
+    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} limit=${limit}`)
     // compute
     const isBeforeSync = aroundIndex < limit
     // if it is not defined
@@ -65,14 +66,14 @@ class UserMediationsDeck extends Component {
       contents,
       isLoadingAfter
     } = this.state
-    isDebug && console.log(`DEBUG: UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex}`)
+    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex}`)
     if (aroundIndex === null || aroundIndex > userMediations.length) {
       return
     }
     // from the present to the past
     // meet the first not well defined content
     const limit = userMediations.length - 2 - countAfterSync
-    isDebug && console.log(`DEBUG: UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} limit=${limit}`)
+    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} limit=${limit}`)
     // compute
     const isAfterSync = aroundIndex > limit
     // if it is not defined
@@ -102,7 +103,7 @@ class UserMediationsDeck extends Component {
       return
     }
     const newState = {}
-    isDebug && console.log(`DEBUG: UserMediationsDeck - handleSetContents aroundIndex=${aroundIndex}`)
+    isDebug && debug(`UserMediationsDeck - handleSetContents aroundIndex=${aroundIndex}`)
     // if aroundIndex is not yet defined
     // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
@@ -152,7 +153,7 @@ class UserMediationsDeck extends Component {
   handleNextItemCard = (diffIndex, deckElement) => {
     // unpack
     const { isDebug } = this.props
-    isDebug && console.log('DEBUG: UserMediationsDeck - handleNextItemCard')
+    isDebug && debug('UserMediationsDeck - handleNextItemCard')
     // update around
     const aroundIndex = this.state.aroundIndex - diffIndex
     // set state
@@ -165,7 +166,7 @@ class UserMediationsDeck extends Component {
   handleSetReadCard = card => {
     // unpack
     const { isCheckRead, isDebug, requestData } = this.props
-    isDebug && console.log('DEBUG: UserMediationsDeck - handleSetReadCard')
+    isDebug && debug('UserMediationsDeck - handleSetReadCard')
     // update dexie
     const nowDate = moment().toISOString()
     const body = [{
@@ -179,7 +180,7 @@ class UserMediationsDeck extends Component {
       { _body: body, body: [], sync: true })
   }
   handleTransitionEnd = () => {
-    this.props.isDebug && console.log('DEBUG: UserMediationsDeck - handleTransitionEnd')
+    this.props.isDebug && debug('UserMediationsDeck - handleTransitionEnd')
     if (this.state.dirtyUserMediations) {
       this.handleSetContents()
     }
@@ -194,10 +195,10 @@ class UserMediationsDeck extends Component {
   componentWillReceiveProps (nextProps) {
     // check
     const { aroundIndex, isDebug, userMediations } = this.props
-    isDebug && console.log('DEBUG: UserMediationsDeck - componentWillReceiveProps')
+    isDebug && debug('UserMediationsDeck - componentWillReceiveProps')
     // check for different userMediations
     if (nextProps.userMediations !== userMediations) {
-      isDebug && console.log('DEBUG: UserMediationsDeck - componentWillReceiveProps diff um')
+      isDebug && debug('UserMediationsDeck - componentWillReceiveProps diff um')
       this.dirtyUserMediations = userMediations
       this.setState({ isLoadingBefore: false, isLoadingAfter: false })
     } else {
@@ -205,7 +206,7 @@ class UserMediationsDeck extends Component {
     }
     // special case where the parent has forced the aroundIndex to be something
     if (nextProps.aroundIndex && !aroundIndex) {
-      isDebug && console.log(`DEBUG: UserMediationsDeck - componentWillReceiveProps parent aroundIndex`)
+      isDebug && debug(`UserMediationsDeck - componentWillReceiveProps parent aroundIndex`)
       this.handleSetContents(nextProps)
     }
   }
@@ -218,10 +219,10 @@ class UserMediationsDeck extends Component {
     const { aroundIndex,
       isTransitioning
     } = this.state
-    isDebug && console.log(`DEBUG: UserMediationsDeck - componentDidUpdate`)
+    isDebug && debug(`UserMediationsDeck - componentDidUpdate`)
     // check
     if (userMediations !== prevProps.userMediations) {
-      isDebug && console.log(`DEBUG: UserMediationsDeck - componentDidUpdate diff um`)
+      isDebug && debug(`UserMediationsDeck - componentDidUpdate diff um`)
       // for the first time we have data
       // we can set peacefully content without
       // having fear of transitions in the deck
@@ -233,7 +234,7 @@ class UserMediationsDeck extends Component {
     // aroundIndex change locally
     if (aroundIndex !== prevState.aroundIndex) {
       const aroundUserMediation = userMediations[aroundIndex]
-      isDebug && console.log(`DEBUG: UserMediationsDeck - componentDidUpdate diff aroundIndex`)
+      isDebug && debug(`UserMediationsDeck - componentDidUpdate diff aroundIndex`)
       if (prevState.aroundIndex === null) {
         // if it is the first time of setting an aroundIndex
         // we need to check that we are not on the edges

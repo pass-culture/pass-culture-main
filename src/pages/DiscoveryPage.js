@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
 import { getContentFromUserMediation } from '../utils/content'
+import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
 
 
@@ -28,7 +29,7 @@ class DiscoveryPage extends Component {
       userMediations
     } = this.props
     const { aroundIndex } = this.state
-    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
+    isDebug && debug(`DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
     // we can replace the url but only when
     // there is not yet an offer id (from a /decouverte just onboarding)
     // there is an aroundIndex and we just shift for the first time
@@ -43,7 +44,7 @@ class DiscoveryPage extends Component {
       if (mediation) {
         url = `${url}/${mediation.id}`
       }
-      isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange replace`)
+      isDebug && debug(`DiscoveryPage - handleUserMediationChange replace`)
       // replace
       history.replace(url)
       this.setState({ aroundIndex: false })
@@ -68,7 +69,7 @@ class DiscoveryPage extends Component {
       this.setState({ userMediations })
       return
     }
-    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
+    isDebug && debug(`DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
     // offer not specified
     if (!offerId) {
       aroundIndex = 0
@@ -95,7 +96,7 @@ class DiscoveryPage extends Component {
       }
       // we need to request around it then
       if (aroundIndex === null && !hasPushPullRequested) {
-        isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
+        isDebug && debug(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
         worker.postMessage({ key: 'dexie-push-pull',
           state: { around: null, mediationId, offerId }})
         this.hasPushPullRequested = true
@@ -103,7 +104,7 @@ class DiscoveryPage extends Component {
         return
       }
     }
-    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest aroundIndex=${aroundIndex}`)
+    isDebug && debug(`DEBUG: DiscoveryPage - handleUserMediationRequest aroundIndex=${aroundIndex}`)
     // update
     this.setState({ aroundIndex, userMediations })
   }
@@ -121,7 +122,7 @@ class DiscoveryPage extends Component {
       if (aroundContent.mediation) {
         url = `${url}/${aroundContent.mediation.id}`
       }
-      isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationSuccess replace`)
+      isDebug && debug(`DiscoveryPage - handleUserMediationSuccess replace`)
       // replace
       history.replace(url)
     }
