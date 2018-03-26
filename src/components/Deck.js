@@ -300,6 +300,7 @@ class Deck extends Component {
       onTransitionStartCard
     } = this
     const { contents,
+      extraContents,
       isLoadingBefore,
       isLoadingAfter,
       transitionTimeout,
@@ -325,8 +326,9 @@ class Deck extends Component {
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isFlipDisabled = !items || isTransitioning
-    console.log('RENDER: Deck contents', contents && contents.length, contents,
-    contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
+    const isLoading = isLoadingBefore || isLoadingAfter
+    // console.log('RENDER: Deck contents', contents && contents.length, contents,
+    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: Deck', 'this.state.items', this.state.items)
     // console.log(`RENDER: Deck isLoadingBefore ${isLoadingBefore} isLoadingAfter ${isLoadingAfter}`)
     return (
@@ -349,7 +351,8 @@ class Deck extends Component {
             items && items.map((item, index) =>
               contents && contents[index] &&
               Math.abs(item) < 2 &&
-                <Card content={contents && contents[index]}
+                <Card content={contents && Object.assign({},
+                  contents[index], extraContents && extraContents[index])}
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
@@ -389,7 +392,8 @@ class Deck extends Component {
                     <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
-                  'button--disabled': isFlipDisabled })}
+                  'button--disabled': isFlipDisabled,
+                  'button--hidden': isLoading })}
                   onClick={handleFlipCard}
                   style={buttonStyle} >
                   <Icon svg='ico-slideup-w' />
