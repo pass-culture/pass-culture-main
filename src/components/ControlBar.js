@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { requestData } from '../reducers/data'
-import { showModal } from '../reducers/modal'
 import Icon from './Icon'
 
 class ControlBar extends Component {
@@ -64,5 +63,5 @@ export default connect(
     booking: state.data.bookings && state.data.bookings[0],
     userId: state.user && state.user.id
   }),
-  { requestData, showModal }
+  { requestData }
 )(ControlBar)

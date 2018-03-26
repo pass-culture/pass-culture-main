@@ -340,7 +340,7 @@ class Deck extends Component {
                   cursor={cursor}
                   deckElement={deckElement}
                   handLength={handLength}
-                  handleFlip={handleFlipCard}
+                  handleFlipCard={handleFlipCard}
                   handleNextItem={handleNextItemCard}
                   handleRelaxItem={handleRelaxItemCard}
                   handleSetCursor={handleSetCursorCard}

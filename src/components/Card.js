@@ -310,10 +310,11 @@ class Card extends Component {
         </Draggable>,
         item === 0 && (
           <Portal key={1} node={document && document.getElementById('deck')}>
-            <Verso {...content}
+            <Verso
               deckElement={deckElement}
               handleFlipCard={handleFlipCard}
-              isFlipped={isVerso} />
+              isFlipped={isVerso}
+              {...content} />
           </Portal>
         ),
         item > -2 && item < 2 && (

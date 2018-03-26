@@ -9,7 +9,7 @@ class Booking extends Component {
     super ()
     this.state = {
       bookingInProgress: false,
-      token: null,
+      booking: null,
       date: null,
       time: null,
     }
@@ -29,22 +29,26 @@ class Booking extends Component {
     })
   }
 
-  // handleSetToken(props) {
-  //   if (!props.token && props.booking) {
-  //     this.setState({ props.booking.token })
-  //   }
-  // }
+  bookingsPropDidUpdate(props) {
+    this.setState({
+      booking: props.bookings.find(b => b.offerId === (props.chosenOffer && props.chosenOffer.id))
+    })
+  }
 
-  // componentWillMount () {
-  //   this.handleSetToken(this.props)
-  // }
+  componentWillMount() {
+    if (this.props.bookings) {
+      this.bookingsPropDidUpdate(this.props)
+    }
+  }
 
-  // componentWillReceiveProps (nextProps) {
-  //   this.handleSetToken(nextProps)
-  // }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.bookings !== this.props.bookings) {
+      this.bookingsPropDidUpdate(nextProps)
+    }
+  }
 
   showForm() {
-    return !this.state.bookingInProgress && !this.props.token;
+    return !this.state.bookingInProgress && !(this.state.booking && this.state.booking.token);
   }
 
   render () {
@@ -69,7 +73,7 @@ class Booking extends Component {
           </div>
         )}
         {this.state.bookingInProgress && (<p>Réservation en cours ...</p>)}
-        {this.token && (
+        {this.state.booking && this.state.booking.token && (
           <div>
             <p>Votre réservation est validée.</p>
             <p>
@@ -77,7 +81,7 @@ class Booking extends Component {
               <br />
               <small>Présentez le code suivant sur place :</small>
             </p>
-            <p><big>{this.token}</big></p>
+            <p><big>{this.state.booking.token}</big></p>
             <p><small>Retrouvez ce code et les détails de l'offre dans la rubrique "Mes réservations" de votre compte.</small></p>
 
           </div>
@@ -89,8 +93,8 @@ class Booking extends Component {
           {this.showForm() && this.state.date && this.state.time && (
             <li><button className='button button--primary' onClick={e => this.onClickConfirm(e)}>Valider</button></li>
           )}
-          {this.state.bookingInProgress && <li><Icon svg='loader-w' /></li>}
-          {this.token && <li><button className='button button--secondary' onClick={e => this.props.onClickFinish(e)}>OK</button></li>}
+          {this.state.bookingInProgress && this.state.booking && <li><Icon svg='loader-w' /></li>}
+          {this.state.booking && this.state.booking.token && <li><button className='button button--secondary' onClick={e => this.props.onClickFinish(e)}>OK</button></li>}
         </ul>
       </div>
     )
@@ -98,9 +102,8 @@ class Booking extends Component {
 }
 
 export default connect(
-  state => ({
-    booking: state.data.bookings && state.data.bookings[0],
-    token: state.data.bookings[0].token
+  (state) => ({
+    bookings: state.data.bookings,
   }),
   {requestData},
 )(Booking)
