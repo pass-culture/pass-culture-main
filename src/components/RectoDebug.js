@@ -1,15 +1,15 @@
 import React from 'react'
 
-const Debug = ({ chosenOffer,
+const RectoDebug = ({ chosenOffer,
   dateRead,
   id,
   contentLength,
   index
 }) => {
   return (
-    <div className='debug absolute left-0 top-0 ml2 mt2 p2'>
+    <div className='recto-debug absolute left-0 ml2 p2'>
       <span>
-        {id} {chosenOffer.id} {index}/{contentLength}
+        {id} {chosenOffer.id} {index + 1}/{contentLength}
       </span>
       {
         dateRead && [
@@ -25,4 +25,4 @@ const Debug = ({ chosenOffer,
   )
 }
 
-export default Debug
+export default RectoDebug

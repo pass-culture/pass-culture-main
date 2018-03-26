@@ -43,7 +43,7 @@
       git checkout master;
       git add .;
       git commit -am "Automated commit";
-      git push origin master;
+      git push --force origin master;
       cd -;
     `).then(({stdout, stderr}) => {
       if (stderr) console.error(stderr);

@@ -1,17 +1,17 @@
 import classnames from 'classnames'
-import { connect } from 'react-redux'
 import Draggable from 'react-draggable'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { rgb_to_hsv } from 'colorsys'
 
-import Card, { CURRENT } from './Card'
+import Card, { AROUND } from './Card'
 import Icon from './Icon'
 
 class Deck extends Component {
   constructor (props) {
     super(props)
     this.state = { bufferContents: null,
+      currentContent: null,
       cursor: 0,
       deckElement: null,
       transition: null,
@@ -27,10 +27,9 @@ class Deck extends Component {
   }
   handleSetTypeCard = (cardProps, cardState) => {
     // only set things for the current Card
-    if (cardState.type !== CURRENT) {
+    if (cardState.type !== AROUND) {
       return
     }
-    // debug
     this.props.isDebug && console.log('DEBUG: Deck - handleSetTypeCard')
     // no need to set in state the current cardProps
     this.currentCardProps = cardProps
@@ -54,12 +53,14 @@ class Deck extends Component {
       console.warn('items is not defined')
       return
     }
-    // debug
     isDebug && console.log('DEBUG: Deck - handleNextItemCard')
+    // new state
+    this.items = items.map(index => index + diffIndex)
+    const newState = { cursor: 0,
+      items: this.items
+    }
     // update by shifting the items
-    this.setState({ cursor: 0,
-      items: items.map(index => index + diffIndex)
-     })
+    this.setState(newState)
     // hook if Deck has parent manager component
     handleNextItemCard && handleNextItemCard(diffIndex, this)
   }
@@ -67,48 +68,66 @@ class Deck extends Component {
     this.props.isDebug && console.log('DEBUG: Deck - handleResetItemCard')
     this.setState({ cursor: 0 })
   }
-  handleResetItems = props => {
+  handleResetItems = (config = {}) => {
     // unpack
-    const { aroundIndex,
-      contents,
-      handLength,
-      isBlobModel,
-    } = props
-    const newState = { bufferContents: null }
-    // we need to determine the dynamic mapping
-    // of the deck
-    if (isBlobModel) {
-      // BLOB MODEL
-      // the deck has 2 * contents.length
-      if (contents) {
-        // const halfLength = Math.floor((contents.length + 1)/2)
-        // newState.items = [...Array(contents.length).keys()]
-        //  .map(index => - halfLength - 1 + index)
-        newState.items = [...Array(contents.length).keys()]
-          .map(index => - handLength - 1 - (aroundIndex > 0 ? aroundIndex : 0) + index)
-      }
-    } else {
-      // SLOT MODEL
-      // the deck has 2 * handLength
-      // + 2 extra slots helping for buffering on each side
-      newState.items = [...Array(2 * handLength + 3).keys()]
-          .map(index => - handLength - 1 + index)
+    const { isDebug } = this.props
+    const contents = config.contents || this.props.contents
+    const aroundIndex = config.aroundIndex || this.props.aroundIndex
+    if (!contents) {
+      return
+    }
+    isDebug && console.log(`DEBUG: Deck - handleResetItems aroundIndex=${aroundIndex}`)
+    // we need to determine the dynamic mapping of the deck
+    const items = [...Array(contents.length).keys()]
+      .map(index => index - (aroundIndex > 0 ? aroundIndex : 0))
+    this.items = items
+    // update
+    this.setState({ items })
+  }
+  handleSetCurrentContent = () => {
+    // unpack
+    const { items } = this
+    const { contents, isDebug } = this.props
+    isDebug && console.log('DEBUG: Deck - handleSetCurrentContent')
+    // find
+    const aroundIndex = items && items.indexOf(0)
+    const currentContent = contents && contents[aroundIndex]
+    this.currentContent = currentContent
+    // update
+    this.setState({ currentContent })
+  }
+  handleSetStyle = () => {
+    // unpack
+    const { currentContent } = this
+    const { transitionTimeout } = this.props
+    // style
+    const buttonStyle = { transition: `opacity ${transitionTimeout}ms` }
+    const style = {
+      backgroundColor: 'black',
+      transition: `background-color ${transitionTimeout}ms`
+    }
+    const gradientStyle = {
+      background: 'linear-gradient(transparent, black)',
+      transition: `background ${transitionTimeout}ms`
+    }
+    if (currentContent && currentContent.backgroundColor) {
+      const [red, green, blue] = currentContent.backgroundColor
+      const hue = rgb_to_hsv({r: red, g: green, b: blue}).h
+      style.backgroundColor = `hsl(${hue}, 100%, 15%)`
+      gradientStyle.background = `linear-gradient(transparent, hsl(${hue}, 100%, 15%))`
     }
     // update
-    this.setState(newState)
+    this.setState({ buttonStyle, gradientStyle, style })
   }
   handleSetReadCard = card => {
     // unpack
     const { handleSetReadCard, isDebug } = this.props
-    // debug
     isDebug && console.log('DEBUG: Deck - handleSetReadCard')
     // hook if Deck has parent manager component
     handleSetReadCard && handleSetReadCard(card)
   }
   handleSetCursorCard = cursor => {
-    // debug
     this.props.isDebug && console.log('DEBUG: Deck - handleSetCursorCard')
-    // update
     this.setState({ cursor, transition: 'none' })
   }
   handleFlipCard = () => {
@@ -122,7 +141,6 @@ class Deck extends Component {
     // unpack
     const { flipRatio, isDebug } = this.props
     const { deckElement, isVerso } = this.state
-    // debug
     isDebug && console.log('DEBUG: Deck - onDrag')
     // cursor
     const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
@@ -144,16 +162,13 @@ class Deck extends Component {
     this.setState({ isFlipping: false, y: null })
   }
   onResize = event => {
-    // debug
     this.props.isDebug && console.log('DEBUG Deck - onResize')
-    // update
     this.setState({ isResizing: true })
   }
   onTransitionEndCard = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
     const { handleTransitionEnd, isDebug } = this.props
-    // debug
     isDebug && console.log('DEBUG: Deck - onTransitionEndCard')
     // update the transitions store
     if (!transitions) {
@@ -179,8 +194,10 @@ class Deck extends Component {
   onTransitionStartCard = (event, cardProps) => {
     // unpack
     const { transitions } = this
-    const { contents, handleTransitionStart, isDebug } = this.props
-    // debug
+    const { contents,
+      handleTransitionStart,
+      isDebug
+    } = this.props
     isDebug && console.log('DEBUG: Deck - onTransitionStartCard')
     // at the first time one of the card is transitioning
     // we init a new array
@@ -201,15 +218,17 @@ class Deck extends Component {
     }
     this.transitions = newTransitions
   }
-  componentWillMount () {
+  componentWillMount() {
     this.handleResetItems(this.props)
   }
   componentWillReceiveProps (nextProps) {
+    // unpack
+    const { contents } = this.props
     const { isTransitioning } = this.state
-    if (nextProps.contents !== this.props.contents) {
-      if (isTransitioning) {
-        this.setState({ bufferContents: this.props.contents })
-      } else if (!nextProps.isKeepItems) {
+    // look for content change
+    if (nextProps.contents !== contents) {
+      if (!isTransitioning) {
+        nextProps.isDebug && console.log('DEBUG: Deck - componentWillReceiveProps')
         this.handleResetItems(nextProps)
         // init new state
         // transition to 'none' helps
@@ -220,14 +239,20 @@ class Deck extends Component {
     }
   }
   componentDidMount () {
+    this.handleSetCurrentContent()
     this.setState({ deckElement: this.element })
     window.addEventListener('resize', this.onDebouncedResize)
   }
   componentDidUpdate (prevProps, prevState) {
     // unpack
-    const { transition,
+    const { contents,
+      isDebug,
+      transitionTimeout
+    } = this.props
+    const { currentContent,
+      transition,
       isResizing,
-      isTransitioning,
+      items
     } = this.state
     // the deck updated because we changed the contents
     // so we need to wait just the refresh of the children
@@ -237,16 +262,24 @@ class Deck extends Component {
     }
     // as the deck element has a dynamical width
     // we need to trigger again the set of the style
-    //o the children when we resize the window
+    // of the children when we resize the window
     if (isResizing && !prevState.isResizing) {
       this.setState({ isResizing: false })
     }
-    // during the transition maybe we kept some buffer contents
-    // and now we can peacefully release the next one
-    // by also sync the items again
-    if (!isTransitioning && prevState.isTransitioning) {
-      this.handleResetItems(this.props)
-      this.setState({ bufferContents: null })
+    isDebug && console.log('DEBUG: Deck - componentDidUpdate')
+    // adapt the items and current content
+    if (contents !== prevProps.contents || items !== prevState.items) {
+      if (contents && !prevProps.contents) {
+        isDebug && console.log('DEBUG: Deck - componentDidUpdate handleResetItems')
+        this.handleResetItems()
+      }
+      isDebug && console.log('DEBUG: Deck - componentDidUpdate handleSetCurrentContent')
+      this.handleSetCurrentContent()
+    }
+    // adapt style given current content
+    if (transitionTimeout !== prevProps.transitionTimeout ||
+      currentContent !== prevState.currentContent) {
+      this.handleSetStyle()
     }
   }
   componentWillUnmount () {
@@ -266,63 +299,43 @@ class Deck extends Component {
       onTransitionEndCard,
       onTransitionStartCard
     } = this
-    const {
-      // browser,
-      handLength,
-      isBlobModel,
-      isDebug,
-      isFullWidth,
+    const { contents,
+      isLoadingBefore,
+      isLoadingAfter,
       transitionTimeout,
       readTimeout
     } = this.props
-    const { cursor,
+    const { buttonStyle,
+      currentContent,
+      cursor,
       deckElement,
-      transition,
+      gradientStyle,
       isFirstCard,
       isFlipping,
       isLastCard,
       isResizing,
       isTransitioning,
       isVerso,
-      items
+      items,
+      style,
+      transition
     } = this.state
-    const contents = this.state.bufferContents || this.props.contents
     const isAfterDisabled = !items || isLastCard || isTransitioning
+    const isAfterHidden = currentContent && currentContent.isLast
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
+    const isBeforeHidden = currentContent && currentContent.isFirst
     const isFlipDisabled = !items || isTransitioning
-    const buttonStyle = { transition: `opacity ${transitionTimeout}ms` }
-    var style = {backgroundColor: 'black',
-                 transition: `background-color ${transitionTimeout}ms`}
-    var gradientStyle = {background: 'linear-gradient(transparent, black)',
-                         transition: `background ${transitionTimeout}ms`}
-    var hue;
-    if (items) {
-      const currentIndex = items.indexOf(0)
-      const currentContent = contents[currentIndex]
-      if (currentContent && currentContent.backgroundColor) {
-        const [red, green, blue] = currentContent.backgroundColor
-        hue = rgb_to_hsv({r: red, g: green, b: blue}).h
-        style['backgroundColor'] = `hsl(${hue}, 100%, 15%)`
-        gradientStyle['background'] = `linear-gradient(transparent, hsl(${hue}, 100%, 15%))`
-      } else {
-        console.error("No background color")
-      }
-    }
-    // console.log('')
-    // console.log('RENDER: Deck this.state.bufferContents', this.state.bufferContents && this.state.bufferContents.length,
-    // this.state.bufferContents && this.state.bufferContents.map(content => content && `${content.id} ${content.dateRead}`))
-    // console.log('RENDER: Deck this.props.contents', this.props.contents && this.props.contents.length,
-    // this.props.contents && this.props.contents.map(content => content && `${content.id} ${content.dateRead}`))
-    // console.log('RENDER: Deck contents', contents && contents.length,
-    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
-    //console.log('RENDER: Deck', 'this.state.items', this.state.items)
+    console.log('RENDER: Deck contents', contents && contents.length, contents,
+    contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
+    // console.log('RENDER: Deck', 'this.state.items', this.state.items)
+    // console.log(`RENDER: Deck isLoadingBefore ${isLoadingBefore} isLoadingAfter ${isLoadingAfter}`)
     return (
       <Draggable axis='y'
-        bounds={{bottom: 0, top: 0}}
+        bounds={{ bottom: 0, top: 0 }}
         onDrag={onDrag}
         onStart={onStart}
         onStop={onStop} >
-        <div className={classnames('deck relative', { 'flex items-center': !isFullWidth })}
+        <div className='deck relative'
           id='deck'
           style={style}
           ref={element => this.element = element }>
@@ -335,24 +348,21 @@ class Deck extends Component {
           {
             items && items.map((item, index) =>
               contents && contents[index] &&
+              Math.abs(item) < 2 &&
                 <Card content={contents && contents[index]}
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
-                  handLength={handLength}
                   handleFlipCard={handleFlipCard}
                   handleNextItem={handleNextItemCard}
                   handleRelaxItem={handleRelaxItemCard}
                   handleSetCursor={handleSetCursorCard}
                   handleSetRead={handleSetReadCard}
                   handleSetType={handleSetTypeCard}
-                  isBlobModel={isBlobModel}
                   isFirst={contents && !contents[index - 1]}
                   isFlipping={isFlipping}
-                  isFullWidth={isFullWidth}
                   isLast={contents && !contents[index + 1]}
                   index={index}
-                  isDebug={isDebug}
                   isResizing={isResizing}
                   isTransitioning={isTransitioning}
                   isVerso={isVerso}
@@ -371,11 +381,12 @@ class Deck extends Component {
               ref={element => this.boardElement = element} >
               <div className='deck__board__control flex justify-around'>
                 <button className={classnames('deck__board__before button', {
-                  'button--disabled': isBeforeDisabled })}
+                  'button--disabled': isBeforeDisabled,
+                  'button--hidden': isBeforeHidden })}
                   disabled={isBeforeDisabled}
                   onClick={event => onNext(event, 1)}
                   style={buttonStyle}>
-                  <Icon svg='ico-prev-w' />
+                    <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isFlipDisabled })}
@@ -384,7 +395,8 @@ class Deck extends Component {
                   <Icon svg='ico-slideup-w' />
                 </button>
                 <button className={classnames('deck__board__after button', {
-                  'button--disabled': isAfterDisabled })}
+                  'button--disabled': isAfterDisabled,
+                  'button--hidden': isAfterHidden })}
                   onClick={event => onNext(event, -1)}
                   disabled={isAfterDisabled}
                   style={buttonStyle} >
@@ -392,7 +404,7 @@ class Deck extends Component {
                 </button>
               </div>
               <button className='deck__board__profile'
-                style={{backgroundImage: "url('../icons/pc_small.jpg')"}} />
+                style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
             </div>
           </div>
         </Draggable>
@@ -402,13 +414,10 @@ class Deck extends Component {
 
 Deck.defaultProps = { deckKey: 0,
   flipRatio: 0.25,
-  handLength: 2,
-  isBlobModel: false,
+  // isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500
 }
 
-export default connect(
-  state => ({ isFullWidth: true })
-)(Deck)
+export default Deck

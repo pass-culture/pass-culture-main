@@ -8,8 +8,8 @@
   &--small {
     border-radius: $border-radius;
   }
-  &__loading {
-    height: 100%;
+  &--loading {
+    height: 50%;
   }
   img {
     position: absolute;
@@ -29,6 +29,8 @@
     left: 0;
     right: 0;
     z-index: 0;
+    &--loading {
+      filter: none;
+    }
   }
-
 }
