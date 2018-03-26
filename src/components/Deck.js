@@ -301,6 +301,8 @@ class Deck extends Component {
     } = this
     const { contents,
       extraContents,
+      isLoadingBefore,
+      isLoadingAfter,
       transitionTimeout,
       readTimeout
     } = this.props
@@ -324,6 +326,7 @@ class Deck extends Component {
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isFlipDisabled = !items || isTransitioning
+    const isLoading = isLoadingBefore || isLoadingAfter
     // console.log('RENDER: Deck contents', contents && contents.length, contents,
     // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: Deck', 'this.state.items', this.state.items)
@@ -389,7 +392,8 @@ class Deck extends Component {
                     <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
-                  'button--disabled': isFlipDisabled })}
+                  'button--disabled': isFlipDisabled,
+                  'button--hidden': isLoading })}
                   onClick={handleFlipCard}
                   style={buttonStyle} >
                   <Icon svg='ico-slideup-w' />
