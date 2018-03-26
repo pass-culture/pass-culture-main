@@ -33,7 +33,14 @@ um_include = [
             {
                 "key": "offer",
                 "sub_joins": [
-                    "eventOccurence",
+                    {
+                        "key": "eventOccurence",
+                        "sub_joins": ["event", "venue"],
+                    },
+                    {
+                        "key": "venue",
+                        "sub_joins": ["venue"]
+                    },
                     "thing",
                     "venue"
                 ]
@@ -43,7 +50,6 @@ um_include = [
 ]
 app.um_include = um_include
 
-import time
 @app.route('/userMediations', methods=['PUT'])
 @login_required
 @expect_json_data
