@@ -40,7 +40,7 @@ class Verso extends Component {
             {this.state.step === 'booking' && (
               <Booking
                 onClickCancel={e => this.setState({step: 'infos'})}
-                onClickFinish={e => this.props.handleFlipCard()}
+                onClickFinish={e => this.setState({step: 'infos'})}
               />
             )}
           </div>
@@ -55,4 +55,5 @@ export default connect(
     currentOffer: currentOffer(state),
     currentUserMediation: currentUserMediation(state),
     headerColor: headerColor(state),
+    isFlipped: state.navigation.isFlipped
   }))(Verso)

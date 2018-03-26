@@ -246,7 +246,6 @@ class Card extends Component {
         <Draggable axis='x'
           bounds={bounds}
           disabled={!isDraggable}
-          key={0}
           position={position}
           onDrag={onDrag}
           onStop={onStop} >
@@ -265,16 +264,12 @@ class Card extends Component {
             </span>
         </Draggable>,
         item === 0 && !content.isLoading && (
-          <Portal key={1} node={document && document.getElementById('deck')}>
-            <Verso
-              deckElement={deckElement}
-              handleFlipCard={handleFlipCard}
-              isFlipped={isVerso}
-              {...content} />
+          <Portal node={document.getElementById('deck')}>
+            <Verso />
           </Portal>
         ),
-        item > -2 && item < 2 && !content.isLoading && (
-          <Portal key={2} node={document && document.getElementById('deck__board')}>
+        Math.abs(item) < 2 && !content.isLoading && (
+          <Portal node={document.getElementById('deck__board')}>
             <Clue {...content}
               contentLength={contentLength}
               index={index}
@@ -287,10 +282,11 @@ class Card extends Component {
   }
 }
 
-Card.defaultProps = { isSetRead: true,
+Card.defaultProps = {
+  isSetRead: true,
   readTimeout: 3000,
   transitionDelay: 100,
-  transitionTimeout: 250
+  transitionTimeout: 250,
 }
 
 export default Card
