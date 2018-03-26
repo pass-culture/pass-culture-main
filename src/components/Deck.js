@@ -348,7 +348,7 @@ class Deck extends Component {
           {
             items && items.map((item, index) =>
               contents && contents[index] &&
-              item > -2 && item < 2 &&
+              Math.abs(item) < 2 &&
                 <Card content={contents && contents[index]}
                   contentLength={contents && contents.length}
                   cursor={cursor}
