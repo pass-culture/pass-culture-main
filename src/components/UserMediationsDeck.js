@@ -27,6 +27,7 @@ class UserMediationsDeck extends Component {
       userMediations
     } = this.props
     const { aroundIndex,
+      contents,
       hasSyncRequested
     } = this.state
     if (aroundIndex === null || aroundIndex < 0) {
@@ -42,7 +43,14 @@ class UserMediationsDeck extends Component {
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
     if (isBeforeSync && !hasSyncRequested) {
-      this.setState({ isLoadingBefore: true,
+      const beforeContents = [...contents]
+      const beforeContent = beforeContents[0]
+      beforeContent.isLoading = true
+      console.log('OUAI')
+      // we update the first content
+      // with a isLoading attribute
+      this.setState({ contents: beforeContents,
+        isLoadingBefore: true,
         hasSyncRequested: true })
       const beforeAroundIndex = Math.max(0, aroundIndex - diffIndex)
       const aroundUserMediation = userMediations[beforeAroundIndex]
@@ -80,7 +88,12 @@ class UserMediationsDeck extends Component {
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
     if (isAfterSync && !hasSyncRequested && !contents.slice(-1)[0].isLoading) {
-      this.setState({ contents: contents.concat([{ isLoading: true }]),
+      // we update the last content
+      // with a isLoading attribute
+      const afterContents = [...contents]
+      const lastContent = afterContents.slice(0, -1)[0]
+      lastContent.isLoading = true
+      this.setState({ contents: contents.slice(0, -1).concat([{ isLoading: true }]),
         isLoadingAfter: true,
         hasSyncRequested: true,
       })
@@ -260,7 +273,7 @@ class UserMediationsDeck extends Component {
     //    content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: UserMediationsDeck this.state.aroundUserMediation', this.props.userMediations && this.props.userMediations[this.state.aroundIndex] && this.props.userMediations[this.state.aroundIndex].id)
     // console.log('RENDER: UserMediationsDeck this.state.aroundIndex', this.state.aroundIndex)
-    console.log(`RENDER: UserMediationsDeck hasSyncRequested ${this.state.hasSyncRequested} isLoadingBefore ${this.state.isLoadingBefore} isLoadingAfter ${this.state.isLoadingAfter}`)
+    // console.log(`RENDER: UserMediationsDeck hasSyncRequested ${this.state.hasSyncRequested} isLoadingBefore ${this.state.isLoadingBefore} isLoadingAfter ${this.state.isLoadingAfter}`)
     return [
         <Deck {...this.props}
           {...this.state}
@@ -276,7 +289,7 @@ class UserMediationsDeck extends Component {
 }
 
 UserMediationsDeck.defaultProps = { countAfterSync: 5,
-  countBeforeSync: 1,
+  countBeforeSync: 2,
   isCheckRead: false,
   // isDebug: true,
   readTimeout: 2000,

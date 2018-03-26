@@ -150,7 +150,7 @@ class DiscoveryPage extends Component {
 }
 
 DiscoveryPage.defaultProps = {
-  isDebug: true
+  // isDebug: true
 }
 
 export default compose(
