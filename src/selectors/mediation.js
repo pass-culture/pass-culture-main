@@ -1,9 +1,12 @@
 import { createSelector } from 'reselect'
-import get from 'lodash.get';
 
 import selectUserMediation from './userMediation'
 
+export function getMediation (userMediation) {
+  return userMediation.mediation
+}
+
 export default createSelector(
-  (state, ownProps) => selectUserMediation(state, ownProps),
-  (userMediation) => get(userMediation, 'mediation')
+  state => selectUserMediation(state),
+  getMediation
 )
