@@ -421,9 +421,6 @@ Deck.defaultProps = { deckKey: 0,
 }
 
 export default connect(
-  state => ({
-    isFlipped: state.navigation.isFlipped
-  }), {
-    flip,
-    unFlip,
-  })(Deck)
+  state => ({ isFlipped: state.navigation.isFlipped }),
+  { flip, unFlip }
+)(Deck)

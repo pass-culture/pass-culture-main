@@ -5,10 +5,7 @@ import { connect } from 'react-redux'
 import RectoDebug from './RectoDebug'
 import Loading from './Loading'
 import { IS_DEV } from '../utils/config'
-
-import currentUserMediation from '../selectors/currentUserMediation'
-import currentHeaderColor from '../selectors/currentHeaderColor'
-import currentThumbUrl from '../selectors/currentThumbUrl'
+import selectCurrentThumbUrl from '../selectors/currentThumbUrl'
 
 
 const Recto = props => {
@@ -39,9 +36,7 @@ const Recto = props => {
 }
 
 export default connect(
-  state => ({
-    currentUserMediation: currentUserMediation(state),
-    currentHeaderColor: currentHeaderColor(state),
-    currentThumbUrl: currentThumbUrl(state),
+  (state, ownProps) => ({
+    currentThumbUrl: selectCurrentThumbUrl(state, ownProps),
     isFlipped: state.navigation.isFlipped
   }))(Recto)

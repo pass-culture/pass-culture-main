@@ -4,6 +4,6 @@ import get from 'lodash.get';
 import selectCurrentUserMediation from './currentUserMediation'
 
 export default createSelector(
-  state => selectCurrentUserMediation(state),
+  (state, ownProps) => selectCurrentUserMediation(state, ownProps),
   (currentUserMediation) => get(currentUserMediation, 'mediation')
 )

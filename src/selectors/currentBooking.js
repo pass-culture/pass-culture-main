@@ -6,6 +6,7 @@ export default createSelector(
   state => state.data.bookings,
   state => selectCurrentUserMediation(state),
   (bookings, currentUserMediation) => {
-    return [].concat(bookings).find(b => (get(b, 'userMediationId') === get(currentUserMediation, 'id')))
+    return [].concat(bookings).find(b =>
+      (get(b, 'userMediationId') === get(currentUserMediation, 'id')))
   }
 )

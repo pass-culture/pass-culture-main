@@ -5,8 +5,8 @@ import selectCurrentMediation from './currentMediation'
 import selectCurrentOffer from './currentOffer'
 
 export default createSelector(
-  state => selectCurrentMediation(state),
-  state => selectCurrentOffer(state),
+  (state, ownProps) => selectCurrentMediation(state, ownProps),
+  (state, ownProps) => selectCurrentOffer(state, ownProps),
   (currentMediation, currentOffer) => {
     return get(currentOffer, 'eventOccurence.event')
       || get(currentOffer, 'thing')
