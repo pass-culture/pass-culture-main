@@ -8,10 +8,10 @@ export const IS_PROD = !IS_DEV
 export const NEW = '_new_'
 
 export const API_URL = IS_DEV ? 'http://localhost'
-                              : 'https://pc-api.btmx.fr'
+                              : 'https://api.passculture.beta.gouv.fr'
 
 export const BROWSER_URL = IS_DEV ? 'http://localhost:3000'
-                                  : 'https://pc.btmx.fr'
+                                  : 'https://app.passculture.beta.gouv.fr'
 
 export const THUMBS_URL = IS_DEV
   ? `${API_URL}/static/object_store_data/thumbs`
