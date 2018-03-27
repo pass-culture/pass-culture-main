@@ -5,10 +5,11 @@ export default createSelector(
   state => state.router.location.pathname, // TODO: get data from redux state
   state => state.data.userMediations || [],
   (pathname, userMediations) => {
-    const [ , , offerId, userMediationId ] = pathname.split('/')
-    if (userMediationId) {
-      return userMediations.find(m => m.id === userMediationId)
+    const [ , , offerId, mediationId ] = pathname.split('/')
+    if (mediationId) {
+      return userMediations.find(m => m.mediationId === mediationId)
     }
-    return userMediations.find(m => get(m, 'userMediationOffers', []).find(o => o.id === offerId))
+    return userMediations.find(m => get(m, 'userMediationOffers', [])
+      .find(o => o.id === offerId))
   }
 )

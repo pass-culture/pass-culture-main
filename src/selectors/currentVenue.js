@@ -8,6 +8,9 @@ export default createSelector(
   state => selectCurrentSource(state),
   state => selectCurrentOffer(state),
   (currentOffer, currentSource) => {
-    return get(currentOffer, 'eventOccurence.venue') || get(currentOffer, 'venue') || get(currentSource, 'venue')
+    return get(currentOffer, 'eventOccurence.venue') ||
+      get(currentOffer, 'venue') ||
+      get(currentSource, 'eventOccurence.venue') ||
+      get(currentSource, 'venue')
   }
 )

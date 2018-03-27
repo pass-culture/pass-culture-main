@@ -8,6 +8,8 @@ export default createSelector(
   state => selectCurrentUserMediation(state),
   (pathname, currentUserMediation) => {
     const [ , , offerId ] = pathname.split('/')
-    return get(currentUserMediation, 'userMediationOffers', []).find(o => o.id === offerId)
+    console.log('offerId', offerId, currentUserMediation)
+    return get(currentUserMediation, 'userMediationOffers', [])
+      .find(o => o.id === offerId)
   }
 )

@@ -278,12 +278,12 @@ class UserMediationsDeck extends Component {
     }
   }
   render () {
-    // console.log('RENDER: UserMediationsDeck this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
-    //  this.props.userMediations && this.props.userMediations.map(um =>
-    //    um && `${um.id} ${um.dateRead}`))
-    // console.log('RENDER: UserMediationsDeck this.state.contents', this.state.contents && this.state.contents.length,
-    //  this.state.contents && this.state.contents.map(content =>
-    //    content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
+    console.log('RENDER: UserMediationsDeck this.props.userMediations', this.props.userMediations && this.props.userMediations.length,
+      this.props.userMediations && this.props.userMediations.map(um =>
+        um && `${um.id} ${um.dateRead}`))
+    console.log('RENDER: UserMediationsDeck this.state.contents', this.state.contents && this.state.contents.length,
+      this.state.contents && this.state.contents.map(content =>
+        content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: UserMediationsDeck this.state.aroundUserMediation', this.props.userMediations && this.props.userMediations[this.state.aroundIndex] && this.props.userMediations[this.state.aroundIndex].id)
     // console.log('RENDER: UserMediationsDeck this.state.aroundIndex', this.state.aroundIndex)
     // console.log(`RENDER: UserMediationsDeck isLoadingBefore ${this.state.isLoadingBefore} isLoadingAfter ${this.state.isLoadingAfter}`)

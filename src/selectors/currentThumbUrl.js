@@ -12,7 +12,7 @@ export default createSelector(
   state => selectCurrentOffer(state),
   (currentMediation, currentSource, currentOffer) => {
     const sourceCollectionName =
-      (get(currentOffer, 'eventOccurence') && 'eventOccurences') ||
+      (get(currentOffer, 'eventOccurence') && 'events') ||
       (get(currentOffer, 'thing') && 'things') ||
       (get(currentMediation, 'event') && 'events') ||
       (get(currentMediation, 'thing') && 'things') || ''

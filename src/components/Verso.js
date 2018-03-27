@@ -5,10 +5,9 @@ import { connect } from 'react-redux'
 import ControlBar from './ControlBar'
 import OfferInfo from '../components/OfferInfo'
 import Booking from '../components/Booking'
-
-import currentUserMediation from '../selectors/currentUserMediation'
-import currentOffer from '../selectors/currentOffer'
-import currentHeaderColor from '../selectors/currentHeaderColor'
+import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
+import selectCurrentSource from '../selectors/currentSource'
+import selectCurrentVenue from '../selectors/currentVenue'
 
 class Verso extends Component {
 
@@ -20,28 +19,29 @@ class Verso extends Component {
   }
 
   render() {
-    const {
-      thing,
-      venue,
-    } = this.props.currentOffer
+    const { currentHeaderColor,
+      currentSource,
+      currentVenue,
+      isFlipped
+    } = this.props
+    const { step } = this.state
+    const author = currentSource.extraData && currentSource.extraData.author
     return (
       <div className={classnames('verso absolute', {
-        'verso--flipped': this.props.isFlipped,
-        'verso--booking': this.state.step === 'booking'
-      })}>
+        'verso--flipped': isFlipped,
+        'verso--booking': step === 'booking'
+      })} >
         <div className='bg-wrapper'>
-          <div className='verso-header' style={{backgroundColor: this.props.currentHeaderColor}}>
-            <h2> { thing.name }, de { thing.extraData.author } </h2>
-            <h6> {venue.name} </h6>
+          <div className='verso-header' style={{ backgroundColor: currentHeaderColor }}>
+            <h2> { currentSource.name }, { author && ("de " + author) } </h2>
+            <h6> { currentVenue.name } </h6>
           </div>
-          {this.state.step === 'infos' && <ControlBar onClickBook={e => this.setState({step: 'booking'})} />}
+          { step === 'infos' && <ControlBar onClickBook={e => this.setState({step: 'booking'})} />}
           <div className='content'>
-            {this.state.step === 'infos' && <OfferInfo />}
-            {this.state.step === 'booking' && (
-              <Booking
-                onClickCancel={e => this.setState({step: 'infos'})}
-                onClickFinish={e => this.setState({step: 'infos'})}
-              />
+            { step === 'infos' && <OfferInfo />}
+            { step === 'booking' && (
+              <Booking onClickCancel={e => this.setState({step: 'infos'})}
+                onClickFinish={e => this.setState({step: 'infos'})} />
             )}
           </div>
         </div>
@@ -52,8 +52,8 @@ class Verso extends Component {
 
 export default connect(
   state => ({
-    currentOffer: currentOffer(state),
-    currentUserMediation: currentUserMediation(state),
-    currentHeaderColor: currentHeaderColor(state),
+    currentHeaderColor: selectCurrentHeaderColor(state),
+    currentSource: selectCurrentSource(state),
+    currentVenue: selectCurrentVenue(state),
     isFlipped: state.navigation.isFlipped
   }))(Verso)
