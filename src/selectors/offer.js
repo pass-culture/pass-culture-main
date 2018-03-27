@@ -1,15 +1,15 @@
 import { createSelector } from 'reselect'
 import get from 'lodash.get';
 
-import selectCurrentUserMediation from './currentUserMediation'
+import selectUserMediation from './userMediation'
 
 export default createSelector(
   state => state.router.location.pathname, // TODO: get data from redux state
-  state => selectCurrentUserMediation(state),
-  (pathname, currentUserMediation) => {
+  state => selectUserMediation(state),
+  (pathname, userMediation) => {
     const [ , , offerId ] = pathname.split('/')
-    console.log('offerId', offerId, currentUserMediation)
-    return get(currentUserMediation, 'userMediationOffers', [])
+    console.log('offerId', offerId, userMediation)
+    return get(userMediation, 'userMediationOffers', [])
       .find(o => o.id === offerId)
   }
 )

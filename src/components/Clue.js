@@ -3,11 +3,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Price from './Price'
-import currentUserMediation from '../selectors/currentUserMediation'
-import currentOffer from '../selectors/currentOffer'
+import selectOffer from '../selectors/offer'
+import selectUserMediation from '../selectors/userMediation'
 
 const Clue = ({
-  currentOffer,
+  offer,
   isHidden,
   transitionTimeout
 }) => {
@@ -15,7 +15,7 @@ const Clue = ({
     <div className={classnames('clue', { 'clue--hidden': isHidden })}
       style={{ transition: `opacity ${transitionTimeout}ms`}}>
       <div>
-        <Price value={currentOffer.price} />
+        <Price value={offer.price} />
         <span className='clue__sep'>
           &middot;
         </span>
@@ -33,7 +33,7 @@ Clue.defaultProps = {
 
 export default connect(
   state => ({
-    currentOffer: currentOffer(state),
-    currentUserMediation: currentUserMediation(state),
-    isFlipped: state.navigation.isFlipped
+    isFlipped: state.navigation.isFlipped,
+    offer: selectOffer(state),
+    userMediation: selectUserMediation(state)
   }))(Clue)

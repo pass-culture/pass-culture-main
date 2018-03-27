@@ -5,18 +5,18 @@ import { connect } from 'react-redux'
 import RectoDebug from './RectoDebug'
 import Loading from './Loading'
 import { IS_DEV } from '../utils/config'
-import selectCurrentThumbUrl from '../selectors/currentThumbUrl'
+import selectThumbUrl from '../selectors/thumbUrl'
 
 
 const Recto = props => {
   const {
     id,
     isLoading,
-    currentThumbUrl,
+    thumbUrl,
   } = props
   const style = isLoading
     ? { backgroundColor: 'black' }
-    : { backgroundImage: `url('${currentThumbUrl}')`}
+    : { backgroundImage: `url('${thumbUrl}')`}
   return (
     <div className='recto'>
        <div className={classnames('card-background', {
@@ -27,7 +27,7 @@ const Recto = props => {
       { id && (
         <div>
           <img alt='thumb'
-            src={currentThumbUrl} />
+            src={thumbUrl} />
           {IS_DEV && <RectoDebug {...props} />}
         </div>
       )}
@@ -37,6 +37,6 @@ const Recto = props => {
 
 export default connect(
   (state, ownProps) => ({
-    currentThumbUrl: selectCurrentThumbUrl(state, ownProps),
-    isFlipped: state.navigation.isFlipped
+    isFlipped: state.navigation.isFlipped,
+    thumbUrl: selectThumbUrl(state, ownProps)
   }))(Recto)

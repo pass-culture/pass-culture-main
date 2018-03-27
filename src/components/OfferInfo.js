@@ -1,32 +1,32 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import currentSource from '../selectors/currentSource'
-import currentVenue from '../selectors/currentVenue'
-import currentThumbUrl from '../selectors/currentThumbUrl'
-import currentOffer from '../selectors/currentOffer'
+import selectOffer from '../selectors/offer'
+import selectSource from '../selectors/source'
+import selectThumbUrl from '../selectors/thumbUrl'
+import selectVenue from '../selectors/venue'
 
 class OfferInfo extends Component {
 
   render() {
     const {
-      currentOffer: {
+      offer: {
         eventOccurence,
         occurencesAtVenue,
       },
-      currentSource: {
+      source: {
         description,
       },
-      currentVenue: {
+      venue: {
         name,
         address,
       },
-      currentThumbUrl,
+      thumbUrl,
     } = this.props;
 
     return (
       <div className='offer-info'>
-        {false && <img alt='' className='offerPicture' src={currentThumbUrl} />}
+        {false && <img alt='' className='offerPicture' src={thumbUrl} />}
         {description && (
           <div className='description'>
             { description.split('\n').map((p, index) => <p key={index}>{p}</p>) }
@@ -66,8 +66,8 @@ class OfferInfo extends Component {
 
 export default connect(
   state => ({
-    currentSource: currentSource(state),
-    currentVenue: currentVenue(state),
-    currentThumbUrl: currentThumbUrl(state),
-    currentOffer: currentOffer(state),
+    source: selectSource(state),
+    thumbUrl: selectThumbUrl(state),
+    offer: selectOffer(state),
+    venue: selectVenue(state)
   }))(OfferInfo)

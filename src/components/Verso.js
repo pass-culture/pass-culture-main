@@ -5,9 +5,9 @@ import { connect } from 'react-redux'
 import ControlBar from './ControlBar'
 import OfferInfo from '../components/OfferInfo'
 import Booking from '../components/Booking'
-import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
-import selectCurrentSource from '../selectors/currentSource'
-import selectCurrentVenue from '../selectors/currentVenue'
+import selectHeaderColor from '../selectors/headerColor'
+import selectSource from '../selectors/source'
+import selectVenue from '../selectors/venue'
 
 class Verso extends Component {
 
@@ -19,22 +19,22 @@ class Verso extends Component {
   }
 
   render() {
-    const { currentHeaderColor,
-      currentSource,
-      currentVenue,
-      isFlipped
+    const { headerColor,
+      isFlipped,
+      source,
+      venue
     } = this.props
     const { step } = this.state
-    const author = currentSource.extraData && currentSource.extraData.author
+    const author = source.extraData && source.extraData.author
     return (
       <div className={classnames('verso absolute', {
         'verso--flipped': isFlipped,
         'verso--booking': step === 'booking'
       })} >
         <div className='bg-wrapper'>
-          <div className='verso-header' style={{ backgroundColor: currentHeaderColor }}>
-            <h2> { currentSource.name }, { author && ("de " + author) } </h2>
-            <h6> { currentVenue.name } </h6>
+          <div className='verso-header' style={{ backgroundColor: headerColor }}>
+            <h2> { source.name }, { author && ("de " + author) } </h2>
+            <h6> { venue.name } </h6>
           </div>
           { step === 'infos' && <ControlBar onClickBook={e => this.setState({step: 'booking'})} />}
           <div className='content'>
@@ -52,8 +52,8 @@ class Verso extends Component {
 
 export default connect(
   state => ({
-    currentHeaderColor: selectCurrentHeaderColor(state),
-    currentSource: selectCurrentSource(state),
-    currentVenue: selectCurrentVenue(state),
-    isFlipped: state.navigation.isFlipped
+    headerColor: selectHeaderColor(state),
+    isFlipped: state.navigation.isFlipped,
+    source: selectSource(state),
+    venue: selectVenue(state)
   }))(Verso)
