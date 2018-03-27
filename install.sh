@@ -57,8 +57,8 @@ git submodule foreach git checkout master
 
 sudo pacman -S certbot certbot-nginx cronie docker-compose docker lftp unzip
 sudo usermod -a -G docker deploy
-logout
-sudo -E su deploy
+exec su -l deploy
+
 cd ~/pass-culture-main 
 
 sudo systemctl start docker
@@ -66,7 +66,7 @@ sudo systemctl enable docker
 
 start-docker
 
-docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot certonly --verbose --webroot --webroot-path=/data/letsencrypt -d "$FQDN" --agree-tos -m "arnaud.betremieux@beta.gouv.fr"
+docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot certonly --verbose --webroot --webroot-path=/data/letsencrypt -d "$FQDN" --agree-tos -m "arnaud.betremieux@beta.gouv.fr" -n
 
 sudo systemctl start cronie
 sudo systemctl enable cronie
