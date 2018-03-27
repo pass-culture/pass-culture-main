@@ -5,8 +5,8 @@ import selectSource from './source'
 import selectOffer from './offer'
 
 export default createSelector(
-  state => selectSource(state),
-  state => selectOffer(state),
+  selectSource,
+  selectOffer,
   (offer, source) => {
     return get(offer, 'eventOccurence.venue') ||
       get(offer, 'venue') ||

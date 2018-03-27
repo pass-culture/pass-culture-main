@@ -6,8 +6,8 @@ import selectSource from './source'
 import selectUserMediation from './userMediation'
 
 export default createSelector(
-  state => selectSource(state),
-  state => selectUserMediation(state),
+  selectSource,
+  selectUserMediation,
   (source, mediation) => {
     const [red, green, blue] =
       get(mediation, 'firstThumbDominantColor', []) ||

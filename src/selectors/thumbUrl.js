@@ -22,8 +22,8 @@ export function getThumbUrl (mediation, source, offer) {
 }
 
 export default createSelector(
-  state => selectMediation(state),
-  state => selectSource(state),
-  state => selectOffer(state),
+  selectMediation,
+  selectSource,
+  selectOffer,
   getThumbUrl
 )

@@ -7,6 +7,6 @@ export function getMediation (userMediation) {
 }
 
 export default createSelector(
-  state => selectUserMediation(state),
+  selectUserMediation,
   getMediation
 )

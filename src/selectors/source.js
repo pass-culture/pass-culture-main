@@ -12,7 +12,7 @@ export function getSource (mediation, offer) {
 }
 
 export default createSelector(
-  state => selectMediation(state),
-  state => selectOffer(state),
+  selectMediation,
+  selectOffer,
   getSource
 )
