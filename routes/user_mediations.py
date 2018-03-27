@@ -152,7 +152,7 @@ def update_user_mediations():
     if len(ums) < BLOB_SIZE:
         ums[-1]['isLast'] = True
         ums[-1]['blobSize'] = BLOB_SIZE
-        if before_ums.count() > 0:
+        if before_ums and before_ums.count() > 0:
             comp_size = BLOB_SIZE - len(ums)
             comp_before_ums = query.filter(UserMediation.id < before_ums[0].id)\
                               .order_by(UserMediation.id.desc())\
