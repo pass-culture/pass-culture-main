@@ -40,7 +40,10 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
         if mock:
             self.df = read_csv(Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'spreadsheet_exp' / 'Evenements.csv')
         else:
-            self.df = read_csv('https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Evenements')
+            self.df = read_csv(
+                #'https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Evenements'
+                'https://docs.google.com/spreadsheets/d/1o4LXJJEcGZ2QO307CdZVOMziGXpgMr7gYyvaqVtrNOs/gviz/tq?tqx=out:csv&sheet=Evenements'
+            )
         self.lines = self.df.iterrows()
         self.mock = mock
 
@@ -129,24 +132,23 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
     def getObjectThumb(self, obj, index):
         assert obj.idAtProviders == str(self.line['Ref Évènement'])
-
-        if isinstance(obj, Mediation) :
+        thumb_request = None
+        if isinstance(obj, Mediation) and 'Lien Image Accroche' in self.line:
             thumb_request = requests.get(self.line['Lien Image Accroche'])
-        elif isinstance(obj, Event):
+        elif isinstance(obj, Event) and 'Lien Image' in self.line:
             thumb_request = requests.get(self.line['Lien Image'])
-        else:
-            raise ValueError('Unexpected object class in updateObj '
-                             + obj.__class__.__name__)
-
-        if thumb_request.status_code == 200:
+        #else:
+        #    raise ValueError('Unexpected object class in updateObj '
+        #                     + obj.__class__.__name__)
+        print('thumb_request', thumb_request)
+        if thumb_request and thumb_request.status_code == 200:
             return thumb_request.content
 
     def getObjectThumbDates(self, obj):
         if self.mock:
             return []
-        if (isinstance(obj, Event) or
-            isinstance(obj, Mediation)) and\
-           str(self.line['Lien Image']).replace(' ', '') != '':
+        if (isinstance(obj, Event) and str(self.line.get('Lien Image')).replace(' ', '') != '') or\
+           (isinstance(obj, Mediation) and str(self.line.get('Lien Image Accroche')).replace(' ', '') != ''):
             return [read_date(str(self.line['Date MAJ']))]
             return read_date(str(self.line['Date MAJ']))
         else:

@@ -28,7 +28,9 @@ def get_recommended_offers(user, limit=3):
                  .outerjoin(Event)\
                  .filter(
                     # (Thing.thumbCount > 0) |
-                    (Event.thumbCount > 0))
+                    (Event.thumbCount > 0) |
+                    # (Thing.mediations.any(Mediation.thumbCount > 0)) |
+                    (Event.mediations.any(Mediation.thumbCount > 0)))
 
     # RETURN
     print('(reco) eligible with thumbs offers.count', query.count())
