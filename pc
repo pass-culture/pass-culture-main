@@ -16,6 +16,15 @@ done
 
 ROOT_PATH=$(dirname "$PRG")
 
+function confirm {
+ read -p "$1 (y/n) : " -n 1 -r
+ echo
+ if [[ ! $REPLY =~ ^[Yy]$ ]]
+ then
+   exit
+ fi
+}
+
 if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
   ENV=$2
   shift 2
@@ -36,10 +45,11 @@ if [[ "$CMD" == "alembic" ]]; then
 elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
-  RUN='cd "$ROOT_PATH";
-	git fetch && git reset --hard && git checkout origin/master && git reset --hard;
-	cd dockerfiles/nginx/conf.d && rm flaskapp.conf && ln -s flaskapp_ssl flaskapp.conf && cd;
-	git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
+  if [[ "$ENV" == "local" ]]; then
+    echo "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-backend\"."
+    exit 2
+  fi
+  RUN='cd pass-culture-main && git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
 elif [[ "$CMD" == "deploy-frontend" ]]; then
   RUN='cd $ROOT_PATH/webapp && netlify deploy -e '"$ENV"
 elif [[ "$CMD" == "dump-db" ]]; then
@@ -92,12 +102,7 @@ elif [[ "$CMD" == "symlink" ]]; then
   RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
 elif [[ "$CMD" == "test-backend" ]]; then
   if [[ $# == 0 ]]; then
-    read -p "Warning: your database will be wiped. Is this OK (y/n): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]
-    then
-      exit
-    fi
+    confirm "Warning: your database will be wiped. Is this OK ?"
      "$ROOT_PATH"/pc -e $ENV reset-all-db
      RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest tests/*"'
   else
@@ -116,7 +121,10 @@ else
 fi
 
 if [[ "$ENV" == "prod" ]]; then
-  ssh deploy@pc-api.btmx.fr bash -c "$RUN"
+  confirm "Are you sure you want to run $CMD in production ?"
+  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
+elif [[ "$ENV" == "staging" ]]; then
+  echo "$RUN" | ssh deploy@api.passculture-staging.beta.gouv.fr bash
 else
   echo $RUN
   eval $RUN
