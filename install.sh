@@ -1,9 +1,16 @@
 #!/bin/bash
 
-# SUR LA BASE DE L'IMAGE ARCHLINUX OVH
-# AVANT TOUT CA, FAIRE :
-# sudo pacman -Suy
-# sudo reboot
+# SCRIPT D'INITIALISATION D'UN SERVEUR SUR LA BASE DE L'IMAGE ARCHLINUX OVH PUBLIC CLOUD
+
+function start-docker {
+  screen -d -m docker-compose up --force-recreate
+  screen -rd -p 0 -X log on
+  tail -f screenlog.0 | sed '/Debugger is active/ q' # FIXME: get some other clue that the server is started !
+}
+
+echo "/!\ before you run this script, please run: "
+echo "$ sudo pacman -Suy"
+echo "$ sudo reboot"
 
 read -p "HOSTNAME (Ex: docker-host-prod): " HOSTNAME
 read -p "FQDN FOR NGINX (Ex: api.passculture.beta.gouv.fr): " FQDN
@@ -12,7 +19,7 @@ echo "HOSTNAME will be $HOSTNAME"
 echo "FQDN will be $FQDN"
 read -p "Is this correct ? (y/n) " -n 1 reply >&2
 if [[ ! $reply = "Y" ]] && [[ ! $reply = "y" ]]; then
-        exit 1
+  exit 1
 fi
 
 sudo hostnamectl set-hostname "$HOSTNAME"
@@ -57,12 +64,18 @@ cd ~/pass-culture-main
 sudo systemctl start docker
 sudo systemctl enable docker
 
-screen -d -m docker-compose up
-screen -rd -p 0 -X log on
-tail -f screenlog.0 | sed '/Debugger is active/ q' # FIXME: get some other clue that the server is started !
+start-docker
 
 docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot certonly --verbose --webroot --webroot-path=/data/letsencrypt -d "$FQDN" --agree-tos -m "arnaud.betremieux@beta.gouv.fr"
 
 sudo systemctl start cronie
 sudo systemctl enable cronie
 crontab -l | { cat; echo "0 0 * * * docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot renew --verbose --webroot --webroot-path=/data/letsencrypt"; } | crontab -
+
+cd dockerfiles/nginx/conf.d
+sed -i -e 's/##FQDN##/'"$FQDN"'/' flaskapp_ssl
+ln -sf flaskapp_ssl flaskapp.conf
+cd -
+docker-compose down
+start-docker
+echo "ALL DONE. Run pc test-backend to check install, then maybe some other form of DB init."
