@@ -79,7 +79,7 @@ class DiscoveryPage extends Component {
       // find the matching um in the dexie buffer
       if (!mediationId) {
         userMediations.find((um, index) => {
-          if (um.userMediationOffers.find(umo => umo.id === offerId)) {
+          if (um.userMediationOffers && um.userMediationOffers.find(umo => umo.id === offerId)) {
             aroundIndex = index
             return true
           }

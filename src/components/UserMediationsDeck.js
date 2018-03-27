@@ -30,7 +30,6 @@ class UserMediationsDeck extends Component {
       userMediations
     } = this.props
     const { beforeLimit,
-      contents,
       isLoadingBefore
     } = this.state
     if (beforeLimit === null) {
@@ -38,18 +37,12 @@ class UserMediationsDeck extends Component {
     }
     isDebug && debug(`UserMediationsDeck - handleBeforeContent nextAroundIndex=${nextAroundIndex} beforeLimit=${beforeLimit}`)
     // compute
-    const isBeforeSync = nextAroundIndex <= beforeLimit
+    const isBefore = nextAroundIndex <= beforeLimit
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    if (isBeforeSync && !isLoadingBefore) {
-      /*
-      const extraContents = contents.map((content, index) =>
-        index === 0 && { isLoading: true })
-      */
-      this.setState({
-        // extraContents,
-        isLoadingBefore: true })
+    if (isBefore && !isLoadingBefore) {
+      this.setState({ isLoadingBefore: true })
       const beforeAroundIndex = Math.max(0, nextAroundIndex)
       const aroundUserMediation = userMediations[beforeAroundIndex]
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
@@ -65,8 +58,6 @@ class UserMediationsDeck extends Component {
       userMediations
     } = this.props
     const { afterLimit,
-      aroundIndex,
-      contents,
       isLoadingAfter
     } = this.state
     if (afterLimit === null) {
@@ -74,18 +65,12 @@ class UserMediationsDeck extends Component {
     }
     isDebug && debug(`UserMediationsDeck - handleAfterContent nextAroundIndex=${nextAroundIndex} afterLimit=${afterLimit}`)
     // compute
-    const isAfterSync = nextAroundIndex >= afterLimit
+    const isAfter = nextAroundIndex >= afterLimit
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
-    if (isAfterSync && !isLoadingAfter) {
-      /*
-      const extraContents = contents.map((content, index) =>
-        index === contents.length - 1 && { isLoading: true })
-      */
-      this.setState({
-        // extraContents,
-        isLoadingAfter: true })
+    if (isAfter && !isLoadingAfter) {
+      this.setState({ isLoadingAfter: true })
       const afterAroundIndex = Math.min(userMediations.length - 1,
         nextAroundIndex)
       const aroundUserMediation = userMediations[afterAroundIndex]
