@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { rgb_to_hsv } from 'colorsys'
 
-import Card, { AROUND } from './Card'
+import Card, { CURRENT } from './Card'
 import Icon from './Icon'
 import { debug, warn } from '../utils/logguers'
 
@@ -28,7 +28,7 @@ class Deck extends Component {
   }
   handleSetTypeCard = (cardProps, cardState) => {
     // only set things for the current Card
-    if (cardState.type !== AROUND) {
+    if (cardState.type !== CURRENT) {
       return
     }
     this.props.isDebug && debug('Deck - handleSetTypeCard')
@@ -73,14 +73,14 @@ class Deck extends Component {
     // unpack
     const { isDebug } = this.props
     const contents = config.contents || this.props.contents
-    const aroundIndex = config.aroundIndex || this.props.aroundIndex
+    const currentIndex = config.currentIndex || this.props.currentIndex
     if (!contents) {
       return
     }
-    isDebug && debug(`Deck - handleResetItems aroundIndex=${aroundIndex}`)
+    isDebug && debug(`Deck - handleResetItems currentIndex=${currentIndex}`)
     // we need to determine the dynamic mapping of the deck
     const items = [...Array(contents.length).keys()]
-      .map(index => index - (aroundIndex > 0 ? aroundIndex : 0))
+      .map(index => index - (currentIndex > -1 ? currentIndex : 0))
     this.items = items
     // update
     this.setState({ items })
@@ -91,8 +91,8 @@ class Deck extends Component {
     const { contents, isDebug } = this.props
     isDebug && debug('Deck - handleSetCurrentContent')
     // find
-    const aroundIndex = items && items.indexOf(0)
-    const currentContent = contents && contents[aroundIndex]
+    const currentIndex = items && items.indexOf(0)
+    const currentContent = contents && contents[currentIndex]
     this.currentContent = currentContent
     // update
     this.setState({ currentContent })
@@ -300,7 +300,8 @@ class Deck extends Component {
       onTransitionEndCard,
       onTransitionStartCard
     } = this
-    const { contents,
+    const { children,
+      contents,
       extraContents,
       isLoadingBefore,
       isLoadingAfter,
@@ -408,8 +409,7 @@ class Deck extends Component {
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
               </div>
-              <button className='deck__board__profile'
-                style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+              {children}
             </div>
           </div>
         </Draggable>
@@ -419,7 +419,7 @@ class Deck extends Component {
 
 Deck.defaultProps = { deckKey: 0,
   flipRatio: 0.25,
-  // isDebug: false,
+  isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500

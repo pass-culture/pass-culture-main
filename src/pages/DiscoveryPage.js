@@ -79,7 +79,7 @@ class DiscoveryPage extends Component {
       // find the matching um in the dexie buffer
       if (!mediationId) {
         userMediations.find((um, index) => {
-          if (um.userMediationOffers.find(umo => umo.id === offerId)) {
+          if (um.userMediationOffers && um.userMediationOffers.find(umo => umo.id === offerId)) {
             aroundIndex = index
             return true
           }
@@ -117,6 +117,10 @@ class DiscoveryPage extends Component {
     } = props
     if (!offerId) {
       const aroundUserMediation = userMediations.find(um => um.isAround)
+      if (!aroundUserMediation) {
+        history.replace('/decouverte')
+        return
+      }
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
       let url = `/decouverte/${aroundContent.chosenOffer.id}`
       if (aroundContent.mediation) {
@@ -126,6 +130,9 @@ class DiscoveryPage extends Component {
       // replace
       history.replace(url)
     }
+  }
+  onProfileClick = event => {
+    this.props.history.push('/profile')
   }
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
@@ -144,7 +151,11 @@ class DiscoveryPage extends Component {
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
-          handleUserMediationChange={this.handleUserMediationChange} />
+          handleUserMediationChange={this.handleUserMediationChange} >
+          <button className='discovery-page__profile'
+            onClick={this.onProfileClick}
+            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+        </UserMediationsDeck>
       </main>
     )
   }

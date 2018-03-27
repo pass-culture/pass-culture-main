@@ -11,12 +11,14 @@ const Verso = props => {
     isFlipped,
     mediation,
     chosenOffer,
+    source,
+    venue
   } = props
   return (
     <div className={classnames('verso absolute', {
       'verso--flipped': isFlipped
     })}>
-      <OfferInfo {...chosenOffer}>
+      <OfferInfo {...chosenOffer} source={source} venue={venue}>
         <ControlBar {...props} />
       </OfferInfo>
       <MediationCardBack {...mediation} />

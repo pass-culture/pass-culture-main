@@ -34,27 +34,33 @@ class OfferInfo extends Component {
       occurencesAtVenue,
       // price,
       // sellersFavorites,
-      thing,
-      // thingOrEventOccurence,
+      source,
       thumbUrl,
       venue,
       children,
     } = this.props;
-
     return (
       <div className='offer-info'>
         <div className='verso-header' style={this.state.headerStyle}>
-          <h2> { thing.name }, de { thing.extraData.author } </h2>
+          <h2>
+            { source.name }, { source.extraData && ("de " + source.extraData.author) }
+          </h2>
           <h6> {venue.name} </h6>
         </div>
         {children}
         <div className='content'>
           <img alt='' className='offerPicture' src={thumbUrl} />
-          {thing.description && (
-            <div className='description'>
-              { thing.description.split('\n').map((p, index) => <p key={index}>{p}</p>) }
-            </div>
-          )}
+          {
+            source.description && (
+              <div className='description'>
+                {
+                  source.description.split('\n')
+                        .map((p, index) =>
+                        <p key={index}>{p}</p>)
+                }
+              </div>
+            )
+          }
           {eventOccurence && (
             <div>
               <h3>Quoi ?</h3>
@@ -78,7 +84,8 @@ class OfferInfo extends Component {
               <h3>Où ?</h3>
               <ul className='address-info'>
                 <li>{venue.name}</li>
-                {venue.address.split(/[,\n\r]/).map((el, index) => (<li key={index}>{el}</li>))}
+                {venue.address.split(/[,\n\r]/).map((el, index) => (
+                  <li key={index}>{el}</li>))}
               </ul>
             </div>
           )}

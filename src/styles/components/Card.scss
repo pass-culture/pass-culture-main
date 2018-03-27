@@ -1,7 +1,7 @@
 .card {
   cursor: pointer;
   height: 100%;
-  &--around {
+  &--current {
     z-index: 50;
   }
   &--draggable {
