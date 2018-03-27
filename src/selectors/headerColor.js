@@ -9,6 +9,8 @@ export default createSelector(
   (currentUserMediation) => {
     const [red, green, blue] = get(currentUserMediation, 'thing.firstThumbDominantColor', []);
     const {h} = rgb_to_hsv(red, green, blue);
-    return `hsl(${h}, 100%, 15%)`;
+    if (h) {
+      return `hsl(${h}, 100%, 15%)`;
+    }
   }
 )

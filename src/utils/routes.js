@@ -8,6 +8,7 @@ import ProfessionalPage from '../pages/ProfessionalPage'
 import ProfilePage from '../pages/ProfilePage'
 import SignPage from '../pages/SignPage'
 import BookingsPage from '../pages/BookingsPage'
+import RedirectPage from '../pages/RedirectPage'
 
 const routes = [
   {
@@ -18,7 +19,7 @@ const routes = [
   {
     exact: true,
     path: '/decouverte',
-    render: () => <DiscoveryPage />
+    render: () => <RedirectPage />
   },
   {
     exact: true,

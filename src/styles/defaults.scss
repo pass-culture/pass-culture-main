@@ -13,6 +13,11 @@ body {
     max-width: 500px;
     margin: 0 auto;
     min-height: 100%;
+    background-color: $menu-red;
+    background-image: url('/icons/logo-group.svg');
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .app {
