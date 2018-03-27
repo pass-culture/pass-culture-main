@@ -25,6 +25,13 @@ function confirm {
  fi
 }
 
+function ensure_remote {
+  if [[ "$ENV" == "local" ]]; then
+    echo "$1"
+    exit 3
+  fi
+}
+
 if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
   ENV=$2
   shift 2
@@ -45,13 +52,12 @@ if [[ "$CMD" == "alembic" ]]; then
 elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
-  if [[ "$ENV" == "local" ]]; then
-    echo "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-backend\"."
-    exit 2
-  fi
+  ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-backend\"."
   RUN='cd pass-culture-main && git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
 elif [[ "$CMD" == "deploy-frontend" ]]; then
-  RUN='cd $ROOT_PATH/webapp && netlify deploy -e '"$ENV"
+  ensure_remote "Deploy fontend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-frontend\"."
+  cd $ROOT_PATH/webapp && NODE_ENV="$ENV" yarn build && netlify deploy -e "$ENV"
+  exit
 elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
        docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
@@ -120,7 +126,7 @@ else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
 
-if [[ "$ENV" == "prod" ]]; then
+if [[ "$ENV" == "production" ]]; then
   confirm "Are you sure you want to run $CMD in production ?"
   echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
 elif [[ "$ENV" == "staging" ]]; then
