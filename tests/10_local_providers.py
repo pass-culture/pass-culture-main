@@ -189,5 +189,6 @@ with app.app_context():
             from scripts.init import init
             init()
             assertCreatedCounts(User=2,
-                                Thing=4,
+                                Event=2,
+                                Thing=2,
                                 Offer=4)

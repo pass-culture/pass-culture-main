@@ -139,7 +139,7 @@ def update_user_mediations():
     unread_ums = unread_ums.order_by(UserMediation.id)
     print('(unread) count', unread_ums.count())
     if unread_ums.count() < unread_complementary_length:
-        print('(check) create ' + str(unread_complementary_length) + ' unread ums')
+        print('(check) need ' + str(unread_complementary_length) + ' unread ums')
         make_new_recommendations(current_user, unread_complementary_length)
     # LIMIT UN READ
     unread_ums = unread_ums.order_by(UserMediation.dateUpdated.desc())\

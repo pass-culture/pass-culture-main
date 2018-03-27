@@ -120,7 +120,7 @@ def do_init():
     check_and_save(venue_museum)
 
 
-    ## CONTENT 1
+    ## THING 1 WITH THUMB MEDIATION
 
     thing1 = model.Thing()
     thing1.description = "Howard Phillips Lovecraft est sans nul doute l'auteur fantastique le plus influent du xxe siècle. Son imaginaire unique et terrifiant n'a cessé d'inspirer des générationsd'écrivains, de cinéastes, d'artistes ou de créateurs d'univers de jeux, de Neil Gaiman à Michel Houellebecq en passant par Metallica. Le mythe de Cthulhu est au coeur de cette oeuvre : un panthéon de dieux et d'êtres monstrueux venus du cosmos et de la nuit des temps ressurgissent pour reprendre possession de notre monde. Ceux qui en sont témoins sont voués à la folie et à la destruction. Les neuf récits essentiels du mythe sont ici réunis dans une toute nouvelle traduction. À votre tour, vous allez pousser la porte de la vieille bâtisse hantée qu'est la Maison de la Sorcière, rejoindre un mystérieux festival où l'on célèbre un rite impie, découvrir une cité antique enfouie sous le sable, ou échouer dans une ville portuaire dépeuplée dont les derniers habitants sont atrocement déformés.."
@@ -165,7 +165,19 @@ def do_init():
     umo1.userMediation = user_mediation1
     check_and_save(umo1)
 
-    ## CONTENT 2
+    booking1 = model.Booking()
+    booking1.user = client_user
+    booking1.offer = offer1
+    booking1.token = 'FUUEEM'
+    booking1.userMediation = user_mediation1
+    check_and_save(user_mediation1)
+
+    umb1 = model.UserMediationBooking()
+    umb1.booking = booking1
+    umb1.userMediation = user_mediation1
+    check_and_save(umb1)
+
+    ## EVENT 2 WITHOUT MEDIATION
 
     event2 = model.Event()
     event2.isActive = True
@@ -190,7 +202,7 @@ def do_init():
 
     check_and_save(offer2)
 
-    ## CONTENT 3
+    ## EVENT 3 WITH THUMB MEDIATION
 
     event3 = model.Event()
     event3.description = "Visite guidée de 1h30 du musée pour des groupes de minimum 15 personnes."
@@ -231,7 +243,7 @@ def do_init():
     umo3.userMediation = user_mediation3
     check_and_save(umo3)
 
-    ## CONTENT 4
+    ## THING 4 WITH TEXT MEDIATION
 
     thing4 = model.Thing()
     thing4.description = "Roman d'aventures, écrit par Jules Verne, publié en 1872. Il raconte la course autour du monde d'un gentleman anglais, Phileas Fogg, qui a fait le pari d'y parvenir en 80 jours. Il est accompagné par Jean Passepartout, son serviteur français. L'ensemble du roman est un habile mélange entre récit de voyage (traditionnel pour Jules Verne) et données scientifiques comme celle utilisée pour le rebondissement de la chute du roman."
@@ -255,7 +267,7 @@ def do_init():
     mediation4 = model.Mediation()
     mediation4.author = pro_user
     mediation4.backText = "Jules Verne savait-il déjà que le voyage en ballon serait le transport du futur ?"
-    mediation4.frontText = "Histoire de voyager sans augmenter son bilan carbone"
+    mediation4.frontText = "Comment voyager sans augmenter son bilan carbone ?"
     mediation4.thing = thing4
 
     user_mediation4 = model.UserMediation()
@@ -268,15 +280,3 @@ def do_init():
     umo4.offer = offer4
     umo4.userMediation = user_mediation4
     check_and_save(umo4)
-
-    booking4 = model.Booking()
-    booking4.user = client_user
-    booking4.offer = offer4
-    booking4.token = 'FUUEEM'
-    booking4.userMediation = user_mediation4
-    check_and_save(user_mediation4)
-
-    umb4 = model.UserMediationBooking()
-    umb4.booking = booking4
-    umb4.userMediation = user_mediation4
-    check_and_save(umb4)
