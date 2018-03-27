@@ -38,6 +38,7 @@ class FormInput extends Component {
       defaultValue,
       id,
       placeholder,
+      autoComplete,
       type,
       value
     } = this.props
@@ -47,6 +48,7 @@ class FormInput extends Component {
           id={id}
           onChange={this.onChange}
           placeholder={placeholder}
+          autoComplete={autoComplete}
           type={type}
           value={
             localValue !== null
