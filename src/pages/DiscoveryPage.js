@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
+import { Link } from 'react-router-dom'
+
 
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
@@ -49,7 +51,6 @@ class DiscoveryPage extends Component {
       }
       isDebug && debug(`DiscoveryPage - handleUserMediationChange replace`)
       // replace
-      console.log('goto', url)
       history.replace(url)
       this.setState({ aroundIndex: false })
     }
@@ -136,9 +137,6 @@ class DiscoveryPage extends Component {
       history.replace(url)
     }
   }
-  onProfileClick = event => {
-    this.props.history.push('/profile')
-  }
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
   }
@@ -149,17 +147,14 @@ class DiscoveryPage extends Component {
     }
   }
   render () {
-    // console.log('RENDER: DiscoveryPage this.state.userMediations', this.state.userMediations && this.props.userMediations.length,
-    //  this.state.userMediations && this.state.userMediations.map(um =>
-    //    um && `${um.id} ${um.dateRead}`))
-    // console.log('RENDER: DiscoveryPage this.state.aroundIndex', this.state.aroundIndex)
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange} >
-          <button className='discovery-page__profile'
-            onClick={this.onProfileClick}
-            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+          <Link
+            to='/profile'
+            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }}
+            className='discovery-page__profile' />
         </UserMediationsDeck>
       </main>
     )

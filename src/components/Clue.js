@@ -8,11 +8,11 @@ import currentOffer from '../selectors/currentOffer'
 
 const Clue = ({
   currentOffer,
-  item,
+  isHidden,
   transitionTimeout
 }) => {
   return (
-    <div className={classnames('clue', { 'clue--hidden': item !== 0 })}
+    <div className={classnames('clue', { 'clue--hidden': isHidden })}
       style={{ transition: `opacity ${transitionTimeout}ms`}}>
       <div>
         <Price value={currentOffer.price} />

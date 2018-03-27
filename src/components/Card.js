@@ -254,10 +254,7 @@ class Card extends Component {
               ref={element => this.cardElement = element}
               style={style}>
               <div className='card__container' style={{ transform }}>
-                <Recto {...content}
-                  contentLength={contentLength}
-                  index={index}
-                  item={item} />
+                <Recto {...content} />
               </div>
             </span>
         </Draggable>
@@ -268,11 +265,7 @@ class Card extends Component {
         )}
         {Math.abs(item) < 2 && content.id && (
           <Portal node={document.getElementById('deck__board')}>
-            <Clue {...content}
-              contentLength={contentLength}
-              index={index}
-              item={item}
-              transitionTimeout={transitionTimeout} />
+            <Clue isHidden={item !== 0} />
           </Portal>
         )}
       </div>
