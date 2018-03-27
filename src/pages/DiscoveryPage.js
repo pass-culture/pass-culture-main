@@ -127,6 +127,9 @@ class DiscoveryPage extends Component {
       history.replace(url)
     }
   }
+  onProfileClick = event => {
+    this.props.history.push('/profile')
+  }
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
   }
@@ -144,7 +147,11 @@ class DiscoveryPage extends Component {
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
-          handleUserMediationChange={this.handleUserMediationChange} />
+          handleUserMediationChange={this.handleUserMediationChange} >
+          <button className='discovery-page__profile'
+            onClick={this.onProfileClick}
+            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+        </UserMediationsDeck>
       </main>
     )
   }

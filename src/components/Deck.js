@@ -300,7 +300,8 @@ class Deck extends Component {
       onTransitionEndCard,
       onTransitionStartCard
     } = this
-    const { contents,
+    const { children,
+      contents,
       extraContents,
       isLoadingBefore,
       isLoadingAfter,
@@ -408,8 +409,7 @@ class Deck extends Component {
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
               </div>
-              <button className='deck__board__profile'
-                style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+              {children}
             </div>
           </div>
         </Draggable>
