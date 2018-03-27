@@ -13,9 +13,11 @@ echo "$ sudo pacman -Suy"
 echo "$ sudo reboot"
 
 read -p "HOSTNAME (Ex: docker-host-prod): " HOSTNAME
+read -p "ENVIRONMENT (Ex: production): " ENV
 read -p "FQDN FOR NGINX (Ex: api.passculture.beta.gouv.fr): " FQDN
 
 echo "HOSTNAME will be $HOSTNAME"
+echo "ENVIRONMENT will be $ENV"
 echo "FQDN will be $FQDN"
 read -p "Is this correct ? (y/n) " -n 1 reply >&2
 if [[ ! $reply = "Y" ]] && [[ ! $reply = "y" ]]; then
@@ -38,6 +40,20 @@ sudo cat /etc/sudoers | sed -e 's|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(A
 
 sudo -E su deploy
 cd
+
+cat > ~/.bashrc <<-EOF
+  export ENV="$ENV"
+  [[ "\$PS1" ]] || return 0                           # continue only when interactive
+  if [[ \$ENV == "production" ]]; then
+    prompt_color='\033[48;5;16m\033[38;5;196m'   # red(196) on black(16)
+  else
+    prompt_color='\033[48;5;16m\033[38;5;46m'    # green(46) on black(16)
+  fi
+  ORIG_PS1=\$PS1                                    # in case needed
+  PS1='\['\${prompt_color}'\]passculture-\$ENV <\h\[\033[m\]:\w>\$ '
+  unset prompt_color
+EOF
+echo "source ~/.bashrc" > ~/.profile
 
 mkdir ~/.ssh
 chown o-rwx ~/.ssh
@@ -79,3 +95,4 @@ cd -
 docker-compose down
 start-docker
 echo "ALL DONE. Run pc test-backend to check install, then maybe some other form of DB init."
+
