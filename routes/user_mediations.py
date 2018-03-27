@@ -152,7 +152,7 @@ def update_user_mediations():
     if len(ums) < BLOB_SIZE:
         ums[-1]['isLast'] = True
         ums[-1]['blobSize'] = BLOB_SIZE
-        if before_ums is not None:
+        if before_ums.count() > 0:
             comp_size = BLOB_SIZE - len(ums)
             comp_before_ums = query.filter(UserMediation.id < before_ums[0].id)\
                               .order_by(UserMediation.id.desc())\
@@ -160,7 +160,7 @@ def update_user_mediations():
                               .from_self()\
                               .order_by(UserMediation.id)
             ums = [um._asdict(include=um_include) for um in comp_before_ums] + ums
-            around_index += comp_size
+            around_index += comp_before_ums.count()
     if around_um:
         ums[around_index]['isAround'] = True
     # PRINT
