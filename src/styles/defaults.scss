@@ -13,17 +13,20 @@ body {
     max-width: 500px;
     margin: 0 auto;
     min-height: 100%;
-    background-color: $menu-red;
-    background-image: url('/icons/logo-group.svg');
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
+    &--loading {
+      background-color: $menu-red;
+      background-image: url('/icons/logo-group.svg');
+      background-size: 80%;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
 }
 
 .app {
   color: $dark-grey;
   font-family: $font-family;
-  min-height: 100%;
+  min-height: 100vh;
+  position: relative;
 }
 
 .h2 {

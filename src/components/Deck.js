@@ -5,8 +5,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { rgb_to_hsv } from 'colorsys'
 
-import Card, { AROUND } from './Card'
+import Card, { CURRENT } from './Card'
 import Icon from './Icon'
+import { debug, warn } from '../utils/logguers'
 
 import { flip, unFlip } from '../reducers/navigation'
 
@@ -29,10 +30,10 @@ class Deck extends Component {
   }
   handleSetTypeCard = (cardProps, cardState) => {
     // only set things for the current Card
-    if (cardState.type !== AROUND) {
+    if (cardState.type !== CURRENT) {
       return
     }
-    this.props.isDebug && console.log('DEBUG: Deck - handleSetTypeCard')
+    this.props.isDebug && debug('Deck - handleSetTypeCard')
     // no need to set in state the current cardProps
     this.currentCardProps = cardProps
     this.currentCardState = cardState
@@ -52,10 +53,10 @@ class Deck extends Component {
     const { handleNextItemCard, isDebug } = this.props
     const { items } = this.state
     if (!items) {
-      console.warn('items is not defined')
+      warn('items is not defined')
       return
     }
-    isDebug && console.log('DEBUG: Deck - handleNextItemCard')
+    isDebug && debug('Deck - handleNextItemCard')
     // new state
     this.items = items.map(index => index + diffIndex)
     const newState = { cursor: 0,
@@ -67,21 +68,21 @@ class Deck extends Component {
     handleNextItemCard && handleNextItemCard(diffIndex, this)
   }
   handleRelaxItemCard = data => {
-    this.props.isDebug && console.log('DEBUG: Deck - handleResetItemCard')
+    this.props.isDebug && debug('Deck - handleResetItemCard')
     this.setState({ cursor: 0 })
   }
   handleResetItems = (config = {}) => {
     // unpack
     const { isDebug } = this.props
     const contents = config.contents || this.props.contents
-    const aroundIndex = config.aroundIndex || this.props.aroundIndex
+    const currentIndex = config.currentIndex || this.props.currentIndex
     if (!contents) {
       return
     }
-    isDebug && console.log(`DEBUG: Deck - handleResetItems aroundIndex=${aroundIndex}`)
+    isDebug && debug(`Deck - handleResetItems currentIndex=${currentIndex}`)
     // we need to determine the dynamic mapping of the deck
     const items = [...Array(contents.length).keys()]
-      .map(index => index - (aroundIndex > 0 ? aroundIndex : 0))
+      .map(index => index - (currentIndex > -1 ? currentIndex : 0))
     this.items = items
     // update
     this.setState({ items })
@@ -90,10 +91,10 @@ class Deck extends Component {
     // unpack
     const { items } = this
     const { contents, isDebug } = this.props
-    isDebug && console.log('DEBUG: Deck - handleSetCurrentContent')
+    isDebug && debug('Deck - handleSetCurrentContent')
     // find
-    const aroundIndex = items && items.indexOf(0)
-    const currentContent = contents && contents[aroundIndex]
+    const currentIndex = items && items.indexOf(0)
+    const currentContent = contents && contents[currentIndex]
     this.currentContent = currentContent
     // update
     this.setState({ currentContent })
@@ -124,23 +125,23 @@ class Deck extends Component {
   handleSetReadCard = card => {
     // unpack
     const { handleSetReadCard, isDebug } = this.props
-    isDebug && console.log('DEBUG: Deck - handleSetReadCard')
+    isDebug && debug('Deck - handleSetReadCard')
     // hook if Deck has parent manager component
     handleSetReadCard && handleSetReadCard(card)
   }
   handleSetCursorCard = cursor => {
-    this.props.isDebug && console.log('DEBUG: Deck - handleSetCursorCard')
+    this.props.isDebug && debug('Deck - handleSetCursorCard')
     this.setState({ cursor, transition: 'none' })
   }
   onStart = (event, data) => {
-    this.props.isDebug && console.log('DEBUG: Deck - onStart')
+    this.props.isDebug && debug('Deck - onStart')
     this.setState({ isFlipping: true, clientY: event.clientY })
   }
   onDrag = (event, data) => {
     // unpack
     const { flipRatio, isDebug } = this.props
     const { deckElement } = this.state
-    isDebug && console.log('DEBUG: Deck - onDrag')
+    isDebug && debug('Deck - onDrag')
     // cursor
     const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
     if (!this.props.isFlipped && cursor < -flipRatio) {
@@ -150,27 +151,27 @@ class Deck extends Component {
     }
   }
   onNext = (event, diffIndex) => {
-    this.props.isDebug && console.log('DEBUG: Deck - onNext')
+    this.props.isDebug && debug('Deck - onNext')
     event.preventDefault()
     event.stopPropagation()
     this.handleNextItemCard(diffIndex)
   }
   onStop = (event, data) => {
-    this.props.isDebug && console.log('DEBUG: Deck - onStop')
+    this.props.isDebug && debug('Deck - onStop')
     this.setState({ isFlipping: false, y: null })
   }
   onResize = event => {
-    this.props.isDebug && console.log('DEBUG Deck - onResize')
+    this.props.isDebug && debug('Deck - onResize')
     this.setState({ isResizing: true })
   }
   onTransitionEndCard = (event, cardProps) => {
     // check and unpack
     const { transitions } = this
     const { handleTransitionEnd, isDebug } = this.props
-    isDebug && console.log('DEBUG: Deck - onTransitionEndCard')
+    isDebug && debug('Deck - onTransitionEndCard')
     // update the transitions store
     if (!transitions) {
-      console.warn('transitions is null while we try to update transition end...? weird')
+      warn('transitions is null while we try to update transition end...? weird')
       return
     }
     const newTransitions = [...transitions]
@@ -196,7 +197,7 @@ class Deck extends Component {
       handleTransitionStart,
       isDebug
     } = this.props
-    isDebug && console.log('DEBUG: Deck - onTransitionStartCard')
+    isDebug && debug('Deck - onTransitionStartCard')
     // at the first time one of the card is transitioning
     // we init a new array
     let newTransitions
@@ -226,7 +227,7 @@ class Deck extends Component {
     // look for content change
     if (nextProps.contents !== contents) {
       if (!isTransitioning) {
-        nextProps.isDebug && console.log('DEBUG: Deck - componentWillReceiveProps')
+        nextProps.isDebug && debug('Deck - componentWillReceiveProps')
         this.handleResetItems(nextProps)
         // init new state
         // transition to 'none' helps
@@ -264,14 +265,14 @@ class Deck extends Component {
     if (isResizing && !prevState.isResizing) {
       this.setState({ isResizing: false })
     }
-    isDebug && console.log('DEBUG: Deck - componentDidUpdate')
+    isDebug && debug('Deck - componentDidUpdate')
     // adapt the items and current content
     if (contents !== prevProps.contents || items !== prevState.items) {
       if (contents && !prevProps.contents) {
-        isDebug && console.log('DEBUG: Deck - componentDidUpdate handleResetItems')
+        isDebug && debug('Deck - componentDidUpdate handleResetItems')
         this.handleResetItems()
       }
-      isDebug && console.log('DEBUG: Deck - componentDidUpdate handleSetCurrentContent')
+      isDebug && debug('Deck - componentDidUpdate handleSetCurrentContent')
       this.handleSetCurrentContent()
     }
     // adapt style given current content
@@ -297,7 +298,9 @@ class Deck extends Component {
       onTransitionEndCard,
       onTransitionStartCard
     } = this
-    const { contents,
+    const { children,
+      contents,
+      extraContents,
       isLoadingBefore,
       isLoadingAfter,
       transitionTimeout,
@@ -322,8 +325,9 @@ class Deck extends Component {
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isFlipDisabled = !items || isTransitioning
-    console.log('RENDER: Deck contents', contents && contents.length, contents,
-    contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
+    const isLoading = isLoadingBefore || isLoadingAfter
+    // console.log('RENDER: Deck contents', contents && contents.length, contents,
+    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: Deck', 'this.state.items', this.state.items)
     // console.log(`RENDER: Deck isLoadingBefore ${isLoadingBefore} isLoadingAfter ${isLoadingAfter}`)
     return (
@@ -346,7 +350,8 @@ class Deck extends Component {
             items && items.map((item, index) =>
               contents && contents[index] &&
               Math.abs(item) < 2 &&
-                <Card content={contents && contents[index]}
+                <Card content={contents && Object.assign({},
+                  contents[index], extraContents && extraContents[index])}
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
@@ -384,7 +389,8 @@ class Deck extends Component {
                     <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
-                  'button--disabled': isFlipDisabled })}
+                  'button--disabled': isFlipDisabled,
+                  'button--hidden': isLoading })}
                   onClick={e => this.props.flip()}
                   style={buttonStyle} >
                   <Icon svg='ico-slideup-w' />
@@ -398,8 +404,7 @@ class Deck extends Component {
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
               </div>
-              <button className='deck__board__profile'
-                style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+              {children}
             </div>
           </div>
         </Draggable>
@@ -409,7 +414,7 @@ class Deck extends Component {
 
 Deck.defaultProps = { deckKey: 0,
   flipRatio: 0.25,
-  // isDebug: false,
+  isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500

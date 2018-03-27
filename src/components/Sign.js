@@ -27,26 +27,30 @@ class Sign extends Component {
         <div className='h1 mb3'>
           Connecte-toi!
         </div>
-        <FormField className={inputClassName}
-          type='email'
-          collectionName='users'
-          name='identifier'
-          placeholder='identifiant (email)' />
-        <FormField className={inputClassName}
-          collectionName='users'
-          name='password'
-          placeholder='password'
-          type='password' />
-        <SubmitButton getBody={form => form.usersById[NEW]}
-          getIsDisabled={form => !form ||
-            !form.usersById ||
-            !form.usersById[NEW] ||
-            !form.usersById[NEW].identifier ||
-            !form.usersById[NEW].password
-          }
-          path='users/signin'
-          storeKey='users'
-          text='Connecter' />
+        <form className='mb4'>
+          <FormField className={inputClassName}
+            type='email'
+            collectionName='users'
+            name='identifier'
+            placeholder='Identifiant (email)'
+            autoComplete='email' />
+          <FormField className={inputClassName}
+            collectionName='users'
+            name='password'
+            type='password'
+            placeholder='Mot de passe'
+            autoComplete='current-password' />
+          <SubmitButton getBody={form => form.usersById[NEW]}
+            getIsDisabled={form => !form ||
+              !form.usersById ||
+              !form.usersById[NEW] ||
+              !form.usersById[NEW].identifier ||
+              !form.usersById[NEW].password
+            }
+            path='users/signin'
+            storeKey='users'
+            text='Connecter' />
+        </form>
         <div className='sign__error mt1'>
           {errors}
         </div>

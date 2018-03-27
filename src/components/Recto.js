@@ -6,7 +6,7 @@ import Loading from './Loading'
 import { IS_DEV } from '../utils/config'
 
 const Recto = props => {
-  const { isLoading, thumbUrl } = props
+  const { id, isLoading, thumbUrl } = props
   const style = isLoading
     ? { backgroundColor: 'black' }
     : { backgroundImage: `url('${thumbUrl}')`}
@@ -19,7 +19,7 @@ const Recto = props => {
          {isLoading && <Loading isForceActive />}
         </div>
         {
-          !isLoading && [
+          id && [
              <img alt='thumb'
                 draggable="false"
                 key={0}

@@ -8,7 +8,7 @@ import Booking from '../components/Booking'
 
 import currentUserMediation from '../selectors/currentUserMediation'
 import currentOffer from '../selectors/currentOffer'
-import headerColor from '../selectors/headerColor'
+import currentHeaderColor from '../selectors/currentHeaderColor'
 
 class Verso extends Component {
 
@@ -30,7 +30,7 @@ class Verso extends Component {
         'verso--booking': this.state.step === 'booking'
       })}>
         <div className='bg-wrapper'>
-          <div className='verso-header' style={{backgroundColor: this.props.headerColor}}>
+          <div className='verso-header' style={{backgroundColor: this.props.currentHeaderColor}}>
             <h2> { thing.name }, de { thing.extraData.author } </h2>
             <h6> {venue.name} </h6>
           </div>
@@ -54,6 +54,6 @@ export default connect(
   state => ({
     currentOffer: currentOffer(state),
     currentUserMediation: currentUserMediation(state),
-    headerColor: headerColor(state),
+    currentHeaderColor: currentHeaderColor(state),
     isFlipped: state.navigation.isFlipped
   }))(Verso)

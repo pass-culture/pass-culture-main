@@ -8,9 +8,9 @@ import Clue from './Clue'
 import Recto from './Recto'
 import Verso from './Verso'
 
-export const AROUND = 'around'
 export const ASIDE_LEFT = 'aside-left'
 export const ASIDE_RIGHT = 'aside-right'
+export const CURRENT = 'current'
 export const HAND_LEFT = 'hand-left'
 export const HAND_RIGHT = 'hand-right'
 
@@ -37,8 +37,8 @@ class Card extends Component {
     this.readTimeout = setTimeout(() => {
       // make sure we are not going to do it circularly
       this.setState({ isRead: true })
-      // check that type is still around
-      this.state.type === AROUND && handleSetRead && handleSetRead(props)
+      // check that type is still current
+      this.state.type === CURRENT && handleSetRead && handleSetRead(props)
     }, readTimeout)
   }
   handleSetType = props => {
@@ -58,7 +58,7 @@ class Card extends Component {
     // determine the type of the card
     let type
     if (item === 0) {
-      type = AROUND
+      type = CURRENT
     } else if (item < 0) {
       if (item >= - 2) {
         type = HAND_LEFT
@@ -89,7 +89,7 @@ class Card extends Component {
           width: deckElement.offsetWidth
         }
         break
-      case AROUND:
+      case CURRENT:
         style = {
           left: 0,
           transition: transition ||
@@ -117,7 +117,7 @@ class Card extends Component {
         break
     }
     // check read
-    isSetRead && type === AROUND && this.handleSetRead(props)
+    isSetRead && type === CURRENT && this.handleSetRead(props)
     // transition happened when the style has been already set once
     // and that the new style has a not none transform
     if (this.state.style && style.transition !== 'none') {
@@ -129,7 +129,7 @@ class Card extends Component {
           }
         })
     }
-    // inform parent about the new around card
+    // inform parent about the new current card
     const newState = { isRead: false,
       style,
       transform,
@@ -164,7 +164,7 @@ class Card extends Component {
       isLast
     } = this.props
     const { x } = data
-    // special reset for the AROUND CARD
+    // special reset for the CURRENT CARD
     // we need to clear the position given by x and y
     // and transfer the position state into the style state one
     this.setState({
@@ -215,7 +215,6 @@ class Card extends Component {
     } = this
     const { content,
       contentLength,
-      deckElement,
       index,
       isFirst,
       isFlipping,
@@ -229,7 +228,7 @@ class Card extends Component {
       transform,
       type
     } = this.state
-    const isDraggable = type === 'around' &&
+    const isDraggable = type === 'current' &&
       !isTransitioning &&
       !this.props.isFlipped &&
       !isFlipping
@@ -239,9 +238,9 @@ class Card extends Component {
     } else if (isLast) {
       bounds.left = 0
     }
-    console.log('RENDER: Card content', content)
+    // console.log('RENDER: Card content', content)
     return (
-      [
+      <div>
         <Draggable axis='x'
           bounds={bounds}
           disabled={!isDraggable}
@@ -249,7 +248,7 @@ class Card extends Component {
           onDrag={onDrag}
           onStop={onStop} >
             <span className={classnames('card absolute', {
-                'card--around': type === AROUND,
+                'card--current': type === CURRENT,
                 'card--draggable': isDraggable
               })}
               ref={element => this.cardElement = element}
@@ -261,13 +260,13 @@ class Card extends Component {
                   item={item} />
               </div>
             </span>
-        </Draggable>,
-        item === 0 && !content.isLoading && (
+        </Draggable>
+        {item === 0 && content.id && (
           <Portal node={document.getElementById('deck')}>
             <Verso />
           </Portal>
-        ),
-        Math.abs(item) < 2 && !content.isLoading && (
+        )}
+        {Math.abs(item) < 2 && content.id && (
           <Portal node={document.getElementById('deck__board')}>
             <Clue {...content}
               contentLength={contentLength}
@@ -275,8 +274,8 @@ class Card extends Component {
               item={item}
               transitionTimeout={transitionTimeout} />
           </Portal>
-        )
-      ]
+        )}
+      </div>
     )
   }
 }

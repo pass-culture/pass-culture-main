@@ -6,39 +6,45 @@ import { closeModal, showModal } from '../reducers/modal'
 import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
-  const { isRequired } = config
+  const { isRequired } = config;
+
   class _withLogin extends Component {
-    componentWillMount = () => {
-      // be sure that user is not defined yet by waiting a bit
-      setTimeout(() => {
-        const { user, requestData } = this.props
-        !user && requestData('GET', `users/me`, { key: 'users', sync: true })
-      }, 1000)
+    componentDidMount() {
+      // setTimeout(() => {
+        !this.props.user && this.props.requestData('GET', 'users/me', { key: 'users', sync: true })
+      // }, 1000)
     }
-    componentWillReceiveProps = nextProps => {
-      const { requestData } = this.props
-      if (nextProps.user && nextProps.user !== this.props.user) {
-        nextProps.closeModal()
-        return
-      } else if (isRequired) {
-        if (nextProps.user === false && this.props.user === null) {
-          requestData('GET', 'users/me', { key: 'users' })
-        } else if (nextProps.user === null && this.props.user === false) {
-          nextProps.showModal(<Sign />, {
-            isCloseButton: false,
-            isUnclosable: true
-          })
-        }
+
+    componentWillReceiveProps(nextProps) {
+      this.handleModalState(nextProps);
+    }
+
+    handleModalState(props) {
+      if (props.activeModal && props.user) {
+        props.closeModal();
+      } else if (!props.activeModal && !props.user && isRequired) {
+        props.showModal(<Sign />, {
+          isCloseButton: false,
+          isUnclosable: true
+        })
       }
     }
-    component
-    render () {
+
+    render() {
       return <WrappedComponent {...this.props} />
     }
   }
+
   return connect(
-    ({ user }) => ({ user }),
-    { closeModal, requestData, showModal }
+    ({ user, modal }) => ({
+      user,
+      activeModal: modal && modal.isActive
+    }),
+    {
+      closeModal,
+      requestData,
+      showModal
+    }
   )(_withLogin)
 }
 

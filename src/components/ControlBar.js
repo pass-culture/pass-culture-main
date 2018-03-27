@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
-import get from 'lodash.get';
 
 import { requestData } from '../reducers/data'
 import Icon from './Icon'
@@ -25,7 +24,6 @@ class ControlBar extends Component {
   }
 
   render () {
-    console.log('currentBooking', this.props.currentBooking)
     return (
       <ul className='control-bar'>
         <li><small className='pass-label'>Mon pass</small><span className='pass-value'>0€</span></li>

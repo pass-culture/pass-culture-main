@@ -38,7 +38,7 @@
     const packed_dir = `${__dirname}/../../webapp-packed-staging/`
     return promisify(exec)(`
       cp -r ${__dirname}/../build/* ${packed_dir};
-      cp ${__dirname}/../pg_config-staging.xml ${packed_dir}/config.xml;
+      cp ${__dirname}/../config-${PG_ENV}.xml ${packed_dir}/config.xml;
       cd ${packed_dir};
       git checkout master;
       git add .;
@@ -64,7 +64,7 @@
     let archive = archiver('zip');
     archive.on('error', raiseAndKill('Could not build archive'));
     archive.pipe(output);
-    archive.file('pg_config-prod.xml', { name: 'config.xml' });
+    archive.file(`config-${PG_ENV}.xml`, { name: 'config.xml' });
     archive.glob('**/**', {cwd: 'build'});
     archive.finalize();
   })

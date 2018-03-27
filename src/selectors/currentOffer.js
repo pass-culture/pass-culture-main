@@ -4,9 +4,10 @@ import get from 'lodash.get';
 import selectCurrentUserMediation from './currentUserMediation'
 
 export default createSelector(
-  state => window.location.pathname.split('/').slice(-1).pop(), // TODO: get data from redux state
+  state => state.router.location.pathname, // TODO: get data from redux state
   state => selectCurrentUserMediation(state),
-  (offerId, currentUserMediation) => {
+  (pathname, currentUserMediation) => {
+    const [ , , offerId ] = pathname.split('/')
     return get(currentUserMediation, 'userMediationOffers', []).find(o => o.id === offerId)
   }
 )

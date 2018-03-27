@@ -1,26 +1,35 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import currentUserMediation from '../selectors/currentUserMediation'
+import currentSource from '../selectors/currentSource'
+import currentVenue from '../selectors/currentVenue'
+import currentThumbUrl from '../selectors/currentThumbUrl'
 import currentOffer from '../selectors/currentOffer'
 
 class OfferInfo extends Component {
 
   render() {
     const {
-      eventOccurence,
-      occurencesAtVenue,
-      thing,
-      thumbUrl,
-      venue,
-    } = this.props.currentOffer;
+      currentOffer: {
+        eventOccurence,
+        occurencesAtVenue,
+      },
+      currentSource: {
+        description,
+      },
+      currentVenue: {
+        name,
+        address,
+      },
+      currentThumbUrl,
+    } = this.props;
 
     return (
       <div className='offer-info'>
-        <img alt='' className='offerPicture' src={thumbUrl} />
-        {thing.description && (
+        {false && <img alt='' className='offerPicture' src={currentThumbUrl} />}
+        {description && (
           <div className='description'>
-            { thing.description.split('\n').map((p, index) => <p key={index}>{p}</p>) }
+            { description.split('\n').map((p, index) => <p key={index}>{p}</p>) }
           </div>
         )}
         {eventOccurence && (
@@ -41,12 +50,12 @@ class OfferInfo extends Component {
             </ul>
           </div>
         )}
-        {venue.address && (
+        {address && (
           <div>
             <h3>Où ?</h3>
             <ul className='address-info'>
-              <li>{venue.name}</li>
-              {venue.address.split(/[,\n\r]/).map((el, index) => (<li key={index}>{el}</li>))}
+              <li>{name}</li>
+              {address.split(/[,\n\r]/).map((el, index) => (<li key={index}>{el}</li>))}
             </ul>
           </div>
         )}
@@ -57,6 +66,8 @@ class OfferInfo extends Component {
 
 export default connect(
   state => ({
+    currentSource: currentSource(state),
+    currentVenue: currentVenue(state),
+    currentThumbUrl: currentThumbUrl(state),
     currentOffer: currentOffer(state),
-    currentUserMediation: currentUserMediation(state),
   }))(OfferInfo)

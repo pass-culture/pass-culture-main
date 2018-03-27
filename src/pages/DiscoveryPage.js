@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
 import { getContentFromUserMediation } from '../utils/content'
+import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
 
 
@@ -28,7 +29,7 @@ class DiscoveryPage extends Component {
       userMediations
     } = this.props
     const { aroundIndex } = this.state
-    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
+    isDebug && debug(`DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
 
     // TODO: remove the case where there is no offerId since it is handled at router level
 
@@ -46,8 +47,9 @@ class DiscoveryPage extends Component {
       if (mediation) {
         url = `${url}/${mediation.id}`
       }
-      isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange replace`)
+      isDebug && debug(`DiscoveryPage - handleUserMediationChange replace`)
       // replace
+      console.log('goto', url)
       history.replace(url)
       this.setState({ aroundIndex: false })
     }
@@ -71,7 +73,7 @@ class DiscoveryPage extends Component {
       this.setState({ userMediations })
       return
     }
-    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
+    isDebug && debug(`DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
     // offer not specified
     if (!offerId) {
       aroundIndex = 0
@@ -81,7 +83,7 @@ class DiscoveryPage extends Component {
       // find the matching um in the dexie buffer
       if (!mediationId) {
         userMediations.find((um, index) => {
-          if (um.userMediationOffers.find(umo => umo.id === offerId)) {
+          if (um.userMediationOffers && um.userMediationOffers.find(umo => umo.id === offerId)) {
             aroundIndex = index
             return true
           }
@@ -98,7 +100,7 @@ class DiscoveryPage extends Component {
       }
       // we need to request around it then
       if (aroundIndex === null && !hasPushPullRequested) {
-        isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
+        isDebug && debug(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
         worker.postMessage({ key: 'dexie-push-pull',
           state: { around: null, mediationId, offerId }})
         this.hasPushPullRequested = true
@@ -106,7 +108,7 @@ class DiscoveryPage extends Component {
         return
       }
     }
-    isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationRequest aroundIndex=${aroundIndex}`)
+    isDebug && debug(`DEBUG: DiscoveryPage - handleUserMediationRequest aroundIndex=${aroundIndex}`)
     // update
     this.setState({ aroundIndex, userMediations })
   }
@@ -119,16 +121,23 @@ class DiscoveryPage extends Component {
     } = props
     if (!offerId) {
       const aroundUserMediation = userMediations.find(um => um.isAround)
+      if (!aroundUserMediation) {
+        history.replace('/decouverte')
+        return
+      }
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
       if (!aroundContent) return;
       let url = `/decouverte/${aroundContent.chosenOffer.id}`
       if (aroundContent.mediation) {
         url = `${url}/${aroundContent.mediation.id}`
       }
-      isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationSuccess replace`)
+      isDebug && debug(`DiscoveryPage - handleUserMediationSuccess replace`)
       // replace
       history.replace(url)
     }
+  }
+  onProfileClick = event => {
+    this.props.history.push('/profile')
   }
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
@@ -147,14 +156,18 @@ class DiscoveryPage extends Component {
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
-          handleUserMediationChange={this.handleUserMediationChange} />
+          handleUserMediationChange={this.handleUserMediationChange} >
+          <button className='discovery-page__profile'
+            onClick={this.onProfileClick}
+            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+        </UserMediationsDeck>
       </main>
     )
   }
 }
 
 DiscoveryPage.defaultProps = {
-  isDebug: true
+  // isDebug: true
 }
 
 export default compose(
