@@ -1,6 +1,7 @@
 # coding=utf-8
 from flask import current_app as app
 
+
 class ApiErrors(Exception):
     def __init__(self):
         self.errors = {}
@@ -50,5 +51,7 @@ class ApiErrors(Exception):
     def maybeRaise(self):
         if len(self.errors)>0:
             raise self
+
+    status_code = None
 
 app.model.ApiErrors = ApiErrors
