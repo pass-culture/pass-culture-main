@@ -4,6 +4,7 @@ def with_app_context(app):
         import models
         import reco
         import routes
+        from utils.includes import get
 
         # ADAPT SQL ALCHEMY TO INSERT APP CONTEXT INSIDE QUERY
         def call_with_app_context(func):
@@ -14,6 +15,7 @@ def with_app_context(app):
         app.model.PcObject.check_and_save = call_with_app_context(app.model.PcObject.check_and_save)
         app.db.session.execute = call_with_app_context(app.db.session.execute)
         app.db.session.query = call_with_app_context(app.db.session.query)
+        app.get = call_with_app_context(get)
         def model_with_app_context(model):
             if not hasattr(model, 'query'):
                 return
