@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="28px" viewBox="0 0 32 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>C3AFB069-E86D-4CD5-8A56-A6893AC6F712</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <radialGradient cx="83.0168382%" cy="8.71051127%" fx="83.0168382%" fy="8.71051127%" r="113.735447%" gradientTransform="translate(0.830168,0.087105),scale(1.000000,0.999238),rotate(132.814199),scale(1.000000,1.018480),translate(-0.830168,-0.087105)" id="radialGradient-1">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.87283237" offset="31.1807255%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="Écrans" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc-tunnel2-valid-wait" transform="translate(-168.000000, -621.000000)">
+            <g id="box" transform="translate(-24.000000, 154.000000)">
+                <g id="BTN-BAR" transform="translate(24.000000, 450.000000)">
+                    <g id="loader2-w-44px-static" transform="translate(166.000000, 11.000000)">
+                        <rect id="crop" x="0" y="0" width="44" height="44"></rect>
+                        <g id="Group" stroke-width="1" fill-rule="evenodd" transform="translate(18.000000, 20.000000) rotate(-1.000000) translate(-18.000000, -20.000000) translate(2.000000, 6.000000)">
+                            <path d="M17.4245971,0 C17.9400629,0 18.3579304,0.417867567 18.3579304,0.933333333 C18.3579304,1.4487991 17.9400629,1.86666667 17.4245971,1.86666667 C8.83237835,1.86666667 1.86666667,8.83826923 1.86666667,17.4385965 C1.86666667,17.9540623 1.4487991,18.3719298 0.933333333,18.3719298 C0.417867567,18.3719298 0,17.9540623 0,17.4385965 C0,7.80769077 7.80109342,0 17.4245971,0 Z" id="spiral-queue" fill="url(#radialGradient-1)" fill-rule="nonzero"></path>
+                            <path d="M21.5070399,16.0631579 C21.5070399,16.5786237 21.0891723,16.9964912 20.5737065,16.9964912 C20.0582408,16.9964912 19.6403732,16.5786237 19.6403732,16.0631579 C19.6403732,14.2995266 18.2122161,12.8701754 16.4508906,12.8701754 C13.5510861,12.8701754 11.2,15.2232574 11.2,18.1263158 C11.2,22.5486502 14.7816216,26.1333333 19.1994345,26.1333333 C25.1352349,26.1333333 29.9474131,21.3170701 29.9474131,15.3754386 C29.9474131,7.91455874 23.9046507,1.86666667 16.4508906,1.86666667 C15.9354248,1.86666667 15.5175573,1.4487991 15.5175573,0.933333333 C15.5175573,0.417867567 15.9354248,0 16.4508906,0 C24.9359369,0 31.8140797,6.88398161 31.8140797,15.3754386 C31.8140797,22.3476472 26.1665212,28 19.1994345,28 C13.7503328,28 9.33333333,23.5792248 9.33333333,18.1263158 C9.33333333,14.1926802 12.5197998,11.0035088 16.4508906,11.0035088 C19.243497,11.0035088 21.5070399,13.2689441 21.5070399,16.0631579 Z" id="spiral" fill="#FFFFFF" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

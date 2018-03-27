@@ -2,7 +2,7 @@
   bottom: -100%;
   left: 0;
   right: 0;
-  transition: bottom 250ms, top 250ms;
+  transition: bottom 250ms, top 250ms, padding 250ms;
   top: 110%;
   z-index: 500;
   padding-top: 50%;
@@ -12,4 +12,84 @@
     height: 100vh;
     overflow: scroll;
   }
+  &--booking {
+    padding-top: 0;
+  }
+
+  .bg-wrapper {
+    color: $text-color;
+    text-align: left;
+    background-image: url(/mosaic-k.svg);
+    background-color: $very-very-light-grey;
+    min-height: 100%;
+    position: relative;
+    .verso-header {
+      background-color: $black;
+      padding: 1rem;
+      color: white;
+      position: relative;
+
+      $triangle-diag: 50px;
+      &:before {
+        content: '';
+        background-color: inherit;
+        width: $triangle-diag;
+        height: $triangle-diag;
+        transform: rotate(45deg);
+        top: -$triangle-diag/2;
+        margin: auto;
+        left: 0;
+        right: 0;
+        position: absolute;
+        z-index: -1;
+      }
+
+      h2 {
+        font-size: 1.7rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+      h6 {
+        font-weight: 500;
+        font-size: 1rem;
+      }
+    }
+
+    .content {
+      padding: 1rem;
+
+      h3 {
+        margin-bottom: 1rem;
+        color: $menu-red;
+        font-weight: 500;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      ul.address-info {
+        list-style: none;
+      }
+    }
+    ul.bottom-bar {
+      background-color: $menu-red;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0;
+      margin: 0;
+      padding: 1rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      li {
+        display: inline-block;
+      }
+    }
+  }
+
+
 }

@@ -1,17 +1,21 @@
 import classnames from 'classnames'
 import React from 'react'
+import { connect } from 'react-redux'
 
-const Clue = ({ chosenOffer,
-  item,
+import Price from './Price'
+import currentUserMediation from '../selectors/currentUserMediation'
+import currentOffer from '../selectors/currentOffer'
+
+const Clue = ({
+  currentOffer,
+  isHidden,
   transitionTimeout
 }) => {
   return (
-    <div className={classnames('clue', { 'clue--hidden': item !== 0 })}
+    <div className={classnames('clue', { 'clue--hidden': isHidden })}
       style={{ transition: `opacity ${transitionTimeout}ms`}}>
       <div>
-        <span>
-          { ("" + chosenOffer.price).replace('.', ',') }&nbsp;€
-        </span>
+        <Price value={currentOffer.price} />
         <span className='clue__sep'>
           &middot;
         </span>
@@ -27,4 +31,9 @@ Clue.defaultProps = {
   transitionTimeout: 250
 }
 
-export default Clue
+export default connect(
+  state => ({
+    currentOffer: currentOffer(state),
+    currentUserMediation: currentUserMediation(state),
+    isFlipped: state.navigation.isFlipped
+  }))(Clue)

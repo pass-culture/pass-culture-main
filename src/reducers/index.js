@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import { routerReducer } from 'react-router-redux'
 
 import browser from './browser'
 import data from './data'
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({ browser,
   loading,
   modal,
   navigation,
-  user
+  user,
+  router: routerReducer,
 })
 
 export default rootReducer

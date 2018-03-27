@@ -2,11 +2,14 @@ import classnames from 'classnames'
 import Draggable from 'react-draggable'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { rgb_to_hsv } from 'colorsys'
 
 import Card, { CURRENT } from './Card'
 import Icon from './Icon'
 import { debug, warn } from '../utils/logguers'
+
+import { flip, unFlip } from '../reducers/navigation'
 
 class Deck extends Component {
   constructor (props) {
@@ -21,7 +24,6 @@ class Deck extends Component {
       isLastCard: false,
       isResizing: false,
       isTransitioning: false,
-      isVerso: false,
       items: null
     }
     this.onDebouncedResize = debounce(this.onResize, props.resizeTimeout)
@@ -131,9 +133,6 @@ class Deck extends Component {
     this.props.isDebug && debug('Deck - handleSetCursorCard')
     this.setState({ cursor, transition: 'none' })
   }
-  handleFlipCard = () => {
-    this.setState({ isVerso: !this.state.isVerso })
-  }
   onStart = (event, data) => {
     this.props.isDebug && debug('Deck - onStart')
     this.setState({ isFlipping: true, clientY: event.clientY })
@@ -141,15 +140,14 @@ class Deck extends Component {
   onDrag = (event, data) => {
     // unpack
     const { flipRatio, isDebug } = this.props
-    const { deckElement, isVerso } = this.state
+    const { deckElement } = this.state
     isDebug && debug('Deck - onDrag')
     // cursor
     const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
-    if (
-      (!isVerso && cursor < -flipRatio) ||
-      (isVerso && cursor > flipRatio)
-    ) {
-      this.handleFlipCard()
+    if (!this.props.isFlipped && cursor < -flipRatio) {
+      this.props.flip()
+    } else if (this.props.isFlipped && cursor > flipRatio) {
+      this.props.unFlip()
     }
   }
   onNext = (event, diffIndex) => {
@@ -287,7 +285,7 @@ class Deck extends Component {
     window.removeEventListener('resize', this.onDebouncedResize)
   }
   render () {
-    const { handleFlipCard,
+    const {
       handleNextItemCard,
       handleRelaxItemCard,
       handleSetCursorCard,
@@ -318,7 +316,6 @@ class Deck extends Component {
       isLastCard,
       isResizing,
       isTransitioning,
-      isVerso,
       items,
       style,
       transition
@@ -344,9 +341,9 @@ class Deck extends Component {
           style={style}
           ref={element => this.element = element }>
           <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0', {
-            'button--hidden': !isVerso,
+            'button--hidden': !this.props.isFlipped,
             'button--disabled': isTransitioning })}
-            onClick={handleFlipCard} >
+            onClick={e => this.props.unFlip()} >
             X
           </button>
           {
@@ -358,7 +355,6 @@ class Deck extends Component {
                   contentLength={contents && contents.length}
                   cursor={cursor}
                   deckElement={deckElement}
-                  handleFlip={handleFlipCard}
                   handleNextItem={handleNextItemCard}
                   handleRelaxItem={handleRelaxItemCard}
                   handleSetCursor={handleSetCursorCard}
@@ -370,7 +366,6 @@ class Deck extends Component {
                   index={index}
                   isResizing={isResizing}
                   isTransitioning={isTransitioning}
-                  isVerso={isVerso}
                   item={item}
                   transition={transition}
                   transitionTimeout={transitionTimeout}
@@ -396,7 +391,7 @@ class Deck extends Component {
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isFlipDisabled,
                   'button--hidden': isLoading })}
-                  onClick={handleFlipCard}
+                  onClick={e => this.props.flip()}
                   style={buttonStyle} >
                   <Icon svg='ico-slideup-w' />
                 </button>
@@ -425,4 +420,10 @@ Deck.defaultProps = { deckKey: 0,
   transitionTimeout: 500
 }
 
-export default Deck
+export default connect(
+  state => ({
+    isFlipped: state.navigation.isFlipped
+  }), {
+    flip,
+    unFlip,
+  })(Deck)

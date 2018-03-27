@@ -17,12 +17,7 @@ ul.control-bar {
       display: block;
       font-size: 1.5em;
     }
-    .button-go {
-      background-color: $white;
-      color: $menu-red;
-      border-top-right-radius: 0;
-      font-weight: 500;
-      font-size: 1.2em;
+    .button--go {
       .price {
         font-weight: normal;
         border-right: thin solid;

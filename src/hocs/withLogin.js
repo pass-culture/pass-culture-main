@@ -20,7 +20,6 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
     handleModalState(props) {
-      console.log(props);
       if (props.activeModal && props.user) {
         props.closeModal();
       } else if (!props.activeModal && !props.user && isRequired) {

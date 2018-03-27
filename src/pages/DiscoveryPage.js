@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
+import { Link } from 'react-router-dom'
+
 
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
@@ -30,6 +32,9 @@ class DiscoveryPage extends Component {
     } = this.props
     const { aroundIndex } = this.state
     isDebug && debug(`DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
+
+    // TODO: remove the case where there is no offerId since it is handled at router level
+
     // we can replace the url but only when
     // there is not yet an offer id (from a /decouverte just onboarding)
     // there is an aroundIndex and we just shift for the first time
@@ -122,6 +127,7 @@ class DiscoveryPage extends Component {
         return
       }
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
+      if (!aroundContent) return;
       let url = `/decouverte/${aroundContent.chosenOffer.id}`
       if (aroundContent.mediation) {
         url = `${url}/${aroundContent.mediation.id}`
@@ -130,9 +136,6 @@ class DiscoveryPage extends Component {
       // replace
       history.replace(url)
     }
-  }
-  onProfileClick = event => {
-    this.props.history.push('/profile')
   }
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
@@ -144,17 +147,14 @@ class DiscoveryPage extends Component {
     }
   }
   render () {
-    // console.log('RENDER: DiscoveryPage this.state.userMediations', this.state.userMediations && this.props.userMediations.length,
-    //  this.state.userMediations && this.state.userMediations.map(um =>
-    //    um && `${um.id} ${um.dateRead}`))
-    // console.log('RENDER: DiscoveryPage this.state.aroundIndex', this.state.aroundIndex)
     return (
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange} >
-          <button className='discovery-page__profile'
-            onClick={this.onProfileClick}
-            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }} />
+          <Link
+            to='/profile'
+            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }}
+            className='discovery-page__profile' />
         </UserMediationsDeck>
       </main>
     )

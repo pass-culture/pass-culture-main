@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import Draggable from 'react-draggable'
 import { Portal } from 'react-portal'
 
@@ -214,14 +215,11 @@ class Card extends Component {
     } = this
     const { content,
       contentLength,
-      deckElement,
-      handleFlipCard,
       index,
       isFirst,
       isFlipping,
       isLast,
       isTransitioning,
-      isVerso,
       item,
       transitionTimeout
     } = this.props
@@ -232,7 +230,7 @@ class Card extends Component {
     } = this.state
     const isDraggable = type === 'current' &&
       !isTransitioning &&
-      !isVerso &&
+      !this.props.isFlipped &&
       !isFlipping
     const bounds = {}
     if (isFirst) {
@@ -242,11 +240,10 @@ class Card extends Component {
     }
     // console.log('RENDER: Card content', content)
     return (
-      [
+      <div>
         <Draggable axis='x'
           bounds={bounds}
           disabled={!isDraggable}
-          key={0}
           position={position}
           onDrag={onDrag}
           onStop={onStop} >
@@ -257,39 +254,33 @@ class Card extends Component {
               ref={element => this.cardElement = element}
               style={style}>
               <div className='card__container' style={{ transform }}>
-                <Recto {...content}
-                  contentLength={contentLength}
-                  index={index}
-                  item={item} />
+                <Recto {...content} />
               </div>
             </span>
-        </Draggable>,
-        item === 0 && content.id && (
-          <Portal key={1} node={document && document.getElementById('deck')}>
-            <Verso {...content}
-              deckElement={deckElement}
-              handleFlipCard={handleFlipCard}
-              isFlipped={isVerso} />
+        </Draggable>
+        {item === 0 && content.id && (
+          <Portal node={document.getElementById('deck')}>
+            <Verso />
           </Portal>
-        ),
-        item > -2 && item < 2 && content.id && (
-          <Portal key={2} node={document && document.getElementById('deck__board')}>
-            <Clue {...content}
-              contentLength={contentLength}
-              index={index}
-              item={item}
-              transitionTimeout={transitionTimeout} />
+        )}
+        {Math.abs(item) < 2 && content.id && (
+          <Portal node={document.getElementById('deck__board')}>
+            <Clue isHidden={item !== 0} />
           </Portal>
-        )
-      ]
+        )}
+      </div>
     )
   }
 }
 
-Card.defaultProps = { isSetRead: true,
+Card.defaultProps = {
+  isSetRead: true,
   readTimeout: 3000,
   transitionDelay: 100,
-  transitionTimeout: 250
+  transitionTimeout: 250,
 }
 
-export default Card
+export default connect(
+  state => ({
+    isFlipped: state.navigation.isFlipped
+  }))(Card)

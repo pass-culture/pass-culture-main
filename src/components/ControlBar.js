@@ -1,60 +1,57 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from "react-router-dom";
 
-import Booking from './Booking'
 import { requestData } from '../reducers/data'
-import { showModal } from '../reducers/modal'
 import Icon from './Icon'
+import currentBooking from '../selectors/currentBooking'
+import currentUserMediation from '../selectors/currentUserMediation'
+import currentOffer from '../selectors/currentOffer'
 
 class ControlBar extends Component {
-  onClickBook = () => {
-    const { showModal } = this.props
-    showModal(<Booking {...this.props} />)
+
+  onClickFavorite(type) {
+    this.props.requestData('POST', 'userMediations', {
+      body: [{
+        id: this.props.currentUserMediation.id,
+        isFavorite: true
+      }]
+    })
   }
-  onClickFavorite = type => {
-    const { id, requestData } = this.props
-    requestData('POST', 'userMediations', { body: [{ id,
-      isFavorite: true
-    }] })
+
+  onClickShare() {
+    // TODO
   }
+
   render () {
-    const { onClickBook,
-      onClickFavorite,
-      onClickShare
-    } = this
-    const {
-      booking,
-      userMediationBookings,
-      chosenOffer,
-     } = this.props
     return (
       <ul className='control-bar'>
         <li><small className='pass-label'>Mon pass</small><span className='pass-value'>0€</span></li>
         <li>
-          <button className='button button--icon button--xlarge'
-            onClick={onClickFavorite} >
+          <button className='button button--secondary'
+            onClick={e => this.onClickFavorite(e)} >
             <Icon svg={this.props.isFavorite ? 'ico-like-w' : 'ico-like-w'} />
           </button>
         </li>
         <li>
-          <button className='button button--icon button--xlarge'
-            onClick={onClickShare}>
+          <button className='button button--secondary'
+            onClick={e => this.onClickShare(e)}>
             <Icon svg='ico-share-w' />
           </button>
         </li>
         <li>
-          <button className='button button-go'
-            onClick={onClickBook} >
-            <span className='price'>{`${chosenOffer.price}€`}</span>
-            {
-              (
-                booking ||
-                (userMediationBookings && userMediationBookings.length > 0)
-              )
-                ? 'Mes réservations'
-                : 'J\'y vais!'
-            }
-          </button>
+          { this.props.currentBooking ? (
+            <Link to="/reservations" className='button button--primary button--inversed button--go'>
+              <Icon name='Check' />
+              {' Réservé'}
+            </Link>
+          ) : (
+            <button className='button button--primary button--go'
+              onClick={e => this.props.onClickBook()} >
+              <span className='price'>{`${this.props.currentOffer.price}€`}</span>
+              J'y vais!
+            </button>
+          )}
         </li>
       </ul>
     )
@@ -63,8 +60,9 @@ class ControlBar extends Component {
 
 export default connect(
   state => ({
-    booking: state.data.bookings && state.data.bookings[0],
-    userId: state.user && state.user.id
-  }),
-  { requestData, showModal }
-)(ControlBar)
+    currentBooking: currentBooking(state),
+    currentUserMediation: currentUserMediation(state),
+    currentOffer: currentOffer(state),
+  }), {
+  requestData
+})(ControlBar)
