@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
 
+from utils.config import IS_DEV
+
 app = Flask(__name__, static_url_path='/static')
 
 app.secret_key = 'dev_secret_key'  # FIXME: get this from the environment
@@ -19,4 +21,4 @@ with app.app_context():
     import routes
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True, use_reloader=True)
+    app.run(host="0.0.0.0", debug=IS_DEV, use_reloader=True)
