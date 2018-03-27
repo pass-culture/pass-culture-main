@@ -29,6 +29,9 @@ class DiscoveryPage extends Component {
     } = this.props
     const { aroundIndex } = this.state
     isDebug && console.log(`DEBUG: DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
+
+    // TODO: remove the case where there is no offerId since it is handled at router level
+
     // we can replace the url but only when
     // there is not yet an offer id (from a /decouverte just onboarding)
     // there is an aroundIndex and we just shift for the first time

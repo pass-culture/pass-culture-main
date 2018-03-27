@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import Draggable from 'react-draggable'
 import { Portal } from 'react-portal'
 
@@ -215,13 +216,11 @@ class Card extends Component {
     const { content,
       contentLength,
       deckElement,
-      handleFlipCard,
       index,
       isFirst,
       isFlipping,
       isLast,
       isTransitioning,
-      isVerso,
       item,
       transitionTimeout
     } = this.props
@@ -232,7 +231,7 @@ class Card extends Component {
     } = this.state
     const isDraggable = type === 'around' &&
       !isTransitioning &&
-      !isVerso &&
+      !this.props.isFlipped &&
       !isFlipping
     const bounds = {}
     if (isFirst) {
@@ -289,4 +288,7 @@ Card.defaultProps = {
   transitionTimeout: 250,
 }
 
-export default Card
+export default connect(
+  state => ({
+    isFlipped: state.navigation.isFlipped
+  }))(Card)
