@@ -419,7 +419,7 @@ class Deck extends Component {
 
 Deck.defaultProps = { deckKey: 0,
   flipRatio: 0.25,
-  // isDebug: false,
+  isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500

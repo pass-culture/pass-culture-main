@@ -7,13 +7,15 @@ import UserMediationsDebug from './UserMediationsDebug'
 import { requestData } from '../reducers/data'
 import { IS_DEV } from '../utils/config'
 import { getContentFromUserMediation } from '../utils/content'
-import { debug } from '../utils/logguers'
+import { debug, warn } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
 
 class UserMediationsDeck extends Component {
   constructor() {
     super()
-    this.state = { aroundIndex: null,
+    this.state = { afterLimit: null,
+      aroundIndex: null,
+      beforeLimit: null,
       contents: null,
       extraContents: null,
       isLoadingBefore: false,
@@ -21,31 +23,34 @@ class UserMediationsDeck extends Component {
       isTransitioning: false
     }
   }
-  handleBeforeContent = diffIndex => {
+  handleBeforeContent = () => {
     // unpack and check
+    const { nextAroundIndex } = this
     const { isDebug,
       userMediations
     } = this.props
-    const { aroundIndex,
-      beforeLimit,
+    const { beforeLimit,
       contents,
       isLoadingBefore
     } = this.state
-    if (aroundIndex === null || aroundIndex < 0) {
+    if (beforeLimit === null) {
       return
     }
-    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} beforeLimit=${beforeLimit}`)
+    isDebug && debug(`UserMediationsDeck - handleBeforeContent nextAroundIndex=${nextAroundIndex} beforeLimit=${beforeLimit}`)
     // compute
-    const isBeforeSync = aroundIndex < beforeLimit
+    const isBeforeSync = nextAroundIndex <= beforeLimit
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
     if (isBeforeSync && !isLoadingBefore) {
+      /*
       const extraContents = contents.map((content, index) =>
         index === 0 && { isLoading: true })
-      this.setState({ extraContents,
+      */
+      this.setState({
+        // extraContents,
         isLoadingBefore: true })
-      const beforeAroundIndex = Math.max(0, aroundIndex - diffIndex)
+      const beforeAroundIndex = Math.max(0, nextAroundIndex)
       const aroundUserMediation = userMediations[beforeAroundIndex]
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
       worker.postMessage({ key: 'dexie-push-pull',
@@ -53,8 +58,9 @@ class UserMediationsDeck extends Component {
       return
     }
   }
-  handleAfterContent = diffIndex => {
+  handleAfterContent = () => {
     // check unpack
+    const { nextAroundIndex } = this
     const { isDebug,
       userMediations
     } = this.props
@@ -63,23 +69,25 @@ class UserMediationsDeck extends Component {
       contents,
       isLoadingAfter
     } = this.state
-    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex}`)
-    if (aroundIndex === null || aroundIndex > userMediations.length) {
+    if (afterLimit === null) {
       return
     }
-    isDebug && debug(`UserMediationsDeck - handleAfterContent aroundIndex=${aroundIndex} afterLimit=${afterLimit}`)
+    isDebug && debug(`UserMediationsDeck - handleAfterContent nextAroundIndex=${nextAroundIndex} afterLimit=${afterLimit}`)
     // compute
-    const isAfterSync = aroundIndex > afterLimit
+    const isAfterSync = nextAroundIndex >= afterLimit
     // if it is not defined
     // it means we need to do ask the backend
     // to update the dexie blob at the good current around
     if (isAfterSync && !isLoadingAfter) {
+      /*
       const extraContents = contents.map((content, index) =>
         index === contents.length - 1 && { isLoading: true })
-      this.setState({ extraContents,
+      */
+      this.setState({
+        // extraContents,
         isLoadingAfter: true })
       const afterAroundIndex = Math.min(userMediations.length - 1,
-        aroundIndex - diffIndex)
+        nextAroundIndex)
       const aroundUserMediation = userMediations[afterAroundIndex]
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
       worker.postMessage({ key: 'dexie-push-pull',
@@ -102,15 +110,16 @@ class UserMediationsDeck extends Component {
     // determine what should be the actual aroundIndex
     // ie the index inside de userMediations dexie blob that
     // is the centered card
+    let newAroundIndex
     if (aroundIndex === null) {
       const isReads = userMediations.map(userMediation =>
         userMediation.dateRead !== null)
       isReads.reverse()
       const reversedFirstReadIndex = isReads.indexOf(true)
       if (reversedFirstReadIndex === -1) {
-        newState.aroundIndex = 0
+        newAroundIndex = 0
       } else {
-        newState.aroundIndex = userMediations.length - 1 - reversedFirstReadIndex + 1
+        newAroundIndex = userMediations.length - 1 - reversedFirstReadIndex + 1
         /*
         const dateReads = userMediations.map(userMediation =>
           userMediation.dateRead && moment(userMediation.dateRead))
@@ -126,50 +135,58 @@ class UserMediationsDeck extends Component {
       // by matching ids
       const aroundUserMediation = dirtyUserMediations[aroundIndex]
       if (!aroundUserMediation) {
-        console.warn('aroundUserMediation is not defined')
+        warn('aroundUserMediation is not defined')
         return
       }
       const aroundId = aroundUserMediation.id
-      newState.aroundIndex = userMediations.map(userMediation => userMediation.id)
+      isDebug && debug(`UserMediationsDeck - handleSetContents aroundId=${aroundId}`)
+      newAroundIndex = userMediations.map(userMediation => userMediation.id)
                                            .indexOf(aroundId)
-      isDebug && console.log(`DEBUG: UserMediationsDeck - handleSetContents dirtyUserMediations aroundIndex=${aroundIndex}`)
+      isDebug && debug(`UserMediationsDeck - handleSetContents newAroundIndex=${newAroundIndex}`)
     } else {
-      newState.aroundIndex = aroundIndex
+      newAroundIndex = aroundIndex
     }
     // set the current index
-    Object.assign(newState, { currentIndex: aroundIndex + 1,
-      contents: [{}].concat(userMediations.map(getContentFromUserMediation))
-        .concat([{}]),
+    Object.assign(newState, { aroundIndex: newAroundIndex,
+      currentIndex: newAroundIndex + 1,
+      contents: [{ isLoading: true }].concat(userMediations.map(getContentFromUserMediation))
+        .concat([{ isLoading: true }]),
       dirtyUserMediations: null
     })
     // update
     this.setState(newState)
   }
-  handleNextItemCard = (diffIndex, deckElement) => {
+  handleNextItemCard = diffIndex => {
     // unpack
     const { isDebug } = this.props
     isDebug && debug('UserMediationsDeck - handleNextItemCard')
     // update around
-    const aroundIndex = this.state.aroundIndex - diffIndex
+    this.nextAroundIndex = this.state.aroundIndex - diffIndex
     // set state
-    this.setState({ aroundIndex })
+    this.setState({ aroundIndex: this.nextAroundIndex })
     // before or after
     diffIndex > 0
-      ? this.handleBeforeContent(diffIndex)
-      : this.handleAfterContent(diffIndex)
+      ? this.handleBeforeContent()
+      : this.handleAfterContent()
   }
   handleSetAfterLimit = props => {
     const { afterCount, userMediations } = props
     if (!userMediations) {
       return
     }
-    let afterLimit = userMediations.length - 3 - afterCount
+    let afterLimit = userMediations.length - afterCount
     if (afterLimit < 1) { afterLimit = userMediations.length }
     this.setState({ afterLimit })
   }
   handleSetBeforeLimit = props => {
     const { beforeCount, userMediations } = props
-    const beforeLimit = Math.min(beforeCount + 1)
+    if (!userMediations) {
+      return
+    }
+    let beforeLimit = beforeCount
+    if (beforeCount >= userMediations.length) {
+      beforeLimit = 1
+    }
     this.setState({ beforeLimit })
   }
   handleSetReadCard = card => {
@@ -225,10 +242,13 @@ class UserMediationsDeck extends Component {
       isDebug && debug(`UserMediationsDeck - componentWillReceiveProps parent aroundIndex`)
       this.handleSetContents(nextProps)
     }
-    if (nextProps.beforeCount !== beforeCount) {
+    // compute the limit determining when to refresh the deck
+    if (nextProps.userMediations !== userMediations ||
+      nextProps.beforeCount !== beforeCount) {
       this.handleSetBeforeLimit(nextProps)
     }
-    if (nextProps.userMediations !== userMediations || nextProps.afterCount !== afterCount) {
+    if (nextProps.userMediations !== userMediations ||
+      nextProps.afterCount !== afterCount) {
       this.handleSetAfterLimit(nextProps)
     }
   }
@@ -260,8 +280,9 @@ class UserMediationsDeck extends Component {
       if (prevState.aroundIndex === null) {
         // if it is the first time of setting an aroundIndex
         // we need to check that we are not on the edges
-        this.handleBeforeContent(0)
-        this.handleAfterContent(0)
+        this.nextAroundIndex = aroundIndex
+        this.handleBeforeContent()
+        this.handleAfterContent()
       } else {
         // if the aroundIndex has changed we can call
         // a parent method that will do things
@@ -287,7 +308,8 @@ class UserMediationsDeck extends Component {
           handleTransitionEnd={this.handleTransitionEnd}
           handleTransitionStart={this.handleTransitionStart}
           handleNextItemCard={this.handleNextItemCard}
-          handleSetReadCard={this.handleSetReadCard} />,
+          handleSetReadCard={this.handleSetReadCard}
+          isDebug={false} />,
           IS_DEV && this.props.userMediations && <UserMediationsDebug key={1}
             {...this.props} {...this.state} />
     ]

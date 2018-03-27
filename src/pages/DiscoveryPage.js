@@ -117,6 +117,10 @@ class DiscoveryPage extends Component {
     } = props
     if (!offerId) {
       const aroundUserMediation = userMediations.find(um => um.isAround)
+      if (!aroundUserMediation) {
+        history.replace('/decouverte')
+        return
+      }
       const aroundContent = getContentFromUserMediation(aroundUserMediation)
       let url = `/decouverte/${aroundContent.chosenOffer.id}`
       if (aroundContent.mediation) {
