@@ -33,7 +33,14 @@ um_include = [
             {
                 "key": "offer",
                 "sub_joins": [
-                    "eventOccurence",
+                    {
+                        "key": "eventOccurence",
+                        "sub_joins": ["event", "venue"],
+                    },
+                    {
+                        "key": "venue",
+                        "sub_joins": ["venue"]
+                    },
                     "thing",
                     "venue"
                 ]
@@ -42,7 +49,6 @@ um_include = [
     }
 ]
 app.um_include = um_include
-
 
 @app.route('/userMediations', methods=['PUT'])
 @login_required
@@ -142,13 +148,22 @@ def update_user_mediations():
     ums += list(unread_ums)
     # AS DICT
     ums = [um._asdict(include=um_include) for um in ums]
-    print([(um['id'], um['dateRead']) for um in ums], len(ums))
-    #print('dateUpdated', [um['dateUpdated'] for um in ums], len(ums))
-    # ADD SOME PREVIOUS BEFORE IF NOT ALREADY
+    # ADD SOME PREVIOUS BEFORE IF ums has not the BLOB_SIZE
     if len(ums) < BLOB_SIZE:
         ums[-1]['isLast'] = True
         ums[-1]['blobSize'] = BLOB_SIZE
+        if before_ums.count() > 0:
+            comp_size = BLOB_SIZE - len(ums)
+            comp_before_ums = query.filter(UserMediation.id < before_ums[0].id)\
+                              .order_by(UserMediation.id.desc())\
+                              .limit(comp_size)\
+                              .from_self()\
+                              .order_by(UserMediation.id)
+            ums = [um._asdict(include=um_include) for um in comp_before_ums] + ums
+            around_index += comp_before_ums.count()
     if around_um:
         ums[around_index]['isAround'] = True
+    # PRINT
+    print('(end) ', [(um['id'], um['dateRead']) for um in ums], len(ums))
     # RETURN
     return jsonify(ums),200
