@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import Booking from '../components/Booking'
 import ControlBar from './ControlBar'
 import OfferInfo from '../components/OfferInfo'
-import Booking from '../components/Booking'
 import MenuButton from '../components/layout/MenuButton'
 
 import { ROOT_PATH } from '../utils/config';
