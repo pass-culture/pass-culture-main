@@ -16,11 +16,15 @@ class Modal extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isActive && !this.props.isActive) {
-      this.openTimeout = setTimeout(() => {
-        this.setState({
-          outside: false
-        })
-      }, 0)
+      if (nextProps.isActive) {
+        this.openTimeout = setTimeout(() => {
+          this.setState({
+            outside: false
+          })
+        }, 0)
+      } else {
+
+      }
     }
   }
 
@@ -66,28 +70,29 @@ class Modal extends Component {
   render () {
     const { ContentComponent,
       isActive,
-      isCloseButton,
+      hasCloseButton,
     } = this.props
-    const { onCloseClick } = this;
     return (
       <div className={classnames('modal', {
-        'modal--active': isActive,
+        'active': isActive,
       })}
         role='dialog'
-        onClick={onCloseClick}>
+        onClick={this.onCloseClick}>
         <div
-          className='modal__dialog'
+          className={classnames('modal-dialog', {
+            fullscreen: this.props.fullscreen
+          })}
           role='document'
           style={Object.assign({transitionDuration: `${this.props.transitionDuration}ms` }, this.transitionRelativePosition())}
           onClick={e => this.stopPropagation(e)}>
-          { isCloseButton && (
+          { hasCloseButton && (
               <button
-                className='button__close'
-                onClick={onCloseClick} >
+                className='close-button'
+                onClick={this.onCloseClick} >
                 <Icon svg='ico-close' />
               </button>
           )}
-          <div className='modal__content'>
+          <div className='modal-content'>
             { ContentComponent && <ContentComponent /> }
           </div>
         </div>
@@ -98,7 +103,7 @@ class Modal extends Component {
 
 Modal.defaultProps = {
   transitionDuration: 250,
-  isCloseButton: true,
+  hasCloseButton: true,
   fromDirection: 'bottom'
 }
 

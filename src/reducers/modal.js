@@ -21,8 +21,8 @@ function modal (state = initialState, action) {
       })
     case SHOW_MODAL:
       return Object.assign({}, state, {
-        config: action.config || state.config,
-        ContentComponent: action.ContentComponent || state.ContentComponent,
+        config: action.config,
+        ContentComponent: action.ContentComponent,
         isActive: true,
       })
     default:

@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import Booking from '../components/Booking'
 import ControlBar from './ControlBar'
 import OfferInfo from '../components/OfferInfo'
-import VersoWrapper from '../components/VersoWrapper'
 import MenuButton from '../components/layout/MenuButton'
 
 import { ROOT_PATH } from '../utils/config';
@@ -32,13 +31,15 @@ class Verso extends Component {
     const { step } = this.state
     const author = source.extraData && source.extraData.author
     return (
-      <div className={classnames('verso', {
-        'flipped': isFlipped,
-      })} >
-        <VersoWrapper hasControlBar>
-          <OfferInfo />
-        </VersoWrapper>
-        <MenuButton borderTop colored />
+      <div className='verso-wrapper' style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-k.svg')` }}>
+        <div className='verso-header' style={{ backgroundColor: headerColor }}>
+          <h2> { source.name }, { author && ("de " + author) } </h2>
+          <h6> { venue.name } </h6>
+        </div>
+        {this.props.hasControlBar && <ControlBar />}
+        <div className='content'>
+          {this.props.children}
+        </div>
       </div>
     )
   }

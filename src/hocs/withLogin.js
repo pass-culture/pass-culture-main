@@ -25,7 +25,7 @@ const withLogin = (config = {}) => WrappedComponent => {
       // } else
       if (!props.activeModal && !props.user && isRequired) {
         props.showModal(<Sign />, {
-          isCloseButton: false,
+          hasCloseButton: false,
           isUnclosable: true
         })
       }
