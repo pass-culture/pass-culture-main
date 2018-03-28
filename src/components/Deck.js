@@ -8,6 +8,7 @@ import { rgb_to_hsv } from 'colorsys'
 import Card, { CURRENT } from './Card'
 import Icon from './Icon'
 import { debug, warn } from '../utils/logguers'
+import { ROOT_PATH } from '../utils/config';
 
 import { flip, unFlip } from '../reducers/navigation'
 
@@ -378,7 +379,8 @@ class Deck extends Component {
             <div className="deck-gradient" style={gradientStyle} />
             <div className='deck__board absolute'
               id='deck__board'
-              ref={element => this.boardElement = element} >
+              ref={element => this.boardElement = element}
+              style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')` }} >
               <div className='deck__board__control flex justify-around'>
                 <button className={classnames('deck__board__before button', {
                   'button--disabled': isBeforeDisabled,
