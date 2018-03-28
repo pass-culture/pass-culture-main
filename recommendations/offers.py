@@ -29,6 +29,7 @@ def get_offers(user, limit=3):
                  .outerjoin(Event)
 
     # CHOOSE OFFER FOR WHICH WE HAVE MEDIATION
+    # TODO WE NEED TO KEEP ONLY ONE BY MEDIATION
     is_mediation = (Mediation.frontText != None) | (Mediation.thumbCount > 0)
     mediation_query = join_query.filter(# (Thing.mediations.any(is_mediation)) |
                                        (Event.mediations.any(is_mediation)))
