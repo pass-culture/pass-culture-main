@@ -4,16 +4,17 @@ import { Link } from "react-router-dom";
 
 import { requestData } from '../reducers/data'
 import Icon from './Icon'
-import currentBooking from '../selectors/currentBooking'
-import currentUserMediation from '../selectors/currentUserMediation'
-import currentOffer from '../selectors/currentOffer'
+import selectBooking from '../selectors/booking'
+import selectOffer from '../selectors/offer'
+import selectUserMediation from '../selectors/userMediation'
+
 
 class ControlBar extends Component {
 
   onClickFavorite(type) {
     this.props.requestData('POST', 'userMediations', {
       body: [{
-        id: this.props.currentUserMediation.id,
+        id: this.props.userMediation.id,
         isFavorite: true
       }]
     })
@@ -40,7 +41,7 @@ class ControlBar extends Component {
           </button>
         </li>
         <li>
-          { this.props.currentBooking ? (
+          { this.props.booking ? (
             <Link to="/reservations" className='button button--primary button--inversed button--go'>
               <Icon name='Check' />
               {' Réservé'}
@@ -48,7 +49,7 @@ class ControlBar extends Component {
           ) : (
             <button className='button button--primary button--go'
               onClick={e => this.props.onClickBook()} >
-              <span className='price'>{`${this.props.currentOffer.price}€`}</span>
+              <span className='price'>{`${this.props.offer.price}€`}</span>
               J'y vais!
             </button>
           )}
@@ -60,9 +61,9 @@ class ControlBar extends Component {
 
 export default connect(
   state => ({
-    currentBooking: currentBooking(state),
-    currentUserMediation: currentUserMediation(state),
-    currentOffer: currentOffer(state),
+    booking: selectBooking(state),
+    userMediation: selectUserMediation(state),
+    offer: selectOffer(state),
   }), {
   requestData
 })(ControlBar)

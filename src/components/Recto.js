@@ -1,25 +1,27 @@
 import classnames from 'classnames'
 import React from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import RectoDebug from './RectoDebug'
 import Loading from './Loading'
+import withSelectors from '../hocs/withSelectors'
+import { getOffer } from '../selectors/offer'
+import { getMediation } from '../selectors/mediation'
+import { getSource } from '../selectors/source'
+import { getThumbUrl } from '../selectors/thumbUrl'
 import { IS_DEV } from '../utils/config'
-
-import currentUserMediation from '../selectors/currentUserMediation'
-import currentHeaderColor from '../selectors/currentHeaderColor'
-import currentThumbUrl from '../selectors/currentThumbUrl'
-
 
 const Recto = props => {
   const {
     id,
     isLoading,
-    currentThumbUrl,
+    item,
+    thumbUrl
   } = props
   const style = isLoading
     ? { backgroundColor: 'black' }
-    : { backgroundImage: `url('${currentThumbUrl}')`}
+    : { backgroundImage: `url('${thumbUrl}')`}
   return (
     <div className='recto'>
        <div className={classnames('card-background', {
@@ -29,8 +31,11 @@ const Recto = props => {
       </div>
       { id && (
         <div>
-          <img alt='thumb'
-            src={currentThumbUrl} />
+          <img
+            alt='thumb'
+            draggable={false}
+            src={thumbUrl}
+          />
           {IS_DEV && <RectoDebug {...props} />}
         </div>
       )}
@@ -38,10 +43,32 @@ const Recto = props => {
   )
 }
 
-export default connect(
-  state => ({
-    currentUserMediation: currentUserMediation(state),
-    currentHeaderColor: currentHeaderColor(state),
-    currentThumbUrl: currentThumbUrl(state),
-    isFlipped: state.navigation.isFlipped
-  }))(Recto)
+export default compose(
+  connect(
+    (state, ownProps) => ({
+      isFlipped: state.navigation.isFlipped,
+      userMediations: state.data.userMediations
+    })),
+  withSelectors({
+    userMediation: [
+      ownProps => ownProps.id,
+      ownProps => ownProps.userMediations,
+      (id, userMediations) => id && userMediations.find(um => um.id === id)
+    ],
+    thumbUrl: [
+      (ownProps, nextState) => nextState.userMediation,
+      userMediation => {
+        if (!userMediation) {
+          return
+        }
+        const mediation = getMediation(userMediation)
+        const userMediationOffers = userMediation.userMediationOffers
+        const offerId = userMediationOffers[
+          Math.floor(Math.random() * userMediationOffers.length)].id
+        const offer = getOffer(offerId, userMediation)
+        const source = getSource(mediation, offer)
+        return getThumbUrl(mediation, source, offer)
+      }
+    ]
+  })
+)(Recto)

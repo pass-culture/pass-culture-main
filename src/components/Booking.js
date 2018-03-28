@@ -4,9 +4,9 @@ import get from 'lodash.get';
 
 import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
-import currentBooking from '../selectors/currentBooking'
-import currentUserMediation from '../selectors/currentUserMediation'
-import currentOffer from '../selectors/currentOffer'
+import selectBooking from '../selectors/booking'
+import selectOffer from '../selectors/offer'
+import selectUserMediation from '../selectors/userMediation'
 
 class Booking extends Component {
   constructor () {
@@ -19,20 +19,21 @@ class Booking extends Component {
   }
 
   onClickConfirm() {
+    const { offer, userMediation, requestData } = this.props
     this.setState({
       bookingInProgress: true
     })
-    this.props.requestData('POST', 'bookings', {
+    requestData('POST', 'bookings', {
       body: {
-        offerId: currentOffer.id,
+        offerId: offer.id,
         quantity: 1,
-        userMediationId: currentUserMediation.id
+        userMediationId: userMediation.id
       }
     })
   }
 
   render () {
-    const token = get(this.props, 'currentBooking.token');
+    const token = get(this.props, 'booking.token');
     const inputStep = !this.state.bookingInProgress && !token;
     const loadingStep = this.state.bookingInProgress && !token;
     const confirmationStep = token;
@@ -47,7 +48,7 @@ class Booking extends Component {
             {this.state.date && this.state.time && (
               <div>
                 <p>
-                  Vous êtes sur le point de réserver cette offre pour {this.props.currentOffer.price}€.
+                  Vous êtes sur le point de réserver cette offre pour {this.props.offer.price}€.
                 </p>
                 <p>
                   <small>Le montant sera déduit de votre pass. Il vous restera O€ après cette réservation.</small>
@@ -87,9 +88,9 @@ class Booking extends Component {
 
 export default connect(
   state => ({
-    currentBooking: currentBooking(state),
-    currentUserMediation: currentUserMediation(state),
-    currentOffer: currentOffer(state),
+    booking: selectBooking(state),
+    offer: selectOffer(state),
+    userMediation: selectUserMediation(state)
   }), {
   requestData
 })(Booking)

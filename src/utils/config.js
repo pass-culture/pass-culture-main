@@ -49,4 +49,20 @@ export const IS_LOCALHOST = Boolean(
     )
 );
 
-export const ROOT_PATH = Boolean(window.cordova) ? window.cordova.file.applicationDirectory : '';
+var CALC_ROOT_PATH = ''
+if (window.cordova) {
+  if (MOBILE_OS=='android') {
+    CALC_ROOT_PATH = 'file:///android_asset/www'
+    document.getElementById('android-statusbar-overlay').style.display = 'block'
+  } else if (MOBILE_OS=='ios') {
+    //TODO
+    CALC_ROOT_PATH = window.location.href.substring(0,1)
+  }
+  document.addEventListener("deviceready",
+                            function () {
+                              window.StatusBar.overlaysWebView(true)
+                            },
+                            false)
+}
+
+export const ROOT_PATH = CALC_ROOT_PATH
