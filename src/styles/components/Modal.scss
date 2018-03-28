@@ -45,8 +45,9 @@
     will-change: transform, opacity;
     backface-visibility: hidden;
     background-color: $menu-red;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    margin-bottom: 0.75rem;
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
     @media (min-width: $lg) {
       // so we can avoid cropping things like dropdown lists inside modal.
       // Test that component if you're changing this value!
@@ -79,6 +80,7 @@
   &--active {
     display: block;
     display: flex;
+    align-items: flex-end;
     opacity: 1;
     // cannot just use opacity: 1 here,
     // the element is display none - not rendered, when this class gets applied

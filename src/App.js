@@ -8,7 +8,6 @@ const App = ({ children, user }) => {
   return (
     <div className='app'>
       {children}
-      {user && <MenuButton />}
       <Modal />
     </div>
   )

@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Icon from './Icon'
+import ProfilePicture from './ProfilePicture'
 import { requestData } from '../reducers/data'
 
 class Menu extends Component {
@@ -17,7 +18,7 @@ class Menu extends Component {
       <div className='menu'>
         <div className='menu__header'>
           <div className='profile-pic'>
-            <img src='/icons/ico-user-w@2x.png' alt='avatar' className='avatar' />
+            <ProfilePicture className='avatar' />
             {this.props.user.publicName}
           </div>
           <div className='account'>

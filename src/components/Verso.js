@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import ControlBar from './ControlBar'
 import OfferInfo from '../components/OfferInfo'
 import Booking from '../components/Booking'
+import MenuButton from '../components/layout/MenuButton'
 
 import currentUserMediation from '../selectors/currentUserMediation'
 import currentOffer from '../selectors/currentOffer'
@@ -45,6 +46,7 @@ class Verso extends Component {
             )}
           </div>
         </div>
+        {this.state.step === 'infos' && <MenuButton borderTop colored />}
       </div>
     )
   }

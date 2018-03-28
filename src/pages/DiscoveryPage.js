@@ -4,6 +4,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import UserMediationsDeck from '../components/UserMediationsDeck'
+import MenuButton from '../components/layout/MenuButton'
 import withLogin from '../hocs/withLogin'
 import { getContentFromUserMediation } from '../utils/content'
 import { debug } from '../utils/logguers'
@@ -149,6 +150,7 @@ class DiscoveryPage extends Component {
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange} >
         </UserMediationsDeck>
+        <MenuButton />
       </main>
     )
   }
