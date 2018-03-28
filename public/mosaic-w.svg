@@ -6,7 +6,7 @@
     <defs>
         <rect id="path-1" x="0" y="0" width="678" height="1128"></rect>
     </defs>
-    <g id="mosaic-w" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="mosaic-w" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.100000001">
         <g id="mosaic">
             <mask id="mask-2" fill="white">
                 <use xlink:href="#path-1"></use>
