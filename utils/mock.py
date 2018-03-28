@@ -22,7 +22,7 @@ def set_from_mock(folder, obj, thumb_id):
         store_public_object(folder,
                             collection_name + '/' + humanize(obj.id),
                             file.read(),
-                            mimes_by_folder)
+                            mimes_by_folder[folder])
     if folder == "thumbs":
         obj.thumbCount = 1
     current_app.model.PcObject.check_and_save(obj)

@@ -135,7 +135,6 @@ class LocalProvider(Iterator):
                     else:
                         print("    Creating thumb #"+str(index)+" for "+str(obj))
                         self.createdThumbs += 1
-                    print('LLLL', thumb)
                     obj.save_thumb(thumb, index)
             if need_save:
                 app.model.PcObject.check_and_save(obj)
