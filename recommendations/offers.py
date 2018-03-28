@@ -23,24 +23,37 @@ def get_offers(user, limit=3):
         )
     print('(reco) not already used offers.count', user_query.count())
 
-    # CHOOSE OFFER FOR WHICH WE HAVE MEDIATION
-    mediation_query = user_query.outerjoin(Thing)\
+    # DO THE JOINS (DO NOT MAKE CONFUSION WITH JOHN KERRY)
+    join_query = user_query.outerjoin(Thing)\
                  .outerjoin(EventOccurence)\
-                 .outerjoin(Event)\
-                 .filter(# (Thing.mediations.any(Mediation.thumbCount > 0)) |
-                         (Event.mediations.any(Mediation.thumbCount > 0)))
+                 .outerjoin(Event)
+
+    # CHOOSE OFFER FOR WHICH WE HAVE MEDIATION
+    is_mediation = (Mediation.frontText != None) | (Mediation.thumbCount > 0)
+    mediation_query = join_query.filter(# (Thing.mediations.any(is_mediation)) |
+                                       (Event.mediations.any(is_mediation)))
     mediation_query_count = mediation_query.count()
-    print('(reco) mediated offers.count', mediation_query.count())
+    print('(reco) mediated offers.count', mediation_query_count)
+    mediation_offers = list(mediation_query.order_by(func.random())\
+                                           .limit(limit))
+    mediation_offer_ids = [m.id for m in mediation_offers]
+
+    # PREPARE FINAL OFFERS
+    final_offers = mediation_offers
 
     # MAYBE FEED WITH SOME COMPLEMENTARY PURE OFFERS
-    final_query = mediation_query
     if mediation_query_count < limit:
-        final_query = mediation_query.filter(# (Thing.thumbCount > 0) |
-                                            (Event.thumbCount > 0))
+        print('(reco) default')
+        default_offers = list(join_query.filter(
+            (~Offer.id.in_(mediation_offer_ids)) &
+            # (Thing.thumbCount > 0) |
+            (Event.thumbCount > 0))
+        .order_by(func.random())\
+        .limit(limit - mediation_query_count))
+        final_offers += default_offers
 
     # RETURN
-    print('(reco) final count', final_query.count())
-    return final_query.order_by(func.random())\
-                .limit(limit)
+    print('(reco) final count', len(final_offers))
+    return final_offers
 
 app.recommendations.get_offers = get_offers
