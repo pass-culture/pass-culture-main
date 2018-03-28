@@ -31,8 +31,11 @@ const Recto = props => {
       </div>
       { id && (
         <div>
-          <img alt='thumb'
-            src={thumbUrl} />
+          <img
+            alt='thumb'
+            draggable={false}
+            src={thumbUrl}
+          />
           {IS_DEV && <RectoDebug {...props} />}
         </div>
       )}
