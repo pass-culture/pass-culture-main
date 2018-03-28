@@ -5,10 +5,9 @@ import { connect } from 'react-redux'
 import ControlBar from './ControlBar'
 import OfferInfo from '../components/OfferInfo'
 import Booking from '../components/Booking'
-
-import currentUserMediation from '../selectors/currentUserMediation'
-import currentOffer from '../selectors/currentOffer'
-import currentHeaderColor from '../selectors/currentHeaderColor'
+import selectHeaderColor from '../selectors/headerColor'
+import selectSource from '../selectors/source'
+import selectVenue from '../selectors/venue'
 
 class Verso extends Component {
 
@@ -20,28 +19,29 @@ class Verso extends Component {
   }
 
   render() {
-    const {
-      thing,
-      venue,
-    } = this.props.currentOffer
+    const { headerColor,
+      isFlipped,
+      source,
+      venue
+    } = this.props
+    const { step } = this.state
+    const author = source.extraData && source.extraData.author
     return (
       <div className={classnames('verso absolute', {
-        'verso--flipped': this.props.isFlipped,
-        'verso--booking': this.state.step === 'booking'
-      })}>
+        'verso--flipped': isFlipped,
+        'verso--booking': step === 'booking'
+      })} >
         <div className='bg-wrapper'>
-          <div className='verso-header' style={{backgroundColor: this.props.currentHeaderColor}}>
-            <h2> { thing.name }, de { thing.extraData.author } </h2>
-            <h6> {venue.name} </h6>
+          <div className='verso-header' style={{ backgroundColor: headerColor }}>
+            <h2> { source.name }, { author && ("de " + author) } </h2>
+            <h6> { venue.name } </h6>
           </div>
-          {this.state.step === 'infos' && <ControlBar onClickBook={e => this.setState({step: 'booking'})} />}
+          { step === 'infos' && <ControlBar onClickBook={e => this.setState({step: 'booking'})} />}
           <div className='content'>
-            {this.state.step === 'infos' && <OfferInfo />}
-            {this.state.step === 'booking' && (
-              <Booking
-                onClickCancel={e => this.setState({step: 'infos'})}
-                onClickFinish={e => this.setState({step: 'infos'})}
-              />
+            { step === 'infos' && <OfferInfo />}
+            { step === 'booking' && (
+              <Booking onClickCancel={e => this.setState({step: 'infos'})}
+                onClickFinish={e => this.setState({step: 'infos'})} />
             )}
           </div>
         </div>
@@ -52,8 +52,8 @@ class Verso extends Component {
 
 export default connect(
   state => ({
-    currentOffer: currentOffer(state),
-    currentUserMediation: currentUserMediation(state),
-    currentHeaderColor: currentHeaderColor(state),
-    isFlipped: state.navigation.isFlipped
+    headerColor: selectHeaderColor(state),
+    isFlipped: state.navigation.isFlipped,
+    source: selectSource(state),
+    venue: selectVenue(state)
   }))(Verso)
