@@ -45,6 +45,10 @@ class PcObject():
                and "-"+key in options['include']:
                 continue
             value = getattr(self, key)
+            if options and options.get('cut'):
+                if isinstance(value, str):
+                    if len(value) > options['cut']:
+                        value = value[:options['cut']] + '...'
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
             elif key == 'firstThumbDominantColor' and value:
@@ -83,7 +87,8 @@ class PcObject():
                         result[key] = list(
                             map(
                                 lambda attr: attr._asdict(
-                                    include=sub_joins
+                                    include=sub_joins,
+                                    cut=options and options.get('cut')
                                 ),
                                 final_value
                             )
@@ -93,7 +98,8 @@ class PcObject():
                                                    result[key]))
                     else:
                         result[key] = value._asdict(
-                            include=sub_joins
+                            include=sub_joins,
+                            cut=options and options.get('cut')
                         )
                         if resolve != None:
                             result[key] = resolve(result[key], options.get('filters', {}))

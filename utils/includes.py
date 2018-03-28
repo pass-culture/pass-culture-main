@@ -1,8 +1,4 @@
-from flask import current_app as app
-
-from utils.string_processing import inflect_engine
-
-offers_include = [
+offers_includes = [
     {
         "key": "eventOccurence",
         "sub_joins": [
@@ -29,15 +25,44 @@ offers_include = [
     }
 ]
 
-includes = {
-    'offers': offers_include
-}
+user_mediations_includes =  [
+    {
+        "key": "mediation",
+        "sub_joins": ["event", "thing"]
+    },
+    {
+        "key": "userMediationBookings",
+        "resolve": (lambda element, filters: element['booking']),
+        "sub_joins": [
+            {
+                "key": "booking"
+            }
+        ]
+    },
+    {
+        "key": "userMediationOffers",
+        "resolve": (lambda element, filters: element['offer']),
+        "sub_joins": [
+            {
+                "key": "offer",
+                "sub_joins": [
+                    {
+                        "key": "eventOccurence",
+                        "sub_joins": ["event", "venue"],
+                    },
+                    {
+                        "key": "venue",
+                        "sub_joins": ["venue"]
+                    },
+                    "thing",
+                    "venue"
+                ]
+            }
+        ]
+    }
+]
 
-# helpful
-""" magic call like get('offers', Offer.price > 10, lambda obj: obj['id']) """
-def get(collection_name, filter = None, resolve = lambda obj: obj):
-    model_name = inflect_engine.singular_noun(collection_name, 1)
-    model = app.model[model_name[0].upper() + model_name[1:]]
-    query = model.query.filter() if filter is None else model.query.filter(filter)
-    include = includes.get(collection_name)
-    return [resolve(obj._asdict(include=include)) for obj in query]
+includes = {
+    'offers': offers_includes,
+    'user_mediations': user_mediations_includes
+}

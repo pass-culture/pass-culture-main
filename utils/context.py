@@ -4,7 +4,7 @@ def with_app_context(app):
         import models
         import reco
         import routes
-        from utils.includes import get
+        from utils.printer import get
 
         # ADAPT SQL ALCHEMY TO INSERT APP CONTEXT INSIDE QUERY
         def call_with_app_context(func):

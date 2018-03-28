@@ -1,19 +1,28 @@
 # -*- coding: utf-8 -*-
+from flask import current_app as app
 import collections
 from decimal import Decimal
 import json
-from pprint import pprint
 
-def listify (query, **kwargs):
-    include = kwargs.get('include', [])
+from utils.includes import includes
+from utils.string_processing import get_camel_string, inflect_engine
+
+def listify (query, include, resolve=lambda obj: obj, **kwargs):
     if isinstance(query, collections.Iterable):
-        elements = list(map(
-            lambda obj: obj._asdict(include=include),
-            query
-        ))
+        elements = [resolve(obj._asdict(include=include, **kwargs)) for obj in query]
     else:
-        elements = [query._asdict(include=include)]
+        elements = [resolve(query._asdict(include=include, **kwargs))]
     return elements
+
+# helpful
+""" magic call like get('offers', Offer.price > 10, lambda obj: obj['id']) """
+def get(collection_name, filter = None, resolve = lambda obj: obj, **kwargs):
+    model_name = get_camel_string(inflect_engine.singular_noun(collection_name, 1))
+    model = app.model[model_name[0].upper() + model_name[1:]]
+    query = model.query.filter() if filter is None else model.query.filter(filter)
+    include = includes.get(collection_name)
+    return listify(query, include, resolve, **kwargs)
+    #[resolve(obj._asdict(include=include, **kwargs)) for obj in query]
 
 class BytesEncoder(json.JSONEncoder):
     def default(self, obj):
