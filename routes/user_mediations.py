@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from sqlalchemy import update
 
-from reco import make_new_recommendations
+from recommendations import get_recommendations
 from utils.rest import expect_json_data
 from utils.config import BEFORE_AFTER_LIMIT, BLOB_SIZE
 from utils.human_ids import dehumanize, humanize
@@ -103,7 +103,7 @@ def update_user_mediations():
     print('(unread) count', unread_ums.count())
     if unread_ums.count() < unread_complementary_length:
         print('(check) need ' + str(unread_complementary_length) + ' unread ums')
-        make_new_recommendations(current_user, unread_complementary_length)
+        get_recommendations(current_user, unread_complementary_length)
     # LIMIT UN READ
     unread_ums = unread_ums.order_by(UserMediation.dateUpdated.desc())\
                            .limit(unread_complementary_length)

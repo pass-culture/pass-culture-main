@@ -1,3 +1,4 @@
+""" recommendations """
 from flask import current_app as app
 from datetime import datetime, timedelta
 
@@ -6,15 +7,15 @@ from utils.attr_dict import AttrDict
 UserMediation = app.model.UserMediation
 UserMediationOffer = app.model.UserMediationOffer
 
-app.reco = AttrDict()
+app.recommendations = AttrDict()
 
-from reco.offers import get_recommended_offers
+from recommendations.offers import get_offers
 
-def make_new_recommendations(user, limit=3):
+def get_recommendations(user, limit=3):
     if user.is_authenticated:
         first_um = UserMediation.query.filter_by(user=user)\
                                 .first()
-    offers = get_recommended_offers(user, limit)
+    offers = get_offers(user, limit)
     print('offers.count', offers.count())
     for (index, offer) in enumerate(offers):
         um = UserMediation()
@@ -27,3 +28,5 @@ def make_new_recommendations(user, limit=3):
         umo.offer = offer
         umo.userMediation = um
         app.model.PcObject.check_and_save(umo)
+
+app.recommendations.get = get_recommendations

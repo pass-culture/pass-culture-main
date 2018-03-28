@@ -1,18 +1,22 @@
+
 offers_includes = [
     {
         "key": "eventOccurence",
         "sub_joins": [
             {
-                "key": "event"
-            }
+                "key": "event",
+                "sub_joins": ['mediations']
+            },
+            "venue"
         ]
     },
+    "occurencesAtVenue",
+    "offerer",
     {
         "key": "thing",
         "sub_joins": [
-            {
-                "key": "venue"
-            }
+            "mediations",
+            "venue"
         ]
     },
     {
@@ -22,7 +26,8 @@ offers_includes = [
                 "key": "mediation"
             }
         ]
-    }
+    },
+    "venue"
 ]
 
 user_mediations_includes =  [
@@ -49,10 +54,6 @@ user_mediations_includes =  [
                     {
                         "key": "eventOccurence",
                         "sub_joins": ["event", "venue"],
-                    },
-                    {
-                        "key": "venue",
-                        "sub_joins": ["venue"]
                     },
                     "thing",
                     "venue"

@@ -7,7 +7,9 @@ import json
 from utils.includes import includes
 from utils.string_processing import get_camel_string, inflect_engine
 
-def listify (query, include, resolve=lambda obj: obj, **kwargs):
+def listify (query, include, resolve=None, **kwargs):
+    if resolve is None:
+        resolve = lambda obj: obj
     if isinstance(query, collections.Iterable):
         elements = [resolve(obj._asdict(include=include, **kwargs)) for obj in query]
     else:
@@ -16,7 +18,9 @@ def listify (query, include, resolve=lambda obj: obj, **kwargs):
 
 # helpful
 """ magic call like get('offers', Offer.price > 10, lambda obj: obj['id']) """
-def get(collection_name, filter = None, resolve = lambda obj: obj, **kwargs):
+def get(collection_name, filter = None, resolve = None, **kwargs):
+    if resolve is None:
+        resolve = lambda obj: obj
     model_name = get_camel_string(inflect_engine.singular_noun(collection_name, 1))
     model = app.model[model_name[0].upper() + model_name[1:]]
     query = model.query.filter() if filter is None else model.query.filter(filter)
@@ -33,5 +37,6 @@ class BytesEncoder(json.JSONEncoder):
         # Let the base class default method raise the TypeErro
         return json.JSONEncoder.default(self, obj)
 
+"""printify(app.get('user_mediations', None, get_content, cut=10)[0])"""
 def printify (elements):
     print(json.dumps(elements, cls=BytesEncoder, indent=2))
