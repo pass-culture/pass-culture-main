@@ -2,70 +2,83 @@ import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Link from './Link'
-import { closeNavigation } from '../reducers/navigation'
+import Icon from './Icon'
+import { requestData } from '../reducers/data'
 
 class Menu extends Component {
-  onLinkClick = href => {
-    const { closeNavigation, history: { push } } = this.props
-    push(href)
-    closeNavigation()
+
+  onSignOutClick = () => {
+    this.props.requestData('GET', 'users/signout')
   }
+
   render () {
-    const { isNavigationActive, user } = this.props
     return (
-      <div className={classnames('menu', { 'menu--active': isNavigationActive })}>
-        <Link className={classnames('link block menu__link mb2', {
-            'menu__link--active': '/decouverte' === window.location.pathname
-          })}
-          onClick={() => this.onLinkClick('/decouverte')}>
-          Découverte
-        </Link>
-        {
-          user && user.userOfferers && user.userOfferers.length > 0 && (
-            <Link className={classnames('link block menu__link mb2', {
-                'menu__link--active': '/pro' === window.location.pathname
-              })}
-              onClick={() => this.onLinkClick('/pro')}>
-              Pro
-            </Link>
-          )
-        }
-        {
-          user && [
-            <Link className={classnames('link block menu__link mb2', {
-                'menu__link--active': window.location.pathname === '/inventaire'
-              })}
-              key={0}
-              onClick={() => this.onLinkClick('/inventaire')}
-            >
-              Inventaire
-            </Link>,
-            <Link className={classnames('link block menu__link mb2', {
-                'menu__link--active': window.location.pathname === '/profile'
-              })}
-              key={1}
-              onClick={() => this.onLinkClick('/profile')}>
-              Profile
-            </Link>
-          ]
-        }
+      <div className='menu'>
+        <div className='menu__header'>
+          <div className='profile-pic'>
+            <img src='/icons/ico-user-w@2x.png' alt='avatar' className='avatar' />
+            {this.props.user.publicName}
+          </div>
+          <div className='account'>
+            <div>Mon Pass</div>
+            <div><strong>0€</strong></div>
+          </div>
+        </div>
+        <ul>
+          <li>
+            <NavLink to='/decouverte'>
+              <Icon svg='ico-offres-w' />
+              Toutes les offres
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to='/reservations'>
+              <Icon svg='ico-calendar-w' />
+              Mes réservations
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to='/favorites'>
+              <Icon svg='ico-like-w' />
+              Mes favoris
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to='/reglages'>
+              <Icon svg='ico-settings-w' />
+              Réglages
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to='/profil'>
+              <Icon svg='ico-user-w' />
+              Mon profil
+            </NavLink>
+          </li>
+        </ul>
+        <div className='stick-to-bottom'>
+          <button onClick={this.onSignOutClick}>
+            <Icon svg='ico-deconnect-w' />
+            Déconnexion
+          </button>
+        </div>
       </div>
     )
   }
 }
 
 export default compose(
-  // withRouter is necessary to  make update the component
-  // given a location path change
-  withRouter,
+  // // withRouter is necessary to  make update the component
+  // // given a location path change
+  // withRouter,
   connect(
     state => ({
-      isNavigationActive: state.navigation.isActive,
       user: state.user
-    }),
-    { closeNavigation }
+    }), {
+      requestData
+    }
   )
 )(Menu)

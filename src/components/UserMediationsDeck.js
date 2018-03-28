@@ -24,7 +24,6 @@ class UserMediationsDeck extends Component {
     }
   }
   handleBeforeContent = () => {
-    console.log('CALLED')
     // unpack and check
     const { nextAroundIndex } = this
     const { isDebug,

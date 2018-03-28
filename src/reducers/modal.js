@@ -1,6 +1,7 @@
 // ACTIONS
 export const CLOSE_MODAL = 'CLOSE_MODAL'
 export const SHOW_MODAL = 'SHOW_MODAL'
+export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
 
 // INITIAL STATE
 const initialState = { ContentComponent: null,
@@ -11,6 +12,10 @@ const initialState = { ContentComponent: null,
 function modal (state = initialState, action) {
   switch (action.type) {
     case CLOSE_MODAL:
+      return Object.assign({}, state, {
+        isActive: false
+      })
+    case LOCATION_CHANGE:
       return Object.assign({}, state, {
         isActive: false
       })
@@ -26,12 +31,13 @@ function modal (state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function closeModal () {
+export function closeModal() {
   return { type: CLOSE_MODAL }
 }
 
-export function showModal (modalElement, config) {
-  return { config,
+export function showModal(modalElement, config) {
+  return {
+    config,
     ContentComponent: () => modalElement,
     type: SHOW_MODAL
   }

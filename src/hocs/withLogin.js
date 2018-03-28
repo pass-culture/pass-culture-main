@@ -20,9 +20,10 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
     handleModalState(props) {
-      if (props.activeModal && props.user) {
-        props.closeModal();
-      } else if (!props.activeModal && !props.user && isRequired) {
+      // if (props.activeModal && props.user) {
+      //   props.closeModal();
+      // } else
+      if (!props.activeModal && !props.user && isRequired) {
         props.showModal(<Sign />, {
           isCloseButton: false,
           isUnclosable: true

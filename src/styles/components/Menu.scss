@@ -1,31 +1,90 @@
 .menu {
-  background-color: black;
-  color: white;
-  left: -$menu-width;
-  height: 110%;
-  padding: 0.5rem;
-  position: fixed;
-  top: calc(#{$header-height} - 1px);
-  transition: all 0.25s ease-out;
-  width: $menu-width;
-  z-index: 20000;
-  &--active {
-    left: 0;
+  position: relative;
+  &__header {
+    width: 100%;
+    padding-bottom: 1rem;
+    position: relative;
+    &:after {
+      content: '';
+      border-bottom: thin solid $black;
+      position: absolute;
+      left: -1rem;
+      right: -1rem;
+      bottom: 0;
+    }
+
+    .profile-pic {
+      display: inline-block;
+      width: 45%;
+      vertical-align: middle;
+      // display: inline-block;
+      text-align: center;
+      padding: 1rem;
+
+      img.avatar {
+        width: 100px;
+        height: auto;
+        display: block;
+        margin: auto;
+        border-radius: 100px;
+        max-width: 100%;
+        max-height: 100%;
+        border: 4px solid;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+      }
+    }
+
+    .account {
+      vertical-align: middle;
+      display: inline-block;
+      width: 55%;
+      // display: inline-block;
+      font-size: 2rem;
+      border-left: thin solid $white;
+      padding: 1rem;
+      font-weight: normal;
+
+      strong {
+        font-weight: 500;
+        font-size: 3rem;
+      }
+    }
   }
-  &__link {
-    background-color: black;
-    border: 0;
-    color: $very-very-light-grey;
-    font-size: 16px;
-    transition: padding-left 1s ease-out;
-    @media (min-width: $sm) {
-      font-size: 26px;
+
+  ul {
+    list-style: none;
+    padding-bottom: 4rem;
+    li {
+      border-top: thin dotted $black;
+      &:first-child {
+        border-top: none;
+      }
     }
-    &:hover {
-      padding-left: $menu-padding-left;
+  }
+  a, button {
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    display: block;
+    line-height: 2rem;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    color: $white;
+    text-decoration: none;
+    img {
+      vertical-align: middle;
+      margin-right: 1rem;
     }
-    &--active {
-      color: $light-blue;
-    }
+  }
+
+  .stick-to-bottom {
+    position: absolute;
+    bottom: -1rem;
+    right: -1rem;
+    left: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background-color: rgba($black, 0.2);
   }
 }
