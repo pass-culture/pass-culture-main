@@ -214,14 +214,11 @@ class Card extends Component {
       onStop
     } = this
     const { content,
-      contentLength,
-      index,
       isFirst,
       isFlipping,
       isLast,
       isTransitioning,
       item,
-      transitionTimeout
     } = this.props
     const { position,
       style,

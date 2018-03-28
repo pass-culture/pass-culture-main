@@ -58,15 +58,15 @@ class Modal extends Component {
         return {left: '-100%'}
       case 'right':
         return {right: '100%'}
+      default:
+        return {};
     }
   }
 
   render () {
     const { ContentComponent,
-      fromDirection,
       isActive,
       isCloseButton,
-      isUnclosable
     } = this.props
     const { onCloseClick } = this;
     return (

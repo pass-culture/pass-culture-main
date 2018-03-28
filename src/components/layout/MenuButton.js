@@ -1,8 +1,5 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { NavLink } from 'react-router-dom'
 
 import { showModal } from '../../reducers/modal'
 import Menu from '../Menu'
@@ -10,7 +7,6 @@ import Menu from '../Menu'
 class MenuButton extends Component {
   render () {
     const {
-      isNavigationActive,
       showModal,
     } = this.props
     return (
@@ -23,8 +19,6 @@ class MenuButton extends Component {
 }
 
 export default connect(
-  state => ({
-    isNavigationActive: state.navigation.isActive,
-  }),
+  state => ({}),
   { showModal }
 )(MenuButton)

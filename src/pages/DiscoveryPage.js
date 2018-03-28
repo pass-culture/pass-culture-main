@@ -2,11 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
-import { Link } from 'react-router-dom'
-
 
 import UserMediationsDeck from '../components/UserMediationsDeck'
-import Menu from '../components/Menu'
 import withLogin from '../hocs/withLogin'
 import { getContentFromUserMediation } from '../utils/content'
 import { debug } from '../utils/logguers'
