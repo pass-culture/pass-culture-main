@@ -38,6 +38,9 @@
     align-items: center;
     li {
       display: inline-block;
+      &.center {
+        margin: 0 auto;
+      }
     }
   }
 }

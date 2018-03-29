@@ -50,7 +50,7 @@ class ControlBar extends Component {
             </Link>
           ) : (
             <button className='button button--primary button--go'
-              onClick={e => this.props.showModal(<Booking />, {fullscreen: true})} >
+              onClick={e => this.props.showModal(<Booking />, {fullscreen: true, maskColor: 'transparent', hasCloseButton: false})} >
               <span className='price'>{`${this.props.offer.price}€`}</span>
               J'y vais!
             </button>

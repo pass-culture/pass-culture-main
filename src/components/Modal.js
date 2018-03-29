@@ -10,35 +10,41 @@ class Modal extends Component {
   constructor() {
     super()
     this.state = {
-      outside: true,
+      translate: true,
+      display: false,
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isActive && !this.props.isActive) {
-      if (nextProps.isActive) {
-        this.openTimeout = setTimeout(() => {
-          this.setState({
-            outside: false
-          })
-        }, 0)
-      } else {
+      // Opening
+      this.setState({
+        display: true,
+      })
+      this.openTimeout = setTimeout(() => {
+        this.setState({
+          translate: false,
+        })
+      }, 0)
+    } else if (!nextProps.isActive && this.props.isActive) {
+      // Closing
+      this.setState({
+        translate: true,
+      })
+      this.closeTimeout = setTimeout(() => {
+        this.setState({
+          display: false,
+        })
+      }, this.props.transitionDuration)
 
-      }
     }
   }
 
   onCloseClick = () => {
     if (this.props.isUnclosable) return;
-    this.setState({
-      outside: true,
-    })
-    this.closeTimeout = setTimeout(() => {
-      const { closeModal, onCloseClick } = this.props
-      onCloseClick && onCloseClick()
-      closeModal()
-    }, this.props.transitionDuration)
-
+    const { closeModal, onCloseClick } = this.props
+    onCloseClick && onCloseClick()
+    closeModal()
   }
 
   stopPropagation(e) {
@@ -52,7 +58,7 @@ class Modal extends Component {
   }
 
   transitionRelativePosition() {
-    if (!this.state.outside) return {top: 0, left: 0};
+    if (!this.state.translate) return {top: 0, left: 0};
     switch(this.props.fromDirection) {
       case 'top':
         return {top: '-100%'}
@@ -68,22 +74,25 @@ class Modal extends Component {
   }
 
   render () {
-    const { ContentComponent,
-      isActive,
+    const {
+      ContentComponent,
       hasCloseButton,
+      maskColor,
+      transitionDuration,
     } = this.props
     return (
       <div className={classnames('modal', {
-        'active': isActive,
+        'active': this.state.display,
       })}
         role='dialog'
+        style={{backgroundColor: maskColor}}
         onClick={this.onCloseClick}>
         <div
           className={classnames('modal-dialog', {
             fullscreen: this.props.fullscreen
           })}
           role='document'
-          style={Object.assign({transitionDuration: `${this.props.transitionDuration}ms` }, this.transitionRelativePosition())}
+          style={Object.assign({transitionDuration: `${transitionDuration}ms` }, this.transitionRelativePosition())}
           onClick={e => this.stopPropagation(e)}>
           { hasCloseButton && (
               <button
@@ -104,7 +113,8 @@ class Modal extends Component {
 Modal.defaultProps = {
   transitionDuration: 250,
   hasCloseButton: true,
-  fromDirection: 'bottom'
+  fromDirection: 'bottom',
+  maskColor: 'rgba(0, 0, 0, 0.8)'
 }
 
 export default connect(({ modal: { config, ContentComponent, isActive } }) =>

@@ -81,7 +81,7 @@ class Booking extends Component {
             {inputStep && this.state.date && this.state.time && (
               <li><button className='button button--primary' onClick={e => this.onClickConfirm()}>Valider</button></li>
             )}
-            {loadingStep && <li><Icon svg='loader-w' /></li>}
+            {loadingStep && <li className='center'><Icon svg='loader-w' /></li>}
             {token && <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>OK</button></li>}
           </ul>
         </div>
