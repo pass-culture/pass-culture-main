@@ -52,7 +52,8 @@ export default compose(
     userMediation: [
       ownProps => ownProps.id,
       ownProps => ownProps.userMediations,
-      (id, userMediations) => id && userMediations.find(um => um.id === id)
+      (id, userMediations) => id && userMediations &&
+        userMediations.find(um => um.id === id)
     ],
     thumbUrl: [
       (ownProps, nextState) => nextState.userMediation,
