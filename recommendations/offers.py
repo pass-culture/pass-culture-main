@@ -43,7 +43,6 @@ def get_offers(user, limit=3):
     final_offers = mediation_offers
 
     # MAYBE FEED WITH SOME COMPLEMENTARY PURE OFFERS
-    """
     if mediation_query_count < limit:
         print('(reco) default')
         default_offers = list(
@@ -58,7 +57,6 @@ def get_offers(user, limit=3):
                       .order_by(func.random())\
                       .limit(limit - mediation_query_count))
         final_offers += default_offers
-    """
     # RETURN
     print('(reco) final count', len(final_offers))
     return final_offers

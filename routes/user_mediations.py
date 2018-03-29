@@ -46,7 +46,7 @@ def update_user_mediations():
         if around is not None:
             print('(special) around_um', around_um)
     # UPDATE FROM CLIENT LOCAL BUFFER
-    print('(update) maybe')
+    print('(update) count', len(request.json))
     for um in request.json:
         print("um['id'], um['dateRead']", um['id'], um['dateRead'])
         update_query = update(UserMediation)\
