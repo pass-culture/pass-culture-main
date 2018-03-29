@@ -46,6 +46,9 @@ export async function fetchData (method, path, config = {}) {
   const result = await fetch(`${API_URL}/${path}`, init)
   // const collectionName = path.split('?')[0]
   if (result.status === 200 || result.status === 201) {
+    if (window.cordova) {
+      window.cordova.plugins.CookieManagementPlugin.flush();
+    }
     return { data: await result.json() }
   } else {
     return { errors: await result.json() }
