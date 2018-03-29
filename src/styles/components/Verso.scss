@@ -1,15 +1,13 @@
 .verso {
-  bottom: -100%;
   left: 0;
   right: 0;
-  transition: bottom 250ms, top 250ms, padding 250ms;
-  top: 110%;
+  transition: padding 250ms, transform 250ms;
+  top: 100%;
   z-index: 500;
   padding-top: 50%;
+  height: 100vh;
   &--flipped {
-    bottom: 0;
-    top: 0;
-    height: 100vh;
+    transform: translate(0, -100vh);
     overflow: scroll;
   }
   &--booking {
