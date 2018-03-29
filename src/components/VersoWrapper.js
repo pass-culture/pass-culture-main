@@ -21,7 +21,7 @@ class Verso extends Component {
       <div className='verso-wrapper' style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-k.svg')` }}>
         <div className='verso-header' style={{ backgroundColor: headerColor }}>
           <h2> { source.name }, { author && ("de " + author) } </h2>
-          <h6> { venue.name } </h6>
+          <h6> { venue && venue.name } </h6>
         </div>
         {this.props.hasControlBar && <ControlBar />}
         <div className='content'>

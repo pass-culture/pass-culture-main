@@ -45,7 +45,8 @@ class UserMediationsDeck extends Component {
       this.setState({ isLoadingBefore: true })
       const beforeAroundIndex = Math.max(0, nextAroundIndex)
       const aroundUserMediation = userMediations[beforeAroundIndex]
-      const aroundContent = getContentFromUserMediation(aroundUserMediation)
+      // const aroundContent = getContentFromUserMediation(aroundUserMediation)
+      const aroundContent = aroundUserMediation
       worker.postMessage({ key: 'dexie-push-pull',
         state: { around: aroundContent.id }})
       return
@@ -126,7 +127,7 @@ class UserMediationsDeck extends Component {
       const aroundId = aroundUserMediation.id
       isDebug && debug(`UserMediationsDeck - handleSetContents aroundId=${aroundId}`)
       newAroundIndex = userMediations.map(userMediation => userMediation.id)
-                                           .indexOf(aroundId)
+                                     .indexOf(aroundId)
       isDebug && debug(`UserMediationsDeck - handleSetContents newAroundIndex=${newAroundIndex}`)
     } else {
       newAroundIndex = aroundIndex
@@ -134,8 +135,10 @@ class UserMediationsDeck extends Component {
     // set the current index
     Object.assign(newState, { aroundIndex: newAroundIndex,
       currentIndex: newAroundIndex + 1,
-      contents: [{ isLoading: true }].concat(userMediations.map(getContentFromUserMediation))
-        .concat([{ isLoading: true }]),
+      contents: [{ isLoading: true }].concat(
+          // userMediations.map(getContentFromUserMediation)
+          userMediations
+        ).concat([{ isLoading: true }]),
       dirtyUserMediations: null
     })
     // update
