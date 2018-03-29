@@ -5,5 +5,5 @@ print('LOCAL DEV MODE: Using disk based object storage')
 
 @app.route('/storage/<bucketId>/<path:objectId>')
 def send_storage_file(bucketId, objectId):
-    print(local_path(bucketId, objectId))
-    return send_file(local_path(bucketId, objectId))
+    path = local_path(bucketId, objectId)
+    return send_file(path, mimetype=open(str(local_path)+".type").read())

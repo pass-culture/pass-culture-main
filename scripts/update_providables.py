@@ -46,7 +46,7 @@ def update_providables(provider, offerer, limit, type, mock=False):
                                if type else PROVIDABLE_TYPES:
             for provider_name in app.local_providers:
                 if provider and provider_name != provider:
-                    print("  Provider " + provider_name + " does not match provider"
+                    print("Provider " + provider_name + " does not match provider"
                           + " name supplied in command line. Not updating")
                     continue
                 provider_type = app.local_providers[provider_name]

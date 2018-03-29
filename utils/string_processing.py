@@ -128,3 +128,6 @@ def get_price_value(price_string):
         return int(value_string)
     else:
         return 0
+
+def get_camel_string (string):
+    return ''.join(word.capitalize() for word in string.split('_'))

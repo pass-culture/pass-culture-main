@@ -1,31 +1,69 @@
-from flask import current_app as app
 
-from utils.string_processing import inflect_engine
-
-offers_include = [
+offers_includes = [
     {
         "key": "eventOccurence",
         "sub_joins": [
             {
-                "key": "event"
+                "key": "event",
+                "sub_joins": ['mediations']
+            },
+            "venue"
+        ]
+    },
+    "occurencesAtVenue",
+    "offerer",
+    {
+        "key": "thing",
+        "sub_joins": [
+            "mediations",
+            "venue"
+        ]
+    },
+    {
+        "key": "userMediationOffers",
+        "sub_joins": [
+            {
+                "key": "mediation"
+            }
+        ]
+    },
+    "venue"
+]
+
+user_mediations_includes =  [
+    {
+        "key": "mediation",
+        "sub_joins": ["event", "thing"]
+    },
+    {
+        "key": "userMediationBookings",
+        "resolve": (lambda element, filters: element['booking']),
+        "sub_joins": [
+            {
+                "key": "booking"
             }
         ]
     },
     {
-        "key": "thing",
+        "key": "userMediationOffers",
+        "resolve": (lambda element, filters: element['offer']),
         "sub_joins": [
             {
-                "key": "venue"
+                "key": "offer",
+                "sub_joins": [
+                    {
+                        "key": "eventOccurence",
+                        "sub_joins": ["event", "venue"],
+                    },
+                    "thing",
+                    "venue"
+                ]
             }
         ]
     }
 ]
 
-locals = locals()
-
-def get(collection_name, filter, resolve = lambda obj: obj):
-    model_name = inflect_engine.singular_noun(collection_name, 1)
-    model = app.model[model_name[0].upper() + model_name[1:]]
-    query = model.query.filter() if filter is None else model.query.filter(filter)
-    include = locals.get(collection_name + '_include')
-    return [resolve(obj._asdict(include=include)) for obj in query]
+includes = {
+    'offers': offers_includes,
+    'user_mediations': user_mediations_includes
+}

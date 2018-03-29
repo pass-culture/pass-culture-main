@@ -33,6 +33,8 @@ def store_public_object(bucket, id, blob, content_type):
     os.makedirs(local_dir(bucket, id), exist_ok=True)
     newFile = open(local_path(bucket, id), "wb")
     newFile.write(blob)
+    newTypeFile = open(str(local_path(bucket, id))+".type", "w")
+    newTypeFile.write(content_type)
 #    swift_con().put_object(bucket,
 #                           id,
 #                           contents=blob,

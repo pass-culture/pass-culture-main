@@ -170,7 +170,7 @@ def do_init():
     booking1.offer = offer1
     booking1.token = 'FUUEEM'
     booking1.userMediation = user_mediation1
-    check_and_save(user_mediation1)
+    check_and_save(booking1)
 
     umb1 = model.UserMediationBooking()
     umb1.booking = booking1
@@ -199,8 +199,17 @@ def do_init():
     offer2.offerer = small_library_offerer
     offer2.eventOccurence = eventOccurence2
     offer2.price = 10
-
     check_and_save(offer2)
+
+    user_mediation2 = model.UserMediation()
+    user_mediation2.user = client_user
+    user_mediation2.validUntilDate = datetime.now() + timedelta(days=2)
+    check_and_save(user_mediation2)
+
+    umo2 = app.model.UserMediationOffer()
+    umo2.offer = offer2
+    umo2.userMediation = user_mediation2
+    check_and_save(umo2)
 
     ## EVENT 3 WITH THUMB MEDIATION
 

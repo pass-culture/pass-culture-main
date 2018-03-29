@@ -1,5 +1,7 @@
 from colorthief import ColorThief
 from flask import current_app as app
+from PIL import Image
+import requests
 import tempfile
 
 from utils.human_ids import humanize
@@ -27,14 +29,30 @@ class HasThumbMixin(object):
                                      + (('_' + str(index)) if index > 0 else '')
 
     def save_thumb(self, thumb, index):
+        image_type = None
+        if isinstance(thumb, str) and thumb[0:4] == 'http':
+            thumb_response = requests.get(thumb)
+            content_type = thumb_response.headers['Content-type']
+            if thumb_response.status_code == 200 and\
+               content_type.split('/')[0] == 'image':
+                thumb = thumb_response.content
+                image_type = content_type.split('/')[1]
+            else:
+                raise ValueError('Error downloading thumb for object '
+                                 + str(self)
+                                 + ' status_code: ' + str(thumb_response.status_code) + ', '
+                                 + ' content-type: ' + content_type)
         with tempfile.TemporaryFile() as tf:
             tf.write(thumb)
             color_thief = ColorThief(tf)
             self.firstThumbDominantColor = bytearray(color_thief.get_color(quality=1))
+            if image_type is None:
+                img = Image.open(tf)
+                image_type = img.format.lower()
         store_public_object("thumbs",
                             self.thumb_storage_id(index),
                             thumb,
-                            "image/jpeg")
+                            "image/"+image_type)
         self.thumbCount = max(index+1, self.thumbCount or 0)
 
 

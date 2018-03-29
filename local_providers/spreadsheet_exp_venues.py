@@ -13,6 +13,11 @@ def read_date(date):
     return datetime.strptime(date.lower(), DATE_FORMAT)
 
 
+def is_filled(info):
+    info = str(info)
+    return info != 'nan' and info.replace(' ', '') != ''
+
+
 Venue = app.model.Venue
 Offerer = app.model.Offerer
 
@@ -68,14 +73,12 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
 
     def getObjectThumb(self, obj, index):
         assert obj.idAtProviders == str(self.line['Ref Lieu'])
-        thumb_request = requests.get(self.line['Lien Image'])
-        if thumb_request.status_code == 200:
-            return thumb_request.content
+        return self.line['Lien Image']
 
     def getObjectThumbDates(self, obj):
         if self.mock:
             return []
-        if self.line['Lien Image'].replace(' ', '') != '':
+        if is_filled(self.line['Lien Image']) != '':
             return [read_date(self.line['Date MAJ'])]
 
 

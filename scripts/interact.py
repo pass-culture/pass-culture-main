@@ -1,6 +1,7 @@
 from flask import Flask
 from sqlalchemy import func, select
 
+from utils.content import *
 from utils.context import with_app_context
 from utils.human_ids import *
 from utils.includes import *
@@ -21,3 +22,6 @@ client_user = User.query\
 pro_user = User.query\
            .filter_by(email='erwan.ledoux@beta.gouv.fr')\
            .first()
+
+# COOL CLI
+#printify(listify(app.recommendations.get_offers(client_user, 2), offers_includes, cut=10))

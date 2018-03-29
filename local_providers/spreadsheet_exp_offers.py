@@ -6,7 +6,6 @@ from os import path
 from pandas import read_csv
 from pathlib import Path
 import re
-import requests
 
 from utils.string_processing import parse_timedelta
 
@@ -17,6 +16,11 @@ HOUR_REGEX = re.compile(r"(\d)h(\d?)$", re.IGNORECASE)
 
 def read_date(date):
     return datetime.strptime(date, DATE_FORMAT)
+
+
+def is_filled(info):
+    info = str(info)
+    return info != 'nan' and info.replace(' ', '') != ''
 
 
 Event = app.model.Event
@@ -78,8 +82,8 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
             providables.append(p_info_offer)
 
-        if str(self.line['Lien Image Accroche']).replace(' ', '') != '' or\
-           str(self.line['Texte Accroche']).replace(' ', '') != '':
+        if is_filled(self.line['Lien Image Accroche']) or\
+           is_filled(self.line['Texte Accroche']):
             p_info_med = app.model.ProvidableInfo()
             p_info_med.type = Mediation
             p_info_med.idAtProviders = str(self.line['Ref Évènement'])
@@ -109,14 +113,14 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
             obj.offerer = app.model.Offerer.query\
                                            .filter_by(idAtProviders=str(self.line['Ref Lieu']))\
                                            .one_or_none()
-            if str(self.line['Places Par Horaire']).replace(' ', '') != '':
+            if is_filled(self.line['Places Par Horaire']):
                 obj.available = int(self.line['Places Par Horaire'])
         elif isinstance(obj, Mediation):
             obj.event = self.providables[0]
             obj.offerer = app.model.Offerer.query\
                                            .filter_by(idAtProviders=str(self.line['Ref Lieu']))\
                                            .one_or_none()
-            if str(self.line['Texte Accroche']).replace(' ', '') != '':
+            if is_filled(self.line['Texte Accroche']):
                 obj.text = str(self.line['Texte Accroche'])
 
         else:
@@ -129,26 +133,22 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
     def getObjectThumb(self, obj, index):
         assert obj.idAtProviders == str(self.line['Ref Évènement'])
-
-        if isinstance(obj, Mediation) :
-            thumb_request = requests.get(self.line['Lien Image Accroche'])
+        thumb_url = None
+        if isinstance(obj, Mediation):
+            thumb_url = self.line['Lien Image Accroche']
         elif isinstance(obj, Event):
-            thumb_request = requests.get(self.line['Lien Image'])
+            thumb_url = self.line['Lien Image']
         else:
             raise ValueError('Unexpected object class in updateObj '
                              + obj.__class__.__name__)
-
-        if thumb_request.status_code == 200:
-            return thumb_request.content
+        return thumb_url
 
     def getObjectThumbDates(self, obj):
         if self.mock:
             return []
-        if (isinstance(obj, Event) or
-            isinstance(obj, Mediation)) and\
-           str(self.line['Lien Image']).replace(' ', '') != '':
+        if (isinstance(obj, Event) and is_filled(self.line.get('Lien Image'))) or\
+           (isinstance(obj, Mediation) and is_filled(self.line.get('Lien Image Accroche'))):
             return [read_date(str(self.line['Date MAJ']))]
-            return read_date(str(self.line['Date MAJ']))
         else:
             return []
 
