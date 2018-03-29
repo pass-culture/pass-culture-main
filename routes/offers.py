@@ -2,6 +2,7 @@ from flask import current_app as app, jsonify, request
 from sqlalchemy.sql.expression import and_, or_
 
 from routes.offerers import check_offerer_user
+from utils.human_ids import dehumanize
 from utils.includes import offers_includes
 from utils.rest import ensure_provider_can_update,\
                        expect_json_data,\
