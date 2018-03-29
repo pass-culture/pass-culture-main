@@ -71,7 +71,7 @@ def make_offer_query():
 def list_offers():
     return handle_rest_get_list(Offer,
                                 query=make_offer_query(),
-                                include=offer_includes,
+                                include=offers_includes,
                                 paginate=50)
 
 
