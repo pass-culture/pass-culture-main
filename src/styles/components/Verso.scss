@@ -1,17 +1,15 @@
 .verso {
   position: absolute;
-  bottom: -100%;
   left: 0;
   right: 0;
-  transition: bottom 250ms, top 250ms, padding 250ms;
-  top: 110%;
+  transition: transform 250ms;
+  top: 0;
+  bottom: 0;
   z-index: 500;
   padding-top: 50%;
+  transform: translate(0, 100vh);
   &.flipped {
-    bottom: 0;
-    top: 0;
-    height: 100vh;
-    overflow: scroll;
+    transform: translate(0, 0);
   }
 
   .bg-wrapper {
