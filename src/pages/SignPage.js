@@ -15,11 +15,11 @@ class SignPage extends Component {
   componentWillReceiveProps (nextProps) {
     const { errors, history, user } = nextProps
     if (user && !errors) {
-      history.push('/decouverte') 
+      history.push('/decouverte')
     }
   }
   onSigninClick = () => {
-    this.props.showModal(<Sign />, { isCloseButton: false })
+    this.props.showModal(<Sign />, { hasCloseButton: false })
   }
   render () {
      const { errors } = this.props

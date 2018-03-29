@@ -2,7 +2,6 @@
   $modal-padding: 24px;
   $modal-padding--large: 10px;
 
-  display: none;
   // on top of header in mobile view
   z-index: 10000;
   position: absolute;
@@ -15,8 +14,9 @@
   transition: height 0.2s ease-out;
 
   // overlay
-  background-color: rgba(236, 236, 236, 0.86);
+  background-color: rgba($black, 0.8);
   will-change: opacity;
+  display: none;
   opacity: 0;
 
   @media (min-width: $lg) {
@@ -24,80 +24,66 @@
     z-index: 1003;
   }
 
-  &__close {
-    background-color: white;
-    $close-padding: 10px;
-    color: $very-dark-grey;
-    font-family: 'Arial', sans-serif;
-    font-size: 1.5em;
-    height: 2.5rem;
-    margin-top: -$close-padding;
-    margin-right: -$close-padding;
-    padding: 0.25rem;
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    z-index: 1;
-    width: 2.5rem;
-    @media (min-width: $lg) {
-      top: 15px;
-      right: 20px;
-    }
+  &.active {
+    display: block;
+    display: flex;
+    align-items: flex-end;
+    opacity: 1;
+    // cannot just use opacity: 1 here,
+    // the element is display none - not rendered, when this class gets applied
+    animation: fade-in 0.5s backwards;
   }
 
-  &__dialog {
-    border-radius: $border-radius;
+  .modal-dialog {
+    transition-timing-function: ease-out;
+    transition-property: top, left;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 1rem;
     box-shadow: $box-shadow;
     max-width: 100%;
     min-height: 4rem;
     max-height: 100%;
     overflow-y: auto;
-    padding-top: $modal-padding;
+    padding: 1rem;
     position: relative;
     text-align: center;
-    width: 750px;
+    width: 100%;
     will-change: transform, opacity;
     backface-visibility: hidden;
+    background-color: $menu-red;
+    margin-bottom: 0.75rem;
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
     @media (min-width: $lg) {
       // so we can avoid cropping things like dropdown lists inside modal.
       // Test that component if you're changing this value!
       overflow-y: visible;
     }
-  }
-
-  &__dialog,
-  &__content {
-    background-color: white;
-    color: $very-dark-grey;
-    font-family: $font-family;
-    font-weight: 500;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    margin-top: 3rem;
-    max-height: 90vh;
-    padding-bottom: 0.5rem;
-    padding-top: 0.5rem;
-  }
-
-  &__close-cta {
-    margin-bottom: 2rem;
-  }
-
-  &--active {
-    display: block;
-    display: flex;
-    opacity: 1;
-    // cannot just use opacity: 1 here,
-    // the element is display none - not rendered, when this class gets applied
-    animation: fade-in 0.5s backwards;
-    .modal__dialog {
-      animation: flip-card-in 0.5s cubic-bezier(0.25, 0.15, 0.3, 1.1) backwards;
+    &.fullscreen {
+      margin: 0;
+      padding: 0;
+      border-radius: 0;
+      height: 100%;
     }
-  }
+    .close-button {
+      background-color: transparent;
+      top: 1rem;
+      right: 1rem;
+      border: none;
+      position: absolute;
+      cursor: pointer;
+      z-index: 10;
+    }
 
-  @media (min-width: $lg) {
-    &__dialog {
-      padding: $modal-padding--large;
+    .modal-content {
+      color: $white;
+      font-family: $font-family;
+      font-weight: 500;
+      height: 100%;
     }
   }
 }

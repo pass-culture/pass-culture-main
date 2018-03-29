@@ -3,7 +3,6 @@ export const SHOW_NAVIGATION = 'SHOW_NAVIGATION'
 export const CLOSE_NAVIGATION = 'CLOSE_NAVIGATION'
 export const SHOW_VERSO = 'SHOW_VERSO'
 export const HIDE_VERSO = 'HIDE_VERSO'
-
 // INITIAL STATE
 const initialState = {
   isActive: false,

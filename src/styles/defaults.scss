@@ -13,6 +13,7 @@ body {
     max-width: 500px;
     margin: 0 auto;
     min-height: 100%;
+    font-size: 16px;
     &--loading {
       background-color: $menu-red;
       background-image: url('/icons/logo-group.svg');

@@ -13,14 +13,14 @@ class RedirectPage extends Component {
     }
   }
 
-  selectFirstOffer(userMediations) {
+  selectOffer(userMediations) {
     return userMediations[0].userMediationOffers[0].id;
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.userMediations.length) {
       this.setState({
-        redirectTo: `/decouverte/${this.selectFirstOffer(nextProps.userMediations)}`
+        redirectTo: `/decouverte/${this.selectOffer(nextProps.userMediations)}`
       })
     }
   }

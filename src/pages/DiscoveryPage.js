@@ -2,15 +2,13 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
-import { Link } from 'react-router-dom'
-
 
 import UserMediationsDeck from '../components/UserMediationsDeck'
+import MenuButton from '../components/layout/MenuButton'
 import withLogin from '../hocs/withLogin'
 import { getContentFromUserMediation } from '../utils/content'
 import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
-
 
 class DiscoveryPage extends Component {
   constructor () {
@@ -151,11 +149,8 @@ class DiscoveryPage extends Component {
       <main className='page discovery-page center'>
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange} >
-          <Link
-            to='/profile'
-            style={{ backgroundImage: "url('../icons/pc_small.jpg')" }}
-            className='discovery-page__profile' />
         </UserMediationsDeck>
+        <MenuButton />
       </main>
     )
   }
@@ -168,5 +163,7 @@ DiscoveryPage.defaultProps = {
 export default compose(
   withRouter,
   withLogin({ isRequired: true }),
-  connect(state => ({ userMediations: state.data.userMediations }))
+  connect(state => ({
+    userMediations: state.data.userMediations
+  }))
 )(DiscoveryPage)

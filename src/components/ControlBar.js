@@ -3,7 +3,9 @@ import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
 
 import { requestData } from '../reducers/data'
+import { showModal } from '../reducers/modal'
 import Icon from './Icon'
+import Booking from './Booking'
 import selectBooking from '../selectors/booking'
 import selectOffer from '../selectors/offer'
 import selectUserMediation from '../selectors/userMediation'
@@ -48,7 +50,7 @@ class ControlBar extends Component {
             </Link>
           ) : (
             <button className='button button--primary button--go'
-              onClick={e => this.props.onClickBook()} >
+              onClick={e => this.props.showModal(<Booking />, {fullscreen: true, maskColor: 'transparent', hasCloseButton: false})} >
               <span className='price'>{`${this.props.offer.price}€`}</span>
               J'y vais!
             </button>
@@ -65,5 +67,6 @@ export default connect(
     userMediation: selectUserMediation(state),
     offer: selectOffer(state),
   }), {
-  requestData
+  requestData,
+  showModal,
 })(ControlBar)

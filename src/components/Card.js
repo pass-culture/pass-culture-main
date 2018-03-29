@@ -218,7 +218,7 @@ class Card extends Component {
       isFlipping,
       isLast,
       isTransitioning,
-      item
+      item,
     } = this.props
     const { position,
       style,

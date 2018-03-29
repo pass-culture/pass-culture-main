@@ -54,7 +54,7 @@ const routes = [
   },
   {
     exact: true,
-    path: '/profile',
+    path: '/profil',
     render: () => <ProfilePage />
   }
 ]

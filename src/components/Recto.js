@@ -16,7 +16,6 @@ const Recto = props => {
   const {
     id,
     isLoading,
-    item,
     thumbUrl
   } = props
   const style = isLoading
