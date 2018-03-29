@@ -57,17 +57,17 @@ class Modal extends Component {
     this.closeTimeout && clearTimeout(this.closeTimeout);
   }
 
-  transitionRelativePosition() {
-    if (!this.state.translate) return {top: 0, left: 0};
+  transform() {
+    if (!this.state.translate) return '';
     switch(this.props.fromDirection) {
       case 'top':
-        return {top: '-100%'}
+        return 'translate(0, -100vh)'
       case 'bottom':
-        return {top: '100%'}
+        return 'translate(0, 100vh)'
       case 'left':
-        return {left: '-100%'}
+        return 'translate(-100vw, 0)'
       case 'right':
-        return {right: '100%'}
+        return 'translate(100vw, 0)'
       default:
         return {};
     }
@@ -92,7 +92,7 @@ class Modal extends Component {
             fullscreen: this.props.fullscreen
           })}
           role='document'
-          style={Object.assign({transitionDuration: `${transitionDuration}ms` }, this.transitionRelativePosition())}
+          style={{transitionDuration: `${transitionDuration}ms`, transform: this.transform() }}
           onClick={e => this.stopPropagation(e)}>
           { hasCloseButton && (
               <button
