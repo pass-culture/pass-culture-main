@@ -10,20 +10,13 @@ class OfferInfo extends Component {
 
   render() {
     const {
-      offer: {
-        eventOccurence,
-        occurencesAtVenue,
-      },
+      offer,
       source: {
         description,
       },
-      venue: {
-        name,
-        address,
-      },
+      venue,
       thumbUrl,
     } = this.props;
-
     return (
       <div className='offer-info'>
         {false && <img alt='' className='offerPicture' src={thumbUrl} />}
@@ -32,17 +25,17 @@ class OfferInfo extends Component {
             { description.split('\n').map((p, index) => <p key={index}>{p}</p>) }
           </div>
         )}
-        {eventOccurence && (
+        {offer && offer.eventOccurence && (
           <div>
             <h3>Quoi ?</h3>
-            <p>{eventOccurence.event.description}</p>
+            <p>{offer.eventOccurence.event.description}</p>
           </div>
         )}
-        {occurencesAtVenue && (
+        {offer && offer.occurencesAtVenue && (
           <div>
             <h3>Quand ?</h3>
             <ul className='dates-info'>
-              { occurencesAtVenue.map((occurence, index) => (
+              { offer.occurencesAtVenue.map((occurence, index) => (
                 <li key={index}>
                   <span> { occurence.beginningDatetime } </span>
                 </li>
@@ -50,12 +43,12 @@ class OfferInfo extends Component {
             </ul>
           </div>
         )}
-        {address && (
+        {venue && venue.address && (
           <div>
             <h3>Où ?</h3>
             <ul className='address-info'>
-              <li>{name}</li>
-              {address.split(/[,\n\r]/).map((el, index) => (<li key={index}>{el}</li>))}
+              <li>{venue.name}</li>
+              {venue.address.split(/[,\n\r]/).map((el, index) => (<li key={index}>{el}</li>))}
             </ul>
           </div>
         )}
