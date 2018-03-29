@@ -14,7 +14,7 @@ body {
     margin: 0 auto;
     min-height: 100%;
     font-size: 16px;
-    &--loading {
+    &.loading {
       background-color: $menu-red;
       background-image: url('/icons/logo-group.svg');
       background-size: 80%;
