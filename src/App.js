@@ -1,9 +1,8 @@
 import React from 'react'
-import { connect } from 'react-redux'
 
 import Modal from './components/Modal'
 
-const App = ({ children, user }) => {
+const App = ({ children }) => {
   return (
     <div className='app'>
       {children}
@@ -12,8 +11,4 @@ const App = ({ children, user }) => {
   )
 }
 
-export default connect(
-  state => ({
-    user: state.user
-  })
-)(App)
+export default App

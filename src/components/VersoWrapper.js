@@ -1,11 +1,7 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Booking from '../components/Booking'
 import ControlBar from './ControlBar'
-import OfferInfo from '../components/OfferInfo'
-import MenuButton from '../components/layout/MenuButton'
 
 import { ROOT_PATH } from '../utils/config';
 import selectHeaderColor from '../selectors/headerColor'
@@ -14,21 +10,12 @@ import selectVenue from '../selectors/venue'
 
 class Verso extends Component {
 
-  constructor () {
-    super ()
-    this.state = {
-      step: 'infos',
-    };
-  }
-
   render() {
     const {
       headerColor,
-      isFlipped,
       source,
       venue
     } = this.props
-    const { step } = this.state
     const author = source.extraData && source.extraData.author
     return (
       <div className='verso-wrapper' style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-k.svg')` }}>
