@@ -1,4 +1,5 @@
 """ bookings routes """
+from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -9,6 +10,7 @@ from utils.token import random_token
 from utils.human_ids import dehumanize
 
 Booking = app.model.Booking
+Offer = app.model.Offer
 
 @app.route('/bookings', methods=['GET'])
 @login_required
@@ -28,12 +30,27 @@ def get_booking(booking_id):
 @expect_json_data
 def post_booking():
     offer_id = request.json.get('offerId')
+    ae = ApiErrors()
+
     if offer_id is None:
-        e = ApiErrors()
-        e.addError('offerId', 'Vous devez adjoindre une offer')
-        return jsonify(e.errors), 400
+        ae.addError('offerId', 'Vous devez adjoindre une offer')
+        return jsonify(ae.errors), 400
+
+    offer = Offer.query.filter_by(id=dehumanize(offer_id)).first()
+
+    if offer is None:
+        ae.addError('offerId', 'offerId ne correspond à aucune offer')
+        return jsonify(ae.errors), 400
+
+    if offer.eventOccurenceId\
+       and offer.eventOccurence.bookingLimitDatetime > datetime.now():
+        ae.addError('global', 'la date limite de réservation de cette offre'
+                              + ' est dépassée')
+        return jsonify(ae.errors), 400
+
     new_booking = Booking()
     new_booking.offerId = dehumanize(offer_id)
+
     token = random_token()
     new_booking.token = token
     new_booking.user = current_user

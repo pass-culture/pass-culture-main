@@ -15,3 +15,18 @@ def test_10_create_booking():
     created_booking_json = r_check.json()
     for (key, value) in booking_json.items():
         assert created_booking_json[key] == booking_json[key]
+
+
+def test_10_create_booking_should_not_work_past_limit_date_for_event():
+    booking_json = {
+        'offerId': humanize(3),
+        'userMediationId': humanize(1)
+    }
+    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    assert r_create.status_code == 201
+    id = r_create.json()['id']
+    r_check = req_with_auth().get(API_URL + '/bookings/'+id)
+    assert r_check.status_code == 200
+    created_booking_json = r_check.json()
+    for (key, value) in booking_json.items():
+        assert created_booking_json[key] == booking_json[key]

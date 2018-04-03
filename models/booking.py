@@ -48,5 +48,4 @@ class Booking(app.model.PcObject,
                            backref='userBookings')
 
 
-
 app.model.Booking = Booking
