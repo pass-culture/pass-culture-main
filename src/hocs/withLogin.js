@@ -13,11 +13,8 @@ const withLogin = (config = {}) => WrappedComponent => {
   class _withLogin extends Component {
 
     componentWillMount = () => {
-      // be sure that user is not defined yet by waiting a bit
-      this.requestUserMeTimeout = setTimeout(() => {
-        const { user, requestData } = this.props
-        !user && requestData('GET', `users/me`, { key: 'users', sync: true })
-      }, requestUserMeTimeout)
+      const { user, requestData } = this.props
+      !user && requestData('GET', `users/me`, { key: 'users', sync: true })
     }
 
     componentWillReceiveProps = nextProps => {
