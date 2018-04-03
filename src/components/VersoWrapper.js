@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -16,7 +17,7 @@ class Verso extends Component {
       source,
       venue
     } = this.props
-    const author = source && source.extraData && source.extraData.author
+    const author = get(source, 'extraData.author')
     return (
       <div className='verso-wrapper' style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-k.svg')` }}>
         <div className='verso-header' style={{ backgroundColor: headerColor }}>

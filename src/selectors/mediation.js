@@ -1,9 +1,10 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import selectUserMediation from './userMediation'
 
 export function getMediation (userMediation) {
-  return userMediation && userMediation.mediation
+  return get(userMediation, 'mediation')
 }
 
 export default createSelector(
