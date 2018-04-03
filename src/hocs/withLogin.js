@@ -6,46 +6,66 @@ import { closeModal, showModal } from '../reducers/modal'
 import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
-  const { isRequired } = config;
+  const { isRequired } = config
+  const requestUserMeTimeout = config.requestUserMeTimeout || 1000
+  const showSignModalTimeout = config.showSignModalTimeout || 500
 
   class _withLogin extends Component {
-    componentDidMount() {
-      // setTimeout(() => {
-        !this.props.user && this.props.requestData('GET', 'users/me', { key: 'users', sync: true })
-      // }, 1000)
+
+    componentWillMount = () => {
+      // be sure that user is not defined yet by waiting a bit
+      this.requestUserMeTimeout = setTimeout(() => {
+        const { user, requestData } = this.props
+        !user && requestData('GET', `users/me`, { key: 'users', sync: true })
+      }, requestUserMeTimeout)
     }
 
-    componentWillReceiveProps(nextProps) {
-      this.handleModalState(nextProps);
-    }
+    componentWillReceiveProps = nextProps => {
+      const { requestData } = this.props
 
-    handleModalState(props) {
-      // if (props.activeModal && props.user) {
-      //   props.closeModal();
-      // } else
-      if (!props.activeModal && !props.user && isRequired) {
-        props.showModal(<Sign />, {
-          hasCloseButton: false,
-          isUnclosable: true
-        })
+      console.log('HEIII', nextProps.user, this.props.user)
+
+
+      if (nextProps.user && nextProps.user !== this.props.user) {
+        // CASE OF LOGIN SUCCESS
+        nextProps.closeModal()
+      } else if (isRequired) {
+        if (nextProps.user === false && this.props.user === null) {
+          // CASE WHERE WE TRIED TO GET THE USER IN THE LOCAL
+          // BUT WE GOT A FALSE RETURN SO WE NEED TO ASK THE BACKEND
+          requestData('GET', 'users/me', { key: 'users' })
+        } else if (nextProps.user === null && this.props.user === false) {
+          // CASE WHERE WE STILL HAVE A USER NULL
+          // SO WE FORCE THE SIGN MODAL
+          nextProps.showModal(<Sign />, {
+            isUnclosable: isRequired
+          })
+        } else if (nextProps.user === false && this.props.user) {
+          // CASE WE JUST SIGNOUT AND AS IS REQUIRED IS TRUE
+          // WE NEED TO PROPOSE A NEW SIGNIN MODAL
+          // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
+          // TO MAKE A SLOW TRANSITION
+          this.showSignModalTimeout = setTimeout(() =>
+            nextProps.showModal(<Sign />, {
+              isUnclosable: isRequired
+            }), showSignModalTimeout)
+        }
       }
     }
 
-    render() {
+    componentWillUnmount () {
+      this.requestUserMeTimeout && clearTimeout(this.requestUserMeTimeout)
+      this.showSignModalTimeout && clearTimeout(this.showSignModalTimeout)
+    }
+
+    render () {
       return <WrappedComponent {...this.props} />
     }
-  }
 
+  }
   return connect(
-    ({ user, modal }) => ({
-      user,
-      activeModal: modal && modal.isActive
-    }),
-    {
-      closeModal,
-      requestData,
-      showModal
-    }
+    ({ user }) => ({ user }),
+    { closeModal, requestData, showModal }
   )(_withLogin)
 }
 

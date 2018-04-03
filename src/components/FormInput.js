@@ -17,6 +17,7 @@ class FormInput extends Component {
   onChange = event => {
     const { type } = this.props
     event.persist()
+    console.log(this.$input.value)
     this.handleDebouncedMergeForm(event)
     if (type === 'checkbox' || type === 'radio' ) {
       return
@@ -42,6 +43,16 @@ class FormInput extends Component {
     const { defaultValue, entityId } = this.props
     defaultValue && entityId === NEW && this.handleMergeForm({target : { value : defaultValue}})
   }
+  componentDidMount () {
+    this.$input.addEventListener('change', () => {
+      if ($this.$input.value) {
+        this.handleMergeForm($this.$input.value)
+      }
+    })
+  }
+  componentWillUnmount () {
+    
+  }
   render () {
     const {
       className,
@@ -54,17 +65,18 @@ class FormInput extends Component {
     } = this.props
     const { localValue } = this.state
     return (
-        <input className={className || 'input'}
-          id={id}
-          onChange={this.onChange}
-          placeholder={placeholder}
-          autoComplete={autoComplete}
-          type={type}
-          value={
-            localValue !== null
-            ? localValue
-            : value || defaultValue || ''
-          } />
+      <input autoComplete={autoComplete}
+        className={className || 'input'}
+        id={id}
+        onChange={this.onChange}
+        placeholder={placeholder}
+        ref={$e => this.$input = $e}
+        type={type}
+        value={
+          localValue !== null
+          ? localValue
+          : value || defaultValue || ''
+        } />
     )
   }
 }

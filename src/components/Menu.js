@@ -1,16 +1,25 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { compose } from 'redux'
 
 import Icon from './Icon'
 import ProfilePicture from './ProfilePicture'
+import Sign from './Sign'
 import { requestData } from '../reducers/data'
+import { closeModal } from '../reducers/modal'
 
 class Menu extends Component {
 
   onSignOutClick = () => {
-    this.props.requestData('GET', 'users/signout')
+    const { closeModal,
+      requestData
+    } = this.props
+    requestData('GET', 'users/signout')
+    closeModal()
+  }
+
+  componentWillUnmount () {
+    this.showSignModalTimeout && clearTimeout(this.showSignModalTimeout)
   }
 
   render () {
@@ -69,15 +78,7 @@ class Menu extends Component {
   }
 }
 
-export default compose(
-  // // withRouter is necessary to  make update the component
-  // // given a location path change
-  // withRouter,
-  connect(
-    state => ({
-      user: state.user
-    }), {
-      requestData
-    }
-  )
+export default connect(
+  state => ({ user: state.user }),
+  { closeModal, requestData }
 )(Menu)
