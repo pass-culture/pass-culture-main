@@ -52,7 +52,6 @@ class SignPage extends Component {
                    required='true'
                    name='contact_ok'
                    type='checkbox'
-                   value='true'
                    label='Pass Culture est en phase d&apos;expérimentation. En créant mon compte pendant cette phase, j&apos;accèpte d&apos;être contacté par email pour donner mon avis.' />
         <div className='form-global__errors'>{errors}</div>
         <SubmitButton getBody={form => form.usersById[NEW]}
