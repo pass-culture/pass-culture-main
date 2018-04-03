@@ -66,7 +66,10 @@ class Sign extends Component {
 export default compose(
   withRouter,
   connect(
-    ({ data, form }) => ({ errors: data.errors && data.errors.global, form }),
+    ({ data, form }) => ({
+      errors: data.errors && data.errors.global,
+      form
+    }),
     { assignData, closeModal }
   )
 )(Sign)

@@ -27,13 +27,14 @@ class ControlBar extends Component {
   }
 
   render () {
+    const { isFavorite, offer } = this.props
     return (
       <ul className='control-bar'>
         <li><small className='pass-label'>Mon pass</small><span className='pass-value'>0€</span></li>
         <li>
           <button className='button button--secondary'
             onClick={e => this.onClickFavorite(e)} >
-            <Icon svg={this.props.isFavorite ? 'ico-like-w' : 'ico-like-w'} />
+            <Icon svg={isFavorite ? 'ico-like-w' : 'ico-like-w'} />
           </button>
         </li>
         <li>
@@ -51,7 +52,7 @@ class ControlBar extends Component {
           ) : (
             <button className='button button--primary button--go'
               onClick={e => this.props.showModal(<Booking />, {fullscreen: true, maskColor: 'transparent', hasCloseButton: false})} >
-              <span className='price'>{`${this.props.offer.price}€`}</span>
+              <span className='price'>{`${offer && offer.price}€`}</span>
               J'y vais!
             </button>
           )}

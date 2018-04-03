@@ -8,19 +8,20 @@ import Loading from './Loading'
 import withSelectors from '../hocs/withSelectors'
 import { getOffer } from '../selectors/offer'
 import { getMediation } from '../selectors/mediation'
+import selectOffer from '../selectors/offer'
 import { getSource } from '../selectors/source'
 import { getThumbUrl } from '../selectors/thumbUrl'
+import selectUserMediation from '../selectors/userMediation'
 import { IS_DEV } from '../utils/config'
 
 const Recto = props => {
-  const {
-    id,
+  const { offer,
     isLoading,
     thumbUrl
   } = props
   const style = isLoading
     ? { backgroundColor: 'black' }
-    : { backgroundImage: `url('${thumbUrl}')`}
+    : { backgroundImage: `url('${thumbUrl}')` }
   return (
     <div className='recto'>
        <div className={classnames('card-background', {
@@ -28,10 +29,9 @@ const Recto = props => {
          })} style={style}>
         {isLoading && <Loading isForceActive />}
       </div>
-      { id && (
+      { offer && (
         <div>
-          <img
-            alt='thumb'
+          <img alt='thumb'
             draggable={false}
             src={thumbUrl}
           />
@@ -45,6 +45,8 @@ const Recto = props => {
 export default compose(
   connect(
     (state, ownProps) => ({
+      currentOffer: selectOffer(state),
+      currentUserMediation: selectUserMediation(state),
       isFlipped: state.navigation.isFlipped,
       userMediations: state.data.userMediations
     })),
@@ -55,17 +57,31 @@ export default compose(
       (id, userMediations) => id && userMediations &&
         userMediations.find(um => um.id === id)
     ],
+    offer: [
+      ownProps => ownProps.currentUserMediation,
+      ownProps => ownProps.currentOffer,
+      (ownProps, nextState) => nextState.userMediation,
+      (currentUserMediation, currentOffer, userMediation) => {
+        if (!currentUserMediation || !userMediation) {
+          return
+        }
+        if (currentUserMediation.id === userMediation.id) {
+          return currentOffer
+        }
+        const userMediationOffers = userMediation.userMediationOffers
+        const offerId = userMediationOffers[
+          Math.floor(Math.random() * userMediationOffers.length)].id
+        return getOffer(offerId, userMediation)
+      }
+    ],
     thumbUrl: [
       (ownProps, nextState) => nextState.userMediation,
-      userMediation => {
+      (ownProps, nextState) => nextState.offer,
+      (userMediation, offer) => {
         if (!userMediation) {
           return
         }
         const mediation = getMediation(userMediation)
-        const userMediationOffers = userMediation.userMediationOffers
-        const offerId = userMediationOffers[
-          Math.floor(Math.random() * userMediationOffers.length)].id
-        const offer = getOffer(offerId, userMediation)
         const source = getSource(mediation, offer)
         return getThumbUrl(mediation, source, offer)
       }

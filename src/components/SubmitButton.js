@@ -7,8 +7,8 @@ import { requestData } from '../reducers/data'
 
 class SubmitButton extends Component {
 
-  onSubmitClick(e) {
-    e.preventDefault();
+  onSubmitClick = event => {
+    event.preventDefault();
     const {
       add,
       form,
@@ -28,7 +28,6 @@ class SubmitButton extends Component {
       key: storeKey
     })
     onClick && onClick()
-    //resetForm()
   }
 
   render() {
@@ -40,7 +39,7 @@ class SubmitButton extends Component {
           [extraClass]: extraClass
         })}
         disabled={isDisabled}
-        onClick={e => this.onSubmitClick(e)}
+        onClick={this.onSubmitClick}
       >
         { text }
       </button>

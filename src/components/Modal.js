@@ -5,14 +5,16 @@ import { connect } from 'react-redux'
 import { closeModal } from '../reducers/modal'
 import Icon from './Icon'
 
+const initialState = {
+  translate: true,
+  display: false,
+}
+
 class Modal extends Component {
 
   constructor() {
     super()
-    this.state = {
-      translate: true,
-      display: false,
-    }
+    this.state = initialState
   }
 
   componentWillReceiveProps(nextProps) {
@@ -25,7 +27,7 @@ class Modal extends Component {
         this.setState({
           translate: false,
         })
-      }, 0)
+      }, this.props.transitionDuration)
     } else if (!nextProps.isActive && this.props.isActive) {
       // Closing
       this.setState({
@@ -77,6 +79,7 @@ class Modal extends Component {
     const {
       ContentComponent,
       hasCloseButton,
+      isUnclosable,
       maskColor,
       transitionDuration,
     } = this.props
@@ -92,9 +95,12 @@ class Modal extends Component {
             fullscreen: this.props.fullscreen
           })}
           role='document'
-          style={{transitionDuration: `${transitionDuration}ms`, transform: this.transform() }}
+          style={{
+            transitionDuration: `${transitionDuration}ms`,
+            transform: this.transform()
+          }}
           onClick={e => this.stopPropagation(e)}>
-          { hasCloseButton && (
+          { !isUnclosable && hasCloseButton && (
               <button
                 className='close-button'
                 onClick={this.onCloseClick} >

@@ -1,21 +1,25 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import classnames from 'classnames'
 
-import { showModal } from '../../reducers/modal'
 import Menu from '../Menu'
 import ProfilePicture from '../ProfilePicture'
+import { showModal } from '../../reducers/modal'
 
 class MenuButton extends Component {
+  onClick = () => {
+    this.props.showModal(<Menu />)
+  }
   render () {
-    const {
-      showModal,
+    const { borderTop,
+      colored
     } = this.props
     return (
       <div className={classnames('menu-button', {
-        bordered: this.props.borderTop
+        bordered: borderTop
       })}>
-        <button onClick={e => showModal(<Menu />)} className={classnames({colored: this.props.colored})}>
+        <button onClick={this.onClick}
+          className={classnames({ colored })}>
           <ProfilePicture />
         </button>
       </div>
@@ -24,6 +28,6 @@ class MenuButton extends Component {
 }
 
 export default connect(
-  state => ({}),
+  null,
   { showModal }
 )(MenuButton)
