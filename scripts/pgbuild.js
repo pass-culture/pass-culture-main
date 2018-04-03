@@ -37,9 +37,11 @@
     console.log('Pushing build to Github staging repo');
     const packed_dir = `${__dirname}/../../webapp-packed-staging/`
     return promisify(exec)(`
+      rm -rf ${packed_dir}/static/js ${packed_dir}/static/css
       cp -r ${__dirname}/../build/* ${packed_dir};
       cp ${__dirname}/../config-${PG_ENV}.xml ${packed_dir}/config.xml;
       cd ${packed_dir};
+      sed -i -e 's#https://api.passculture.beta.gouv.fr#https://api.passculture-staging.beta.gouv.fr#' static/js/*.js
       git checkout master;
       git add .;
       git commit -am "Automated commit";
