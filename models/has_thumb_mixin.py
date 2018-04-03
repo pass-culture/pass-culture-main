@@ -30,7 +30,11 @@ class HasThumbMixin(object):
 
     def save_thumb(self, thumb, index):
         image_type = None
-        if isinstance(thumb, str) and thumb[0:4] == 'http':
+        if isinstance(thumb, str):
+            if not thumb[0:4] == 'http':
+                raise ValueError('Invalid thumb URL for object '
+                                 + str(self)
+                                 + ' : ' + thumb)
             thumb_response = requests.get(thumb)
             content_type = thumb_response.headers['Content-type']
             if thumb_response.status_code == 200 and\

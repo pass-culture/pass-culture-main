@@ -44,6 +44,9 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
     def __next__(self):
         self.line = self.lines.__next__()[1]
 
+        while not is_filled(self.line['Date MAJ']):
+            self.line = self.lines.__next__()[1]
+
         p_info_venue = app.model.ProvidableInfo()
         p_info_venue.type = Venue
         p_info_venue.idAtProviders = str(self.line['Ref Lieu'])

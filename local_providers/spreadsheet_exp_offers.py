@@ -51,6 +51,11 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
     def __next__(self):
         self.line = self.lines.__next__()[1]
 
+        for field in ['Date MAJ', 'Description', 'Horaires', 'Ref Lieu', 'Ref Évènement', 'Durée', 'Places Par Horaire']:
+            while not is_filled(self.line[field]):
+                print(field+' is empty, skipping line')
+                self.line = self.lines.__next__()[1]
+
         providables = []
 
         p_info_event = app.model.ProvidableInfo()
@@ -61,26 +66,27 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
         providables.append(p_info_event)
 
         for index, horaire in enumerate(self.line['Horaires'].split(';')):
-            horaire = HOUR_REGEX.sub(r'\1:\2', horaire)
-            if horaire.endswith(':'):
-                horaire = horaire + '00'
-            evocc_dt = dateparser.parse(horaire, languages=['fr'])
+            if is_filled(horaire):
+                horaire = HOUR_REGEX.sub(r'\1:\2', horaire)
+                if horaire.endswith(':'):
+                    horaire = horaire + '00'
+                evocc_dt = dateparser.parse(horaire, languages=['fr'])
 
-            p_info_evocc = app.model.ProvidableInfo()
-            p_info_evocc.type = EventOccurence
-            p_info_evocc.idAtProviders = str(self.line['Ref Évènement']) + '_'\
-                                         + evocc_dt.isoformat()
-            p_info_evocc.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+                p_info_evocc = app.model.ProvidableInfo()
+                p_info_evocc.type = EventOccurence
+                p_info_evocc.idAtProviders = str(self.line['Ref Évènement']) + '_'\
+                                             + evocc_dt.isoformat()
+                p_info_evocc.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
-            providables.append(p_info_evocc)
+                providables.append(p_info_evocc)
 
-            p_info_offer = app.model.ProvidableInfo()
-            p_info_offer.type = Offer
-            p_info_offer.idAtProviders = str(self.line['Ref Évènement']) + '_'\
-                                         + evocc_dt.isoformat()
-            p_info_offer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+                p_info_offer = app.model.ProvidableInfo()
+                p_info_offer.type = Offer
+                p_info_offer.idAtProviders = str(self.line['Ref Évènement']) + '_'\
+                                             + evocc_dt.isoformat()
+                p_info_offer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
-            providables.append(p_info_offer)
+                providables.append(p_info_offer)
 
         if is_filled(self.line['Lien Image Accroche']) or\
            is_filled(self.line['Texte Accroche']):
