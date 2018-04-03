@@ -17,10 +17,6 @@ class Menu extends Component {
     closeModal()
   }
 
-  componentWillUnmount () {
-    this.showSignModalTimeout && clearTimeout(this.showSignModalTimeout)
-  }
-
   render () {
     return (
       <div className='menu'>
