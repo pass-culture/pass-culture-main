@@ -50,7 +50,8 @@ function * fromWatchRequestDataActions (action) {
 }
 
 function * fromWatchFailDataActions (action) {
-  yield put(assignData({ errors: action.errors }))
+  const errors = yield select(state => state.data.errors)
+  yield put(assignData({ errors: Object.assign({}, errors, action.errors) }))
 }
 
 function * fromWatchSuccessDataActions (action) {

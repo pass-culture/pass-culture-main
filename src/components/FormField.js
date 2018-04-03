@@ -23,12 +23,19 @@ class FormField extends Component {
                         </label> )
     const inputMarkup = type === 'textarea' ? ( <FormTextarea {...this.props} id={inputId} key={inputId} /> ) : ( <FormInput {...this.props} id={inputId} key={inputId} /> )
     return (
-        <div className={'form-input' + (errors ? ' form-input-haserror' : '')}>
-          { type === 'checkbox' ? [inputMarkup, labelMarkup] : [ labelMarkup, inputMarkup ] }
-          { errors && <ul className='form-input__errors'>
-                       {errors && errors.map((e, index) => ( <li key={index}>{e}</li> ))}
-                     </ul>
+        <div className='form-input'>
+          {
+            type === 'checkbox'
+              ? [inputMarkup, labelMarkup]
+              : [ labelMarkup, inputMarkup ]
           }
+          <ul className='form-input__errors'>
+            {
+              errors && errors.map((e, index) => (
+                <li key={index}>{e}</li>
+              ))
+            }
+          </ul>
         </div>
     )
   }
@@ -41,6 +48,8 @@ FormInput.propTypes = {
 
 export default compose(
   connect(
-    (state, ownProps) => ({ errors: state.data.errors && state.data.errors[ownProps['name']] }),
+    (state, ownProps) => ({
+      errors: state.data.errors && state.data.errors[ownProps['name']]
+    }),
   )
 )(FormField)
