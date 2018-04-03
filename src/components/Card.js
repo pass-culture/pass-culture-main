@@ -117,7 +117,7 @@ class Card extends Component {
         break
     }
     // check read
-    isSetRead && type === CURRENT && this.handleSetRead(props)
+    isSetRead && type === CURRENT && !this.readTimeout && this.handleSetRead(props)
     // transition happened when the style has been already set once
     // and that the new style has a not none transform
     if (this.state.style && style.transition !== 'none') {
@@ -230,9 +230,9 @@ class Card extends Component {
       !this.props.isFlipped &&
       !isFlipping
     const bounds = {}
-    if (isFirst) {
+    if (isFirst || (content && content.isFirst)) {
       bounds.right = 0
-    } else if (isLast) {
+    } else if (isLast || (content && content.isLast)) {
       bounds.left = 0
     }
     // console.log('RENDER: Card content', content)

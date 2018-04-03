@@ -191,7 +191,7 @@ class UserMediationsDeck extends Component {
     }]
     // request
     isCheckRead && requestData('PUT', 'userMediations',
-      { _body: body, body: [], sync: true })
+      { _body: body, body: [], local: true })
   }
   handleTransitionEnd = () => {
     this.props.isDebug && debug('UserMediationsDeck - handleTransitionEnd')
