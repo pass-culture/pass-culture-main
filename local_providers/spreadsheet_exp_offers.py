@@ -54,7 +54,27 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
         for field in ['Date MAJ', 'Description', 'Horaires', 'Ref Lieu', 'Ref Évènement', 'Durée', 'Places Par Horaire']:
             while not is_filled(self.line[field]):
                 print(field+' is empty, skipping line')
-                self.line = self.lines.__next__()[1]
+                self.__next__()
+
+        venueIdAtProviders = str(int(self.line['Ref Lieu']))
+
+        self.venue = app.model.Venue.query\
+                                    .filter_by(idAtProviders=venueIdAtProviders)\
+                                    .one_or_none()
+
+        if self.venue is None:
+            print('Venue #' + venueIdAtProviders
+                  + ' not found, skipping line')
+            self.__next__()
+
+        self.offerer = app.model.Offerer.query\
+                                        .filter_by(idAtProviders=venueIdAtProviders)\
+                                        .one_or_none()
+
+        if self.offerer is None:
+            print('Offerer #' + venueIdAtProviders
+                  + ' not found, skipping line')
+            self.__next__()
 
         providables = []
 
@@ -108,24 +128,18 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
             self.eos = {}
         elif isinstance(obj, EventOccurence):
             obj.beginningDatetime = dateparser.parse(obj.idAtProviders.split('_')[1])
-            obj.venue = app.model.Venue.query\
-                                       .filter_by(idAtProviders=str(self.line['Ref Lieu']))\
-                                       .one_or_none()
+            obj.venue = self.venue
             obj.event = self.providables[0]
             self.eos[obj.idAtProviders] = obj
         elif isinstance(obj, Offer):
             obj.eventOccurence = self.eos[obj.idAtProviders]
             obj.price = 0
-            obj.offerer = app.model.Offerer.query\
-                                           .filter_by(idAtProviders=str(self.line['Ref Lieu']))\
-                                           .one_or_none()
+            obj.offerer = self.offerer
             if is_filled(self.line['Places Par Horaire']):
                 obj.available = int(self.line['Places Par Horaire'])
         elif isinstance(obj, Mediation):
             obj.event = self.providables[0]
-            obj.offerer = app.model.Offerer.query\
-                                           .filter_by(idAtProviders=str(self.line['Ref Lieu']))\
-                                           .one_or_none()
+            obj.offerer = self.offerer
             if is_filled(self.line['Texte Accroche']):
                 obj.text = str(self.line['Texte Accroche'])
 

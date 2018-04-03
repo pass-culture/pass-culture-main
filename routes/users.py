@@ -41,7 +41,8 @@ def signout():
 @app.route("/users", methods=["POST"])
 def signup():
     if 'contact_ok' not in request.json or\
-       request.json['contact_ok']!='true':
+       (request.json['contact_ok'] is not True and
+        str(request.json['contact_ok']).lower() != 'true'):
         e = ApiErrors()
         e.addError('contact_ok', 'Vous devez obligatoirement cocher cette case')
         return jsonify(e.errors), 400

@@ -45,7 +45,7 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
         self.line = self.lines.__next__()[1]
 
         while not is_filled(self.line['Date MAJ']):
-            self.line = self.lines.__next__()[1]
+            self.__next__()
 
         p_info_venue = app.model.ProvidableInfo()
         p_info_venue.type = Venue
