@@ -18,8 +18,6 @@ class Modal extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('nextProps.isActive', nextProps.isActive,
-      this.state.display, this.state.translate)
     if (nextProps.isActive && !this.props.isActive) {
       // Opening
       this.setState({
@@ -29,7 +27,7 @@ class Modal extends Component {
         this.setState({
           translate: false,
         })
-      }, 0)
+      }, this.props.transitionDuration)
     } else if (!nextProps.isActive && this.props.isActive) {
       // Closing
       this.setState({

@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom'
 
 import Icon from './Icon'
 import ProfilePicture from './ProfilePicture'
-import Sign from './Sign'
 import { requestData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 

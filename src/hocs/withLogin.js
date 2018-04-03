@@ -22,10 +22,6 @@ const withLogin = (config = {}) => WrappedComponent => {
 
     componentWillReceiveProps = nextProps => {
       const { requestData } = this.props
-
-      console.log('HEIII', nextProps.user, this.props.user)
-
-
       if (nextProps.user && nextProps.user !== this.props.user) {
         // CASE OF LOGIN SUCCESS
         nextProps.closeModal()
