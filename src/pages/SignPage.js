@@ -22,7 +22,7 @@ class SignPage extends Component {
     this.props.showModal(<Sign />, { hasCloseButton: false })
   }
   render () {
-     const { errors } = this.props
+    const { errors } = this.props
     return (
       <main className='page center col-6 mx-auto mt3'>
         <h2>Inscription au Pass Culture</h2>

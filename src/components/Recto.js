@@ -17,8 +17,7 @@ import { IS_DEV } from '../utils/config'
 const Recto = props => {
   const { offer,
     isLoading,
-    thumbUrl,
-    userMediation
+    thumbUrl
   } = props
   const style = isLoading
     ? { backgroundColor: 'black' }
@@ -32,8 +31,7 @@ const Recto = props => {
       </div>
       { offer && (
         <div>
-          <img
-            alt='thumb'
+          <img alt='thumb'
             draggable={false}
             src={thumbUrl}
           />
@@ -64,6 +62,9 @@ export default compose(
       ownProps => ownProps.currentOffer,
       (ownProps, nextState) => nextState.userMediation,
       (currentUserMediation, currentOffer, userMediation) => {
+        if (!currentUserMediation || !userMediation) {
+          return
+        }
         if (currentUserMediation.id === userMediation.id) {
           return currentOffer
         }

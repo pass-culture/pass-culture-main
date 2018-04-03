@@ -9,20 +9,22 @@ import selectVenue from '../selectors/venue'
 class OfferInfo extends Component {
 
   render() {
-    const {
-      offer,
-      source: {
-        description,
-      },
+    const { offer,
       venue,
+      source,
       thumbUrl,
     } = this.props;
+
     return (
       <div className='offer-info'>
         {false && <img alt='' className='offerPicture' src={thumbUrl} />}
-        {description && (
+        {source && source.description && (
           <div className='description'>
-            { description.split('\n').map((p, index) => <p key={index}>{p}</p>) }
+            {
+              source.description.split('\n')
+                                .map((p, index) =>
+                <p key={index}>{p}</p>)
+            }
           </div>
         )}
         {offer && offer.eventOccurence && (
