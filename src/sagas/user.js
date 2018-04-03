@@ -8,9 +8,8 @@ import { worker } from '../workers/dexie/register'
 function * fromWatchFailSignActions (action) {
   // force to update by changing value null to false or false to null
   yield call(clear)
-  const user = yield select(state => state.user)
-  yield put(setUser(user === false ? null : false))
-  worker.postMessage({ key: 'dexie-signout' })
+  const currentUser = yield select(state => state.user)
+  yield put(setUser(currentUser=== false ? null : false))
 }
 
 function * fromWatchSuccessGetSignoutActions () {
@@ -22,7 +21,8 @@ function * fromWatchSuccessGetSignoutActions () {
 
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
-  if (user) {
+  const currentUser = yield select(state => state.user)
+  if (user && (!currentUser || (user.id !== currentUser.id))) {
     yield put(setUser(user))
     // call the dexie-user event
     // either the sync service worker has already in state the user
@@ -30,8 +30,8 @@ function * fromWatchSuccessSignActions () {
     // else it asks for a dexie push pull to also feed
     // the dexie with the backend
     worker.postMessage({ key: 'dexie-signin', state: { user } })
-  } else {
-    yield call(fromWatchFailSignActions)
+  } else if (!user) {
+    yield put(setUser(false))
   }
 }
 

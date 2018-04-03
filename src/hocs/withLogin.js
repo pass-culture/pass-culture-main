@@ -10,10 +10,14 @@ const withLogin = (config = {}) => WrappedComponent => {
   const showSignModalTimeout = config.showSignModalTimeout || 500
 
   class _withLogin extends Component {
+    constructor () {
+      super()
+      this.hasBackendRequest = false
+    }
 
     componentWillMount = () => {
       const { user, requestData } = this.props
-      !user && requestData('GET', `users/me`, { key: 'users', sync: true })
+      !user && requestData('GET', `users/me`, { key: 'users', local: true })
     }
 
     componentWillReceiveProps = nextProps => {
@@ -25,8 +29,9 @@ const withLogin = (config = {}) => WrappedComponent => {
         // NOW BETTER IS TO ALSO TO DO A QUICK CHECK
         // ON THE BACKEND TO CONFIRM THAT IT IS STILL
         // A STORED USER
-        if (!this.props.user) {
+        if (!this.props.user && !this.hasBackendRequest) {
           requestData('GET', `users/me`, { key: 'users' })
+          this.hasBackendRequest = true
         }
         this.setState({ hasConfirmRequest: true })
       } else if (isRequired) {
@@ -34,6 +39,7 @@ const withLogin = (config = {}) => WrappedComponent => {
           // CASE WHERE WE TRIED TO GET THE USER IN THE LOCAL
           // BUT WE GOT A FALSE RETURN SO WE NEED TO ASK THE BACKEND
           requestData('GET', 'users/me', { key: 'users' })
+          this.hasBackendRequest = true
         } else if (!isModalActive) {
           if (nextProps.user === null && this.props.user === false) {
             // CASE WHERE WE STILL HAVE A USER NULL
@@ -46,6 +52,7 @@ const withLogin = (config = {}) => WrappedComponent => {
             // WE NEED TO PROPOSE A NEW SIGNIN MODAL
             // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
             // TO MAKE A SLOW TRANSITION
+            console.log('ON TRIGER CA')
             this.showSignModalTimeout = setTimeout(() =>
               nextProps.showModal(<Sign />, {
                 isUnclosable: isRequired

@@ -56,11 +56,7 @@ class DexieWrapper {
     this.receiveMessage({ text: "dexieSignout" })
   }
   onMessage = event => {
-    const {
-      key,
-      // log,
-      // type,
-    } = event.data
+    const { key } = event.data
     // check
     if (!key) {
       console.warn('you need to define a key in event.data')
