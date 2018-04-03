@@ -23,7 +23,7 @@ class Menu extends Component {
           </div>
           <div className='account'>
             <div>Mon Pass</div>
-            <div><strong>0€</strong></div>
+            <div><strong>——&nbsp;€</strong></div>
           </div>
         </div>
         <ul>
