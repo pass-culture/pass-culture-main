@@ -31,7 +31,7 @@ def get_offers(user, limit=3):
                                 .distinct(EventOccurence.eventId)\
                                 .order_by(EventOccurence.eventId, EventOccurence.beginningDatetime)\
                                 .outerjoin(Event)\
-                                .filter(# (Thing.mediations.any(is_mediation)) |
+                                .filter((Thing.mediations.any(is_mediation)) |
                                     (Event.mediations.any(is_mediation)))
     mediation_query_count = mediation_query.count()
     print('(reco) mediated offers.count', mediation_query_count)
@@ -52,7 +52,7 @@ def get_offers(user, limit=3):
                       .order_by(EventOccurence.eventId, EventOccurence.beginningDatetime)\
                       .outerjoin(Event)\
                       .filter((~Offer.id.in_(mediation_offer_ids)) &
-                              # (Thing.thumbCount > 0) |
+                              (Thing.thumbCount > 0) |
                               (Event.thumbCount > 0))\
                       .order_by(func.random())\
                       .limit(limit - mediation_query_count))

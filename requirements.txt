@@ -9,7 +9,6 @@ flask_sqlalchemy
 flask_script
 gunicorn
 hypothesis
-imghdr
 inflect
 isbnlib
 nltk

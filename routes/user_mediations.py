@@ -42,7 +42,8 @@ def update_user_mediations():
                 .filter(UserMediation.userMediationOffers\
                         .any(UserMediationOffer.offerId == dehumanize(offer_id)))\
                 .first()
-            around = humanize(around_um.id)
+            if around_um is not None:
+                around = humanize(around_um.id)
         if around is not None:
             print('(special) around_um', around_um)
     # UPDATE FROM CLIENT LOCAL BUFFER
