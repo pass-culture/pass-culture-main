@@ -47,7 +47,8 @@ class SubmitButton extends Component {
   }
 }
 
-SubmitButton.defaultProps = { getBody: form => form,
+SubmitButton.defaultProps = {
+  getBody: form => form,
   getIsDisabled: form => Object.keys(form).length === 0,
   method: 'POST',
   text: 'Soumettre'

@@ -9,6 +9,7 @@ import ProfilePage from '../pages/ProfilePage'
 import SignPage from '../pages/SignPage'
 import BookingsPage from '../pages/BookingsPage'
 import RedirectPage from '../pages/RedirectPage'
+import BetaPage from '../pages/BetaPage'
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     exact: true,
     path:'/pro/:offererId',
     render: props => <OffererPage offererId={props.match.params.offererId} />
+  },
+  {
+    exact: true,
+    path: '/beta',
+    render: () => <BetaPage />
   },
   {
     exact: true,

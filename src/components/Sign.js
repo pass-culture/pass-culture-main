@@ -47,6 +47,7 @@ class Sign extends Component {
               !form.usersById[NEW].identifier ||
               !form.usersById[NEW].password
             }
+            className='button button--primary'
             path='users/signin'
             storeKey='users'
             text='Connecter' />
@@ -54,7 +55,7 @@ class Sign extends Component {
         <div className='sign__error mt1'>
           {errors}
         </div>
-        <button className='button button--inversed absolute bottom-0 right-0 mb2 mr2'
+        <button className='button button--primary button--inversed absolute bottom-0 left-0 mb2 ml2'
           onClick={this.onSignupClick} >
           Pas encore inscrit ?
         </button>

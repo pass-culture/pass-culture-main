@@ -19,7 +19,6 @@ class FormField extends Component {
     const inputId = id || 'input_'+collectionName+'_'+name
     const labelMarkup = ( <label htmlFor={id} key={'label_'+id}>
                           { label }
-                          { required && <span className='form-input__required'> (*) </span>}
                         </label> )
     const inputMarkup = type === 'textarea' ? ( <FormTextarea {...this.props} id={inputId} key={inputId} /> ) : ( <FormInput {...this.props} id={inputId} key={inputId} /> )
     return (
@@ -29,7 +28,7 @@ class FormField extends Component {
               ? [inputMarkup, labelMarkup]
               : [ labelMarkup, inputMarkup ]
           }
-          <ul className='form-input__errors'>
+          <ul className='errors'>
             {
               errors && errors.map((e, index) => (
                 <li key={index}>{e}</li>
