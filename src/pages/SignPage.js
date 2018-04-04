@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
@@ -9,8 +10,6 @@ import SubmitButton from '../components/SubmitButton'
 import { showModal } from '../reducers/modal'
 import { NEW } from '../utils/config'
 
-const inputClassName = 'input block col-12 mb2'
-
 class SignPage extends Component {
   componentWillReceiveProps (nextProps) {
     const { errors, history, user } = nextProps
@@ -19,48 +18,50 @@ class SignPage extends Component {
     }
   }
   onSigninClick = () => {
-    this.props.showModal(<Sign />, { hasCloseButton: false })
+
   }
   render () {
-    const { errors } = this.props
+    const {
+      showModal,
+      errors,
+    } = this.props
     return (
-      <main className='page center col-6 mx-auto mt3'>
-        <h2>Inscription au Pass Culture</h2>
-        <p>Les champs marqués d&apos;une * sont obligatoires.</p>
-        <FormField label='Dans le pass, je veux apparaître comme:'
+      <main className='page sign-page'>
+        <p>Une minute pour créer un compte, et puis c'est tout !</p>
+        <FormField label={<span>Nom ou pseudo : <small>(c'est lui que verront les autres utilisateurs)</small></span>}
                    required='true'
                    collectionName='users'
                    name='publicName'
-                   placeholder='prénom, nom ou pseudo'
+                   autoComplete='name'
+                   placeholder='Rosa'
                    type='text' />
-        <FormField label="Adresse email:"
-                   className={inputClassName}
+        <FormField label={<span>Adresse email : <small>(pour se connecter et récupérer son mot de passe en cas d'oubli)</small></span>}
                    collectionName='users'
                    required='true'
+                   autoComplete='email'
                    name='email'
                    type='email'
-                   placeholder='email' />
-        <FormField label='Cet email me servira à m&apos;identifier, et à récupérer mon mot de passe en cas d&apos;oubli.'
-                   className={inputClassName}
+                   placeholder='rose@domaine.fr' />
+        <FormField label={<span>Mot de passe : <small>(pour se connecter)</small></span>}
                    collectionName='users'
                    required='true'
+                   autoComplete='new-password'
                    name='password'
                    placeholder='mot de passe'
                    type='password' />
-        <FormField className={inputClassName}
-                   collectionName='users'
-                   required='true'
-                   name='contact_ok'
-                   type='checkbox'
-                   label='Pass Culture est en phase d&apos;expérimentation. En créant mon compte pendant cette phase, j&apos;accèpte d&apos;être contacté par email pour donner mon avis.' />
-        <div className='form-global__errors'>{errors}</div>
-        <SubmitButton getBody={form => form.usersById[NEW]}
-          path='users'
-          storeKey='users'
-          text='Soumettre' />
-        <button className='button button--alive' onClick={this.onSigninClick}>
-          Déjà inscrit ?
-        </button>
+        <div className='errors'>{errors}</div>
+        <footer>
+          <button className='button button--secondary' onClick={e => showModal(<Sign />)}>
+            Déjà inscrit ?
+          </button>
+          <SubmitButton
+            text='OK'
+            className='button button--secondary'
+            getBody={form => form.usersById[NEW]}
+            getIsDisabled={form => !get(form, 'usersById._new_.publicName') || !get(form, 'usersById._new_.email') || !get(form, 'usersById._new_.password')}
+            path='users'
+            storeKey='users' />
+        </footer>
       </main>
     )
   }
@@ -69,6 +70,9 @@ class SignPage extends Component {
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => ({ errors: state.data.errors && state.data.errors['global'], form: state.form, user:state.user }),
+    (state, ownProps) => ({
+      errors: state.data.errors && state.data.errors['global'],
+      form: state.form, user:state.user
+    }),
     { showModal }
   ))(SignPage)
