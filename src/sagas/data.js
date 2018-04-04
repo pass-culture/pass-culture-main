@@ -2,8 +2,8 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { assignData, failData, successData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
-import { setGeolocationPosition } from '../reducers/geolocation'
-import { fetchData, syncData } from '../utils/request'
+// import { setGeolocationPosition } from '../reducers/geolocation'
+import { fetchData, localData } from '../utils/request'
 import { getGeolocationPosition } from '../utils/geolocation'
 
 function * fromWatchRequestDataActions (action) {
@@ -11,18 +11,18 @@ function * fromWatchRequestDataActions (action) {
   const { method, path, config } = action
   const body = config && config.body
   const hook = config && config.hook
-  const sync = config && config.sync
+  const local = config && config.local
   const type = config && config.type
   // GEOLOCATION
   const position = yield config && config.isGeolocated &&
     call(getGeolocationPosition, { highAccuracy: true })
-  yield put(setGeolocationPosition(position))
+  // yield put(setGeolocationPosition(position))
   // TOKEN
   const token = yield type && select(state => state.data[`${type}Token`])
   // DATA
   try {
-    const dataMethod = sync
-      ? syncData
+    const dataMethod = local
+      ? localData
       : fetchData
     const result = yield call(dataMethod,
       method,
@@ -33,11 +33,6 @@ function * fromWatchRequestDataActions (action) {
       yield call(hook, method, path, result, config)
     }
     if (result.data) {
-      /*
-      if (sync && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-        yield call(bulkData, method, path, result.data, config)
-      }
-      */
       yield put(successData(method, path, result.data, config))
     } else {
       console.warn(result.errors)
@@ -50,7 +45,8 @@ function * fromWatchRequestDataActions (action) {
 }
 
 function * fromWatchFailDataActions (action) {
-  yield put(assignData({ errors: action.errors }))
+  const errors = yield select(state => state.data.errors)
+  yield put(assignData({ errors: Object.assign({}, errors, action.errors) }))
 }
 
 function * fromWatchSuccessDataActions (action) {

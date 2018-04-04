@@ -104,7 +104,7 @@ export const failData = (method, path, errors, config) => ({
   errors,
   method,
   path,
-  type: `FAIL_DATA_${method.toUpperCase()}_${path.toUpperCase()}`
+  type: `FAIL_DATA_${method.toUpperCase()}_${path.toUpperCase()}${config.local ? ' (LOCAL)' : ''}`
 })
 
 export const filterData = (key, filter) => ({ filter,
@@ -112,11 +112,11 @@ export const filterData = (key, filter) => ({ filter,
   type: FILTER_DATA
 })
 
-export const requestData = (method, path, config) => ({
+export const requestData = (method, path, config={}) => ({
   config,
   method,
   path,
-  type: `REQUEST_DATA_${method.toUpperCase()}_${path.toUpperCase()}`
+  type: `REQUEST_DATA_${method.toUpperCase()}_${path.toUpperCase()}${config.local ? ' (LOCAL)' : ''}`
 })
 
 export const resetData = () => ({
@@ -128,7 +128,7 @@ export const successData = (method, path, data, config={}) => ({
   data,
   method,
   path,
-  type: `SUCCESS_DATA_${method.toUpperCase()}_${path.toUpperCase()}`
+  type: `SUCCESS_DATA_${method.toUpperCase()}_${path.toUpperCase()}${config.local ? ' (LOCAL)' : ''}`
 })
 
 // default

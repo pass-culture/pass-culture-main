@@ -24,7 +24,7 @@ export default function register() {
 export function syncRedux () {
   config.collections.forEach(({ name }) =>
     name !== 'differences' && store.dispatch(
-      requestData('GET', name, { sync: true })))
+      requestData('GET', name, { local: true })))
 }
 
 if (IS_DEV) {

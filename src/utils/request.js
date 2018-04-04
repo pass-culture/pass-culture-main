@@ -4,10 +4,6 @@ import { parse } from 'query-string'
 import { API_URL } from './config'
 import { getData, putData } from '../workers/dexie/data'
 
-export const isRequestAction = ({ type }) => /REQUEST_(.*)/.test(type)
-
-export const isSuccessAction = ({ type }) => /SUCCESS_(.*)/.test(type)
-
 export async function fetchData (method, path, config = {}) {
   // unpack
   const { body, position, token } = config
@@ -55,7 +51,7 @@ export async function fetchData (method, path, config = {}) {
   }
 }
 
-export async function syncData (method, path, config = {}) {
+export async function localData (method, path, config = {}) {
   // unpack
   const { body } = config
   let data
