@@ -13,17 +13,17 @@ class RedirectToDiscoveryPage extends Component {
     }
   }
 
-  handleSelectOffer = props => {
+  handleSetRedirectTo = props => {
     const { userMediations } = props
     if (!userMediations || userMediations.length === 0) {
       return
     }
-    // THE BLOB HAS ALREADY A isAround VARIABLE
+    // THE BLOB HAS MAYBE A isAround VARIABLE
     // HELPING TO RETRIEVE THE AROUND
-    const aroundUserMediation = userMediations.find(um => um.isAround)
+    let aroundUserMediation = userMediations.find(um => um.isAround)
     if (!aroundUserMediation) {
-      // history.replace('/decouverte')
-      return
+      // ELSE TAKE THE FIRST?
+      aroundUserMediation = userMediations[0]
     }
     // NOW CHOOSE AN OFFER AMONG THE ONES
     const userMediationOffers = aroundUserMediation.userMediationOffers
@@ -40,12 +40,12 @@ class RedirectToDiscoveryPage extends Component {
   }
 
   componentWillMount () {
-    this.handleSelectOffer(this.props)
+    this.handleSetRedirectTo(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.userMediations && (nextProps.userMediations !== this.props.userMediations)) {
-      this.handleSelectOffer(nextProps)
+      this.handleSetRedirectTo(nextProps)
     }
   }
 
