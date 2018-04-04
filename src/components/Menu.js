@@ -38,34 +38,34 @@ class Menu extends Component {
         <ul>
           <li>
             <NavLink to='/decouverte'>
-              <Icon svg='ico-offres-w' />
-              Toutes les offres
+              <Icon className='col-1' svg='ico-offres-w' />
+              Les offres
             </NavLink>
           </li>
           <li>
             <NavLink to='/reservations'>
-              <Icon svg='ico-calendar-w' />
+              <Icon className='col-1' svg='ico-calendar-w' />
               Mes réservations
             </NavLink>
           </li>
           <li className='disabled'>
             <NavLink to='/favoris'
               onClick={this.onDisableClick}>
-              <Icon svg='ico-like-w' />
+              <Icon className='col-1' svg='ico-like-w' />
               Mes favoris
             </NavLink>
           </li>
           <li className='disabled'>
             <NavLink to='/reglages'
               onClick={this.onDisableClick}>
-              <Icon svg='ico-settings-w' />
+              <Icon className='col-1' svg='ico-settings-w' />
               Réglages
             </NavLink>
           </li>
           <li className='disabled'>
             <NavLink to='/profil'
               onClick={this.onDisableClick}>
-              <Icon svg='ico-user-w' />
+              <Icon className='col-1' svg='ico-user-w' />
               Mon profil
             </NavLink>
           </li>
