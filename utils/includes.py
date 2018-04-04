@@ -1,5 +1,5 @@
 
-offers_includes = [
+OFFERS_INCLUDES = [
     {
         "key": "eventOccurence",
         "sub_joins": [
@@ -30,7 +30,7 @@ offers_includes = [
     "venue"
 ]
 
-user_mediations_includes =  [
+USER_MEDIATIONS_INCLUDES =  [
     {
         "key": "mediation",
         "sub_joins": ["event", "thing"]
@@ -63,7 +63,19 @@ user_mediations_includes =  [
     }
 ]
 
+BOOKINGS_INCLUDES = [
+    {
+        "key": "userMediations",
+        "sub_joins": USER_MEDIATIONS_INCLUDES
+    },
+    {
+        "key": "offer",
+        "sub_joins": OFFERS_INCLUDES
+    }
+]
+
 includes = {
-    'offers': offers_includes,
-    'user_mediations': user_mediations_includes
+    'bookings': BOOKINGS_INCLUDES,
+    'offers': OFFERS_INCLUDES,
+    'user_mediations': USER_MEDIATIONS_INCLUDES
 }

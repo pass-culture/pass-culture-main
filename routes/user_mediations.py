@@ -7,7 +7,7 @@ from recommendations import create_recommendations
 from utils.rest import expect_json_data
 from utils.config import BEFORE_AFTER_LIMIT, BLOB_SIZE
 from utils.human_ids import dehumanize, humanize
-from utils.includes import user_mediations_includes
+from utils.includes import USER_MEDIATIONS_INCLUDES
 
 Offer = app.model.Offer
 UserMediation = app.model.UserMediation
@@ -111,7 +111,7 @@ def update_user_mediations():
     print('(unread) ids', [humanize(unread_um.id) for unread_um in unread_ums])
     ums += list(unread_ums)
     # AS DICT
-    ums = [um._asdict(include=user_mediations_includes) for um in ums]
+    ums = [um._asdict(include=USER_MEDIATIONS_INCLUDES) for um in ums]
     # ADD SOME PREVIOUS BEFORE IF ums has not the BLOB_SIZE
     if len(ums) < BLOB_SIZE:
         ums[-1]['isLast'] = True
@@ -123,7 +123,7 @@ def update_user_mediations():
                               .limit(comp_size)\
                               .from_self()\
                               .order_by(UserMediation.id)
-            ums = [um._asdict(include=user_mediations_includes) for um in comp_before_ums] + ums
+            ums = [um._asdict(include=USER_MEDIATIONS_INCLUDES) for um in comp_before_ums] + ums
             around_index += comp_before_ums.count()
     if around_um:
         ums[around_index]['isAround'] = True
