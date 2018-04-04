@@ -1,0 +1,116 @@
+.bookings-page {
+  color: $white;
+  background-color: $menu-red;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  header {
+    position: absolute;
+    text-align: center;
+    font-weight: 500;
+    border-bottom: thin dotted $white;
+    padding: 1rem 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  .content {
+    position: absolute;
+    top: 4rem;
+    bottom: 4rem;
+    left: 1rem;
+    right: 1rem;
+    overflow-y: scroll;
+    font-size: 1.2rem;
+
+    h4 {
+      text-transform: uppercase;
+      font-style: italic;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    ul.bookings {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        background-color: $white;
+        margin-bottom: 1rem;
+        border-radius: $border-radius;
+        height: 150px;
+        width: 100%;
+        overflow: hidden;
+        font-size: 1.2rem;
+        a {
+          color: $black;
+        }
+        .thumb {
+          height: 100%;
+          width: 30%;
+          float: left;
+          border-right: thin dotted $menu-red;
+          img {
+            max-height: 100%;
+            max-width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .infos {
+          width: 55%;
+          float: left;
+          height: 100%;
+          position: relative;
+
+          .top {
+            padding: 0.5rem;
+
+            h5 {
+              font-weight: 500;
+
+            }
+
+            time {
+              font-size: 0.8em;
+            }
+          }
+
+          .token {
+            padding: 0.5rem;
+            border-top: thin dotted $menu-red;
+            font-size: 2.5em;
+            color: $menu-red;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+          }
+        }
+
+        .arrow {
+          width: 15%;
+          height: 100%;
+          position: relative;
+          float: left;
+          img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+          }
+        }
+
+      }
+    }
+  }
+}

@@ -6,7 +6,15 @@
   right: 0;
 
   &.bordered {
-    border-top: thin dotted $menu-red;
+    border-top: thin dotted $white;
+  }
+  &.colored {
+    button {
+      background: $menu-red;
+    }
+    &.bordered {
+      border-color: $menu-red;
+    }
   }
   button {
     border: 0;
@@ -17,9 +25,6 @@
     cursor: pointer;
     display: block;
     background: none;
-    &.colored {
-      background: $menu-red;
-    }
     img {
       width: 100%;
       height: auto;
