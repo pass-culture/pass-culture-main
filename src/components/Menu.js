@@ -9,6 +9,11 @@ import { closeModal } from '../reducers/modal'
 
 class Menu extends Component {
 
+  onDisableClick = event => {
+    alert('Pas encore disponible')
+    event.preventDefault()
+  }
+
   onSignOutClick = () => {
     const { closeModal,
       requestData
@@ -43,20 +48,23 @@ class Menu extends Component {
               Mes réservations
             </NavLink>
           </li>
-          <li>
-            <NavLink to='/favorites'>
+          <li className='disabled'>
+            <NavLink to='/favoris'
+              onClick={this.onDisableClick}>
               <Icon svg='ico-like-w' />
               Mes favoris
             </NavLink>
           </li>
-          <li>
-            <NavLink to='/reglages'>
+          <li className='disabled'>
+            <NavLink to='/reglages'
+              onClick={this.onDisableClick}>
               <Icon svg='ico-settings-w' />
               Réglages
             </NavLink>
           </li>
-          <li>
-            <NavLink to='/profil'>
+          <li className='disabled'>
+            <NavLink to='/profil'
+              onClick={this.onDisableClick}>
               <Icon svg='ico-user-w' />
               Mon profil
             </NavLink>
