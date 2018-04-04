@@ -1,6 +1,12 @@
 const config = {
   name: "pass_culture",
   collections: [
+    // NECESSARY FOR DOING DIFF PUSH PULL
+    {
+      description: 'id',
+      name: 'differences'
+    },
+    // SPECIFIC COLLECTIONS
     {
       description: 'index',
       name: 'userMediations',
@@ -18,7 +24,8 @@ const config = {
     },
     {
       description: 'id',
-      name: 'differences'
+      name: 'bookings',
+      isPullOnly: true
     },
     {
       description: 'id',
