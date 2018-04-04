@@ -3,7 +3,7 @@ from sqlalchemy.sql.expression import and_, or_
 
 from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
-from utils.includes import offers_includes
+from utils.includes import OFFERS_INCLUDES
 from utils.rest import ensure_provider_can_update,\
                        expect_json_data,\
                        handle_rest_get_list,\
@@ -72,7 +72,7 @@ def make_offer_query():
 def list_offers():
     return handle_rest_get_list(Offer,
                                 query=make_offer_query(),
-                                include=offers_includes,
+                                include=OFFERS_INCLUDES,
                                 paginate=50)
 
 
@@ -94,7 +94,7 @@ def get_offer(offer_id, mediation_id):
         return jsonify(offer)
     else:
         offer = query.first_or_404()
-        return jsonify(offer._asdict(include=offers_includes))
+        return jsonify(offer._asdict(include=OFFERS_INCLUDES))
 
 
 @app.route('/offers', methods=['POST'])
@@ -103,7 +103,7 @@ def get_offer(offer_id, mediation_id):
 def create_offer():
     new_offer = Offer(from_dict=request.json)
     app.model.PcObject.check_and_save(new_offer)
-    return jsonify(new_offer._asdict(include=offers_includes)), 201
+    return jsonify(new_offer._asdict(include=OFFERS_INCLUDES)), 201
 
 
 @app.route('/offers/<offer_id>', methods=['PATCH'])
@@ -116,4 +116,4 @@ def edit_offer(offer_id):
     ensure_provider_can_update(offer)
     update(offer, updated_offer_dict)
     app.model.PcObject.check_and_save(offer)
-    return jsonify(offer._asdict(include=offers_includes)), 200
+    return jsonify(offer._asdict(include=OFFERS_INCLUDES)), 200

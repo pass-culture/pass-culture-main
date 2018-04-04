@@ -6,7 +6,6 @@ from sqlalchemy.sql.expression import func
 
 from utils.attr_dict import AttrDict
 from utils.content import get_source
-from utils.includes import offers_includes
 
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
