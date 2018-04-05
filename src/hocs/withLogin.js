@@ -7,8 +7,7 @@ import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
   const { isRequired,
-    redirectTo,
-    requestUserTimeout
+    redirectTo
   } = config
   const pushSigninTimeout = config.pushSigninTimeout || 500
 
@@ -25,11 +24,8 @@ const withLogin = (config = {}) => WrappedComponent => {
         requestData
       } = this.props
       if (!user) {
-        this.requestUserTimeout = setTimeout(
-          () => requestData('GET',
-            `users/me`,
-            { key: 'users', local: true }
-          ), requestUserTimeout)
+        requestData('GET', `users/me`,
+            { key: 'users', local: true })
       } else if (redirectTo) {
         push(redirectTo)
       }
@@ -76,7 +72,6 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
     componentWillUnmount () {
-      this.requestUserTimeout && clearTimeout(this.requestUserTimeout)
       this.pushSigninTimeout && clearTimeout(this.pushSigninTimeout)
     }
 

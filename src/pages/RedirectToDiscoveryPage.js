@@ -60,7 +60,7 @@ RedirectToDiscoveryPage.defaultProps = {
 }
 
 export default compose(
-  withLogin({ requestUserTimeout: 2000, isRequired: true }),
+  withLogin({ isRequired: true }),
   withSplash(),
   withRouter,
   connect(state => ({

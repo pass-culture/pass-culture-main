@@ -136,7 +136,7 @@ DiscoveryPage.defaultProps = {
 }
 
 export default compose(
-  withLogin({ requestUserTimeout: 1000, isRequired: true }),
+  withLogin({ isRequired: true }),
   withSplash(),
   withRouter,
   connect(state => ({
