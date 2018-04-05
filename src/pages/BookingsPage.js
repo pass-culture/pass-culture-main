@@ -8,6 +8,8 @@ import TimeAgo from 'react-timeago'
 import frenchStrings from 'react-timeago/lib/language-strings/fr-short'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 
+import Dotdotdot from 'react-dotdotdot'
+
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 import MenuButton from '../components/layout/MenuButton'
@@ -30,25 +32,30 @@ class BookingsPage extends Component {
     this.props.requestData('GET', 'bookings', { local: true })
   }
 
-  renderBooking = b => (
-    <li key={b.id}>
-      <Link to={getDiscoveryPath(b.offer, b.mediation)}>
-        <div className='thumb'>
-          <img src={b.thumbUrl} alt='Thumb' />
-        </div>
-        <div className='infos'>
-          <div className='top'>
-            <h5>{get(b, 'source.name')}</h5>
-            <TimeAgo date={get(b, 'eventOccurence.beginningDatetime')} formatter={formatter} />
+  renderBooking = b => {
+    const date = get(b, 'offer.eventOccurence.beginningDatetime');
+    return (
+      <li key={b.id}>
+        <Link to={getDiscoveryPath(b.offer, b.mediation)}>
+          <div className='thumb'>
+            <img src={b.thumbUrl} alt='Thumb' />
           </div>
-          <div className='token'>{b.token}</div>
-        </div>
-        <div className='arrow'>
-          <Icon svg='ico-next-S' />
-        </div>
-      </Link>
-    </li>
-  )
+          <div className='infos'>
+            <div className='top'>
+              <h5 title={get(b, 'source.name')} >
+                <Dotdotdot clamp={date ? 2 : 3}>{get(b, 'source.name')}</Dotdotdot>
+              </h5>
+              <TimeAgo date={date} formatter={formatter} />
+            </div>
+            <div className='token'>{b.token}</div>
+          </div>
+          <div className='arrow'>
+            <Icon svg='ico-next-S' />
+          </div>
+        </Link>
+      </li>
+    )
+  }
 
   render() {
     const {
