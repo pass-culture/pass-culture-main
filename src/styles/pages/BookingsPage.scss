@@ -21,12 +21,13 @@
 
   .content {
     position: absolute;
-    top: 4rem;
-    bottom: 4rem;
+    top: 52px;
+    bottom: 52px;
     left: 1rem;
     right: 1rem;
     overflow-y: scroll;
     font-size: 1.2rem;
+    padding: 1rem 0;
 
     h4 {
       text-transform: uppercase;
@@ -111,6 +112,10 @@
         }
 
       }
+    }
+    .nothing {
+      text-align: center;
+      margin-bottom: 1rem;
     }
   }
 }

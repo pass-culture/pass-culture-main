@@ -32,6 +32,11 @@ body {
   }
 }
 
+a {
+  color: $white;
+  text-decoration: none;
+}
+
 .app {
   color: $dark-grey;
   font-family: $font-family;

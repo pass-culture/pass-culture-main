@@ -11,6 +11,7 @@ import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 import MenuButton from '../components/layout/MenuButton'
 import Icon from '../components/Icon'
+import selectBookings from '../selectors/bookings'
 
 const formatter = buildFormatter(Object.assign(frenchStrings, {
   prefixAgo: 'Il y a',
@@ -18,37 +19,62 @@ const formatter = buildFormatter(Object.assign(frenchStrings, {
 }))
 
 class BookingsPage extends Component {
-  formatDate(date) {
-    return 'Dans un mois'
-  }
+
+  renderBooking = b => (
+    <li key={b.id}>
+      <Link to={b.path}>
+        <div className='thumb'>
+          <img src={b.thumbUrl} alt='Thumb' />
+        </div>
+        <div className='infos'>
+          <div className='top'>
+            <h5>{b.name}</h5>
+            <TimeAgo date={b.date} formatter={formatter} />
+          </div>
+          <div className='token'>{b.token}</div>
+        </div>
+        <div className='arrow'>
+          <Icon svg='ico-next-S' />
+        </div>
+      </Link>
+    </li>
+  )
 
   render() {
+    const {
+      soonBookings,
+      otherBookings,
+    } = this.props.bookings;
     return (
       <div className='page bookings-page'>
         <header>Mes réservations</header>
         <div className='content'>
-          <h4>Réservations</h4>
-          <ul className='bookings'>
-            {this.props.bookings.map(b => (
-              <li key={b.id}>
-                <Link to={b.path}>
-                  <div className='thumb'>
-                    <img src={b.thumbUrl} alt='Thumb' />
-                  </div>
-                  <div className='infos'>
-                    <div className='top'>
-                      <h5>{b.name}</h5>
-                      <TimeAgo date={b.date} formatter={formatter} />
-                    </div>
-                    <div className='token'>{b.token}</div>
-                  </div>
-                  <div className='arrow'>
-                    <Icon svg='ico-next-S' />
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          { soonBookings.length > 0 && (
+            <div>
+              <h4>C'est bientôt !</h4>
+              <ul className='bookings'>
+                {soonBookings.map(this.renderBooking)}
+              </ul>
+            </div>
+          )}
+          {otherBookings.length > 0 && (
+            <div>
+              <h4>Réservations</h4>
+              <ul className='bookings'>
+                {otherBookings.map(this.renderBooking)}
+              </ul>
+            </div>
+          )}
+          { soonBookings.length === 0 && otherBookings.length === 0 && (
+            <div>
+              <p className='nothing'>
+                Pas encore de réservation.
+              </p>
+              <p className='nothing'>
+                <Link to='/decouverte' className='button button--primary'>Allez-y !</Link>
+              </p>
+            </div>
+          )}
         </div>
         <MenuButton borderTop />
       </div>
@@ -59,64 +85,8 @@ class BookingsPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => ({
-      bookings: [{
-        id: 'AM',
-        name: 'Visite nocturne',
-        date: new Date('04-30-2018'),
-        token: 'A684P6',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }, {
-        id: 'BM',
-        name: 'Visite diurne',
-        date: new Date('05-03-2018'),
-        token: 'VF8996',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }, {
-        id: 'CM',
-        name: 'Visite diurne',
-        date: new Date('05-06-2018'),
-        token: 'VF8996',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }, {
-        id: 'DM',
-        name: 'Visite diurne',
-        date: new Date('05-09-2018'),
-        token: 'VF8996',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }, {
-        id: 'EM',
-        name: 'Visite diurne',
-        date: new Date('05-11-2018'),
-        token: 'VF8996',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }, {
-        id: 'FM',
-        name: 'Visite diurne',
-        date: new Date('05-23-2018'),
-        token: 'VF8996',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }, {
-        id: 'GM',
-        name: 'Visite diurne',
-        date: new Date('05-29-2018'),
-        token: 'VF8996',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }, {
-        id: 'HM',
-        name: 'Visite diurne',
-        date: new Date('05-30-2018'),
-        token: 'VF8996',
-        thumbUrl: '/default_thumb.png',
-        path: '/decouverte/AFUA/AM',
-      }]
+    (state) => ({
+      bookings: selectBookings(state),
     }),
     { requestData }
   )
