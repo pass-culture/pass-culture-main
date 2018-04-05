@@ -341,11 +341,11 @@ class Deck extends Component {
           id='deck'
           style={style}
           ref={element => this.element = element }>
-          <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0', {
+          <button className={classnames('button close', {
             'button--hidden': !this.props.isFlipped,
             'button--disabled': isTransitioning })}
             onClick={e => this.props.unFlip()} >
-            X
+            <Icon svg='ico-close' />
           </button>
           {
             items && items.map((item, index) =>

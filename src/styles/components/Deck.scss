@@ -47,7 +47,15 @@
       }
     }
   }
-  &__to-verso {
+  .close {
     z-index: 1100;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 5px;
+    width: 16px;
+    font-size: 0;
+    height: 16px;
+    box-sizing: content-box;
   }
 }
