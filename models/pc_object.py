@@ -188,6 +188,9 @@ class PcObject():
 
     @staticmethod
     def check_and_save(*objects):
+        if len(objects)==0:
+            raise ValueError('Objects to save need to be passed as arguments'
+                             + ' to check_and_save')
         for obj in objects:
             if isinstance(obj, app.model.ProvidableMixin)\
                 and request\

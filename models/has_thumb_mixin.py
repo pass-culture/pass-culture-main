@@ -31,7 +31,7 @@ class HasThumbMixin(object):
                                      + humanize(self.id)\
                                      + (('_' + str(index)) if index > 0 else '')
 
-    def save_thumb(self, thumb, index, image_type=None):
+    def save_thumb(self, thumb, index, image_type=None, dominant_color=None):
         if isinstance(thumb, str):
             if not thumb[0:4] == 'http':
                 raise ValueError('Invalid thumb URL for object '
@@ -42,23 +42,29 @@ class HasThumbMixin(object):
             if thumb_response.status_code == 200 and\
                content_type.split('/')[0] == 'image':
                 thumb = thumb_response.content
-                image_type = content_type.split('/')[1]
+                image_type = image_type or content_type.split('/')[1]
             else:
                 raise ValueError('Error downloading thumb for object '
                                  + str(self)
                                  + ' status_code: ' + str(thumb_response.status_code) + ', '
                                  + ' content-type: ' + content_type)
-        with tempfile.TemporaryFile() as tf:
-            tf.write(thumb)
-            color_thief = ColorThief(tf)
-            self.firstThumbDominantColor = bytearray(color_thief.get_color(quality=1))
-            if image_type is None:
+        if image_type is None:
+            with tempfile.TemporaryFile() as tf:
+                tf.write(thumb)
                 img = Image.open(tf)
                 image_type = img.format.lower()
+        if dominant_color is None:
+            with tempfile.TemporaryFile() as tf:
+                tf.write(thumb)
+                color_thief = ColorThief(tf)
+                dominant_color = bytearray(color_thief.get_color(quality=1))
+        self.firstThumbDominantColor = dominant_color
         store_public_object("thumbs",
                             self.thumb_storage_id(index),
                             thumb,
-                            "image/"+image_type)
+                            "image/" + ('svg+xml'
+                                        if image_type == 'svg'
+                                        else image_type))
         self.thumbCount = max(index+1, self.thumbCount or 0)
 
 

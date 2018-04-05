@@ -40,8 +40,11 @@ with app.app_context():
     def assertEmptyDb():
         for modelName in app.model:
             if isinstance(app.model[modelName], app.model.PcObject):
-                assert app.model[modelName].query.count() == 0
-        assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 0
+                if modelName == 'Mediation':
+                    assert app.model[modelName].query.count() == 2
+                else:
+                    assert app.model[modelName].query.count() == 0
+        assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
     def provider_test(provider, offererProvider, **counts):
         with app.app_context():
