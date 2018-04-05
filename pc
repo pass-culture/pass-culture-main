@@ -73,6 +73,8 @@ elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='rm -rf $ROOT_PATH/api/static/object_store_data;
        rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up'
+elif [[ "$CMD" == "reset-backend" ]]; then
+	RUN='pc reset-all-db && pc update_providables -m && pc init'
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "reset-um-db" ]]; then
