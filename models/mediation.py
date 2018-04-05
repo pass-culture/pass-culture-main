@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from sqlalchemy import event
 from sqlalchemy.orm import mapper
+import time
 
 
 db = app.db
@@ -74,8 +75,6 @@ Mediation.__table_args__ = (
                        name='check_mediation_has_event_or_thing_or_tutoIndex'),
 )
 
-app.model.Mediation = Mediation
-
 
 TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..'\
                  / 'static' / 'tuto_mediations'
@@ -96,7 +95,6 @@ def upsertTutoMediation(index, dominant_color, backText=None):
     app.model.PcObject.check_and_save(mediation)
 
 
-@event.listens_for(mapper, 'after_configured')
 def upsertTutoMediations():
     upsertTutoMediation(0, b'\xFF\x00\x00')
     upsertTutoMediation(1,
@@ -105,3 +103,8 @@ def upsertTutoMediations():
                                  + " principal, faites glisser cette"
                                  + " fenềtre vers le bas ou appuyez"
                                  + " sur la croix en haut à droite.")
+
+
+Mediation.upsertTutoMediations = upsertTutoMediations
+
+app.model.Mediation = Mediation

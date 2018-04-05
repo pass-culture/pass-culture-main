@@ -3,9 +3,9 @@ from flask import current_app as app
 from flask_sqlalchemy import SQLAlchemy
 from postgresql_audit.flask import versioning_manager
 import sqlalchemy as sa
+from sqlalchemy.exc import ProgrammingError
 
 from utils.attr_dict import AttrDict
-from sqlalchemy.exc import ProgrammingError
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pass_culture:passq@postgres/pass_culture'
@@ -56,5 +56,6 @@ except ProgrammingError:
 app.db.create_all()
 app.db.engine.execute("CREATE INDEX IF NOT EXISTS idx_activity_objid ON activity(cast(changed_data->>'id' AS INT));")
 
-
 app.db.session.commit()
+
+app.model.Mediation.upsertTutoMediations()
