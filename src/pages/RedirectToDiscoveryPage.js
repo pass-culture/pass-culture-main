@@ -4,6 +4,7 @@ import { withRouter, Redirect } from 'react-router'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
+import { getDiscoveryPath } from '../utils/routes'
 
 class RedirectToDiscoveryPage extends Component {
   constructor () {
@@ -30,12 +31,8 @@ class RedirectToDiscoveryPage extends Component {
     const chosenOffer = userMediationOffers &&
       userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
     // BUILD THE URL NOW
-    let redirectTo = `/decouverte/${chosenOffer.id}`
-    if (aroundUserMediation.mediation) {
-      redirectTo = `${redirectTo}/${aroundUserMediation.mediation.id}`
-    }
     this.setState({
-      redirectTo
+      redirectTo: getDiscoveryPath(chosenOffer, aroundUserMediation.mediation)
     })
   }
 

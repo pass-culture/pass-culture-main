@@ -16,10 +16,10 @@ class MenuButton extends Component {
     } = this.props
     return (
       <div className={classnames('menu-button', {
-        bordered: borderTop
+        bordered: borderTop,
+        colored: colored,
       })}>
-        <button onClick={this.onClick}
-          className={classnames({ colored })}>
+        <button onClick={this.onClick}>
           <ProfilePicture />
         </button>
       </div>
