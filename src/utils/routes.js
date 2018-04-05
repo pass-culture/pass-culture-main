@@ -12,6 +12,12 @@ import ProfilePage from '../pages/ProfilePage'
 import RedirectToDiscoveryPage from '../pages/RedirectToDiscoveryPage'
 import SignPage from '../pages/SignPage'
 
+export const getDiscoveryPath = (offer, mediation='') => {
+  const offerId = (typeof offer === 'string') ? offer : offer.id;
+  const mediationId = (typeof mediation === 'string') ? mediation : (typeof mediation === 'object' ? mediation.id : '');
+  return `/decouverte/${offerId}/${mediationId}`;
+}
+
 const routes = [
   {
     exact: true,

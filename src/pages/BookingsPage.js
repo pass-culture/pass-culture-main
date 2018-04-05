@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Link } from 'react-router-dom'
+import get from 'lodash.get'
 
 import TimeAgo from 'react-timeago'
 import frenchStrings from 'react-timeago/lib/language-strings/fr-short'
@@ -12,6 +13,8 @@ import { requestData } from '../reducers/data'
 import MenuButton from '../components/layout/MenuButton'
 import Icon from '../components/Icon'
 import selectBookings from '../selectors/bookings'
+import { getDiscoveryPath } from '../utils/routes'
+import { getThumbUrl } from '../selectors/thumbUrl'
 
 const formatter = buildFormatter(Object.assign(frenchStrings, {
   prefixAgo: 'Il y a',
@@ -30,14 +33,14 @@ class BookingsPage extends Component {
 
   renderBooking = b => (
     <li key={b.id}>
-      <Link to={b.path}>
+      <Link to={getDiscoveryPath(b.offer, b.mediation)}>
         <div className='thumb'>
-          <img src={b.thumbUrl} alt='Thumb' />
+          <img src={getThumbUrl(b.mediation, b.thing, b.offer)} alt='Thumb' />
         </div>
         <div className='infos'>
           <div className='top'>
-            <h5>{b.name}</h5>
-            <TimeAgo date={b.date} formatter={formatter} />
+            <h5>{get(b, 'offer.thing.name') || get(b, 'offer.eventOccurence.name')}</h5>
+            <TimeAgo date={get(b, 'eventOccurence.beginningDatetime')} formatter={formatter} />
           </div>
           <div className='token'>{b.token}</div>
         </div>
