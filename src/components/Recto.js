@@ -15,13 +15,13 @@ import selectUserMediation from '../selectors/userMediation'
 import { IS_DEV } from '../utils/config'
 
 const Recto = props => {
-  const { offer,
+  const {
+    offer,
     isLoading,
-    thumbUrl
+    thumbUrl,
+    isFlipped,
   } = props
-  const style = isLoading
-    ? { backgroundColor: 'black' }
-    : { backgroundImage: `url('${thumbUrl}')` }
+  const style = { backgroundImage: `url('${thumbUrl}')` };
   return (
     <div className='recto'>
        <div className={classnames('card-background', {
@@ -30,14 +30,11 @@ const Recto = props => {
         {isLoading && <Loading isForceActive />}
       </div>
       { offer && (
-        <div>
-          <img alt='thumb'
-            draggable={false}
-            src={thumbUrl}
-          />
-          {IS_DEV && <RectoDebug {...props} />}
-        </div>
+        <div style={style} className={classnames('thumb', {
+          translated: isFlipped
+        })} />
       )}
+      {IS_DEV && <RectoDebug {...props} />}
      </div>
   )
 }

@@ -1,36 +1,44 @@
 .recto {
   width: 100%;
-  padding-bottom: 133%;
-  height: 0;
+  height: 80%;
   overflow: hidden;
   position: relative;
-  z-index: 0;
   &--small {
     border-radius: $border-radius;
   }
   &--loading {
     height: 50%;
   }
-  img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 100%;
-    z-index: 1;
-  }
   .card-background {
     filter: blur(30px);
-    background-size: 150% 150%;
-    background-position: 50% 50%;
+    background-size: 100% auto;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background-repeat: no-repeat;
+    &--loading {
+      filter: none;
+    }
+  }
+  .thumb {
     position: absolute;
+    height: 100%;
+    width: 100%;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 0;
-    &--loading {
-      filter: none;
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition-duration: 250ms;
+    transition-delay: 50ms;
+    -webkit-transition-property: transform, background-size;
+    transition-property: transform, background-size;
+    &.translated {
+      transform: translate(0, -25%);
     }
   }
 }
