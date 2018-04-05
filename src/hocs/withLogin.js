@@ -6,22 +6,40 @@ import { compose } from 'redux'
 import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
-  const { isRequired } = config
-  const showSignModalTimeout = config.showSignModalTimeout || 500
+  const { isRequired,
+    redirectTo,
+    requestUserTimeout
+  } = config
+  const pushSigninTimeout = config.pushSigninTimeout || 500
 
   class _withLogin extends Component {
     constructor () {
       super()
       this.hasBackendRequest = false
+      this.state = { hasConfirmRequest: false }
     }
 
     componentWillMount = () => {
-      const { user, requestData } = this.props
-      !user && requestData('GET', `users/me`, { key: 'users', local: true })
+      const { history: { push },
+        user,
+        requestData
+      } = this.props
+      if (!user) {
+        this.requestUserTimeout = setTimeout(
+          () => requestData('GET',
+            `users/me`,
+            { key: 'users', local: true }
+          ), requestUserTimeout)
+      } else if (redirectTo) {
+        push(redirectTo)
+      }
     }
 
     componentWillReceiveProps = nextProps => {
-      const { history, isModalActive, requestData } = this.props
+      const { history: { push },
+        isModalActive,
+        requestData
+      } = this.props
       if (nextProps.user && nextProps.user !== this.props.user) {
         // BUT ACTUALLY IT IS A SUCCESS FROM THE LOCAL USER
         // NOW BETTER IS TO ALSO TO DO A QUICK CHECK
@@ -30,8 +48,10 @@ const withLogin = (config = {}) => WrappedComponent => {
         if (!this.props.user && !this.hasBackendRequest) {
           requestData('GET', `users/me`, { key: 'users' })
           this.hasBackendRequest = true
+          if (redirectTo) {
+            push(redirectTo)
+          }
         }
-        this.setState({ hasConfirmRequest: true })
       } else if (isRequired) {
         if (nextProps.user === false && this.props.user === null) {
           // CASE WHERE WE TRIED TO GET THE USER IN THE LOCAL
@@ -41,23 +61,23 @@ const withLogin = (config = {}) => WrappedComponent => {
         } else if (!isModalActive) {
           if (nextProps.user === null && this.props.user === false) {
             // CASE WHERE WE STILL HAVE A USER NULL
-            // SO WE FORCE THE SIGN MODAL
-            history.push('/connexion')
+            // SO WE FORCE THE SIGNIN PUSH
+            push('/connexion')
           } else if (nextProps.user === false && this.props.user) {
             // CASE WE JUST SIGNOUT AND AS IS REQUIRED IS TRUE
             // WE NEED TO PROPOSE A NEW SIGNIN MODAL
             // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
             // TO MAKE A SLOW TRANSITION
-            this.showSignModalTimeout = setTimeout(() =>
-              history.push('/connexion'), showSignModalTimeout)
+            this.pushSigninTimeout = setTimeout(() =>
+              push('/connexion'), pushSigninTimeout)
           }
         }
       }
     }
 
     componentWillUnmount () {
-      this.requestUserMeTimeout && clearTimeout(this.requestUserMeTimeout)
-      this.showSignModalTimeout && clearTimeout(this.showSignModalTimeout)
+      this.requestUserTimeout && clearTimeout(this.requestUserTimeout)
+      this.pushSigninTimeout && clearTimeout(this.pushSigninTimeout)
     }
 
     render () {

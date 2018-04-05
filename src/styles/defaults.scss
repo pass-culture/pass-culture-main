@@ -55,6 +55,15 @@ a {
   opacity: 0.5;
 }
 
+.flip-horiz {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
+}
+
 .h2 {
   color: $very-dark-grey;
 }
@@ -125,6 +134,16 @@ select {
   width: 90%;
 }
 
+.splash {
+  background-color: $menu-red;
+  transition: opacity 1s, z-index 10ms 0.75s;
+  z-index: 10000;
+  &--hidden {
+    opacity: 0;
+    z-index: -10000;
+  }
+}
+
 .textarea {
   border: $border;
   border-radius: $border-radius;
@@ -158,15 +177,6 @@ select {
   color: $light-grey;
   font-style: italic;
   opacity: 1;
-}
-
-.flip-horiz {
-  -moz-transform: scaleX(-1);
-  -o-transform: scaleX(-1);
-  -webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
-  filter: FlipH;
-  -ms-filter: "FlipH";
 }
 
 #android-statusbar-overlay {

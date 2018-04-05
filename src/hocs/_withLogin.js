@@ -1,30 +1,65 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
-import Sign from '../components/Sign'
-import { closeModal, showModal } from '../reducers/modal'
+import Icon from '../components/Icon'
 import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
-  const { isRequired } = config
-  const showSignModalTimeout = config.showSignModalTimeout || 500
+  const { isRequired,
+    redirectTo,
+    requestUserTimeout
+  } = config
+  const pushSigninTimeout = config.pushSigninTimeout || 500
+  const setConfirmRequestTimeout = config.setConfirmRequestTimeout || 2000
 
   class _withLogin extends Component {
     constructor () {
       super()
       this.hasBackendRequest = false
+      this.state = { hasConfirmRequest: false }
     }
 
     componentWillMount = () => {
-      const { user, requestData } = this.props
-      !user && requestData('GET', `users/me`, { key: 'users', local: true })
+      const { history: { push },
+        user,
+        requestData
+      } = this.props
+      if (!user) {
+        this.requestUserTimeout = setTimeout(
+          () => requestData('GET',
+            `users/me`,
+            { key: 'users', local: true }
+          ), requestUserTimeout)
+
+        this.setConfirmRequestTimeout = setTimeout(() =>
+          this.setState({ hasConfirmRequest: true }),
+          setConfirmRequestTimeout
+        )
+      } else if (redirectTo) {
+        push(redirectTo)
+      } else {
+        this.setConfirmRequestTimeout = setTimeout(() =>
+          this.setState({ hasConfirmRequest: true }),
+          setConfirmRequestTimeout
+        )
+      }
+
+
+      this.setConfirmRequestTimeout = setTimeout(() =>
+        this.setState({ hasConfirmRequest: true }),
+        setConfirmRequestTimeout
+      )
     }
 
     componentWillReceiveProps = nextProps => {
-      const { isModalActive, requestData } = this.props
+      const { history: { push },
+        isModalActive,
+        requestData
+      } = this.props
       if (nextProps.user && nextProps.user !== this.props.user) {
-        // CASE OF LOGIN SUCCESS
-        nextProps.closeModal()
         // BUT ACTUALLY IT IS A SUCCESS FROM THE LOCAL USER
         // NOW BETTER IS TO ALSO TO DO A QUICK CHECK
         // ON THE BACKEND TO CONFIRM THAT IT IS STILL
@@ -33,7 +68,14 @@ const withLogin = (config = {}) => WrappedComponent => {
           requestData('GET', `users/me`, { key: 'users' })
           this.hasBackendRequest = true
         }
-        this.setState({ hasConfirmRequest: true })
+        if (redirectTo) {
+          push(redirectTo)
+        } else {
+          this.setConfirmRequestTimeout = setTimeout(() =>
+            this.setState({ hasConfirmRequest: true }),
+            setConfirmRequestTimeout
+          )
+        }
       } else if (isRequired) {
         if (nextProps.user === false && this.props.user === null) {
           // CASE WHERE WE TRIED TO GET THE USER IN THE LOCAL
@@ -43,41 +85,44 @@ const withLogin = (config = {}) => WrappedComponent => {
         } else if (!isModalActive) {
           if (nextProps.user === null && this.props.user === false) {
             // CASE WHERE WE STILL HAVE A USER NULL
-            // SO WE FORCE THE SIGN MODAL
-            nextProps.showModal(<Sign />, {
-              isUnclosable: isRequired
-            })
+            // SO WE FORCE THE SIGNIN PUSH
+            push('/connexion')
           } else if (nextProps.user === false && this.props.user) {
             // CASE WE JUST SIGNOUT AND AS IS REQUIRED IS TRUE
             // WE NEED TO PROPOSE A NEW SIGNIN MODAL
             // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
             // TO MAKE A SLOW TRANSITION
-            console.log('ON TRIGER CA')
-            this.showSignModalTimeout = setTimeout(() =>
-              nextProps.showModal(<Sign />, {
-                isUnclosable: isRequired
-              }), showSignModalTimeout)
+            this.pushSigninTimeout = setTimeout(() =>
+              push('/connexion'), pushSigninTimeout)
           }
         }
       }
     }
 
     componentWillUnmount () {
-      this.requestUserMeTimeout && clearTimeout(this.requestUserMeTimeout)
-      this.showSignModalTimeout && clearTimeout(this.showSignModalTimeout)
+      this.requestUserTimeout && clearTimeout(this.requestUserTimeout)
+      this.setConfirmRequestTimeout && clearTimeout(this.setConfirmRequestTimeout)
+      this.pushSigninTimeout && clearTimeout(this.pushSigninTimeout)
     }
 
     render () {
-      return <WrappedComponent {...this.props} />
+      return [
+          <div className={classnames('splash absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center', {
+            'splash--hidden': this.state.hasConfirmRequest
+          })} key={0}>
+            <Icon svg='logo-group'/>
+          </div>,
+          <WrappedComponent key={1} {...this.props} />
+        ]
     }
 
   }
-  return connect(
-    state => ({
-      isModalActive: state.modal.isActive,
-      user: state.user
-    }),
-    { closeModal, requestData, showModal }
+  return compose(
+    withRouter,
+    connect(
+      state => ({ isModalActive: state.modal.isActive, user: state.user }),
+      { requestData }
+    )
   )(_withLogin)
 }
 

@@ -1,10 +1,10 @@
 import React from 'react'
+import { Redirect } from 'react-router'
 
 import BetaPage from '../pages/BetaPage'
 import BookingsPage from '../pages/BookingsPage'
 import DiscoveryPage from '../pages/DiscoveryPage'
 import FavoritesPage from '../pages/FavoritesPage'
-import HomePage from '../pages/HomePage'
 import InventoryPage from '../pages/InventoryPage'
 import OffererPage from '../pages/OffererPage'
 import ProfessionalPage from '../pages/ProfessionalPage'
@@ -23,7 +23,7 @@ const routes = [
   {
     exact: true,
     path: '/',
-    render: () => <HomePage />
+    render: () => <Redirect to='/beta' />
   },
   {
     exact: true,
