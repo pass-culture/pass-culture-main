@@ -12,9 +12,8 @@ import withLogin from '../hocs/withLogin'
 import { requestData } from '../reducers/data'
 import MenuButton from '../components/layout/MenuButton'
 import Icon from '../components/Icon'
-import selectBookings from '../selectors/bookings'
+import selectBookingsByTime from '../selectors/bookingsByTime'
 import { getDiscoveryPath } from '../utils/routes'
-import { getThumbUrl } from '../selectors/thumbUrl'
 
 const formatter = buildFormatter(Object.assign(frenchStrings, {
   prefixAgo: 'Il y a',
@@ -35,11 +34,11 @@ class BookingsPage extends Component {
     <li key={b.id}>
       <Link to={getDiscoveryPath(b.offer, b.mediation)}>
         <div className='thumb'>
-          <img src={getThumbUrl(b.mediation, b.thing, b.offer)} alt='Thumb' />
+          <img src={b.thumbUrl} alt='Thumb' />
         </div>
         <div className='infos'>
           <div className='top'>
-            <h5>{get(b, 'offer.thing.name') || get(b, 'offer.eventOccurence.name')}</h5>
+            <h5>{get(b, 'source.name')}</h5>
             <TimeAgo date={get(b, 'eventOccurence.beginningDatetime')} formatter={formatter} />
           </div>
           <div className='token'>{b.token}</div>
@@ -55,7 +54,7 @@ class BookingsPage extends Component {
     const {
       soonBookings,
       otherBookings,
-    } = this.props.bookings;
+    } = this.props.bookingsByTime;
     return (
       <div className='page bookings-page'>
         <header>Mes réservations</header>
@@ -97,7 +96,7 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     state => ({
-      bookings: selectBookings(state),
+      bookingsByTime: selectBookingsByTime(state),
     }),
     { requestData }
   )
