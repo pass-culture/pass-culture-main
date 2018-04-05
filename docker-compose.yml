@@ -20,6 +20,8 @@ services:
         read_only: true
     env_file:
       - env_file
+    environment:
+      - ENV=${ENV}
     networks:
       - db_nw
       - web_nw

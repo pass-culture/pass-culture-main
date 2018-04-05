@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name pc-api.btmx.fr;
+    server_name ##FQDN##;
 
     location ^~ /.well-known {
         allow all;
@@ -14,11 +14,11 @@ server {
 
 server {
     listen 443;
-    server_name pc-api.btmx.fr;
+    server_name ##FQDN##;
 
     ssl on;
-    ssl_certificate /etc/letsencrypt/live/pc-api.btmx.fr/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/pc-api.btmx.fr/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/##FQDN##/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/##FQDN##/privkey.pem;
     ssl_session_timeout 5m;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
