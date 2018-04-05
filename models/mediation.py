@@ -85,6 +85,7 @@ def upsertTutoMediation(index, dominant_color, backText=None):
                                         .first()
     mediation = existing_mediation or Mediation()
     mediation.tutoIndex = index
+    mediation.backText = backText
     app.model.PcObject.check_and_save(mediation)
 
     with open(TUTOS_PATH / (str(index) + '.svg'), "rb") as f:
