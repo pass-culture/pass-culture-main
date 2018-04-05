@@ -20,6 +20,14 @@ const formatter = buildFormatter(Object.assign(frenchStrings, {
 
 class BookingsPage extends Component {
 
+  componentDidMount() {
+    this.handleRequestBookings()
+  }
+
+  handleRequestBookings = () => {
+    this.props.requestData('GET', 'bookings', { local: true })
+  }
+
   renderBooking = b => (
     <li key={b.id}>
       <Link to={b.path}>
@@ -85,7 +93,7 @@ class BookingsPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state) => ({
+    state => ({
       bookings: selectBookings(state),
     }),
     { requestData }

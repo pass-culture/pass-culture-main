@@ -1,13 +1,26 @@
 .form-input {
-  &__required {
-    color: $medium-red;
+  text-align: center;
+  label {
+    display: block;
+    color: $black;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    small {
+      display: block;
+    }
   }
-  &__errors {
+
+  input {
+    width: 100%;
+    border: 2px solid $menu-red;
+    border-radius: 2em;
+    padding: 0.3em 0.75em;
+  }
+
+  .errors {
     color: red;
-    font-size: 15px;
     list-style: none;
     padding: 0;
     margin: 0;
-    height: 50px;
   }
 }

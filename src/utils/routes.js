@@ -1,14 +1,16 @@
 import React from 'react'
 
+import BetaPage from '../pages/BetaPage'
+import BookingsPage from '../pages/BookingsPage'
 import DiscoveryPage from '../pages/DiscoveryPage'
-import InventoryPage from '../pages/InventoryPage'
+import FavoritesPage from '../pages/FavoritesPage'
 import HomePage from '../pages/HomePage'
+import InventoryPage from '../pages/InventoryPage'
 import OffererPage from '../pages/OffererPage'
 import ProfessionalPage from '../pages/ProfessionalPage'
 import ProfilePage from '../pages/ProfilePage'
+import RedirectToDiscoveryPage from '../pages/RedirectToDiscoveryPage'
 import SignPage from '../pages/SignPage'
-import BookingsPage from '../pages/BookingsPage'
-import RedirectPage from '../pages/RedirectPage'
 
 const routes = [
   {
@@ -18,8 +20,13 @@ const routes = [
   },
   {
     exact: true,
+    path: '/beta',
+    render: () => <BetaPage />
+  },
+  {
+    exact: true,
     path: '/decouverte',
-    render: () => <RedirectPage />
+    render: () => <RedirectToDiscoveryPage />
   },
   {
     exact: true,
@@ -29,13 +36,8 @@ const routes = [
   },
   {
     exact: true,
-    path: '/pro',
-    render: () => <ProfessionalPage />
-  },
-  {
-    exact: true,
-    path:'/pro/:offererId',
-    render: props => <OffererPage offererId={props.match.params.offererId} />
+    path: '/favoris',
+    render: () => <FavoritesPage />
   },
   {
     exact: true,
@@ -49,13 +51,23 @@ const routes = [
   },
   {
     exact: true,
-    path: '/reservations',
-    render: () => <BookingsPage />
+    path: '/pro',
+    render: () => <ProfessionalPage />
+  },
+  {
+    exact: true,
+    path:'/pro/:offererId',
+    render: props => <OffererPage offererId={props.match.params.offererId} />
   },
   {
     exact: true,
     path: '/profil',
     render: () => <ProfilePage />
+  },
+  {
+    exact: true,
+    path: '/reservations',
+    render: () => <BookingsPage />
   }
 ]
 
