@@ -9,12 +9,15 @@
   justify-content: space-around;
   padding-bottom: 5rem;
 
-  &.red {
+  footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background-color: $menu-red;
-    color: white;
-    label {
-      color: white;
-    }
+    padding: 1rem;
+    display: flex;
+    justify-content: space-around;
   }
 
   label {
@@ -23,6 +26,19 @@
 
   p {
     font-weight: 500;
+  }
+
+  &.red {
+    background-color: $menu-red;
+    color: white;
+
+    footer {
+      border-top: dotted 1px white;
+    }
+
+    label {
+      color: white;
+    }
   }
 
   .button--secondary {
@@ -36,15 +52,5 @@
     text-align: center;
   }
 
-  footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: $menu-red;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-around;
-  }
 
 }
