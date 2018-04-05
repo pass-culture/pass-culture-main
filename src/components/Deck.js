@@ -385,14 +385,14 @@ class Deck extends Component {
                 <button className={classnames('deck__board__before button', {
                   'button--disabled': isBeforeDisabled,
                   'button--hidden': isBeforeHidden })}
-                  disabled={isBeforeDisabled}
+                  disabled={isBeforeDisabled || isBeforeHidden}
                   onClick={event => onNext(event, 1)}
                   style={buttonStyle}>
                     <Icon svg='ico-prev-w' />
                 </button>
                 <button className={classnames('deck__board__to-recto button', {
                   'button--disabled': isFlipDisabled,
-                  'button--hidden': isLoading })}
+                  'button--hidden': isLoading || isFlipDisabled })}
                   onClick={e => this.props.flip()}
                   style={buttonStyle} >
                   <Icon svg='ico-slideup-w' />
@@ -401,7 +401,7 @@ class Deck extends Component {
                   'button--disabled': isAfterDisabled,
                   'button--hidden': isAfterHidden })}
                   onClick={event => onNext(event, -1)}
-                  disabled={isAfterDisabled}
+                  disabled={isAfterDisabled || isAfterHidden}
                   style={buttonStyle} >
                   <Icon svg='ico-prev-w' className='flip-horiz' />
                 </button>
