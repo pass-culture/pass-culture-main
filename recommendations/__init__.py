@@ -18,13 +18,27 @@ app.recommendations = AttrDict()
 
 from recommendations.offers import get_offers
 
+
 def create_recommendations(user, limit=3):
     if user.is_authenticated:
-        first_um = UserMediation.query.filter_by(user=user)\
-                                .first()
+        um_count = UserMediation.query.filter_by(user=user)\
+                                .count()
+
     offers = get_offers(user, limit)
+
+    tuto_mediations = {}
+
+    for to in Mediation.query.filter(Mediation.tutoIndex!=None).all():
+        tuto_mediations[to.tutoIndex] = to
+
+    inserted_tuto_mediations = 0
     for (index, offer) in enumerate(offers):
 
+        while um_count+index+inserted_tuto_mediations in tuto_mediations:
+            insert_tuto_mediation(user,
+                                  tuto_mediations[um_count + index
+                                                  + inserted_tuto_mediations])
+            inserted_tuto_mediations += 1
         # CREATE
         um = UserMediation()
         um.user = user
@@ -48,9 +62,6 @@ def create_recommendations(user, limit=3):
                                    .first()
         if mediation is not None:
             um.mediation = mediation
-        # ADD A TAG FOR THE FIRST UM
-        if first_um is None and index == 0:
-            um.isFirst = True
 
         # SAVE AND DO THE UM OFFER JOIN
         app.model.PcObject.check_and_save(um)
@@ -58,3 +69,14 @@ def create_recommendations(user, limit=3):
         umo.offer = offer
         umo.userMediation = um
         app.model.PcObject.check_and_save(umo)
+
+
+def insert_tuto_mediation(user, tuto_mediation):
+    um = UserMediation()
+    um.user = user
+    um.mediation = tuto_mediation
+    um.validUntilDate = datetime.now() + timedelta(weeks=2)
+    # ADD A TAG FOR THE FIRST UM
+    if tuto_mediation.tutoIndex == 0:
+        um.isFirst = True
+    app.model.PcObject.check_and_save(um)

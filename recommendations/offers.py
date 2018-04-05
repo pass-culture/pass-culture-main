@@ -10,6 +10,7 @@ UserMediation = app.model.UserMediation
 UserMediationOffer = app.model.UserMediationOffer
 Thing = app.model.Thing
 
+
 def get_offers(user, limit=3):
     all_query = Offer.query
     print('(reco) all offers.count', all_query.count())
@@ -29,7 +30,8 @@ def get_offers(user, limit=3):
     mediation_query = user_query.outerjoin(Thing)\
                                 .outerjoin(EventOccurence)\
                                 .distinct(EventOccurence.eventId)\
-                                .order_by(EventOccurence.eventId, EventOccurence.beginningDatetime)\
+                                .order_by(EventOccurence.eventId,
+                                          EventOccurence.beginningDatetime)\
                                 .outerjoin(Event)\
                                 .filter((Thing.mediations.any(is_mediation)) |
                                     (Event.mediations.any(is_mediation)))
