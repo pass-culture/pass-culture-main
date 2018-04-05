@@ -341,12 +341,14 @@ class Deck extends Component {
           id='deck'
           style={style}
           ref={element => this.element = element }>
-          <button className={classnames('button close', {
-            'button--hidden': !this.props.isFlipped,
-            'button--disabled': isTransitioning })}
-            onClick={e => this.props.unFlip()} >
-            <Icon svg='ico-close' />
-          </button>
+          {!this.props.unFlippable && (
+            <button className={classnames('button close', {
+              'button--hidden': !this.props.isFlipped,
+              'button--disabled': isTransitioning })}
+              onClick={e => this.props.unFlip()} >
+              <Icon svg='ico-close' />
+            </button>
+          )}
           {
             items && items.map((item, index) =>
               contents && contents[index] &&
@@ -423,6 +425,9 @@ Deck.defaultProps = { deckKey: 0,
 }
 
 export default connect(
-  state => ({ isFlipped: state.navigation.isFlipped }),
+  state => ({
+    isFlipped: state.navigation.isFlipped,
+    unFlippable: state.navigation.unFlippable,
+  }),
   { flip, unFlip }
 )(Deck)
