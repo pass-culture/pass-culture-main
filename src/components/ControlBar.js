@@ -13,6 +13,11 @@ import selectUserMediation from '../selectors/userMediation'
 
 class ControlBar extends Component {
 
+  onClickDisable = event => {
+    alert('Pas encore disponible')
+    event.preventDefault()
+  }
+
   onClickFavorite(type) {
     this.props.requestData('POST', 'userMediations', {
       body: [{
@@ -32,14 +37,14 @@ class ControlBar extends Component {
       <ul className='control-bar'>
         <li><small className='pass-label'>Mon pass</small><span className='pass-value'>0€</span></li>
         <li>
-          <button className='button button--secondary'
-            onClick={e => this.onClickFavorite(e)} >
+          <button className='button button--secondary disabled'
+            onClick={this.onClickDisable} >
             <Icon svg={isFavorite ? 'ico-like-w' : 'ico-like-w'} />
           </button>
         </li>
         <li>
-          <button className='button button--secondary'
-            onClick={e => this.onClickShare(e)}>
+          <button className='button button--secondary disabled'
+            onClick={this.onClickDisable}>
             <Icon svg='ico-share-w' />
           </button>
         </li>

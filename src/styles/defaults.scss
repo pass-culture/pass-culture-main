@@ -51,6 +51,10 @@ a {
   position: relative;
 }
 
+.disabled {
+  opacity: 0.5;
+}
+
 .h2 {
   color: $very-dark-grey;
 }
