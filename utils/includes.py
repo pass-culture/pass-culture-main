@@ -65,7 +65,7 @@ USER_MEDIATIONS_INCLUDES =  [
 
 BOOKINGS_INCLUDES = [
     {
-        "key": "userMediations",
+        "key": "userMediation",
         "sub_joins": USER_MEDIATIONS_INCLUDES
     },
     {
