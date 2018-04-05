@@ -33,6 +33,13 @@ body {
 }
 
 a {
+  background-color: transparent;
+  border: none;
+  text-align: left;
+  display: block;
+  line-height: 2rem;
+  font-size: 1.2rem;
+  padding: 0.5rem;
   color: $white;
   text-decoration: none;
 }

@@ -3,11 +3,23 @@
   padding: 1rem;
   color: $black;
   display: flex;
-  justify-content: space-around;
+  font-size: 1.2rem;
   flex-direction: column;
   height: 100vh;
+  justify-content: space-around;
   padding-bottom: 5rem;
-  font-size: 1.2rem;
+
+  &.red {
+    background-color: $menu-red;
+    color: white;
+    label {
+      color: white;
+    }
+  }
+
+  label {
+    margin-bottom: 0.5rem;
+  }
 
   p {
     font-weight: 500;
@@ -34,4 +46,5 @@
     display: flex;
     justify-content: space-around;
   }
+
 }

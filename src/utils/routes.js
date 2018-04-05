@@ -10,7 +10,8 @@ import OffererPage from '../pages/OffererPage'
 import ProfessionalPage from '../pages/ProfessionalPage'
 import ProfilePage from '../pages/ProfilePage'
 import RedirectToDiscoveryPage from '../pages/RedirectToDiscoveryPage'
-import SignPage from '../pages/SignPage'
+import SigninPage from '../pages/SigninPage'
+import SignupPage from '../pages/SignupPage'
 
 export const getDiscoveryPath = (offer, mediation='') => {
   const offerId = (typeof offer === 'string') ? offer : offer.id;
@@ -31,6 +32,11 @@ const routes = [
   },
   {
     exact: true,
+    path: '/connexion',
+    render: () => <SigninPage />
+  },
+  {
+    exact: true,
     path: '/decouverte',
     render: () => <RedirectToDiscoveryPage />
   },
@@ -48,7 +54,7 @@ const routes = [
   {
     exact: true,
     path: '/inscription',
-    render: () => <SignPage />
+    render: () => <SignupPage />
   },
   {
     exact: true,

@@ -10,7 +10,7 @@ import SubmitButton from '../components/SubmitButton'
 import { showModal } from '../reducers/modal'
 import { NEW } from '../utils/config'
 
-class SignPage extends Component {
+class SignupPage extends Component {
   componentWillReceiveProps (nextProps) {
     const { errors, history, user } = nextProps
     if (user && !errors) {
@@ -75,4 +75,4 @@ export default compose(
       form: state.form, user:state.user
     }),
     { showModal }
-  ))(SignPage)
+  ))(SignupPage)

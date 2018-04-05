@@ -17,10 +17,14 @@ class FormField extends Component {
       type
     } = this.props
     const inputId = id || 'input_'+collectionName+'_'+name
-    const labelMarkup = ( <label htmlFor={id} key={'label_'+id}>
-                          { label }
-                        </label> )
-    const inputMarkup = type === 'textarea' ? ( <FormTextarea {...this.props} id={inputId} key={inputId} /> ) : ( <FormInput {...this.props} id={inputId} key={inputId} /> )
+    const labelMarkup = (
+      <label htmlFor={id} key={'label_'+id}>
+        { label }
+      </label>
+    )
+    const inputMarkup = type === 'textarea'
+      ? <FormTextarea {...this.props} id={inputId} key={inputId} />
+      : <FormInput {...this.props} id={inputId} key={inputId} />
     return (
         <div className='form-input'>
           {
