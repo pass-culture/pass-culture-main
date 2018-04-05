@@ -62,7 +62,9 @@ class HasThumbMixin(object):
         store_public_object("thumbs",
                             self.thumb_storage_id(index),
                             thumb,
-                            "image/"+image_type)
+                            "image/" + ('svg+xml'
+                                        if image_type == 'svg'
+                                        else image_type))
         self.thumbCount = max(index+1, self.thumbCount or 0)
 
 
