@@ -9,6 +9,7 @@
     border-top: thin dotted $white;
   }
   &.colored {
+    background-color: rgba($white, 0.9);
     button {
       background: $menu-red;
     }

@@ -6,85 +6,14 @@
   top: 0;
   bottom: 0;
   z-index: 500;
-  padding-top: 50%;
+  // padding-top: 50%;
   transform: translate(0, 100vh);
   &.flipped {
     transform: translate(0, 0);
   }
 
-  .bg-wrapper {
-    color: $text-color;
-    text-align: left;
-    background-color: $very-very-light-grey;
-    min-height: 100%;
-    position: relative;
-    .verso-header {
-      background-color: $black;
-      padding: 1rem;
-      color: white;
-      position: relative;
-
-      $triangle-diag: 50px;
-      &:before {
-        content: '';
-        background-color: inherit;
-        width: $triangle-diag;
-        height: $triangle-diag;
-        transform: rotate(45deg);
-        top: -$triangle-diag/2;
-        margin: auto;
-        left: 0;
-        right: 0;
-        position: absolute;
-        z-index: -1;
-      }
-
-      h2 {
-        font-size: 1.7rem;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-      }
-      h6 {
-        font-weight: 500;
-        font-size: 1rem;
-      }
-    }
-
-    .content {
-      padding: 1rem;
-
-      h3 {
-        margin-bottom: 1rem;
-        color: $menu-red;
-        font-weight: 500;
-      }
-
-      p {
-        margin-bottom: 1rem;
-      }
-
-      ul.address-info {
-        list-style: none;
-      }
-    }
-    ul.bottom-bar {
-      background-color: $menu-red;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 0;
-      margin: 0;
-      padding: 1.15rem;
-      list-style: none;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      li {
-        display: inline-block;
-      }
-    }
+  .over-wrapper {
+    margin-top: 50%;
   }
-
 
 }
