@@ -129,7 +129,7 @@ class LocalProvider(Iterator):
                         continue
                     need_save = True
                     if existing_date is not None:
-                        obj.delete_thumb(thumb, index)
+                        obj.delete_thumb(index)
                         print("    Updating thumb #"+str(index)+" for "+str(obj))
                         self.updatedThumbs += 1
                     else:

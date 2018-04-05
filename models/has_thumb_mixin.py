@@ -15,7 +15,10 @@ db = app.db
 
 class HasThumbMixin(object):
     thumbCount = db.Column(db.Integer(), nullable=False, default=0)
-    firstThumbDominantColor = db.Column(db.Binary(3), nullable=True)
+    firstThumbDominantColor = db.Column(db.Binary(3),
+                                        db.CheckConstraint('"thumbCount"=0 OR "firstThumbDominantColor" IS NOT NULL',
+                                                           name='check_thumb_has_dominant_color'),
+                                        nullable=True)
 
     def delete_thumb(self, index):
         delete_public_object("thumbs", self.thumb_storage_id(index))
@@ -28,8 +31,7 @@ class HasThumbMixin(object):
                                      + humanize(self.id)\
                                      + (('_' + str(index)) if index > 0 else '')
 
-    def save_thumb(self, thumb, index):
-        image_type = None
+    def save_thumb(self, thumb, index, image_type=None):
         if isinstance(thumb, str):
             if not thumb[0:4] == 'http':
                 raise ValueError('Invalid thumb URL for object '

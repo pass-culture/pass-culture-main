@@ -12,6 +12,7 @@ mimes_by_folder = {
     "zips": "application/zip"
 }
 
+
 def set_from_mock(folder, obj, thumb_id):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
     collection_name = inflect_engine.plural(obj.__class__.__name__.lower())
@@ -19,10 +20,11 @@ def set_from_mock(folder, obj, thumb_id):
                  / folder / collection_name\
                  / str(thumb_id)
     with open(thumb_path, mode='rb') as file:
-        store_public_object(folder,
-                            collection_name + '/' + humanize(obj.id),
-                            file.read(),
-                            mimes_by_folder[folder])
-    if folder == "thumbs":
-        obj.thumbCount = 1
+        if folder == "thumbs":
+            obj.save_thumb(file.read(), 0)
+        else:
+            store_public_object(folder,
+                                collection_name + '/' + humanize(obj.id),
+                                file.read(),
+                                mimes_by_folder[folder])
     current_app.model.PcObject.check_and_save(obj)
