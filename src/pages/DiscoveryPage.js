@@ -9,6 +9,7 @@ import withLogin from '../hocs/withLogin'
 import { getContentFromUserMediation } from '../utils/content'
 import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
+import { getDiscoveryPath } from '../utils/routes'
 
 class DiscoveryPage extends Component {
   constructor () {
@@ -37,13 +38,9 @@ class DiscoveryPage extends Component {
       (aroundIndex !== null && userMediations[aroundIndex].id !== id)
     ) {
       const aroundContent = getContentFromUserMediation(userMediation)
-      let url = `/decouverte/${aroundContent.chosenOffer.id}`
-      if (mediation) {
-        url = `${url}/${mediation.id}`
-      }
       isDebug && debug(`DiscoveryPage - handleUserMediationChange replace`)
       // replace
-      history.replace(url)
+      history.replace(getDiscoveryPath(aroundContent.chosenOffer, mediation))
       this.setState({ aroundIndex: false })
     }
   }
