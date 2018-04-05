@@ -34,7 +34,7 @@ const SignupPage = ({ errors }) => {
                  placeholder='mot de passe'
                  type='password' />
       <div className='errors'>{errors}</div>
-      <footer>
+      <footer className='flex items-center'>
         <NavLink to='/connexion'>
           Déjà inscrit ?
         </NavLink>
@@ -42,7 +42,9 @@ const SignupPage = ({ errors }) => {
           text='OK'
           className='button button--secondary'
           getBody={form => form.usersById[NEW]}
-          getIsDisabled={form => !get(form, 'usersById._new_.publicName') || !get(form, 'usersById._new_.email') || !get(form, 'usersById._new_.password')}
+          getIsDisabled={form => !get(form, 'usersById._new_.publicName') ||
+            !get(form, 'usersById._new_.email') ||
+            !get(form, 'usersById._new_.password')}
           path='users'
           storeKey='users' />
       </footer>
