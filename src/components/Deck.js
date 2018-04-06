@@ -313,7 +313,6 @@ class Deck extends Component {
       currentContent,
       cursor,
       deckElement,
-      gradientStyle,
       isFirstCard,
       isFlipping,
       isLastCard,
