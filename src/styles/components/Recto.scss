@@ -10,13 +10,17 @@
     height: 50%;
   }
   .card-background {
-    filter: blur(30px);
+    filter: blur(20px);
     background-size: 100% auto;
     background-position: center;
     height: 100%;
     width: 100%;
     position: relative;
     background-repeat: no-repeat;
+    box-sizing: content-box;
+    padding: 50px;
+    margin-top: -50px;
+    margin-left: -50px;
     &--loading {
       filter: none;
     }
@@ -38,7 +42,7 @@
     -webkit-transition-property: transform, background-size;
     transition-property: transform, background-size;
     &.translated {
-      transform: translate(0, -25%);
+      transform: translate(0, -25%) scale(1.1);
     }
   }
 }
