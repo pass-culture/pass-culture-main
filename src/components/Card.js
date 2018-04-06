@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import Draggable from 'react-draggable'
 import { Portal } from 'react-portal'
 
-import Clue from './Clue'
 import Recto from './Recto'
 import Verso from './Verso'
 

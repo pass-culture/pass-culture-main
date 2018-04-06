@@ -11,7 +11,7 @@ import { resetForm } from '../reducers/form'
 const withSign = WrappedComponent => {
   class _withSign extends Component {
     componentWillMount () {
-      const { assignData, resetForm } = this.props
+      const { assignData } = this.props
       assignData({ errors: null })
     }
 

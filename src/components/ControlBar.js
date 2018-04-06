@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
+import get from 'lodash.get'
 
 import { requestData } from '../reducers/data'
 import { showModal } from '../reducers/modal'
@@ -65,7 +66,7 @@ class ControlBar extends Component {
           ) : (
             <button className='button button--primary button--go'
               onClick={this.onClickJyVais} >
-              <span className='price'>{`${offer && offer.price || 'prix'} €`}</span>
+              <span className='price'>{`${get(offer, 'price', '--')} €`}</span>
               J'y vais!
             </button>
           )}
