@@ -1,30 +1,44 @@
+// POSSIBLE HOC FOR ALL OTHER THE PAGE THAN SIGNIN AND SIGNUP
+// withLogin ASK FOR A CONNECTED USER, IF NOT IT REDIRECTS TO SININGPAGE
+// ON USER SUCCESS IT CAN ALSO REDIRECT TO A SPECIFIC PATH
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
-import Sign from '../components/Sign'
-import { closeModal, showModal } from '../reducers/modal'
 import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
-  const { isRequired } = config
-  const showSignModalTimeout = config.showSignModalTimeout || 500
+  const { isRequired,
+    redirectTo
+  } = config
+  const pushSigninTimeout = config.pushSigninTimeout || 500
 
   class _withLogin extends Component {
     constructor () {
       super()
       this.hasBackendRequest = false
+      this.state = { hasConfirmRequest: false }
     }
 
     componentWillMount = () => {
-      const { user, requestData } = this.props
-      !user && requestData('GET', `users/me`, { key: 'users', local: true })
+      const { user,
+        requestData
+      } = this.props
+      if (!user) {
+        requestData('GET', `users/me`,
+            { key: 'users', local: true })
+      } else if (redirectTo) {
+        this.setState({ redirectTo })
+      }
     }
 
     componentWillReceiveProps = nextProps => {
-      const { isModalActive, requestData } = this.props
+      const { history,
+        isModalActive,
+        requestData
+      } = this.props
       if (nextProps.user && nextProps.user !== this.props.user) {
-        // CASE OF LOGIN SUCCESS
-        nextProps.closeModal()
         // BUT ACTUALLY IT IS A SUCCESS FROM THE LOCAL USER
         // NOW BETTER IS TO ALSO TO DO A QUICK CHECK
         // ON THE BACKEND TO CONFIRM THAT IT IS STILL
@@ -32,8 +46,10 @@ const withLogin = (config = {}) => WrappedComponent => {
         if (!this.props.user && !this.hasBackendRequest) {
           requestData('GET', `users/me`, { key: 'users' })
           this.hasBackendRequest = true
+          if (redirectTo) {
+            history.push(redirectTo)
+          }
         }
-        this.setState({ hasConfirmRequest: true })
       } else if (isRequired) {
         if (nextProps.user === false && this.props.user === null) {
           // CASE WHERE WE TRIED TO GET THE USER IN THE LOCAL
@@ -43,28 +59,22 @@ const withLogin = (config = {}) => WrappedComponent => {
         } else if (!isModalActive) {
           if (nextProps.user === null && this.props.user === false) {
             // CASE WHERE WE STILL HAVE A USER NULL
-            // SO WE FORCE THE SIGN MODAL
-            nextProps.showModal(<Sign />, {
-              isUnclosable: isRequired
-            })
+            // SO WE FORCE THE SIGNIN PUSH
+            history.push('/connexion')
           } else if (nextProps.user === false && this.props.user) {
             // CASE WE JUST SIGNOUT AND AS IS REQUIRED IS TRUE
             // WE NEED TO PROPOSE A NEW SIGNIN MODAL
             // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
             // TO MAKE A SLOW TRANSITION
-            console.log('ON TRIGER CA')
-            this.showSignModalTimeout = setTimeout(() =>
-              nextProps.showModal(<Sign />, {
-                isUnclosable: isRequired
-              }), showSignModalTimeout)
+            this.pushSigninTimeout = setTimeout(() =>
+              history.push('/connexion'), pushSigninTimeout)
           }
         }
       }
     }
 
     componentWillUnmount () {
-      this.requestUserMeTimeout && clearTimeout(this.requestUserMeTimeout)
-      this.showSignModalTimeout && clearTimeout(this.showSignModalTimeout)
+      this.pushSigninTimeout && clearTimeout(this.pushSigninTimeout)
     }
 
     render () {
@@ -72,12 +82,12 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
   }
-  return connect(
-    state => ({
-      isModalActive: state.modal.isActive,
-      user: state.user
-    }),
-    { closeModal, requestData, showModal }
+  return compose(
+    withRouter,
+    connect(
+      state => ({ isModalActive: state.modal.isActive, user: state.user }),
+      { requestData }
+    )
   )(_withLogin)
 }
 

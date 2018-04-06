@@ -1,16 +1,17 @@
 import React from 'react'
+import { Redirect } from 'react-router'
 
 import BetaPage from '../pages/BetaPage'
 import BookingsPage from '../pages/BookingsPage'
 import DiscoveryPage from '../pages/DiscoveryPage'
 import FavoritesPage from '../pages/FavoritesPage'
-import HomePage from '../pages/HomePage'
 import InventoryPage from '../pages/InventoryPage'
 import OffererPage from '../pages/OffererPage'
 import ProfessionalPage from '../pages/ProfessionalPage'
 import ProfilePage from '../pages/ProfilePage'
 import RedirectToDiscoveryPage from '../pages/RedirectToDiscoveryPage'
-import SignPage from '../pages/SignPage'
+import SigninPage from '../pages/SigninPage'
+import SignupPage from '../pages/SignupPage'
 
 export const getDiscoveryPath = (offer, mediation='') => {
   const offerId = (typeof offer === 'string') ? offer : offer.id;
@@ -22,12 +23,17 @@ const routes = [
   {
     exact: true,
     path: '/',
-    render: () => <HomePage />
+    render: () => <Redirect to='/beta' />
   },
   {
     exact: true,
     path: '/beta',
     render: () => <BetaPage />
+  },
+  {
+    exact: true,
+    path: '/connexion',
+    render: () => <SigninPage />
   },
   {
     exact: true,
@@ -48,7 +54,7 @@ const routes = [
   {
     exact: true,
     path: '/inscription',
-    render: () => <SignPage />
+    render: () => <SignupPage />
   },
   {
     exact: true,

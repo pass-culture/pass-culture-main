@@ -3,14 +3,42 @@
   padding: 1rem;
   color: $black;
   display: flex;
-  justify-content: space-around;
+  font-size: 1.2rem;
   flex-direction: column;
   height: 100vh;
+  justify-content: space-around;
   padding-bottom: 5rem;
-  font-size: 1.2rem;
+
+  footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $menu-red;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  label {
+    margin-bottom: 0.5rem;
+  }
 
   p {
     font-weight: 500;
+  }
+
+  &.red {
+    background-color: $menu-red;
+    color: white;
+
+    footer {
+      border-top: dotted 1px white;
+    }
+
+    label {
+      color: white;
+    }
   }
 
   .button--secondary {
@@ -24,14 +52,5 @@
     text-align: center;
   }
 
-  footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: $menu-red;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-around;
-  }
+
 }
