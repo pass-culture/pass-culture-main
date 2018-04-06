@@ -182,6 +182,10 @@ select {
   }
 }
 
+.white {
+  color: white;
+}
+
 ::-webkit-input-placeholder { /* Chrome */
   color: $light-grey;
   font-style: italic;

@@ -18,8 +18,7 @@ import selectHeaderColor from '../selectors/headerColor'
 class Deck extends Component {
   constructor (props) {
     super(props)
-    this.state = { bufferContents: null,
-      currentContent: null,
+    this.state = { currentContent: null,
       cursor: 0,
       deckElement: null,
       transition: null,
