@@ -6,6 +6,8 @@ import { connect } from 'react-redux'
 import { rgb_to_hsv } from 'colorsys'
 
 import Card, { CURRENT } from './Card'
+import Clue from './Clue'
+
 import Icon from './Icon'
 import { debug, warn } from '../utils/logguers'
 import { ROOT_PATH } from '../utils/config';
@@ -381,34 +383,40 @@ class Deck extends Component {
                 id='deck__board'
                 ref={element => this.boardElement = element}
                 style={{
-                  backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,
                   background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 25%,${headerColor} 100%)`,
                 }} >
-                <div className='control'>
-                  <button className={classnames('deck__board__before button', {
-                    'button--disabled': isBeforeDisabled,
-                    'button--hidden': isBeforeHidden })}
-                    disabled={isBeforeDisabled || isBeforeHidden}
-                    onClick={event => onNext(event, 1)}
-                    style={buttonStyle}>
-                      <Icon svg='ico-prev-w' />
-                  </button>
-                  <button className={classnames('deck__board__to-recto button', {
-                    'button--disabled': isFlipDisabled,
-                    'button--hidden': isLoading || isFlipDisabled })}
-                    onClick={e => this.props.flip()}
-                    style={buttonStyle} >
-                    <Icon svg='ico-slideup-w' />
-                  </button>
-                  <button className={classnames('deck__board__after button', {
-                    'button--disabled': isAfterDisabled,
-                    'button--hidden': isAfterHidden })}
-                    onClick={event => onNext(event, -1)}
-                    disabled={isAfterDisabled || isAfterHidden}
-                    style={buttonStyle} >
-                    <Icon svg='ico-prev-w' className='flip-horiz' />
-                  </button>
-                </div>
+                <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,}}>
+                  <li>
+                    <button className={classnames('button before', {
+                      'disabled': isBeforeDisabled,
+                      'hidden': isBeforeHidden })}
+                      disabled={isBeforeDisabled || isBeforeHidden}
+                      onClick={event => onNext(event, 1)}
+                      style={buttonStyle}>
+                        <Icon svg='ico-prev-w-group' />
+                    </button>
+                  </li>
+                  <li>
+                    <button className={classnames('button to-recto ', {
+                      'disabled': isFlipDisabled,
+                      'hidden': isLoading || isFlipDisabled })}
+                      onClick={e => this.props.flip()}
+                      style={buttonStyle} >
+                      <Icon svg='ico-slideup-w' />
+                    </button>
+                    <Clue />
+                  </li>
+                  <li>
+                    <button className={classnames('button after', {
+                      'disabled': isAfterDisabled,
+                      'hidden': isAfterHidden })}
+                      onClick={event => onNext(event, -1)}
+                      disabled={isAfterDisabled || isAfterHidden}
+                      style={buttonStyle} >
+                      <Icon svg='ico-next-w-group' />
+                    </button>
+                  </li>
+                </ul>
                 {children}
               </div>
             </div>

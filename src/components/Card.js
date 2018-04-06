@@ -260,11 +260,6 @@ class Card extends Component {
             <Verso />
           </Portal>
         )}
-        {Math.abs(item) < 2 && content.id && (
-          <Portal node={document.getElementById('deck__board')}>
-            <Clue isHidden={item !== 0} />
-          </Portal>
-        )}
       </div>
     )
   }
