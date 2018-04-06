@@ -34,7 +34,7 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
     componentWillReceiveProps = nextProps => {
-      const { history: { push },
+      const { history,
         isModalActive,
         requestData
       } = this.props
@@ -47,7 +47,7 @@ const withLogin = (config = {}) => WrappedComponent => {
           requestData('GET', `users/me`, { key: 'users' })
           this.hasBackendRequest = true
           if (redirectTo) {
-            push(redirectTo)
+            history.push(redirectTo)
           }
         }
       } else if (isRequired) {
@@ -60,14 +60,14 @@ const withLogin = (config = {}) => WrappedComponent => {
           if (nextProps.user === null && this.props.user === false) {
             // CASE WHERE WE STILL HAVE A USER NULL
             // SO WE FORCE THE SIGNIN PUSH
-            push('/connexion')
+            history.push('/connexion')
           } else if (nextProps.user === false && this.props.user) {
             // CASE WE JUST SIGNOUT AND AS IS REQUIRED IS TRUE
             // WE NEED TO PROPOSE A NEW SIGNIN MODAL
             // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
             // TO MAKE A SLOW TRANSITION
             this.pushSigninTimeout = setTimeout(() =>
-              push('/connexion'), pushSigninTimeout)
+              history.push('/connexion'), pushSigninTimeout)
           }
         }
       }
