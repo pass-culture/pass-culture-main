@@ -45,12 +45,9 @@ const SigninPage = ({ errors }) => {
           Inscription
         </NavLink>
         <SubmitButton getBody={form => form.usersById[NEW]}
-          getIsDisabled={form => !form ||
-            !form.usersById ||
-            !form.usersById[NEW] ||
-            !form.usersById[NEW].identifier ||
-            !form.usersById[NEW].password
-          }
+          getIsDisabled={form => !get(form, 'usersById._new_.publicName') ||
+            !get(form, 'usersById._new_.identifier') ||
+            !get(form, 'usersById._new_.password')}
           className='button button--primary'
           path='users/signin'
           storeKey='users'

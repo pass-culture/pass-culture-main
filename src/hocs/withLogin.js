@@ -1,3 +1,6 @@
+// POSSIBLE HOC FOR ALL OTHER THE PAGE THAN SIGNIN AND SIGNUP
+// withLogin ASK FOR A CONNECTED USER, IF NOT IT REDIRECTS TO SININGPAGE
+// ON USER SUCCESS IT CAN ALSO REDIRECT TO A SPECIFIC PATH
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -19,15 +22,14 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
     componentWillMount = () => {
-      const { history: { push },
-        user,
+      const { user,
         requestData
       } = this.props
       if (!user) {
         requestData('GET', `users/me`,
             { key: 'users', local: true })
       } else if (redirectTo) {
-        push(redirectTo)
+        this.setState({ redirectTo })
       }
     }
 

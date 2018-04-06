@@ -1,3 +1,5 @@
+// HOC THAT GATHERS COMMON TASK FOR SIGNIN AND SIGNUP PAGE
+// LIKE RESET DATA, FORM REDUCER / REDIRECT TO decouverte ON USER SUCCESS
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
