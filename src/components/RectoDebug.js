@@ -2,21 +2,21 @@ import React from 'react'
 
 const RectoDebug = ({ contentLength,
   index,
-  offer,
-  userMediation
+  currentOffer,
+  currentUserMediation,
 }) => {
   return (
     <div className='recto-debug absolute left-0 ml2 p2'>
       <span>
-        {userMediation.id} {offer.id} {index + 1}/{contentLength}
+        {currentUserMediation.id} {currentOffer.id} {index + 1}/{contentLength}
       </span>
       {
-        userMediation.dateRead && [
+        currentUserMediation.dateRead && [
           <span key={0}>
             &middot;
           </span>,
           <span key={1}>
-            {userMediation.dateRead}
+            {currentUserMediation.dateRead}
           </span>
         ]
       }
