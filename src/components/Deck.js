@@ -300,7 +300,8 @@ class Deck extends Component {
       onTransitionEndCard,
       onTransitionStartCard
     } = this
-    const { contents,
+    const { children,
+      contents,
       extraContents,
       isLoadingBefore,
       isLoadingAfter,
@@ -327,7 +328,10 @@ class Deck extends Component {
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isLoading = isLoadingBefore || isLoadingAfter
-    const isFlipDisabled = !items || isLoading || isTransitioning || (currentContent && currentContent.mediation && !currentContent.mediation.backText && currentContent.userMediationOffers.length === 0)
+    const isFlipDisabled = !items || isLoading || isTransitioning ||
+      (currentContent && currentContent.mediation &&
+        !currentContent.mediation.backText &&
+        currentContent.userMediationOffers.length === 0)
     // console.log('RENDER: Deck contents', contents && contents.length, contents,
     // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: Deck', 'this.state.items', this.state.items)
@@ -379,12 +383,15 @@ class Deck extends Component {
                   readTimeout={readTimeout} />
             )
           }
-          <div className="deck-gradient" style={gradientStyle} />
-            <div className='deck__board absolute'
+          <div className="board-wrapper deck-gradient" style={gradientStyle}>
+            <div className='board'
               id='deck__board'
               ref={element => this.boardElement = element}
-              style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')` }} >
-              <div className='deck__board__control flex justify-around'>
+              style={{
+                  backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,
+                  background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 25%,${headerColor} 100%)`,
+                }} >
+              <div className='control'>
                 <button className={classnames('deck__board__before button', {
                   'button--disabled': isBeforeDisabled,
                   'button--hidden': isLoading || isFlipDisabled })}
@@ -411,9 +418,10 @@ class Deck extends Component {
               </div>
             </div>
           </div>
-        </Draggable>
-      )
-    }
+        </div>
+      </Draggable>
+    )
+  }
 }
 
 Deck.defaultProps = { deckKey: 0,
