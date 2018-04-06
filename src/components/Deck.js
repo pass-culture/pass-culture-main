@@ -340,7 +340,7 @@ class Deck extends Component {
         onDrag={onDrag}
         onStart={onStart}
         onStop={onStop} >
-        <div className='deck relative'
+        <div className='deck'
           id='deck'
           style={style}
           ref={element => this.element = element }>
@@ -386,7 +386,7 @@ class Deck extends Component {
               id='deck__board'
               ref={element => this.boardElement = element}
               style={{
-                background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 25%,${headerColor} 100%)`,
+                background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 35%,${headerColor} 100%)`,
               }} >
               <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,}}>
                 <li>

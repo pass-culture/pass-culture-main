@@ -1,9 +1,11 @@
 .deck {
   height: 100vh;
   overflow: hidden;
+  position: relative;
+
   .board-wrapper {
     width: 100%;
-    height: 30%;
+    height: 40%;
     position: absolute;
     bottom: 0;
 
