@@ -20,7 +20,6 @@ export async function getData (collectionName, query) {
   if (!table) {
     return
   }
-  console.log('query', query)
   // return
   return await table.filter(element =>
     Object.keys(query).every(key => element[key] === query[key])).toArray()

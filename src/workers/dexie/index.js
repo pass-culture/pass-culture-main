@@ -1,7 +1,6 @@
 /* global self */
 /* eslint no-restricted-globals: ["off", "self"] */
 import { db,
-  getData,
   pushPull,
   setUser
 } from './data'

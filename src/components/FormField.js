@@ -13,7 +13,6 @@ class FormField extends Component {
       id,
       label,
       name,
-      required,
       type
     } = this.props
     const inputId = id || 'input_'+collectionName+'_'+name

@@ -1,9 +1,19 @@
 .card {
   cursor: pointer;
   height: 100%;
-  &--current {
-    z-index: 50;
+
+  &.react-draggable {
+    &:before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      content: '';
+    }
   }
+
   &--draggable {
     cursor: -webkit-grab;
   }

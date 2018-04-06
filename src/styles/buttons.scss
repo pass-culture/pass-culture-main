@@ -32,10 +32,10 @@
   &--cta {
     min-width: 100px;
   }
-  &--disabled {
+  &--disabled, &.disabled {
     opacity: 0.25;
   }
-  &--hidden {
+  &--hidden, &.hidden {
     opacity: 0;
   }
   &--inversed {

@@ -3,7 +3,6 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 import FormField from '../components/FormField'
-import Sign from '../components/Sign'
 import SubmitButton from '../components/SubmitButton'
 import withSign from '../hocs/withSign'
 import { NEW } from '../utils/config'

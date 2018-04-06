@@ -6,6 +6,8 @@ import { connect } from 'react-redux'
 import { rgb_to_hsv } from 'colorsys'
 
 import Card, { CURRENT } from './Card'
+import Clue from './Clue'
+
 import Icon from './Icon'
 import { debug, warn } from '../utils/logguers'
 import { ROOT_PATH } from '../utils/config';
@@ -313,7 +315,6 @@ class Deck extends Component {
       currentContent,
       cursor,
       deckElement,
-      gradientStyle,
       isFirstCard,
       isFlipping,
       isLastCard,
@@ -332,17 +333,14 @@ class Deck extends Component {
       (currentContent && currentContent.mediation &&
         !currentContent.mediation.backText &&
         currentContent.userMediationOffers.length === 0)
-    // console.log('RENDER: Deck contents', contents && contents.length, contents,
-    // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
-    // console.log('RENDER: Deck', 'this.state.items', this.state.items)
-    // console.log(`RENDER: Deck isLoadingBefore ${isLoadingBefore} isLoadingAfter ${isLoadingAfter}`)
+
     return (
       <Draggable axis='none'
         bounds={{ bottom: 0, top: 0 }}
         onDrag={onDrag}
         onStart={onStart}
         onStop={onStop} >
-        <div className='deck relative'
+        <div className='deck'
           id='deck'
           style={style}
           ref={element => this.element = element }>
@@ -383,39 +381,46 @@ class Deck extends Component {
                   readTimeout={readTimeout} />
             )
           }
-          <div className="board-wrapper deck-gradient" style={gradientStyle}>
+          <div className='board-wrapper'>
             <div className='board'
               id='deck__board'
               ref={element => this.boardElement = element}
               style={{
-                  backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,
-                  background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 25%,${headerColor} 100%)`,
-                }} >
-              <div className='control'>
-                <button className={classnames('deck__board__before button', {
-                  'button--disabled': isBeforeDisabled,
-                  'button--hidden': isLoading || isFlipDisabled })}
-                  disabled={isBeforeDisabled || isBeforeHidden}
-                  onClick={event => onNext(event, 1)}
-                  style={buttonStyle}>
-                    <Icon svg='ico-prev-w' />
-                </button>
-                <button className={classnames('deck__board__to-recto button', {
-                  'button--disabled': isFlipDisabled,
-                  'button--hidden': isFlipDisabled })}
-                  onClick={e => this.props.flip()}
-                  style={buttonStyle} >
-                  <Icon svg='ico-slideup-w' />
-                </button>
-                <button className={classnames('deck__board__after button', {
-                  'button--disabled': isAfterDisabled,
-                  'button--hidden': isAfterHidden })}
-                  onClick={event => onNext(event, -1)}
-                  disabled={isAfterDisabled || isAfterHidden}
-                  style={buttonStyle} >
-                  <Icon svg='ico-prev-w' className='flip-horiz' />
-                </button>
-              </div>
+                background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 35%,${headerColor} 100%)`,
+              }} >
+              <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,}}>
+                <li>
+                  <button className={classnames('button before', {
+                    'disabled': isBeforeDisabled,
+                    'hidden': isBeforeHidden })}
+                    disabled={isBeforeDisabled || isBeforeHidden}
+                    onClick={event => onNext(event, 1)}
+                    style={buttonStyle}>
+                      <Icon svg='ico-prev-w-group' />
+                  </button>
+                </li>
+                <li>
+                  <button className={classnames('button to-recto ', {
+                    'disabled': isFlipDisabled,
+                    'hidden': isLoading || isFlipDisabled })}
+                    onClick={e => this.props.flip()}
+                    style={buttonStyle} >
+                    <Icon svg='ico-slideup-w' />
+                  </button>
+                  <Clue />
+                </li>
+                <li>
+                  <button className={classnames('button after', {
+                    'disabled': isAfterDisabled,
+                    'hidden': isAfterHidden })}
+                    onClick={event => onNext(event, -1)}
+                    disabled={isAfterDisabled || isAfterHidden}
+                    style={buttonStyle} >
+                    <Icon svg='ico-next-w-group' />
+                  </button>
+                </li>
+              </ul>
+              {children}
             </div>
           </div>
         </div>

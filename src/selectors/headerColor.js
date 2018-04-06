@@ -10,7 +10,7 @@ export default createSelector(
   selectMediation,
   (source, mediation) => {
     const [red, green, blue] =
-      get(mediation, 'mediation.firstThumbDominantColor', []) ||
+      get(mediation, 'firstThumbDominantColor', []) ||
       get(source, 'firstThumbDominantColor', [])
     const {h} = rgb_to_hsv(red, green, blue);
     if (h) {

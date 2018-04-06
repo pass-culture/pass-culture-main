@@ -125,7 +125,7 @@ class DiscoveryPage extends Component {
         <UserMediationsDeck {...this.state}
           handleUserMediationChange={this.handleUserMediationChange} >
         </UserMediationsDeck>
-        <MenuButton />
+        <MenuButton borderTop />
       </main>
     )
   }
