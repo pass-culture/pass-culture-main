@@ -13,7 +13,7 @@ class Verso extends Component {
       <div className={classnames('verso', {
         'flipped': this.props.isFlipped,
       })} >
-        <VersoWrapper hasControlBar>
+        <VersoWrapper hasControlBar className='with-padding-top'>
           <OfferInfo />
         </VersoWrapper>
         <MenuButton borderTop colored />

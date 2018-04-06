@@ -36,7 +36,7 @@ class BookingsPage extends Component {
     const date = get(b, 'offer.eventOccurence.beginningDatetime');
     return (
       <li key={b.id}>
-        <Link to={getDiscoveryPath(b.offer, b.mediation)}>
+        <Link to={`${getDiscoveryPath(b.offer, b.mediation)}?to=verso`}>
           <div className='thumb'>
             <img src={b.thumbUrl} alt='Thumb' />
           </div>

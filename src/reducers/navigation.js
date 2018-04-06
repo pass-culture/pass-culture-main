@@ -3,10 +3,12 @@ export const SHOW_NAVIGATION = 'SHOW_NAVIGATION'
 export const CLOSE_NAVIGATION = 'CLOSE_NAVIGATION'
 export const SHOW_VERSO = 'SHOW_VERSO'
 export const HIDE_VERSO = 'HIDE_VERSO'
+export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
 // INITIAL STATE
 const initialState = {
   isActive: false,
   isFlipped: false,
+  unFlippable: false,
 }
 
 // REDUCER
@@ -20,6 +22,11 @@ function navigation (state = initialState, action) {
       return Object.assign({}, state, { isFlipped: true })
     case HIDE_VERSO:
       return Object.assign({}, state, { isFlipped: false })
+    case LOCATION_CHANGE: // Come from reservation
+      if (action.payload.search.indexOf('to=verso') >= 0) {
+        return Object.assign({}, state, {isFlipped: true, unFlippable: true})
+      }
+      return initialState
     default:
       return state
   }

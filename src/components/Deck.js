@@ -11,6 +11,7 @@ import { debug, warn } from '../utils/logguers'
 import { ROOT_PATH } from '../utils/config';
 
 import { flip, unFlip } from '../reducers/navigation'
+import selectHeaderColor from '../selectors/headerColor'
 
 class Deck extends Component {
   constructor (props) {
@@ -305,7 +306,8 @@ class Deck extends Component {
       isLoadingBefore,
       isLoadingAfter,
       transitionTimeout,
-      readTimeout
+      readTimeout,
+      headerColor,
     } = this.props
     const { buttonStyle,
       currentContent,
@@ -332,7 +334,7 @@ class Deck extends Component {
     // console.log('RENDER: Deck', 'this.state.items', this.state.items)
     // console.log(`RENDER: Deck isLoadingBefore ${isLoadingBefore} isLoadingAfter ${isLoadingAfter}`)
     return (
-      <Draggable axis='y'
+      <Draggable axis='none'
         bounds={{ bottom: 0, top: 0 }}
         onDrag={onDrag}
         onStart={onStart}
@@ -341,12 +343,14 @@ class Deck extends Component {
           id='deck'
           style={style}
           ref={element => this.element = element }>
-          <button className={classnames('button deck__to-verso absolute right-0 mr2 top-0', {
-            'button--hidden': !this.props.isFlipped,
-            'button--disabled': isTransitioning })}
-            onClick={e => this.props.unFlip()} >
-            X
-          </button>
+          {!this.props.unFlippable && (
+            <button className={classnames('button close', {
+              'button--hidden': !this.props.isFlipped,
+              'button--disabled': isTransitioning })}
+              onClick={e => this.props.unFlip()} >
+              <Icon svg='ico-close' />
+            </button>
+          )}
           {
             items && items.map((item, index) =>
               contents && contents[index] &&
@@ -376,37 +380,41 @@ class Deck extends Component {
                   readTimeout={readTimeout} />
             )
           }
-            <div className="deck-gradient" style={gradientStyle} />
-            <div className='deck__board absolute'
-              id='deck__board'
-              ref={element => this.boardElement = element}
-              style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')` }} >
-              <div className='deck__board__control flex justify-around'>
-                <button className={classnames('deck__board__before button', {
-                  'button--disabled': isBeforeDisabled,
-                  'button--hidden': isBeforeHidden })}
-                  disabled={isBeforeDisabled || isBeforeHidden}
-                  onClick={event => onNext(event, 1)}
-                  style={buttonStyle}>
-                    <Icon svg='ico-prev-w' />
-                </button>
-                <button className={classnames('deck__board__to-recto button', {
-                  'button--disabled': isFlipDisabled,
-                  'button--hidden': isLoading || isFlipDisabled })}
-                  onClick={e => this.props.flip()}
-                  style={buttonStyle} >
-                  <Icon svg='ico-slideup-w' />
-                </button>
-                <button className={classnames('deck__board__after button', {
-                  'button--disabled': isAfterDisabled,
-                  'button--hidden': isAfterHidden })}
-                  onClick={event => onNext(event, -1)}
-                  disabled={isAfterDisabled || isAfterHidden}
-                  style={buttonStyle} >
-                  <Icon svg='ico-prev-w' className='flip-horiz' />
-                </button>
+            <div className='board-wrapper'>
+              <div className='board'
+                id='deck__board'
+                ref={element => this.boardElement = element}
+                style={{
+                  backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,
+                  background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 25%,${headerColor} 100%)`,
+                }} >
+                <div className='control'>
+                  <button className={classnames('deck__board__before button', {
+                    'button--disabled': isBeforeDisabled,
+                    'button--hidden': isBeforeHidden })}
+                    disabled={isBeforeDisabled || isBeforeHidden}
+                    onClick={event => onNext(event, 1)}
+                    style={buttonStyle}>
+                      <Icon svg='ico-prev-w' />
+                  </button>
+                  <button className={classnames('deck__board__to-recto button', {
+                    'button--disabled': isFlipDisabled,
+                    'button--hidden': isLoading || isFlipDisabled })}
+                    onClick={e => this.props.flip()}
+                    style={buttonStyle} >
+                    <Icon svg='ico-slideup-w' />
+                  </button>
+                  <button className={classnames('deck__board__after button', {
+                    'button--disabled': isAfterDisabled,
+                    'button--hidden': isAfterHidden })}
+                    onClick={event => onNext(event, -1)}
+                    disabled={isAfterDisabled || isAfterHidden}
+                    style={buttonStyle} >
+                    <Icon svg='ico-prev-w' className='flip-horiz' />
+                  </button>
+                </div>
+                {children}
               </div>
-              {children}
             </div>
           </div>
         </Draggable>
@@ -423,6 +431,10 @@ Deck.defaultProps = { deckKey: 0,
 }
 
 export default connect(
-  state => ({ isFlipped: state.navigation.isFlipped }),
+  state => ({
+    headerColor: selectHeaderColor(state),
+    isFlipped: state.navigation.isFlipped,
+    unFlippable: state.navigation.unFlippable,
+  }),
   { flip, unFlip }
 )(Deck)

@@ -7,6 +7,7 @@ ul.control-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
   li {
     display: inline-block;
     text-align: center;
