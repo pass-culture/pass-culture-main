@@ -15,7 +15,7 @@ const BetaPage = ({ errors }) => {
       <footer>
         <Link to='/inscription'>
           C'est par là
-          <Icon svg='ico-prev-w' />
+          <Icon svg='ico-next' />
         </Link>
       </footer>
     </div>
