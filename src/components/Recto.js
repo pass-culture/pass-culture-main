@@ -59,7 +59,10 @@ export default compose(
       ownProps => ownProps.currentOffer,
       (ownProps, nextState) => nextState.userMediation,
       (currentUserMediation, currentOffer, userMediation) => {
-        if (!currentUserMediation || !userMediation) {
+        if (!currentUserMediation
+            || !userMediation
+            || !userMediation.userMediationOffers
+            || userMediation.userMediationOffers.length === 0) {
           return
         }
         if (currentUserMediation.id === userMediation.id) {

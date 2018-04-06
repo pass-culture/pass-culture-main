@@ -327,8 +327,11 @@ class Deck extends Component {
     const isAfterHidden = currentContent && currentContent.isLast
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
-    const isFlipDisabled = !items || isTransitioning
     const isLoading = isLoadingBefore || isLoadingAfter
+    const isFlipDisabled = !items || isLoading || isTransitioning ||
+      (currentContent && currentContent.mediation &&
+        !currentContent.mediation.backText &&
+        currentContent.userMediationOffers.length === 0)
     // console.log('RENDER: Deck contents', contents && contents.length, contents,
     // contents && contents.map(content => content && `${content.id} ${content.chosenOffer && content.chosenOffer.id} ${content.dateRead}`))
     // console.log('RENDER: Deck', 'this.state.items', this.state.items)
@@ -380,46 +383,45 @@ class Deck extends Component {
                   readTimeout={readTimeout} />
             )
           }
-            <div className='board-wrapper'>
-              <div className='board'
-                id='deck__board'
-                ref={element => this.boardElement = element}
-                style={{
+          <div className="board-wrapper deck-gradient" style={gradientStyle}>
+            <div className='board'
+              id='deck__board'
+              ref={element => this.boardElement = element}
+              style={{
                   backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,
                   background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 25%,${headerColor} 100%)`,
                 }} >
-                <div className='control'>
-                  <button className={classnames('deck__board__before button', {
-                    'button--disabled': isBeforeDisabled,
-                    'button--hidden': isBeforeHidden })}
-                    disabled={isBeforeDisabled || isBeforeHidden}
-                    onClick={event => onNext(event, 1)}
-                    style={buttonStyle}>
-                      <Icon svg='ico-prev-w' />
-                  </button>
-                  <button className={classnames('deck__board__to-recto button', {
-                    'button--disabled': isFlipDisabled,
-                    'button--hidden': isLoading || isFlipDisabled })}
-                    onClick={e => this.props.flip()}
-                    style={buttonStyle} >
-                    <Icon svg='ico-slideup-w' />
-                  </button>
-                  <button className={classnames('deck__board__after button', {
-                    'button--disabled': isAfterDisabled,
-                    'button--hidden': isAfterHidden })}
-                    onClick={event => onNext(event, -1)}
-                    disabled={isAfterDisabled || isAfterHidden}
-                    style={buttonStyle} >
-                    <Icon svg='ico-prev-w' className='flip-horiz' />
-                  </button>
-                </div>
-                {children}
+              <div className='control'>
+                <button className={classnames('deck__board__before button', {
+                  'button--disabled': isBeforeDisabled,
+                  'button--hidden': isLoading || isFlipDisabled })}
+                  disabled={isBeforeDisabled || isBeforeHidden}
+                  onClick={event => onNext(event, 1)}
+                  style={buttonStyle}>
+                    <Icon svg='ico-prev-w' />
+                </button>
+                <button className={classnames('deck__board__to-recto button', {
+                  'button--disabled': isFlipDisabled,
+                  'button--hidden': isFlipDisabled })}
+                  onClick={e => this.props.flip()}
+                  style={buttonStyle} >
+                  <Icon svg='ico-slideup-w' />
+                </button>
+                <button className={classnames('deck__board__after button', {
+                  'button--disabled': isAfterDisabled,
+                  'button--hidden': isAfterHidden })}
+                  onClick={event => onNext(event, -1)}
+                  disabled={isAfterDisabled || isAfterHidden}
+                  style={buttonStyle} >
+                  <Icon svg='ico-prev-w' className='flip-horiz' />
+                </button>
               </div>
             </div>
           </div>
-        </Draggable>
-      )
-    }
+        </div>
+      </Draggable>
+    )
+  }
 }
 
 Deck.defaultProps = { deckKey: 0,

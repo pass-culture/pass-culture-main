@@ -44,7 +44,7 @@ export function getContentFromUserMediation (userMediation) {
     }
   }
   // venue
-  venue = venue || chosenOffer.venue || (source && source.venue)
+  venue = venue || (chosenOffer && chosenOffer.venue) || (source && source.venue)
   // color
   let backgroundColor
   let thumbUrl

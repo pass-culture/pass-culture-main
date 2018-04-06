@@ -16,8 +16,8 @@ if (window.cordova) {
 export const API_URL = CALCULATED_API_URL
 
 export const THUMBS_URL = IS_DEV
-  ? `${API_URL}/static/object_store_data/thumbs`
-  : `${API_URL}/static/object_store_data/thumbs`
+  ? `${API_URL}/storage/thumbs`
+  : `${API_URL}/storage/thumbs`
 
 function getMobileOperatingSystem() {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera;

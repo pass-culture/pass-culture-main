@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import selectMediation from '../selectors/mediation'
 import selectOffer from '../selectors/offer'
 import selectSource from '../selectors/source'
 import selectThumbUrl from '../selectors/thumbUrl'
@@ -9,16 +10,25 @@ import selectVenue from '../selectors/venue'
 class OfferInfo extends Component {
 
   render() {
-    const { offer,
-      venue,
+    const { mediation,
+      offer,
       source,
       thumbUrl,
+      venue,
     } = this.props;
 
     return (
       <div className='offer-info'>
         {false && <img alt='' className='offerPicture' src={thumbUrl} />}
-        {source && source.description && (
+        {mediation && mediation.backText && (
+          <div className='description'>
+            {
+              mediation.backText.split('\n')
+                             .map((p, index) =>
+                <p key={index}>{p}</p>)
+            }
+          </div>
+        )}{source && source.description && (
           <div className='description'>
             {
               source.description.split('\n')
@@ -61,8 +71,9 @@ class OfferInfo extends Component {
 
 export default connect(
   state => ({
+    mediation: selectMediation(state),
+    offer: selectOffer(state),
     source: selectSource(state),
     thumbUrl: selectThumbUrl(state),
-    offer: selectOffer(state),
     venue: selectVenue(state)
   }))(OfferInfo)
