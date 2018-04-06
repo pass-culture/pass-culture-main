@@ -107,12 +107,12 @@ class DiscoveryPage extends Component {
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
     if (this.props.userMediations) {
-      this.props.handleRemoveSplash(0)
+      //this.props.handleRemoveSplash(0)
     }
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.userMediations) {
-      nextProps.handleRemoveSplash()
+      //nextProps.handleRemoveSplash()
     }
 
     if (nextProps.userMediations !== this.props.userMediations) {
@@ -137,7 +137,7 @@ DiscoveryPage.defaultProps = {
 
 export default compose(
   withLogin({ isRequired: true }),
-  withSplash(),
+  // withSplash(),
   withRouter,
   connect(state => ({
     userMediations: state.data.userMediations
