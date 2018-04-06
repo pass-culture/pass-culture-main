@@ -31,14 +31,19 @@ class ControlBar extends Component {
     // TODO
   }
 
+  onClickJyVais = event => {
+    if (this.props.offer) {
+        this.props.showModal(<Booking />, {fullscreen: true, maskColor: 'transparent', hasCloseButton: false})
+    } else {
+      alert("Ce bouton vous permet d'effectuer une reservation")
+    }
+  }
+
   render () {
     const { isFavorite, offer } = this.props
     return (
       <ul className='control-bar'>
-        <li>
-          <small className='pass-label'>Mon pass</small>
-          <span className='pass-value'>0€</span>
-        </li>
+        <li><small className='pass-label'>Mon pass</small><span className='pass-value'>——€</span></li>
         <li>
           <button className='button button--secondary disabled'
             onClick={this.onClickDisable} >
@@ -59,8 +64,8 @@ class ControlBar extends Component {
             </Link>
           ) : (
             <button className='button button--primary button--go'
-              onClick={e => this.props.showModal(<Booking />, {fullscreen: true, maskColor: 'transparent', hasCloseButton: false})} >
-              <span className='price'>{`${offer && offer.price}€`}</span>
+              onClick={this.onClickJyVais} >
+              <span className='price'>{`${offer && offer.price || 'prix'} €`}</span>
               J'y vais!
             </button>
           )}

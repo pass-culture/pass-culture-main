@@ -13,7 +13,6 @@ const withSign = WrappedComponent => {
     componentWillMount () {
       const { assignData, resetForm } = this.props
       assignData({ errors: null })
-      resetForm()
     }
 
     componentWillReceiveProps (nextProps) {
@@ -21,6 +20,10 @@ const withSign = WrappedComponent => {
       if (user && !errors) {
         history.push('/decouverte')
       }
+    }
+
+    componentWillUnmount() {
+      this.props.resetForm()
     }
 
     render () {
