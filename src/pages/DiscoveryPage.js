@@ -107,7 +107,7 @@ class DiscoveryPage extends Component {
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
     if (this.props.userMediations) {
-      this.props.handleRemoveSplash()
+      this.props.handleRemoveSplash(0)
     }
   }
   componentWillReceiveProps (nextProps) {

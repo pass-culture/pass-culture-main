@@ -14,11 +14,11 @@ const withSplash = (config = {}) => WrappedComponent => {
       this.state = { hasSplash: true }
     }
 
-    handleRemoveSplash = () => {
+    handleRemoveSplash = localRemoveSplashTimeout => {
       if(!this.removeSplashTimeout) {
         this.removeSplashTimeout = setTimeout(() =>
           this.setState({ hasSplash: false }),
-          removeSplashTimeout
+          localRemoveSplashTimeout || removeSplashTimeout
         )
       }
     }
