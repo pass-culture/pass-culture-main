@@ -97,13 +97,20 @@ C'est tout le framework du Pass Culture!
   --webroot --webroot-path=/data/letsencrypt
 
 ### Push
-  Pour déployer une nouvelle version, par exemple en staging:
-  (Attention de ne pas déployer sur la prod sans authorisation !)
-  ```bash
-    ./pc rebuild-frontend
-    ./pc -e staging deploy-frontend
-  ```
 
-  ```bash
-    ./pc deploy-backend
-  ```
+  - frontend
+
+    Pour déployer une nouvelle version, par exemple en staging:
+    (Attention de ne pas déployer sur la prod sans authorisation !)
+    ```bash
+      ./pc rebuild-frontend
+      ./pc -e staging deploy-frontend
+    ```
+
+  - backend
+
+    Vérifier déjà que l'un des admins (comme @arnoo) a
+    enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/), puis
+    ```bash
+      ./pc -e staging deploy-backend
+    ```
