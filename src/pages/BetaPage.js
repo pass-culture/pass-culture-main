@@ -24,5 +24,5 @@ const BetaPage = ({ errors }) => {
 
 export default compose(
   withLogin({ redirectTo: '/decouverte' }),
-  withSplash({ triggerRemoveSplashTimeout: 2000 })
+  // withSplash({ triggerRemoveSplashTimeout: 2000 })
 )(BetaPage)

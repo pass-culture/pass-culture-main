@@ -37,10 +37,11 @@ const withSplash = (config = {}) => WrappedComponent => {
 
     render () {
       return [
-          <div className={classnames('splash absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center', {
-            'splash--hidden': !this.state.hasSplash
+          <div className={classnames('splash', {
+            'hidden': !this.state.hasSplash
           })} key={0}>
-            <Icon svg='logo-group'/>
+            <Icon svg='loading-img'/>
+            <p>Chargement des offres</p>
           </div>,
           <WrappedComponent key={1}
             {...this.props}
