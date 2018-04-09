@@ -4,16 +4,26 @@
     display: block;
     color: $black;
     font-size: 1.2rem;
-    margin-bottom: 1rem;
     small {
       display: block;
     }
   }
 
   input {
-    width: 100%;
     border: 2px solid $menu-red;
     border-radius: 2em;
+  }
+
+  &.checkbox {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    input {
+      margin-right: 0.5rem;
+    }
+  }
+
+  &.text,.email,.password {
     padding: 0.3em 0.75em;
   }
 
