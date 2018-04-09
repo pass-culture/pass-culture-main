@@ -267,5 +267,5 @@ Card.defaultProps = {
 
 export default connect(
   state => ({
-    isFlipped: state.navigation.isFlipped
+    isFlipped: state.verso.isFlipped
   }))(Card)

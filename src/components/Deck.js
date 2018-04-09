@@ -12,7 +12,7 @@ import Icon from './Icon'
 import { debug, warn } from '../utils/logguers'
 import { ROOT_PATH } from '../utils/config';
 
-import { flip, unFlip } from '../reducers/navigation'
+import { flip, unFlip } from '../reducers/verso'
 import selectHeaderColor from '../selectors/headerColor'
 
 class Deck extends Component {
@@ -442,8 +442,8 @@ Deck.defaultProps = { deckKey: 0,
 export default connect(
   state => ({
     headerColor: selectHeaderColor(state),
-    isFlipped: state.navigation.isFlipped,
-    unFlippable: state.navigation.unFlippable,
+    isFlipped: state.verso.isFlipped,
+    unFlippable: state.verso.unFlippable,
   }),
   { flip, unFlip }
 )(Deck)

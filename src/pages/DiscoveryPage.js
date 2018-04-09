@@ -6,7 +6,6 @@ import { compose } from 'redux'
 import MenuButton from '../components/layout/MenuButton'
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
-import withSplash from '../hocs/withSplash'
 import { getContentFromUserMediation } from '../utils/content'
 import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
@@ -137,7 +136,6 @@ DiscoveryPage.defaultProps = {
 
 export default compose(
   withLogin({ isRequired: true }),
-  // withSplash(),
   withRouter,
   connect(state => ({
     userMediations: state.data.userMediations

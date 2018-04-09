@@ -138,34 +138,6 @@ select {
   width: 90%;
 }
 
-.splash {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  color: $white;
-  background-color: $menu-red;
-  transition: opacity 1s, z-index 10ms 0.75s;
-  z-index: 10000;
-
-  p {
-    font-size: 1.25rem;
-    margin: 2rem;
-    font-style: italic;
-    font-weight: 500;
-  }
-
-  &.hidden {
-    opacity: 0;
-    z-index: -10000;
-  }
-}
-
 .textarea {
   border: $border;
   border-radius: $border-radius;

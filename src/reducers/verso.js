@@ -1,9 +1,8 @@
 // ACTIONS
-export const SHOW_NAVIGATION = 'SHOW_NAVIGATION'
-export const CLOSE_NAVIGATION = 'CLOSE_NAVIGATION'
+export const CLOSE_VERSO = 'CLOSE_VERSO'
 export const SHOW_VERSO = 'SHOW_VERSO'
-export const HIDE_VERSO = 'HIDE_VERSO'
 export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
+
 // INITIAL STATE
 const initialState = {
   isActive: false,
@@ -12,16 +11,12 @@ const initialState = {
 }
 
 // REDUCER
-function navigation (state = initialState, action) {
+function verso (state = initialState, action) {
   switch (action.type) {
-    case SHOW_NAVIGATION:
-      return Object.assign({}, state, { isActive: true })
-    case CLOSE_NAVIGATION:
-      return Object.assign({}, state, { isActive: false })
+    case CLOSE_VERSO:
+      return Object.assign({}, state, { isFlipped: false })
     case SHOW_VERSO:
       return Object.assign({}, state, { isFlipped: true })
-    case HIDE_VERSO:
-      return Object.assign({}, state, { isFlipped: false })
     case LOCATION_CHANGE: // Come from reservation
       if (action.payload.search.indexOf('to=verso') >= 0) {
         return Object.assign({}, state, {isFlipped: true, unFlippable: true})
@@ -33,22 +28,13 @@ function navigation (state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function closeNavigation (action = {}) {
-  return { type: CLOSE_NAVIGATION }
-}
-
-export function showNavigation (action = {}) {
-  return { type: SHOW_NAVIGATION }
-}
-
-// ACTION CREATORS
 export function flip (action = {}) {
   return { type: SHOW_VERSO }
 }
 
 export function unFlip (action = {}) {
-  return { type: HIDE_VERSO }
+  return { type: CLOSE_VERSO }
 }
 
 // default
-export default navigation
+export default verso

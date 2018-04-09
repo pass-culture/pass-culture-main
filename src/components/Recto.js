@@ -54,7 +54,7 @@ export default compose(
     (state, ownProps) => ({
       currentOffer: selectOffer(state),
       currentUserMediation: selectUserMediation(state),
-      isFlipped: state.navigation.isFlipped,
+      isFlipped: state.verso.isFlipped,
       userMediations: state.data.userMediations
     })),
   withSelectors({

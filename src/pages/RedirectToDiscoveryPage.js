@@ -4,7 +4,6 @@ import { withRouter, Redirect } from 'react-router'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
-import withSplash from '../hocs/withSplash'
 import { getDiscoveryPath } from '../utils/routes'
 
 class RedirectToDiscoveryPage extends Component {
@@ -61,7 +60,6 @@ RedirectToDiscoveryPage.defaultProps = {
 
 export default compose(
   withLogin({ isRequired: true }),
-  withSplash(),
   withRouter,
   connect(state => ({
     userMediations: state.data.userMediations
