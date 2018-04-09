@@ -14,7 +14,7 @@ import SigninPage from '../pages/SigninPage'
 import SignupPage from '../pages/SignupPage'
 
 export const getDiscoveryPath = (offer, mediation='') => {
-  const offerId = (typeof offer === 'string') ? offer : offer.id;
+  const offerId = (typeof offer === 'string') ? offer : (typeof offer === 'object' ? offer.id : 'tuto');
   const mediationId = (typeof mediation === 'string') ? mediation : (typeof mediation === 'object' ? mediation.id : '');
   return `/decouverte/${offerId}/${mediationId}`;
 }
