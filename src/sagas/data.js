@@ -1,8 +1,6 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { assignData, failData, successData } from '../reducers/data'
-import { resetForm } from '../reducers/form'
-// import { setGeolocationPosition } from '../reducers/geolocation'
 import { fetchData, localData } from '../utils/request'
 import { getGeolocationPosition } from '../utils/geolocation'
 
@@ -13,10 +11,6 @@ function * fromWatchRequestDataActions (action) {
   const hook = config && config.hook
   const local = config && config.local
   const type = config && config.type
-  // GEOLOCATION
-  const position = yield config && config.isGeolocated &&
-    call(getGeolocationPosition, { highAccuracy: true })
-  // yield put(setGeolocationPosition(position))
   // TOKEN
   const token = yield type && select(state => state.data[`${type}Token`])
   // DATA
@@ -27,7 +21,7 @@ function * fromWatchRequestDataActions (action) {
     const result = yield call(dataMethod,
       method,
       path,
-      { body, position, token }
+      { body, token }
     )
     if (hook) {
       yield call(hook, method, path, result, config)
@@ -49,12 +43,7 @@ function * fromWatchFailDataActions (action) {
   yield put(assignData({ errors: Object.assign({}, errors, action.errors) }))
 }
 
-function * fromWatchSuccessDataActions (action) {
-  yield put(resetForm())
-}
-
 export function * watchDataActions () {
   yield takeEvery(({ type }) => /REQUEST_DATA_(.*)/.test(type), fromWatchRequestDataActions)
   yield takeEvery(({ type }) => /FAIL_DATA_(.*)/.test(type), fromWatchFailDataActions)
-  yield takeEvery(({ type }) => /SUCCESS_DATA_(POST|PUT|PATCH)_(.*)/.test(type), fromWatchSuccessDataActions)
 }

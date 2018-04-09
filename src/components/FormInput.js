@@ -18,13 +18,12 @@ class FormInput extends Component {
   }
 
   onChange = event => {
-    const { name, removeDataError, type } = this.props
+    const { type } = this.props
     event.persist()
     this.onDebouncedMergeForm(event)
     if (type === 'checkbox' || type === 'radio' ) {
       return
     }
-    removeDataError(name)
     this.setState({ localValue: event.target.value })
   }
 
@@ -35,6 +34,7 @@ class FormInput extends Component {
       entityId,
       mergeForm,
       name,
+      removeDataError,
       type
     } = this.props
     let mergedValue
@@ -45,7 +45,7 @@ class FormInput extends Component {
     } else {
       mergedValue = value
     }
-    // merge
+    removeDataError(name)
     mergeForm(collectionName, entityId, name, mergedValue)
   }
 

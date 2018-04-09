@@ -32,24 +32,24 @@ class FormField extends Component {
       : <FormInput {...this.props} {...extraProps}
         id={inputId}
         key={inputId} />
-    return (
+    return [
         <div className={classnames('form-input', {
           'checkbox': type === 'checkbox'
-        })}>
+        })} key={0}>
           {
             type === 'checkbox'
               ? [ inputMarkup, labelMarkup ]
               : [ labelMarkup, inputMarkup ]
           }
-          <ul className={classnames('errors', { 'pop': errors })}>
-            {
-              errors && errors.map((e, index) => (
-                <li key={index}>{e}</li>
-              ))
-            }
-          </ul>
-        </div>
-    )
+        </div>,
+        <ul className={classnames('errors', { 'pop': errors })} key={1}>
+          {
+            errors && errors.map((e, index) => (
+              <li key={index}>{e}</li>
+            ))
+          }
+        </ul>
+    ]
   }
 }
 
