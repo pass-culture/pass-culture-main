@@ -80,12 +80,11 @@ TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..'\
                  / 'static' / 'tuto_mediations'
 
 
-def upsertTutoMediation(index, dominant_color, backText=None):
+def upsertTutoMediation(index, dominant_color, back_dominant_color=None):
     existing_mediation = Mediation.query.filter_by(tutoIndex=index)\
                                         .first()
     mediation = existing_mediation or Mediation()
     mediation.tutoIndex = index
-    mediation.backText = backText
     app.model.PcObject.check_and_save(mediation)
 
     with open(TUTOS_PATH / (str(index) + '.svg'), "rb") as f:
@@ -93,17 +92,20 @@ def upsertTutoMediation(index, dominant_color, backText=None):
                              0,
                              image_type='svg',
                              dominant_color=dominant_color)
+
+    if back_dominant_color is not None:
+        with open(TUTOS_PATH / (str(index) + '_verso.svg'), "rb") as f:
+            mediation.save_thumb(f.read(),
+                                 1,
+                                 image_type='svg',
+                                 dominant_color=back_dominant_color)
+
     app.model.PcObject.check_and_save(mediation)
 
 
 def upsertTutoMediations():
     upsertTutoMediation(0, b'\xFF\x00\x00')
-    upsertTutoMediation(1,
-                        b'\xFF\x00\x00',
-                        backText="Bien joué ! Pour revenir à l'écran"
-                                 + " principal, faites glisser cette"
-                                 + " fenềtre vers le bas ou appuyez"
-                                 + " sur la croix en haut à droite.")
+    upsertTutoMediation(1, b'\xFF\x00\x00', b'\xFF\x00\x00')
 
 
 Mediation.upsertTutoMediations = upsertTutoMediations

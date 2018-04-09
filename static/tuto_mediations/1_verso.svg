@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 2405546, 2018-03-11"
-   sodipodi:docname="0.svg">
+   sodipodi:docname="1_verso.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.49497475"
-     inkscape:cx="224.81375"
+     inkscape:cx="220.77314"
      inkscape:cy="478.82674"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -57,11 +57,11 @@
        id="rect10"
        width="210.07385"
        height="297.73825"
-       x="0"
-       y="-0.20371258" />
+       x="0.80180502"
+       y="0.063557431" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:17.85453796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.44636345;"
+       style="font-style:normal;font-weight:normal;font-size:17.85453796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.44636345"
        x="36.132084"
        y="97.261421"
        id="text12"><tspan
@@ -69,11 +69,11 @@
          id="tspan10"
          x="36.132084"
          y="97.261421"
-         style="stroke-width:0.44636345;fill:#ffffff;">Mediation tuto</tspan><tspan
+         style="fill:#ffffff;stroke-width:0.44636345">Mediation tuto</tspan><tspan
          sodipodi:role="line"
          x="36.132084"
          y="119.57959"
-         style="stroke-width:0.44636345;fill:#ffffff;"
-         id="tspan14">recto 1 (TODO)</tspan></text>
+         style="fill:#ffffff;stroke-width:0.44636345"
+         id="tspan14">verso 2 (TODO)</tspan></text>
   </g>
 </svg>
