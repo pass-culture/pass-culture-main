@@ -16,7 +16,6 @@ import { IS_DEV } from '../utils/config'
 
 const Recto = props => {
   const {
-    offer,
     isLoading,
     thumbUrl,
     isFlipped,
@@ -29,7 +28,7 @@ const Recto = props => {
          })} style={style}>
         {isLoading && <Loading isForceActive />}
       </div>
-      { offer && (
+      { thumbUrl && (
         <div style={style} className={classnames('thumb', {
           translated: isFlipped
         })} />

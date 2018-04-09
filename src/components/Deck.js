@@ -331,9 +331,8 @@ class Deck extends Component {
     const isLoading = isLoadingBefore || isLoadingAfter
     const isFlipDisabled = !items || isLoading || isTransitioning ||
       (currentContent && currentContent.mediation &&
-        !currentContent.mediation.backText &&
-        currentContent.userMediationOffers.length === 0)
-
+        currentContent.userMediationOffers.length === 0 &&
+        currentContent.mediation.thumbCount === 1)
     return (
       <Draggable axis='none'
         bounds={{ bottom: 0, top: 0 }}

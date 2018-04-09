@@ -20,15 +20,7 @@ class OfferInfo extends Component {
     return (
       <div className='offer-info'>
         {false && <img alt='' className='offerPicture' src={thumbUrl} />}
-        {mediation && mediation.backText && (
-          <div className='description'>
-            {
-              mediation.backText.split('\n')
-                             .map((p, index) =>
-                <p key={index}>{p}</p>)
-            }
-          </div>
-        )}{source && source.description && (
+        {source && source.description && (
           <div className='description'>
             {
               source.description.split('\n')

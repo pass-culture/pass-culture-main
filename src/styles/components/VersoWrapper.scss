@@ -47,13 +47,16 @@
 
   .content {
     background-color: $very-very-light-grey;
-    padding: 1rem;
     padding-bottom: 68px; // dirty
     flex: 1;
     h3 {
       margin-bottom: 1rem;
       color: $menu-red;
       font-weight: 500;
+    }
+
+    img.verso-tuto-mediation {
+      width: 100%
     }
 
     p {
