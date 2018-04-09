@@ -1,23 +1,11 @@
-/*
-import {
-  //clientSignin as body,
-   professionalSignin as body
-} from './mock'
-import { requestData } from '../reducers/data'
-*/
+import { setGeolocationPosition } from '../reducers/geolocation'
+
 import { IS_DEV } from '../utils/config'
 
 const init = store => {
-  // mock sign
-  if (IS_DEV) {
-    /*
-    store.dispatch(requestData(
-      'POST',
-      'users/signin',
-      { body, key: 'users' }
-    ))
-    */
-  }
+  var watchID = navigator.geolocation.watchPosition(function(position) {
+    store.dispatch(setGeolocationPosition(position))
+  });
 }
 
 export default init
