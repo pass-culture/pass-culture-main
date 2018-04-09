@@ -11,7 +11,8 @@
 
   a {
     color: $black;
-    font-size: 1rem;
+    font-weight: 500;
+    font-size: 1.2rem;
     padding: 0;
     text-decoration: underline;
   }
@@ -27,12 +28,16 @@
     right: 0;
     a {
       color: white;
+      line-height: 4rem;
       text-decoration: none;
     }
   }
 
   span {
-    line-height: 1;
+    a {
+      font-size: 1rem;
+      font-weight: 400;
+    }
   }
 
   p {
