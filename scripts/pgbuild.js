@@ -54,7 +54,7 @@
 
   };
 
-  const uploadZip = () => new Promise((resolve, reject) => {
+  const createZip = () => new Promise((resolve, reject) => {
     console.log('Zipping build for PG Build');
     let output = fs.createWriteStream('target.zip');
 
@@ -86,14 +86,14 @@
       }).catch(raiseAndKill('Could not trigger build'))
   }
 
-  const uploadToPGB = (zipfile) => pgb_do()
+  const uploadToPGB = () => pgb_do()
     .then(api => {
       const options = {
         form: {
           data: {
             debug: false
           },
-          file: zipfile
+          file: 'target.zip'
         }
       };
       return promisify(api.put)(`/apps/${APP_ID}`, options)
@@ -130,7 +130,7 @@
       promise = pushToGit()
         .then(() => triggerGithubBuild())
     } else {
-      promise = uploadZip()
+      promise = createZip()
         .then(() => uploadToPGB())
     }
     return promise
