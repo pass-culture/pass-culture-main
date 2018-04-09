@@ -1,6 +1,7 @@
 // ACTIONS
 const ASSIGN_DATA = 'ASSIGN_DATA'
 const FILTER_DATA = 'FILTER_DATA'
+const REMOVE_DATA_ERROR = 'REMOVE_DATA_ERROR'
 const RESET_DATA = 'RESET_DATA'
 
 // INITIAL STATE
@@ -13,7 +14,13 @@ const data = (state = initialState, action) => {
   } else if (action.type === FILTER_DATA) {
     const filteredElements = state[action.key].filter(action.filter)
     return Object.assign({}, state, { [action.key]: filteredElements })
-  }  else if (/REQUEST_DATA_(POST|PUT|DELETE|PATCH)_(.*)/.test(action.type)) {
+  } else if (action.type === REMOVE_DATA_ERROR) {
+    return Object.assign({}, state, {
+      errors: Object.assign({}, state.errors, {
+        [action.name]: null
+      })
+    })
+  } else if (/REQUEST_DATA_(POST|PUT|DELETE|PATCH)_(.*)/.test(action.type)) {
     const nextState = { isOptimist: true, previousOptimistState: state }
     if (action.config && action.config.getOptimistState) {
       const nextState = { isOptimist: true, previousOptimistState: state }
@@ -110,6 +117,11 @@ export const failData = (method, path, errors, config) => ({
 export const filterData = (key, filter) => ({ filter,
   key,
   type: FILTER_DATA
+})
+
+export const removeDataError = name => ({
+  name,
+  type: REMOVE_DATA_ERROR
 })
 
 export const requestData = (method, path, config={}) => ({

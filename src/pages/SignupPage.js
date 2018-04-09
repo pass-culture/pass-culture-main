@@ -25,7 +25,7 @@ const SignupPage = ({ errors }) => {
     <main className='page sign-page'>
       <p>Une minute pour créer un compte, et puis c'est tout !</p>
       <form className='p2'>
-        <FormField className='mb3 input'
+        <FormField className='input'
                    label={
                      <Label isJumpLine
                             title='Identifiant'
@@ -37,7 +37,7 @@ const SignupPage = ({ errors }) => {
                    autoComplete='name'
                    placeholder='Rosa'
                    type='text' />
-        <FormField className='mb3 input'
+        <FormField className='input'
                    label={
                      <Label isJumpLine
                             title='Adresse e-mail'
@@ -49,7 +49,7 @@ const SignupPage = ({ errors }) => {
                    name='email'
                    type='email'
                    placeholder='rose@domaine.fr' />
-        <FormField className='mb3 input'
+        <FormField className='input'
                    label={
                      <Label title='Mot de passe'
                             subtitle="...pour se connecter:" />
@@ -62,6 +62,7 @@ const SignupPage = ({ errors }) => {
                    type='password' />
         <FormField label={<span className="h4"> J'accepte d'être contacté par mail pour donner mon avis sur le <a href="http://passculture.beta.gouv.fr">Pass Culture</a></span>}
                    collectionName='users'
+                   defaultValue='false'
                    required='true'
                    name='contact_ok'
                    type='checkbox' />

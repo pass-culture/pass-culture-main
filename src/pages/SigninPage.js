@@ -9,6 +9,14 @@ import { NEW } from '../utils/config'
 
 const inputClassName = 'input block col-12 mb2 red'
 
+const Label = ({ title }) => {
+  return (
+    <div className='mb1 center'>
+      {title}
+    </div>
+  )
+}
+
 const SigninPage = ({ errors }) => {
   return (
     <main className='page sign-page red'>
@@ -25,13 +33,13 @@ const SigninPage = ({ errors }) => {
         <FormField className={inputClassName}
           type='email'
           collectionName='users'
-          label='Adresse e-mail:'
+          label={<Label title='Adresse e-mail:' />}
           name='identifier'
           placeholder='Identifiant (email)'
           autoComplete='email' />
         <FormField className={inputClassName}
           collectionName='users'
-          label='Mot de passe:'
+          label={<Label title='Mot de passe' />}
           name='password'
           type='password'
           placeholder='Mot de passe'
