@@ -62,7 +62,6 @@ const SignupPage = ({ errors }) => {
                    type='password' />
         <FormField label={<span className="h4"> J'accepte d'être contacté par mail pour donner mon avis sur le <a href="http://passculture.beta.gouv.fr">Pass Culture</a></span>}
                    collectionName='users'
-                   defaultValue='false'
                    required='true'
                    name='contact_ok'
                    type='checkbox' />
