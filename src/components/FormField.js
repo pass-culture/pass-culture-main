@@ -41,7 +41,7 @@ class FormField extends Component {
               ? [ inputMarkup, labelMarkup ]
               : [ labelMarkup, inputMarkup ]
           }
-          <ul className='errors'>
+          <ul className={classnames('errors', { 'pop': errors })}>
             {
               errors && errors.map((e, index) => (
                 <li key={index}>{e}</li>

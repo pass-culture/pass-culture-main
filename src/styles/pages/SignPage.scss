@@ -64,8 +64,15 @@
 
   .errors {
     color: $menu-red;
+    font-size: 0.75rem;
     font-weight: 500;
-    text-align: center;
+    height: 2rem;
+    margin-left: 1.25rem;
+    text-align: left;
+    transition: transform .2s ease-in-out;
+    &.pop {
+      transform: scale(1.04);
+    }
   }
 
 
