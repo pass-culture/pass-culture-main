@@ -82,7 +82,8 @@ a {
   	-webkit-appearance: none;
   	background-color: $very-very-light-grey;
   	border: $border;
-    border-radius: $border-radius;
+    border-radius: 1em;
+    width: 25px;
     display: inline-block;
     padding: 9px;
   	position: relative;
@@ -103,10 +104,15 @@ a {
       }
     }
   }
+  &--text, &--email, &--password {
+    width: 100%;
+  }
 }
 
 label {
-  color: $dark-grey;
+  color: $very-dark-grey;
+  line-height: 1;
+  text-align: left;
 }
 
 .page {

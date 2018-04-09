@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import FormInput from '../components/FormInput'
 import FormTextarea from '../components/FormTextarea'
 import PropTypes from 'prop-types'
@@ -7,7 +8,7 @@ import { connect } from 'react-redux'
 
 class FormField extends Component {
   render () {
-    const {
+    const { className,
       collectionName,
       errors,
       id,
@@ -15,20 +16,29 @@ class FormField extends Component {
       name,
       type
     } = this.props
-    const inputId = id || 'input_'+collectionName+'_'+name
+    const inputId = id || `input_${collectionName}_${name}`
+    const extraProps = {
+      className: classnames(className, `input input--${type} ${type}`)
+    }
     const labelMarkup = (
       <label htmlFor={id} key={'label_'+id}>
         { label }
       </label>
     )
     const inputMarkup = type === 'textarea'
-      ? <FormTextarea {...this.props} id={inputId} key={inputId} />
-      : <FormInput {...this.props} id={inputId} key={inputId} />
+      ? <FormTextarea {...this.props} {...extraProps}
+        id={inputId}
+        key={inputId} />
+      : <FormInput {...this.props} {...extraProps}
+        id={inputId}
+        key={inputId} />
     return (
-        <div className='form-input'>
+        <div className={classnames('form-input', {
+          'checkbox': type === 'checkbox'
+        })}>
           {
             type === 'checkbox'
-              ? [inputMarkup, labelMarkup]
+              ? [ inputMarkup, labelMarkup ]
               : [ labelMarkup, inputMarkup ]
           }
           <ul className='errors'>

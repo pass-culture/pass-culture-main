@@ -9,19 +9,30 @@
   justify-content: space-around;
   padding-bottom: 5rem;
 
-  footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: $menu-red;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-around;
+  a {
+    color: $black;
+    font-size: 1rem;
+    padding: 0;
+    text-decoration: underline;
   }
 
-  label {
-    margin-bottom: 0.5rem;
+  footer {
+    background-color: $menu-red;
+    bottom: 0;
+    display: flex;
+    justify-content: space-around;
+    left: 0;
+    padding: 1rem;
+    position: absolute;
+    right: 0;
+    a {
+      color: white;
+      text-decoration: none;
+    }
+  }
+
+  span {
+    line-height: 1;
   }
 
   p {
