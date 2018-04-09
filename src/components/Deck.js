@@ -97,10 +97,12 @@ class Deck extends Component {
     isDebug && debug('Deck - handleSetCurrentContent')
     // find
     const currentIndex = items && items.indexOf(0)
+    const previousContent = contents && contents[currentIndex-1]
     const currentContent = contents && contents[currentIndex]
+    const nextContent = contents && contents[currentIndex + 1]
     this.currentContent = currentContent
     // update
-    this.setState({ currentContent })
+    this.setState({ currentContent, previousContent, nextContent  })
   }
   handleSetStyle = () => {
     // unpack
@@ -320,11 +322,13 @@ class Deck extends Component {
       isResizing,
       isTransitioning,
       items,
+      nextContent,
+      previousContent,
       style,
       transition
     } = this.state
     const isAfterDisabled = !items || isLastCard || isTransitioning
-    const isAfterHidden = currentContent && currentContent.isLast
+    const isAfterHidden = previousContent && previousContent.isLast
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isLoading = isLoadingBefore || isLoadingAfter
