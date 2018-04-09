@@ -53,12 +53,13 @@ class HasThumbMixin(object):
                 tf.write(thumb)
                 img = Image.open(tf)
                 image_type = img.format.lower()
-        if dominant_color is None:
-            with tempfile.TemporaryFile() as tf:
-                tf.write(thumb)
-                color_thief = ColorThief(tf)
-                dominant_color = bytearray(color_thief.get_color(quality=1))
-        self.firstThumbDominantColor = dominant_color
+        if index == 0:
+            if dominant_color is None:
+                with tempfile.TemporaryFile() as tf:
+                    tf.write(thumb)
+                    color_thief = ColorThief(tf)
+                    dominant_color = bytearray(color_thief.get_color(quality=1))
+            self.firstThumbDominantColor = dominant_color
         store_public_object("thumbs",
                             self.thumb_storage_id(index),
                             thumb,
