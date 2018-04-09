@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import selectMediation from '../selectors/mediation'
 import selectOffer from '../selectors/offer'
 import selectSource from '../selectors/source'
 import selectThumbUrl from '../selectors/thumbUrl'
@@ -10,8 +9,7 @@ import selectVenue from '../selectors/venue'
 class OfferInfo extends Component {
 
   render() {
-    const { mediation,
-      offer,
+    const { offer,
       source,
       thumbUrl,
       venue,
@@ -63,7 +61,6 @@ class OfferInfo extends Component {
 
 export default connect(
   state => ({
-    mediation: selectMediation(state),
     offer: selectOffer(state),
     source: selectSource(state),
     thumbUrl: selectThumbUrl(state),

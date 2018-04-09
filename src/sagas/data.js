@@ -2,7 +2,6 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { assignData, failData, successData } from '../reducers/data'
 import { fetchData, localData } from '../utils/request'
-import { getGeolocationPosition } from '../utils/geolocation'
 
 function * fromWatchRequestDataActions (action) {
   // UNPACK

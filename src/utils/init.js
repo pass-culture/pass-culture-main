@@ -1,11 +1,11 @@
-import { setGeolocationPosition } from '../reducers/geolocation'
-
-import { IS_DEV } from '../utils/config'
+import { setGeolocationPosition,
+  setGeolocationWatchId } from '../reducers/geolocation'
 
 const init = store => {
-  var watchID = navigator.geolocation.watchPosition(function(position) {
+  const watchId = navigator.geolocation.watchPosition(function(position) {
     store.dispatch(setGeolocationPosition(position))
   });
+  store.dispatch(setGeolocationWatchId(watchId))
 }
 
 export default init

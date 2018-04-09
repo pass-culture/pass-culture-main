@@ -21,7 +21,13 @@ class Verso extends Component {
         'flipped': isFlipped,
       })} >
         <VersoWrapper hasControlBar={!isTuto} className='with-padding-top'>
-          { isTuto ? mediation && ( <img className='verso-tuto-mediation' src={`${THUMBS_URL}/mediations/${mediation.id}_1`} /> ) : ( <OfferInfo /> ) }
+          {
+            isTuto
+            ? mediation && <img alt='verso'
+                className='verso-tuto-mediation'
+                src={`${THUMBS_URL}/mediations/${mediation.id}_1`} />
+            : <OfferInfo />
+          }
         </VersoWrapper>
         <MenuButton borderTop colored />
       </div>

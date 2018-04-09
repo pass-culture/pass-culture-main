@@ -12,7 +12,7 @@ const Clue = ({
   isHidden,
   transitionTimeout
 }) => {
-  return offer
+  return (offer
     &&  (
           <div className='clue' style={{ transition: `opacity ${transitionTimeout}ms`}}>
             <Price value={offer.price} />
@@ -21,7 +21,7 @@ const Clue = ({
                {distance}
             </div>
           </div>
-        )
+        ))
     || []
 }
 

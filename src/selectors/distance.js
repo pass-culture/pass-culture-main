@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect'
-import get from 'lodash.get';
 
 import selectOffer from './offer'
 import selectVenue from './venue'
@@ -8,7 +7,7 @@ import { distanceInMeters } from '../utils/geolocation'
 export default createSelector(
   selectOffer,
   selectVenue,
-  (state) => state.geolocation.position,
+  state => state.geolocation.position,
   (offer, venue, position) => {
     if (!position || !offer || ! venue) {
       return '?'
