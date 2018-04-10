@@ -63,8 +63,8 @@ class Booking extends Component {
           )}
           {loadingStep && (<p>Réservation en cours ...</p>)}
           {confirmationStep && (
-            <div>
-              <Icon svg='picto-validation' />
+            <div className='booking__success center p3'>
+              <Icon className='mb2' svg='picto-validation' />
               <p>Votre réservation est validée.</p>
               <p>
                 <small>8€ ont été déduits de votre pass.</small>
@@ -73,7 +73,6 @@ class Booking extends Component {
               </p>
               <p><big>{token}</big></p>
               <p><small>Retrouvez ce code et les détails de l'offre dans la rubrique "Mes réservations" de votre compte.</small></p>
-
             </div>
           )}
           <ul className='bottom-bar'>
