@@ -90,13 +90,17 @@ elif [[ "$CMD" == "restart-backend" ]]; then
        rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up'
 elif [[ "$CMD" == "reset-backend" ]]; then
-	RUN='pc reset-all-db && pc update_providables -m && pc init'
+	RUN='pc reset-all-db;
+	 		 pc update-mocks;
+			 pc update_providables -p SpreadsheetExpVenues;
+			 pc update_providables -p SpreadsheetExpOffers;
+			 pc init;'
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
        docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "reset-um-db" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-       docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,mediation,user_mediation RESTART IDENTITY CASCADE;\""'
+       docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,user_mediation RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
   if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
