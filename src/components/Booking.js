@@ -26,6 +26,7 @@ class Booking extends Component {
       bookingInProgress: true
     })
     requestData('POST', 'bookings', {
+      add: 'append',
       body: {
         offerId: offer.id,
         quantity: 1,

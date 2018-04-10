@@ -120,7 +120,6 @@ export default compose(
       (ownProps, nextState) => nextState.mediation,
       (ownProps, nextState) => nextState.offer,
       (mediation, offer) => {
-        console.log('mediation', mediation, offer)
         const source = getSource(mediation, offer)
         return getThumbUrl(mediation, source, offer)
       }
