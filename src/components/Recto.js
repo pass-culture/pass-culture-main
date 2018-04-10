@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import RectoDebug from './RectoDebug'
-import Loading from './Loading'
 import withSelectors from '../hocs/withSelectors'
 import { getOffer } from '../selectors/offer'
 import { getMediation } from '../selectors/mediation'
@@ -13,6 +12,8 @@ import { getSource } from '../selectors/source'
 import { getThumbUrl } from '../selectors/thumbUrl'
 import selectUserMediation from '../selectors/userMediation'
 import { IS_DEV } from '../utils/config'
+
+import Icon from './Icon'
 
 const Recto = props => {
   const {
@@ -24,9 +25,18 @@ const Recto = props => {
   return (
     <div className='recto'>
        <div className={classnames('card-background', {
-           'card-background--loading flex items-center justify-center': isLoading
+           'loading flex items-center justify-center': isLoading
          })} style={style}>
-        {isLoading && <Loading isForceActive />}
+        {
+          isLoading && (
+            <div>
+              <Icon svg='ico-loading-card' />
+              <div className='h2'>
+                chargement des offres
+              </div>
+            </div>
+          )
+        }
       </div>
       { thumbUrl && (
         <div style={style} className={classnames('thumb', {
@@ -43,7 +53,7 @@ export default compose(
     (state, ownProps) => ({
       currentOffer: selectOffer(state),
       currentUserMediation: selectUserMediation(state),
-      isFlipped: state.navigation.isFlipped,
+      isFlipped: state.verso.isFlipped,
       userMediations: state.data.userMediations
     })),
   withSelectors({

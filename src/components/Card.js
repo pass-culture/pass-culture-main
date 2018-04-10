@@ -76,40 +76,35 @@ class Card extends Component {
         style = {
           left: - deckElement.offsetWidth,
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: deckElement.offsetWidth
+            `left ${transitionTimeout}ms, transform 0s`
         }
         break
       case HAND_LEFT:
         style = {
           left: - (1 - cursor) * deckElement.offsetWidth,
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: deckElement.offsetWidth
+            `left ${transitionTimeout}ms, transform 0s`
         }
         break
       case CURRENT:
         style = {
           left: 0,
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: deckElement.offsetWidth
+            `left ${transitionTimeout}ms, transform 0s`
         }
         break
       case HAND_RIGHT:
         style = {
           left: deckElement.offsetWidth + cursor * deckElement.offsetWidth,
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: deckElement.offsetWidth
+            `left ${transitionTimeout}ms, transform 0s`
         }
         break
       case ASIDE_RIGHT:
         style = {
           left: 2 * deckElement.offsetWidth,
           transition: transition ||
-            `left ${transitionTimeout}ms, width ${transitionTimeout}ms, transform 0s`,
-          width: deckElement.offsetWidth
+            `left ${transitionTimeout}ms, transform 0s`
         }
         break
       default:
@@ -235,32 +230,31 @@ class Card extends Component {
       bounds.left = 0
     }
     // console.log('RENDER: Card content', content)
-    return (
-      <div>
-        <Draggable axis='x'
-          bounds={bounds}
-          disabled={!isDraggable}
-          position={position}
-          onDrag={onDrag}
-          onStop={onStop} >
-            <span className={classnames('card absolute', {
-                'card--current': type === CURRENT,
-                'card--draggable': isDraggable
-              })}
-              ref={element => this.cardElement = element}
-              style={style}>
-              <div className='card__container' style={{ transform }}>
-                <Recto {...content} />
-              </div>
-            </span>
-        </Draggable>
-        {item === 0 && content.id && (
-          <Portal node={document.getElementById('deck')}>
-            <Verso />
-          </Portal>
-        )}
-      </div>
-    )
+    return [
+      <Draggable axis='x'
+        bounds={bounds}
+        disabled={!isDraggable}
+        key={0}
+        position={position}
+        onDrag={onDrag}
+        onStop={onStop} >
+          <span className={classnames('card absolute', {
+              'card--current': type === CURRENT,
+              'card--draggable': isDraggable
+            })}
+            ref={element => this.cardElement = element}
+            style={style}>
+            <div className='card__container' style={{ transform }}>
+              <Recto {...content} />
+            </div>
+          </span>
+      </Draggable>,
+      item === 0 && content.id && (
+        <Portal key={1} node={document.getElementById('deck')}>
+          <Verso />
+        </Portal>
+      )
+    ]
   }
 }
 
@@ -273,5 +267,5 @@ Card.defaultProps = {
 
 export default connect(
   state => ({
-    isFlipped: state.navigation.isFlipped
+    isFlipped: state.verso.isFlipped
   }))(Card)

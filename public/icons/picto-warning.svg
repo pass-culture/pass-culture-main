@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="21px" viewBox="0 0 22 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>1F16FCFE-9303-4441-9914-CDC95BB9325E</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <path d="M15.8246388,3.77521388 L22.3497115,15.6389824 C23.414337,17.5746652 22.7082056,20.0068956 20.7725229,21.0715211 C20.181943,21.39634 19.5188598,21.5666574 18.8448479,21.5666574 L5.79470248,21.5666574 C3.58556348,21.5666574 1.79470248,19.7757964 1.79470248,17.5666574 C1.79470248,16.8926456 1.96501989,16.2295624 2.28983885,15.6389824 L8.81491155,3.77521388 C9.87953706,1.83953115 12.3117675,1.13339974 14.2474502,2.19802525 C14.912089,2.56357662 15.4590874,3.11057502 15.8246388,3.77521388 Z" id="path-1"></path>
+    </defs>
+    <g id="Splash-&amp;-account" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc3-signup-1-error" transform="translate(-23.000000, -225.000000)">
+            <g id="Champs-[36v]" transform="translate(24.000000, 36.000000)">
+                <g id="Group-3" transform="translate(0.000000, 88.000000)">
+                    <g id="picto-warning" transform="translate(0.000000, 102.000000)">
+                        <g transform="translate(-2.000000, -2.000000)">
+                            <g id="Triangle">
+                                <use fill="#D0021B" fill-rule="evenodd" xlink:href="#path-1"></use>
+                                <path stroke="#FFFFFF" stroke-width="2" d="M14.9484229,4.25713263 C14.6742594,3.75865349 14.2640106,3.34840469 13.7655314,3.07424116 C12.3137694,2.27577203 10.4895966,2.80537058 9.69112746,4.25713263 L3.16605476,16.1209012 C2.92244054,16.5638361 2.79470248,17.0611485 2.79470248,17.5666574 C2.79470248,19.2235117 4.13784823,20.5666574 5.79470248,20.5666574 L18.8448479,20.5666574 C19.3503568,20.5666574 19.8476692,20.4389194 20.2906041,20.1953052 C21.7423662,19.396836 22.2719647,17.5726632 21.4734956,16.1209012 L14.9484229,4.25713263 Z"></path>
+                            </g>
+                            <text id="!" font-family="Barlow-ExtraBold, Barlow" font-size="15" font-weight="600" fill="#FFFFFF">
+                                <tspan x="9.5" y="18">!</tspan>
+                            </text>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

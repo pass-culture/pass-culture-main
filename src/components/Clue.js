@@ -32,7 +32,7 @@ Clue.defaultProps = {
 export default connect(
   state => ({
     distance: selectDistance(state),
-    isFlipped: state.navigation.isFlipped,
+    isFlipped: state.verso.isFlipped,
     offer: selectOffer(state),
     userMediation: selectUserMediation(state)
   }))(Clue)
