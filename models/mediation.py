@@ -80,31 +80,30 @@ TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..'\
                  / 'static' / 'tuto_mediations'
 
 
-def upsertTutoMediation(index, dominant_color, has_back=False):
+def upsertTutoMediation(index, has_back=False):
     existing_mediation = Mediation.query.filter_by(tutoIndex=index)\
                                         .first()
     mediation = existing_mediation or Mediation()
     mediation.tutoIndex = index
     app.model.PcObject.check_and_save(mediation)
 
-    with open(TUTOS_PATH / (str(index) + '.svg'), "rb") as f:
+    with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
         mediation.save_thumb(f.read(),
                              0,
-                             image_type='svg',
-                             dominant_color=dominant_color)
+                             image_type='png')
 
     if has_back:
-        with open(TUTOS_PATH / (str(index) + '_verso.svg'), "rb") as f:
+        with open(TUTOS_PATH / (str(index) + '_verso.png'), "rb") as f:
             mediation.save_thumb(f.read(),
                                  1,
-                                 image_type='svg')
+                                 image_type='png')
 
     app.model.PcObject.check_and_save(mediation)
 
 
 def upsertTutoMediations():
-    upsertTutoMediation(0, b'\x99\x0f\x56')
-    upsertTutoMediation(1, b'\x00\x6f\xed', True)
+    upsertTutoMediation(0)
+    upsertTutoMediation(1, True)
 
 
 Mediation.upsertTutoMediations = upsertTutoMediations
