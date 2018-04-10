@@ -1,6 +1,6 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Route, Switch } from 'react-router-dom'
+import { matchPath, Redirect, Route, Switch } from 'react-router-dom'
 
 import { ConnectedRouter } from 'react-router-redux'
 
@@ -21,6 +21,12 @@ const Root = () => {
                 return route.render(match);
               }} />
             ))}
+            <Route path="/:active?"
+              render={props => {
+                const matchedRoute = routes.find(route =>
+                  matchPath(`/${props.match.params.active}`, route))
+                return props.location.pathname !== '/' && !matchedRoute && <Redirect to='/' />
+              }} />
           </Switch>
         </App>
       </ConnectedRouter>

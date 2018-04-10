@@ -28,6 +28,7 @@ class Modal extends Component {
           translate: false,
         })
       }, this.props.transitionDuration)
+      document.addEventListener('backbutton', this.onCloseClick)
     } else if (!nextProps.isActive && this.props.isActive) {
       // Closing
       this.setState({
@@ -38,12 +39,12 @@ class Modal extends Component {
           display: false,
         })
       }, this.props.transitionDuration)
-
+      document.removeEventListener('backbutton', this.onCloseClick)
     }
   }
 
   onCloseClick = e => {
-    if (this.props.isUnclosable || !this.props.isActive) return;
+    if (this.props.isUnclosable || !this.props.isActive) return true;
     const { closeModal, onCloseClick } = this.props
     onCloseClick && onCloseClick()
     closeModal()
@@ -56,13 +57,11 @@ class Modal extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('backbutton', this.onCloseClick)
   }
 
   componentWillUnmount() {
     this.openTimeout && clearTimeout(this.openTimeout);
     this.closeTimeout && clearTimeout(this.closeTimeout);
-    document.removeEventListener('backbutton', this.onCloseClick)
   }
 
   transform() {
