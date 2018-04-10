@@ -25,8 +25,8 @@
   <plugin name="cordova-plugin-statusbar" spec="~2.4.1" />
   <plugin name="cordova-plugin-splashscreen" spec="https://github.com/apache/cordova-plugin-splashscreen.git" />
 
-  <preference name="phonegap-version" value="cli-8.0.0" />
   <preference name="orientation" value="portrait" />
+  <preference name="phonegap-version" value="cli-8.0.0" />
   <preference name="SplashScreen" value="screen" />
   <preference name="ShowSplashScreenSpinner" value="false"/>
   <preference name="SplashMaintainAspectRatio" value="true" />
