@@ -1,7 +1,7 @@
+"""users routes"""
 from base64 import b64decode
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
-from sqlalchemy.orm import aliased
 
 from models.api_errors import ApiErrors
 from utils.human_ids import humanize
