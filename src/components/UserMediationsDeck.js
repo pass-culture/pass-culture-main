@@ -16,7 +16,7 @@ class UserMediationsDeck extends Component {
     this.state = { afterLimit: null,
       aroundIndex: null,
       beforeLimit: null,
-      contents: null,
+      contents: [{ isLoading: true }],
       extraContents: null,
       isLoadingBefore: false,
       isLoadingAfter: false,

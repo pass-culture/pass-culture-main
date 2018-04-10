@@ -5,7 +5,7 @@ import Icon from '../components/Icon'
 
 const withSplash = (config = {}) => WrappedComponent => {
 
-  const { triggerRemoveSplashTimeout } = config
+  const { children, triggerRemoveSplashTimeout } = config
   const removeSplashTimeout = config.removeSplashTimeout || 2000
 
   class _withSplash extends Component {
@@ -40,8 +40,7 @@ const withSplash = (config = {}) => WrappedComponent => {
           <div className={classnames('splash', {
             'hidden': !this.state.hasSplash
           })} key={0}>
-            <Icon svg='loading-img'/>
-            <p>Chargement des offres</p>
+            {children}
           </div>,
           <WrappedComponent key={1}
             {...this.props}

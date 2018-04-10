@@ -12,14 +12,13 @@ import Icon from './Icon'
 import { debug, warn } from '../utils/logguers'
 import { ROOT_PATH } from '../utils/config';
 
-import { flip, unFlip } from '../reducers/navigation'
+import { flip, unFlip } from '../reducers/verso'
 import selectHeaderColor from '../selectors/headerColor'
 
 class Deck extends Component {
   constructor (props) {
     super(props)
-    this.state = { bufferContents: null,
-      currentContent: null,
+    this.state = { currentContent: null,
       cursor: 0,
       deckElement: null,
       transition: null,
@@ -98,10 +97,12 @@ class Deck extends Component {
     isDebug && debug('Deck - handleSetCurrentContent')
     // find
     const currentIndex = items && items.indexOf(0)
+    const previousContent = contents && contents[currentIndex-1]
     const currentContent = contents && contents[currentIndex]
+    const nextContent = contents && contents[currentIndex + 1]
     this.currentContent = currentContent
     // update
-    this.setState({ currentContent })
+    this.setState({ currentContent, previousContent, nextContent  })
   }
   handleSetStyle = () => {
     // unpack
@@ -321,11 +322,13 @@ class Deck extends Component {
       isResizing,
       isTransitioning,
       items,
+      nextContent,
+      previousContent,
       style,
       transition
     } = this.state
     const isAfterDisabled = !items || isLastCard || isTransitioning
-    const isAfterHidden = currentContent && currentContent.isLast
+    const isAfterHidden = previousContent && previousContent.isLast
     const isBeforeDisabled = !items || isFirstCard || isTransitioning
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isLoading = isLoadingBefore || isLoadingAfter
@@ -439,8 +442,8 @@ Deck.defaultProps = { deckKey: 0,
 export default connect(
   state => ({
     headerColor: selectHeaderColor(state),
-    isFlipped: state.navigation.isFlipped,
-    unFlippable: state.navigation.unFlippable,
+    isFlipped: state.verso.isFlipped,
+    unFlippable: state.verso.unFlippable,
   }),
   { flip, unFlip }
 )(Deck)

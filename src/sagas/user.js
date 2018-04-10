@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { resetData } from '../reducers/data'
@@ -22,7 +23,18 @@ function * fromWatchSuccessGetSignoutActions () {
 function * fromWatchSuccessSignActions () {
   const user = yield select(state => state.data.users && state.data.users[0])
   const currentUser = yield select(state => state.user)
-  if (user && (!currentUser || (user.id !== currentUser.id))) {
+  const isDeprecatedCurrentUser = currentUser && (
+    user.id !== currentUser.id ||
+    moment(user.dateCreated) > moment(currentUser.dateCreated)
+  )
+  if (user && (!currentUser ||
+    isDeprecatedCurrentUser
+  )) {
+    // clear if we changed user
+    if (isDeprecatedCurrentUser) {
+      yield call(clear)
+    }
+    // set
     yield put(setUser(user))
     // call the dexie-user event
     // either the sync service worker has already in state the user
