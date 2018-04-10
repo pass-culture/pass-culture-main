@@ -101,6 +101,10 @@ class Deck extends Component {
     const currentContent = contents && contents[currentIndex]
     const nextContent = contents && contents[currentIndex + 1]
     this.currentContent = currentContent
+    // add a note if currentContent came from a loading card
+    if (this.state.currentContent && this.state.currentContent.isLoading) {
+      currentContent.isFromLoading = true
+    }
     // update
     this.setState({ currentContent, previousContent, nextContent  })
   }

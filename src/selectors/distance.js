@@ -10,7 +10,7 @@ export default createSelector(
   state => state.geolocation.position,
   (offer, venue, position) => {
     if (!position || !offer || ! venue) {
-      return '?'
+      return '-'
     }
     const { latitude, longitude } = position.coords
     const distance = distanceInMeters(latitude, longitude, venue.latitude, venue.longitude)
@@ -20,8 +20,10 @@ export default createSelector(
       return Math.round(distance/5)*5+"m"
     } else if (distance<1000) {
       return Math.round(distance/10)*10+"m"
-    } else {
+    } else if (distance<5000) {
       return Math.round(distance/100)/10+"km"
+    } else {
+      return Math.round(distance/1000)+"km"
     }
   }
 )
