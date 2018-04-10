@@ -132,3 +132,4 @@ Modal.defaultProps = {
 export default connect(({ modal: { config, ContentComponent, isActive } }) =>
   Object.assign({ ContentComponent, isActive }, config),
   { closeModal })
+(Modal)
