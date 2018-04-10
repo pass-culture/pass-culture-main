@@ -162,6 +162,7 @@ class UserMediationsDeck extends Component {
     if (!userMediations) {
       return
     }
+    console.log('userMediations.length', userMediations.length, afterCount)
     let afterLimit = userMediations.length - afterCount
     if (afterLimit < 1) { afterLimit = userMediations.length }
     this.setState({ afterLimit })

@@ -30,7 +30,7 @@ function * fromWatchSuccessSignActions () {
   if (user && (!currentUser ||
     isDeprecatedCurrentUser
   )) {
-    // clear if we changed user
+    // clear if the currentUser was deprecated
     if (isDeprecatedCurrentUser) {
       yield call(clear)
     }
