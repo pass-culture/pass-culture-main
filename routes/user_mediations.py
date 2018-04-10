@@ -125,6 +125,7 @@ def update_user_mediations():
                               .order_by(UserMediation.id)
             ums = [um._asdict(include=USER_MEDIATIONS_INCLUDES) for um in comp_before_ums] + ums
             around_index += comp_before_ums.count()
+            print('(before comp) count', comp_before_ums.count())
     if around_um:
         ums[around_index]['isAround'] = True
     # PRINT
