@@ -12,17 +12,15 @@ const Clue = ({
   isHidden,
   transitionTimeout
 }) => {
-  return (offer
-    &&  (
-          <div className='clue' style={{ transition: `opacity ${transitionTimeout}ms`}}>
-            <Price value={offer.price} />
-            <div className='separator'>&middot;</div>
-            <div>
-               {distance}
-            </div>
-          </div>
-        ))
-    || []
+  return (
+    <div className='clue' style={{ transition: `opacity ${transitionTimeout}ms`}}>
+      <Price value={offer && offer.price} />
+      <div className='separator'>&middot;</div>
+      <div>
+         {distance}
+      </div>
+    </div>
+  )
 }
 
 Clue.defaultProps = {

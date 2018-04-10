@@ -1,12 +1,12 @@
 import React from 'react'
 
-const Price = ({value}) => {
+const Price = ({ value }) => {
   return (
-    <span className='price'>{
+    <div className='price'>{
       value === 0
-      ? 'gratuit'
-      : value.toString().replace('.', ',')+'€'
-    }</span>
+        ? 'gratuit'
+        : value && (value.toString().replace('.', ',')+'€')
+    }</div>
   )
 }
 
