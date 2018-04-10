@@ -79,18 +79,10 @@ class Modal extends Component {
     const {
       ContentComponent,
       hasCloseButton,
-      isMask,
       isUnclosable,
       maskColor,
       transitionDuration,
     } = this.props
-    if (isMask) {
-      return (
-        <div className='absolute top-0 bottom-0 left-0 right-0'>
-          { ContentComponent && <ContentComponent /> }
-        </div>
-      )
-    }
     return (
       <div className={classnames('modal', {
         'active': this.state.display,

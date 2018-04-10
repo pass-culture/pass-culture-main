@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import RectoDebug from './RectoDebug'
-import Loading from './Loading'
 import withSelectors from '../hocs/withSelectors'
 import { getOffer } from '../selectors/offer'
 import { getMediation } from '../selectors/mediation'
