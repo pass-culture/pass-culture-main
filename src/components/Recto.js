@@ -23,11 +23,7 @@ class Recto extends Component {
 
   handleRemoveLoading = () => {
     this.removeLoadingTimeout = setTimeout(() =>
-      this.setState({ isRemoveLoading: true }), 1000)
-  }
-
-  componentWillMount () {
-    this.props.isFromLoading && this.handleRemoveLoading()
+      this.setState({ isRemoveLoading: true }), 0)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -67,7 +63,7 @@ class Recto extends Component {
                   chargement des offres
                 </div>
               </div>
-            </div>
+           </div>
           )
         }
         { thumbUrl && (

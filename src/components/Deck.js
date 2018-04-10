@@ -104,8 +104,6 @@ class Deck extends Component {
     // add a note if currentContent came from a loading card
     if (this.state.currentContent && this.state.currentContent.isLoading) {
       currentContent.isFromLoading = true
-    } else {
-      currentContent.isFromLoading = false
     }
     // update
     this.setState({ currentContent, previousContent, nextContent  })
