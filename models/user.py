@@ -1,6 +1,7 @@
-import bcrypt
+"""User model"""
+from datetime import datetime
 from flask import current_app as app
-
+import bcrypt
 db = app.db
 
 
@@ -15,6 +16,10 @@ class User(app.model.PcObject,
 
     offerers = db.relationship(lambda: app.model.Offerer,
                                secondary='user_offerer')
+
+    dateCreated = db.Column(db.DateTime,
+                            nullable=False,
+                            default=datetime.now)
 
     clearTextPassword = None
 
