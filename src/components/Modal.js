@@ -1,8 +1,6 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import { closeModal } from '../reducers/modal'
 import Icon from './Icon'
@@ -44,11 +42,12 @@ class Modal extends Component {
     }
   }
 
-  onCloseClick = () => {
-    if (this.props.isUnclosable) return;
+  onCloseClick = e => {
+    if (this.props.isUnclosable || !this.props.isActive) return;
     const { closeModal, onCloseClick } = this.props
     onCloseClick && onCloseClick()
     closeModal()
+    e.preventDefault()
   }
 
   stopPropagation(e) {
@@ -56,9 +55,14 @@ class Modal extends Component {
     e.stopPropagation()
   }
 
+  componentDidMount() {
+    document.addEventListener('backbutton', this.onCloseClick)
+  }
+
   componentWillUnmount() {
     this.openTimeout && clearTimeout(this.openTimeout);
     this.closeTimeout && clearTimeout(this.closeTimeout);
+    document.removeEventListener('backbutton', this.onCloseClick)
   }
 
   transform() {
@@ -125,10 +129,6 @@ Modal.defaultProps = {
   maskColor: 'rgba(0, 0, 0, 0.8)'
 }
 
-export default compose(
-  withRouter,
-  connect(({ modal: { config, ContentComponent, isActive } }) =>
-    Object.assign({ ContentComponent, isActive }, config),
-    { closeModal }
-  )
-)(Modal)
+export default connect(({ modal: { config, ContentComponent, isActive } }) =>
+  Object.assign({ ContentComponent, isActive }, config),
+  { closeModal })
