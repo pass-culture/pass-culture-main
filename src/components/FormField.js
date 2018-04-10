@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import FormInput from '../components/FormInput'
 import FormTextarea from '../components/FormTextarea'
+import Icon from '../components/Icon'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { compose } from 'redux'
@@ -45,7 +46,7 @@ class FormField extends Component {
         <ul className={classnames('errors', { 'pop': errors })} key={1}>
           {
             errors && errors.map((e, index) => (
-              <li key={index}>{e}</li>
+              <li key={index}><Icon svg='picto-warning' /> {e}</li>
             ))
           }
         </ul>
