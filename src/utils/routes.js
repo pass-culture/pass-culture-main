@@ -28,12 +28,27 @@ const routes = [
   {
     exact: true,
     path: '/beta',
+    title: 'Bienvenue dans l\'avant-première du Pass Culture',
     render: () => <BetaPage />
   },
   {
     exact: true,
     path: '/connexion',
+    title: 'Connexion',
     render: () => <SigninPage />
+  },
+  {
+    exact: true,
+    path: '/inscription',
+    title: 'Inscription',
+    render: () => <SignupPage />
+  },
+  {
+    exact: true,
+    path: '/decouverte/:offerId/:mediationId?',
+    title: 'Les offres',
+    render: ({ match: { mediationId, offerId }}) =>
+      <DiscoveryPage mediationId={mediationId} offerId={offerId}/>
   },
   {
     exact: true,
@@ -42,43 +57,38 @@ const routes = [
   },
   {
     exact: true,
-    path: '/decouverte/:offerId/:mediationId?',
-    render: ({ match: { mediationId, offerId }}) =>
-      <DiscoveryPage mediationId={mediationId} offerId={offerId}/>
-  },
-  {
-    exact: true,
     path: '/favoris',
+    title: 'Mes favoris',
     render: () => <FavoritesPage />
   },
   {
     exact: true,
-    path: '/inscription',
-    render: () => <SignupPage />
-  },
-  {
-    exact: true,
     path: '/inventaire',
+    title: 'Inventaire',
     render: () => <InventoryPage />
   },
   {
     exact: true,
     path: '/pro',
+    title: 'Espace pro',
     render: () => <ProfessionalPage />
   },
   {
     exact: true,
     path:'/pro/:offererId',
+    title: 'Espace pro - Offre',
     render: props => <OffererPage offererId={props.match.params.offererId} />
   },
   {
     exact: true,
     path: '/profil',
+    title: 'Profil',
     render: () => <ProfilePage />
   },
   {
     exact: true,
     path: '/reservations',
+    title: 'Réservations',
     render: () => <BookingsPage />
   }
 ]

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import { matchPath, Redirect, Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import { ConnectedRouter } from 'react-router-redux'
 
@@ -14,13 +14,14 @@ const Root = () => {
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <App>
-          { routes.map((route, index) =>  <Route key={index} {...route} />) }
-          <Route path="/:active?"
-            render={props => {
-              const matchedRoute = routes.find(route =>
-                matchPath(`/${props.match.params.active}`, route))
-              return props.location.pathname !== '/' && !matchedRoute && <Redirect to='/' />
-            }} />
+          <Switch>
+            { routes.map((route, index) =>  (
+              <Route key={index} {...route} render={(match) => {
+                document.title = (route.title ? `${route.title} - ` : '') + 'Pass Culture';
+                return route.render(match);
+              }} />
+            ))}
+          </Switch>
         </App>
       </ConnectedRouter>
     </Provider>
