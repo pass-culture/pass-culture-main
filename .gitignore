@@ -94,6 +94,9 @@ ENV/
 ftp_mirrors
 postgres_data
 
+# Mock
+mock/spreadsheet_exp
+
 # Secret
 private
 secret.py
