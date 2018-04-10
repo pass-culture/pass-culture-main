@@ -35,15 +35,8 @@ class DexieWrapper {
     if (!user) {
       return
     }
-    // get the matching user
-
-    // const users = await getData('users', { id: user.id })
-    //if (users.length === 0 || users[0].id !== user.id) {
-      // trigger a first push pull to feed the dexie
-      // or user has changed so trigger it also
-      await pushPull(this.state)
-    //}
-
+    // do push pull to be sure to sync
+    await pushPull(this.state)
     // setUser to set for the first time or just sync
     this.state.user && await setUser(this.state)
     // sync the redux state
