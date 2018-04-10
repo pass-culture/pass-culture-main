@@ -28,6 +28,7 @@ class Modal extends Component {
           translate: false,
         })
       }, this.props.transitionDuration)
+      document.addEventListener('backbutton', this.onCloseClick)
     } else if (!nextProps.isActive && this.props.isActive) {
       // Closing
       this.setState({
@@ -38,20 +39,24 @@ class Modal extends Component {
           display: false,
         })
       }, this.props.transitionDuration)
-
+      document.removeEventListener('backbutton', this.onCloseClick)
     }
   }
 
-  onCloseClick = () => {
-    if (this.props.isUnclosable) return;
+  onCloseClick = e => {
+    if (this.props.isUnclosable || !this.props.isActive) return true;
     const { closeModal, onCloseClick } = this.props
     onCloseClick && onCloseClick()
     closeModal()
+    e.preventDefault()
   }
 
   stopPropagation(e) {
     e.nativeEvent.stopImmediatePropagation() // Prevent click bubbling and closing modal
     e.stopPropagation()
+  }
+
+  componentDidMount() {
   }
 
   componentWillUnmount() {
@@ -125,5 +130,4 @@ Modal.defaultProps = {
 
 export default connect(({ modal: { config, ContentComponent, isActive } }) =>
   Object.assign({ ContentComponent, isActive }, config),
-  { closeModal }
-)(Modal)
+  { closeModal })(Modal)
