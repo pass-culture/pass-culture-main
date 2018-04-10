@@ -17,16 +17,21 @@ import Icon from './Icon'
 
 const Recto = props => {
   const {
+    mediation,
     isLoading,
     thumbUrl,
     isFlipped,
   } = props
-  const style = { backgroundImage: `url('${thumbUrl}')` };
+  const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` };
+  const thumbStyle = Object.assign({}, backgroundStyle);
+  if (mediation) {
+    thumbStyle.backgroundSize='cover';
+  }
   return (
     <div className='recto'>
        <div className={classnames('card-background', {
            'loading flex items-center justify-center': isLoading
-         })} style={style}>
+         })} style={backgroundStyle}>
         {
           isLoading && (
             <div>
@@ -39,7 +44,7 @@ const Recto = props => {
         }
       </div>
       { thumbUrl && (
-        <div style={style} className={classnames('thumb', {
+        <div style={thumbStyle} className={classnames('thumb', {
           translated: isFlipped
         })} />
       )}
@@ -63,6 +68,10 @@ export default compose(
       (id, userMediations) => id && userMediations &&
         userMediations.find(um => um.id === id)
     ],
+    mediation: [
+      (ownProps, nextState) => nextState.userMediation,
+      (userMediation) => getMediation(userMediation)
+      ],
     offer: [
       ownProps => ownProps.currentUserMediation,
       ownProps => ownProps.currentOffer,
