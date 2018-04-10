@@ -63,6 +63,7 @@ export async function localData (method, path, config = {}) {
     data = await getData(collectionName, parse(queryString))
   } else {
     data = await putData('update', collectionName, body)
+    console.log('C ES', data)
   }
   // return data
   return { data }
