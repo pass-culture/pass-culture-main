@@ -94,7 +94,7 @@ export default compose(
     ],
     mediation: [
       (ownProps, nextState) => nextState.userMediation,
-      (userMediation) => getMediation(userMediation)
+      userMediation => getMediation(userMediation)
     ],
     offer: [
       ownProps => ownProps.currentUserMediation,
@@ -120,9 +120,7 @@ export default compose(
       (ownProps, nextState) => nextState.mediation,
       (ownProps, nextState) => nextState.offer,
       (mediation, offer) => {
-        if (!mediation) {
-          return
-        }
+        console.log('mediation', mediation, offer)
         const source = getSource(mediation, offer)
         return getThumbUrl(mediation, source, offer)
       }

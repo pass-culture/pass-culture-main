@@ -105,8 +105,14 @@ class Deck extends Component {
     if (this.state.currentContent && this.state.currentContent.isLoading) {
       currentContent.isFromLoading = true
     }
+    if (previousContent) {
+      previousContent.isFromLoading = false
+    }
+    if (nextContent) {
+      nextContent.isFromLoading = false
+    }
     // update
-    this.setState({ currentContent, previousContent, nextContent  })
+    this.setState({ currentContent, previousContent, nextContent })
   }
   handleSetStyle = () => {
     // unpack
@@ -326,7 +332,7 @@ class Deck extends Component {
       isResizing,
       isTransitioning,
       items,
-      nextContent,
+      //nextContent,
       previousContent,
       style,
       transition
