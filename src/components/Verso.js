@@ -37,7 +37,7 @@ class Verso extends Component {
 
 export default connect(
   state => ({
-    isFlipped: state.navigation.isFlipped,
+    isFlipped: state.verso.isFlipped,
     isTuto: selectIsTuto(state),
     mediation: selectMediation(state),
   }))(Verso)

@@ -8,7 +8,7 @@ const RectoDebug = ({ contentLength,
   return (
     <div className='recto-debug absolute left-0 ml2 p2'>
       <span>
-        {userMediation && userMediation.id} {offer && offer.id} {index + 1}/{contentLength}
+        {userMediation && userMediation.id} {offer && offer.id} {index + 1}
       </span>
       {
         userMediation && userMediation.dateRead && [

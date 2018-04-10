@@ -45,7 +45,7 @@ class Verso extends Component {
 export default connect(
   state => ({
     headerColor: selectHeaderColor(state),
-    isFlipped: state.navigation.isFlipped,
+    isFlipped: state.verso.isFlipped,
     isTuto: selectIsTuto(state),
     source: selectSource(state),
     venue: selectVenue(state)

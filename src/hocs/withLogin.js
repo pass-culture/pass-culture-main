@@ -62,7 +62,7 @@ const withLogin = (config = {}) => WrappedComponent => {
             // SO WE FORCE THE SIGNIN PUSH
             history.push('/connexion')
           } else if (nextProps.user === false && this.props.user) {
-            // CASE WE JUST SIGNOUT AND AS IS REQUIRED IS TRUE
+            // CASE WE JUST SIGNOUT AND AS IT IS REQUIRED IS TRUE
             // WE NEED TO PROPOSE A NEW SIGNIN MODAL
             // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
             // TO MAKE A SLOW TRANSITION

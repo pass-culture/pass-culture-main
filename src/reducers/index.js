@@ -7,7 +7,8 @@ import form from './form'
 import geolocation from './geolocation'
 import loading from './loading'
 import modal from './modal'
-import navigation from './navigation'
+import verso from './verso'
+import splash from './splash'
 import user from './user'
 
 const rootReducer = combineReducers({ browser,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({ browser,
   geolocation,
   loading,
   modal,
-  navigation,
+  splash,
+  verso,
   user,
   router: routerReducer,
 })

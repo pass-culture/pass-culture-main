@@ -21,8 +21,12 @@
     padding: 50px;
     margin-top: -50px;
     margin-left: -50px;
-    &--loading {
+    &.loading {
+      background-color: $menu-red;
       filter: none;
+      div {
+        color: white;
+      }
     }
   }
   .thumb {

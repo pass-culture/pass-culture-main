@@ -9,7 +9,7 @@
   const request = require('request');
 
   const APP_IDS = {
-    prod: 3048468,
+    production: 3110560,
     staging: 3059566
   }
 
