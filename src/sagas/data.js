@@ -42,7 +42,18 @@ function * fromWatchFailDataActions (action) {
   yield put(assignData({ errors: Object.assign({}, errors, action.errors) }))
 }
 
+function * fromWatchSuccessDataActions (action) {
+  const { config, method, path } = action
+  const local = config && config.local
+  if (method !== 'GET' && !local) {
+    // FROM A MUTATING FETCH REQUEST
+    // WE MAKE SURE HERE TO UPDATE ALSO THE DEXIE
+    yield call(localData, method, path, { body: action.data })
+  }
+}
+
 export function * watchDataActions () {
   yield takeEvery(({ type }) => /REQUEST_DATA_(.*)/.test(type), fromWatchRequestDataActions)
   yield takeEvery(({ type }) => /FAIL_DATA_(.*)/.test(type), fromWatchFailDataActions)
+  yield takeEvery(({ type }) => /SUCCESS_DATA_(.*)/.test(type), fromWatchSuccessDataActions)
 }

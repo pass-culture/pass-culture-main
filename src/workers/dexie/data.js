@@ -25,12 +25,16 @@ export async function getData (collectionName, query) {
     Object.keys(query).every(key => element[key] === query[key])).toArray()
 }
 
-export async function putData (dexieMethod, collectionName, data) {
+export async function putData (dexieMethod, collectionName, dataOrDatum) {
   // check the table
   const table = db[collectionName]
   if (!table) {
     return
   }
+  // check format
+  const data = Array.isArray(dataOrDatum)
+    ? dataOrDatum
+    : [dataOrDatum]
   // choose the put method
   if (dexieMethod === 'bulk') {
     // bulk is when we replace everything and index by the index in the array data
@@ -41,16 +45,13 @@ export async function putData (dexieMethod, collectionName, data) {
     // update is when we want to update certain elements in the array
     const storedData = await table.toArray()
     for (let datum of data) {
-      // find if it is already in the db
       const storedDatum = storedData.find(({ id }) => id === datum.id)
-      // find the corresponding index matching the id
-      const putIndex = storedDatum
-        ? storedDatum.index
-        : storedData.length
-      // make sure to update the local temp of data
-      storedData[putIndex] = Object.assign(storedData[putIndex], datum)
-      // update
-      await table.update(putIndex, datum)
+      if (storedDatum) {
+        await table.put(storedDatum.index,
+          Object.assign({}, storedDatum, datum))
+      } else {
+        await table.add(datum)
+      }
     }
     await db.differences.add({
       id: uuid(),
