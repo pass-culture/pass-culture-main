@@ -150,6 +150,7 @@ def do_init():
     check_and_save(mediation1)
     set_from_mock("thumbs", mediation1, 1)
 
+    """
     user_mediation1 = model.UserMediation()
     first_user_mediation = model.UserMediation.query\
                            .filter_by(user=client_user)\
@@ -177,6 +178,7 @@ def do_init():
     umb1.booking = booking1
     umb1.userMediation = user_mediation1
     check_and_save(umb1)
+    """
 
     ## EVENT 2 WITHOUT MEDIATION
 
@@ -202,6 +204,7 @@ def do_init():
     offer2.price = 10
     check_and_save(offer2)
 
+    """
     user_mediation2 = model.UserMediation()
     user_mediation2.user = client_user
     user_mediation2.validUntilDate = datetime.now() + timedelta(days=2)
@@ -211,6 +214,7 @@ def do_init():
     umo2.offer = offer2
     umo2.userMediation = user_mediation2
     check_and_save(umo2)
+    """
 
     ## EVENT 3 WITH THUMB MEDIATION
 
@@ -243,6 +247,7 @@ def do_init():
     check_and_save(mediation3)
     set_from_mock("thumbs", mediation3, 2)
 
+    """
     user_mediation3 = model.UserMediation()
     user_mediation3.mediation = mediation3
     user_mediation3.user = client_user
@@ -252,6 +257,7 @@ def do_init():
     umo3.offer = offer3
     umo3.userMediation = user_mediation3
     check_and_save(umo3)
+    """
 
     ## THING 4 WITH TEXT MEDIATION
 
@@ -280,6 +286,7 @@ def do_init():
     mediation4.frontText = "Comment voyager sans augmenter son bilan carbone ?"
     mediation4.thing = thing4
 
+    """
     user_mediation4 = model.UserMediation()
     user_mediation4.mediation = mediation4
     user_mediation4.user = client_user
@@ -290,3 +297,4 @@ def do_init():
     umo4.offer = offer4
     umo4.userMediation = user_mediation4
     check_and_save(umo4)
+    """
