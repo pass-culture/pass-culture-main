@@ -9,9 +9,10 @@ export default createSelector(
   selectVenue,
   state => state.geolocation.position,
   (offer, venue, position) => {
-    if (!position || !offer || ! venue) {
+    if (!position || !offer || !venue) {
       return '-'
     }
+    console.log('position', position)
     const { latitude, longitude } = position.coords
     const distance = distanceInMeters(latitude, longitude, venue.latitude, venue.longitude)
     if (distance<30) {

@@ -9,9 +9,12 @@ export default createSelector(
   selectSource,
   selectMediation,
   (source, mediation) => {
-    const [red, green, blue] =
-      get(mediation, 'firstThumbDominantColor', []) ||
+    const firstThumbDominantColor = get(mediation, 'firstThumbDominantColor', []) ||
       get(source, 'firstThumbDominantColor', [])
+    if (!firstThumbDominantColor) {
+      return
+    }
+    const [red, green, blue] = firstThumbDominantColor
     const {h} = rgb_to_hsv(red, green, blue);
     if (h) {
       return `hsl(${h}, 100%, 15%)`;
