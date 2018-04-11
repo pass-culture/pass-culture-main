@@ -1,13 +1,19 @@
 .sign-page {
 
-  padding: 1rem;
-  color: $black;
-  display: flex;
-  font-size: 1.2rem;
-  flex-direction: column;
-  min-height: 100vh;
-  justify-content: space-around;
-  padding-bottom: 5rem;
+  height: 100vh;
+
+  .form-container {
+    overflow-y: auto;
+    justify-content: space-between;
+    flex-direction: column;
+    padding: 1rem;
+    display: flex;
+    color: $black;
+    font-size: 1.2rem;
+    position: absolute;
+    top: 0;
+    bottom: 5rem;
+  }
 
   a {
     color: $black;
@@ -81,5 +87,16 @@
   .button--secondary {
     font-size: 1.3rem;
     line-height: 1rem;
+  }
+}
+
+.softkeyboard .sign-page {
+  height: auto;
+  min-height: 100vh;
+  .form-container {
+    position: static;
+  }
+  footer {
+    position: static;
   }
 }
