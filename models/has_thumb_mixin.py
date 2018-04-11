@@ -59,6 +59,9 @@ class HasThumbMixin(object):
                     tf.write(thumb)
                     color_thief = ColorThief(tf)
                     dominant_color = bytearray(color_thief.get_color(quality=1))
+            if dominant_color is None:
+                print("Warning: could not determine dominant_color for thumb")
+                self.firstThumbDominantColor = b'\x00\x00\x00'
             self.firstThumbDominantColor = dominant_color
         store_public_object("thumbs",
                             self.thumb_storage_id(index),

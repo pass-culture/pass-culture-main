@@ -66,7 +66,9 @@ class TiteLiveBookThumbs(app.model.LocalProvider):
         self.zip = ZipFile(str(self.zips.__next__()))
         print("  Importing thumbs from file "+str(self.zip))
         self.logEvent(LocalProviderEventType.SyncPartStart, file_date(self.zip))
-        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'), self.zip.infolist()))
+        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'),
+                                          sorted(self.zip.infolist(),
+                                                 key=lambda f: f.filename)))
 
     def __next__(self):
         if self.thumb_zipinfos is None:
