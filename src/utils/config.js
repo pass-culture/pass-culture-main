@@ -53,6 +53,7 @@ export const IS_LOCALHOST = Boolean(
 
 var CALC_ROOT_PATH = ''
 if (window.cordova) {
+  document.body.className += ' cordova'
   if (MOBILE_OS === 'android') {
     CALC_ROOT_PATH = 'file:///android_asset/www'
     //document.body.className += ' android-with-statusbar'
@@ -72,6 +73,9 @@ if (window.cordova) {
                                                                              .filter(c => c!=='softkeyboard')
                                                                              .join(' ')
                           });
+} else {
+  document.body.className += ' web'
 }
+
 
 export const ROOT_PATH = CALC_ROOT_PATH

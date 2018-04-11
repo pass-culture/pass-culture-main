@@ -1,18 +1,23 @@
 .sign-page {
 
+  color: $black;
+  display: flex;
+  font-size: 1.2rem;
+  flex-direction: column;
   height: 100vh;
+  padding-bottom: 5rem;
 
   .form-container {
-    overflow-y: auto;
-    justify-content: space-between;
-    flex-direction: column;
-    padding: 1rem;
     display: flex;
-    color: $black;
-    font-size: 1.2rem;
-    position: absolute;
-    top: 0;
-    bottom: 5rem;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+
+  form {
+    margin-top: auto;
+    margin-bottom: auto;
   }
 
   a {
@@ -61,6 +66,7 @@
     transition: transform .2s ease-in-out;
     &.pop {
       transform: scale(1.04);
+      transform-origin: 0 50%;
     }
     img {
       vertical-align: middle;
@@ -90,13 +96,11 @@
   }
 }
 
-.softkeyboard .sign-page {
-  height: auto;
+body.softkeyboard .sign-page,
+body.web .sign-page {
   min-height: 100vh;
+  height: auto;
   .form-container {
-    position: static;
-  }
-  footer {
-    position: static;
+    min-height: calc(100vh - 5rem);
   }
 }
