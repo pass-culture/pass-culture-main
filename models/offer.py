@@ -73,6 +73,7 @@ class Offer(app.model.PcObject,
     def object(self):
         return self.thing or self.eventOccurence
 
+    @property
     def occurencesAtVenue(self):
         if self.eventOccurence is None:
             return None

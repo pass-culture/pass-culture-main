@@ -55,6 +55,7 @@ USER_MEDIATIONS_INCLUDES =  [
                         "key": "eventOccurence",
                         "sub_joins": ["event", "venue"],
                     },
+                    "occurencesAtVenue",
                     "thing",
                     "venue"
                 ]
