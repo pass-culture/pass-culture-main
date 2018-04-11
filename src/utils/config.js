@@ -55,7 +55,7 @@ var CALC_ROOT_PATH = ''
 if (window.cordova) {
   if (MOBILE_OS === 'android') {
     CALC_ROOT_PATH = 'file:///android_asset/www'
-    document.body.className += ' android-with-statusbar'
+    //document.body.className += ' android-with-statusbar'
   } else if (MOBILE_OS === 'ios') {
     //TODO
     CALC_ROOT_PATH = window.location.href.substring(0,1)
