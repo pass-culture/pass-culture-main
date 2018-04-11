@@ -1,13 +1,24 @@
 .sign-page {
 
-  padding: 1rem;
   color: $black;
   display: flex;
   font-size: 1.2rem;
   flex-direction: column;
-  min-height: 100vh;
-  justify-content: space-around;
+  height: 100vh;
   padding-bottom: 5rem;
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+
+  form {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
 
   a {
     color: $black;
@@ -55,6 +66,7 @@
     transition: transform .2s ease-in-out;
     &.pop {
       transform: scale(1.04);
+      transform-origin: 0 50%;
     }
     img {
       vertical-align: middle;
@@ -81,5 +93,14 @@
   .button--secondary {
     font-size: 1.3rem;
     line-height: 1rem;
+  }
+}
+
+body.softkeyboard .sign-page,
+body.web .sign-page {
+  min-height: 100vh;
+  height: auto;
+  .form-container {
+    flex: 1;
   }
 }

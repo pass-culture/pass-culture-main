@@ -53,6 +53,7 @@ export const IS_LOCALHOST = Boolean(
 
 var CALC_ROOT_PATH = ''
 if (window.cordova) {
+  document.body.className += ' cordova'
   if (MOBILE_OS === 'android') {
     CALC_ROOT_PATH = 'file:///android_asset/www'
     //document.body.className += ' android-with-statusbar'
@@ -60,6 +61,21 @@ if (window.cordova) {
     //TODO
     CALC_ROOT_PATH = window.location.href.substring(0,1)
   }
+  window.addEventListener('keyboardWillShow',
+                          function (e) {
+                            console.log("Keyboard show");
+                            document.body.className += ' softkeyboard'
+                          });
+  window.addEventListener('keyboardWillHide',
+                          function (e) {
+                            console.log("Keyboard Hide");
+                            document.body.className = document.body.className.split(' ')
+                                                                             .filter(c => c!=='softkeyboard')
+                                                                             .join(' ')
+                          });
+} else {
+  document.body.className += ' web'
 }
+
 
 export const ROOT_PATH = CALC_ROOT_PATH
