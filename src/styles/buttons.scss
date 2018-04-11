@@ -37,7 +37,7 @@
   }
   &--hidden, &.hidden {
     opacity: 0;
-    visibility: invisible;
+    visibility: hidden; // otherwise it is still clickable
   }
   &--inversed {
     background-color: white;
