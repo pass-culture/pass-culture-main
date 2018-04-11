@@ -24,7 +24,12 @@ class Booking extends Component {
 
   componentDidMount() {
     if (!get(this.props, 'offer.occurencesAtVenue')) {
-      this.makeBooking()
+      // Delay added because otherwise the AJAX call is too fast.
+      // Remove when actual booking takes longer
+      setTimeout(this.makeBooking, 500)
+      this.setState({
+        bookingInProgress: true
+      })
     }
   }
 
@@ -45,9 +50,9 @@ class Booking extends Component {
 
   currentStep() {
     const token = get(this.props, 'booking.token');
-    if (!this.state.bookingInProgress && !token) return 'input';
-    if (this.state.bookingInProgress) return 'loading';
     if (token) return 'confirmation';
+    if (this.state.bookingInProgress) return 'loading';
+    return 'input';
   }
 
   render () {
@@ -91,12 +96,12 @@ class Booking extends Component {
           )}
           <ul className='bottom-bar'>
             {step === 'input' && [
-              <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>Annuler</button></li>,
-              <li><button className={classnames({
+              <li key='submit'><button className={classnames({
                 button: true,
                 'button--primary': true,
                 hidden: !(this.state.date && this.state.time)
               })} onClick={this.makeBooking}>Valider</button></li>,
+              <li key='cancel'><button className='button button--secondary' onClick={e => this.props.closeModal()}>Annuler</button></li>,
             ]}
             {step === 'loading' && <li className='center'><Icon svg='loader-w' /></li>}
             {step === 'confirmation' && <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>OK</button></li>}
