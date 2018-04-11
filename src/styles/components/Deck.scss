@@ -42,6 +42,7 @@
             border: 0;
             border-radius: 0;
             background-color: transparent;
+            transition: none;
             &.to-recto {
               position: absolute;
               top: -40px;

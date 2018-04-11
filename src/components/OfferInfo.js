@@ -1,30 +1,31 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import moment from 'moment'
 
 import selectOffer from '../selectors/offer'
 import selectSource from '../selectors/source'
 import selectThumbUrl from '../selectors/thumbUrl'
 import selectVenue from '../selectors/venue'
+import selectUserMediation from '../selectors/userMediation'
+
 
 class OfferInfo extends Component {
 
-  formatDate(dateStr) {
-    return new Date(dateStr).toLocaleString("fr-FR")
-  }
-
   render() {
-    const { offer,
+    const {
+      offer,
       source,
       thumbUrl,
       venue,
+      userMediation,
     } = this.props;
 
     const infos = {
       image: thumbUrl,
       description: get(source, 'description'),
       what: get(offer, 'eventOccurence.event.description'),
-      when: get(offer, 'occurencesAtVenue'),
+      when: get(userMediation, 'mediatedOccurences', []).map(o => o.beginningDatetime),
       where: {
         name: get(venue, 'name'),
         address: get(venue, 'address'),
@@ -53,7 +54,7 @@ class OfferInfo extends Component {
             <ul className='dates-info'>
               { infos.when.map((occurence, index) => (
                 <li key={index}>
-                  <span>{this.formatDate(occurence.beginningDatetime)}</span>
+                  <span>{moment(occurence).format('DD/MM/YYYY à H:mm')}</span>
                 </li>
               ))}
             </ul>
@@ -78,5 +79,6 @@ export default connect(
     offer: selectOffer(state),
     source: selectSource(state),
     thumbUrl: selectThumbUrl(state),
+    userMediation: selectUserMediation(state),
     venue: selectVenue(state)
   }))(OfferInfo)

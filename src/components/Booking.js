@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import get from 'lodash.get';
 import classnames from 'classnames';
+import moment from 'moment'
 
 import Icon from '../components/Icon'
 import Price from '../components/Price'
@@ -23,7 +24,7 @@ class Booking extends Component {
   }
 
   componentDidMount() {
-    if (get(this.props, 'offer.occurencesAtVenue', []).length <= 1) {
+    if (get(this.props, 'userMediation.mediatedOccurences', []).length <= 1) {
       // Delay added because otherwise the AJAX call is too fast.
       // Remove when actual booking takes longer
       setTimeout(this.makeBooking, 500)
@@ -55,19 +56,51 @@ class Booking extends Component {
     return 'input';
   }
 
+  getAvailableDateTimes(selectedDate) {
+    const availableDates = get(this.props, 'userMediation.mediatedOccurences', []).map(o => o.beginningDatetime);
+    const availableHours = availableDates.filter(d => moment(d).format('YYYY-MM-DD') === (selectedDate || this.state.date));
+    return {
+      availableDates,
+      availableHours
+    }
+  }
+
+  handleDateSelect = e => {
+    const selectedDate = e.target.value;
+    const {
+      availableHours
+    } = this.getAvailableDateTimes(selectedDate);
+    this.setState({
+      date: selectedDate,
+      time: availableHours.length === 1 ? availableHours[0] : null
+    })
+  }
+
   render () {
     const token = get(this.props, 'booking.token');
     const price = get(this.props, 'offer.price');
     const step = this.currentStep();
+    const {
+      availableDates,
+      availableHours
+    } = this.getAvailableDateTimes();
     return (
       <VersoWrapper>
         <div className='booking'>
           {step === 'input' && (
             <div>
               <h6>Choisissez une date :</h6>
-              <input type='date' className='input' onChange={e => this.setState({date: e.target.value})} />
+              <input type='date' className='input' list='available-dates' onChange={this.handleDateSelect} />
+              <datalist id='available-dates'>
+                { availableDates.map(d => <option key={d}>{moment(d).format('YYYY-MM-DD')}</option> ) }
+              </datalist>
               <h6>Choisissez une heure :</h6>
-              <input type='time' className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} />
+              <select value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
+                { availableHours.length === 0 && <option></option>}
+                { availableHours.map(d =>
+                  <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
+                )}
+              </select>
               {this.state.date && this.state.time && (
                 <div>
                   <p>
