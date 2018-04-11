@@ -1,5 +1,5 @@
+""" recommendations offers """
 from flask import current_app as app
-from flask_login import current_user
 from sqlalchemy.sql.expression import func
 
 Event = app.model.Event
@@ -15,11 +15,15 @@ def get_offers(user, limit=3):
     all_query = Offer.query
     print('(reco) all offers.count', all_query.count())
 
-    # REMOVE OFFERS FOR WHICH THERE IS ALREADY A MEDIATION FOR THIS USER
+    # REMOVE OFFERS FOR WHICH THERE IS ALREADY A RECOMMENDATION FOR THIS USER
     if user.is_authenticated:
+        user_mediations = UserMediation.query.filter(UserMediation.user == user).all()
+        user_mediation_ids = [um.id for um in user_mediations]
         user_query = all_query.filter(
             ~Offer.userMediationOffers.any() |\
-            Offer.userMediationOffers.any(UserMediation.user != user)
+            ~Offer.userMediationOffers.any(
+                UserMediationOffer.userMediationId.in_(user_mediation_ids)
+            )
         )
     print('(reco) not already used offers.count', user_query.count())
 
@@ -46,8 +50,7 @@ def get_offers(user, limit=3):
 
     # MAYBE FEED WITH SOME COMPLEMENTARY PURE OFFERS
     if mediation_query_count < limit:
-        print('(reco) default')
-        default_offers = list(
+        pure_offers = list(
             user_query.outerjoin(Thing)\
                       .outerjoin(EventOccurence)\
                       .distinct(EventOccurence.eventId)\
@@ -58,9 +61,11 @@ def get_offers(user, limit=3):
                               (Event.thumbCount > 0))\
                       .order_by(func.random())\
                       .limit(limit - mediation_query_count))
-        final_offers += default_offers
+        print('(reco) pure offers count', len(pure_offers))
+        final_offers += pure_offers
     # RETURN
     print('(reco) final count', len(final_offers))
+    print('(reco) ids ', [final_offer._asdict()['id'] for final_offer in final_offers])
     return final_offers
 
 app.recommendations.get_offers = get_offers

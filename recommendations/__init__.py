@@ -44,7 +44,7 @@ def create_recommendations(user, limit=3):
         um.user = user
         um.validUntilDate = datetime.now() + timedelta(days=2) # TODO: make this smart based on event dates, etc.
 
-        # LOOK IF OFFER HAS (THING OR EVENT)(IE SOURCE) WITH MEDIATIONS
+        # LOOK IF OFFER HAS A THING OR AN EVENT (IE A SOURCE) WITH MEDIATIONS
         # AND PICK ONE OF THEM
         mediation_query = Mediation.query
         mediation_filter = None
