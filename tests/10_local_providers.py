@@ -160,22 +160,22 @@ with app.app_context():
     def test_15_spreadsheet_exp_venues_provider():
         provider_test(app.local_providers.SpreadsheetExpVenues,
                       None,
-                      checkedObjects=2,
-                      createdObjects=2,
+                      checkedObjects=10,
+                      createdObjects=10,
                       updatedObjects=0,
                       erroredObjects=0,
                       checkedThumbs=0,
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Venue=1,
-                      Offerer=1)
+                      Venue=5,
+                      Offerer=5)
 
     def test_15_spreadsheet_exp_offers_provider():
         provider_test(app.local_providers.SpreadsheetExpOffers,
                       None,
-                      checkedObjects=12,
-                      createdObjects=12,
+                      checkedObjects=482,
+                      createdObjects=482,
                       updatedObjects=0,
                       erroredObjects=0,
                       checkedThumbs=0,

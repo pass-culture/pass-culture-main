@@ -66,9 +66,9 @@ class Mediation(app.model.PcObject,
 
 
 Mediation.__table_args__ = (
-    db.CheckConstraint('"thumbCount" <= 1',
-                       name='check_mediation_has_max_1_thumb'),
-    db.CheckConstraint('"thumbCount" = 1 OR frontText IS NOT NULL',
+    db.CheckConstraint('"thumbCount" <= 2',
+                       name='check_mediation_has_max_2_thumbs'),
+    db.CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
                        name='check_mediation_has_thumb_or_text'),
     db.CheckConstraint('"eventId" IS NOT NULL OR thingId IS NOT NULL'
                        + ' OR tutoIndex IS NOT NULL',

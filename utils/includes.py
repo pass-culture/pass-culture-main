@@ -31,6 +31,7 @@ OFFERS_INCLUDES = [
 ]
 
 USER_MEDIATIONS_INCLUDES =  [
+    "mediatedOccurences",
     {
         "key": "mediation",
         "sub_joins": ["event", "thing"]
@@ -55,7 +56,6 @@ USER_MEDIATIONS_INCLUDES =  [
                         "key": "eventOccurence",
                         "sub_joins": ["event", "venue"],
                     },
-                    "occurencesAtVenue",
                     "thing",
                     "venue"
                 ]

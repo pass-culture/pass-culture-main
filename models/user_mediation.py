@@ -22,12 +22,14 @@ class UserMediation(app.model.PcObject, db.Model):
     userMediationBookings = db.relationship(lambda: app.model.UserMediationBooking,
                                             back_populates="userMediation")
 
+    # FIXME: Replace this with offerId (single offer)
+    # + constraint ? (offerId XOR mediationId ?)
     userMediationOffers = db.relationship(lambda: app.model.UserMediationOffer,
                                           back_populates="userMediation")
 
     mediationId = db.Column(db.BigInteger,
                             db.ForeignKey('mediation.id'),
-                            nullable=True)
+                            nullable=True) # NULL for userMediation created directly from an offer
 
     mediation = db.relationship(lambda: app.model.Mediation,
                                 foreign_keys=[mediationId],
@@ -78,6 +80,20 @@ class UserMediation(app.model.PcObject, db.Model):
                         nullable=False,
                         default=False)
 
+
+    @property
+    def mediatedOccurences(self):
+        #FIXME: try to turn this into a join
+        if self.mediationId is None:
+            if self.userMediationOffers[0].eventOccurenceId is None:
+                return None
+            else:
+                return self.userMediationOffers[0].eventOccurence.event.occurences
+        else:
+            if self.mediation.event is None:
+                return None
+            else:
+                return self.mediation.event.occurences
 
 
 app.model.UserMediation = UserMediation

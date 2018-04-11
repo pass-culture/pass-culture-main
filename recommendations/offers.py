@@ -26,7 +26,7 @@ def get_offers(user, limit=3):
     # CHOOSE OFFER FOR WHICH WE HAVE MEDIATION
     # WE JUST KEEP ONE OFFER PER EVENT
     # THE ONE THAT IS WITH THE SOONER EVENT OCCURENCE
-    is_mediation = (Mediation.frontText != None) | (Mediation.thumbCount > 0)
+    is_mediation = Mediation.thumbCount != None
     mediation_query = user_query.outerjoin(Thing)\
                                 .outerjoin(EventOccurence)\
                                 .distinct(EventOccurence.eventId)\
@@ -34,7 +34,7 @@ def get_offers(user, limit=3):
                                           EventOccurence.beginningDatetime)\
                                 .outerjoin(Event)\
                                 .filter((Thing.mediations.any(is_mediation)) |
-                                    (Event.mediations.any(is_mediation)))
+                                        (Event.mediations.any(is_mediation)))
     mediation_query_count = mediation_query.count()
     print('(reco) mediated offers.count', mediation_query_count)
     mediation_offers = list(mediation_query.order_by(func.random())\

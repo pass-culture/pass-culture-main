@@ -31,7 +31,8 @@ class Offer(app.model.PcObject,
                                  nullable=True)
 
     eventOccurence = db.relationship(lambda: app.model.EventOccurence,
-                                     foreign_keys=[eventOccurenceId])
+                                     foreign_keys=[eventOccurenceId],
+                                     backref='offer')
 
     thingId = db.Column(db.BigInteger,
                         db.ForeignKey("thing.id"),
@@ -72,14 +73,6 @@ class Offer(app.model.PcObject,
     @hybrid_property
     def object(self):
         return self.thing or self.eventOccurence
-
-    @property
-    def occurencesAtVenue(self):
-        if self.eventOccurence is None:
-            return None
-        #FIXME: try to turn this into a join
-        return list(filter(lambda eo: eo.venueId == self.eventOccurence.venueId,
-                           self.eventOccurence.event.occurences))
 
 
 app.model.Offer = Offer
