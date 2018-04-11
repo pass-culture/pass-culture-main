@@ -18,8 +18,7 @@ C'est tout le framework du Pass Culture!
 ### Init
   Pour obtenir une base de données minimale.
   ```bash
-    ./pc update_providables -m
-    ./pc init
+    ./pc set-backend-dev
   ```
 
 ### Démarrage
@@ -54,9 +53,10 @@ C'est tout le framework du Pass Culture!
   Si vos serveurs de dev tournent, et que vous souhaitez juste effacer
   les tables de la db:
   ```bash
-    ./pc reset-all-db
+    ./pc reset-backend-dev
   ```
-  If you
+  Si vous voulez juste enlever les recommandations et bookings crées en dev par votre
+  navigation:
   ```bash
     ./pc reset-um-db
   ```
