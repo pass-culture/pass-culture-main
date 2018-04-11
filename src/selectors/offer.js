@@ -12,7 +12,6 @@ export default createSelector(
   state => state.router.location.pathname, // TODO: get data from redux state
   selectUserMediation,
   (pathname, userMediation) => {
-    console.log('pathname', pathname)
     const [ , , offerId ] = pathname.split('/')
     return getOffer(offerId, userMediation)
   }

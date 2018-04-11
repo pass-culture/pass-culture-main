@@ -6,7 +6,6 @@ import Deck from './Deck'
 import UserMediationsDebug from './UserMediationsDebug'
 import { requestData } from '../reducers/data'
 import { IS_DEV } from '../utils/config'
-import { getContentFromUserMediation } from '../utils/content'
 import { debug, warn } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
 
@@ -45,7 +44,6 @@ class UserMediationsDeck extends Component {
       this.setState({ isLoadingBefore: true })
       const beforeAroundIndex = Math.max(0, nextAroundIndex)
       const aroundUserMediation = userMediations[beforeAroundIndex]
-      // const aroundContent = getContentFromUserMediation(aroundUserMediation)
       const aroundContent = aroundUserMediation
       worker.postMessage({ key: 'dexie-push-pull',
         state: { around: aroundContent.id }})
@@ -75,7 +73,7 @@ class UserMediationsDeck extends Component {
       const afterAroundIndex = Math.min(userMediations.length - 1,
         nextAroundIndex)
       const aroundUserMediation = userMediations[afterAroundIndex]
-      const aroundContent = getContentFromUserMediation(aroundUserMediation)
+      const aroundContent = aroundUserMediation
       worker.postMessage({ key: 'dexie-push-pull',
         state: { around: aroundContent.id }})
       return
