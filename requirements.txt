@@ -7,11 +7,13 @@ flask_cors
 flask-login
 flask_sqlalchemy
 flask_script
+gspread
 gunicorn
 hypothesis
 inflect
 isbnlib
 nltk
+oauth2client
 pandas
 PostgreSQL-Audit
 psycopg2-binary
