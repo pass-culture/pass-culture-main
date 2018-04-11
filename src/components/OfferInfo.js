@@ -24,7 +24,7 @@ class OfferInfo extends Component {
       image: thumbUrl,
       description: get(source, 'description'),
       what: get(offer, 'eventOccurence.event.description'),
-      when: get(offer, 'eventOccurence.beginningDatetime') || get(offer, 'occurencesAtVenue'),
+      when: get(offer, 'occurencesAtVenue'),
       where: {
         name: get(venue, 'name'),
         address: get(venue, 'address'),
@@ -50,17 +50,13 @@ class OfferInfo extends Component {
         { infos.when && (
           <div>
             <h3>Quand ?</h3>
-            { infos.when.constructor === Array ? (
-              <ul className='dates-info'>
-                { infos.when.map((occurence, index) => (
-                  <li key={index}>
-                    <span>{this.formatDate(occurence.beginningDatetime)}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>{this.formatDate(infos.when)}</p>
-            )}
+            <ul className='dates-info'>
+              { infos.when.map((occurence, index) => (
+                <li key={index}>
+                  <span>{this.formatDate(occurence.beginningDatetime)}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
         { infos.where.name && infos.where.address && (

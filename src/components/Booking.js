@@ -23,7 +23,7 @@ class Booking extends Component {
   }
 
   componentDidMount() {
-    if (!get(this.props, 'offer.occurencesAtVenue')) {
+    if (get(this.props, 'offer.occurencesAtVenue', []).length <= 1) {
       // Delay added because otherwise the AJAX call is too fast.
       // Remove when actual booking takes longer
       setTimeout(this.makeBooking, 500)
