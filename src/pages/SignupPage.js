@@ -23,50 +23,52 @@ const Label = ({ isJumpLine, subtitle, title }) => (
 const SignupPage = ({ errors }) => {
   return (
     <main className='page sign-page'>
-      <p>Une minute pour créer un compte, et puis c'est tout !</p>
-      <form className='p2'>
-        <FormField className='input'
-                   label={
-                     <Label isJumpLine
-                            title='Identifiant'
-                            subtitle='...que verront les autres utilisateurs:' />
-                   }
-                   required='true'
-                   collectionName='users'
-                   name='publicName'
-                   autoComplete='name'
-                   placeholder='Rosa'
-                   type='text' />
-        <FormField className='input'
-                   label={
-                     <Label isJumpLine
-                            title='Adresse e-mail'
-                            subtitle="...pour se connecter et récupérer son mot de passe en cas d'oubli:" />
-                   }
-                   collectionName='users'
-                   required='true'
-                   autoComplete='email'
-                   name='email'
-                   type='email'
-                   placeholder='rose@domaine.fr' />
-        <FormField className='input'
-                   label={
-                     <Label title='Mot de passe'
-                            subtitle="...pour se connecter:" />
-                   }
-                   collectionName='users'
-                   required='true'
-                   autoComplete='new-password'
-                   name='password'
-                   placeholder='mot de passe'
-                   type='password' />
-        <FormField label={<span className="h4"> J'accepte d'être contacté par mail pour donner mon avis sur le <a href="http://passculture.beta.gouv.fr">Pass Culture</a></span>}
-                   collectionName='users'
-                   required='true'
-                   name='contact_ok'
-                   type='checkbox' />
-      </form>
-      <div className='errors'>{errors}</div>
+      <div className='form-container'>
+        <p>Une minute pour créer un compte, et puis c'est tout !</p>
+        <form className='p2'>
+          <FormField className='input'
+                     label={
+                       <Label isJumpLine
+                              title='Identifiant'
+                              subtitle='...que verront les autres utilisateurs:' />
+                     }
+                     required='true'
+                     collectionName='users'
+                     name='publicName'
+                     autoComplete='name'
+                     placeholder='Rosa'
+                     type='text' />
+          <FormField className='input'
+                     label={
+                       <Label isJumpLine
+                              title='Adresse e-mail'
+                              subtitle="...pour se connecter et récupérer son mot de passe en cas d'oubli:" />
+                     }
+                     collectionName='users'
+                     required='true'
+                     autoComplete='email'
+                     name='email'
+                     type='email'
+                     placeholder='rose@domaine.fr' />
+          <FormField className='input'
+                     label={
+                       <Label title='Mot de passe'
+                              subtitle="...pour se connecter:" />
+                     }
+                     collectionName='users'
+                     required='true'
+                     autoComplete='new-password'
+                     name='password'
+                     placeholder='mot de passe'
+                     type='password' />
+          <FormField label={<span className="h4"> J'accepte d'être contacté par mail pour donner mon avis sur le <a href="http://passculture.beta.gouv.fr">Pass Culture</a></span>}
+                     collectionName='users'
+                     required='true'
+                     name='contact_ok'
+                     type='checkbox' />
+        </form>
+        <div className='errors'>{errors}</div>
+      </div>
       <footer className='flex items-center'>
         <NavLink to='/connexion'>
           Déjà inscrit ?

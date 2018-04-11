@@ -20,33 +20,35 @@ const Label = ({ title }) => {
 const SigninPage = ({ errors }) => {
   return (
     <main className='page sign-page red'>
-      <div className='mt3'>
-        <div className='h1 mb1 semibold'>
-          Bonjour!
+      <div className='form-container'>
+        <div className='mt3'>
+          <div className='h1 mb1 semibold'>
+            Bonjour!
+          </div>
+          <div>
+            Identifiez-vous <br/>
+            pour accéder aux offres
+          </div>
         </div>
-        <div>
-          Identifiez-vous <br/>
-          pour accéder aux offres
+        <form className='mb4'>
+          <FormField className={inputClassName}
+            type='email'
+            collectionName='users'
+            label={<Label title='Adresse e-mail:' />}
+            name='identifier'
+            placeholder='Identifiant (email)'
+            autoComplete='email' />
+          <FormField className={inputClassName}
+            collectionName='users'
+            label={<Label title='Mot de passe' />}
+            name='password'
+            type='password'
+            placeholder='Mot de passe'
+            autoComplete='current-password' />
+        </form>
+        <div className='sign__error mt1'>
+          {errors}
         </div>
-      </div>
-      <form className='mb4'>
-        <FormField className={inputClassName}
-          type='email'
-          collectionName='users'
-          label={<Label title='Adresse e-mail:' />}
-          name='identifier'
-          placeholder='Identifiant (email)'
-          autoComplete='email' />
-        <FormField className={inputClassName}
-          collectionName='users'
-          label={<Label title='Mot de passe' />}
-          name='password'
-          type='password'
-          placeholder='Mot de passe'
-          autoComplete='current-password' />
-      </form>
-      <div className='sign__error mt1'>
-        {errors}
       </div>
       <footer>
         <NavLink to='/inscription'>
