@@ -37,6 +37,7 @@
   }
   &--hidden, &.hidden {
     opacity: 0;
+    visibility: invisible;
   }
   &--inversed {
     background-color: white;

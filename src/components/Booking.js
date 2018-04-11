@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import get from 'lodash.get';
+import classnames from 'classnames';
 
 import Icon from '../components/Icon'
+import Price from '../components/Price'
 import VersoWrapper from '../components/VersoWrapper'
 import { requestData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
@@ -12,7 +14,7 @@ import selectUserMediation from '../selectors/userMediation'
 
 class Booking extends Component {
   constructor () {
-    super ()
+    super()
     this.state = {
       bookingInProgress: false,
       date: null,
@@ -20,7 +22,13 @@ class Booking extends Component {
     }
   }
 
-  onClickConfirm() {
+  componentDidMount() {
+    if (!get(this.props, 'offer.occurencesAtVenue')) {
+      this.makeBooking()
+    }
+  }
+
+  makeBooking = () => {
     const { offer, userMediation, requestData } = this.props
     this.setState({
       bookingInProgress: true
@@ -28,22 +36,28 @@ class Booking extends Component {
     requestData('POST', 'bookings', {
       add: 'append',
       body: {
+        userMediationId: userMediation.id,
         offerId: offer.id,
         quantity: 1,
-        userMediationId: userMediation.id
       }
     })
   }
 
+  currentStep() {
+    const token = get(this.props, 'booking.token');
+    if (!this.state.bookingInProgress && !token) return 'input';
+    if (this.state.bookingInProgress) return 'loading';
+    if (token) return 'confirmation';
+  }
+
   render () {
     const token = get(this.props, 'booking.token');
-    const inputStep = !this.state.bookingInProgress && !token;
-    const loadingStep = this.state.bookingInProgress && !token;
-    const confirmationStep = token;
+    const price = get(this.props, 'offer.price');
+    const step = this.currentStep();
     return (
       <VersoWrapper>
         <div className='booking'>
-          {inputStep && (
+          {step === 'input' && (
             <div>
               <h6>Choisissez une date :</h6>
               <input type='date' className='input' onChange={e => this.setState({date: e.target.value})} />
@@ -52,7 +66,7 @@ class Booking extends Component {
               {this.state.date && this.state.time && (
                 <div>
                   <p>
-                    Vous êtes sur le point de réserver cette offre pour {this.props.offer.price}€.
+                    Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
                   </p>
                   <p>
                     <small>Le montant sera déduit de votre pass. Il vous restera O€ après cette réservation.</small>
@@ -61,13 +75,13 @@ class Booking extends Component {
               )}
             </div>
           )}
-          {loadingStep && (<p>Réservation en cours ...</p>)}
-          {confirmationStep && (
+          {step === 'loading' && (<p>Réservation en cours ...</p>)}
+          {step === 'confirmation' && (
             <div className='booking__success center p3'>
               <Icon className='mb2' svg='picto-validation' />
               <p>Votre réservation est validée.</p>
               <p>
-                <small>8€ ont été déduits de votre pass.</small>
+                <small><Price value={price} /> ont été déduits de votre pass.</small>
                 <br />
                 <small>Présentez le code suivant sur place :</small>
               </p>
@@ -76,14 +90,16 @@ class Booking extends Component {
             </div>
           )}
           <ul className='bottom-bar'>
-            {inputStep && (
-              <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>Annuler</button></li>
-            )}
-            {inputStep && this.state.date && this.state.time && (
-              <li><button className='button button--primary' onClick={e => this.onClickConfirm()}>Valider</button></li>
-            )}
-            {loadingStep && <li className='center'><Icon svg='loader-w' /></li>}
-            {token && <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>OK</button></li>}
+            {step === 'input' && [
+              <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>Annuler</button></li>,
+              <li><button className={classnames({
+                button: true,
+                'button--primary': true,
+                hidden: !(this.state.date && this.state.time)
+              })} onClick={this.makeBooking}>Valider</button></li>,
+            ]}
+            {step === 'loading' && <li className='center'><Icon svg='loader-w' /></li>}
+            {step === 'confirmation' && <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>OK</button></li>}
           </ul>
         </div>
       </VersoWrapper>

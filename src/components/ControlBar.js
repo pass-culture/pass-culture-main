@@ -6,6 +6,7 @@ import get from 'lodash.get'
 import { requestData } from '../reducers/data'
 import { showModal } from '../reducers/modal'
 import Icon from './Icon'
+import Price from './Price'
 import Booking from './Booking'
 import selectBooking from '../selectors/booking'
 import selectOffer from '../selectors/offer'
@@ -66,7 +67,7 @@ class ControlBar extends Component {
           ) : (
             <button className='button button--primary button--go'
               onClick={this.onClickJyVais} >
-              <span className='price'>{`${get(offer, 'price', '--')} €`}</span>
+              <Price value={get(offer, 'price')} free='——' />
               J'y vais!
             </button>
           )}
