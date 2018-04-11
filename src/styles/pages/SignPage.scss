@@ -101,6 +101,6 @@ body.web .sign-page {
   min-height: 100vh;
   height: auto;
   .form-container {
-    min-height: calc(100vh - 5rem);
+    flex: 1;
   }
 }
