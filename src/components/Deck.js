@@ -123,22 +123,8 @@ class Deck extends Component {
     const { transitionTimeout } = this.props
     // style
     const buttonStyle = { transition: `opacity ${transitionTimeout}ms` }
-    const style = {
-      backgroundColor: 'black',
-      transition: `background-color ${transitionTimeout}ms`
-    }
-    const gradientStyle = {
-      background: 'linear-gradient(transparent, black)',
-      transition: `background ${transitionTimeout}ms`
-    }
-    if (currentContent && currentContent.backgroundColor) {
-      const [red, green, blue] = currentContent.backgroundColor
-      const hue = rgb_to_hsv({r: red, g: green, b: blue}).h
-      style.backgroundColor = `hsl(${hue}, 100%, 15%)`
-      gradientStyle.background = `linear-gradient(transparent, hsl(${hue}, 100%, 15%))`
-    }
     // update
-    this.setState({ buttonStyle, gradientStyle, style })
+    this.setState({ buttonStyle })
   }
   handleSetReadCard = card => {
     // unpack
@@ -337,7 +323,6 @@ class Deck extends Component {
       items,
       //nextContent,
       previousContent,
-      style,
       transition
     } = this.state
     const isAfterDisabled = !items || isLastCard
@@ -357,7 +342,6 @@ class Deck extends Component {
         onStop={onStop} >
         <div className='deck'
           id='deck'
-          style={style}
           ref={element => this.element = element }>
           {!this.props.unFlippable && (
             <button className={classnames('button close', {
@@ -397,12 +381,24 @@ class Deck extends Component {
             )
           }
           <div className='board-wrapper'>
+            <div className='board-bg'
+              style={{
+                  background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, black 35%,black 100%)`,
+                  opacity: currentContent && currentContent.index % 2,
+                  transition: `opacity ${transitionTimeout}ms`
+                }} >
+            </div>
+            <div className='board-bg'
+              style={{
+                  background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 35%,${headerColor} 100%)`,
+                  opacity: currentContent && (1 - (currentContent.index % 2)),
+                  transition: `opacity ${transitionTimeout}ms`
+                }} >
+            </div>
             <div className='board'
               id='deck__board'
               ref={element => this.boardElement = element}
-              style={{
-                background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 35%,${headerColor} 100%)`,
-              }} >
+               >
               <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,}}>
                 <li>
                   <button className={classnames('button before', {

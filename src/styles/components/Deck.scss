@@ -9,6 +9,14 @@
     position: absolute;
     bottom: 0;
 
+    .board-bg {
+      position: absolute;
+      z-index: 099;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
     .board {
       position: absolute;
       background-color: transparent;
@@ -16,12 +24,6 @@
       width: 100%;
       height: 100%;
       z-index: 100;
-      .deck-gradient {
-        position: relative;
-        top: -50px;
-        width: 100%;
-        height: 50px;
-      }
 
       ul.controls {
         display: flex;
