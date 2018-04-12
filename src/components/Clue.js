@@ -15,9 +15,9 @@ const Clue = ({
   return (
     <div className='clue' style={{ transition: `opacity ${transitionTimeout}ms`}}>
       <Price value={offer && offer.price} />
-      <div className='separator'>&middot;</div>
+      <div className='separator'>{ offer && "\u00B7" || ' ' }</div>
       <div>
-         {distance}
+         { offer && distance || ' ' }
       </div>
     </div>
   )
