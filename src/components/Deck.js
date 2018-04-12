@@ -102,7 +102,10 @@ class Deck extends Component {
     const nextContent = contents && contents[currentIndex + 1]
     this.currentContent = currentContent
     // add a note if currentContent came from a loading card
-    if (this.state.currentContent && this.state.currentContent.isLoading) {
+    if (this.state.currentContent
+      && this.state.currentContent.isLoading
+      && !this.state.currentContent.isRebootLoading
+    ) {
       currentContent.isFromLoading = true
     }
     if (previousContent) {
@@ -346,6 +349,7 @@ class Deck extends Component {
       (currentContent && currentContent.mediation &&
         currentContent.userMediationOffers.length === 0 &&
         currentContent.mediation.thumbCount === 1)
+    console.log('CONTENTS', contents)
     return (
       <Draggable axis='none'
         bounds={{ bottom: 0, top: 0 }}

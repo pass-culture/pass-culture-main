@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import MenuButton from '../components/layout/MenuButton'
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
+import { assignData } from '../reducers/data'
 import { getContentFromUserMediation } from '../utils/content'
 import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
@@ -117,8 +118,14 @@ class DiscoveryPage extends Component {
 
     if (nextProps.deprecatedUserMediations && nextProps.deprecatedUserMediations !== this.props.deprecatedUserMediations) {
       nextProps.history.push('/decouverte')
+      const newData = { deprecatedUserMediations: null }
+      if (nextProps.userMediations.length) {
+        newData.userMediations = [
+          Object.assign({ isLoading: true, isRebootLoading: true }, nextProps.userMediations[0])
+        ].concat(nextProps.userMediations.slice(1))
+      }
+      nextProps.assignData(newData)
     }
-
   }
 
   render () {
@@ -143,5 +150,5 @@ export default compose(
   connect(state => ({
     deprecatedUserMediations: state.data.deprecatedUserMediations,
     userMediations: state.data.userMediations
-  }))
+  }), { assignData })
 )(DiscoveryPage)
