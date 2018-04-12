@@ -349,7 +349,6 @@ class Deck extends Component {
       (currentContent && currentContent.mediation &&
         currentContent.userMediationOffers.length === 0 &&
         currentContent.mediation.thumbCount === 1)
-    console.log('CONTENTS', contents)
     return (
       <Draggable axis='none'
         bounds={{ bottom: 0, top: 0 }}
