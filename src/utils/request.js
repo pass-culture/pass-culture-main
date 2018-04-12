@@ -54,17 +54,13 @@ export async function fetchData (method, path, config = {}) {
 export async function localData (method, path, config = {}) {
   // unpack
   const { body } = config
-  let data
   // check the table
   const [pathWithoutQuery, queryString] = path.split('?')
   const collectionName = pathWithoutQuery.split('/')[0]
   // call the good protocol api
   if (method === 'GET') {
-    data = await getData(collectionName, parse(queryString))
+    return await getData(collectionName, parse(queryString))
   } else {
-    data = await putData('update', collectionName, body)
-    console.log('C ES', data)
+    return await putData('update', collectionName, body)
   }
-  // return data
-  return { data }
 }

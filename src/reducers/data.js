@@ -81,6 +81,11 @@ const data = (state = initialState, action) => {
     if (action.method === 'POST' || action.method === 'PUT' || action.method === 'PATCH') {
       nextState.previousOptimistState = null
     }
+    // special deprecation
+    if (action.method === 'GET' && action.config === 'local' && action.config.deprecatedData) {
+      console.log('DEPRECATED DATA')
+    }
+
     // last
     if (action.config.getSuccessState) {
       Object.assign(nextState, action.config.getSuccessState(state, action))

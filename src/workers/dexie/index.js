@@ -22,36 +22,29 @@ class DexieWrapper {
   }
 
   async dexiePushPull () {
-    // pull
-    this.state.user && await pushPull(this.state)
-    // post
-    this.receiveMessage({ isSyncRedux: true,
-      text: "dexiePushPull"
-    })
+    const message = { isSyncRedux: true, text: "dexiePushPull" }
+    message.results = this.state.user && await pushPull(this.state)
+    this.receiveMessage(message)
   }
+
   async dexieSignin () {
     // check
     const { user } = this.state
-    if (!user) {
-      return
-    }
-    // do push pull to be sure to sync
-    await pushPull(this.state)
-    // setUser to set for the first time or just sync
+    if (!user) { return }
+    const message = { isSyncRedux: true, text: "dexieSignin" }
+    message.results = await pushPull(this.state)
     this.state.user && await setUser(this.state)
-    // sync the redux state
-    this.receiveMessage({ isSyncRedux: true, text: "dexieSignin" })
+    this.receiveMessage(message)
   }
+
   dexieSignout () {
-    // clear
     Object.keys(this.state).forEach(key => delete this.state[key])
     db.users.clear()
-    // post
     this.receiveMessage({ text: "dexieSignout" })
   }
+
   onMessage = event => {
     const { key } = event.data
-    // check
     if (!key) {
       console.warn('you need to define a key in event.data')
       return

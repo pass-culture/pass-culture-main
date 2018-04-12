@@ -18,6 +18,7 @@ class DiscoveryPage extends Component {
       userMediations: null
     }
   }
+
   handleUserMediationChange = userMediation => {
     if (!userMediation) {
       console.warn('userMediation is not defined')
@@ -44,6 +45,7 @@ class DiscoveryPage extends Component {
       this.setState({ aroundIndex: false })
     }
   }
+
   handleUserMediationRequest = props => {
     // unpack and check
     const { hasPushPullRequested } = this
@@ -103,12 +105,14 @@ class DiscoveryPage extends Component {
     // update
     this.setState({ aroundIndex, userMediations })
   }
+
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
     if (this.props.userMediations) {
       //this.props.handleRemoveSplash(0)
     }
   }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.userMediations) {
       //nextProps.handleRemoveSplash()
@@ -118,6 +122,7 @@ class DiscoveryPage extends Component {
       this.handleUserMediationRequest(nextProps)
     }
   }
+
   render () {
     return (
       <main className='page discovery-page center'>
