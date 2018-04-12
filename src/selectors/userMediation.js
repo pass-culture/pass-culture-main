@@ -13,9 +13,12 @@ export function getUserMediation (offerId, mediationId, userMediations) {
     filteredUserMediations = userMediations
   }
   // THEN DESAMBIGUATE WITH OFFER ID
-  const userMediation = filteredUserMediations.find(m => get(m, 'userMediationOffers', [])
-    .find(o => o.id === offerId))
-  return userMediation
+  if (offerId === 'tuto') {
+    return filteredUserMediations[0]
+  } else {
+    return filteredUserMediations.find(m => get(m, 'userMediationOffers', [])
+      .find(o => o.id === offerId))
+  }
 }
 
 export default createSelector(
