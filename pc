@@ -91,8 +91,8 @@ elif [[ "$CMD" == "restart-backend" ]]; then
        docker-compose up'
 elif [[ "$CMD" == "reset-backend-dev" ]]; then
 	RUN='pc reset-all-db;
-			 pc update_providables -m -p SpreadsheetExpVenues;
-			 pc update_providables -m -p SpreadsheetExpOffers;
+			 pc update_providables -p SpreadsheetExpVenues;
+			 pc update_providables -p SpreadsheetExpOffers;
 			 pc init;'
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
@@ -111,6 +111,12 @@ elif [[ "$CMD" == "set-backend-dev" ]]; then
 			 pc update_providables -m -p SpreadsheetExpVenues;
 			 pc update_providables -m -p SpreadsheetExpOffers;
 			 pc init;'
+elif [[ "$CMD" == "ssh" ]]; then
+	if [[ "$ENV" == "production" ]]; then
+		ssh deploy@api.passculture.beta.gouv.fr
+	elif [[ "$ENV" == "staging" ]]; then
+		ssh deploy@api.passculture-staging.beta.gouv.fr
+	fi
 elif [[ "$CMD" == "start-backend" ]]; then
   RUN='docker-compose up'
 elif [[ "$CMD" == "start-frontend" ]]; then
