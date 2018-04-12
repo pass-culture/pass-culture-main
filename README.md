@@ -115,7 +115,7 @@ enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.what
   ```
   Enfin dans le terminal du python flask, fait un contrôle d pour killer le process, puis:
   ```
-    ./pc restart-backend
+    cd /home/deploy/pass-culture-main/ && ./pc restart-backend
   ```
 
 #### Automatiquement (WIP)
