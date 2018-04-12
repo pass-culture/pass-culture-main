@@ -86,8 +86,8 @@ elif [[ "$CMD" == "rebuild-backend" ]]; then
 elif [[ "$CMD" == "rebuild-frontend" ]]; then
 	RUN='cd $ROOT_PATH/webapp && npm run build'
 elif [[ "$CMD" == "restart-backend" ]]; then
-  RUN='rm -rf $ROOT_PATH/api/static/object_store_data;
-       rm -rf $ROOT_PATH/api/postgres_data;
+  RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
+       sudo rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up --force-recreate'
 elif [[ "$CMD" == "reset-backend-dev" ]]; then
 	RUN='pc reset-all-db;
