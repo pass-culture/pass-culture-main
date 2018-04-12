@@ -46,7 +46,7 @@ class ApiErrors(Exception):
 
     def checkEmail(self, field, value):
         if not "@" in value:
-            self.addError(field, 'Cet email n''a pas de @ !')
+            self.addError(field, 'L''e-mail doit contenir un @.')
 
     def maybeRaise(self):
         if len(self.errors)>0:
