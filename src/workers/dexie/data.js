@@ -62,8 +62,12 @@ export async function putData (dexieMethod, collectionName, dataOrDatum, config 
   if (dexieMethod === 'bulk') {
     // bulk is when we replace everything and index by the index in the array data
     await table.clear()
-    data = data.map((datum, index) =>
-      Object.assign({ index }, datum))
+    data = data.map((datum, index) => {
+      if (datum._storedDatum) {
+        delete datum._storedDatum
+      }
+      return Object.assign({ index }, datum)
+    })
     await table.bulkPut(data)
     result.data = await table.toArray()
     return result
