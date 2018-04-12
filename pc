@@ -90,7 +90,7 @@ elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
        sudo rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up --force-recreate'
-elif [[ "$CMD" == "reset-backend-dev" ]]; then
+elif [[ "$CMD" == "reset-backend" ]]; then
 	RUN='pc reset-all-db;
 			 pc update_providables -p SpreadsheetExpVenues;
 			 pc update_providables -p SpreadsheetExpOffers;
@@ -107,7 +107,7 @@ elif [[ "$CMD" == "restore-db" ]]; then
   fi
   backup_file="$1"
   RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c'
-elif [[ "$CMD" == "set-backend-dev" ]]; then
+elif [[ "$CMD" == "set-backend" ]]; then
 	RUN='pc update-mocks;
 			 pc update_providables -m -p SpreadsheetExpVenues;
 			 pc update_providables -m -p SpreadsheetExpOffers;
