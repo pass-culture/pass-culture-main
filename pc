@@ -82,7 +82,8 @@ elif [[ "$CMD" == "python" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
-       rm -rf $ROOT_PATH/api/postgres_data'
+			 sudo rm -rf $ROOT_PATH/api/static/object_store_data;
+       sudo rm -rf $ROOT_PATH/api/postgres_data'
 elif [[ "$CMD" == "rebuild-frontend" ]]; then
 	RUN='cd $ROOT_PATH/webapp && npm run build'
 elif [[ "$CMD" == "restart-backend" ]]; then
