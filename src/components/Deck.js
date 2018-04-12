@@ -337,12 +337,12 @@ class Deck extends Component {
       style,
       transition
     } = this.state
-    const isAfterDisabled = !items || isLastCard || isTransitioning
+    const isAfterDisabled = !items || isLastCard
     const isAfterHidden = previousContent && previousContent.isLast
-    const isBeforeDisabled = !items || isFirstCard || isTransitioning
+    const isBeforeDisabled = !items || isFirstCard
     const isBeforeHidden = currentContent && currentContent.isFirst
     const isLoading = isLoadingBefore || isLoadingAfter
-    const isFlipDisabled = !items || isLoading || isTransitioning ||
+    const isFlipDisabled = !items || isLoading ||
       (currentContent && currentContent.mediation &&
         currentContent.userMediationOffers.length === 0 &&
         currentContent.mediation.thumbCount === 1)

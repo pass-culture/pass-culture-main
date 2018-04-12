@@ -9,7 +9,7 @@ export default createSelector(
   selectVenue,
   state => state.geolocation.position,
   (offer, venue, position) => {
-    if (!position || !offer || ! venue) {
+    if (!position || !offer || !venue) {
       return '-'
     }
     const { latitude, longitude } = position.coords

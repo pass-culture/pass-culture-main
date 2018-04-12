@@ -47,7 +47,7 @@ export async function putData (dexieMethod, collectionName, dataOrDatum) {
     for (let datum of data) {
       const storedDatum = storedData.find(({ id }) => id === datum.id)
       if (storedDatum) {
-        await table.put(storedDatum.index,
+        await table.put(storedDatum.id,
           Object.assign({}, storedDatum, datum))
       } else {
         await table.add(datum)
