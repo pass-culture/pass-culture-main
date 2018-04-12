@@ -392,7 +392,7 @@ class Deck extends Component {
           }
           <div className='board-wrapper'>
             <div className='board-bg' style={currentContent && currentContent.index % 2 == 0 ? bgStyle : previousBgStyle } ></div>
-            <div className='board-bg' style={currentContent && currentContent.index % 2 == 1 ? bgStyle : previousBgStyle } ></div>
+            <div className='board-bg' style={currentContent && currentContent.index % 2 == 0 ? previousBgStyle : bgStyle } ></div>
             <div className='board'
               id='deck__board'
               ref={element => this.boardElement = element}
