@@ -34,7 +34,7 @@ def update_user_mediations():
         print('(special) offer_id', offer_id, 'mediation_id', mediation_id)
         if mediation_id is not None:
             around_um = UserMediation.query\
-                            .filter_by(mediation_id=dehumanize(mediation_id),
+                            .filter_by(mediationId=dehumanize(mediation_id),
                                        userId=user_id).first()
             around = humanize(around_um.id)
         elif offer_id is not None:
@@ -114,8 +114,9 @@ def update_user_mediations():
     ums = [um._asdict(include=USER_MEDIATIONS_INCLUDES) for um in ums]
     # ADD SOME PREVIOUS BEFORE IF ums has not the BLOB_SIZE
     if len(ums) < BLOB_SIZE:
-        ums[-1]['isLast'] = True
-        ums[-1]['blobSize'] = BLOB_SIZE
+        if len(ums):
+            ums[-1]['isLast'] = True
+            ums[-1]['blobSize'] = BLOB_SIZE
         if before_ums and before_ums.count() > 0:
             comp_size = BLOB_SIZE - len(ums)
             comp_before_ums = query.filter(UserMediation.id < before_ums[0].id)\
