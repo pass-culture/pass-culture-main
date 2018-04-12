@@ -91,10 +91,11 @@ elif [[ "$CMD" == "restart-backend" ]]; then
        sudo rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up --force-recreate'
 elif [[ "$CMD" == "reset-backend" ]]; then
-	RUN='pc reset-all-db;
-			 pc update_providables -p SpreadsheetExpVenues;
-			 pc update_providables -p SpreadsheetExpOffers;
-			 pc init;'
+	RUN='cd "$ROOT_PATH";
+			 ./pc reset-all-db;
+			 ./pc update_providables -p SpreadsheetExpVenues;
+			 ./pc update_providables -p SpreadsheetExpOffers;
+			 ./pc init;'
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
        docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
@@ -108,10 +109,11 @@ elif [[ "$CMD" == "restore-db" ]]; then
   backup_file="$1"
   RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c'
 elif [[ "$CMD" == "set-backend" ]]; then
-	RUN='pc update-mocks;
-			 pc update_providables -m -p SpreadsheetExpVenues;
-			 pc update_providables -m -p SpreadsheetExpOffers;
-			 pc init;'
+	RUN='cd "$ROOT_PATH";
+			 ./pc update-mocks;
+			 ./pc update_providables -m -p SpreadsheetExpVenues;
+			 ./pc update_providables -m -p SpreadsheetExpOffers;
+			 ./pc init;'
 elif [[ "$CMD" == "ssh" ]]; then
 	if [[ "$ENV" == "production" ]]; then
 		ssh deploy@api.passculture.beta.gouv.fr
@@ -133,7 +135,7 @@ elif [[ "$CMD" == "test-backend" ]]; then
      RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest '"$*"'"'
   fi
 elif [[ "$CMD" == "testcafe" ]]; then
-  RUN='cd webapp && ./scripts/pc.js testcafe '"$*"
+  RUN='cd "$ROOT_PATH"/webapp && ./scripts/pc.js testcafe '"$*"
 elif [[ "$CMD" == "update-mocks" ]]; then
   RUN='cd "$ROOT_PATH";
        cd api/mock/spreadsheet_exp;
