@@ -17,7 +17,7 @@ export default createSelector(
     const [red, green, blue] = firstThumbDominantColor
     const {h} = rgb_to_hsv(red, green, blue);
     if (h) {
-      return `hsl(${h}, 100%, 15%)`;
+      return `hsl(${h}, 100%, 7.5%)`;
     }
     return 'black';
   }
