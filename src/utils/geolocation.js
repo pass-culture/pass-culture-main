@@ -37,6 +37,6 @@ export function navigationLink (lat, long) {
       return "http://maps.google.com/maps?daddr=lat,long&amp;ll="+long+","+lat
     }
     else {
-      return "https://www.openstreetmap.org/#map=18/"+long+"/"+lat
+      return "https://www.openstreetmap.org/#map=18/"+lat+"/"+long
     }
 }
