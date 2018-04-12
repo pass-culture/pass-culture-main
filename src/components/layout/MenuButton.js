@@ -20,7 +20,7 @@ class MenuButton extends Component {
         colored: colored,
       })}>
         <button onClick={this.onClick}>
-          <ProfilePicture />
+          <ProfilePicture colored={colored} />
         </button>
       </div>
     )

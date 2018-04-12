@@ -71,7 +71,8 @@
     padding: 0;
     border: none;
     height: 1em;
-    font-size: 1.25em;
+    font-size: 1.3rem;
+    font-weight: 700;
     svg {
       vertical-align: top !important; // TODO: investigate why there is vertical-align: middle inline
     }
@@ -80,8 +81,9 @@
     background-color: $white;
     color: $menu-red;
     border-top-right-radius: 0;
-    font-weight: 500;
-    font-size: 1.2em;
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.1rem;
     &.button--inversed {
       background-color: $menu-red;
       color: $white;

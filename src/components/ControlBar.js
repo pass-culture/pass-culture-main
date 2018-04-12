@@ -44,7 +44,7 @@ class ControlBar extends Component {
     const { isFavorite, offer } = this.props
     return (
       <ul className='control-bar'>
-        <li><small className='pass-label'>Mon pass</small><span className='pass-value'>——€</span></li>
+        <li><small className='pass-label'>Mon Pass</small><span className='pass-value'>——€</span></li>
         <li>
           <button className='button button--secondary disabled'
             onClick={this.onClickDisable} >

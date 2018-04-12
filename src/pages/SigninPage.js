@@ -11,7 +11,7 @@ const inputClassName = 'input block col-12 mb2 red'
 
 const Label = ({ title }) => {
   return (
-    <div className='mb1 center'>
+    <div className='mb1'>
       {title}
     </div>
   )
@@ -19,18 +19,18 @@ const Label = ({ title }) => {
 
 const SigninPage = ({ errors }) => {
   return (
-    <main className='page sign-page red'>
+    <main className='page sign-page signin-page red'>
       <div className='form-container'>
         <div className='mt3'>
-          <div className='h1 mb1 semibold'>
-            Bonjour!
+          <div className='h1 semibold'>
+            Bonjour&nbsp;!
           </div>
-          <div>
+          <div className='h2'>
             Identifiez-vous <br/>
-            pour accéder aux offres
+            pour accéder aux offres.
           </div>
         </div>
-        <form className='mb4'>
+        <form>
           <FormField className={inputClassName}
             type='email'
             collectionName='users'

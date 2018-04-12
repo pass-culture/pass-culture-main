@@ -24,8 +24,8 @@ const SignupPage = ({ errors }) => {
   return (
     <main className='page sign-page'>
       <div className='form-container'>
-        <p>Une minute pour créer un compte, et puis c'est tout !</p>
-        <form className='p2'>
+        <p className='h2-black'>Une minute pour créer un compte, et puis c'est tout !</p>
+        <form>
           <FormField className='input'
                      label={
                        <Label isJumpLine
@@ -36,7 +36,7 @@ const SignupPage = ({ errors }) => {
                      collectionName='users'
                      name='publicName'
                      autoComplete='name'
-                     placeholder='Rosa'
+                     placeholder='Mon nom ou pseudo'
                      type='text' />
           <FormField className='input'
                      label={
@@ -49,7 +49,7 @@ const SignupPage = ({ errors }) => {
                      autoComplete='email'
                      name='email'
                      type='email'
-                     placeholder='rose@domaine.fr' />
+                     placeholder='nom@exemple.fr' />
           <FormField className='input'
                      label={
                        <Label title='Mot de passe'
@@ -59,9 +59,9 @@ const SignupPage = ({ errors }) => {
                      required='true'
                      autoComplete='new-password'
                      name='password'
-                     placeholder='mot de passe'
+                     placeholder='Mon mot de passe'
                      type='password' />
-          <FormField label={<span className="h4"> J'accepte d'être contacté par mail pour donner mon avis sur le <a href="http://passculture.beta.gouv.fr">Pass Culture</a></span>}
+          <FormField label={<span className="h4"> J'accepte d'être contacté par mail pour donner mon avis sur le <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.</span>}
                      collectionName='users'
                      required='true'
                      name='contact_ok'
@@ -71,11 +71,11 @@ const SignupPage = ({ errors }) => {
       </div>
       <footer className='flex items-center'>
         <NavLink to='/connexion'>
-          Déjà inscrit ?
+          J'ai déjà un compte
         </NavLink>
         <SubmitButton
-          text='OK'
-          className='button button--secondary'
+          text='Créer'
+          className='button button--primary'
           getBody={form => form.usersById[NEW]}
           getIsDisabled={form => !get(form, 'usersById._new_.publicName') ||
             !get(form, 'usersById._new_.email') ||
