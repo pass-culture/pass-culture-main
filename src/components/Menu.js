@@ -39,7 +39,7 @@ class Menu extends Component {
         <ul>
           <li>
             <NavLink to='/decouverte'>
-              <div class='menu-icon'>
+              <div className='menu-icon'>
                 <Icon svg='ico-offres-w' />
               </div>
               Les offres
@@ -47,7 +47,7 @@ class Menu extends Component {
           </li>
           <li>
             <NavLink to='/reservations'>
-              <div class='menu-icon'>
+              <div className='menu-icon'>
                 <Icon svg='ico-calendar-w' />
               </div>
               Mes réservations
@@ -56,7 +56,7 @@ class Menu extends Component {
           <li className='disabled'>
             <NavLink to='/favoris'
               onClick={this.onDisableClick}>
-              <div class='menu-icon'>
+              <div className='menu-icon'>
                 <Icon svg='ico-like-w' />
               </div>
               Mes favoris
@@ -65,7 +65,7 @@ class Menu extends Component {
           <li className='disabled'>
             <NavLink to='/reglages'
               onClick={this.onDisableClick}>
-              <div class='menu-icon'>
+              <div className='menu-icon'>
                 <Icon svg='ico-settings-w' />
               </div>
               Réglages
@@ -74,7 +74,7 @@ class Menu extends Component {
           <li className='disabled'>
             <NavLink to='/profil'
               onClick={this.onDisableClick}>
-              <div class='menu-icon'>
+              <div className='menu-icon'>
                 <Icon svg='ico-user-w' />
               </div>
               Mon profil
@@ -83,7 +83,7 @@ class Menu extends Component {
         </ul>
         <div className='stick-to-bottom'>
           <button onClick={this.onSignOutClick} className='button'>
-            <div class='menu-icon'>
+            <div className='menu-icon'>
               <Icon svg='ico-deconnect-w' />
             </div>
             Déconnexion
