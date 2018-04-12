@@ -97,7 +97,7 @@ class Deck extends Component {
     isDebug && debug('Deck - handleSetCurrentContent')
     // find
     const currentIndex = items && items.indexOf(0)
-    const previousContent = contents && contents[currentIndex-1]
+    const previousContent = contents && contents[currentIndex - 1]
     const currentContent = contents && contents[currentIndex]
     const nextContent = contents && contents[currentIndex + 1]
     this.currentContent = currentContent
@@ -330,20 +330,22 @@ class Deck extends Component {
       isResizing,
       isTransitioning,
       items,
-      //nextContent,
+      nextContent,
       previousBgStyle,
       previousContent,
       transition
     } = this.state
-    const isAfterDisabled = !items || isLastCard
-    const isAfterHidden = previousContent && previousContent.isLast
-    const isBeforeDisabled = !items || isFirstCard
-    const isBeforeHidden = currentContent && currentContent.isFirst
+    const isAfterDisabled = !items || isLastCard || !nextContent
+    const isAfterHidden = (previousContent && previousContent.isLast) || !nextContent
+    const isBeforeDisabled = !items || isFirstCard || !previousContent
+    const isBeforeHidden = (currentContent && currentContent.isFirst) || !previousContent
     const isLoading = isLoadingBefore || isLoadingAfter
     const isFlipDisabled = !items || isLoading ||
       (currentContent && currentContent.mediation &&
         currentContent.userMediationOffers.length === 0 &&
-        currentContent.mediation.thumbCount === 1)
+        currentContent.mediation.thumbCount === 1) || (currentContent
+          && (!currentContent.mediation || currentContent.userMediationOffers.length === 0))
+    const isBeforeAfterDisabled = isBeforeDisabled && isAfterHidden
     return (
       <Draggable axis='none'
         bounds={{ bottom: 0, top: 0 }}
@@ -375,6 +377,7 @@ class Deck extends Component {
                   handleSetCursor={handleSetCursorCard}
                   handleSetRead={handleSetReadCard}
                   handleSetType={handleSetTypeCard}
+                  isBeforeAfterDisabled={isBeforeAfterDisabled}
                   isFirst={contents && !contents[index - 1]}
                   isFlipping={isFlipping}
                   isLast={contents && !contents[index + 1]}
@@ -409,9 +412,11 @@ class Deck extends Component {
                 </li>
                 <li>
                   <button className={classnames('button to-recto ', {
-                    // 'disabled': isFlipDisabled,
-                    'hidden': isLoading || isFlipDisabled
-                  })} onClick={e => this.props.flip()} >
+                      'disabled': isFlipDisabled,
+                      'hidden': isLoading || isFlipDisabled
+                    })}
+                    disabled={isFlipDisabled}
+                    onClick={e => this.props.flip()} >
                     <Icon svg='ico-slideup-w' />
                   </button>
                   <Clue />

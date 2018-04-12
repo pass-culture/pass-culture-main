@@ -208,6 +208,7 @@ class Card extends Component {
       onStop
     } = this
     const { content,
+      isBeforeAfterDisabled,
       isFirst,
       isFlipping,
       isLast,
@@ -222,7 +223,8 @@ class Card extends Component {
     const isDraggable = type === 'current' &&
       !isTransitioning &&
       !this.props.isFlipped &&
-      !isFlipping
+      !isFlipping &&
+      !isBeforeAfterDisabled
     const bounds = {}
     if (isFirst || (content && content.isFirst)) {
       bounds.right = 0
