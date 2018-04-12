@@ -2,7 +2,7 @@ from utils.test_utils import API_URL, req, req_with_auth
 
 
 BASE_DATA = {
-             'email': 'toto@toto.com',
+             'email': 'toto@btmx.fr',
              'publicName': 'Toto',
              'password': 'toto12345678',
              'contact_ok': 'true'
@@ -91,3 +91,9 @@ def test_14_get_profile_should_return_the_users_profile_without_password_hash():
     assert user['email'] == 'erwan.ledoux@beta.gouv.fr'
     assert user['publicName'] == 'Erwan Ledoux'
     assert 'password' not in user
+
+
+def test_15_signup_should_not_work_for_user_not_in_exp_spreadsheet():
+    data = BASE_DATA.copy()
+    data['email'] = 'unknown@unknown.com'
+    assert_signup_error(data, 'email')
