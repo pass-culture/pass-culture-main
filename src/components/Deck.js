@@ -120,54 +120,48 @@ class Deck extends Component {
   handleSetStyle = () => {
     // unpack
     const { currentContent } = this
-    const { transitionTimeout } = this.props
+    const { headerColor, transitionTimeout } = this.props
     // style
     const buttonStyle = { transition: `opacity ${transitionTimeout}ms` }
-    const style = {
-      backgroundColor: 'black',
-      transition: `background-color ${transitionTimeout}ms`
-    }
-    const gradientStyle = {
-      background: 'linear-gradient(transparent, black)',
-      transition: `background ${transitionTimeout}ms`
-    }
-    if (currentContent && currentContent.backgroundColor) {
-      const [red, green, blue] = currentContent.backgroundColor
-      const hue = rgb_to_hsv({r: red, g: green, b: blue}).h
-      style.backgroundColor = `hsl(${hue}, 100%, 15%)`
-      gradientStyle.background = `linear-gradient(transparent, hsl(${hue}, 100%, 15%))`
-    }
+    const previousBgStyle = Object.assign({}, this.state.bgStyle)
+    const bgStyle = {
+                      transition: `opacity ${transitionTimeout}ms cubic-bezier(0.0, 0.0, 0, 1.0)`,
+                      background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 35%,${headerColor} 100%)`,
+                      opacity: 1,
+                    }
+    previousBgStyle.transition = `opacity ${transitionTimeout}ms cubic-bezier(1, 0.0, 1.0, 1.0)`
+    previousBgStyle.opacity = 0
     // update
-    this.setState({ buttonStyle, gradientStyle, style })
-  }
-  handleSetReadCard = card => {
-    // unpack
-    const { handleSetReadCard, isDebug } = this.props
-    isDebug && debug('Deck - handleSetReadCard')
-    // hook if Deck has parent manager component
-    handleSetReadCard && handleSetReadCard(card)
-  }
-  handleSetCursorCard = cursor => {
-    this.props.isDebug && debug('Deck - handleSetCursorCard')
-    this.setState({ cursor, transition: 'none' })
-  }
-  onStart = (event, data) => {
-    this.props.isDebug && debug('Deck - onStart')
-    this.setState({ isFlipping: true, clientY: event.clientY })
-  }
-  onDrag = (event, data) => {
-    // unpack
-    const { flipRatio, isDebug } = this.props
-    const { deckElement } = this.state
-    isDebug && debug('Deck - onDrag')
-    // cursor
-    const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
-    if (!this.props.isFlipped && cursor < -flipRatio) {
-      this.props.flip()
-    } else if (this.props.isFlipped && cursor > flipRatio) {
-      this.props.unFlip()
+    this.setState({ buttonStyle, bgStyle, previousBgStyle })
     }
-  }
+      handleSetReadCard = card => {
+        // unpack
+        const { handleSetReadCard, isDebug } = this.props
+        isDebug && debug('Deck - handleSetReadCard')
+        // hook if Deck has parent manager component
+        handleSetReadCard && handleSetReadCard(card)
+      }
+      handleSetCursorCard = cursor => {
+        this.props.isDebug && debug('Deck - handleSetCursorCard')
+        this.setState({ cursor, transition: 'none' })
+      }
+      onStart = (event, data) => {
+        this.props.isDebug && debug('Deck - onStart')
+        this.setState({ isFlipping: true, clientY: event.clientY })
+      }
+      onDrag = (event, data) => {
+        // unpack
+        const { flipRatio, isDebug } = this.props
+        const { deckElement } = this.state
+        isDebug && debug('Deck - onDrag')
+        // cursor
+        const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
+        if (!this.props.isFlipped && cursor < -flipRatio) {
+          this.props.flip()
+        } else if (this.props.isFlipped && cursor > flipRatio) {
+          this.props.unFlip()
+        }
+      }
   onNext = (event, diffIndex) => {
     this.props.isDebug && debug('Deck - onNext')
     event.preventDefault()
@@ -325,7 +319,8 @@ class Deck extends Component {
       readTimeout,
       headerColor,
     } = this.props
-    const { buttonStyle,
+    const { bgStyle,
+      buttonStyle,
       currentContent,
       cursor,
       deckElement,
@@ -336,8 +331,8 @@ class Deck extends Component {
       isTransitioning,
       items,
       //nextContent,
+      previousBgStyle,
       previousContent,
-      style,
       transition
     } = this.state
     const isAfterDisabled = !items || isLastCard
@@ -357,7 +352,6 @@ class Deck extends Component {
         onStop={onStop} >
         <div className='deck'
           id='deck'
-          style={style}
           ref={element => this.element = element }>
           {!this.props.unFlippable && (
             <button className={classnames('button close', {
@@ -397,12 +391,12 @@ class Deck extends Component {
             )
           }
           <div className='board-wrapper'>
+            <div className='board-bg' style={currentContent && currentContent.index % 2 == 0 ? bgStyle : previousBgStyle } ></div>
+            <div className='board-bg' style={currentContent && currentContent.index % 2 == 0 ? previousBgStyle : bgStyle } ></div>
             <div className='board'
               id='deck__board'
               ref={element => this.boardElement = element}
-              style={{
-                background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 35%,${headerColor} 100%)`,
-              }} >
+               >
               <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,}}>
                 <li>
                   <button className={classnames('button before', {
