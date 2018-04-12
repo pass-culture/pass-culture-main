@@ -26,8 +26,14 @@ class Recto extends Component {
       this.setState({ isRemoveLoading: true }), 0)
   }
 
+  componentDidMount () {
+    if (this.props.isRebootLoading) {
+      this.handleRemoveLoading()
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
-    if (nextProps.isFromLoading && !this.props.isFromLoading) {
+    if (!nextProps.isRebootLoading && nextProps.isFromLoading && !this.props.isFromLoading) {
       this.handleRemoveLoading()
     }
   }

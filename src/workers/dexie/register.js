@@ -26,9 +26,7 @@ export function syncRedux (payload) {
     const config = { local: true }
     const result = payload.results.find(result =>
       result && result.collectionName === name)
-    if (result && result.deprecatedData.length) {
-      config.deprecatedData = result.deprecatedData
-    }
+    config.deprecatedData = result && result.deprecatedData
     name !== 'differences' && store.dispatch(
       requestData('GET', name, config))
   })
