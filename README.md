@@ -86,7 +86,45 @@ C'est tout le framework du Pass Culture!
 
 ## Deploy
 
-### HTTPS first configuration
+### FRONTEND WEB
+  Pour déployer une nouvelle version, par exemple en staging:
+  (Attention de ne pas déployer sur la prod sans authorisation !)
+  ```bash
+    ./pc rebuild-frontend
+    ./pc -e staging deploy-frontend
+  ```
+
+### FRONTEND MOBILE
+  TODO
+
+### BACKEND
+
+#### CREDENTIALS
+
+Vérifier déjà que l'un des admins (comme @arnoo) a
+enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/)
+
+#### Manuellement
+  Il faut se connecter à la machine
+  ```
+    ./pc -e staging ssh
+  ```
+  Et dans le terminal du server:
+  ```
+    screen -r
+  ```
+  Enfin dans le terminal du python flask, fait un contrôle d pour killer le process, puis:
+  ```
+    ./pc restart-backend
+  ```
+
+#### Automatiquement (WIP)
+  ```bash
+    ./pc -e staging deploy-backend
+  ```
+
+#### Note pour une premiere configuration HTTPS (pour un premier build)
+
   Pour obtenir un certificat et le mettre dans le nginx (remplacer <domaine> par le domaine souhaité, qui doit pointer vers la machine hébergeant les docker)
   docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt       -v ~/pass-culture-main/certs-data:/data/letsencrypt       deliverous/certbot       certonly       --verb
   ose --webroot --webroot-path=/data/letsencrypt       -d <domaine>
@@ -95,22 +133,3 @@ C'est tout le framework du Pass Culture!
 
   0 0 * * * docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt       -v ~/pass-culture-main/certs-data:/data/letsencrypt       deliverous/certbot       renew       --verbose
   --webroot --webroot-path=/data/letsencrypt
-
-### Push
-
-  - frontend
-
-    Pour déployer une nouvelle version, par exemple en staging:
-    (Attention de ne pas déployer sur la prod sans authorisation !)
-    ```bash
-      ./pc rebuild-frontend
-      ./pc -e staging deploy-frontend
-    ```
-
-  - backend
-
-    Vérifier déjà que l'un des admins (comme @arnoo) a
-    enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/), puis
-    ```bash
-      ./pc -e staging deploy-backend
-    ```

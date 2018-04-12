@@ -88,7 +88,7 @@ elif [[ "$CMD" == "rebuild-frontend" ]]; then
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='rm -rf $ROOT_PATH/api/static/object_store_data;
        rm -rf $ROOT_PATH/api/postgres_data;
-       docker-compose up'
+       docker-compose up --force-recreate'
 elif [[ "$CMD" == "reset-backend-dev" ]]; then
 	RUN='pc reset-all-db;
 			 pc update_providables -p SpreadsheetExpVenues;
