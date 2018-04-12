@@ -108,19 +108,17 @@ class DiscoveryPage extends Component {
 
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
-    if (this.props.userMediations) {
-      //this.props.handleRemoveSplash(0)
-    }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.userMediations) {
-      //nextProps.handleRemoveSplash()
-    }
-
     if (nextProps.userMediations !== this.props.userMediations) {
       this.handleUserMediationRequest(nextProps)
     }
+
+    if (nextProps.deprecatedUserMediations && nextProps.deprecatedUserMediations !== this.props.deprecatedUserMediations) {
+      nextProps.history.push('/decouverte')
+    }
+
   }
 
   render () {
@@ -143,6 +141,7 @@ export default compose(
   withLogin({ isRequired: true }),
   withRouter,
   connect(state => ({
+    deprecatedUserMediations: state.data.deprecatedUserMediations,
     userMediations: state.data.userMediations
   }))
 )(DiscoveryPage)

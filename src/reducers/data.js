@@ -32,7 +32,8 @@ const data = (state = initialState, action) => {
   } else if (action.type === RESET_DATA) {
     return initialState
   } else if (/SUCCESS_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
-    const key = action.config.key || action.path.replace(/\/$/, '').replace(/\?.*$/, '')
+    const key = action.config.key ||
+      action.path.replace(/\/$/, '').replace(/\?.*$/, '')
     const nextState = { isOptimist: false }
     // force to cast into array
     let nextData = action.data
@@ -82,10 +83,14 @@ const data = (state = initialState, action) => {
       nextState.previousOptimistState = null
     }
     // special deprecation
-    if (action.method === 'GET' && action.config === 'local' && action.config.deprecatedData) {
-      console.log('DEPRECATED DATA')
+    if (action.method === 'GET' &&
+      action.config.local &&
+      action.config.deprecatedData &&
+      action.config.deprecatedData.length
+    ) {
+      const deprecatedKey = `deprecated${key[0].toUpperCase()}${key.slice(1)}`
+      nextState[deprecatedKey] = action.config.deprecatedData
     }
-
     // last
     if (action.config.getSuccessState) {
       Object.assign(nextState, action.config.getSuccessState(state, action))
