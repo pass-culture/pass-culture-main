@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import React from 'react'
 import { connect } from 'react-redux'
 
@@ -16,9 +15,9 @@ const Clue = ({
   return (
     <div className='clue' style={{ transition: `opacity ${transitionTimeout}ms`}}>
       <Price value={offer && offer.price} />
-      <div className='separator'>{ offer && "\u00B7" || ' ' }</div>
+      <div className='separator'>{ offer ? '\u00B7' : ' ' }</div>
       <div>
-         { offer && distance || ' ' }
+         { offer ? distance : ' ' }
       </div>
     </div>
   )
