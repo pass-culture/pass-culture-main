@@ -67,6 +67,10 @@ class DiscoveryPage extends Component {
       return
     }
     isDebug && debug(`DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
+    // special empty case
+    if (offerId === 'empty') {
+      history.push('/decouverte')
+    }
     // offer not specified
     if (!offerId) {
       console.warn('We should have an offerId here at least')
@@ -95,6 +99,10 @@ class DiscoveryPage extends Component {
     // IF WE FAILED TO FIND THE AROUND INDEX IN THE LOCAL
     // IT MEANS WE NEED TO ASK THE BACKEND
     if (aroundIndex === null && !hasPushPullRequested) {
+      // special empty case
+      if (offerId === 'empty') {
+        return
+      }
       isDebug && debug(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
       worker.postMessage({ key: 'dexie-push-pull',
         state: { around: null, mediationId, offerId }})
@@ -115,7 +123,8 @@ class DiscoveryPage extends Component {
     if (nextProps.userMediations !== this.props.userMediations) {
       this.handleUserMediationRequest(nextProps)
     }
-
+    // SPECIAL DEPRECATION HANDLING
+    // IF THE RECO ARE DEPRECATED, WE GO TO DECOUVERTE
     if (nextProps.deprecatedUserMediations && nextProps.deprecatedUserMediations !== this.props.deprecatedUserMediations) {
       nextProps.history.push('/decouverte')
       const newData = { deprecatedUserMediations: null }

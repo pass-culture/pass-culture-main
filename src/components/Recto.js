@@ -64,7 +64,7 @@ class Recto extends Component {
               'loading--ended': isRemoveLoading
             })}>
               <div>
-                <Icon svg='ico-loading-card' />
+                <Icon draggable={false} svg='ico-loading-card' />
                 <div className='h2'>
                   chargement des offres
                 </div>
