@@ -36,11 +36,9 @@ a {
   background-color: transparent;
   border: none;
   text-align: left;
-  line-height: 2rem;
   font-size: 1.2rem;
   padding: 0.5rem;
   color: $white;
-  text-decoration: none;
 }
 
 .app {
@@ -79,28 +77,26 @@ a {
     outline: none;
   }
   &--checkbox {
-  	-webkit-appearance: none;
-  	background-color: $very-very-light-grey;
-  	border: $border;
-    border-radius: 1em;
+    -webkit-appearance: none;
+    border: $border;
+    border-radius: 4px !important;
     width: 25px;
     display: inline-block;
     padding: 9px;
-  	position: relative;
+    position: relative;
     transition: all 0.25s ease-out;
     &:focus{
       outline: none;
     }
     &:active,&:checked {
-    	background-color: black;
-    	color: $very-very-light-grey;
+      color: $very-very-light-grey;
       &:after {
       	content: '\2714';
-      	font-size: 14px;
+      	font-size: 18px;
       	position: absolute;
-      	top: 0px;
+      	top: -3px;
       	left: 3px;
-      	color: $very-very-light-grey;
+      	color: $menu-red;
       }
     }
   }
@@ -160,20 +156,16 @@ select {
 
 ::-webkit-input-placeholder { /* Chrome */
   color: $light-grey;
-  font-style: italic;
 }
 :-ms-input-placeholder { /* IE 10+ */
   color: $light-grey;
-  font-style: italic;
 }
 ::-moz-placeholder { /* Firefox 19+ */
   color: $light-grey;
-  font-style: italic;
   opacity: 1;
 }
 :-moz-placeholder { /* Firefox 4 - 18 */
   color: $light-grey;
-  font-style: italic;
   opacity: 1;
 }
 

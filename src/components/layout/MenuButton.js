@@ -14,13 +14,17 @@ class MenuButton extends Component {
     const { borderTop,
       colored
     } = this.props
+    const maybeColored = {}
+    if (colored) {
+      maybeColored.colored = "colored"
+    }
     return (
       <div className={classnames('menu-button', {
         bordered: borderTop,
         colored: colored,
       })}>
         <button onClick={this.onClick}>
-          <ProfilePicture />
+          <ProfilePicture {... maybeColored} />
         </button>
       </div>
     )

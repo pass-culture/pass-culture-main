@@ -3,6 +3,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
 
+import Icon from './Icon'
+import { navigationLink } from '../utils/geolocation'
+import selectDistance from '../selectors/distance'
 import selectOffer from '../selectors/offer'
 import selectSource from '../selectors/source'
 import selectThumbUrl from '../selectors/thumbUrl'
@@ -14,6 +17,7 @@ class OfferInfo extends Component {
 
   render() {
     const {
+      distance,
       offer,
       source,
       thumbUrl,
@@ -63,6 +67,10 @@ class OfferInfo extends Component {
         { infos.where.name && infos.where.address && (
           <div>
             <h3>Où ?</h3>
+            <a className='distance' href={navigationLink(venue.latitude, venue.longitude)}>
+              { distance }
+              <Icon svg='ico-geoloc-solid2' />
+            </a>
             <ul className='address-info'>
               <li>{infos.where.name}</li>
               {infos.where.address.split(/[,\n\r]/).map((el, index) => (<li key={index}>{el}</li>))}
@@ -76,6 +84,7 @@ class OfferInfo extends Component {
 
 export default connect(
   state => ({
+    distance: selectDistance(state),
     offer: selectOffer(state),
     source: selectSource(state),
     thumbUrl: selectThumbUrl(state),

@@ -5,48 +5,82 @@
   font-size: 1.2rem;
   flex-direction: column;
   height: 100vh;
-  padding-bottom: 5rem;
+  padding-bottom: 60px;
+
+  .h1 {
+    font-weight: 800;
+    font-style: italic;
+  }
+
+  .h2 {
+    font-weight: 500;
+    font-style: italic;
+    color: white;
+    margin-top: 6px;
+  }
+
+  .h2-black {
+    font-weight: 500;
+    font-style: italic;
+    color: black;
+    margin-top: 6px;
+  }
+
+  label .h4 {
+   line-height: 1.1875rem;
+   display: block;
+  }
 
   .form-container {
     display: flex;
     flex-direction: column;
     min-height: 100%;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 1.5rem;
+    justify-content: center;
   }
 
   form {
-    margin-top: auto;
-    margin-bottom: auto;
+    .form-input {
+      margin-top: 1.5rem;
+    }
+  }
+
+  &.signin-page form {
+    .form-input {
+      margin-top: 3rem;
+    }
   }
 
   a {
     color: $black;
-    font-weight: 500;
-    font-size: 1.2rem;
+    font-weight: 700;
+    font-size: 1.3rem;
     padding: 0;
-    text-decoration: underline;
   }
 
   footer {
     background-color: $menu-red;
     bottom: 0;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     left: 0;
-    padding: 1rem;
+    padding-left: 1.15rem;
+    padding-right: 1.15rem;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    height: 60px;
     position: absolute;
     right: 0;
     a {
       color: white;
-      line-height: 4rem;
       text-decoration: none;
     }
   }
 
   span {
     a {
-      font-size: 1rem;
+      font-size: 1em;
       font-weight: 400;
     }
   }
@@ -57,7 +91,7 @@
 
   .errors {
     color: $menu-red;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-weight: 500;
     height: 2rem;
     line-height: 2em;
@@ -71,6 +105,9 @@
     img {
       vertical-align: middle;
       padding-right: 5px;
+    }
+    &:empty {
+      display: none;
     }
   }
 
@@ -88,11 +125,6 @@
     .errors {
       color: $white;
     }
-  }
-
-  .button--secondary {
-    font-size: 1.3rem;
-    line-height: 1rem;
   }
 }
 

@@ -30,7 +30,7 @@ class Verso extends Component {
     return (
       <div className={`verso-wrapper ${className || ''}`}>
         <div className='verso-header' style={{ backgroundColor: headerColor }}>
-          <h2> { source && source.name + ", " }{ author && ("de " + author) } </h2>
+          <h2> { source && source.name }{ author && (", de " + author) } </h2>
           <h6> { venue && venue.name } </h6>
         </div>
         {this.props.hasControlBar && <ControlBar />}

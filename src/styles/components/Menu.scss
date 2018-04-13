@@ -2,11 +2,12 @@
   position: relative;
   &__header {
     width: 100%;
-    padding-bottom: 1rem;
     position: relative;
+    padding-bottom: 1rem;
+    
     &:after {
       content: '';
-      border-bottom: thin solid $black;
+      border-bottom: thin solid #990026;
       position: absolute;
       left: -1rem;
       right: -1rem;
@@ -19,19 +20,17 @@
       vertical-align: middle;
       // display: inline-block;
       text-align: center;
-      padding: 1rem;
+      font-size: 18px;
 
       img.avatar {
-        width: 100px;
+        width: 88px;
         height: auto;
         display: block;
         margin: auto;
-        border-radius: 100px;
+        border-radius: 88px;
         max-width: 100%;
         max-height: 100%;
-        border: 4px solid;
-        padding: 0.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.3rem;
       }
     }
 
@@ -40,12 +39,14 @@
       display: inline-block;
       width: 55%;
       // display: inline-block;
-      font-size: 2rem;
+      font-size: 1.875rem;
       border-left: thin solid $white;
       padding: 1rem;
       font-weight: normal;
 
       strong {
+        display: block;
+        margin-top: -8px;
         font-weight: 500;
         font-size: 3rem;
       }
@@ -54,9 +55,10 @@
 
   ul {
     list-style: none;
-    padding-bottom: 4rem;
+    padding-bottom: 2.7rem;
+    margin-left: -6px;
     li {
-      border-top: thin dotted $black;
+      border-top: thin dotted #990026;
       &:first-child {
         border-top: none;
       }
@@ -68,14 +70,28 @@
     text-align: left;
     display: block;
     line-height: 2rem;
-    font-size: 1.2rem;
-    padding: 0.5rem;
+    font-size: 1.1875rem;
+    font-weight: 400;
+    padding: 0;
+    padding-top: 0.82rem;
+    padding-bottom: 0.82rem;
     color: $white;
     text-decoration: none;
-    img {
-      vertical-align: middle;
+    .menu-icon {
+      width: 44px;
+      height: 44px;
+      text-align: center;
+      float: left;
       margin-right: 1rem;
+      img {
+        vertical-align: middle;
+      }
     }
+  }
+
+  button {
+    margin-bottom: -12px;
+    margin-top: -4px;
   }
 
   .stick-to-bottom {
@@ -86,5 +102,6 @@
     padding-left: 1rem;
     padding-right: 1rem;
     background-color: rgba($black, 0.2);
+    margin-left: -6px;
   }
 }

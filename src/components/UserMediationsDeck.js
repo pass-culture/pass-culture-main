@@ -307,7 +307,7 @@ UserMediationsDeck.defaultProps = { afterCount: 5,
   isCheckRead: false,
   // isDebug: true,
   readTimeout: 2000,
-  transitionTimeout: 150
+  transitionTimeout: 300
 }
 
 export default connect(null,{ requestData })(UserMediationsDeck)

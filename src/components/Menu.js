@@ -6,6 +6,7 @@ import Icon from './Icon'
 import ProfilePicture from './ProfilePicture'
 import { requestData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
+import { ROOT_PATH } from '../utils/config';
 
 class Menu extends Component {
 
@@ -27,7 +28,7 @@ class Menu extends Component {
       <div className='menu'>
         <div className='menu__header'>
           <div className='profile-pic'>
-            <ProfilePicture className='avatar' />
+            <img src={`${ROOT_PATH}/icons/avatar-default-w-XL.svg` } alt='Avatar' className='avatar' />
             {this.props.user.publicName}
           </div>
           <div className='account'>
@@ -38,41 +39,53 @@ class Menu extends Component {
         <ul>
           <li>
             <NavLink to='/decouverte'>
-              <Icon className='col-1' svg='ico-offres-w' />
+              <div className='menu-icon'>
+                <Icon svg='ico-offres-w' />
+              </div>
               Les offres
             </NavLink>
           </li>
           <li>
             <NavLink to='/reservations'>
-              <Icon className='col-1' svg='ico-calendar-w' />
+              <div className='menu-icon'>
+                <Icon svg='ico-calendar-w' />
+              </div>
               Mes réservations
             </NavLink>
           </li>
           <li className='disabled'>
             <NavLink to='/favoris'
               onClick={this.onDisableClick}>
-              <Icon className='col-1' svg='ico-like-w' />
+              <div className='menu-icon'>
+                <Icon svg='ico-like-w' />
+              </div>
               Mes favoris
             </NavLink>
           </li>
           <li className='disabled'>
             <NavLink to='/reglages'
               onClick={this.onDisableClick}>
-              <Icon className='col-1' svg='ico-settings-w' />
+              <div className='menu-icon'>
+                <Icon svg='ico-settings-w' />
+              </div>
               Réglages
             </NavLink>
           </li>
           <li className='disabled'>
             <NavLink to='/profil'
               onClick={this.onDisableClick}>
-              <Icon className='col-1' svg='ico-user-w' />
+              <div className='menu-icon'>
+                <Icon svg='ico-user-w' />
+              </div>
               Mon profil
             </NavLink>
           </li>
         </ul>
         <div className='stick-to-bottom'>
-          <button onClick={this.onSignOutClick}>
-            <Icon svg='ico-deconnect-w' />
+          <button onClick={this.onSignOutClick} className='button'>
+            <div className='menu-icon'>
+              <Icon svg='ico-deconnect-w' />
+            </div>
             Déconnexion
           </button>
         </div>

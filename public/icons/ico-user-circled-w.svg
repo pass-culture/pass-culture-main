@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>F74BC4B1-EF51-40B5-887F-0088D5B7FF3A</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <circle id="path-1" cx="19" cy="19" r="19"></circle>
+    </defs>
+    <g id="Écrans" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc3-HP3-tuto1" transform="translate(-40.000000, -622.000000)">
+            <g id="ICONS/ico-user-circled-w" transform="translate(38.000000, 620.000000)">
+                <g id="ICONS/ico-user-w">
+                    <rect id="crop" x="0" y="0" width="44" height="44"></rect>
+                    <g id="user" transform="translate(3.000000, 3.000000)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="Oval-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xlink:href="#path-1"></use>
+                        <path d="M26.1393287,13.1212121 C26.1487156,7.37373737 23.8068182,4.5 19.1136364,4.5 C14.4204545,4.5 12.0763693,7.37373737 12.0813806,13.1212121 C12.0813806,13.1212121 11,13.2961455 11,14.0326788 C11.4891445,16.9805899 11.9826145,18.4545455 12.4804101,18.4545455 C12.4804101,19.5340909 15.5682924,25.5 19.3044625,25.5 C23.0400919,25.5 25.9663078,19.5340909 25.9663078,18.4545455 C26.4641034,18.4545455 26.8822372,17.1212121 27.2207093,14.4545455 C27.2207093,13.7180121 27.3791316,13.1212121 26.1393287,13.1212121 Z" id="Stroke-1" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-2)"></path>
+                        <g id="epaules" mask="url(#mask-2)" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            <g transform="translate(5.000000, 16.000000)" id="Stroke-9">
+                                <path d="M28.8675,19.3333333 L28.8675,18.0017294 C28.8675,14.6557717 26.5202786,13.3333333 22.810787,13.3333333 L20.810787,13.0384782 C18.936929,13.0384782 18,11.6923188 18,9"></path>
+                                <path d="M10.8675,19.3333333 L10.8675,18.0017294 C10.8675,14.6557717 8.52027859,13.3333333 4.81078704,13.3333333 L2.81078704,13.0384782 C0.936929012,13.0384782 0,11.6923188 0,9" transform="translate(5.433750, 14.166667) scale(-1, 1) translate(-5.433750, -14.166667) "></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

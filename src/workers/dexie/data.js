@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 import flatten from 'lodash.flatten'
+import moment from 'moment'
 import uniq from 'lodash.uniq'
 import uuid from 'uuid'
 
@@ -20,46 +21,82 @@ export async function getData (collectionName, query) {
   if (!table) {
     return
   }
-  // return
-  return await table.filter(element =>
+  // get
+  const data = await table.filter(element =>
     Object.keys(query).every(key => element[key] === query[key])).toArray()
+  // return
+  return { data }
 }
 
-export async function putData (dexieMethod, collectionName, dataOrDatum) {
+export async function putData (dexieMethod, collectionName, dataOrDatum, config = {}) {
+  // unpack
+  const diff = (typeof config.diff !== 'undefined' && config.diff) || true
   // check the table
   const table = db[collectionName]
   if (!table) {
     return
   }
+  const collectionConfig = storesConfig[collectionName]
+  const description = collectionConfig.description
+  const result = { collectionName }
   // check format
-  const data = Array.isArray(dataOrDatum)
+  let data = Array.isArray(dataOrDatum)
     ? dataOrDatum
     : [dataOrDatum]
-  // choose the put method
+  // update is when we want to update certain elements in the array
+  const storedData = await table.toArray()
+  // look for deprecation
+  result.deprecatedData = []
+  for (let datum of data) {
+    const storedDatum = storedData.find(({ id }) => id === datum.id)
+    if (storedDatum) {
+      // bind temporaly the storedDatum
+      datum._storedDatum = storedDatum
+      if (storedDatum.dateCreated && datum.dateCreated &&
+        moment(storedDatum.dateCreated) < moment(datum.dateCreated)) {
+        result.deprecatedData.push(storedDatum)
+      }
+    }
+  }
+  // bulk
   if (dexieMethod === 'bulk') {
     // bulk is when we replace everything and index by the index in the array data
     await table.clear()
-    await table.bulkPut(data.map((datum, index) =>
-      Object.assign({ index }, datum)))
-  } else if (dexieMethod === 'update') {
-    // update is when we want to update certain elements in the array
-    const storedData = await table.toArray()
-    for (let datum of data) {
-      const storedDatum = storedData.find(({ id }) => id === datum.id)
-      if (storedDatum) {
-        await table.put(storedDatum.id,
-          Object.assign({}, storedDatum, datum))
-      } else {
-        await table.add(datum)
+    data = data.map((datum, index) => {
+      if (datum._storedDatum) {
+        delete datum._storedDatum
       }
+      return Object.assign({ index }, datum)
+    })
+    await table.bulkPut(data)
+    result.data = await table.toArray()
+    return result
+  }
+  // update
+  for (let datum of data) {
+    if (datum._storedDatum) {
+      const localStoredDatum = datum._storedDatum
+      if (!localStoredDatum[description]) {
+        console.warn('storedDatum has not the description as a good key')
+      }
+      const putDatum = Object.assign({}, localStoredDatum, datum)
+      delete datum._storedDatum
+      await table.put(putDatum[description], putDatum)
+    } else {
+      await table.add(datum)
     }
+  }
+  // diff or not
+  if (diff) {
     await db.differences.add({
       id: uuid(),
       name: collectionName,
       ids: data.map(datum => datum.id)
     })
   }
-  return table.toArray()
+  // get again
+  result.data = table.toArray()
+  return result
 }
 
 export async function clear () {
@@ -126,9 +163,9 @@ export async function pushPull (state = {}) {
     if (result.data) {
       const pathWithoutQuery = path.split('?')[0]
       const collectionName = pathWithoutQuery.split('/')[0]
-      return putData('bulk', collectionName, result.data, { isClear: true })
+      return await putData('bulk', collectionName, result.data, { isClear: true })
     } else {
-      console.warn(result.error)
+      return result
     }
   }))
 }

@@ -15,10 +15,10 @@ const Clue = ({
 }) => {
   return (
     <div className='clue' style={{ transition: `opacity ${transitionTimeout}ms`}}>
-      <div><Price value={get(offer, 'price')} /></div>
-      <div className='separator'>&middot;</div>
+      <Price value={offer && offer.price} />
+      <div className='separator'>{ offer && "\u00B7" || ' ' }</div>
       <div>
-         {distance}
+         { offer && distance || ' ' }
       </div>
     </div>
   )

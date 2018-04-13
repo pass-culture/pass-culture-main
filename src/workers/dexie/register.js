@@ -12,7 +12,7 @@ export default function register() {
       console.warn(event.data.error)
     } else {
       if (event.data.isSyncRedux) {
-        syncRedux()
+        syncRedux(event.data)
       }
       if (event.data.log) {
         console.log(event.data.log)
@@ -21,10 +21,15 @@ export default function register() {
   }
 }
 
-export function syncRedux () {
-  config.collections.forEach(({ name }) =>
+export function syncRedux (payload) {
+  config.collections.forEach(({ name }) => {
+    const config = { local: true }
+    const result = payload.results.find(result =>
+      result && result.collectionName === name)
+    config.deprecatedData = result && result.deprecatedData
     name !== 'differences' && store.dispatch(
-      requestData('GET', name, { local: true })))
+      requestData('GET', name, config))
+  })
 }
 
 if (IS_DEV) {

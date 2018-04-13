@@ -1,7 +1,10 @@
 ul.control-bar {
   list-style: none;
   background-color: $menu-red;
-  padding: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   color: $white;
   font-weight: 500;
   display: flex;
@@ -13,6 +16,7 @@ ul.control-bar {
     text-align: center;
     .pass-label {
       display: block;
+      margin-bottom: -3px;
     }
     .pass-value {
       display: block;

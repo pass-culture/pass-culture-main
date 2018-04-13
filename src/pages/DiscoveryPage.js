@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import MenuButton from '../components/layout/MenuButton'
 import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
+import { assignData } from '../reducers/data'
 import { getContentFromUserMediation } from '../utils/content'
 import { debug } from '../utils/logguers'
 import { worker } from '../workers/dexie/register'
@@ -18,6 +19,7 @@ class DiscoveryPage extends Component {
       userMediations: null
     }
   }
+
   handleUserMediationChange = userMediation => {
     if (!userMediation) {
       console.warn('userMediation is not defined')
@@ -44,6 +46,7 @@ class DiscoveryPage extends Component {
       this.setState({ aroundIndex: false })
     }
   }
+
   handleUserMediationRequest = props => {
     // unpack and check
     const { hasPushPullRequested } = this
@@ -103,21 +106,28 @@ class DiscoveryPage extends Component {
     // update
     this.setState({ aroundIndex, userMediations })
   }
+
   componentWillMount () {
     this.handleUserMediationRequest(this.props)
-    if (this.props.userMediations) {
-      //this.props.handleRemoveSplash(0)
-    }
   }
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.userMediations) {
-      //nextProps.handleRemoveSplash()
-    }
 
+  componentWillReceiveProps (nextProps) {
     if (nextProps.userMediations !== this.props.userMediations) {
       this.handleUserMediationRequest(nextProps)
     }
+
+    if (nextProps.deprecatedUserMediations && nextProps.deprecatedUserMediations !== this.props.deprecatedUserMediations) {
+      nextProps.history.push('/decouverte')
+      const newData = { deprecatedUserMediations: null }
+      if (nextProps.userMediations.length) {
+        newData.userMediations = [
+          Object.assign({ isLoading: true, isRebootLoading: true }, nextProps.userMediations[0])
+        ].concat(nextProps.userMediations.slice(1))
+      }
+      nextProps.assignData(newData)
+    }
   }
+
   render () {
     return (
       <main className='page discovery-page center'>
@@ -138,6 +148,7 @@ export default compose(
   withLogin({ isRequired: true }),
   withRouter,
   connect(state => ({
+    deprecatedUserMediations: state.data.deprecatedUserMediations,
     userMediations: state.data.userMediations
-  }))
+  }), { assignData })
 )(DiscoveryPage)
