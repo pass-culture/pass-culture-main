@@ -400,31 +400,28 @@ class Deck extends Component {
               <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,}}>
                 <li>
                   <button className={classnames('button before', {
-                    'disabled': isBeforeDisabled,
+                    // 'disabled': isBeforeDisabled,
                     'hidden': isBeforeHidden })}
                     disabled={isBeforeDisabled || isBeforeHidden}
-                    onClick={event => onNext(event, 1)}
-                    style={buttonStyle}>
+                    onClick={event => onNext(event, 1)}>
                       <Icon svg='ico-prev-w-group' />
                   </button>
                 </li>
                 <li>
                   <button className={classnames('button to-recto ', {
-                    'disabled': isFlipDisabled,
-                    'hidden': isLoading || isFlipDisabled })}
-                    onClick={e => this.props.flip()}
-                    style={buttonStyle} >
+                    // 'disabled': isFlipDisabled,
+                    'hidden': isLoading || isFlipDisabled
+                  })} onClick={e => this.props.flip()} >
                     <Icon svg='ico-slideup-w' />
                   </button>
                   <Clue />
                 </li>
                 <li>
                   <button className={classnames('button after', {
-                    'disabled': isAfterDisabled,
+                    // 'disabled': isAfterDisabled,
                     'hidden': isAfterHidden })}
                     onClick={event => onNext(event, -1)}
-                    disabled={isAfterDisabled || isAfterHidden}
-                    style={buttonStyle} >
+                    disabled={isAfterDisabled || isAfterHidden} >
                     <Icon svg='ico-next-w-group' />
                   </button>
                 </li>

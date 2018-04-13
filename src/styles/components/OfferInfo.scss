@@ -1,5 +1,10 @@
 .offer-info {
-  padding: 0.65rem;
+  padding: 1rem;
+
+  ul.dates-info {
+    margin-bottom: 1rem;
+    list-style: none;
+  }
   a.distance {
     float: right;
     padding: 0;

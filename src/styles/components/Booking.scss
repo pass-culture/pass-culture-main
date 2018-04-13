@@ -1,4 +1,6 @@
 .booking {
+  margin: 1rem;
+
   h6 {
     font-weight: normal;
     text-align: center;
@@ -6,13 +8,14 @@
     margin-bottom: 1rem;
   }
 
-  input {
+  .input {
     margin: auto;
     display: block;
     border: thin solid $menu-red;
     border-radius: 50px;
     font-weight: 500;
     margin-bottom: 1rem;
+    background-color: transparent;
   }
 
   p {
@@ -36,6 +39,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-direction: row-reverse;
     li {
       display: inline-block;
       &.center {

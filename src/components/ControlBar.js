@@ -6,6 +6,7 @@ import get from 'lodash.get'
 import { requestData } from '../reducers/data'
 import { showModal } from '../reducers/modal'
 import Icon from './Icon'
+import Price from './Price'
 import Booking from './Booking'
 import selectBooking from '../selectors/booking'
 import selectOffer from '../selectors/offer'
@@ -41,7 +42,14 @@ class ControlBar extends Component {
   }
 
   render () {
-    const { isFavorite, offer } = this.props
+    const {
+      isFavorite,
+      offer,
+      booking
+    } = this.props
+    if (booking) {
+      console.log('received booking', booking)
+    }
     return (
       <ul className='control-bar'>
         <li><small className='pass-label'>Mon Pass</small><span className='pass-value'>——€</span></li>
@@ -58,7 +66,7 @@ class ControlBar extends Component {
           </button>
         </li>
         <li>
-          { this.props.booking ? (
+          { booking ? (
             <Link to="/reservations" className='button button--primary button--inversed button--go'>
               <Icon name='Check' />
               {' Réservé'}
@@ -66,7 +74,7 @@ class ControlBar extends Component {
           ) : (
             <button className='button button--primary button--go'
               onClick={this.onClickJyVais} >
-              <span className='price'>{`${get(offer, 'price', '--')} €`}</span>
+              <Price value={get(offer, 'price')} free='——' />
               J'y vais!
             </button>
           )}

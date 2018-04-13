@@ -1,13 +1,19 @@
 import React from 'react'
 
-const Price = ({ value }) => {
+const Price = ({ value, free, Tag, className }) => {
   return (
-    <div className='price'>{
+    <Tag className={className}>{
       value === 0
-        ? 'gratuit'
+        ? free
         : value && (value.toString().replace('.', ',')+'€')
-    }</div>
+    }</Tag>
   )
+}
+
+Price.defaultProps = {
+  free: 'gratuit',
+  Tag: 'span',
+  className: 'price',
 }
 
 export default Price;
