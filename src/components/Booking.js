@@ -107,7 +107,7 @@ class Booking extends Component {
                     Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
                   </p>
                   <p>
-                    <small>Le montant sera déduit de votre pass. Il vous restera O€ après cette réservation.</small>
+                    <small>Le montant sera déduit de votre pass. Il vous restera ——€ après cette réservation.</small>
                   </p>
                 </div>
               )}
@@ -119,7 +119,7 @@ class Booking extends Component {
               <Icon className='mb2' svg='picto-validation' />
               <p>Votre réservation est validée.</p>
               <p>
-                <small><Price value={price} /> ont été déduits de votre pass.</small>
+                { price > 0 && (<small><Price value={price} /> ont été déduits de votre pass.</small>) }
                 <br />
                 <small>Présentez le code suivant sur place :</small>
               </p>
