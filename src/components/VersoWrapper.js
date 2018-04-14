@@ -24,7 +24,7 @@ class Verso extends Component {
     if (isTuto) {
       contentStyle.backgroundColor = headerColor
     } else {
-      contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k.svg')`
+      contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     }
     const author = get(source, 'extraData.author')
     return (
