@@ -3,161 +3,69 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import Deck from '../components/Deck'
 import MenuButton from '../components/layout/MenuButton'
-import UserMediationsDeck from '../components/UserMediationsDeck'
 import withLogin from '../hocs/withLogin'
-import { assignData } from '../reducers/data'
-import { getContentFromUserMediation } from '../utils/content'
-import { debug } from '../utils/logguers'
-import { worker } from '../workers/dexie/register'
 import { getDiscoveryPath } from '../utils/routes'
 
+
 class DiscoveryPage extends Component {
-  constructor () {
-    super()
-    this.state = { aroundIndex: null,
-      userMediations: null
-    }
-  }
 
-  handleUserMediationChange = userMediation => {
-    if (!userMediation) {
-      console.warn('userMediation is not defined')
-      return
-    }
-    const { isDebug } = this.props
-    const { id, mediation } = userMediation
-    const { history,
-      userMediations
-    } = this.props
-    const { aroundIndex } = this.state
-    isDebug && debug(`DiscoveryPage - handleUserMediationChange userMediation.id=${userMediation.id} aroundIndex=${aroundIndex}`)
-    // we can replace the url but only when
-    // there is an aroundIndex and we just shift for the first time
-    // we already went here one time, so we can set aroundIndex to false
-    // to make it not taken in account in the child Deck
-    if (aroundIndex === false ||
-      (aroundIndex !== null && userMediations[aroundIndex].id !== id)
-    ) {
-      const aroundContent = getContentFromUserMediation(userMediation)
-      isDebug && debug(`DiscoveryPage - handleUserMediationChange replace`)
-      // replace
-      history.replace(getDiscoveryPath(aroundContent.chosenOffer, mediation))
-      this.setState({ aroundIndex: false })
-    }
-  }
-
-  handleUserMediationRequest = props => {
-    // unpack and check
-    const { hasPushPullRequested } = this
-    const { history,
-      isDebug,
-      match: { params: { mediationId, offerId } },
+  handleSetRedirectTo (nextProps) {
+    // ONLY TRIGGER AT MOUNT TIME
+    // OR WHEN WE RECEIVED FRESH NON EMPTY DATA
+    const props =  nextProps || this.props
+    const { offerId,
+      history,
       userMediations
     } = props
-    let { aroundIndex } = this.state
-    // no need to compute when there is no um
-    // or if we have already computed once, no need to continue
-    // again and again because UserMediationsDeck is taking over
-    // the sync of aroundIndex
-    if (!userMediations) {
-      return
-    } else if (aroundIndex || aroundIndex === false) {
-      this.setState({ userMediations })
+    if (
+      offerId !== 'empty'
+      || (nextProps && !nextProps.userMediations)
+      || (offerId !== 'empty' || !userMediations || !userMediations.length)
+    ) {
       return
     }
-    isDebug && debug(`DiscoveryPage - handleUserMediationRequest offerId=${offerId}`)
-    // special empty case
-    if (offerId === 'empty') {
-      history.push('/decouverte')
+
+    // THE BLOB HAS MAYBE A isAround VARIABLE
+    // HELPING TO RETRIEVE THE AROUND
+    let currentUserMediation = userMediations.find(um => um.isAround)
+    if (!currentUserMediation) {
+      // ELSE TAKE THE FIRST?
+      currentUserMediation = userMediations[0]
     }
-    // offer not specified
-    if (!offerId) {
-      console.warn('We should have an offerId here at least')
-      return
-    }
-    // FIND THE CORRESPONDING AROUND INDEX
-    // GIVEN THE LOCAL DATA
-    aroundIndex = null
-    if (!mediationId) {
-      userMediations.find((um, index) => {
-        if (um.userMediationOffers && um.userMediationOffers.find(umo => umo.id === offerId)) {
-          aroundIndex = index
-          return true
-        }
-        return false
-      })
-    } else {
-      userMediations.find((um, index) => {
-        if (um.mediationId === mediationId) {
-          aroundIndex = index
-          return true
-        }
-        return false
-      })
-    }
-    // IF WE FAILED TO FIND THE AROUND INDEX IN THE LOCAL
-    // IT MEANS WE NEED TO ASK THE BACKEND
-    if (aroundIndex === null && !hasPushPullRequested) {
-      // special empty case
-      if (offerId === 'empty') {
-        return
-      }
-      isDebug && debug(`DEBUG: DiscoveryPage - handleUserMediationRequest pushPull`)
-      worker.postMessage({ key: 'dexie-push-pull',
-        state: { around: null, mediationId, offerId }})
-      this.hasPushPullRequested = true
-      history.replace('/decouverte')
-      return
-    }
-    isDebug && debug(`DEBUG: DiscoveryPage - handleUserMediationRequest aroundIndex=${aroundIndex}`)
-    // update
-    this.setState({ aroundIndex, userMediations })
+
+    // NOW CHOOSE AN OFFER AMONG THE ONES
+    const userMediationOffers = currentUserMediation.userMediationOffers
+    const chosenOffer = userMediationOffers &&
+      userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
+
+    // PUSH
+    const path = getDiscoveryPath(chosenOffer, currentUserMediation.mediation)
+    history.push(path)
+
   }
 
   componentWillMount () {
-    this.handleUserMediationRequest(this.props)
+    this.handleSetRedirectTo()
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.userMediations !== this.props.userMediations) {
-      this.handleUserMediationRequest(nextProps)
-    }
-    // SPECIAL DEPRECATION HANDLING
-    // IF THE RECO ARE DEPRECATED, WE GO TO DECOUVERTE
-    if (nextProps.deprecatedUserMediations && nextProps.deprecatedUserMediations !== this.props.deprecatedUserMediations) {
-      nextProps.history.push('/decouverte')
-      const newData = { deprecatedUserMediations: null }
-      if (nextProps.userMediations.length) {
-        newData.userMediations = [
-          Object.assign({ isLoading: true, isRebootLoading: true }, nextProps.userMediations[0])
-        ].concat(nextProps.userMediations.slice(1))
-      }
-      nextProps.assignData(newData)
-    }
+    this.handleSetRedirectTo(nextProps)
   }
 
   render () {
     return (
       <main className='page discovery-page center'>
-        <UserMediationsDeck {...this.state}
-          handleUserMediationChange={this.handleUserMediationChange} >
-        </UserMediationsDeck>
+        <Deck />
         <MenuButton borderTop />
       </main>
     )
   }
 }
 
-DiscoveryPage.defaultProps = {
-  // isDebug: true
-}
-
 export default compose(
   withLogin({ isRequired: true }),
   withRouter,
-  connect(state => ({
-    deprecatedUserMediations: state.data.deprecatedUserMediations,
-    userMediations: state.data.userMediations
-  }), { assignData })
+  connect(state => ({ userMediations: state.data.userMediations}))
 )(DiscoveryPage)

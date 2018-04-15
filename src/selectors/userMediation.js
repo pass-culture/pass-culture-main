@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect'
 import get from 'lodash.get';
 
+import selectUserMediationsWithIndex from './userMediationsWithIndex'
+
 export function getUserMediation (offerId, mediationId, userMediations) {
   let filteredUserMediations
   // NORMALY mediationId is ENOUGH TO FIND THE MATCHING
@@ -22,8 +24,8 @@ export function getUserMediation (offerId, mediationId, userMediations) {
 }
 
 export default createSelector(
-  state => state.router.location.pathname, // TODO: get data from redux state
-  state => state.data.userMediations || [],
+  state => state.router.location.pathname,
+  selectUserMediationsWithIndex,
   (pathname, userMediations) => {
     const [ , , offerId, mediationId ] = pathname.split('/')
     return getUserMediation (offerId, mediationId, userMediations)

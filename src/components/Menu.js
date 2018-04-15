@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './Icon'
-import ProfilePicture from './ProfilePicture'
+// import ProfilePicture from './ProfilePicture'
 import { requestData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 import { ROOT_PATH } from '../utils/config';

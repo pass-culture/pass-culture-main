@@ -9,13 +9,16 @@ import InventoryPage from '../pages/InventoryPage'
 import OffererPage from '../pages/OffererPage'
 import ProfessionalPage from '../pages/ProfessionalPage'
 import ProfilePage from '../pages/ProfilePage'
-import RedirectToDiscoveryPage from '../pages/RedirectToDiscoveryPage'
 import SigninPage from '../pages/SigninPage'
 import SignupPage from '../pages/SignupPage'
 
 export const getDiscoveryPath = (offer, mediation='') => {
-  const offerId = (typeof offer === 'string') ? offer : (typeof offer === 'object' ? offer.id : 'tuto');
-  const mediationId = (typeof mediation === 'string') ? mediation : (typeof mediation === 'object' ? mediation.id : '');
+  const offerId = (typeof offer === 'string')
+    ? offer
+    : (typeof offer === 'object' ? offer.id : 'tuto');
+  const mediationId = (typeof mediation === 'string')
+    ? mediation
+    : (typeof mediation === 'object' ? mediation.id : '');
   return `/decouverte/${offerId}/${mediationId}`;
 }
 
@@ -45,15 +48,15 @@ const routes = [
   },
   {
     exact: true,
-    path: '/decouverte/:offerId/:mediationId?',
-    title: 'Les offres',
-    render: ({ match: { mediationId, offerId }}) =>
-      <DiscoveryPage mediationId={mediationId} offerId={offerId}/>
+    path: '/decouverte',
+    render: () => <Redirect to='/decouverte/empty' />
   },
   {
     exact: true,
-    path: '/decouverte',
-    render: () => <RedirectToDiscoveryPage />
+    path: '/decouverte/:offerId/:mediationId?',
+    title: 'Les offres',
+    render: ({ match: { params: { mediationId, offerId } } }) =>
+      <DiscoveryPage mediationId={mediationId} offerId={offerId}/>
   },
   {
     exact: true,

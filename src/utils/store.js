@@ -3,7 +3,6 @@ import {
   compose,
   createStore
 } from 'redux'
-import { responsiveStoreEnhancer } from 'redux-responsive'
 import createSagaMiddleware from 'redux-saga'
 import { routerMiddleware } from 'react-router-redux'
 
@@ -17,7 +16,7 @@ const sagaMiddleware = createSagaMiddleware()
 const middlewares = [ sagaMiddleware, routerMiddleware(history) ]
 
 // ENHANCERS
-const enhancers = [ responsiveStoreEnhancer ]
+const enhancers = [ ]
 const composeEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose
 
 const storeEnhancer = composeEnhancers(

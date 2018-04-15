@@ -2,17 +2,24 @@
   cursor: pointer;
   height: 100%;
   width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
 
-  &.react-draggable {
-    &:before {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      content: '';
-    }
+  &.current {
+    z-index: 1;
+  }
+
+  .gradient {
+    position: absolute;
+    bottom: 0;
+    top: 65%;
+    left: -100%;
+    right: -100%;
+    z-index: 3;
   }
 
   &--draggable {
@@ -25,6 +32,7 @@
     height: 100%;
     z-index: 1;
   }
+
   &__container {
     height: 100%;
     width: 100%;
