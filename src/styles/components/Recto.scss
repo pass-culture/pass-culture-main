@@ -57,6 +57,7 @@
     transition-delay: 50ms;
     -webkit-transition-property: transform, background-size;
     transition-property: transform, background-size;
+    will-change: transform;
     &.translated {
       transform: translate(0, -25%) scale(1.1);
     }

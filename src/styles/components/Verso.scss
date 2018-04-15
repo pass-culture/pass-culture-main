@@ -8,6 +8,7 @@
   z-index: 500;
   // padding-top: 50%;
   transform: translate(0, 100vh);
+  will-change: transform;
   &.flipped {
     transform: translate(0, 0);
   }
