@@ -181,7 +181,7 @@ class Deck extends Component {
           </div>
         </div>
         <Draggable
-          axis={isFlipped ? 'y' : 'exclude'}
+          axis={isFlipped ? 'none' : 'exclude'}
           key={refreshKey}
           position={position}
           onStop={this.onStop}
@@ -200,7 +200,7 @@ class Deck extends Component {
             }
           </div>
         </Draggable>
-        <div className='board-wrapper'>
+        <div className={classnames('board-wrapper', { hidden: isFlipped })}>
           <div className='board-bg'
             style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}} />
           <ul className={classnames('controls', {

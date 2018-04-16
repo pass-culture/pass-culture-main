@@ -37,6 +37,10 @@
     position: absolute;
     bottom: 0;
 
+    &.hidden {
+      display: none;
+    }
+
     .board-bg {
       position: absolute;
       top: 0;
