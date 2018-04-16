@@ -30,12 +30,12 @@ function verso (state = initialState, action) {
 
 // ACTION CREATORS
 export function flip (action = {}) {
-  document.querySelector(".menu-button:not(.colored").style.display = "none"
+  document.querySelector(".menu-button:not(.colored)").style.display = "none"
   return { type: SHOW_VERSO }
 }
 
 export function unFlip (action = {}) {
-  document.querySelector(".menu-button:not(.colored").style.display = "block"
+  document.querySelector(".menu-button:not(.colored)").style.display = "block"
   return { type: CLOSE_VERSO }
 }
 
