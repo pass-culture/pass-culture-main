@@ -400,7 +400,7 @@ class Deck extends Component {
               id='deck__board'
               ref={element => this.boardElement = element}
                >
-              <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w.svg')`,}}>
+              <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}}>
                 <li>
                   <button className={classnames('button before', {
                     // 'disabled': isBeforeDisabled,
