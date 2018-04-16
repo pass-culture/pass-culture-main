@@ -29,7 +29,11 @@ class Verso extends Component {
             : <OfferInfo />
           }
         </VersoWrapper>
-        <MenuButton borderTop colored />
+        {
+          isTuto ?
+            ( <MenuButton borderTop /> ) :
+            ( <MenuButton borderTop colored /> )
+        }
       </div>
     )
   }

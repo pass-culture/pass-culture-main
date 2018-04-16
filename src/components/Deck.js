@@ -344,7 +344,7 @@ class Deck extends Component {
       (currentContent && currentContent.mediation &&
         currentContent.userMediationOffers.length === 0 &&
         currentContent.mediation.thumbCount === 1) || (currentContent
-          && (!currentContent.mediation || currentContent.userMediationOffers.length === 0))
+          && (!currentContent.mediation))
     const isBeforeAfterDisabled = isBeforeDisabled && isAfterHidden
     return (
       <Draggable axis='none'
