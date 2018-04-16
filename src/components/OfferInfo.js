@@ -56,9 +56,9 @@ class OfferInfo extends Component {
           <div>
             <h3>Quand ?</h3>
             <ul className='dates-info'>
-              { infos.when.map((occurence, index) => (
+              { infos.when.map((occurence, index) => (index < 7) && (
                 <li key={index}>
-                  <span>{moment(occurence).format('DD/MM/YYYY à H:mm')}</span>
+                  <span>{moment(occurence).format('dddd DD/MM/YYYY à H:mm')}</span>
                 </li>
               ))}
             </ul>
