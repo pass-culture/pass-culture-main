@@ -1,7 +1,7 @@
 .menu-button {
   position: absolute;
   padding: 3px 0;
-  bottom: 1px;
+  bottom: 0;
   left: 0;
   right: 0;
 
@@ -34,4 +34,8 @@
       border-radius: 50%;
     }
   }
+}
+
+body.cordova-android .menu-button {
+  bottom: 1px;
 }

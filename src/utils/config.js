@@ -56,9 +56,11 @@ if (window.cordova) {
   document.body.className += ' cordova'
   if (MOBILE_OS === 'android') {
     CALC_ROOT_PATH = 'file:///android_asset/www'
+    document.body.className += ' cordova-android'
     //document.body.className += ' android-with-statusbar'
   } else if (MOBILE_OS === 'ios') {
     //TODO
+    document.body.className += ' cordova-ios'
     CALC_ROOT_PATH = window.location.href.substring(0,1)
   }
   window.addEventListener('keyboardWillShow',
