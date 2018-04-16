@@ -8,6 +8,7 @@
   z-index: 500;
   transform: translate(0, 100vh);
   will-change: transform;
+  height: calc(100% + 1px);
 
   &.flipped {
     transform: translate(0, 0);
