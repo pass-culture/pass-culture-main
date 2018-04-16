@@ -53,7 +53,7 @@ elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
   ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-backend\"."
-  RUN='cd pass-culture-main && git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
+  RUN='cd $ROOT_PATH && ./pc reset-git'
 elif [[ "$CMD" == "deploy-frontend" ]]; then
   ensure_remote "Deploy fontend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-frontend\"."
   cd $ROOT_PATH/webapp && NODE_ENV="$ENV" yarn build && netlify deploy -e "$ENV"
@@ -86,6 +86,8 @@ elif [[ "$CMD" == "rebuild-backend" ]]; then
        sudo rm -rf $ROOT_PATH/api/postgres_data'
 elif [[ "$CMD" == "rebuild-frontend" ]]; then
 	RUN='cd $ROOT_PATH/webapp && npm run build'
+elif [[ "$CMD" == "reset-git" ]]; then
+	RUN='cd $ROOT_PATH && git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
        sudo rm -rf $ROOT_PATH/api/postgres_data;
@@ -122,8 +124,10 @@ elif [[ "$CMD" == "ssh" ]]; then
 	fi
 elif [[ "$CMD" == "start-backend" ]]; then
   RUN='docker-compose up'
-elif [[ "$CMD" == "start-frontend" ]]; then
+elif [[ "$CMD" == "start-browser" ]]; then
   RUN='cd $ROOT_PATH/webapp && yarn start'
+elif [[ "$CMD" == "start-ios" ]]; then
+	RUN='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
 elif [[ "$CMD" == "symlink" ]]; then
   RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
 elif [[ "$CMD" == "test-backend" ]]; then
