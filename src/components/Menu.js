@@ -24,12 +24,13 @@ class Menu extends Component {
   }
 
   render () {
+    const { user } = this.props
     return (
       <div className='menu'>
         <div className='menu__header'>
           <div className='profile-pic'>
             <img src={`${ROOT_PATH}/icons/avatar-default-w-XL.svg` } alt='Avatar' className='avatar' />
-            {this.props.user.publicName}
+            {user && user.publicName}
           </div>
           <div className='account'>
             <div>Mon Pass</div>
