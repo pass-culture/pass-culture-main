@@ -79,10 +79,10 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
         return self.line['Lien Image']
 
     def getObjectThumbDates(self, obj):
-        if self.mock:
+        #if self.mock:
             return []
-        if is_filled(self.line['Lien Image']) != '':
-            return [read_date(self.line['Date MAJ'])]
+        #if is_filled(self.line['Lien Image']) != '':
+        #    return [read_date(self.line['Date MAJ'])]
 
 
 app.local_providers.SpreadsheetExpVenues = SpreadsheetExpVenues

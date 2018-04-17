@@ -10,9 +10,11 @@ Event = app.model.Event
 EventOccurence = app.model.EventOccurence
 Mediation = app.model.Mediation
 Offer = app.model.Offer
+Offerer = app.model.Offerer
 UserMediation = app.model.UserMediation
 UserMediationOffer = app.model.UserMediationOffer
 Thing = app.model.Thing
+Venue = app.model.Venue
 
 
 def get_offers(user, limit=3):
@@ -55,7 +57,11 @@ def get_offers(user, limit=3):
                                 )
     mediation_query_count = mediation_query.count()
     print('(reco) mediation count', mediation_query_count)
-    mediation_offers = list(mediation_query.order_by(func.random())\
+                                
+    mediation_offers = list(mediation_query.join(Offerer)
+                                           .join(Venue)
+                                           .order_by(func.sqrt(func.pow(Venue.latitude - 43.608495, 2) +
+                                                               func.pow(Venue.longitude - 3.893408, 2)))
                                            .limit(limit))
     mediation_offer_ids = [offer.id for offer in mediation_offers]
 
