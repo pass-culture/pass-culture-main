@@ -16,7 +16,7 @@ class RedirectToDiscoveryPage extends Component {
 
   handleSetRedirectTo = props => {
     const { userMediations } = props
-    if (!userMediations || userMediations.length === 0) {
+    if (userMediations && userMediations.length === 0) {
       this.setState({
         redirectTo: '/decouverte/empty'
       })
