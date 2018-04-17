@@ -83,18 +83,24 @@ class Booking extends Component {
             <div>
               { dateRequired && (
                 <div>
-                  <h6>Choisissez une date :</h6>
-                  <input type='date' className='input' list='available-dates' onChange={this.handleDateSelect} />
-                  <datalist id='available-dates'>
-                    { availableDates.map(d => <option key={d}>{moment(d).format('YYYY-MM-DD')}</option> ) }
-                  </datalist>
-                  <h6>Choisissez une heure :</h6>
-                  <select value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
-                    { availableHours.length === 0 && <option></option>}
-                    { availableHours.map(d =>
-                      <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
-                    )}
-                  </select>
+                  <label htmlFor='date'><h6>Choisissez une date :</h6></label>
+                  <div className='input-field'>
+                    <input id='date' type='date' className='input' list='available-dates' onChange={this.handleDateSelect} />
+                    <datalist id='available-dates'>
+                      { availableDates.map(d => <option key={d}>{moment(d).format('YYYY-MM-DD')}</option> ) }
+                    </datalist>
+                    <label htmlFor='date'><Icon svg='ico-calendar' className='input-icon' /></label>
+                  </div>
+                  <label htmlFor='time'><h6>Choisissez une heure :</h6></label>
+                  <div className='input-field' htmlFor='time'>
+                    <select id='time' value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
+                      { availableHours.length === 0 && <option>hh:mm</option>}
+                      { availableHours.map(d =>
+                        <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
+                      )}
+                    </select>
+                    <label htmlFor='time'><Icon svg='ico-hour-list' className='input-icon' /></label>
+                  </div>
                 </div>
               )}
               { dateOk && (
@@ -108,12 +114,20 @@ class Booking extends Component {
                     </div>
                   ) : (
                     <div>
-                      <p>
-                        Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
-                      </p>
-                      <p>
-                        <small>Le montant sera déduit de votre pass. Il vous restera <Price value={0} free='——' /> après cette réservation.</small>
-                      </p>
+                      { price > 0 ? (
+                        <div>
+                          <p>
+                            Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
+                          </p>
+                          <p>
+                            <small>Le montant sera déduit de votre pass. Il vous restera <Price value={0} free='——' /> après cette réservation.</small>
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p>Vous êtes sur le point de réserver cettre gratuite.</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

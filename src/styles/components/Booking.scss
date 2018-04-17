@@ -1,5 +1,6 @@
 .booking {
   margin: 1rem;
+  text-align: center;
 
   h6 {
     font-weight: normal;
@@ -8,15 +9,31 @@
     margin-bottom: 1rem;
   }
 
-  .input {
+  .input-field {
+    position: relative;
     margin: auto;
-    display: block;
-    border: thin solid $menu-red;
-    border-radius: 50px;
-    font-weight: 500;
+    display: inline-block;
     margin-bottom: 1rem;
-    background-color: transparent;
+    .input {
+      margin: auto;
+      display: block;
+      border: thin solid $menu-red;
+      border-radius: 50px;
+      font-weight: 500;
+      background-color: transparent;
+      padding-right: 50px;
+      width: auto;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 20px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+    }
   }
+
 
   p {
     text-align: center;
