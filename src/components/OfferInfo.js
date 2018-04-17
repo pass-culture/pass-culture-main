@@ -2,6 +2,7 @@ import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
+import 'moment/locale/fr';
 
 import Icon from './Icon'
 import { navigationLink } from '../utils/geolocation'
@@ -11,6 +12,8 @@ import selectSource from '../selectors/source'
 import selectThumbUrl from '../selectors/thumbUrl'
 import selectVenue from '../selectors/venue'
 import selectUserMediation from '../selectors/userMediation'
+
+moment.locale('fr-fr')
 
 
 class OfferInfo extends Component {
