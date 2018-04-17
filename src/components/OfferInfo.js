@@ -40,7 +40,7 @@ class OfferInfo extends Component {
     return (
       <div className='offer-info'>
         {false && <img alt='' className='offerPicture' src={infos.image} />}
-        { infos.description && (
+        { infos.description && !infos.what && (
           <div className='description'>
             { infos.description.split('\n').map((p, index) =>
               <p key={index}>{p}</p>
