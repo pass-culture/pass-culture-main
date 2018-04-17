@@ -21,6 +21,7 @@
       border-radius: 50px;
       font-weight: 500;
       background-color: transparent;
+      padding: 13px 12px 11px;
       padding-right: 50px;
       width: auto;
     }
@@ -31,6 +32,25 @@
       top: 0;
       bottom: 0;
       margin: auto;
+    }
+  }
+
+
+  // TODO: make a theme: https://github.com/airbnb/react-dates/#theming
+  .SingleDatePicker {
+    border-radius: 50px;
+    border: thin solid $menu-red;
+    .SingleDatePickerInput {
+      background: transparent;
+      .DateInput {
+        background: transparent;
+        .DateInput_input {
+          background: transparent;
+          &.DateInput_input__focused {
+            border-bottom: none;
+          }
+        }
+      }
     }
   }
 

@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import get from 'lodash.get';
 import classnames from 'classnames';
 import moment from 'moment'
+import 'moment-locale-fr'
+import { SingleDatePicker } from 'react-dates';
 
 import Icon from '../components/Icon'
 import Price from '../components/Price'
@@ -14,6 +16,8 @@ import selectOffer from '../selectors/offer'
 import selectOfferer from '../selectors/offerer'
 import selectUserMediation from '../selectors/userMediation'
 
+moment.locale('fr');
+
 class Booking extends Component {
   constructor () {
     super()
@@ -21,6 +25,7 @@ class Booking extends Component {
       bookingInProgress: false,
       date: null,
       time: null,
+      focused: false,
     }
   }
 
@@ -47,21 +52,20 @@ class Booking extends Component {
   }
 
   getAvailableDateTimes(selectedDate) {
-    const availableDates = get(this.props, 'userMediation.mediatedOccurences', []).map(o => o.beginningDatetime);
-    const availableHours = availableDates.filter(d => moment(d).format('YYYY-MM-DD') === (selectedDate || this.state.date));
+    const availableDates = get(this.props, 'userMediation.mediatedOccurences', []).map(o => moment(o.beginningDatetime));
+    const availableHours = availableDates.filter(d => d.isSame(selectedDate || this.state.date , 'day'));
     return {
       availableDates,
       availableHours
     }
   }
 
-  handleDateSelect = e => {
-    const selectedDate = e.target.value;
+  handleDateSelect = date => {
     const {
       availableHours
-    } = this.getAvailableDateTimes(selectedDate);
+    } = this.getAvailableDateTimes(date);
     this.setState({
-      date: selectedDate,
+      date: date,
       time: availableHours.length === 1 ? availableHours[0] : null
     })
   }
@@ -85,12 +89,23 @@ class Booking extends Component {
               { dateRequired && (
                 <div>
                   <label htmlFor='date'><h6>Choisissez une date :</h6></label>
-                  <div className='input-field'>
-                    <input id='date' type='date' className='input' list='available-dates' onChange={this.handleDateSelect} />
-                    <datalist id='available-dates'>
-                      { availableDates.map(d => <option key={d}>{moment(d).format('YYYY-MM-DD')}</option> ) }
-                    </datalist>
-                    <label htmlFor='date'><Icon svg='ico-calendar' className='input-icon' /></label>
+                  <div className='input-field date-picker'>
+                    <SingleDatePicker
+                      date={this.state.date}
+                      onDateChange={this.handleDateSelect}
+                      focused={this.state.focused}
+                      onFocusChange={({ focused }) => this.setState({ focused })}
+                      numberOfMonths={1}
+                      noBorder={true}
+                      initialVisibleMonth={() => moment.min(availableDates)}
+                      inputIconPosition='after'
+                      anchorDirection='right'
+                      isDayBlocked={date => !availableDates.find(d => d.isSame(date, 'day'))}
+                      customInputIcon={<Icon svg='ico-calendar' />}
+                      // customArrowIcon={<Icon svg='ico-next' />} // need in black
+                      // customCloseIcon={<Icon svg='ico-close' />} // need in black
+                      displayFormat='LL'
+                    />
                   </div>
                   <label htmlFor='time'><h6>Choisissez une heure :</h6></label>
                   <div className='input-field' htmlFor='time'>

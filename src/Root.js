@@ -2,6 +2,9 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { matchPath, Redirect, Route, Switch } from 'react-router-dom'
 
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
+
 import { ConnectedRouter } from 'react-router-redux'
 
 import App from './App'
