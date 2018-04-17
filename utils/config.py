@@ -6,4 +6,4 @@ IS_DEV = ENV == 'dev'
 IS_STAGING = ENV == 'staging'
 
 BEFORE_AFTER_LIMIT = 5
-BLOB_SIZE = 20
+BLOB_SIZE = 60
