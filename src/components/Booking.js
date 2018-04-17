@@ -104,11 +104,15 @@ class Booking extends Component {
               {this.state.date && this.state.time && (
                 <div>
                   <p>
-                    Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
+                    Vous êtes sur le point de réserver cette offre{ price > 0 && ( <span> pour <Price value={price} /> </span> ) }.
                   </p>
-                  <p>
-                    <small>Le montant sera déduit de votre pass. Il vous restera ——€ après cette réservation.</small>
-                  </p>
+                  { price > 0 &&
+                    (
+                      <p>
+                        <small>Le montant sera déduit de votre pass. Il vous restera ——€ après cette réservation.</small>
+                      </p>
+                    )
+                   }
                 </div>
               )}
             </div>
