@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 import get from 'lodash.get';
-import { API_URL, THUMBS_URL } from '../utils/config'
+import { THUMBS_URL } from '../utils/config'
 
 import selectSource from './source'
 import selectMediation from './mediation'
