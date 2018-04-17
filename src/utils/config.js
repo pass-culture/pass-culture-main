@@ -1,3 +1,8 @@
+import moment from 'moment'
+import 'moment/locale/fr';
+
+moment.locale('fr-fr')
+
 const { NODE_ENV } = process.env
 
 export const IS_DEBUG = true
