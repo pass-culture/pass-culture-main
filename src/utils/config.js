@@ -77,6 +77,7 @@ if (window.cordova) {
                           });
 } else {
   document.body.className += ' web'
+  CALC_ROOT_PATH = window.location.protocol+'://'+document.location.host
 }
 
 

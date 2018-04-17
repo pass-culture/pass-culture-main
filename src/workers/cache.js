@@ -1,6 +1,7 @@
 import {
   IS_PROD,
   IS_LOCALHOST,
+  ROOT_PATH
 } from '../utils/config'
 
 // In production, we register a service worker to serve assets from local cache.
@@ -25,7 +26,7 @@ export default function register() {
     }
 
     window.addEventListener('load', () => {
-      const swUrl = './service-worker.js';
+      const swUrl = ROOT_PATH+'/service-worker.js';
 
       if (IS_LOCALHOST) {
         // This is running on localhost. Lets check if a service worker still exists or not.
