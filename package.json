@@ -77,7 +77,7 @@
     "worker-loader": "^1.1.1"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "HOST=app.passculture-local.beta.gouv.fr HTTPS=true node scripts/start.js",
     "pgbuild": "yarn build && node scripts/pgbuild.js",
     "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "build": "node scripts/build.js",
