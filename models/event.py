@@ -58,7 +58,7 @@ class Event(app.model.PcObject,
                               nullable=False,
                               default=bytes([0]))
 
-    mediaUrls = db.Column(ARRAY(db.String(120)),
+    mediaUrls = db.Column(ARRAY(db.String(220)),
                           nullable=False,
                           default=[])
 
