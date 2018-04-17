@@ -56,7 +56,6 @@ export function getContentFromUserMediation (userMediation) {
     thumbUrl = `${THUMBS_URL}/${sourceCollectionName}/${source.id}`
     backgroundColor = source.firstThumbDominantColor
   } else {
-    thumbUrl = `${API_URL}/static/images/default_thumb.png`
     backgroundColor = [0, 0, 0]
   }
   return Object.assign({ backgroundColor,

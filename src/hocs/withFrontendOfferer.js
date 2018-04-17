@@ -5,9 +5,7 @@ const withFrontendOfferer = withSelectors({
   thumbUrl: [
     ownProps => ownProps.thumbCount,
     ownProps => ownProps.id,
-    (thumbCount, id) => thumbCount > 0
-      ? `${THUMBS_URL}/offerers/${id}`
-      : `${API_URL}/static/images/default_thumb.png`
+    (thumbCount, id) => thumbCount > 0 && `${THUMBS_URL}/offerers/${id}`
   ]
 })
 

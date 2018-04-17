@@ -16,8 +16,6 @@ export function getThumbUrl (mediation, source, offer) {
     return `${THUMBS_URL}/mediations/${mediation.id}`
   } else if (get(source, 'thumbCount') > 0) {
     return `${THUMBS_URL}/${sourceCollectionName}/${source.id}`
-  } else {
-    return`${API_URL}/static/images/default_thumb.png`
   }
 }
 
