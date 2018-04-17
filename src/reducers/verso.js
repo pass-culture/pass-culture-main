@@ -14,7 +14,8 @@ const initialState = {
 function verso (state = initialState, action) {
   switch (action.type) {
     case CLOSE_VERSO:
-      document.getElementsByClassName("verso-wrapper")[0].scrollTo(0,0)
+      var wrapper = document.getElementsByClassName("verso-wrapper")[0]
+      wrapper && wrapper.scrollTo(0,0)
       return Object.assign({}, state, { isFlipped: false })
     case SHOW_VERSO:
       return Object.assign({}, state, { isFlipped: true })
