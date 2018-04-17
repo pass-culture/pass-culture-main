@@ -90,8 +90,8 @@ def get_offers(user, limit=3):
     # ... FROM MONTPELLIER
     mediation_query = compose(
         get_distance_query(43.608495, 3.893408),
-        get_deduplication_query,
-        get_mediation_query(source_ids)
+        get_mediation_query(source_ids),
+        get_deduplication_query
     )(user_query)
     mediation_query_count = mediation_query.count()
     print('(reco) mediation count', mediation_query_count)
@@ -107,19 +107,19 @@ def get_offers(user, limit=3):
     """
     if mediation_query_count < limit:
         pure_query = list(
-            user_query.filter(~Offer.id.in_(mediation_offer_ids))\
-                      .join(Offerer)\
-                      .join(Venue)\
-                      .order_by(distance_order_by)\
-                      .outerjoin(Thing)\
-                      .outerjoin(EventOccurence)\
-                      .outerjoin(Event)\
-                      .filter((Thing.thumbCount > 0) |\
-                              (Event.thumbCount > 0))\
-                      .add_column(row_number_column)\
-                      .from_self()\
-                      .filter(row_number_column == 1)
-                      .limit(limit - mediation_query_count))
+            compose(
+                get_distance_query(43.608495, 3.893408),
+                lambda query: query.join(Offerer)\
+                                   .join(Venue)\
+                                   .order_by(distance_order_by)\
+                                   .outerjoin(Thing)\
+                                   .outerjoin(EventOccurence)\
+                                   .outerjoin(Event)\
+                                   .filter((Thing.thumbCount > 0) |\
+                                            (Event.thumbCount > 0))\
+                get_deduplication_query
+            )(user_query.filter(~Offer.id.in_(mediation_offer_ids)))
+        ).limit(limit - mediation_query_count))
         print('(reco) pure offers count', len(pure_query))
         final_offers += [t[0] for t in pure_query]
     """
