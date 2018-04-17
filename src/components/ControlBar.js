@@ -10,6 +10,7 @@ import Price from './Price'
 import Booking from './Booking'
 import selectBooking from '../selectors/booking'
 import selectOffer from '../selectors/offer'
+import selectOfferer from '../selectors/offerer'
 import selectUserMediation from '../selectors/userMediation'
 
 
@@ -45,7 +46,8 @@ class ControlBar extends Component {
     const {
       isFavorite,
       offer,
-      booking
+      offerer,
+      booking,
     } = this.props
     if (booking) {
       console.log('received booking', booking)
@@ -74,7 +76,7 @@ class ControlBar extends Component {
           ) : (
             <button className='button button--primary button--go'
               onClick={this.onClickJyVais} >
-              <Price value={get(offer, 'price')} free='——' />
+              <Price value={get(offer, 'price') || get(offer, 'displayPrice') } free='——' className={offerer ? 'strike' : ''} />
               J'y vais!
             </button>
           )}
@@ -89,6 +91,7 @@ export default connect(
     booking: selectBooking(state),
     userMediation: selectUserMediation(state),
     offer: selectOffer(state),
+    offerer: selectOfferer(state),
   }), {
   requestData,
   showModal,

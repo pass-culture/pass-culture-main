@@ -11,6 +11,7 @@ import { requestData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 import selectBooking from '../selectors/booking'
 import selectOffer from '../selectors/offer'
+import selectOfferer from '../selectors/offerer'
 import selectUserMediation from '../selectors/userMediation'
 
 class Booking extends Component {
@@ -71,7 +72,7 @@ class Booking extends Component {
     const step = this.currentStep();
     const dateRequired = get(this.props, 'userMediation.mediatedOccurences', []).length > 1;
     const dateOk = dateRequired ? (this.state.date && this.state.time) : true;
-    const offerer = get(this.props, 'offer.offerer.name');
+    const offerer = this.props.offerer
     const {
       availableDates,
       availableHours
@@ -170,6 +171,7 @@ export default connect(
   state => ({
     booking: selectBooking(state),
     offer: selectOffer(state),
+    offerer: selectOfferer(state),
     userMediation: selectUserMediation(state)
   }), {
   requestData,
