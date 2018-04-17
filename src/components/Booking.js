@@ -23,17 +23,6 @@ class Booking extends Component {
     }
   }
 
-  componentDidMount() {
-    if (get(this.props, 'userMediation.mediatedOccurences', []).length <= 1) {
-      // Delay added because otherwise the AJAX call is too fast.
-      // Remove when actual booking takes longer
-      setTimeout(this.makeBooking, 500)
-      this.setState({
-        bookingInProgress: true
-      })
-    }
-  }
-
   makeBooking = () => {
     const { offer, userMediation, requestData } = this.props
     this.setState({
@@ -53,7 +42,7 @@ class Booking extends Component {
     const token = get(this.props, 'booking.token');
     if (token) return 'confirmation';
     if (this.state.bookingInProgress) return 'loading';
-    return 'input';
+    return 'confirm';
   }
 
   getAvailableDateTimes(selectedDate) {
@@ -80,6 +69,9 @@ class Booking extends Component {
     const token = get(this.props, 'booking.token');
     const price = get(this.props, 'offer.price');
     const step = this.currentStep();
+    const dateRequired = get(this.props, 'userMediation.mediatedOccurences', []).length > 1;
+    const dateOk = dateRequired ? (this.state.date && this.state.time) : true;
+    const offerer = get(this.props, 'offer.offerer.name');
     const {
       availableDates,
       availableHours
@@ -87,28 +79,43 @@ class Booking extends Component {
     return (
       <VersoWrapper>
         <div className='booking'>
-          {step === 'input' && (
+          {step === 'confirm' && (
             <div>
-              <h6>Choisissez une date :</h6>
-              <input type='date' className='input' list='available-dates' onChange={this.handleDateSelect} />
-              <datalist id='available-dates'>
-                { availableDates.map(d => <option key={d}>{moment(d).format('YYYY-MM-DD')}</option> ) }
-              </datalist>
-              <h6>Choisissez une heure :</h6>
-              <select value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
-                { availableHours.length === 0 && <option></option>}
-                { availableHours.map(d =>
-                  <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
-                )}
-              </select>
-              {this.state.date && this.state.time && (
+              { dateRequired && (
                 <div>
-                  <p>
-                    Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
-                  </p>
-                  <p>
-                    <small>Le montant sera déduit de votre pass. Il vous restera ——€ après cette réservation.</small>
-                  </p>
+                  <h6>Choisissez une date :</h6>
+                  <input type='date' className='input' list='available-dates' onChange={this.handleDateSelect} />
+                  <datalist id='available-dates'>
+                    { availableDates.map(d => <option key={d}>{moment(d).format('YYYY-MM-DD')}</option> ) }
+                  </datalist>
+                  <h6>Choisissez une heure :</h6>
+                  <select value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
+                    { availableHours.length === 0 && <option></option>}
+                    { availableHours.map(d =>
+                      <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
+                    )}
+                  </select>
+                </div>
+              )}
+              { dateOk && (
+                <div>
+                  { Boolean(offerer) ? (
+                    <div>
+                      <p>Cette réservation d'une valeur de <Price value={price} /> vous est offerte par :<br />
+                        <strong>{offerer}</strong>.
+                      </p>
+                      <p>Nous comptons sur vous pour en profiter !</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p>
+                        Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
+                      </p>
+                      <p>
+                        <small>Le montant sera déduit de votre pass. Il vous restera <Price value={0} free='——' /> après cette réservation.</small>
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -128,11 +135,11 @@ class Booking extends Component {
             </div>
           )}
           <ul className='bottom-bar'>
-            {step === 'input' && [
+            {step === 'confirm' && [
               <li key='submit'><button className={classnames({
                 button: true,
                 'button--primary': true,
-                hidden: !(this.state.date && this.state.time)
+                hidden: !dateOk,
               })} onClick={this.makeBooking}>Valider</button></li>,
               <li key='cancel'><button className='button button--secondary' onClick={e => this.props.closeModal()}>Annuler</button></li>,
             ]}
