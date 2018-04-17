@@ -12,6 +12,7 @@ import Clue from './Clue'
 import Icon from './Icon'
 import { flip, unFlip } from '../reducers/verso'
 import selectIsFlipDisabled from '../selectors/isFlipDisabled'
+import selectHeaderColor from '../selectors/headerColor'
 import { getMediation } from '../selectors/mediation'
 import selectNextLimit from '../selectors/nextLimit'
 import selectNextUserMediation from '../selectors/nextUserMediation'
@@ -142,17 +143,6 @@ class Deck extends Component {
     this.handleRefreshedData(nextProps)
     this.handleDeprecatedData(nextProps)
     this.handleSetDragPosition(nextProps)
-
-
-    const previousBgStyle = Object.assign({}, this.state.bgStyle)
-    const bgStyle = {
-                     transition: `opacity 300ms cubic-bezier(0.0, 0.0, 0, 1.0)`,
-                     background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${nextProps.headerColor} 35%,${nextProps.headerColor} 100%)`,
-                     opacity: 1,
-                   }
-    previousBgStyle.transition = `opacity 300ms cubic-bezier(1, 0.0, 1.0, 1.0)`
-    previousBgStyle.opacity = 0
-    this.setState({ previousBgStyle, bgStyle })
   }
 
   render () {
@@ -166,8 +156,7 @@ class Deck extends Component {
       unFlip,
       unFlippable,
     } = this.props
-    const { previousBgStyle,
-      bgStyle,
+    const {
       position,
       refreshKey
     } = this.state
@@ -215,9 +204,7 @@ class Deck extends Component {
         </Draggable>
         <div className={classnames('board-wrapper', { hidden: isFlipped })}>
           <div className='board-bg'
-            style={currentUserMediation && currentUserMediation.index % 2 == 0 ? bgStyle : previousBgStyle } />
-          <div className='board-bg'
-            style={currentUserMediation && currentUserMediation.index % 2 == 0 ? previousBgStyle : bgStyle } />
+            style={{ background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${this.props.headerColor} 35%,${this.props.headerColor} 100%)` }} />
           <ul className={classnames('controls', {
             hidden: isFlipped,
           })} style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}} >
@@ -279,6 +266,7 @@ export default compose(
     state => ({
       currentUserMediation: selectUserMediation(state),
       deprecatedUserMediations: state.data.deprecatedUserMediations,
+      headerColor: selectHeaderColor(state),
       isFlipDisabled: selectIsFlipDisabled(state),
       isFlipped: state.verso.isFlipped,
       nextLimit: selectNextLimit(state),
