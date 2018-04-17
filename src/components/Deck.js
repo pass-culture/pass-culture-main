@@ -142,6 +142,17 @@ class Deck extends Component {
     this.handleRefreshedData(nextProps)
     this.handleDeprecatedData(nextProps)
     this.handleSetDragPosition(nextProps)
+
+
+    const previousBgStyle = Object.assign({}, this.state.bgStyle)
+    const bgStyle = {
+                     transition: `opacity 300ms cubic-bezier(0.0, 0.0, 0, 1.0)`,
+                     background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${nextProps.headerColor} 35%,${nextProps.headerColor} 100%)`,
+                     opacity: 1,
+                   }
+    previousBgStyle.transition = `opacity 300ms cubic-bezier(1, 0.0, 1.0, 1.0)`
+    previousBgStyle.opacity = 0
+    this.setState({ previousBgStyle, bgStyle })
   }
 
   render () {
@@ -155,7 +166,9 @@ class Deck extends Component {
       unFlip,
       unFlippable,
     } = this.props
-    const { position,
+    const { previousBgStyle,
+      bgStyle,
+      position,
       refreshKey
     } = this.state
     return (
@@ -202,10 +215,12 @@ class Deck extends Component {
         </Draggable>
         <div className={classnames('board-wrapper', { hidden: isFlipped })}>
           <div className='board-bg'
-            style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}} />
+            style={currentUserMediation && currentUserMediation.index % 2 == 0 ? bgStyle : previousBgStyle } />
+          <div className='board-bg'
+            style={currentUserMediation && currentUserMediation.index % 2 == 0 ? previousBgStyle : bgStyle } />
           <ul className={classnames('controls', {
             hidden: isFlipped,
-          })} >
+          })} style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}} >
             <li>
               <button className={classnames('button before', {
                   hidden: !previousUserMediation,
