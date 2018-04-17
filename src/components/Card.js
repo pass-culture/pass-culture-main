@@ -6,8 +6,6 @@ import { connect } from 'react-redux'
 import Recto from './Recto'
 import Verso from './Verso'
 
-import selectHeaderColor from '../selectors/headerColor'
-
 class Card extends Component {
 
   handleSetRead = props => {
@@ -35,7 +33,6 @@ class Card extends Component {
   render () {
     const {
       userMediation,
-      headerColor,
       position,
     } = this.props
     return (
@@ -47,10 +44,6 @@ class Card extends Component {
           transform: `translate(${get(userMediation, 'index') * 100}%, 0)`,
         }}>
           <Recto {...userMediation} />
-          <div className='gradient'
-            style={{
-              background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 25%,${headerColor} 100%)`,
-            }} />
           { position === 'current' &&  <Verso /> }
       </div>
     )
@@ -64,6 +57,5 @@ Card.defaultProps = {
 
 export default connect(
   state => ({
-    isFlipped: state.verso.isFlipped,
-    headerColor: selectHeaderColor(state),
+    isFlipped: state.verso.isFlipped
   }))(Card)
