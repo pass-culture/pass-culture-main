@@ -2,6 +2,6 @@ import { createSelector } from 'reselect'
 
 export default createSelector(
   state => state.data.userMediations || [],
-  userMediations => userMediations.map((um, i) =>
-    Object.assign(um, {index: i}))
+  userMediations => userMediations.map((um, index) =>
+    Object.assign(um, { index }))
 )
