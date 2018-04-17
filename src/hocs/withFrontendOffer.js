@@ -18,9 +18,7 @@ const withFrontendOffer = withSelectors({
         eventOccurence && eventOccurence.thumbCount > 0
           ? `${THUMBS_URL}/events/${eventOccurence.id}`
           : (
-            thing && thing.thumbCount > 0
-            ? `${THUMBS_URL}/things/${thing.id}`
-            : `${API_URL}/static/images/default_thumb.png`
+            thing && thing.thumbCount > 0 && `${THUMBS_URL}/things/${thing.id}`
           )
       )
   ],

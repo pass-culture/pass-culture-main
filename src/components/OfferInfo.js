@@ -14,6 +14,7 @@ import selectVenue from '../selectors/venue'
 import selectUserMediation from '../selectors/userMediation'
 
 
+
 class OfferInfo extends Component {
 
   render() {
@@ -42,7 +43,7 @@ class OfferInfo extends Component {
       <div className='offer-info'>
         { offerer && <div className='offerer'>Ce livre vous est offert par {offerer}.</div> }
         {false && <img alt='' className='offerPicture' src={infos.image} />}
-        { infos.description && (
+        { infos.description && !infos.what && (
           <div className='description'>
             { infos.description.split('\n').map((p, index) =>
               <p key={index}>{p}</p>

@@ -133,10 +133,10 @@ class Booking extends Component {
                       { price > 0 ? (
                         <div>
                           <p>
-                            Vous êtes sur le point de réserver cette offre pour <Price value={price} />.
+                            Vous êtes sur le point de réserver cette offre{ price > 0 && ( <span> pour <Price value={price} /> </span> ) }.
                           </p>
                           <p>
-                            <small>Le montant sera déduit de votre pass. Il vous restera <Price value={0} free='——' /> après cette réservation.</small>
+                            <small>Le montant sera déduit de votre pass. Il vous restera <Price value={0} free='——€' /> après cette réservation.</small>
                           </p>
                         </div>
                       ) : (

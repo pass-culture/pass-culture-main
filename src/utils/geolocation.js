@@ -13,21 +13,6 @@ export function distanceInMeters(lat1, lon1, lat2, lon2) {
     return d * 1000
 }
 
-export async function getGeolocationPosition (config = {}) {
-  const geolocation = navigator.geolocation
-  if (!geolocation) {
-    alert("Erreur : pas de géolocalisation")
-    return null
-  }
-  return new Promise((resolve, reject) => {
-    geolocation.getCurrentPosition(
-      position => resolve(position),
-      error => reject(error),
-      config
-    )
-  })
-}
-
 export function navigationLink (lat, long) {
     //see https://stackoverflow.com/questions/9688607/how-to-open-a-mobile-devices-map-app-when-a-user-clicks-on-a-link
     if (MOBILE_OS==='ios') {
