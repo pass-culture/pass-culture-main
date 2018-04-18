@@ -11,7 +11,8 @@
     position: absolute;
     text-align: center;
     font-weight: 500;
-    border-bottom: thin dotted $white;
+    // border-bottom: thin dotted $white;
+    @include dotted($white, bottom);
     padding: 1rem 0;
     top: 0;
     left: 0;
@@ -60,7 +61,6 @@
           height: 100%;
           width: 30%;
           float: left;
-          border-right: thin dotted $menu-red;
           text-align: center;
           img {
             max-height: 100%;
@@ -75,6 +75,7 @@
           float: left;
           height: 100%;
           position: relative;
+          @include dotted($menu-red, left)
 
           .top {
             position: absolute;
@@ -99,7 +100,7 @@
 
           .token {
             padding: 0.5rem;
-            border-top: thin dotted $menu-red;
+            @include dotted($menu-red, top)
             font-size: 2.3em;
             color: $menu-red;
             position: absolute;

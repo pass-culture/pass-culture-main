@@ -116,7 +116,7 @@
     color: white;
 
     footer {
-      border-top: dotted 1px white;
+      @include dotted($white, top);
     }
 
     label {

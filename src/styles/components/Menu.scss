@@ -58,9 +58,9 @@
     padding-bottom: 2.7rem;
     margin-left: -6px;
     li {
-      border-top: thin dotted #990026;
+      @include dotted($text-color);
       &:first-child {
-        border-top: none;
+        background: none;
       }
     }
   }

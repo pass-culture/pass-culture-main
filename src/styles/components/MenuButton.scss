@@ -6,7 +6,8 @@
   right: 0;
 
   &.bordered {
-    border-top: thin dotted rgba($white, 0.25);
+    @include dotted($menu-red);
+    // border-top: thin dotted rgba($white, 0.25);
   }
 
   &.colored {

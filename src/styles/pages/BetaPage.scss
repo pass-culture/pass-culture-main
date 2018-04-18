@@ -34,7 +34,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    border-top: thin dotted;
+    @include dotted($white);
     text-align: right;
     padding: 1rem;
     a {
