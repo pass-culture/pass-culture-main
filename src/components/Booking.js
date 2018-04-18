@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import get from 'lodash.get';
 import classnames from 'classnames';
 import moment from 'moment'
+import 'moment-locale-fr'
+import { SingleDatePicker } from 'react-dates';
 
 import Icon from '../components/Icon'
 import Price from '../components/Price'
@@ -11,7 +13,10 @@ import { requestData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 import selectBooking from '../selectors/booking'
 import selectOffer from '../selectors/offer'
+import selectOfferer from '../selectors/offerer'
 import selectUserMediation from '../selectors/userMediation'
+
+moment.locale('fr');
 
 class Booking extends Component {
   constructor () {
@@ -20,17 +25,7 @@ class Booking extends Component {
       bookingInProgress: false,
       date: null,
       time: null,
-    }
-  }
-
-  componentDidMount() {
-    if (get(this.props, 'userMediation.mediatedOccurences', []).length <= 1) {
-      // Delay added because otherwise the AJAX call is too fast.
-      // Remove when actual booking takes longer
-      setTimeout(this.makeBooking, 500)
-      this.setState({
-        bookingInProgress: true
-      })
+      focused: false,
     }
   }
 
@@ -53,25 +48,24 @@ class Booking extends Component {
     const token = get(this.props, 'booking.token');
     if (token) return 'confirmation';
     if (this.state.bookingInProgress) return 'loading';
-    return 'input';
+    return 'confirm';
   }
 
   getAvailableDateTimes(selectedDate) {
-    const availableDates = get(this.props, 'userMediation.mediatedOccurences', []).map(o => o.beginningDatetime);
-    const availableHours = availableDates.filter(d => moment(d).format('YYYY-MM-DD') === (selectedDate || this.state.date));
+    const availableDates = get(this.props, 'userMediation.mediatedOccurences', []).map(o => moment(o.beginningDatetime));
+    const availableHours = availableDates.filter(d => d.isSame(selectedDate || this.state.date , 'day'));
     return {
       availableDates,
       availableHours
     }
   }
 
-  handleDateSelect = e => {
-    const selectedDate = e.target.value;
+  handleDateSelect = date => {
     const {
       availableHours
-    } = this.getAvailableDateTimes(selectedDate);
+    } = this.getAvailableDateTimes(date);
     this.setState({
-      date: selectedDate,
+      date: date,
       time: availableHours.length === 1 ? availableHours[0] : null
     })
   }
@@ -80,6 +74,9 @@ class Booking extends Component {
     const token = get(this.props, 'booking.token');
     const price = get(this.props, 'offer.price');
     const step = this.currentStep();
+    const dateRequired = get(this.props, 'userMediation.mediatedOccurences', []).length > 1;
+    const dateOk = dateRequired ? (this.state.date && this.state.time) : true;
+    const offerer = this.props.offerer
     const {
       availableDates,
       availableHours
@@ -87,32 +84,68 @@ class Booking extends Component {
     return (
       <VersoWrapper>
         <div className='booking'>
-          {step === 'input' && (
+          {step === 'confirm' && (
             <div>
-              <h6>Choisissez une date :</h6>
-              <input type='date' className='input' list='available-dates' onChange={this.handleDateSelect} />
-              <datalist id='available-dates'>
-                { availableDates.map(d => <option key={d}>{moment(d).format('YYYY-MM-DD')}</option> ) }
-              </datalist>
-              <h6>Choisissez une heure :</h6>
-              <select value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
-                { availableHours.length === 0 && <option></option>}
-                { availableHours.map(d =>
-                  <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
-                )}
-              </select>
-              {this.state.date && this.state.time && (
+              { dateRequired && (
                 <div>
-                  <p>
-                    Vous êtes sur le point de réserver cette offre{ price > 0 && ( <span> pour <Price value={price} /> </span> ) }.
-                  </p>
-                  { price > 0 &&
-                    (
-                      <p>
-                        <small>Le montant sera déduit de votre pass. Il vous restera ——€ après cette réservation.</small>
+                  <label htmlFor='date'><h6>Choisissez une date :</h6></label>
+                  <div className='input-field date-picker'>
+                    <SingleDatePicker
+                      date={this.state.date}
+                      onDateChange={this.handleDateSelect}
+                      focused={this.state.focused}
+                      onFocusChange={({ focused }) => this.setState({ focused })}
+                      numberOfMonths={1}
+                      noBorder={true}
+                      initialVisibleMonth={() => moment.min(availableDates)}
+                      inputIconPosition='after'
+                      anchorDirection='right'
+                      isDayBlocked={date => !availableDates.find(d => d.isSame(date, 'day'))}
+                      customInputIcon={<Icon svg='ico-calendar' />}
+                      // customArrowIcon={<Icon svg='ico-next' />} // need in black
+                      // customCloseIcon={<Icon svg='ico-close' />} // need in black
+                      displayFormat='LL'
+                    />
+                  </div>
+                  <label htmlFor='time'><h6>Choisissez une heure :</h6></label>
+                  <div className='input-field' htmlFor='time'>
+                    <select id='time' value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
+                      { availableHours.length === 0 && <option>hh:mm</option>}
+                      { availableHours.map(d =>
+                        <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
+                      )}
+                    </select>
+                    <label htmlFor='time'><Icon svg='ico-hour-list' className='input-icon' /></label>
+                  </div>
+                </div>
+              )}
+              { dateOk && (
+                <div>
+                  { Boolean(offerer) ? (
+                    <div>
+                      <p>Cette réservation d'une valeur de <Price value={price} /> vous est offerte par :<br />
+                        <strong>{offerer}</strong>.
                       </p>
-                    )
-                   }
+                      <p>Nous comptons sur vous pour en profiter !</p>
+                    </div>
+                  ) : (
+                    <div>
+                      { price > 0 ? (
+                        <div>
+                          <p>
+                            Vous êtes sur le point de réserver cette offre{ price > 0 && ( <span> pour <Price value={price} /> </span> ) }.
+                          </p>
+                          <p>
+                            <small>Le montant sera déduit de votre pass. Il vous restera <Price value={0} free='——€' /> après cette réservation.</small>
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p>Vous êtes sur le point de réserver cettre gratuite.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -132,11 +165,11 @@ class Booking extends Component {
             </div>
           )}
           <ul className='bottom-bar'>
-            {step === 'input' && [
+            {step === 'confirm' && [
               <li key='submit'><button className={classnames({
                 button: true,
                 'button--primary': true,
-                hidden: !(this.state.date && this.state.time)
+                hidden: !dateOk,
               })} onClick={this.makeBooking}>Valider</button></li>,
               <li key='cancel'><button className='button button--secondary' onClick={e => this.props.closeModal()}>Annuler</button></li>,
             ]}
@@ -153,6 +186,7 @@ export default connect(
   state => ({
     booking: selectBooking(state),
     offer: selectOffer(state),
+    offerer: selectOfferer(state),
     userMediation: selectUserMediation(state)
   }), {
   requestData,

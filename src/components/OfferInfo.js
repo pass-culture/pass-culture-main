@@ -7,6 +7,7 @@ import Icon from './Icon'
 import { navigationLink } from '../utils/geolocation'
 import selectDistance from '../selectors/distance'
 import selectOffer from '../selectors/offer'
+import selectOfferer from '../selectors/offerer'
 import selectSource from '../selectors/source'
 import selectThumbUrl from '../selectors/thumbUrl'
 import selectVenue from '../selectors/venue'
@@ -24,6 +25,7 @@ class OfferInfo extends Component {
       thumbUrl,
       venue,
       userMediation,
+      offerer,
     } = this.props;
 
     const infos = {
@@ -39,6 +41,7 @@ class OfferInfo extends Component {
 
     return (
       <div className='offer-info'>
+        { offerer && <div className='offerer'>Ce livre vous est offert par {offerer}.</div> }
         {false && <img alt='' className='offerPicture' src={infos.image} />}
         { infos.description && !infos.what && (
           <div className='description'>
@@ -87,6 +90,7 @@ export default connect(
   state => ({
     distance: selectDistance(state),
     offer: selectOffer(state),
+    offerer: selectOfferer(state),
     source: selectSource(state),
     thumbUrl: selectThumbUrl(state),
     userMediation: selectUserMediation(state),
