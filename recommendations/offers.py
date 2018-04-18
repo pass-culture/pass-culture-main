@@ -1,5 +1,6 @@
 """ recommendations offers """
 from flask import current_app as app
+from math import sqrt
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
@@ -20,17 +21,25 @@ Venue = app.model.Venue
 
 # FILTER OFFERS WITH THUMBED MEDIATION
 mediation_filter = Mediation.thumbCount != None
-def get_mediation_query(source_ids):
+def get_event_mediation_query(source_ids):
     def inner(query):
         return query.outerjoin(EventOccurence)\
                     .filter(~EventOccurence.eventId.in_(source_ids))\
                     .outerjoin(Event)\
-                    .outerjoin(Thing)\
-                    .filter(
-                        (Event.mediations.any(mediation_filter)) |\
-                        (Thing.mediations.any(mediation_filter))
-                    )
+                    .filter((Event.mediations.any(mediation_filter)))
     return inner
+
+def get_thing_mediation_query(source_ids):
+    def inner(query):
+        return query.outerjoin(Thing)\
+                    .filter(~Thing.id.in_(source_ids))\
+                    .filter((Thing.mediations.any(mediation_filter)))
+    return inner
+
+
+def distance(latitude1, longitude1, latitude2, longitude2):
+    return sqrt(((float(latitude2) - float(latitude1)) ** 2) +
+                ((float(longitude2) - float(longitude1)) ** 2))
 
 # FILTER OFFERS THAT ARE THE CLOSEST
 def get_distance_query(latitude, longitude):
@@ -51,7 +60,7 @@ row_number_column = func.row_number()\
                         .over(partition_by=Event.id,
                               order_by=desc(EventOccurence.beginningDatetime))\
                         .label('row_number')
-def get_deduplication_query(query):
+def get_event_deduplication_query(query):
     return query.add_column(row_number_column)\
                 .from_self()\
                 .filter(row_number_column == 1)
@@ -86,30 +95,47 @@ def get_offers(user, limit=3):
     )
     print('(reco) not already used offers.count', user_query.count())
 
-    # COMPOSE
+    # COMPOSE EVENTS
     # ... FROM MONTPELLIER
-    mediation_query = compose(
-        get_distance_query(43.608495, 3.893408),
-        get_deduplication_query,
-        get_mediation_query(source_ids)
+
+    LAT = 43.608495
+    LONG = 3.893408
+    event_mediation_query = compose(
+        get_distance_query(LAT, LONG),
+        get_event_deduplication_query,
+        get_event_mediation_query(source_ids)
     )(user_query)
-    mediation_query_count = mediation_query.count()
-    print('(reco) mediation count', mediation_query_count)
+    event_mediation_query_count = event_mediation_query.count()
+    print('(reco) event_mediation count', event_mediation_query_count)
 
     # LIMIT
-    mediation_offers = [t[0] for t in mediation_query.limit(limit)]
-    mediation_offer_ids = [offer.id for offer in mediation_offers]
+    event_mediation_offers = [t[0] for t in event_mediation_query.limit(limit)]
+    event_mediation_offer_ids = [offer.id for offer in event_mediation_offers]
+
+    # COMPOSE THINGS
+    # ... FROM MONTPELLIER
+    thing_mediation_query = compose(
+        get_distance_query(LAT, LONG),
+        get_thing_mediation_query(source_ids)
+    )(user_query)
+    thing_mediation_query_count = thing_mediation_query.count()
+    print('(reco) thing_mediation count', thing_mediation_query_count)
+
+    # LIMIT
+    thing_mediation_offers = [t for t in thing_mediation_query.limit(limit)]
+    thing_mediation_offer_ids = [offer.id for offer in thing_mediation_offers]
+
 
     # PREPARE FINAL OFFERS
-    final_offers = mediation_offers
+    final_offers = event_mediation_offers + thing_mediation_offers
 
     # MAYBE FEED WITH SOME COMPLEMENTARY PURE OFFERS
     """
     if mediation_query_count < limit:
         pure_query = list(
             compose(
-                get_distance_query(43.608495, 3.893408),
-                get_deduplication_query,
+                get_distance_query(LAT, LONG),
+                get_event_deduplication_query,
                 lambda query: query.outerjoin(Thing)\
                                    .outerjoin(EventOccurence)\
                                    .outerjoin(Event)\
@@ -123,6 +149,6 @@ def get_offers(user, limit=3):
 
     # RETURN
     print('(reco) final count', len(final_offers))
-    return final_offers
+    return sorted(final_offers, key=lambda o: distance(o.offerer.venue.latitude, o.offerer.venue.longitude, LAT, LONG))
 
 app.recommendations.get_offers = get_offers
