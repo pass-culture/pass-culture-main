@@ -113,11 +113,20 @@ class Deck extends Component {
     this.setState({ position })
   }
 
+  handleFlip = () => {
+    if (this.props.unFlippable) return;
+    this.props.flip();
+  }
+
+  handleUnFlip = () => {
+    if (this.props.unFlippable) return;
+    this.props.unFlip();
+  }
+
   onStop = (e, data) => {
-    const { flip,
+    const {
       horizontalSlideRatio,
       verticalSlideRatio,
-      unFlip
     } = this.props
     const deckWidth = this.$deck.offsetWidth;
     const deckHeight = this.$deck.offsetHeight;
@@ -128,9 +137,9 @@ class Deck extends Component {
     } else if (-offset > horizontalSlideRatio) {
       this.handleGoNext();
     } else if (data.y > deckHeight * verticalSlideRatio) {
-      unFlip();
+      this.handleUnFlip();
     } else if (data.y < -deckHeight * verticalSlideRatio) {
-      flip();
+      this.handleFlip();
     }
   }
 
@@ -148,12 +157,10 @@ class Deck extends Component {
   render () {
     const {
       currentUserMediation,
-      flip,
       isFlipDisabled,
       isFlipped,
       nextUserMediation,
       previousUserMediation,
-      unFlip,
       unFlippable,
     } = this.props
     const {
@@ -168,7 +175,7 @@ class Deck extends Component {
           <button className={classnames('button close', {
               hidden: !isFlipped,
             })}
-            onClick={unFlip} >
+            onClick={this.handleUnFlip} >
             <Icon svg='ico-close' />
           </button>
         )}
@@ -222,7 +229,7 @@ class Deck extends Component {
                   hidden: isFlipDisabled,
                 })}
                 disabled={isFlipDisabled}
-                onClick={flip} >
+                onClick={this.handleFlip} >
                 <Icon svg='ico-slideup-w' />
               </button>
               <Clue />

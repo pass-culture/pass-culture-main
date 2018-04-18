@@ -6,7 +6,7 @@ const Price = ({ value, free, Tag, className }) => {
       typeof value === 'undefined'
         ? ''
         : (
-          typeof value === 0
+          value === 0
             ? free
             : value && (value.toString().replace('.', ',')+'€')
         )
