@@ -1,9 +1,7 @@
 import classnames from 'classnames'
-import React from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 
-import withSelectors from '../hocs/withSelectors'
 import { getOffer } from '../selectors/offer'
 import { getMediation } from '../selectors/mediation'
 import selectOffer from '../selectors/offer'
@@ -13,98 +11,121 @@ import selectUserMediation from '../selectors/userMediation'
 import { IS_DEV } from '../utils/config'
 
 
-const Recto = ({ dateRead,
-  id,
-  index,
-  mediation,
-  offer,
-  thumbUrl,
-  isFlipped
-}) => {
-  const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` };
-  const thumbStyle = Object.assign({}, backgroundStyle);
-  if (mediation) {
-    thumbStyle.backgroundSize='cover';
+class Recto extends Component {
+  constructor () {
+    super()
+    this.state = {
+      id: null,
+      mediation: null,
+      offer: null,
+      thumbUrl: null
+    }
   }
-  return (
-    <div className='recto'>
-      <div className='background' style={backgroundStyle} />
-      {
-        thumbUrl && (
-          <div style={thumbStyle} className={classnames('thumb', {
-            translated: isFlipped
-          })} />
-        )
-      }
-      {
-        IS_DEV && (
-          <div className='debug absolute left-0 ml2 p2'>
-            <span>
-              {id} {offer && offer.id} {index}
-            </span>
-            {
-              dateRead && [
-                <span key={0}>
-                  &middot;
-                </span>,
-                <span key={1}>
-                  {dateRead}
-                </span>
-              ]
-            }
-          </div>
-        )
-      }
-   </div>
-  )
+
+  static getDerivedStateFromProps (nextProps, prevState) {
+    const {
+      currentOffer,
+      currentUserMediation,
+      id,
+      userMediations
+    } = nextProps
+    // UPDATE WHEN ID CHANGES
+    if (!id
+      || !userMediations
+      || id === prevState.id
+      || !currentUserMediation) {
+      return {}
+    }
+    // NO NEED TO FIND AGAIN IF WE ARE THE CURRENT USER MEDIATION
+    let userMediation
+    if (currentUserMediation.id === id) {
+      userMediation = userMediations.find(um => um.id === id)
+    } else {
+      userMediation = currentUserMediation
+    }
+    if (
+        !userMediation
+        || !userMediation.userMediationOffers
+        || userMediation.userMediationOffers.length === 0) {
+      return {}
+    }
+    // FIND THE ASSOCIATED OFFER
+    let offer
+    if (currentUserMediation.id === userMediation.id) {
+      offer = currentOffer
+    }
+    const userMediationOffers = userMediation.userMediationOffers
+    const offerId = userMediationOffers[
+      Math.floor(Math.random() * userMediationOffers.length)].id
+    offer = getOffer(userMediation, offerId)
+    // GET OTHER PROPERTIES 
+    const mediation = getMediation(userMediation)
+    const source = getSource(mediation, offer)
+    const thumbUrl = getThumbUrl(mediation, source, offer)
+    return {
+      id,
+      mediation,
+      offer,
+      thumbUrl
+    }
+  }
+
+  render () {
+    const {
+      dateRead,
+      id,
+      index,
+      isFlipped
+    } = this.props
+    const {
+      mediation,
+      offer,
+      thumbUrl,
+    } = this.state
+    const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` };
+    const thumbStyle = Object.assign({}, backgroundStyle);
+    if (mediation) {
+      thumbStyle.backgroundSize='cover';
+    }
+    return (
+      <div className='recto'>
+        <div className='background' style={backgroundStyle} />
+        {
+          thumbUrl && (
+            <div style={thumbStyle} className={classnames('thumb', {
+              translated: isFlipped
+            })} />
+          )
+        }
+        {
+          IS_DEV && (
+            <div className='debug absolute left-0 ml2 p2'>
+              <span>
+                {id} {offer && offer.id} {index}
+              </span>
+              {
+                dateRead && [
+                  <span key={0}>
+                    &middot;
+                  </span>,
+                  <span key={1}>
+                    {dateRead}
+                  </span>
+                ]
+              }
+            </div>
+          )
+        }
+     </div>
+    )
+  }
 }
 
-export default compose(
-  connect(
-    (state, ownProps) => ({
-      currentOffer: selectOffer(state),
-      currentUserMediation: selectUserMediation(state),
-      isFlipped: state.verso.isFlipped,
-      userMediations: state.data.userMediations
-    })),
-  withSelectors({
-    userMediation: [
-      ownProps => ownProps.id,
-      ownProps => ownProps.userMediations,
-      (id, userMediations) => id && userMediations &&
-        userMediations.find(um => um.id === id)
-    ],
-    mediation: [
-      (ownProps, nextState) => nextState.userMediation,
-      userMediation => getMediation(userMediation)
-    ],
-    offer: [
-      ownProps => ownProps.currentUserMediation,
-      ownProps => ownProps.currentOffer,
-      (ownProps, nextState) => nextState.userMediation,
-      (currentUserMediation, currentOffer, userMediation) => {
-        if (!currentUserMediation
-            || !userMediation
-            || !userMediation.userMediationOffers
-            || userMediation.userMediationOffers.length === 0) {
-          return
-        }
-        if (currentUserMediation.id === userMediation.id) {
-          return currentOffer
-        }
-        const userMediationOffers = userMediation.userMediationOffers
-        const offerId = userMediationOffers[
-          Math.floor(Math.random() * userMediationOffers.length)].id
-        return getOffer(userMediation, offerId)
-      }
-    ],
-    thumbUrl: [
-      (ownProps, nextState) => nextState.mediation,
-      (ownProps, nextState) => nextState.offer,
-      (mediation, offer) => {
-        const source = getSource(mediation, offer)
-        return getThumbUrl(mediation, source, offer)
-      }
-    ]
+export default connect(
+  (state, ownProps) => ({
+    currentOffer: selectOffer(state),
+    currentUserMediation: selectUserMediation(state),
+    isFlipped: state.verso.isFlipped,
+    userMediations: state.data.userMediations
   })
 )(Recto)
