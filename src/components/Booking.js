@@ -141,7 +141,7 @@ class Booking extends Component {
                         </div>
                       ) : (
                         <div>
-                          <p>Vous êtes sur le point de réserver cettre gratuite.</p>
+                          <p>Vous êtes sur le point de réserver cette offre gratuite.</p>
                         </div>
                       )}
                     </div>
