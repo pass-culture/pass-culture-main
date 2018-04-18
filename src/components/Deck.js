@@ -187,6 +187,7 @@ class Deck extends Component {
           key={refreshKey}
           position={position}
           onStop={this.onStop}
+          bounds={isFlipped ? {} : {bottom: 0}}
           >
           <div>
             {
