@@ -1,9 +1,8 @@
 import classnames from 'classnames'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import RectoDebug from './RectoDebug'
 import withSelectors from '../hocs/withSelectors'
 import { getOffer } from '../selectors/offer'
 import { getMediation } from '../selectors/mediation'
@@ -13,74 +12,51 @@ import { getThumbUrl } from '../selectors/thumbUrl'
 import selectUserMediation from '../selectors/userMediation'
 import { IS_DEV } from '../utils/config'
 
-import Icon from './Icon'
 
-class Recto extends Component {
-  constructor () {
-    super()
-    this.state = { isRemoveLoading: false }
+const Recto = ({ dateRead,
+  id,
+  index,
+  mediation,
+  offer,
+  thumbUrl,
+  isFlipped
+}) => {
+  const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` };
+  const thumbStyle = Object.assign({}, backgroundStyle);
+  if (mediation) {
+    thumbStyle.backgroundSize='cover';
   }
-
-  handleRemoveLoading = () => {
-    this.removeLoadingTimeout = setTimeout(() =>
-      this.setState({ isRemoveLoading: true }), 0)
-  }
-
-  componentDidMount () {
-    if (this.props.isRebootLoading) {
-      this.handleRemoveLoading()
-    }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (!nextProps.isRebootLoading && nextProps.isFromLoading && !this.props.isFromLoading) {
-      this.handleRemoveLoading()
-    }
-  }
-
-  componentWillUnmount () {
-    this.removeLoadingTimeout && clearTimeout(this.removeLoadingTimeout)
-  }
-
-  render () {
-    const { isFromLoading,
-      mediation,
-      isLoading,
-      thumbUrl,
-      isFlipped,
-    } = this.props
-    const { isRemoveLoading } = this.state
-    const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` };
-    const thumbStyle = Object.assign({}, backgroundStyle);
-    if (mediation) {
-      thumbStyle.backgroundSize='cover';
-    }
-    return (
-      <div className='recto'>
-        <div className='card-background' style={backgroundStyle} />
-        {
-          (isLoading || isFromLoading) && (
-            <div className={classnames('loading flex items-center justify-center', {
-              'loading--ended': isRemoveLoading
-            })}>
-              <div>
-                <Icon draggable={false} svg='ico-loading-card' />
-                <div className='h2'>
-                  chargement des offres
-                </div>
-              </div>
-           </div>
-          )
-        }
-        { thumbUrl && (
+  return (
+    <div className='recto'>
+      <div className='background' style={backgroundStyle} />
+      {
+        thumbUrl && (
           <div style={thumbStyle} className={classnames('thumb', {
             translated: isFlipped
           })} />
-        )}
-        {IS_DEV && <RectoDebug {...this.props} />}
-     </div>
-    )
-  }
+        )
+      }
+      {
+        IS_DEV && (
+          <div className='debug absolute left-0 ml2 p2'>
+            <span>
+              {id} {offer && offer.id} {index}
+            </span>
+            {
+              dateRead && [
+                <span key={0}>
+                  &middot;
+                </span>,
+                <span key={1}>
+                  {dateRead}
+                </span>
+              ]
+            }
+          </div>
+        )
+      }
+   </div>
+  )
 }
 
 export default compose(
@@ -119,7 +95,7 @@ export default compose(
         const userMediationOffers = userMediation.userMediationOffers
         const offerId = userMediationOffers[
           Math.floor(Math.random() * userMediationOffers.length)].id
-        return getOffer(offerId, userMediation)
+        return getOffer(userMediation, offerId)
       }
     ],
     thumbUrl: [

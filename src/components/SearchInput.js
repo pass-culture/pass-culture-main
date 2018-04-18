@@ -1,9 +1,9 @@
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
-import { Portal } from 'react-portal'
+// import { Portal } from 'react-portal'
 import { connect } from 'react-redux'
 
-import Loading from './Loading'
+// import Loading from './Loading'
 import { requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
 
@@ -47,12 +47,14 @@ class SearchInput extends Component {
         ref={_element => this._element = _element }
         type='text' />
     ]
+    /*
     window.location.pathname.includes('/gestion') && children.push(
       <Portal key={1}
         node={document && document.getElementById('header__content')}>
         <Loading />
       </Portal>
     )
+    */
     return children
   }
 }

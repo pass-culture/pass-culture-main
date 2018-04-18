@@ -8,6 +8,7 @@
   &.bordered {
     border-top: thin dotted rgba($white, 0.25);
   }
+
   &.colored {
     background-color: rgba($white, 0.9);
     &.bordered {
@@ -17,6 +18,7 @@
       background-color: white;
     }
   }
+
   button {
     border: 0;
     border-radius: 50%;
@@ -26,6 +28,10 @@
     cursor: pointer;
     display: block;
     background: none;
+    &:focus {
+      outline: none;
+    }
+
     img {
       width: 100%;
       height: auto;

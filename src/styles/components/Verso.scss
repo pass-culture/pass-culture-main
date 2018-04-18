@@ -6,9 +6,10 @@
   top: 0;
   bottom: 0;
   z-index: 500;
-  // padding-top: 50%;
   transform: translate(0, 100vh);
   will-change: transform;
+  height: calc(100% + 1px);
+
   &.flipped {
     transform: translate(0, 0);
   }

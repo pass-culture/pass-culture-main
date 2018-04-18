@@ -1,458 +1,282 @@
 import classnames from 'classnames'
+import get from 'lodash.get'
 import Draggable from 'react-draggable'
-import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { rgb_to_hsv } from 'colorsys'
+import { compose } from 'redux'
+import withSizes from 'react-sizes'
+import { withRouter } from 'react-router-dom'
 
-import Card, { CURRENT } from './Card'
+import Card from './Card'
 import Clue from './Clue'
-
 import Icon from './Icon'
-import { debug, warn } from '../utils/logguers'
-import { ROOT_PATH } from '../utils/config';
-
 import { flip, unFlip } from '../reducers/verso'
+import selectIsFlipDisabled from '../selectors/isFlipDisabled'
 import selectHeaderColor from '../selectors/headerColor'
+import { getMediation } from '../selectors/mediation'
+import selectNextLimit from '../selectors/nextLimit'
+import selectNextUserMediation from '../selectors/nextUserMediation'
+import selectPreviousLimit from '../selectors/previousLimit'
+import selectPreviousUserMediation from '../selectors/previousUserMediation'
+import { getOffer } from '../selectors/offer'
+import selectUserMediation from '../selectors/userMediation'
+import { IS_DEV, MOBILE_OS, ROOT_PATH } from '../utils/config';
+import { getDiscoveryPath } from '../utils/routes'
+import { worker } from '../workers/dexie/register'
 
 class Deck extends Component {
-  constructor (props) {
-    super(props)
-    this.state = { currentContent: null,
-      cursor: 0,
-      deckElement: null,
-      transition: null,
-      isFirstCard: false,
-      isFlipping: false,
-      isLastCard: false,
-      isResizing: false,
-      isTransitioning: false,
-      items: null
+  constructor () {
+    super()
+    this.state = {
+      bgStyle: null,
+      previousBgStyle: null,
+      position: null,
+      refreshKey: 0
     }
-    this.onDebouncedResize = debounce(this.onResize, props.resizeTimeout)
   }
-  handleSetTypeCard = (cardProps, cardState) => {
-    // only set things for the current Card
-    if (cardState.type !== CURRENT) {
-      return
+
+  handleDeprecatedData = nextProps => {
+    // DEPRECATION HANDLING
+    // IF THE RECO ARE DEPRECATED, WE GO TO DECOUVERTE
+    const { deprecatedUserMediations } = nextProps
+    if (deprecatedUserMediations
+      && deprecatedUserMediations !== this.props.deprecatedUserMediations) {
+      nextProps.history.push('/decouverte')
     }
-    this.props.isDebug && debug('Deck - handleSetTypeCard')
-    // no need to set in state the current cardProps
-    this.currentCardProps = cardProps
-    this.currentCardState = cardState
-    const newState = { isFirstCard: false,
-      isLastCard: false
-    }
-    if (cardProps.isFirst) {
-      newState.isFirstCard = true
-    } else if (cardProps.isLast) {
-      newState.isLastCard = true
-    }
-    // update
-    this.setState(newState)
   }
-  handleNextItemCard = diffIndex => {
-    // unpack
-    const { handleNextItemCard, isDebug } = this.props
-    const { items } = this.state
-    if (!items) {
-      warn('items is not defined')
-      return
-    }
-    isDebug && debug('Deck - handleNextItemCard')
-    // new state
-    this.items = items.map(index => index + diffIndex)
-    const newState = { cursor: 0,
-      items: this.items
-    }
-    // update by shifting the items
-    this.setState(newState)
-    // hook if Deck has parent manager component
-    handleNextItemCard && handleNextItemCard(diffIndex, this)
+
+  handleGoNext = () => {
+    const { history,
+      isFlipped,
+      nextUserMediation
+    } = this.props
+    if (!nextUserMediation || isFlipped) return;
+    const offer = getOffer(nextUserMediation)
+    history.push(getDiscoveryPath(offer, getMediation(nextUserMediation)));
+    this.handleRefreshNext()
   }
-  handleRelaxItemCard = data => {
-    this.props.isDebug && debug('Deck - handleResetItemCard')
-    this.setState({ cursor: 0 })
+
+  handleGoPrevious = () => {
+    const { history,
+      isFlipped,
+      previousUserMediation
+    } = this.props
+    if (!previousUserMediation || isFlipped) return;
+    const offer = getOffer(previousUserMediation)
+    history.push(getDiscoveryPath(offer, getMediation(previousUserMediation)));
+    this.handleRefreshPrevious()
   }
-  handleResetItems = (config = {}) => {
-    // unpack
-    const { isDebug } = this.props
-    const contents = config.contents || this.props.contents
-    const currentIndex = config.currentIndex || this.props.currentIndex
-    if (!contents) {
-      return
+
+  handleRefreshPrevious = () => {
+    const { currentUserMediation, previousLimit } = this.props
+    if (currentUserMediation.index <= previousLimit) {
+      worker.postMessage({ key: 'dexie-push-pull',
+        state: { around: currentUserMediation.id }})
     }
-    isDebug && debug(`Deck - handleResetItems currentIndex=${currentIndex}`)
-    // we need to determine the dynamic mapping of the deck
-    const items = [...Array(contents.length).keys()]
-      .map(index => index - (currentIndex > -1 ? currentIndex : 0))
-    this.items = items
-    // update
-    this.setState({ items })
   }
-  handleSetCurrentContent = () => {
-    // unpack
-    const { items } = this
-    const { contents, isDebug } = this.props
-    isDebug && debug('Deck - handleSetCurrentContent')
-    // find
-    const currentIndex = items && items.indexOf(0)
-    const previousContent = contents && contents[currentIndex - 1]
-    const currentContent = contents && contents[currentIndex]
-    const nextContent = contents && contents[currentIndex + 1]
-    this.currentContent = currentContent
-    // add a note if currentContent came from a loading card
-    if (this.state.currentContent
-      && this.state.currentContent.isLoading
-      && !this.state.currentContent.isRebootLoading
+
+  handleRefreshNext = () => {
+    const { currentUserMediation, nextLimit } = this.props
+    if (currentUserMediation.index >= nextLimit) {
+      worker.postMessage({ key: 'dexie-push-pull',
+        state: { around: currentUserMediation.id }})
+    }
+  }
+
+  handleRefreshedData = nextProps => {
+    // REFRESH HANDLING
+    // (ie kill the transition the short time we change the blob)
+    // WE CHANGE THE KEY OF THE DRAGGABLE
+    // TO FORCE IT TO REMOUNT AGAIN
+    if (nextProps && (
+         (!nextProps.userMediations || !this.props.userMediations)
+         || (nextProps.userMediations === this.props.userMediations)
+         || (!nextProps.currentUserMediation || !this.props.currentUserMediation)
+         || (nextProps.currentUserMediation.index === this.props.currentUserMediation.index)
+       )
     ) {
-      currentContent.isFromLoading = true
-    }
-    if (previousContent) {
-      previousContent.isFromLoading = false
-    }
-    if (nextContent) {
-      nextContent.isFromLoading = false
-    }
-    // update
-    this.setState({ currentContent, previousContent, nextContent })
-  }
-  handleSetStyle = () => {
-    // unpack
-    const { currentContent } = this
-    const { headerColor, transitionTimeout } = this.props
-    // style
-    const buttonStyle = { transition: `opacity ${transitionTimeout}ms` }
-    const previousBgStyle = Object.assign({}, this.state.bgStyle)
-    const bgStyle = {
-                      transition: `opacity ${transitionTimeout}ms cubic-bezier(0.0, 0.0, 0, 1.0)`,
-                      background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 35%,${headerColor} 100%)`,
-                      opacity: 1,
-                    }
-    previousBgStyle.transition = `opacity ${transitionTimeout}ms cubic-bezier(1, 0.0, 1.0, 1.0)`
-    previousBgStyle.opacity = 0
-    // update
-    this.setState({ buttonStyle, bgStyle, previousBgStyle })
-    }
-      handleSetReadCard = card => {
-        // unpack
-        const { handleSetReadCard, isDebug } = this.props
-        isDebug && debug('Deck - handleSetReadCard')
-        // hook if Deck has parent manager component
-        handleSetReadCard && handleSetReadCard(card)
-      }
-      handleSetCursorCard = cursor => {
-        this.props.isDebug && debug('Deck - handleSetCursorCard')
-        this.setState({ cursor, transition: 'none' })
-      }
-      onStart = (event, data) => {
-        this.props.isDebug && debug('Deck - onStart')
-        this.setState({ isFlipping: true, clientY: event.clientY })
-      }
-      onDrag = (event, data) => {
-        // unpack
-        const { flipRatio, isDebug } = this.props
-        const { deckElement } = this.state
-        isDebug && debug('Deck - onDrag')
-        // cursor
-        const cursor = (event.clientY - this.state.clientY) / deckElement.offsetHeight
-        if (!this.props.isFlipped && cursor < -flipRatio) {
-          this.props.flip()
-        } else if (this.props.isFlipped && cursor > flipRatio) {
-          this.props.unFlip()
-        }
-      }
-  onNext = (event, diffIndex) => {
-    this.props.isDebug && debug('Deck - onNext')
-    event.preventDefault()
-    event.stopPropagation()
-    this.handleNextItemCard(diffIndex)
-  }
-  onStop = (event, data) => {
-    this.props.isDebug && debug('Deck - onStop')
-    this.setState({ isFlipping: false, y: null })
-  }
-  onResize = event => {
-    this.props.isDebug && debug('Deck - onResize')
-    this.setState({ isResizing: true })
-  }
-  onTransitionEndCard = (event, cardProps) => {
-    // check and unpack
-    const { transitions } = this
-    const { handleTransitionEnd, isDebug } = this.props
-    isDebug && debug('Deck - onTransitionEndCard')
-    // update the transitions store
-    if (!transitions) {
-      warn('transitions is null while we try to update transition end...? weird')
       return
     }
-    const newTransitions = [...transitions]
-    const transition = newTransitions[cardProps.index]
-    if (transition && transition[event.propertyName]) {
-        delete transition[event.propertyName]
-        if (Object.keys(transition).length === 0) {
-          newTransitions[cardProps.index] = false
-        }
-    }
-    this.transitions = newTransitions
-    // check
-    if (newTransitions.every((newTransition, index) => !newTransition)) {
-      handleTransitionEnd && handleTransitionEnd()
-      this.setState({ isTransitioning: false })
-      this.transitions = null
-    }
+    this.setState({ refreshKey: this.state.refreshKey + 1 })
   }
-  onTransitionStartCard = (event, cardProps) => {
-    // unpack
-    const { transitions } = this
-    const { contents,
-      handleTransitionStart,
-      isDebug
+
+  handleSetDragPosition = nextProps => {
+    const props = nextProps || this.props
+    if (nextProps
+      && nextProps.currentUserMediation === this.props.currentUserMediation
+      && nextProps.width === this.props.width
+    ) { return }
+    const offsetWidth = get(this.$deck, 'offsetWidth')
+    const index = get(props, 'currentUserMediation.index', 0)
+    const x = -1 * offsetWidth * index
+    const position = { x, y: 0 }
+    this.setState({ position })
+  }
+
+  onStop = (e, data) => {
+    const { flip,
+      horizontalSlideRatio,
+      verticalSlideRatio,
+      unFlip
     } = this.props
-    isDebug && debug('Deck - onTransitionStartCard')
-    // at the first time one of the card is transitioning
-    // we init a new array
-    let newTransitions
-    if (!transitions) {
-      newTransitions = [...new Array(contents.length)]
-      this.setState({ isTransitioning: true })
-      handleTransitionStart && handleTransitionStart()
-    } else {
-      newTransitions = [...transitions]
-    }
-    // for this particular card, maybe the transition
-    // exists alreay or not
-    if (!newTransitions[cardProps.index]) {
-      newTransitions[cardProps.index] = { [event.propertyName]: true }
-    } else {
-      newTransitions[cardProps.index][event.propertyName] = true
-    }
-    this.transitions = newTransitions
-  }
-  componentWillMount() {
-    this.handleResetItems(this.props)
-  }
-  componentWillReceiveProps (nextProps) {
-    // unpack
-    const { contents } = this.props
-    const { isTransitioning } = this.state
-    // look for content change
-    if (nextProps.contents !== contents) {
-      if (!isTransitioning) {
-        nextProps.isDebug && debug('Deck - componentWillReceiveProps')
-        this.handleResetItems(nextProps)
-        // init new state
-        // transition to 'none' helps
-        // the card to know that they should not remount with a style transition
-        // because they are already at the good place
-        this.setState({ transition: 'none' })
-      }
+    const deckWidth = this.$deck.offsetWidth;
+    const deckHeight = this.$deck.offsetHeight;
+    const index = get(this.props, 'currentUserMediation.index', 0)
+    const offset = (data.x + deckWidth * index)/deckWidth
+    if (offset > horizontalSlideRatio) {
+      this.handleGoPrevious();
+    } else if (-offset > horizontalSlideRatio) {
+      this.handleGoNext();
+    } else if (data.y > deckHeight * verticalSlideRatio) {
+      unFlip();
+    } else if (data.y < -deckHeight * verticalSlideRatio) {
+      flip();
     }
   }
+
   componentDidMount () {
-    this.handleSetCurrentContent()
-    this.setState({ deckElement: this.element })
-    window.addEventListener('resize', this.onDebouncedResize)
+    this.handleRefreshedData()
+    this.handleSetDragPosition()
   }
-  componentDidUpdate (prevProps, prevState) {
-    // unpack
-    const { contents,
-      isDebug,
-      transitionTimeout
-    } = this.props
-    const { currentContent,
-      transition,
-      isResizing,
-      items
-    } = this.state
-    // the deck updated because we changed the contents
-    // so we need to wait just the refresh of the children
-    // card to reset to false the transition
-    if (transition === 'none') {
-      this.setState({ transition: null })
-    }
-    // as the deck element has a dynamical width
-    // we need to trigger again the set of the style
-    // of the children when we resize the window
-    if (isResizing && !prevState.isResizing) {
-      this.setState({ isResizing: false })
-    }
-    isDebug && debug('Deck - componentDidUpdate')
-    // adapt the items and current content
-    if (contents !== prevProps.contents || items !== prevState.items) {
-      if (contents && !prevProps.contents) {
-        isDebug && debug('Deck - componentDidUpdate handleResetItems')
-        this.handleResetItems()
-      }
-      isDebug && debug('Deck - componentDidUpdate handleSetCurrentContent')
-      this.handleSetCurrentContent()
-    }
-    // adapt style given current content
-    if (transitionTimeout !== prevProps.transitionTimeout ||
-      currentContent !== prevState.currentContent) {
-      this.handleSetStyle()
-    }
+
+  componentWillReceiveProps (nextProps) {
+    this.handleRefreshedData(nextProps)
+    this.handleDeprecatedData(nextProps)
+    this.handleSetDragPosition(nextProps)
   }
-  componentWillUnmount () {
-    window.removeEventListener('resize', this.onDebouncedResize)
-  }
+
   render () {
     const {
-      handleNextItemCard,
-      handleRelaxItemCard,
-      handleSetCursorCard,
-      handleSetTypeCard,
-      handleSetReadCard,
-      onDrag,
-      onNext,
-      onStart,
-      onStop,
-      onTransitionEndCard,
-      onTransitionStartCard
-    } = this
-    const { children,
-      contents,
-      extraContents,
-      isLoadingBefore,
-      isLoadingAfter,
-      transitionTimeout,
-      readTimeout,
-      headerColor,
+      currentUserMediation,
+      flip,
+      isFlipDisabled,
+      isFlipped,
+      nextUserMediation,
+      previousUserMediation,
+      unFlip,
+      unFlippable,
     } = this.props
-    const { bgStyle,
-      buttonStyle,
-      currentContent,
-      cursor,
-      deckElement,
-      isFirstCard,
-      isFlipping,
-      isLastCard,
-      isResizing,
-      isTransitioning,
-      items,
-      nextContent,
-      previousBgStyle,
-      previousContent,
-      transition
+    const {
+      position,
+      refreshKey
     } = this.state
-    const isAfterDisabled = !items || isLastCard || !nextContent
-    const isAfterHidden = (previousContent && previousContent.isLast) || !nextContent
-    const isBeforeDisabled = !items || isFirstCard || !previousContent
-    const isBeforeHidden = (currentContent && currentContent.isFirst) || !previousContent
-    const isLoading = isLoadingBefore || isLoadingAfter
-    const isFlipDisabled = !items || isLoading ||
-      (currentContent && currentContent.mediation &&
-        currentContent.userMediationOffers.length === 0 &&
-        currentContent.mediation.thumbCount === 1) || (currentContent
-          && (!currentContent.mediation))
-    const isBeforeAfterDisabled = isBeforeDisabled && isAfterHidden
     return (
-      <Draggable axis='none'
-        bounds={{ bottom: 0, top: 0 }}
-        onDrag={onDrag}
-        onStart={onStart}
-        onStop={onStop} >
-        <div className='deck'
-          id='deck'
-          ref={element => this.element = element }>
-          {!this.props.unFlippable && (
-            <button className={classnames('button close', {
-              'button--hidden': !this.props.isFlipped,
-              'button--disabled': isTransitioning })}
-              onClick={e => this.props.unFlip()} >
-              <Icon svg='ico-close' />
-            </button>
-          )}
-          {
-            items && items.map((item, index) =>
-              contents && contents[index] &&
-              Math.abs(item) < 2 &&
-                <Card content={contents && Object.assign({},
-                  contents[index], extraContents && extraContents[index])}
-                  contentLength={contents && contents.length}
-                  cursor={cursor}
-                  deckElement={deckElement}
-                  handleNextItem={handleNextItemCard}
-                  handleRelaxItem={handleRelaxItemCard}
-                  handleSetCursor={handleSetCursorCard}
-                  handleSetRead={handleSetReadCard}
-                  handleSetType={handleSetTypeCard}
-                  isBeforeAfterDisabled={isBeforeAfterDisabled}
-                  isFirst={contents && !contents[index - 1]}
-                  isFlipping={isFlipping}
-                  isLast={contents && !contents[index + 1]}
-                  index={index}
-                  isResizing={isResizing}
-                  isTransitioning={isTransitioning}
-                  item={item}
-                  transition={transition}
-                  transitionTimeout={transitionTimeout}
-                  key={index}
-                  onTransitionEnd={onTransitionEndCard}
-                  onTransitionStart={onTransitionStartCard}
-                  readTimeout={readTimeout} />
-            )
-          }
-          <div className='board-wrapper'>
-            <div className='board-bg' style={currentContent && currentContent.index % 2 == 0 ? bgStyle : previousBgStyle } ></div>
-            <div className='board-bg' style={currentContent && currentContent.index % 2 == 0 ? previousBgStyle : bgStyle } ></div>
-            <div className='board'
-              id='deck__board'
-              ref={element => this.boardElement = element}
-               >
-              <ul className='controls' style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}}>
-                <li>
-                  <button className={classnames('button before', {
-                    // 'disabled': isBeforeDisabled,
-                    'hidden': isBeforeHidden })}
-                    disabled={isBeforeDisabled || isBeforeHidden}
-                    onClick={event => onNext(event, 1)}>
-                      <Icon svg='ico-prev-w-group' />
-                  </button>
-                </li>
-                <li>
-                  <button className={classnames('button to-recto ', {
-                      'disabled': isFlipDisabled,
-                      'hidden': isLoading || isFlipDisabled
-                    })}
-                    disabled={isFlipDisabled}
-                    onClick={e => this.props.flip()} >
-                    <Icon svg='ico-slideup-w' />
-                  </button>
-                  <Clue />
-                </li>
-                <li>
-                  <button className={classnames('button after', {
-                    // 'disabled': isAfterDisabled,
-                    'hidden': isAfterHidden })}
-                    onClick={event => onNext(event, -1)}
-                    disabled={isAfterDisabled || isAfterHidden} >
-                    <Icon svg='ico-next-w-group' />
-                  </button>
-                </li>
-              </ul>
-              {children}
+      <div className='deck'
+        id='deck'
+        ref={$el => (this.$deck = $el)}>
+        {!unFlippable && (
+          <button className={classnames('button close', {
+              hidden: !isFlipped,
+            })}
+            onClick={unFlip} >
+            <Icon svg='ico-close' />
+          </button>
+        )}
+        <div className={classnames('loading flex items-center justify-center', {
+          'shown': !currentUserMediation
+        })}>
+          <div>
+            <Icon draggable={false} svg='ico-loading-card' />
+            <div className='h2'>
+              chargement des offres
             </div>
           </div>
         </div>
-      </Draggable>
+        <Draggable
+          axis={isFlipped ? 'none' : 'exclude'}
+          key={refreshKey}
+          position={position}
+          onStop={this.onStop}
+          >
+          <div>
+            {
+              previousUserMediation && <Card position='previous'
+                userMediation={previousUserMediation} />
+            }
+            <Card ref={$el => this.$current = $el}
+              position='current'
+              userMediation={currentUserMediation} />
+            {
+              nextUserMediation && <Card position='next'
+                userMediation={nextUserMediation} />
+            }
+          </div>
+        </Draggable>
+        <div className={classnames('board-wrapper', { hidden: isFlipped })}>
+          <div className='board-bg'
+            style={{ background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${this.props.headerColor} 35%,${this.props.headerColor} 100%)` }} />
+          <ul className={classnames('controls', {
+            hidden: isFlipped,
+          })} style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}} >
+            <li>
+              <button className={classnames('button before', {
+                  hidden: !previousUserMediation,
+                })}
+                onClick={this.handleGoPrevious} >
+                  <Icon svg='ico-prev-w-group' />
+              </button>
+            </li>
+            <li>
+              <button className={classnames('button to-recto', {
+                  hidden: isFlipDisabled,
+                })}
+                disabled={isFlipDisabled}
+                onClick={flip} >
+                <Icon svg='ico-slideup-w' />
+              </button>
+              <Clue />
+            </li>
+            <li>
+              <button className={classnames('after button', {
+                  hidden: !nextUserMediation,
+                })}
+                onClick={this.handleGoNext} >
+                <Icon svg='ico-next-w-group' />
+              </button>
+            </li>
+          </ul>
+        </div>
+        {
+          IS_DEV && (
+            <div className='debug absolute left-0 ml2 p2'>
+              ({this.props.isLoadingBefore ? '?' : ' '}{this.props.previousLimit}) {this.props.currentUserMediation && this.props.currentUserMediation.index}{' '}
+              ({this.props.nextLimit} {this.props.isLoadingAfter ? '?' : ' '}) / {this.props.userMediations && this.props.userMediations.length - 1}
+            </div>
+          )
+        }
+      </div>
     )
   }
 }
 
-Deck.defaultProps = { deckKey: 0,
+Deck.defaultProps = {
   flipRatio: 0.25,
+  horizontalSlideRatio: 0.2,
+  verticalSlideRatio: 0.1,
   isDebug: false,
   readTimeout: 3000,
   resizeTimeout: 250,
   transitionTimeout: 500
 }
 
-export default connect(
-  state => ({
-    headerColor: selectHeaderColor(state),
-    isFlipped: state.verso.isFlipped,
-    unFlippable: state.verso.unFlippable,
-  }),
-  { flip, unFlip }
+
+export default compose(
+  withRouter,
+  connect(
+    state => ({
+      currentUserMediation: selectUserMediation(state),
+      deprecatedUserMediations: state.data.deprecatedUserMediations,
+      headerColor: selectHeaderColor(state),
+      isFlipDisabled: selectIsFlipDisabled(state),
+      isFlipped: state.verso.isFlipped,
+      nextLimit: selectNextLimit(state),
+      nextUserMediation: selectNextUserMediation(state),
+      previousLimit: selectPreviousLimit(state),
+      previousUserMediation: selectPreviousUserMediation(state),
+      userMediations: state.data.userMediations,
+      unFlippable: state.verso.unFlippable,
+    }),
+    { flip, unFlip }
+  ),
+  ...MOBILE_OS === 'unknown' && [withSizes(({ width }) => ({ width }))]
 )(Deck)

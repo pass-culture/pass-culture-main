@@ -1,4 +1,3 @@
-import 'fetch-everywhere'
 import { parse } from 'query-string'
 
 import { API_URL } from './config'

@@ -1,5 +1,5 @@
 import withSelectors from './withSelectors'
-import { API_URL, THUMBS_URL } from '../utils/config'
+import { THUMBS_URL } from '../utils/config'
 
 const withFrontendOffer = withSelectors({
   thingOrEventOccurence: [

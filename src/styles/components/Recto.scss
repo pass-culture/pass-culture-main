@@ -3,13 +3,15 @@
   height: 75%;
   overflow: hidden;
   position: relative;
+
   &--small {
     border-radius: $border-radius;
   }
   &--loading {
     height: 50%;
   }
-  .card-background {
+
+  .background {
     filter: blur(20px);
     background-size: 100% auto;
     background-position: center;
@@ -23,24 +25,7 @@
     margin-left: -50px;
     transition: all 0.25s ease-out;
   }
-  .loading {
-    background-color: $menu-red;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transition: opacity 1s, z-index 10ms 0.75s;
-    z-index: 1000;
-    filter: none;
-    div {
-      color: white;
-    }
-    &--ended {
-      opacity: 0;
-      z-index: -1000;
-    }
-  }
+
   .thumb {
     position: absolute;
     height: 100%;
@@ -58,8 +43,17 @@
     -webkit-transition-property: transform, background-size;
     transition-property: transform, background-size;
     will-change: transform;
+
     &.translated {
       transform: translate(0, -25%) scale(1.1);
     }
   }
+
+  .debug {
+    background-color: white;
+    border-radius: $border-radius;
+    top: 20%;
+    z-index: 10000;
+  }
+
 }

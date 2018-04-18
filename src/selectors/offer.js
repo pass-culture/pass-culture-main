@@ -3,9 +3,9 @@ import get from 'lodash.get';
 
 import selectUserMediation from './userMediation'
 
-export function getOffer (offerId, userMediation) {
+export function getOffer (userMediation, offerId) {
   return get(userMediation, 'userMediationOffers', [])
-    .find(o => o.id === offerId)
+    .find(o => offerId ? (o.id === offerId) : true)
 }
 
 export default createSelector(
@@ -13,6 +13,6 @@ export default createSelector(
   selectUserMediation,
   (pathname, userMediation) => {
     const [ , , offerId ] = pathname.split('/')
-    return getOffer(offerId, userMediation)
+    return getOffer(userMediation, offerId)
   }
 )
