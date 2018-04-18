@@ -40,4 +40,4 @@ def test_12_put_user_mediations_should_return_more_ums():
     assert len(list(filter(lambda um: 'mediatedOccurences' in um and
                                       um['mediatedOccurences'] is not None and
                                       len(um['mediatedOccurences']) > 1,
-                           ums))) == 10 
+                           ums))) == 5

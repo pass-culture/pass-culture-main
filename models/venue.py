@@ -1,6 +1,6 @@
 from flask import current_app as app
 from sqlalchemy import Index
-from sqlalchemy.dialects.postgresql import TEXT
+from sqlalchemy.dialects.postgresql import ARRAY, TEXT, TIME
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
@@ -22,6 +22,11 @@ class Venue(app.model.PcObject,
     latitude = db.Column(db.Numeric(8, 5), nullable=True)
 
     longitude = db.Column(db.Numeric(8, 5), nullable=True)
+
+    #openingHours = db.Column(ARRAY(TIME))
+    # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
+    # means open monday 9 to 18 and tuesday 9 to 19, closed wednesday,
+    # open thursday 9 to 18, closed the rest of the week
 
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT)
