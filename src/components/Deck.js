@@ -115,7 +115,7 @@ class Deck extends Component {
   }
 
   handleFlip = () => {
-    if (this.props.unFlippable) return;
+    if (this.props.isFlipDisabled) return;
     this.props.flip();
   }
 
