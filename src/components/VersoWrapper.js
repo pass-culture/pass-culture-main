@@ -3,11 +3,11 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import ControlBar from './ControlBar'
+import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
+import selectCurrentSource from '../selectors/currentSource'
+import selectCurrentVenue from '../selectors/currentVenue'
+import selectIsCurrentTuto from '../selectors/isCurrentTuto'
 import { ROOT_PATH } from '../utils/config';
-import selectHeaderColor from '../selectors/headerColor'
-import selectIsTuto from '../selectors/isTuto'
-import selectSource from '../selectors/source'
-import selectVenue from '../selectors/venue'
 
 class VersoWrapper extends Component {
   componentDidUpdate (prevProps, prevState) {
@@ -19,14 +19,14 @@ class VersoWrapper extends Component {
   render() {
     const { children,
       className,
-      hasControlBar,
       headerColor,
-      isTuto,
       source,
       venue,
+      hasControlBar,
+      isCurrentTuto
     } = this.props
     const contentStyle = {}
-    if (isTuto) {
+    if (isCurrentTuto) {
       contentStyle.backgroundColor = headerColor
     } else {
       contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
@@ -51,9 +51,9 @@ class VersoWrapper extends Component {
 
 export default connect(
   state => ({
-    headerColor: selectHeaderColor(state),
+    headerColor: selectCurrentHeaderColor(state),
     isFlipped: state.verso.isFlipped,
-    isTuto: selectIsTuto(state),
-    source: selectSource(state),
-    venue: selectVenue(state)
+    isCurrentTuto: selectIsCurrentTuto(state),
+    source: selectCurrentSource(state),
+    venue: selectCurrentVenue(state)
   }))(VersoWrapper)

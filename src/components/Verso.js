@@ -5,24 +5,25 @@ import { connect } from 'react-redux'
 import OfferInfo from '../components/OfferInfo'
 import VersoWrapper from '../components/VersoWrapper'
 import MenuButton from '../components/layout/MenuButton'
-import selectIsTuto from '../selectors/isTuto'
-import selectMediation from '../selectors/mediation'
+import selectCurrentMediation from '../selectors/currentMediation'
+import selectIsCurrentTuto from '../selectors/isCurrentTuto'
 import { THUMBS_URL } from '../utils/config'
 
 class Verso extends Component {
 
   render() {
-    const { isFlipped,
-            isTuto,
-            mediation,
-          } = this.props
+    const {
+      mediation,
+      isFlipped,
+      isCurrentTuto,
+    } = this.props
     return (
       <div className={classnames('verso', {
         'flipped': isFlipped,
       })} >
-        <VersoWrapper hasControlBar={!isTuto} className='with-padding-top'>
+        <VersoWrapper hasControlBar={!isCurrentTuto} className='with-padding-top'>
           {
-            isTuto
+            isCurrentTuto
             ? mediation && <img alt='verso'
                 className='verso-tuto-mediation'
                 src={`${THUMBS_URL}/mediations/${mediation.id}_1`} />
@@ -30,7 +31,7 @@ class Verso extends Component {
           }
         </VersoWrapper>
         {
-          isTuto ?
+          isCurrentTuto ?
             ( <MenuButton borderTop /> ) :
             ( <MenuButton borderTop colored /> )
         }
@@ -41,7 +42,7 @@ class Verso extends Component {
 
 export default connect(
   state => ({
+    mediation: selectCurrentMediation(state),
     isFlipped: state.verso.isFlipped,
-    isTuto: selectIsTuto(state),
-    mediation: selectMediation(state),
+    isCurrentTuto: selectIsCurrentTuto(state)
   }))(Verso)

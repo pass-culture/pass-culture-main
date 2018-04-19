@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import get from 'lodash.get';
 import classnames from 'classnames';
+import get from 'lodash.get';
 import moment from 'moment'
 import 'moment-locale-fr'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { SingleDatePicker } from 'react-dates';
 
 import Icon from '../components/Icon'
@@ -12,9 +12,9 @@ import VersoWrapper from '../components/VersoWrapper'
 import { requestData } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 import selectBooking from '../selectors/booking'
-import selectOffer from '../selectors/offer'
-import selectOfferer from '../selectors/offerer'
-import selectUserMediation from '../selectors/userMediation'
+import selectCurrentOffer from '../selectors/currentOffer'
+import selectCurrentOfferer from '../selectors/currentOfferer'
+import selectCurrentUserMediation from '../selectors/currentUserMediation'
 
 moment.locale('fr');
 
@@ -185,9 +185,9 @@ class Booking extends Component {
 export default connect(
   state => ({
     booking: selectBooking(state),
-    offer: selectOffer(state),
-    offerer: selectOfferer(state),
-    userMediation: selectUserMediation(state)
+    offer: selectCurrentOffer(state),
+    offerer: selectCurrentOfferer(state),
+    userMediation: selectCurrentUserMediation(state)
   }), {
   requestData,
   closeModal,

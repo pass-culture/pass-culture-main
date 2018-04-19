@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 
 import Price from './Price'
 import selectDistance from '../selectors/distance'
-import selectOffer from '../selectors/offer'
-import selectUserMediation from '../selectors/userMediation'
+import selectCurrentOffer from '../selectors/currentOffer'
+import selectCurrentUserMediation from '../selectors/currentUserMediation'
 
 const Clue = ({
   distance,
@@ -31,6 +31,6 @@ export default connect(
   state => ({
     distance: selectDistance(state),
     isFlipped: state.verso.isFlipped,
-    offer: selectOffer(state),
-    userMediation: selectUserMediation(state)
+    offer: selectCurrentOffer(state),
+    userMediation: selectCurrentUserMediation(state)
   }))(Clue)

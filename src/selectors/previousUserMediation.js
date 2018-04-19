@@ -1,13 +1,16 @@
 import { createSelector } from 'reselect'
 
-import selectUserMediation from './userMediation'
+import selectCurrentUserMediation from './currentUserMediation'
+import getUserMediation from '../getters/userMediation'
 
 export default createSelector(
   state => state.data.userMediations,
-  state => selectUserMediation(state),
-  (userMediations, userMediation) =>
-    userMediation
-    && userMediations
-    && userMediations[userMediations.findIndex(um =>
-      um.id === userMediation.id) - 1]
+  selectCurrentUserMediation,
+  (userMediations, currentUserMediation) => {
+    const previousUserMediation = currentUserMediation
+      && userMediations
+      && userMediations[userMediations.findIndex(um =>
+        um.id === currentUserMediation.id) - 1]
+    return getUserMediation({ userMediation: previousUserMediation })
+  }
 )

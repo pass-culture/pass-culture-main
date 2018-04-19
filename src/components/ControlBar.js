@@ -1,18 +1,17 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
-import get from 'lodash.get'
 
-import { requestData } from '../reducers/data'
-import { showModal } from '../reducers/modal'
 import Icon from './Icon'
 import Price from './Price'
 import Booking from './Booking'
 import selectBooking from '../selectors/booking'
-import selectOffer from '../selectors/offer'
-import selectOfferer from '../selectors/offerer'
-import selectUserMediation from '../selectors/userMediation'
-
+import selectCurrentOffer from '../selectors/currentOffer'
+import selectCurrentOfferer from '../selectors/currentOfferer'
+import selectCurrentUserMediation from '../selectors/currentUserMediation'
+import { requestData } from '../reducers/data'
+import { showModal } from '../reducers/modal'
 
 class ControlBar extends Component {
 
@@ -86,9 +85,9 @@ class ControlBar extends Component {
 export default connect(
   state => ({
     booking: selectBooking(state),
-    userMediation: selectUserMediation(state),
-    offer: selectOffer(state),
-    offerer: selectOfferer(state),
+    userMediation: selectCurrentUserMediation(state),
+    offer: selectCurrentOffer(state),
+    offerer: selectCurrentOfferer(state),
   }), {
   requestData,
   showModal,

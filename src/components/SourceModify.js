@@ -7,7 +7,6 @@ import ProviderItem from '../components/ProviderItem'
 import { NEW } from '../utils/config'
 
 const SourceModify = ({ offererId, providers }) => {
-  console.log('providers', providers)
   return (
     <div>
       <List className='mb1'

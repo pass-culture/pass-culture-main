@@ -6,12 +6,12 @@ import moment from 'moment'
 import Icon from './Icon'
 import { navigationLink } from '../utils/geolocation'
 import selectDistance from '../selectors/distance'
-import selectOffer from '../selectors/offer'
-import selectOfferer from '../selectors/offerer'
-import selectSource from '../selectors/source'
-import selectThumbUrl from '../selectors/thumbUrl'
-import selectVenue from '../selectors/venue'
-import selectUserMediation from '../selectors/userMediation'
+import selectCurrentOffer from '../selectors/currentOffer'
+import selectCurrentOfferer from '../selectors/currentOfferer'
+import selectCurrentSource from '../selectors/currentSource'
+import selectCurrentThumbUrl from '../selectors/currentThumbUrl'
+import selectVenue from '../selectors/currentVenue'
+import selectCurrentUserMediation from '../selectors/currentUserMediation'
 
 
 
@@ -89,10 +89,10 @@ class OfferInfo extends Component {
 export default connect(
   state => ({
     distance: selectDistance(state),
-    offer: selectOffer(state),
-    offerer: selectOfferer(state),
-    source: selectSource(state),
-    thumbUrl: selectThumbUrl(state),
-    userMediation: selectUserMediation(state),
+    offer: selectCurrentOffer(state),
+    offerer: selectCurrentOfferer(state),
+    source: selectCurrentSource(state),
+    thumbUrl: selectCurrentThumbUrl(state),
+    userMediation: selectCurrentUserMediation(state),
     venue: selectVenue(state)
   }))(OfferInfo)
