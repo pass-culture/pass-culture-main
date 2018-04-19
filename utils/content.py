@@ -21,7 +21,6 @@ def get_thumb_url(mediation, source, offer):
         return '/mediations/'+ mediation['id']
     elif source and source.get('thumbCount') > 0:
         return source_collection_name + '/' + source['id']
-    return '/static/images/default_thumb.png'
 
 def get_venue(offer, source):
     return offer.get('eventOccurence', {'venue': None}).get('venue') or\
