@@ -162,6 +162,7 @@ class Deck extends Component {
       nextUserMediation,
       previousUserMediation,
       unFlippable,
+      headerColor,
     } = this.props
     const {
       position,
@@ -170,6 +171,9 @@ class Deck extends Component {
     return (
       <div className='deck'
         id='deck'
+        style={{
+          backgroundColor: headerColor,
+        }}
         ref={$el => (this.$deck = $el)}>
         {!unFlippable && (
           <button className={classnames('button close', {
@@ -194,7 +198,7 @@ class Deck extends Component {
           key={refreshKey}
           position={position}
           onStop={this.onStop}
-          bounds={isFlipped ? {} : {bottom: 0}}
+          bounds={isFlipped ? {} : {bottom: 0, top: -100}}
           enableUserSelectHack={false}
           >
           <div>
