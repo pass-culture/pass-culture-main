@@ -87,4 +87,4 @@ def page_defaults(mapper, configuration, target):
     # `bookingLimitDatetime` defaults to midnight before `beginningDatetime`
     # for eventOccurences
     if target.eventOccurenceId and not target.bookingLimitDatetime:
-        target.bookingLimitDatetime = target.eventOccurence.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=1)
+        target.bookingLimitDatetime = target.eventOccurence.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=2)
