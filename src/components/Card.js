@@ -47,9 +47,6 @@ class Card extends Component {
           transform: `translate(${get(userMediation, 'index') * 100}%, 0)`,
         }}>
           <Recto {...userMediation} />
-          <div className='board-bg'
-            style={{ background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)` }} />
-
           { position === 'current' &&  <Verso /> }
       </div>
     )

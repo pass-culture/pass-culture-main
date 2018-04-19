@@ -7,39 +7,4 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: -1;
-
-  &.current {
-    z-index: 1;
-  }
-
-  &--draggable {
-    cursor: -webkit-grab;
-  }
-  &--small {
-    height: 90%;
-  }
-  &--span {
-    height: 100%;
-    z-index: 1;
-  }
-
-  .board-bg {
-    position: fixed;
-    bottom: 0px;
-    top: 62%;
-    left: -100%;
-    right: -100%;
-    z-index: 1;
-    // transition: background 2500ms ease;
-  }
-
-  &__container {
-    height: 100%;
-    width: 100%;
-    &--small {
-      border-radius: $border-radius;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    }
-  }
 }

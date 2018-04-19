@@ -37,11 +37,10 @@
     background-size: auto 100%;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: 1;
     transition-duration: 250ms;
     transition-delay: 50ms;
-    -webkit-transition-property: transform, background-size;
-    transition-property: transform, background-size;
+    -webkit-transition-property: transform;
+    transition-property: transform;
     will-change: transform;
 
     &.translated {

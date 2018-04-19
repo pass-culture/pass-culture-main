@@ -216,6 +216,8 @@ class Deck extends Component {
           </div>
         </Draggable>
         <div className={classnames('board-wrapper', { hidden: isFlipped })}>
+          <div className='board-bg'
+            style={{ background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)` }} />
           <ul className={classnames('controls', {
             hidden: isFlipped,
           })} style={{backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,}} >
