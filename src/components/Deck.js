@@ -26,9 +26,6 @@ class Deck extends Component {
   constructor () {
     super()
     this.state = {
-      bgStyle: null,
-      previousBgStyle: null,
-      position: null,
       refreshKey: 0
     }
   }
@@ -101,19 +98,6 @@ class Deck extends Component {
     this.setState({ refreshKey: this.state.refreshKey + 1 })
   }
 
-  handleSetDragPosition = nextProps => {
-    const props = nextProps || this.props
-    if (nextProps
-      && nextProps.currentUserMediation === this.props.currentUserMediation
-      && nextProps.width === this.props.width
-    ) { return }
-    const offsetWidth = get(this.$deck, 'offsetWidth')
-    const index = get(props, 'currentUserMediation.index', 0)
-    const x = -1 * offsetWidth * index
-    const position = { x, y: 0 }
-    this.setState({ position })
-  }
-
   handleFlip = () => {
     if (this.props.isFlipDisabled) return;
     this.props.flip();
@@ -128,31 +112,29 @@ class Deck extends Component {
     const {
       horizontalSlideRatio,
       verticalSlideRatio,
+      height,
+      width,
     } = this.props
-    const deckWidth = this.$deck.offsetWidth;
-    const deckHeight = this.$deck.offsetHeight;
     const index = get(this.props, 'currentUserMediation.index', 0)
-    const offset = (data.x + deckWidth * index)/deckWidth
+    const offset = (data.x + width * index)/width
     if (offset > horizontalSlideRatio) {
       this.handleGoPrevious();
     } else if (-offset > horizontalSlideRatio) {
       this.handleGoNext();
-    } else if (data.y > deckHeight * verticalSlideRatio) {
+    } else if (data.y > height * verticalSlideRatio) {
       this.handleUnFlip();
-    } else if (data.y < -deckHeight * verticalSlideRatio) {
+    } else if (data.y < -height * verticalSlideRatio) {
       this.handleFlip();
     }
   }
 
   componentDidMount () {
     this.handleRefreshedData()
-    this.handleSetDragPosition()
   }
 
   componentWillReceiveProps (nextProps) {
     this.handleRefreshedData(nextProps)
     this.handleDeprecatedData(nextProps)
-    this.handleSetDragPosition(nextProps)
   }
 
   render () {
@@ -165,18 +147,24 @@ class Deck extends Component {
       previousUserMediation,
       unFlippable,
       headerColor,
+      width,
     } = this.props
     const {
-      position,
       refreshKey
     } = this.state
+
+    const index = get(this.props, 'currentUserMediation.index', 0)
+    const position = {
+      x: -1 * width * index,
+      y: 0
+    }
+
     return (
       <div className='deck'
         id='deck'
         style={{
           backgroundColor: headerColor,
-        }}
-        ref={$el => (this.$deck = $el)}>
+        }} >
         {!unFlippable && (
           <button className={classnames('button close', {
               hidden: !isFlipped,
@@ -200,21 +188,15 @@ class Deck extends Component {
           key={refreshKey}
           position={position}
           onStop={this.onStop}
-          bounds={isFlipped ? {} : {bottom: 0, top: -100}}
+          bounds={{bottom: 0, top: -100}}
           enableUserSelectHack={false}
           >
           <div>
-            {
-              previousUserMediation && <Card position='previous'
-                userMediation={previousUserMediation} />
-            }
-            <Card ref={$el => this.$current = $el}
-              position='current'
-              userMediation={currentUserMediation} />
-            {
-              nextUserMediation && <Card position='next'
-                userMediation={nextUserMediation} />
-            }
+            { previousUserMediation &&
+              <Card position='previous' userMediation={previousUserMediation} /> }
+            <Card position='current' userMediation={currentUserMediation} />
+            { nextUserMediation &&
+              <Card position='next' userMediation={nextUserMediation} /> }
           </div>
         </Draggable>
         <div className={classnames('board-wrapper', { hidden: isFlipped })}>
@@ -277,6 +259,10 @@ Deck.defaultProps = {
 
 export default compose(
   withRouter,
+  withSizes(({ width, height }) => ({
+    width: Math.min(width, 500), // body{max-width: 500px;}
+    height,
+  })),
   connect(
     state => ({
       currentHeaderColor: selectCurrentHeaderColor(state),
@@ -293,5 +279,4 @@ export default compose(
     }),
     { flip, unFlip }
   ),
-  ...MOBILE_OS === 'unknown' && [withSizes(({ width }) => ({ width }))]
 )(Deck)
