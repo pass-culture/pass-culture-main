@@ -3,6 +3,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import selectCurrentUserMediation from '../selectors/currentUserMediation'
+import selectNextUserMediation from '../selectors/nextUserMediation'
+import selectPreviousUserMediation from '../selectors/previousUserMediation'
 import { IS_DEV } from '../utils/config'
 
 const Recto = ({
@@ -56,5 +58,9 @@ export default connect(
   (state, ownProps) => Object.assign({
     isFlipped: state.verso.isFlipped,
     userMediations: state.data.userMediations
-  }, selectCurrentUserMediation(state))
+  }, ownProps.position === 'current'
+      ? selectCurrentUserMediation(state)
+      : ownProps.position === 'previous'
+        ? selectPreviousUserMediation(state)
+        : ownProps.position === 'next' && selectNextUserMediation(state))
 )(Recto)
