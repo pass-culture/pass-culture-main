@@ -1,12 +1,12 @@
 import { createSelector } from 'reselect'
 
-import selectOffer from './offer'
-import selectVenue from './venue'
+import selectCurrentOffer from './currentOffer'
+import selectCurrentVenue from './currentVenue'
 import { distanceInMeters } from '../utils/geolocation'
 
 export default createSelector(
-  selectOffer,
-  selectVenue,
+  selectCurrentOffer,
+  selectCurrentVenue,
   state => state.geolocation.position,
   (offer, venue, position) => {
     if (!position || !offer || !venue) {

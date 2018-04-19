@@ -3,7 +3,8 @@ import { createSelector } from 'reselect'
 
 import selectBookingsWithThumbUrl from './bookingsWithThumbUrl'
 
-const getDate = booking => get(booking, 'offer.eventOccurence.beginningDatetime')
+const getDate = booking =>
+  get(booking, 'offer.eventOccurence.beginningDatetime')
 
 export default createSelector(
   selectBookingsWithThumbUrl,

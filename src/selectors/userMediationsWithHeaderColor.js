@@ -1,22 +1,10 @@
-import get from 'lodash.get'
 import { createSelector } from 'reselect'
-import { rgb_to_hsv } from 'colorsys'
 
-import { getMediation } from './mediation'
-import { getOffer } from './offer'
-import { getSource } from './source'
 import selectUserMediationsWithIndex from './userMediationsWithIndex'
-
-export function getHeaderColor (mediation, source) {
-  const [red, green, blue] =
-    get(mediation, 'firstThumbDominantColor') ||
-    get(source, 'firstThumbDominantColor') || []
-    const {h} = rgb_to_hsv(red, green, blue);
-    if (h) {
-      return `hsl(${h}, 100%, 7.5%)`;
-    }
-    return 'black';
-}
+import getHeaderColor from '../getters/headerColor'
+import getMediation from '../getters/mediation'
+import getOffer from '../getters/offer'
+import getSource from '../getters/source'
 
 export default createSelector(
   selectUserMediationsWithIndex,

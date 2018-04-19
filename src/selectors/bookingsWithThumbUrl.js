@@ -1,9 +1,8 @@
 import { createSelector } from 'reselect'
 
 import selectBookingsWithSource from './bookingsWithSource'
-import { getMediation } from './mediation'
-import { getThumbUrl } from './thumbUrl'
-
+import getMediation from '../getters/mediation'
+import getThumbUrl from '../getters/thumbUrl'
 
 export default createSelector(
   selectBookingsWithSource,

@@ -1,10 +1,11 @@
 import { createSelector } from 'reselect'
 
-import selectUserMediation from './userMediation'
+import selectCurrentUserMediation from './currentUserMediation'
 
 export default createSelector(
-  selectUserMediation,
+  selectCurrentUserMediation,
   userMediation =>
     userMediation
+    && userMediation.userMediationOffers
     && userMediation.userMediationOffers.length === 0
 )

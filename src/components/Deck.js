@@ -11,15 +11,13 @@ import Card from './Card'
 import Clue from './Clue'
 import Icon from './Icon'
 import { flip, unFlip } from '../reducers/verso'
+import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
+import selectCurrentUserMediation from '../selectors/currentUserMediation'
 import selectIsFlipDisabled from '../selectors/isFlipDisabled'
-import selectHeaderColor from '../selectors/headerColor'
-import { getMediation } from '../selectors/mediation'
 import selectNextLimit from '../selectors/nextLimit'
 import selectNextUserMediation from '../selectors/nextUserMediation'
 import selectPreviousLimit from '../selectors/previousLimit'
 import selectPreviousUserMediation from '../selectors/previousUserMediation'
-import { getOffer } from '../selectors/offer'
-import selectUserMediation from '../selectors/userMediation'
 import { IS_DEV, MOBILE_OS, ROOT_PATH } from '../utils/config';
 import { getDiscoveryPath } from '../utils/routes'
 import { worker } from '../workers/dexie/register'
@@ -51,8 +49,9 @@ class Deck extends Component {
       nextUserMediation
     } = this.props
     if (!nextUserMediation || isFlipped) return;
-    const offer = getOffer(nextUserMediation)
-    history.push(getDiscoveryPath(offer, getMediation(nextUserMediation)));
+    history.push(getDiscoveryPath(
+      nextUserMediation.offer,
+      nextUserMediation.mediation));
     this.handleRefreshNext()
   }
 
@@ -62,8 +61,10 @@ class Deck extends Component {
       previousUserMediation
     } = this.props
     if (!previousUserMediation || isFlipped) return;
-    const offer = getOffer(previousUserMediation)
-    history.push(getDiscoveryPath(offer, getMediation(previousUserMediation)));
+    history.push(getDiscoveryPath(
+      previousUserMediation.offer,
+      previousUserMediation.mediation
+    ));
     this.handleRefreshPrevious()
   }
 
@@ -275,9 +276,9 @@ export default compose(
   withRouter,
   connect(
     state => ({
-      currentUserMediation: selectUserMediation(state),
+      currentHeaderColor: selectCurrentHeaderColor(state),
+      currentUserMediation: selectCurrentUserMediation(state),
       deprecatedUserMediations: state.data.deprecatedUserMediations,
-      headerColor: selectHeaderColor(state),
       isFlipDisabled: selectIsFlipDisabled(state),
       isFlipped: state.verso.isFlipped,
       nextLimit: selectNextLimit(state),

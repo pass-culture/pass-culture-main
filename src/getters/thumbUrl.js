@@ -1,12 +1,8 @@
-import { createSelector } from 'reselect'
-import get from 'lodash.get';
+import get from 'lodash.get'
+
 import { THUMBS_URL } from '../utils/config'
 
-import selectSource from './source'
-import selectMediation from './mediation'
-import selectOffer from './offer'
-
-export function getThumbUrl (mediation, source, offer) {
+export default function getThumbUrl (mediation, source, offer) {
   const sourceCollectionName =
     (get(offer, 'eventOccurence') && 'events') ||
     (get(offer, 'thing') && 'things') ||
@@ -18,10 +14,3 @@ export function getThumbUrl (mediation, source, offer) {
     return `${THUMBS_URL}/${sourceCollectionName}/${source.id}`
   }
 }
-
-export default createSelector(
-  selectMediation,
-  selectSource,
-  selectOffer,
-  getThumbUrl
-)

@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
-import { getMediation } from './mediation'
-import { getSource } from './source'
+import getMediation from '../getters/mediation'
+import getSource from '../getters/source'
 
 
 export default createSelector(
