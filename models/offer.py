@@ -74,6 +74,9 @@ class Offer(app.model.PcObject,
     bookingLimitDatetime = db.Column(db.DateTime,
                                      nullable=True)
 
+    bookingRecapSent = db.Column(db.DateTime,
+                                 nullable=True)
+
     @hybrid_property
     def object(self):
         return self.thing or self.eventOccurence
