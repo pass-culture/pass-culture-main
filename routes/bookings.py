@@ -33,7 +33,7 @@ def post_booking():
     ae = ApiErrors()
 
     if offer_id is None:
-        ae.addError('offerId', 'Vous devez adjoindre une offer')
+        ae.addError('offerId', 'Vous devez préciser un identifiant d\'offre')
         return jsonify(ae.errors), 400
 
     offer = Offer.query.filter_by(id=dehumanize(offer_id)).first()
