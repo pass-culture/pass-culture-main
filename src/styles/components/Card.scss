@@ -24,6 +24,16 @@
     z-index: 1;
   }
 
+  .board-bg {
+    position: fixed;
+    bottom: 0px;
+    top: 62%;
+    left: -100%;
+    right: -100%;
+    z-index: 1;
+    // transition: background 2500ms ease;
+  }
+
   &__container {
     height: 100%;
     width: 100%;
