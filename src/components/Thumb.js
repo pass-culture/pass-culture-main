@@ -16,6 +16,7 @@ const Thumb = ({
       {!withMediation && <div className='background' style={backgroundStyle} />}
       <div style={thumbStyle} className={classnames({
         image: true,
+        translatable: translated !== undefined,
         translated
       })} />
    </div>
