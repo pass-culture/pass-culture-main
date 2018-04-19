@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import Recto from './Recto'
 import Verso from './Verso'
 
-import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 
 class Card extends Component {
 
@@ -36,7 +35,6 @@ class Card extends Component {
     const {
       userMediation,
       position,
-      headerColor,
     } = this.props
     return (
       <div
@@ -61,5 +59,4 @@ Card.defaultProps = {
 export default connect(
   state => ({
     isFlipped: state.verso.isFlipped,
-    headerColor: selectCurrentHeaderColor(state),
   }))(Card)

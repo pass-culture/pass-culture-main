@@ -18,7 +18,7 @@ import selectNextLimit from '../selectors/nextLimit'
 import selectNextUserMediation from '../selectors/nextUserMediation'
 import selectPreviousLimit from '../selectors/previousLimit'
 import selectPreviousUserMediation from '../selectors/previousUserMediation'
-import { IS_DEV, MOBILE_OS, ROOT_PATH } from '../utils/config';
+import { IS_DEV, ROOT_PATH } from '../utils/config';
 import { getDiscoveryPath } from '../utils/routes'
 import { worker } from '../workers/dexie/register'
 
