@@ -39,26 +39,23 @@ class Recto extends Component {
     // NO NEED TO FIND AGAIN IF WE ARE THE CURRENT USER MEDIATION
     let userMediation
     if (currentUserMediation.id === id) {
-      userMediation = userMediations.find(um => um.id === id)
-    } else {
       userMediation = currentUserMediation
-    }
-    if (
-        !userMediation
-        || !userMediation.userMediationOffers
-        || userMediation.userMediationOffers.length === 0) {
-      return {}
+    } else {
+      userMediation = userMediations.find(um => um.id === id)
     }
     // FIND THE ASSOCIATED OFFER
     let offer
     if (currentUserMediation.id === userMediation.id) {
       offer = currentOffer
+    } else {
+      const userMediationOffers = userMediation.userMediationOffers
+      if (userMediation.userMediationOffers && userMediation.userMediationOffers.length) {
+        const offerId = userMediationOffers[
+          Math.floor(Math.random() * userMediationOffers.length)].id
+        offer = getOffer(userMediation, offerId)
+      }
     }
-    const userMediationOffers = userMediation.userMediationOffers
-    const offerId = userMediationOffers[
-      Math.floor(Math.random() * userMediationOffers.length)].id
-    offer = getOffer(userMediation, offerId)
-    // GET OTHER PROPERTIES 
+    // GET OTHER PROPERTIES
     const mediation = getMediation(userMediation)
     const source = getSource(mediation, offer)
     const thumbUrl = getThumbUrl(mediation, source, offer)
