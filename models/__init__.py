@@ -10,7 +10,7 @@ from utils.attr_dict import AttrDict
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pass_culture:passq@postgres/pass_culture'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = IS_DEV
+#app.config['SQLALCHEMY_ECHO'] = IS_DEV
 app.db = SQLAlchemy(app)
 app.model = AttrDict()
 
