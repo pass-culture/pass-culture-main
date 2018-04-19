@@ -5,7 +5,7 @@ import selectCurrentUserMediation from './currentUserMediation'
 export default createSelector(
   selectCurrentUserMediation,
   userMediation =>
-    userMediation
-    && userMediation.userMediationOffers
-    && userMediation.userMediationOffers.length === 0
+    userMediation &&
+    userMediation.userMediationOffers &&
+    userMediation.userMediationOffers.length === 0
 )

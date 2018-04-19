@@ -1,7 +1,7 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 
 import Icon from './Icon'
 import Price from './Price'
@@ -14,7 +14,6 @@ import { requestData } from '../reducers/data'
 import { showModal } from '../reducers/modal'
 
 class ControlBar extends Component {
-
   onClickDisable = event => {
     alert('Pas encore disponible')
     event.preventDefault()
@@ -22,10 +21,12 @@ class ControlBar extends Component {
 
   onClickFavorite(type) {
     this.props.requestData('POST', 'userMediations', {
-      body: [{
-        id: this.props.userMediation.id,
-        isFavorite: true
-      }]
+      body: [
+        {
+          id: this.props.userMediation.id,
+          isFavorite: true,
+        },
+      ],
     })
   }
 
@@ -35,44 +36,59 @@ class ControlBar extends Component {
 
   onClickJyVais = event => {
     if (this.props.offer) {
-        this.props.showModal(<Booking />, {fullscreen: true, maskColor: 'transparent', hasCloseButton: false})
+      this.props.showModal(<Booking />, {
+        fullscreen: true,
+        maskColor: 'transparent',
+        hasCloseButton: false,
+      })
     } else {
       alert("Ce bouton vous permet d'effectuer une reservation")
     }
   }
 
-  render () {
-    const {
-      isFavorite,
-      offer,
-      offerer,
-      booking,
-    } = this.props
+  render() {
+    const { isFavorite, offer, offerer, booking } = this.props
     return (
-      <ul className='control-bar'>
-        <li><small className='pass-label'>Mon Pass</small><span className='pass-value'>——€</span></li>
+      <ul className="control-bar">
         <li>
-          <button className='button button--secondary disabled'
-            onClick={this.onClickDisable} >
+          <small className="pass-label">Mon Pass</small>
+          <span className="pass-value">——€</span>
+        </li>
+        <li>
+          <button
+            className="button button--secondary disabled"
+            onClick={this.onClickDisable}
+          >
             <Icon svg={isFavorite ? 'ico-like-w' : 'ico-like-w'} />
           </button>
         </li>
         <li>
-          <button className='button button--secondary disabled'
-            onClick={this.onClickDisable}>
-            <Icon svg='ico-share-w' />
+          <button
+            className="button button--secondary disabled"
+            onClick={this.onClickDisable}
+          >
+            <Icon svg="ico-share-w" />
           </button>
         </li>
         <li>
-          { booking ? (
-            <Link to="/reservations" className='button button--primary button--inversed button--go'>
-              <Icon name='Check' />
+          {booking ? (
+            <Link
+              to="/reservations"
+              className="button button--primary button--inversed button--go"
+            >
+              <Icon name="Check" />
               {' Réservé'}
             </Link>
           ) : (
-            <button className='button button--primary button--go'
-              onClick={this.onClickJyVais} >
-              <Price value={get(offer, 'price') || get(offer, 'displayPrice') } free='——' className={offerer ? 'strike' : ''} />
+            <button
+              className="button button--primary button--go"
+              onClick={this.onClickJyVais}
+            >
+              <Price
+                value={get(offer, 'price') || get(offer, 'displayPrice')}
+                free="——"
+                className={offerer ? 'strike' : ''}
+              />
               J'y vais!
             </button>
           )}
@@ -88,7 +104,9 @@ export default connect(
     userMediation: selectCurrentUserMediation(state),
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
-  }), {
-  requestData,
-  showModal,
-})(ControlBar)
+  }),
+  {
+    requestData,
+    showModal,
+  }
+)(ControlBar)

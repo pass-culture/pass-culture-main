@@ -8,21 +8,24 @@ import withLogin from '../hocs/withLogin'
 import { closeSplash } from '../reducers/splash'
 
 class BetaPage extends Component {
-
-  componentDidMount () {
+  componentDidMount() {
     const { closeSplash, closeSplashTimeout } = this.props
     setTimeout(closeSplash, closeSplashTimeout)
   }
 
-  render () {
+  render() {
     return (
-      <div className='page beta-page'>
-        <h1><strong>Bienvenue</strong><strong>dans l'avant-première</strong><span>du Pass Culture</span></h1>
+      <div className="page beta-page">
+        <h1>
+          <strong>Bienvenue</strong>
+          <strong>dans l'avant-première</strong>
+          <span>du Pass Culture</span>
+        </h1>
         <p>Et merci de votre participation pour nous aider à l'améliorer !</p>
         <footer>
-          <Link to='/inscription'>
+          <Link to="/inscription">
             C'est par là
-            <Icon svg='ico-next' />
+            <Icon svg="ico-next" />
           </Link>
         </footer>
       </div>
@@ -32,8 +35,7 @@ class BetaPage extends Component {
 
 export default compose(
   withLogin({ redirectTo: '/decouverte' }),
-  connect(
-    state => ({ closeSplashTimeout: state.splash.closeTimeout }),
-    { closeSplash }
-  )
+  connect(state => ({ closeSplashTimeout: state.splash.closeTimeout }), {
+    closeSplash,
+  })
 )(BetaPage)

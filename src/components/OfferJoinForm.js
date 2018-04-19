@@ -12,8 +12,9 @@ import { NEW } from '../utils/config'
 const OfferJoinForm = ({ id, prices, mediations }) => {
   return (
     <div>
-      <div className='sep mt2 mb2' />
-      <List className='mb1'
+      <div className="sep mt2 mb2" />
+      <List
+        className="mb1"
         ContentComponent={PriceItem}
         elements={prices}
         extra={{ offerId: id }}
@@ -23,10 +24,7 @@ const OfferJoinForm = ({ id, prices, mediations }) => {
           !form ||
           !form.pricesById ||
           !form.pricesById[NEW] ||
-          (
-            !form.pricesById[NEW].groupSize ||
-            !form.pricesById[NEW].value
-          )
+          (!form.pricesById[NEW].groupSize || !form.pricesById[NEW].value)
         }
         getOptimistState={(state, action) => {
           let optimistPrices = [action.config.body]
@@ -34,7 +32,7 @@ const OfferJoinForm = ({ id, prices, mediations }) => {
             optimistPrices = optimistPrices.concat(prices)
           }
           return {
-            prices: optimistPrices
+            prices: optimistPrices,
           }
         }}
         getSuccessState={(state, action) => {
@@ -42,40 +40,43 @@ const OfferJoinForm = ({ id, prices, mediations }) => {
           const offerIndex = offerIds.indexOf(id)
           const nextOffers = [...state.offers]
           nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex], {
-            prices: [action.data].concat(nextOffers[offerIndex].prices)
+            prices: [action.data].concat(nextOffers[offerIndex].prices),
           })
           // on success we need to make this buffer
           // null again in order to catch the new refreshed ownProps.prices
           return { offers: nextOffers, prices: null }
         }}
         isWrap
-        path='prices'
-        title='Prix' />
+        path="prices"
+        title="Prix"
+      />
 
-      <div className='sep mb2' />
+      <div className="sep mb2" />
 
-      <List className='mb1'
+      <List
+        className="mb1"
         ContentComponent={MediationItem}
         elements={mediations}
         extra={{ offerId: id }}
         FormComponent={MediationForm}
-        getBody={form => Object.assign({ offerId: id },
-          form.mediationsById[NEW])}
+        getBody={form =>
+          Object.assign({ offerId: id }, form.mediationsById[NEW])
+        }
         getIsDisabled={form =>
           !form ||
           !form.mediationsById ||
           !form.mediationsById[NEW] ||
-          (
-            !form.mediationsById[NEW].description
-          )
+          !form.mediationsById[NEW].description
         }
         getOptimistState={(state, action) => {
           let optimistSellersMediations = [action.config.body]
           if (mediations) {
-            optimistSellersMediations = optimistSellersMediations.concat(mediations)
+            optimistSellersMediations = optimistSellersMediations.concat(
+              mediations
+            )
           }
           return {
-            mediations: optimistSellersMediations
+            mediations: optimistSellersMediations,
           }
         }}
         getSuccessState={(state, action) => {
@@ -83,22 +84,21 @@ const OfferJoinForm = ({ id, prices, mediations }) => {
           const offerIndex = offerIds.indexOf(id)
           const nextOffers = [...state.offers]
           nextOffers[offerIndex] = Object.assign({}, nextOffers[offerIndex], {
-            mediations: [action.data].concat(nextOffers[offerIndex].mediations)
+            mediations: [action.data].concat(nextOffers[offerIndex].mediations),
           })
           // on success we need to make this buffer
           // null again in order to catch the new refreshed ownProps.mediations
           return { offers: nextOffers, mediations: null }
         }}
         isWrap
-        path='mediations'
-        title='Coups de Coeur' />
+        path="mediations"
+        title="Coups de Coeur"
+      />
     </div>
   )
 }
 
-export default connect((state, ownProps) =>
-  ({
-    mediations: state.data.mediations || ownProps.mediations,
-    prices: state.data.prices || ownProps.prices
-  })
-)(OfferJoinForm)
+export default connect((state, ownProps) => ({
+  mediations: state.data.mediations || ownProps.mediations,
+  prices: state.data.prices || ownProps.prices,
+}))(OfferJoinForm)

@@ -6,9 +6,8 @@ import { connect } from 'react-redux'
 import { requestData } from '../reducers/data'
 
 class SubmitButton extends Component {
-
   onSubmitClick = event => {
-    event.preventDefault();
+    event.preventDefault()
     const {
       add,
       form,
@@ -19,13 +18,14 @@ class SubmitButton extends Component {
       onClick,
       path,
       storeKey,
-      requestData
-    } = this.props;
-    requestData(method, path, { add,
+      requestData,
+    } = this.props
+    requestData(method, path, {
+      add,
       body: (getBody && getBody(form)) || form,
       getOptimistState,
       getSuccessState,
-      key: storeKey
+      key: storeKey,
     })
     onClick && onClick()
   }
@@ -34,14 +34,15 @@ class SubmitButton extends Component {
     const { className, extraClass, getIsDisabled, form, text } = this.props
     const isDisabled = getIsDisabled(form)
     return (
-      <button className={classnames(className || 'button button--alive button--cta', {
+      <button
+        className={classnames(className || 'button button--alive button--cta', {
           'button--disabled': isDisabled,
-          [extraClass]: extraClass
+          [extraClass]: extraClass,
         })}
         disabled={isDisabled}
         onClick={this.onSubmitClick}
       >
-        { text }
+        {text}
       </button>
     )
   }
@@ -51,12 +52,11 @@ SubmitButton.defaultProps = {
   getBody: form => form,
   getIsDisabled: form => Object.keys(form).length === 0,
   method: 'POST',
-  text: 'Soumettre'
+  text: 'Soumettre',
 }
 
 SubmitButton.propTypes = {
-  path: PropTypes.string.isRequired
+  path: PropTypes.string.isRequired,
 }
 
-export default connect(({ form }) => ({ form }),
-  { requestData })(SubmitButton)
+export default connect(({ form }) => ({ form }), { requestData })(SubmitButton)

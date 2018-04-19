@@ -8,11 +8,11 @@ import { requestData } from '../reducers/data'
 import { NEW } from '../utils/config'
 
 class ThingDetector extends Component {
-  constructor () {
+  constructor() {
     super()
     this.state = {
       identifier: '',
-      selectedCategory: null
+      selectedCategory: null,
     }
   }
   onInputChange = ({ target: { value } }) => {
@@ -24,49 +24,50 @@ class ThingDetector extends Component {
   }
   onSearchClick = () => {
     const { identifier } = this.state
-    this.props.requestData('GET', `things/book:${identifier}`, { key: 'things'})
+    this.props.requestData('GET', `things/book:${identifier}`, {
+      key: 'things',
+    })
   }
-  render () {
+  render() {
     const { identifier, selectedCategory } = this.state
     const { options, thing } = this.props
     const isDisabled = identifier.trim() === ''
     return (
-      <div className='thing-detector p2'>
-        {
-          !thing && <Select className='select mb2'
-            defaultLabel='-- choisir une catégorie --'
+      <div className="thing-detector p2">
+        {!thing && (
+          <Select
+            className="select mb2"
+            defaultLabel="-- choisir une catégorie --"
             onOptionClick={this.onOptionClick}
             options={options}
             value={selectedCategory}
           />
-        }
-        {
-          selectedCategory && (
-            <div className='mb2 mx-auto'>
-              <label className='block left-align mb1'>
-                {
-                  selectedCategory === 'book'
-                    ? 'ISBN (0140188711 for e.g.)'
-                    : 'Identifiant'
-                }
-              </label>
-              <div className='flex items-center'>
-                <input className='input mr2 left-align'
-                  onChange={this.onInputChange}
-                  value={identifier}
-                />
-                <button className={classnames('button button--alive', {
-                    'button--disabled': isDisabled
-                  })}
-                  disabled={isDisabled}
-                  onClick={this.onSearchClick}
-                >
-                  Recherche
-                </button>
-              </div>
+        )}
+        {selectedCategory && (
+          <div className="mb2 mx-auto">
+            <label className="block left-align mb1">
+              {selectedCategory === 'book'
+                ? 'ISBN (0140188711 for e.g.)'
+                : 'Identifiant'}
+            </label>
+            <div className="flex items-center">
+              <input
+                className="input mr2 left-align"
+                onChange={this.onInputChange}
+                value={identifier}
+              />
+              <button
+                className={classnames('button button--alive', {
+                  'button--disabled': isDisabled,
+                })}
+                disabled={isDisabled}
+                onClick={this.onSearchClick}
+              >
+                Recherche
+              </button>
             </div>
-          )
-        }
+          </div>
+        )}
       </div>
     )
   }
@@ -75,8 +76,8 @@ class ThingDetector extends Component {
 ThingDetector.defaultProps = {
   options: [
     { value: 'book', label: 'Livre' },
-    { value: 'theater', label: 'Theâtre' }
-  ]
+    { value: 'theater', label: 'Theâtre' },
+  ],
 }
 
 export default connect(

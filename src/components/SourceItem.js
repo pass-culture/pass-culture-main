@@ -20,15 +20,17 @@ class SourceItem extends Component {
     requestData('PUT', `providers`, { body })
   }
   */
-  render () {
+  render() {
     const { name, offererProviders } = this.props
     return (
-      <div className='flex flex-start items-center mb1'>
-        <input className='input--checkbox mr1'
+      <div className="flex flex-start items-center mb1">
+        <input
+          className="input--checkbox mr1"
           defaultChecked={offererProviders && offererProviders.length > 0}
           onClick={this.onToggle}
-          type='checkbox' />
-        <button className='mr2 button button--alive' onClick={this.onClick}>
+          type="checkbox"
+        />
+        <button className="mr2 button button--alive" onClick={this.onClick}>
           {name}
         </button>
       </div>

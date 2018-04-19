@@ -9,35 +9,27 @@ import { compose } from 'redux'
 import { requestData } from '../reducers/data'
 
 const withLogin = (config = {}) => WrappedComponent => {
-  const { isRequired,
-    redirectTo
-  } = config
+  const { isRequired, redirectTo } = config
   const pushSigninTimeout = config.pushSigninTimeout || 500
 
   class _withLogin extends Component {
-    constructor () {
+    constructor() {
       super()
       this.hasBackendRequest = false
       this.state = { hasConfirmRequest: false }
     }
 
     componentWillMount = () => {
-      const { user,
-        requestData
-      } = this.props
+      const { user, requestData } = this.props
       if (!user) {
-        requestData('GET', `users/me`,
-            { key: 'users', local: true })
+        requestData('GET', `users/me`, { key: 'users', local: true })
       } else if (redirectTo) {
         this.setState({ redirectTo })
       }
     }
 
     componentWillReceiveProps = nextProps => {
-      const { history,
-        isModalActive,
-        requestData
-      } = this.props
+      const { history, isModalActive, requestData } = this.props
       if (nextProps.user && nextProps.user !== this.props.user) {
         // BUT ACTUALLY IT IS A SUCCESS FROM THE LOCAL USER
         // NOW BETTER IS TO ALSO TO DO A QUICK CHECK
@@ -66,21 +58,22 @@ const withLogin = (config = {}) => WrappedComponent => {
             // WE NEED TO PROPOSE A NEW SIGNIN MODAL
             // BUT WE ARE GOING TO WAIT JUST A LITTLE BIT
             // TO MAKE A SLOW TRANSITION
-            this.pushSigninTimeout = setTimeout(() =>
-              history.push('/connexion'), pushSigninTimeout)
+            this.pushSigninTimeout = setTimeout(
+              () => history.push('/connexion'),
+              pushSigninTimeout
+            )
           }
         }
       }
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
       this.pushSigninTimeout && clearTimeout(this.pushSigninTimeout)
     }
 
-    render () {
+    render() {
       return <WrappedComponent {...this.props} />
     }
-
   }
   return compose(
     withRouter,

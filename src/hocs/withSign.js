@@ -10,12 +10,12 @@ import { resetForm } from '../reducers/form'
 
 const withSign = WrappedComponent => {
   class _withSign extends Component {
-    componentWillMount () {
+    componentWillMount() {
       const { assignData } = this.props
       assignData({ errors: null })
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
       const { errors, history, user } = nextProps
       if (user && !errors) {
         history.push('/decouverte')
@@ -26,7 +26,7 @@ const withSign = WrappedComponent => {
       this.props.resetForm()
     }
 
-    render () {
+    render() {
       return <WrappedComponent {...this.props} />
     }
   }
@@ -36,7 +36,7 @@ const withSign = WrappedComponent => {
       (state, ownProps) => ({
         errors: state.data.errors && state.data.errors.global,
         form: state.form,
-        user: state.user
+        user: state.user,
       }),
       { assignData, resetForm }
     )

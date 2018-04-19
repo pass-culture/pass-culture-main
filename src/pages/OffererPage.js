@@ -15,27 +15,30 @@ class OffererPage extends Component {
     const { offererId, setUserOfferer, user } = props
     user && user.userOfferers && setUserOfferer(offererId)
   }
-  componentWillMount () {
+  componentWillMount() {
     const { requestData } = this.props
     requestData('GET', 'providers')
     this.handleSetUserOfferer(this.props)
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const { offererId, requestData, user } = nextProps
-    if (user && user.userOfferers !== (this.props.user && this.props.user.userOfferers)) {
+    if (
+      user &&
+      user.userOfferers !== (this.props.user && this.props.user.userOfferers)
+    ) {
       this.handleSetUserOfferer(nextProps)
     }
     if (user && this.props.user) {
       requestData('GET', `offerers/${offererId}`, { key: 'offerers' })
     }
   }
-  render () {
+  render() {
     return (
-      <main className='page offerer-page p2'>
-        <div className='flex items-center flex-start mt2 mb2'>
+      <main className="page offerer-page p2">
+        <div className="flex items-center flex-start mt2 mb2">
           <OfferNewButton />
           <OffererEditButton />
-          <SearchInput collectionName='offers' isLoading />
+          <SearchInput collectionName="offers" isLoading />
         </div>
         <OffersList />
       </main>
@@ -45,8 +48,5 @@ class OffererPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
-  connect(
-    state => ({ user: state.user }),
-    { requestData, setUserOfferer }
-  )
+  connect(state => ({ user: state.user }), { requestData, setUserOfferer })
 )(OffererPage)

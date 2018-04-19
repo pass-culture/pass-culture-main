@@ -1,5 +1,5 @@
 import moment from 'moment'
-import 'moment/locale/fr';
+import 'moment/locale/fr'
 
 moment.locale('fr-fr')
 
@@ -16,7 +16,9 @@ var CALCULATED_API_URL
 if (window.cordova) {
   CALCULATED_API_URL = 'https://api.passculture.beta.gouv.fr' // This will be replaced by 'yarn pgbuild' for staging
 } else {
-  CALCULATED_API_URL = IS_DEV ? 'http://localhost' : 'https://'+document.location.host.replace('app', 'api')
+  CALCULATED_API_URL = IS_DEV
+    ? 'http://localhost'
+    : 'https://' + document.location.host.replace('app', 'api')
 }
 export const API_URL = CALCULATED_API_URL
 
@@ -25,23 +27,23 @@ export const THUMBS_URL = IS_DEV
   : `${API_URL}/storage/thumbs`
 
 function getMobileOperatingSystem() {
-  var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  var userAgent = navigator.userAgent || navigator.vendor || window.opera
 
-      // Windows Phone must come first because its UA also contains "Android"
-    if (/windows phone/i.test(userAgent)) {
-        return "windows_phone";
-    }
+  // Windows Phone must come first because its UA also contains "Android"
+  if (/windows phone/i.test(userAgent)) {
+    return 'windows_phone'
+  }
 
-    if (/android/i.test(userAgent)) {
-        return "android";
-    }
+  if (/android/i.test(userAgent)) {
+    return 'android'
+  }
 
-    // iOS detection from: http://stackoverflow.com/a/9039885/177710
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-        return "ios";
-    }
+  // iOS detection from: http://stackoverflow.com/a/9039885/177710
+  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    return 'ios'
+  }
 
-    return "unknown";
+  return 'unknown'
 }
 
 export const MOBILE_OS = getMobileOperatingSystem()
@@ -54,7 +56,7 @@ export const IS_LOCALHOST = Boolean(
     window.location.hostname.match(
       /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
     )
-);
+)
 
 var CALC_ROOT_PATH = ''
 if (window.cordova) {
@@ -66,24 +68,22 @@ if (window.cordova) {
   } else if (MOBILE_OS === 'ios') {
     //TODO
     document.body.className += ' cordova-ios'
-    CALC_ROOT_PATH = window.location.href.substring(0,1)
+    CALC_ROOT_PATH = window.location.href.substring(0, 1)
   }
-  window.addEventListener('keyboardWillShow',
-                          function (e) {
-                            console.log("Keyboard show");
-                            document.body.className += ' softkeyboard'
-                          });
-  window.addEventListener('keyboardWillHide',
-                          function (e) {
-                            console.log("Keyboard Hide");
-                            document.body.className = document.body.className.split(' ')
-                                                                             .filter(c => c!=='softkeyboard')
-                                                                             .join(' ')
-                          });
+  window.addEventListener('keyboardWillShow', function(e) {
+    console.log('Keyboard show')
+    document.body.className += ' softkeyboard'
+  })
+  window.addEventListener('keyboardWillHide', function(e) {
+    console.log('Keyboard Hide')
+    document.body.className = document.body.className
+      .split(' ')
+      .filter(c => c !== 'softkeyboard')
+      .join(' ')
+  })
 } else {
   document.body.className += ' web'
-  CALC_ROOT_PATH = window.location.protocol+'//'+document.location.host
+  CALC_ROOT_PATH = window.location.protocol + '//' + document.location.host
 }
-
 
 export const ROOT_PATH = CALC_ROOT_PATH

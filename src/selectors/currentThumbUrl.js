@@ -5,7 +5,6 @@ import selectCurrentSource from './currentSource'
 import selectCurrentOffer from './currentOffer'
 import getThumbUrl from '../getters/thumbUrl'
 
-
 export default createSelector(
   selectCurrentMediation,
   selectCurrentSource,

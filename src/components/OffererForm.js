@@ -7,27 +7,30 @@ import withSelectors from '../hocs/withSelectors'
 
 const OffererForm = ({ sources }) => {
   return (
-    <div className='offerer-form'>
-      <div className='h2 mb1'>
-        Mes sources
-      </div>
-      <div className='p3' >
-      {
-        sources && sources.map((source, index) =>
-          <SourceItem key={index} {...source} />)
-      }
+    <div className="offerer-form">
+      <div className="h2 mb1">Mes sources</div>
+      <div className="p3">
+        {sources &&
+          sources.map((source, index) => (
+            <SourceItem key={index} {...source} />
+          ))}
       </div>
     </div>
   )
 }
 
 export default compose(
-  connect(
-    state => Object.assign({
-      offererProviders: state.data.offerers && state.data.offerers[0] &&
-        state.data.offerers[0].offererProviders,
-      providers: state.data.providers
-    }, state.user && state.user.offerer)
+  connect(state =>
+    Object.assign(
+      {
+        offererProviders:
+          state.data.offerers &&
+          state.data.offerers[0] &&
+          state.data.offerers[0].offererProviders,
+        providers: state.data.providers,
+      },
+      state.user && state.user.offerer
+    )
   ),
   withSelectors({
     sources: [
@@ -36,12 +39,16 @@ export default compose(
       (providers, offererProviders) => {
         return providers.map(({ localClass, name }) => {
           return {
-            offererProviders: offererProviders && offererProviders
-              .filter(offererProvider => offererProvider.provider.localClass === localClass),
-            name
+            offererProviders:
+              offererProviders &&
+              offererProviders.filter(
+                offererProvider =>
+                  offererProvider.provider.localClass === localClass
+              ),
+            name,
           }
         })
-      }
-    ]
+      },
+    ],
   })
 )(OffererForm)

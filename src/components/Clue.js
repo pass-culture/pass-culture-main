@@ -6,31 +6,26 @@ import selectDistance from '../selectors/distance'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentUserMediation from '../selectors/currentUserMediation'
 
-const Clue = ({
-  distance,
-  offer,
-  isHidden,
-  transitionTimeout
-}) => {
+const Clue = ({ distance, offer, isHidden, transitionTimeout }) => {
   return (
-    <div className='clue' style={{ transition: `opacity ${transitionTimeout}ms`}}>
+    <div
+      className="clue"
+      style={{ transition: `opacity ${transitionTimeout}ms` }}
+    >
       <Price value={offer && offer.price} />
-      <div className='separator'>{ offer ? '\u00B7' : ' ' }</div>
-      <div>
-         { offer ? distance : ' ' }
-      </div>
+      <div className="separator">{offer ? '\u00B7' : ' '}</div>
+      <div>{offer ? distance : ' '}</div>
     </div>
   )
 }
 
 Clue.defaultProps = {
-  transitionTimeout: 250
+  transitionTimeout: 250,
 }
 
-export default connect(
-  state => ({
-    distance: selectDistance(state),
-    isFlipped: state.verso.isFlipped,
-    offer: selectCurrentOffer(state),
-    userMediation: selectCurrentUserMediation(state)
-  }))(Clue)
+export default connect(state => ({
+  distance: selectDistance(state),
+  isFlipped: state.verso.isFlipped,
+  offer: selectCurrentOffer(state),
+  userMediation: selectCurrentUserMediation(state),
+}))(Clue)

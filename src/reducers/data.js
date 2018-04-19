@@ -17,8 +17,8 @@ const data = (state = initialState, action) => {
   } else if (action.type === REMOVE_DATA_ERROR) {
     return Object.assign({}, state, {
       errors: Object.assign({}, state.errors, {
-        [action.name]: null
-      })
+        [action.name]: null,
+      }),
     })
   } else if (/REQUEST_DATA_(POST|PUT|DELETE|PATCH)_(.*)/.test(action.type)) {
     const nextState = { isOptimist: true, previousOptimistState: state }
@@ -32,8 +32,8 @@ const data = (state = initialState, action) => {
   } else if (action.type === RESET_DATA) {
     return initialState
   } else if (/SUCCESS_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
-    const key = action.config.key ||
-      action.path.replace(/\/$/, '').replace(/\?.*$/, '')
+    const key =
+      action.config.key || action.path.replace(/\/$/, '').replace(/\?.*$/, '')
     const nextState = { isOptimist: false }
     // force to cast into array
     let nextData = action.data
@@ -41,9 +41,8 @@ const data = (state = initialState, action) => {
       nextData = [nextData]
     }
     // choose the previousState
-    const previousState = action.method === 'GET'
-      ? state
-      : state.previousOptimistState || {}
+    const previousState =
+      action.method === 'GET' ? state : state.previousOptimistState || {}
     let previousData = previousState[key] || []
     if (!Array.isArray(previousData)) {
       previousData = [previousData]
@@ -55,11 +54,13 @@ const data = (state = initialState, action) => {
       const previousIds = previousData.map(({ id }) => id)
       nextData.forEach(datum => {
         const previousIndex = previousIds.indexOf(datum.id)
-        const putIndex = previousIndex === -1
-          ? nextState[key].length
-          : previousIndex
-        nextState[key][putIndex] = Object.assign({},
-          previousIndex !== -1 && nextState[key][previousIndex], datum)
+        const putIndex =
+          previousIndex === -1 ? nextState[key].length : previousIndex
+        nextState[key][putIndex] = Object.assign(
+          {},
+          previousIndex !== -1 && nextState[key][previousIndex],
+          datum
+        )
       })
     } else {
       // for get and post we need to concat
@@ -79,11 +80,16 @@ const data = (state = initialState, action) => {
       }
     }
     // clear the optimist when it is the POST PUT success
-    if (action.method === 'POST' || action.method === 'PUT' || action.method === 'PATCH') {
+    if (
+      action.method === 'POST' ||
+      action.method === 'PUT' ||
+      action.method === 'PATCH'
+    ) {
       nextState.previousOptimistState = null
     }
     // special deprecation
-    if (action.method === 'GET' &&
+    if (
+      action.method === 'GET' &&
       action.config.local &&
       action.config.deprecatedData &&
       action.config.deprecatedData.length
@@ -113,7 +119,7 @@ const data = (state = initialState, action) => {
 // ACTION CREATORS
 export const assignData = patch => ({
   patch,
-  type: ASSIGN_DATA
+  type: ASSIGN_DATA,
 })
 
 export const failData = (method, path, errors, config) => ({
@@ -121,36 +127,43 @@ export const failData = (method, path, errors, config) => ({
   errors,
   method,
   path,
-  type: `FAIL_DATA_${method.toUpperCase()}_${path.toUpperCase()}${config.local ? ' (LOCAL)' : ''}`
+  type: `FAIL_DATA_${method.toUpperCase()}_${path.toUpperCase()}${
+    config.local ? ' (LOCAL)' : ''
+  }`,
 })
 
-export const filterData = (key, filter) => ({ filter,
+export const filterData = (key, filter) => ({
+  filter,
   key,
-  type: FILTER_DATA
+  type: FILTER_DATA,
 })
 
 export const removeDataError = name => ({
   name,
-  type: REMOVE_DATA_ERROR
+  type: REMOVE_DATA_ERROR,
 })
 
-export const requestData = (method, path, config={}) => ({
+export const requestData = (method, path, config = {}) => ({
   config,
   method,
   path,
-  type: `REQUEST_DATA_${method.toUpperCase()}_${path.toUpperCase()}${config.local ? ' (LOCAL)' : ''}`
+  type: `REQUEST_DATA_${method.toUpperCase()}_${path.toUpperCase()}${
+    config.local ? ' (LOCAL)' : ''
+  }`,
 })
 
 export const resetData = () => ({
-  type: RESET_DATA
+  type: RESET_DATA,
 })
 
-export const successData = (method, path, data, config={}) => ({
+export const successData = (method, path, data, config = {}) => ({
   config,
   data,
   method,
   path,
-  type: `SUCCESS_DATA_${method.toUpperCase()}_${path.toUpperCase()}${config.local ? ' (LOCAL)' : ''}`
+  type: `SUCCESS_DATA_${method.toUpperCase()}_${path.toUpperCase()}${
+    config.local ? ' (LOCAL)' : ''
+  }`,
 })
 
 // default

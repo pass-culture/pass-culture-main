@@ -5,10 +5,8 @@ import withLogin from '../hocs/withLogin'
 
 const ProfessionalPage = () => {
   return (
-    <main className='page professional-page p2 center'>
-      <div className='h2 mt2'>
-        Mes offres
-      </div>
+    <main className="page professional-page p2 center">
+      <div className="h2 mt2">Mes offres</div>
       <OfferersGrid />
     </main>
   )

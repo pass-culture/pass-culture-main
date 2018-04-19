@@ -3,29 +3,27 @@ import { createSelector } from 'reselect'
 
 const withSelectors = patch => WrappedComponent => {
   class _withSelectors extends Component {
-    constructor () {
+    constructor() {
       super()
       this.state = {}
-      Object.keys(patch)
-        .forEach(key => {
-          this[`${key}Selector`] = createSelector(...patch[key])
-        })
+      Object.keys(patch).forEach(key => {
+        this[`${key}Selector`] = createSelector(...patch[key])
+      })
     }
-    componentWillMount () {
+    componentWillMount() {
       this.handleSelectorsUpdate(this.props)
     }
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
       this.handleSelectorsUpdate(nextProps)
     }
     handleSelectorsUpdate = props => {
       const nextState = {}
-      Object.keys(patch)
-        .forEach(key => {
-          nextState[key] = this[`${key}Selector`](props, nextState)
-        })
+      Object.keys(patch).forEach(key => {
+        nextState[key] = this[`${key}Selector`](props, nextState)
+      })
       this.setState(nextState)
     }
-    render () {
+    render() {
       return <WrappedComponent {...this.props} {...this.state} />
     }
   }

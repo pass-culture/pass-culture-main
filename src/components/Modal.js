@@ -11,7 +11,6 @@ const initialState = {
 }
 
 class Modal extends Component {
-
   constructor() {
     super()
     this.state = initialState
@@ -44,7 +43,7 @@ class Modal extends Component {
   }
 
   onCloseClick = e => {
-    if (this.props.isUnclosable || !this.props.isActive) return true;
+    if (this.props.isUnclosable || !this.props.isActive) return true
     const { closeModal, onCloseClick } = this.props
     onCloseClick && onCloseClick()
     closeModal()
@@ -56,17 +55,16 @@ class Modal extends Component {
     e.stopPropagation()
   }
 
-  componentDidMount() {
-  }
+  componentDidMount() {}
 
   componentWillUnmount() {
-    this.openTimeout && clearTimeout(this.openTimeout);
-    this.closeTimeout && clearTimeout(this.closeTimeout);
+    this.openTimeout && clearTimeout(this.openTimeout)
+    this.closeTimeout && clearTimeout(this.closeTimeout)
   }
 
   transform() {
-    if (!this.state.translate) return '';
-    switch(this.props.fromDirection) {
+    if (!this.state.translate) return ''
+    switch (this.props.fromDirection) {
       case 'top':
         return 'translate(0, -100vh)'
       case 'bottom':
@@ -76,11 +74,11 @@ class Modal extends Component {
       case 'right':
         return 'translate(100vw, 0)'
       default:
-        return {};
+        return {}
     }
   }
 
-  render () {
+  render() {
     const {
       ContentComponent,
       hasCloseButton,
@@ -89,31 +87,33 @@ class Modal extends Component {
       transitionDuration,
     } = this.props
     return (
-      <div className={classnames('modal', {
-        'active': this.state.display,
-      })}
-        role='dialog'
-        style={{backgroundColor: maskColor}}
-        onClick={this.onCloseClick}>
+      <div
+        className={classnames('modal', {
+          active: this.state.display,
+        })}
+        role="dialog"
+        style={{ backgroundColor: maskColor }}
+        onClick={this.onCloseClick}
+      >
         <div
           className={classnames('modal-dialog', {
-            fullscreen: this.props.fullscreen
+            fullscreen: this.props.fullscreen,
           })}
-          role='document'
+          role="document"
           style={{
             transitionDuration: `${transitionDuration}ms`,
-            transform: this.transform()
+            transform: this.transform(),
           }}
-          onClick={e => this.stopPropagation(e)}>
-          { !isUnclosable && hasCloseButton && (
-              <button
-                className='close-button'
-                onClick={this.onCloseClick} >
-                <Icon svg='ico-close' />
+          onClick={e => this.stopPropagation(e)}
+        >
+          {!isUnclosable &&
+            hasCloseButton && (
+              <button className="close-button" onClick={this.onCloseClick}>
+                <Icon svg="ico-close" />
               </button>
-          )}
-          <div className='modal-content'>
-            { ContentComponent && <ContentComponent /> }
+            )}
+          <div className="modal-content">
+            {ContentComponent && <ContentComponent />}
           </div>
         </div>
       </div>
@@ -125,9 +125,11 @@ Modal.defaultProps = {
   transitionDuration: 250,
   hasCloseButton: true,
   fromDirection: 'bottom',
-  maskColor: 'rgba(0, 0, 0, 0.8)'
+  maskColor: 'rgba(0, 0, 0, 0.8)',
 }
 
-export default connect(({ modal: { config, ContentComponent, isActive } }) =>
-  Object.assign({ ContentComponent, isActive }, config),
-  { closeModal })(Modal)
+export default connect(
+  ({ modal: { config, ContentComponent, isActive } }) =>
+    Object.assign({ ContentComponent, isActive }, config),
+  { closeModal }
+)(Modal)

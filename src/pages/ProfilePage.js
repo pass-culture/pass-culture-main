@@ -12,25 +12,31 @@ class ProfilePage extends Component {
     const { requestData } = this.props
     requestData('GET', 'users/signout')
   }
-  componentWillReceiveProps (nextProps) {
-    const { history: { push }, user } = nextProps
+  componentWillReceiveProps(nextProps) {
+    const {
+      history: { push },
+      user,
+    } = nextProps
     if (user === false && this.props.user) {
       push('/')
     }
   }
-  render () {
+  render() {
     const { user } = this.props
     return (
-      <main className='page center col-6 mx-auto mt3'>
-        <div className='h2 mb2'>
-          Bienvenue !
+      <main className="page center col-6 mx-auto mt3">
+        <div className="h2 mb2">Bienvenue !</div>
+        <div className="mb2">
+          {(user && user.email) ||
+            "vous n'etes pas connecté (ou attendez 2s...)"}
         </div>
-        <div className='mb2'>
-          { (user && user.email) || 'vous n\'etes pas connecté (ou attendez 2s...)' }
-        </div>
-        <button className={classnames('button button--alive', { 'button--disabled': !user })}
+        <button
+          className={classnames('button button--alive', {
+            'button--disabled': !user,
+          })}
           disabled={!user}
-          onClick={this.onSignOutClick}>
+          onClick={this.onSignOutClick}
+        >
           Déconnection
         </button>
       </main>
@@ -41,8 +47,5 @@ class ProfilePage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   withRouter,
-  connect(
-    state => ({ user: state.user }),
-    { requestData }
-  )
+  connect(state => ({ user: state.user }), { requestData })
 )(ProfilePage)

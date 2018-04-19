@@ -9,26 +9,29 @@ import { mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class OfferNew extends Component {
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const { mergeForm, thing } = nextProps
     if (thing && thing !== this.props.thing) {
       const now = moment()
-      const endDate = now.add(1, 'd').utc().format()
+      const endDate = now
+        .add(1, 'd')
+        .utc()
+        .format()
       const startDate = now.utc().format()
       mergeForm('prices', NEW, 'endDate', endDate)
       mergeForm('prices', NEW, 'startDate', startDate)
       mergeForm('offers', NEW, 'thingId', thing.id)
     }
   }
-  render () {
+  render() {
     const { thing } = this.props
     return (
-      <div className={classnames('offer-new', { 'offer-new--thing-detector mt2 flex items-center': !thing })}>
-        {
-          thing
-            ? <OfferModify thing={thing} />
-            : <ThingDetector />
-        }
+      <div
+        className={classnames('offer-new', {
+          'offer-new--thing-detector mt2 flex items-center': !thing,
+        })}
+      >
+        {thing ? <OfferModify thing={thing} /> : <ThingDetector />}
       </div>
     )
   }

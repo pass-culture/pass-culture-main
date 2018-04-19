@@ -5,8 +5,8 @@ const withFrontendOfferer = withSelectors({
   thumbUrl: [
     ownProps => ownProps.thumbCount,
     ownProps => ownProps.id,
-    (thumbCount, id) => thumbCount > 0 && `${THUMBS_URL}/offerers/${id}`
-  ]
+    (thumbCount, id) => thumbCount > 0 && `${THUMBS_URL}/offerers/${id}`,
+  ],
 })
 
 export default withFrontendOfferer

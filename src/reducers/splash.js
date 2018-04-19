@@ -5,12 +5,13 @@ export const CLOSE_SPLASH = 'CLOSE_SPLASH'
 // INITIAL STATE
 const initialState = {
   closeTimeout: 2000,
-  isActive: window.location.pathname === '/' || ['/beta'].find(pageName =>
-    window.location.pathname.startsWith(pageName)),
+  isActive:
+    window.location.pathname === '/' ||
+    ['/beta'].find(pageName => window.location.pathname.startsWith(pageName)),
 }
 
 // REDUCER
-function splash (state = initialState, action) {
+function splash(state = initialState, action) {
   switch (action.type) {
     case CLOSE_SPLASH:
       return Object.assign({}, state, { isActive: false })
@@ -22,11 +23,11 @@ function splash (state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function closeSplash (action = {}) {
+export function closeSplash(action = {}) {
   return { type: CLOSE_SPLASH }
 }
 
-export function showSplash (action = {}) {
+export function showSplash(action = {}) {
   return { type: SHOW_SPLASH }
 }
 

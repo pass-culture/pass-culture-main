@@ -2,15 +2,13 @@ import React from 'react'
 
 const Price = ({ value, free, Tag, className }) => {
   return (
-    <Tag className={['price'].concat(className).join(' ')}>{
-      typeof value === 'undefined'
+    <Tag className={['price'].concat(className).join(' ')}>
+      {typeof value === 'undefined'
         ? ''
-        : (
-          value === 0
-            ? free
-            : value && (value.toString().replace('.', ',')+'€')
-        )
-    }</Tag>
+        : value === 0
+          ? free
+          : value && value.toString().replace('.', ',') + '€'}
+    </Tag>
   )
 }
 
@@ -19,4 +17,4 @@ Price.defaultProps = {
   Tag: 'span',
 }
 
-export default Price;
+export default Price
