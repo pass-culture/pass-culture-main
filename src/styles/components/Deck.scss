@@ -37,17 +37,13 @@
     height: 40%;
     position: absolute;
     bottom: 0;
+    transition: opacity 250ms 100ms ease, visibility 0ms 0ms;
+    will-change: opacity, visibility;
 
     &.hidden {
-      display: none;
-    }
-
-    .board-bg {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-      will-change: opacity;
+      opacity: 0;
+      transition-delay: 0ms, 400ms;
+      visibility: hidden;
     }
 
     ul.controls {
