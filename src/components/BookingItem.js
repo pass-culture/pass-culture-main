@@ -7,6 +7,7 @@ import frenchStrings from 'react-timeago/lib/language-strings/fr-short'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 
 import Icon from '../components/Icon'
+import Thumb from '../components/Thumb'
 import { getDiscoveryPath } from '../utils/routes'
 
 const formatter = buildFormatter(Object.assign(frenchStrings, {
@@ -24,9 +25,7 @@ const BookingItem = props => {
   return (
     <li>
       <Link to={`${getDiscoveryPath(offer, mediation)}?to=verso`}>
-        <div className='thumb'>
-          <img src={thumbUrl} alt='Thumb' />
-        </div>
+        <Thumb src={thumbUrl} withMediation={mediation} />
         <div className='infos'>
           <div className='top'>
             <h5 title={get(props, 'source.name')} >

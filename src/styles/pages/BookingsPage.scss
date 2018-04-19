@@ -59,19 +59,13 @@
         }
         .thumb {
           height: 100%;
-          width: 30%;
+          width: 27%;
           float: left;
           text-align: center;
-          img {
-            max-height: 100%;
-            max-width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
         }
 
         .infos {
-          width: 55%;
+          width: 58%;
           float: left;
           height: 100%;
           position: relative;

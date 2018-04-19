@@ -2,6 +2,8 @@ import classnames from 'classnames'
 import React from 'react'
 import { connect } from 'react-redux'
 
+import Thumb from './Thumb'
+
 import selectCurrentUserMediation from '../selectors/currentUserMediation'
 import selectNextUserMediation from '../selectors/nextUserMediation'
 import selectPreviousUserMediation from '../selectors/previousUserMediation'
@@ -23,14 +25,7 @@ const Recto = ({
   }
   return (
     <div className='recto'>
-      <div className='background' style={backgroundStyle} />
-      {
-        thumbUrl && (
-          <div style={thumbStyle} className={classnames('thumb', {
-            translated: isFlipped
-          })} />
-        )
-      }
+      <Thumb src={thumbUrl} withMediation={mediation} translated={isFlipped} />
       {
         IS_DEV && (
           <div className='debug absolute left-0 ml2 p2'>
