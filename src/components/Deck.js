@@ -188,7 +188,7 @@ class Deck extends Component {
           key={refreshKey}
           position={position}
           onStop={this.onStop}
-          bounds={{bottom: 0, top: -100}}
+          bounds={isFlipped ? {} : {bottom: 0, top: -100}}
           enableUserSelectHack={false}
           >
           <div>
