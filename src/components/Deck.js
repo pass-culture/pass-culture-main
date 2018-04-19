@@ -195,6 +195,7 @@ class Deck extends Component {
           position={position}
           onStop={this.onStop}
           bounds={isFlipped ? {} : {bottom: 0}}
+          enableUserSelectHack={false}
           >
           <div>
             {
