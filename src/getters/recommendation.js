@@ -3,30 +3,30 @@ import getOffer from './offer'
 import getSource from './source'
 import getThumbUrl from './thumbUrl'
 
-export default function getUserMediation(config = {}) {
-  const { offerId, userMediation } = config
-  if (!userMediation) {
+export default function getRecommendation(config = {}) {
+  const { offerId, recommendation } = config
+  if (!recommendation) {
     return
   }
   // FIND THE ASSOCIATED OFFER
   let offer
   if (offerId) {
-    offer = getOffer(userMediation, offerId)
+    offer = getOffer(recommendation, offerId)
   } else {
-    const userMediationOffers = userMediation.userMediationOffers
+    const userMediationOffers = recommendation.userMediationOffers
     if (
-      userMediation.userMediationOffers &&
-      userMediation.userMediationOffers.length
+      recommendation.userMediationOffers &&
+      recommendation.userMediationOffers.length
     ) {
       const randomOfferId =
         userMediationOffers[
           Math.floor(Math.random() * userMediationOffers.length)
         ].id
-      offer = getOffer(userMediation, randomOfferId)
+      offer = getOffer(recommendation, randomOfferId)
     }
   }
   // GET OTHER PROPERTIES
-  const mediation = getMediation(userMediation)
+  const mediation = getMediation(recommendation)
   const source = getSource(mediation, offer)
   const thumbUrl = getThumbUrl(mediation, source, offer)
   return Object.assign(
@@ -35,6 +35,6 @@ export default function getUserMediation(config = {}) {
       offer,
       thumbUrl,
     },
-    userMediation
+    recommendation
   )
 }

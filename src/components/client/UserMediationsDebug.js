@@ -1,6 +1,6 @@
 import React from 'react'
 
-const UserMediationsDebug = ({
+const RecommendationsDebug = ({
   afterLimit,
   aroundIndex,
   beforeLimit,
@@ -8,15 +8,15 @@ const UserMediationsDebug = ({
   countBeforeSync,
   isLoadingAfter,
   isLoadingBefore,
-  userMediations,
+  recommendations,
 }) => {
   return (
     <div className="user-mediations-debug absolute left-0 ml2 p2">
       ({isLoadingBefore ? '?' : ' '}
       {beforeLimit + 1}) {aroundIndex + 1} ({afterLimit + 1}{' '}
-      {isLoadingAfter ? '?' : ' '}) / {userMediations.length + 2}
+      {isLoadingAfter ? '?' : ' '}) / {recommendations.length + 2}
     </div>
   )
 }
 
-export default UserMediationsDebug
+export default RecommendationsDebug

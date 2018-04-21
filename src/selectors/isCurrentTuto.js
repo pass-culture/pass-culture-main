@@ -1,11 +1,11 @@
 import { createSelector } from 'reselect'
 
-import selectCurrentUserMediation from './currentUserMediation'
+import selectCurrentRecommendation from './currentRecommendation'
 
 export default createSelector(
-  selectCurrentUserMediation,
-  userMediation =>
-    userMediation &&
-    userMediation.userMediationOffers &&
-    userMediation.userMediationOffers.length === 0
+  selectCurrentRecommendation,
+  recommendation =>
+    recommendation &&
+    recommendation.userMediationOffers &&
+    recommendation.userMediationOffers.length === 0
 )

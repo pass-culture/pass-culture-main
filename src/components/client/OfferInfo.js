@@ -10,7 +10,7 @@ import selectCurrentOfferer from '../../selectors/currentOfferer'
 import selectCurrentSource from '../../selectors/currentSource'
 import selectCurrentThumbUrl from '../../selectors/currentThumbUrl'
 import selectVenue from '../../selectors/currentVenue'
-import selectCurrentUserMediation from '../../selectors/currentUserMediation'
+import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import { navigationLink } from '../../utils/geolocation'
 
 class OfferInfo extends Component {
@@ -21,7 +21,7 @@ class OfferInfo extends Component {
       source,
       thumbUrl,
       venue,
-      userMediation,
+      recommendation,
       offerer,
     } = this.props
 
@@ -29,7 +29,7 @@ class OfferInfo extends Component {
       image: thumbUrl,
       description: get(source, 'description'),
       what: get(offer, 'eventOccurence.event.description'),
-      when: get(userMediation, 'mediatedOccurences', []).map(
+      when: get(recommendation, 'mediatedOccurences', []).map(
         o => o.beginningDatetime
       ),
       where: {
@@ -105,6 +105,6 @@ export default connect(state => ({
   offerer: selectCurrentOfferer(state),
   source: selectCurrentSource(state),
   thumbUrl: selectCurrentThumbUrl(state),
-  userMediation: selectCurrentUserMediation(state),
+  recommendation: selectCurrentRecommendation(state),
   venue: selectVenue(state),
 }))(OfferInfo)

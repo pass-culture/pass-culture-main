@@ -2,9 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Thumb from '../layout/Thumb'
-import selectCurrentUserMediation from '../../selectors/currentUserMediation'
-import selectNextUserMediation from '../../selectors/nextUserMediation'
-import selectPreviousUserMediation from '../../selectors/previousUserMediation'
+import selectCurrentRecommendation from '../../selectors/currentRecommendation'
+import selectNextRecommendation from '../../selectors/nextRecommendation'
+import selectPreviousRecommendation from '../../selectors/previousRecommendation'
 import { IS_DEV } from '../../utils/config'
 
 const Recto = ({
@@ -43,12 +43,12 @@ export default connect((state, ownProps) =>
   Object.assign(
     {
       isFlipped: state.verso.isFlipped,
-      userMediations: state.data.userMediations,
+      recommendations: state.data.recommendations,
     },
     ownProps.position === 'current'
-      ? selectCurrentUserMediation(state)
+      ? selectCurrentRecommendation(state)
       : ownProps.position === 'previous'
-        ? selectPreviousUserMediation(state)
-        : ownProps.position === 'next' && selectNextUserMediation(state)
+        ? selectPreviousRecommendation(state)
+        : ownProps.position === 'next' && selectNextRecommendation(state)
   )
 )(Recto)

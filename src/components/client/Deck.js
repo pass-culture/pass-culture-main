@@ -12,12 +12,12 @@ import Clue from './Clue'
 import Icon from '../layout/Icon'
 import { flip, unFlip } from '../../reducers/verso'
 import selectCurrentHeaderColor from '../../selectors/currentHeaderColor'
-import selectCurrentUserMediation from '../../selectors/currentUserMediation'
+import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import selectIsFlipDisabled from '../../selectors/isFlipDisabled'
 import selectNextLimit from '../../selectors/nextLimit'
-import selectNextUserMediation from '../../selectors/nextUserMediation'
+import selectNextRecommendation from '../../selectors/nextRecommendation'
 import selectPreviousLimit from '../../selectors/previousLimit'
-import selectPreviousUserMediation from '../../selectors/previousUserMediation'
+import selectPreviousRecommendation from '../../selectors/previousRecommendation'
 import { IS_DEV, ROOT_PATH } from '../../utils/config'
 import { getDiscoveryPath } from '../../utils/routes'
 import { worker } from '../../workers/dexie/register'
@@ -33,52 +33,52 @@ class Deck extends Component {
   handleDeprecatedData = nextProps => {
     // DEPRECATION HANDLING
     // IF THE RECO ARE DEPRECATED, WE GO TO DECOUVERTE
-    const { deprecatedUserMediations } = nextProps
+    const { deprecatedRecommendations } = nextProps
     if (
-      deprecatedUserMediations &&
-      deprecatedUserMediations !== this.props.deprecatedUserMediations
+      deprecatedRecommendations &&
+      deprecatedRecommendations !== this.props.deprecatedRecommendations
     ) {
       nextProps.history.push('/decouverte')
     }
   }
 
   handleGoNext = () => {
-    const { history, isFlipped, nextUserMediation } = this.props
-    if (!nextUserMediation || isFlipped) return
+    const { history, isFlipped, nextRecommendation } = this.props
+    if (!nextRecommendation || isFlipped) return
     history.push(
-      getDiscoveryPath(nextUserMediation.offer, nextUserMediation.mediation)
+      getDiscoveryPath(nextRecommendation.offer, nextRecommendation.mediation)
     )
     this.handleRefreshNext()
   }
 
   handleGoPrevious = () => {
-    const { history, isFlipped, previousUserMediation } = this.props
-    if (!previousUserMediation || isFlipped) return
+    const { history, isFlipped, previousRecommendation } = this.props
+    if (!previousRecommendation || isFlipped) return
     history.push(
       getDiscoveryPath(
-        previousUserMediation.offer,
-        previousUserMediation.mediation
+        previousRecommendation.offer,
+        previousRecommendation.mediation
       )
     )
     this.handleRefreshPrevious()
   }
 
   handleRefreshPrevious = () => {
-    const { currentUserMediation, previousLimit } = this.props
-    if (currentUserMediation.index <= previousLimit) {
+    const { currentRecommendation, previousLimit } = this.props
+    if (currentRecommendation.index <= previousLimit) {
       worker.postMessage({
         key: 'dexie-push-pull',
-        state: { around: currentUserMediation.id },
+        state: { around: currentRecommendation.id },
       })
     }
   }
 
   handleRefreshNext = () => {
-    const { currentUserMediation, nextLimit } = this.props
-    if (currentUserMediation.index >= nextLimit) {
+    const { currentRecommendation, nextLimit } = this.props
+    if (currentRecommendation.index >= nextLimit) {
       worker.postMessage({
         key: 'dexie-push-pull',
-        state: { around: currentUserMediation.id },
+        state: { around: currentRecommendation.id },
       })
     }
   }
@@ -90,12 +90,12 @@ class Deck extends Component {
     // TO FORCE IT TO REMOUNT AGAIN
     if (
       nextProps &&
-      (!nextProps.userMediations ||
-        !this.props.userMediations ||
-        nextProps.userMediations === this.props.userMediations ||
-        (!nextProps.currentUserMediation || !this.props.currentUserMediation) ||
-        nextProps.currentUserMediation.index ===
-          this.props.currentUserMediation.index)
+      (!nextProps.recommendations ||
+        !this.props.recommendations ||
+        nextProps.recommendations === this.props.recommendations ||
+        (!nextProps.currentRecommendation || !this.props.currentRecommendation) ||
+        nextProps.currentRecommendation.index ===
+          this.props.currentRecommendation.index)
     ) {
       return
     }
@@ -119,7 +119,7 @@ class Deck extends Component {
       height,
       width,
     } = this.props
-    const index = get(this.props, 'currentUserMediation.index', 0)
+    const index = get(this.props, 'currentRecommendation.index', 0)
     const offset = (data.x + width * index) / width
     if (offset > horizontalSlideRatio) {
       this.handleGoPrevious()
@@ -144,18 +144,18 @@ class Deck extends Component {
   render() {
     const {
       currentHeaderColor,
-      currentUserMediation,
+      currentRecommendation,
       isFlipDisabled,
       isFlipped,
-      nextUserMediation,
-      previousUserMediation,
+      nextRecommendation,
+      previousRecommendation,
       unFlippable,
       headerColor,
       width,
     } = this.props
     const { refreshKey } = this.state
 
-    const index = get(this.props, 'currentUserMediation.index', 0)
+    const index = get(this.props, 'currentRecommendation.index', 0)
     const position = {
       x: -1 * width * index,
       y: 0,
@@ -181,7 +181,7 @@ class Deck extends Component {
         )}
         <div
           className={classnames('loading flex items-center justify-center', {
-            shown: !currentUserMediation,
+            shown: !currentRecommendation,
           })}
         >
           <div>
@@ -198,12 +198,12 @@ class Deck extends Component {
           enableUserSelectHack={false}
         >
           <div>
-            {previousUserMediation && (
-              <Card position="previous" userMediation={previousUserMediation} />
+            {previousRecommendation && (
+              <Card position="previous" recommendation={previousRecommendation} />
             )}
-            <Card position="current" userMediation={currentUserMediation} />
-            {nextUserMediation && (
-              <Card position="next" userMediation={nextUserMediation} />
+            <Card position="current" recommendation={currentRecommendation} />
+            {nextRecommendation && (
+              <Card position="next" recommendation={nextRecommendation} />
             )}
           </div>
         </Draggable>
@@ -223,7 +223,7 @@ class Deck extends Component {
             <li>
               <button
                 className={classnames('button before', {
-                  hidden: !previousUserMediation,
+                  hidden: !previousRecommendation,
                 })}
                 onClick={this.handleGoPrevious}
               >
@@ -245,7 +245,7 @@ class Deck extends Component {
             <li>
               <button
                 className={classnames('after button', {
-                  hidden: !nextUserMediation,
+                  hidden: !nextRecommendation,
                 })}
                 onClick={this.handleGoNext}
               >
@@ -258,10 +258,10 @@ class Deck extends Component {
           <div className="debug absolute left-0 ml2 p2">
             ({this.props.isLoadingBefore ? '?' : ' '}
             {this.props.previousLimit}){' '}
-            {this.props.currentUserMediation &&
-              this.props.currentUserMediation.index}{' '}
+            {this.props.currentRecommendation &&
+              this.props.currentRecommendation.index}{' '}
             ({this.props.nextLimit} {this.props.isLoadingAfter ? '?' : ' '}) /{' '}
-            {this.props.userMediations && this.props.userMediations.length - 1}
+            {this.props.recommendations && this.props.recommendations.length - 1}
           </div>
         )}
       </div>
@@ -288,15 +288,15 @@ export default compose(
   connect(
     state => ({
       currentHeaderColor: selectCurrentHeaderColor(state),
-      currentUserMediation: selectCurrentUserMediation(state),
-      deprecatedUserMediations: state.data.deprecatedUserMediations,
+      currentRecommendation: selectCurrentRecommendation(state),
+      deprecatedRecommendations: state.data.deprecatedRecommendations,
       isFlipDisabled: selectIsFlipDisabled(state),
       isFlipped: state.verso.isFlipped,
       nextLimit: selectNextLimit(state),
-      nextUserMediation: selectNextUserMediation(state),
+      nextRecommendation: selectNextRecommendation(state),
       previousLimit: selectPreviousLimit(state),
-      previousUserMediation: selectPreviousUserMediation(state),
-      userMediations: state.data.userMediations,
+      previousRecommendation: selectPreviousRecommendation(state),
+      recommendations: state.data.recommendations,
       unFlippable: state.verso.unFlippable,
     }),
     { flip, unFlip }

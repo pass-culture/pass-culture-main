@@ -2,13 +2,13 @@ import { createSelector } from 'reselect'
 
 import selectIsCurrentTuto from './isCurrentTuto'
 import selectCurrentMediation from './currentMediation'
-import selectCurrentUserMediation from './currentUserMediation'
+import selectCurrentRecommendation from './currentRecommendation'
 
 export default createSelector(
-  selectCurrentUserMediation,
+  selectCurrentRecommendation,
   selectIsCurrentTuto,
   selectCurrentMediation,
-  (currentUserMediation, isCurrentTuto, currentMediation) =>
-    !currentUserMediation ||
+  (currentRecommendation, isCurrentTuto, currentMediation) =>
+    !currentRecommendation ||
     (isCurrentTuto && currentMediation.thumbCount === 1)
 )

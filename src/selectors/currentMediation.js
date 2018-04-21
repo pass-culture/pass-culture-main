@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import selectCurrentUserMediation from './currentUserMediation'
+import selectCurrentRecommendation from './currentRecommendation'
 import getMediation from '../getters/mediation'
 
-export default createSelector(selectCurrentUserMediation, getMediation)
+export default createSelector(selectCurrentRecommendation, getMediation)

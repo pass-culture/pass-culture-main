@@ -9,7 +9,7 @@ import Icon from '../layout/Icon'
 import selectBooking from '../../selectors/booking'
 import selectCurrentOffer from '../../selectors/currentOffer'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
-import selectCurrentUserMediation from '../../selectors/currentUserMediation'
+import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import { requestData } from '../../reducers/data'
 import { showModal } from '../../reducers/modal'
 
@@ -23,10 +23,11 @@ class ControlBar extends Component {
     this.props.requestData('POST', 'userMediations', {
       body: [
         {
-          id: this.props.userMediation.id,
+          id: this.props.recommendation.id,
           isFavorite: true,
         },
       ],
+      storeKey: 'recommendations'
     })
   }
 
@@ -101,7 +102,7 @@ class ControlBar extends Component {
 export default connect(
   state => ({
     booking: selectBooking(state),
-    userMediation: selectCurrentUserMediation(state),
+    recommendation: selectCurrentRecommendation(state),
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
   }),

@@ -9,6 +9,7 @@ const config = {
     // SPECIFIC COLLECTIONS
     {
       description: 'index',
+      key: 'recommendations',
       name: 'userMediations',
       query: ({ around,
         mediationId,

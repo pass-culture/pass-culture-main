@@ -15,8 +15,8 @@ class RedirectToDiscoveryPage extends Component {
   }
 
   handleSetRedirectTo = props => {
-    const { userMediations } = props
-    if (userMediations && userMediations.length === 0) {
+    const { recommendations } = props
+    if (recommendations && recommendations.length === 0) {
       this.setState({
         redirectTo: '/decouverte/empty',
       })
@@ -24,13 +24,13 @@ class RedirectToDiscoveryPage extends Component {
     }
     // THE BLOB HAS MAYBE A isAround VARIABLE
     // HELPING TO RETRIEVE THE AROUND
-    let aroundUserMediation = userMediations.find(um => um.isAround)
-    if (!aroundUserMediation) {
+    let aroundRecommendation = recommendations.find(um => um.isAround)
+    if (!aroundRecommendation) {
       // ELSE TAKE THE FIRST?
-      aroundUserMediation = userMediations[0]
+      aroundRecommendation = recommendations[0]
     }
     // NOW CHOOSE AN OFFER AMONG THE ONES
-    const userMediationOffers = aroundUserMediation.userMediationOffers
+    const userMediationOffers = aroundRecommendation.userMediationOffers
     const chosenOffer =
       userMediationOffers &&
       userMediationOffers[
@@ -38,7 +38,7 @@ class RedirectToDiscoveryPage extends Component {
       ]
     // BUILD THE URL NOW
     this.setState({
-      redirectTo: getDiscoveryPath(chosenOffer, aroundUserMediation.mediation),
+      redirectTo: getDiscoveryPath(chosenOffer, aroundRecommendation.mediation),
     })
   }
 
@@ -48,8 +48,8 @@ class RedirectToDiscoveryPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (
-      nextProps.userMediations &&
-      nextProps.userMediations !== this.props.userMediations
+      nextProps.recommendations &&
+      nextProps.recommendations !== this.props.recommendations
     ) {
       this.handleSetRedirectTo(nextProps)
     }
@@ -64,13 +64,13 @@ class RedirectToDiscoveryPage extends Component {
 }
 
 RedirectToDiscoveryPage.defaultProps = {
-  userMediations: [],
+  recommendations: [],
 }
 
 export default compose(
   withLogin({ isRequired: true }),
   withRouter,
   connect(state => ({
-    userMediations: state.data.userMediations,
+    recommendations: state.data.recommendations,
   }))
 )(RedirectToDiscoveryPage)

@@ -1,13 +1,13 @@
 import { createSelector } from 'reselect'
 
-import selectCurrentUserMediation from './currentUserMediation'
+import selectCurrentRecommendation from './currentRecommendation'
 import getOffer from '../getters/offer'
 
 export default createSelector(
   state => state.router.location.pathname, // TODO: get data from redux state
-  selectCurrentUserMediation,
-  (pathname, userMediation) => {
+  selectCurrentRecommendation,
+  (pathname, recommendation) => {
     const [, , offerId] = pathname.split('/')
-    return getOffer(userMediation, offerId)
+    return getOffer(recommendation, offerId)
   }
 )

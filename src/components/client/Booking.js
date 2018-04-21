@@ -14,7 +14,7 @@ import { closeModal } from '../../reducers/modal'
 import selectBooking from '../../selectors/booking'
 import selectCurrentOffer from '../../selectors/currentOffer'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
-import selectCurrentUserMediation from '../../selectors/currentUserMediation'
+import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 
 moment.locale('fr')
 
@@ -30,14 +30,14 @@ class Booking extends Component {
   }
 
   makeBooking = () => {
-    const { offer, userMediation, requestData } = this.props
+    const { offer, recommendation, requestData } = this.props
     this.setState({
       bookingInProgress: true,
     })
     requestData('POST', 'bookings', {
       add: 'append',
       body: {
-        userMediationId: userMediation.id,
+        recommendationId: recommendation.id,
         offerId: offer.id,
         quantity: 1,
       },
@@ -54,7 +54,7 @@ class Booking extends Component {
   getAvailableDateTimes(selectedDate) {
     const availableDates = get(
       this.props,
-      'userMediation.mediatedOccurences',
+      'recommendation.mediatedOccurences',
       []
     ).map(o => moment(o.beginningDatetime))
     const availableHours = availableDates.filter(d =>
@@ -79,7 +79,7 @@ class Booking extends Component {
     const price = get(this.props, 'offer.price')
     const step = this.currentStep()
     const dateRequired =
-      get(this.props, 'userMediation.mediatedOccurences', []).length > 1
+      get(this.props, 'recommendation.mediatedOccurences', []).length > 1
     const dateOk = dateRequired ? this.state.date && this.state.time : true
     const offerer = this.props.offerer
     const { availableDates, availableHours } = this.getAvailableDateTimes()
@@ -260,7 +260,7 @@ export default connect(
     booking: selectBooking(state),
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
-    userMediation: selectCurrentUserMediation(state),
+    recommendation: selectCurrentRecommendation(state),
   }),
   {
     requestData,

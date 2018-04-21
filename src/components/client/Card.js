@@ -28,17 +28,17 @@ class Card extends Component {
   }
 
   render() {
-    const { userMediation, position } = this.props
+    const { recommendation, position } = this.props
     return (
       <div
         className={classnames('card', {
           current: position === 'current',
         })}
         style={{
-          transform: `translate(${get(userMediation, 'index') * 100}%, 0)`,
+          transform: `translate(${get(recommendation, 'index') * 100}%, 0)`,
         }}
       >
-        <Recto {...userMediation} />
+        <Recto {...recommendation} />
         {position === 'current' && <Verso />}
       </div>
     )

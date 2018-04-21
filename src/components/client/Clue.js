@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import Price from './Price'
 import selectDistance from '../../selectors/distance'
 import selectCurrentOffer from '../../selectors/currentOffer'
-import selectCurrentUserMediation from '../../selectors/currentUserMediation'
 
 const Clue = ({ distance, offer, isHidden, transitionTimeout }) => {
   return (
@@ -26,6 +25,5 @@ Clue.defaultProps = {
 export default connect(state => ({
   distance: selectDistance(state),
   isFlipped: state.verso.isFlipped,
-  offer: selectCurrentOffer(state),
-  userMediation: selectCurrentUserMediation(state),
+  offer: selectCurrentOffer(state)
 }))(Clue)

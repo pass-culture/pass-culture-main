@@ -1,40 +1,40 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import selectUserMediationsWithIndex from './userMediationsWithIndex'
-import getUserMediation from '../getters/userMediation'
+import selectRecommendationsWithIndex from './recommendationsWithIndex'
+import getRecommendation from '../getters/recommendation'
 
 export default createSelector(
   state => state.router.location.pathname,
-  selectUserMediationsWithIndex,
-  (pathname, userMediations) => {
+  selectRecommendationsWithIndex,
+  (pathname, recommendations) => {
     const [, , offerId, mediationId] = pathname.split('/')
-    let filteredUserMediations
+    let filteredRecommendations
     // NORMALY mediationId is ENOUGH TO FIND THE MATCHING
     // USER MEDIATION (BECAUSE WE PROPOSE ONLY ONE OFFER PER MEDIATION)
     // BUT TO BE SURE WE GET ALL THE AVAILABLES
     // (IF AT ANY CASE BACKEND ALGO SENT BACK DOUBLONS...BECAUSE OF SOME MISTAKES)
     if (mediationId) {
-      filteredUserMediations = userMediations.filter(
+      filteredRecommendations = recommendations.filter(
         m => m.mediationId === mediationId
       )
     } else {
-      filteredUserMediations = userMediations
+      filteredRecommendations = recommendations
     }
     // THEN DESAMBIGUATE WITH OFFER ID
-    let userMediation
+    let recommendation
     if (offerId === 'tuto') {
-      userMediation = filteredUserMediations[0]
+      recommendation = filteredRecommendations[0]
     } else {
-      userMediation = filteredUserMediations.find(m =>
+      recommendation = filteredRecommendations.find(m =>
         get(m, 'userMediationOffers', []).find(o => o.id === offerId)
       )
     }
-    const hydratedUserMediation = getUserMediation({
+    const hydratedRecommendation = getRecommendation({
       offerId,
-      userMediation,
-      userMediations,
+      recommendation,
+      recommendations,
     })
-    return hydratedUserMediation
+    return hydratedRecommendation
   }
 )
