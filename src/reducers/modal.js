@@ -4,20 +4,21 @@ export const SHOW_MODAL = 'SHOW_MODAL'
 export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
 
 // INITIAL STATE
-const initialState = { ContentComponent: null,
-  isActive: false
+const initialState = {
+  ContentComponent: null,
+  isActive: false,
 }
 
 // REDUCER
-function modal (state = initialState, action) {
+function modal(state = initialState, action) {
   switch (action.type) {
     case CLOSE_MODAL:
       return Object.assign({}, state, {
-        isActive: false
+        isActive: false,
       })
     case LOCATION_CHANGE:
       return Object.assign({}, state, {
-        isActive: false
+        isActive: false,
       })
     case SHOW_MODAL:
       return Object.assign({}, state, {
@@ -39,7 +40,7 @@ export function showModal(modalElement, config) {
   return {
     config,
     ContentComponent: () => modalElement,
-    type: SHOW_MODAL
+    type: SHOW_MODAL,
   }
 }
 

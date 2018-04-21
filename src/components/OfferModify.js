@@ -16,34 +16,36 @@ class OfferModify extends Component {
   onCloseClick = () => {
     this.props.closeModal()
   }
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.assignData({ modifyOfferId: null })
   }
-  render () {
+  render() {
     const { id, thing } = this.props
     const isNew = id === NEW
     return (
-      <div className='offer-modify p2'>
-        <div className='h2 mt2 mb2'> Offre </div>
-        <ThingItem extraClass='mb2' {...thing} />
+      <div className="offer-modify p2">
+        <div className="h2 mt2 mb2"> Offre </div>
+        <ThingItem extraClass="mb2" {...thing} />
         <OfferForm {...this.props} />
         <div>
-          <SubmitButton add='append'
-            extraClass='mr1'
+          <SubmitButton
+            add="append"
+            extraClass="mr1"
             getBody={form => form.offersById[id]}
             getIsDisabled={form =>
               !form ||
               !form.offersById ||
               !form.offersById[id] ||
-              (
-                !form.offersById[id].description &&
-                !form.offersById[id].name
-              )
+              (!form.offersById[id].description && !form.offersById[id].name)
             }
             getOptimistState={(state, action) => {
-              const modifyOffer = Object.assign({ id,
-                thing
-              }, action.config.body)
+              const modifyOffer = Object.assign(
+                {
+                  id,
+                  thing,
+                },
+                action.config.body
+              )
               return { offers: state.offers.concat(modifyOffer) }
             }}
             getSuccessState={(state, action) => {
@@ -53,39 +55,41 @@ class OfferModify extends Component {
             }}
             method={isNew ? 'POST' : 'PATCH'}
             path={'offers/' + (isNew ? '' : id)}
-            storeKey='offers'
+            storeKey="offers"
             text={isNew ? 'Enregistrer' : 'Modifer'}
           />
-          <DeleteButton className={classnames('button button--alive mb2', {
-            'button--disabled': isNew
-          })}
-            collectionName='offers'
+          <DeleteButton
+            className={classnames('button button--alive mb2', {
+              'button--disabled': isNew,
+            })}
+            collectionName="offers"
             disabled={isNew}
             id={id}
-            text='Supprimer'
+            text="Supprimer"
           />
         </div>
-        {
-          !isNew && [
-            <OfferJoinForm key='offer-join-form' {...this.props} />,
-            <button key='ok' className='button button--alive'
-              onClick={this.onCloseClick} >
-              Ok
-            </button>
-          ]
-        }
+        {!isNew && [
+          <OfferJoinForm key="offer-join-form" {...this.props} />,
+          <button
+            key="ok"
+            className="button button--alive"
+            onClick={this.onCloseClick}
+          >
+            Ok
+          </button>,
+        ]}
       </div>
     )
   }
 }
 
 OfferModify.defaultProps = {
-  id: NEW
+  id: NEW,
 }
 
-const getModifyOffer = createSelector(state => state.data.offers,
-  (state, ownProps) =>
-    state.data.modifyOfferId || ownProps.id,
+const getModifyOffer = createSelector(
+  state => state.data.offers,
+  (state, ownProps) => state.data.modifyOfferId || ownProps.id,
   (offers, offerId) => offers && offers.find(({ id }) => id === offerId)
 )
 

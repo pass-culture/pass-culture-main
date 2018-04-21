@@ -3,7 +3,7 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { assignData, failData, successData } from '../reducers/data'
 import { fetchData, localData } from '../utils/request'
 
-function * fromWatchRequestDataActions (action) {
+function* fromWatchRequestDataActions(action) {
   // UNPACK
   const { method, path, config } = action
   const body = config && config.body
@@ -14,14 +14,8 @@ function * fromWatchRequestDataActions (action) {
   const token = yield type && select(state => state.data[`${type}Token`])
   // DATA
   try {
-    const dataMethod = local
-      ? localData
-      : fetchData
-    const result = yield call(dataMethod,
-      method,
-      path,
-      { body, token }
-    )
+    const dataMethod = local ? localData : fetchData
+    const result = yield call(dataMethod, method, path, { body, token })
     if (hook) {
       yield call(hook, method, path, result, config)
     }
@@ -37,12 +31,12 @@ function * fromWatchRequestDataActions (action) {
   }
 }
 
-function * fromWatchFailDataActions (action) {
+function* fromWatchFailDataActions(action) {
   const errors = yield select(state => state.data.errors)
   yield put(assignData({ errors: Object.assign({}, errors, action.errors) }))
 }
 
-function * fromWatchSuccessDataActions (action) {
+function* fromWatchSuccessDataActions(action) {
   const { config, method, path } = action
   const local = config && config.local
   if (method !== 'GET' && !local) {
@@ -52,8 +46,17 @@ function * fromWatchSuccessDataActions (action) {
   }
 }
 
-export function * watchDataActions () {
-  yield takeEvery(({ type }) => /REQUEST_DATA_(.*)/.test(type), fromWatchRequestDataActions)
-  yield takeEvery(({ type }) => /FAIL_DATA_(.*)/.test(type), fromWatchFailDataActions)
-  yield takeEvery(({ type }) => /SUCCESS_DATA_(.*)/.test(type), fromWatchSuccessDataActions)
+export function* watchDataActions() {
+  yield takeEvery(
+    ({ type }) => /REQUEST_DATA_(.*)/.test(type),
+    fromWatchRequestDataActions
+  )
+  yield takeEvery(
+    ({ type }) => /FAIL_DATA_(.*)/.test(type),
+    fromWatchFailDataActions
+  )
+  yield takeEvery(
+    ({ type }) => /SUCCESS_DATA_(.*)/.test(type),
+    fromWatchSuccessDataActions
+  )
 }

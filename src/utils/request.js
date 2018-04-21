@@ -3,18 +3,19 @@ import { parse } from 'query-string'
 import { API_URL } from './config'
 import { getData, putData } from '../workers/dexie/data'
 
-export async function fetchData (method, path, config = {}) {
+export async function fetchData(method, path, config = {}) {
   // unpack
   const { body, position, token } = config
   // init
-  const init = { method,
+  const init = {
+    method,
     // mode: 'cors',
-    credentials: 'include'
+    credentials: 'include',
   }
   if (method && method !== 'GET') {
     init.headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
     }
     // body
     init.body = JSON.stringify(body || {})
@@ -42,7 +43,7 @@ export async function fetchData (method, path, config = {}) {
   // const collectionName = path.split('?')[0]
   if (result.status === 200 || result.status === 201) {
     if (window.cordova) {
-      window.cordova.plugins.CookieManagementPlugin.flush();
+      window.cordova.plugins.CookieManagementPlugin.flush()
     }
     return { data: await result.json() }
   } else {
@@ -50,7 +51,7 @@ export async function fetchData (method, path, config = {}) {
   }
 }
 
-export async function localData (method, path, config = {}) {
+export async function localData(method, path, config = {}) {
   // unpack
   const { body } = config
   // check the table

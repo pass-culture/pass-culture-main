@@ -3,19 +3,18 @@
 // import { rgb_to_hsv } from 'colorsys'
 import { API_URL, THUMBS_URL } from '../utils/config'
 
-export function getContentFromUserMediation (userMediation) {
+export function getContentFromUserMediation(userMediation) {
   // check and unpack
   if (!userMediation) {
     return
   }
-  const { mediation,
-    userMediationOffers
-  } = userMediation
+  const { mediation, userMediationOffers } = userMediation
   // choose one of the associated offer
   // for now we just pick randomly one of them
   // and this is actually what we want for the case where we have an event
   // proposed by several ticketers
-  const chosenOffer = userMediationOffers &&
+  const chosenOffer =
+    userMediationOffers &&
     userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
   // check
   if (!chosenOffer && !mediation) {
@@ -44,7 +43,8 @@ export function getContentFromUserMediation (userMediation) {
     }
   }
   // venue
-  venue = venue || (chosenOffer && chosenOffer.venue) || (source && source.venue)
+  venue =
+    venue || (chosenOffer && chosenOffer.venue) || (source && source.venue)
   // color
   let backgroundColor
   let thumbUrl
@@ -58,10 +58,14 @@ export function getContentFromUserMediation (userMediation) {
   } else {
     backgroundColor = [0, 0, 0]
   }
-  return Object.assign({ backgroundColor,
-    chosenOffer,
-    source,
-    thumbUrl,
-    venue
-  }, userMediation)
+  return Object.assign(
+    {
+      backgroundColor,
+      chosenOffer,
+      source,
+      thumbUrl,
+      venue,
+    },
+    userMediation
+  )
 }

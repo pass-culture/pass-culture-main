@@ -7,18 +7,11 @@ import { requestData } from '../reducers/data'
 
 class InventoryPage extends Component {
   render = () => {
-    return (
-      <main className='page'>
-        PINS
-      </main>
-    )
+    return <main className="page">PINS</main>
   }
 }
 
 export default compose(
   withLogin({ isRequired: true }),
-  connect(
-    (state, ownProps) => ({ a: 1 }),
-    { requestData }
-  )
+  connect((state, ownProps) => ({ a: 1 }), { requestData })
 )(InventoryPage)

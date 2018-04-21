@@ -6,9 +6,8 @@ import getMediation from '../getters/mediation'
 import getOffer from '../getters/offer'
 import getSource from '../getters/source'
 
-export default createSelector(
-  selectUserMediationsWithIndex,
-  userMediations => userMediations.map((um, i) => {
+export default createSelector(selectUserMediationsWithIndex, userMediations =>
+  userMediations.map((um, i) => {
     const mediation = getMediation(um)
     const offer = getOffer(um)
     const source = getSource(mediation, offer)

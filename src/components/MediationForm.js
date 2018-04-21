@@ -6,18 +6,20 @@ import { mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class MediationForm extends Component {
-  componentWillMount () {
+  componentWillMount() {
     const { mergeForm, offerId } = this.props
     mergeForm('mediations', NEW, 'name', 'Coup de Coeur')
     mergeForm('mediations', NEW, 'offerId', offerId)
   }
-  render () {
+  render() {
     return (
-      <div className='mediation-form mb2 relative p3'>
-        <FormTextarea className='textarea mediation-form__textarea mt2'
-          collectionName='mediations'
-          name='description'
-          placeholder='donnez la description de votre coup de coeur' />
+      <div className="mediation-form mb2 relative p3">
+        <FormTextarea
+          className="textarea mediation-form__textarea mt2"
+          collectionName="mediations"
+          name="description"
+          placeholder="donnez la description de votre coup de coeur"
+        />
         {/*
         <FormInput collectionName='venuesFavorites'
           name='description'

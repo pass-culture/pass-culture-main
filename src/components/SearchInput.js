@@ -8,26 +8,24 @@ import { requestData } from '../reducers/data'
 import { closeLoading, showLoading } from '../reducers/loading'
 
 class SearchInput extends Component {
-  constructor (props) {
-    super (props)
+  constructor(props) {
+    super(props)
     this.onDebouncedRequestData = debounce(
       this.onRequestData,
       props.debounceTimeout
     )
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const { closeLoading, offers } = nextProps
     if (offers !== this.props.offers) {
       closeLoading()
     }
   }
   onRequestData = event => {
-    const { target: { value } } = event
-    const { collectionName,
-      hook,
-      requestData,
-      showLoading
-    } = this.props
+    const {
+      target: { value },
+    } = event
+    const { collectionName, hook, requestData, showLoading } = this.props
     showLoading('search')
     requestData('GET', `${collectionName}?search=${value}`, { hook, value })
     this._isDebouncing = false
@@ -38,14 +36,16 @@ class SearchInput extends Component {
     this._isDebouncing = true
     this.onDebouncedRequestData(event)
   }
-  render () {
+  render() {
     const children = [
-      <input className='input search-input mx-auto col-9'
+      <input
+        className="input search-input mx-auto col-9"
         key={0}
         onChange={this.onChange}
-        placeholder='tape ta recherche'
-        ref={_element => this._element = _element }
-        type='text' />
+        placeholder="tape ta recherche"
+        ref={_element => (this._element = _element)}
+        type="text"
+      />,
     ]
     /*
     window.location.pathname.includes('/gestion') && children.push(
@@ -60,12 +60,12 @@ class SearchInput extends Component {
 }
 
 SearchInput.defaultProps = {
-  debounceTimeout: 1000
+  debounceTimeout: 1000,
 }
 
 export default connect(
   (state, ownProps) => ({
-    [ownProps.collectionName]: state.data[ownProps.collectionName]
+    [ownProps.collectionName]: state.data[ownProps.collectionName],
   }),
   { closeLoading, requestData, showLoading }
 )(SearchInput)

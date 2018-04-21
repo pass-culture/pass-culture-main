@@ -7,10 +7,12 @@ export default createSelector(
   state => state.data.userMediations,
   selectCurrentUserMediation,
   (userMediations, currentUserMediation) => {
-    const nextUserMediation = currentUserMediation
-      && userMediations
-      && userMediations[userMediations.findIndex(um =>
-        um.id === currentUserMediation.id) + 1]
+    const nextUserMediation =
+      currentUserMediation &&
+      userMediations &&
+      userMediations[
+        userMediations.findIndex(um => um.id === currentUserMediation.id) + 1
+      ]
     return getUserMediation({ userMediation: nextUserMediation })
   }
 )

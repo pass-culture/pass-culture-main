@@ -9,7 +9,8 @@ import { NEW } from '../utils/config'
 const SourceModify = ({ offererId, providers }) => {
   return (
     <div>
-      <List className='mb1'
+      <List
+        className="mb1"
         ContentComponent={ProviderItem}
         elements={providers}
         extra={{ offererId }}
@@ -19,10 +20,7 @@ const SourceModify = ({ offererId, providers }) => {
           !form ||
           !form.providersById ||
           !form.providersById[NEW] ||
-          (
-            !form.providersById[NEW].groupSize ||
-            !form.providersById[NEW].value
-          )
+          (!form.providersById[NEW].groupSize || !form.providersById[NEW].value)
         }
         getOptimistState={(state, action) => {
           /*
@@ -49,13 +47,14 @@ const SourceModify = ({ offererId, providers }) => {
           */
         }}
         isWrap
-        path='providers'
-        title='providers' />
+        path="providers"
+        title="providers"
+      />
     </div>
   )
 }
 
-export default connect(
-  state => ({ offererId: state.data.offerers && state.data.offerers[0] &&
-    state.data.offerers[0].id })
-)(SourceModify)
+export default connect(state => ({
+  offererId:
+    state.data.offerers && state.data.offerers[0] && state.data.offerers[0].id,
+}))(SourceModify)

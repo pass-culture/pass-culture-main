@@ -19,7 +19,7 @@ const form = (state = initialState, action) => {
       collection[action.id] = entity
       entity[action.name] = action.value
       return Object.assign({}, state, { [collectionKey]: collection })
-      // return merge({}, state, action.patch)
+    // return merge({}, state, action.patch)
     case RESET_FORM:
       return {}
     default:
@@ -33,7 +33,7 @@ export const mergeForm = (collectionName, id, name, value) => ({
   id,
   name,
   type: MERGE_FORM,
-  value
+  value,
 })
 
 /*
@@ -46,7 +46,7 @@ export const mergeForm = patch => ({
 export const resetForm = patch => ({ type: RESET_FORM })
 
 // SELECTORS
-export function getFormCollection (state, ownProps) {
+export function getFormCollection(state, ownProps) {
   const form = state.form
   if (!form) {
     return
@@ -54,16 +54,16 @@ export function getFormCollection (state, ownProps) {
   return form[`${ownProps.collectionName}ById`]
 }
 
-export function getFormEntity (state, ownProps) {
-  const collection = getFormCollection (state, ownProps)
+export function getFormEntity(state, ownProps) {
+  const collection = getFormCollection(state, ownProps)
   if (!collection) {
     return
   }
   return collection[ownProps.id || NEW]
 }
 
-export function getFormValue (state, ownProps) {
-  const entity = getFormEntity (state, ownProps)
+export function getFormValue(state, ownProps) {
+  const entity = getFormEntity(state, ownProps)
   if (!entity) {
     return
   }

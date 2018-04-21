@@ -8,10 +8,10 @@ import withFrontendOffer from '../hocs/withFrontendOffer'
 import { mergeForm } from '../reducers/form'
 
 class OfferForm extends Component {
-  componentWillMount () {
+  componentWillMount() {
     this.handleMergeForm(this.props)
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (
       // be sure to put the id inside the form (even after a reset form)
       !nextProps.formOffer ||
@@ -25,36 +25,32 @@ class OfferForm extends Component {
     id && mergeForm('offers', id, 'id', id)
     mergeForm('offers', id, 'sellerId', sellerId)
   }
-  render () {
-    const { description,
-      id,
-      name
-    } = this.props
+  render() {
+    const { description, id, name } = this.props
     return (
-      <div className='offer-form p2'>
-        <div className='mb2'>
-          <label className='block mb1'>
-            titre
-          </label>
-          <FormInput className='input col-12'
-            collectionName='offers'
+      <div className="offer-form p2">
+        <div className="mb2">
+          <label className="block mb1">titre</label>
+          <FormInput
+            className="input col-12"
+            collectionName="offers"
             defaultValue={name}
             entityId={id}
-            name='name'
+            name="name"
             placeholder="titre de l'offre"
           />
         </div>
         <div>
-          <label className='block mb1'>
-            description
-          </label>
-          <FormTextarea className='textarea offer-form__textarea'
-            collectionName='offers'
+          <label className="block mb1">description</label>
+          <FormTextarea
+            className="textarea offer-form__textarea"
+            collectionName="offers"
             defaultValue={description}
             entityId={id}
             maxLength={1000}
-            name='description'
-            placeholder="Vous pouvez écrire une description ici" />
+            name="description"
+            placeholder="Vous pouvez écrire une description ici"
+          />
         </div>
       </div>
     )
@@ -65,7 +61,7 @@ export default compose(
   withFrontendOffer,
   connect(
     (state, ownProps) => ({
-      formOffer: state.form.offersById && state.form.offersById[ownProps.id]
+      formOffer: state.form.offersById && state.form.offersById[ownProps.id],
     }),
     { mergeForm }
   )

@@ -15,46 +15,41 @@ const Recto = ({
   index,
   isFlipped,
   offer,
-  thumbUrl
+  thumbUrl,
 }) => {
-  const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` };
-  const thumbStyle = Object.assign({}, backgroundStyle);
+  const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` }
+  const thumbStyle = Object.assign({}, backgroundStyle)
   if (mediation) {
-    thumbStyle.backgroundSize='cover';
+    thumbStyle.backgroundSize = 'cover'
   }
   return (
-    <div className='recto'>
+    <div className="recto">
       <Thumb src={thumbUrl} withMediation={mediation} translated={isFlipped} />
-      {
-        IS_DEV && (
-          <div className='debug absolute left-0 ml2 p2'>
-            <span>
-              {id} {offer && offer.id} {index}
-            </span>
-            {
-              dateRead && [
-                <span key={0}>
-                  &middot;
-                </span>,
-                <span key={1}>
-                  {dateRead}
-                </span>
-              ]
-            }
-          </div>
-        )
-      }
-   </div>
+      {IS_DEV && (
+        <div className="debug absolute left-0 ml2 p2">
+          <span>
+            {id} {offer && offer.id} {index}
+          </span>
+          {dateRead && [
+            <span key={0}>&middot;</span>,
+            <span key={1}>{dateRead}</span>,
+          ]}
+        </div>
+      )}
+    </div>
   )
 }
 
-export default connect(
-  (state, ownProps) => Object.assign({
-    isFlipped: state.verso.isFlipped,
-    userMediations: state.data.userMediations
-  }, ownProps.position === 'current'
+export default connect((state, ownProps) =>
+  Object.assign(
+    {
+      isFlipped: state.verso.isFlipped,
+      userMediations: state.data.userMediations,
+    },
+    ownProps.position === 'current'
       ? selectCurrentUserMediation(state)
       : ownProps.position === 'previous'
         ? selectPreviousUserMediation(state)
-        : ownProps.position === 'next' && selectNextUserMediation(state))
+        : ownProps.position === 'next' && selectNextUserMediation(state)
+  )
 )(Recto)

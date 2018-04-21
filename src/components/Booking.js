@@ -1,10 +1,10 @@
-import classnames from 'classnames';
-import get from 'lodash.get';
+import classnames from 'classnames'
+import get from 'lodash.get'
 import moment from 'moment'
 import 'moment-locale-fr'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { SingleDatePicker } from 'react-dates';
+import { SingleDatePicker } from 'react-dates'
 
 import Icon from '../components/Icon'
 import Price from '../components/Price'
@@ -16,10 +16,10 @@ import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
 import selectCurrentUserMediation from '../selectors/currentUserMediation'
 
-moment.locale('fr');
+moment.locale('fr')
 
 class Booking extends Component {
-  constructor () {
+  constructor() {
     super()
     this.state = {
       bookingInProgress: false,
@@ -32,7 +32,7 @@ class Booking extends Component {
   makeBooking = () => {
     const { offer, userMediation, requestData } = this.props
     this.setState({
-      bookingInProgress: true
+      bookingInProgress: true,
     })
     requestData('POST', 'bookings', {
       add: 'append',
@@ -40,108 +40,143 @@ class Booking extends Component {
         userMediationId: userMediation.id,
         offerId: offer.id,
         quantity: 1,
-      }
+      },
     })
   }
 
   currentStep() {
-    const token = get(this.props, 'booking.token');
-    if (token) return 'confirmation';
-    if (this.state.bookingInProgress) return 'loading';
-    return 'confirm';
+    const token = get(this.props, 'booking.token')
+    if (token) return 'confirmation'
+    if (this.state.bookingInProgress) return 'loading'
+    return 'confirm'
   }
 
   getAvailableDateTimes(selectedDate) {
-    const availableDates = get(this.props, 'userMediation.mediatedOccurences', []).map(o => moment(o.beginningDatetime));
-    const availableHours = availableDates.filter(d => d.isSame(selectedDate || this.state.date , 'day'));
+    const availableDates = get(
+      this.props,
+      'userMediation.mediatedOccurences',
+      []
+    ).map(o => moment(o.beginningDatetime))
+    const availableHours = availableDates.filter(d =>
+      d.isSame(selectedDate || this.state.date, 'day')
+    )
     return {
       availableDates,
-      availableHours
+      availableHours,
     }
   }
 
   handleDateSelect = date => {
-    const {
-      availableHours
-    } = this.getAvailableDateTimes(date);
+    const { availableHours } = this.getAvailableDateTimes(date)
     this.setState({
       date: date,
-      time: availableHours.length === 1 ? availableHours[0] : null
+      time: availableHours.length === 1 ? availableHours[0] : null,
     })
   }
 
-  render () {
-    const token = get(this.props, 'booking.token');
-    const price = get(this.props, 'offer.price');
-    const step = this.currentStep();
-    const dateRequired = get(this.props, 'userMediation.mediatedOccurences', []).length > 1;
-    const dateOk = dateRequired ? (this.state.date && this.state.time) : true;
+  render() {
+    const token = get(this.props, 'booking.token')
+    const price = get(this.props, 'offer.price')
+    const step = this.currentStep()
+    const dateRequired =
+      get(this.props, 'userMediation.mediatedOccurences', []).length > 1
+    const dateOk = dateRequired ? this.state.date && this.state.time : true
     const offerer = this.props.offerer
-    const {
-      availableDates,
-      availableHours
-    } = this.getAvailableDateTimes();
+    const { availableDates, availableHours } = this.getAvailableDateTimes()
     return (
       <VersoWrapper>
-        <div className='booking'>
+        <div className="booking">
           {step === 'confirm' && (
             <div>
-              { dateRequired && (
+              {dateRequired && (
                 <div>
-                  <label htmlFor='date'><h6>Choisissez une date :</h6></label>
-                  <div className='input-field date-picker'>
+                  <label htmlFor="date">
+                    <h6>Choisissez une date :</h6>
+                  </label>
+                  <div className="input-field date-picker">
                     <SingleDatePicker
                       date={this.state.date}
                       onDateChange={this.handleDateSelect}
                       focused={this.state.focused}
-                      onFocusChange={({ focused }) => this.setState({ focused })}
+                      onFocusChange={({ focused }) =>
+                        this.setState({ focused })
+                      }
                       numberOfMonths={1}
                       noBorder={true}
                       initialVisibleMonth={() => moment.min(availableDates)}
-                      inputIconPosition='after'
-                      anchorDirection='right'
-                      isDayBlocked={date => !availableDates.find(d => d.isSame(date, 'day'))}
-                      customInputIcon={<Icon svg='ico-calendar' />}
+                      inputIconPosition="after"
+                      anchorDirection="right"
+                      isDayBlocked={date =>
+                        !availableDates.find(d => d.isSame(date, 'day'))
+                      }
+                      customInputIcon={<Icon svg="ico-calendar" />}
                       // customArrowIcon={<Icon svg='ico-next' />} // need in black
                       // customCloseIcon={<Icon svg='ico-close' />} // need in black
-                      displayFormat='LL'
+                      displayFormat="LL"
                     />
                   </div>
-                  <label htmlFor='time'><h6>Choisissez une heure :</h6></label>
-                  <div className='input-field' htmlFor='time'>
-                    <select id='time' value={this.state.time || ''} className='input' onChange={e => this.setState({time: e.target.value})} disabled={!this.state.date} >
-                      { availableHours.length === 0 && <option>hh:mm</option>}
-                      { availableHours.map(d =>
-                        <option key={d} value={moment(d).format('H:mm')}>{moment(d).format('H:mm')}</option>
-                      )}
+                  <label htmlFor="time">
+                    <h6>Choisissez une heure :</h6>
+                  </label>
+                  <div className="input-field" htmlFor="time">
+                    <select
+                      id="time"
+                      value={this.state.time || ''}
+                      className="input"
+                      onChange={e => this.setState({ time: e.target.value })}
+                      disabled={!this.state.date}
+                    >
+                      {availableHours.length === 0 && <option>hh:mm</option>}
+                      {availableHours.map(d => (
+                        <option key={d} value={moment(d).format('H:mm')}>
+                          {moment(d).format('H:mm')}
+                        </option>
+                      ))}
                     </select>
-                    <label htmlFor='time'><Icon svg='ico-hour-list' className='input-icon' /></label>
+                    <label htmlFor="time">
+                      <Icon svg="ico-hour-list" className="input-icon" />
+                    </label>
                   </div>
                 </div>
               )}
-              { dateOk && (
+              {dateOk && (
                 <div>
-                  { Boolean(offerer) ? (
+                  {Boolean(offerer) ? (
                     <div>
-                      <p>Cette réservation d'une valeur de <Price value={price} /> vous est offerte par :<br />
+                      <p>
+                        Cette réservation d'une valeur de{' '}
+                        <Price value={price} /> vous est offerte par :<br />
                         <strong>{offerer}</strong>.
                       </p>
                       <p>Nous comptons sur vous pour en profiter !</p>
                     </div>
                   ) : (
                     <div>
-                      { price > 0 ? (
+                      {price > 0 ? (
                         <div>
                           <p>
-                            Vous êtes sur le point de réserver cette offre{ price > 0 && ( <span> pour <Price value={price} /> </span> ) }.
+                            Vous êtes sur le point de réserver cette offre{price >
+                              0 && (
+                              <span>
+                                {' '}
+                                pour <Price value={price} />{' '}
+                              </span>
+                            )}.
                           </p>
                           <p>
-                            <small>Le montant sera déduit de votre pass. Il vous restera <Price value={0} free='——€' /> après cette réservation.</small>
+                            <small>
+                              Le montant sera déduit de votre pass. Il vous
+                              restera <Price value={0} free="——€" /> après cette
+                              réservation.
+                            </small>
                           </p>
                         </div>
                       ) : (
                         <div>
-                          <p>Vous êtes sur le point de réserver cette offre gratuite.</p>
+                          <p>
+                            Vous êtes sur le point de réserver cette offre
+                            gratuite.
+                          </p>
                         </div>
                       )}
                     </div>
@@ -150,31 +185,69 @@ class Booking extends Component {
               )}
             </div>
           )}
-          {step === 'loading' && (<p>Réservation en cours ...</p>)}
+          {step === 'loading' && <p>Réservation en cours ...</p>}
           {step === 'confirmation' && (
-            <div className='booking__success center p3'>
-              <Icon className='mb2' svg='picto-validation' />
+            <div className="booking__success center p3">
+              <Icon className="mb2" svg="picto-validation" />
               <p>Votre réservation est validée.</p>
               <p>
-                { price > 0 && (<small><Price value={price} /> ont été déduits de votre pass.</small>) }
+                {price > 0 && (
+                  <small>
+                    <Price value={price} /> ont été déduits de votre pass.
+                  </small>
+                )}
                 <br />
                 <small>Présentez le code suivant sur place :</small>
               </p>
-              <p><big>{token}</big></p>
-              <p><small>Retrouvez ce code et les détails de l'offre dans la rubrique "Mes réservations" de votre compte.</small></p>
+              <p>
+                <big>{token}</big>
+              </p>
+              <p>
+                <small>
+                  Retrouvez ce code et les détails de l'offre dans la rubrique
+                  "Mes réservations" de votre compte.
+                </small>
+              </p>
             </div>
           )}
-          <ul className='bottom-bar'>
+          <ul className="bottom-bar">
             {step === 'confirm' && [
-              <li key='submit'><button className={classnames({
-                button: true,
-                'button--primary': true,
-                hidden: !dateOk,
-              })} onClick={this.makeBooking}>Valider</button></li>,
-              <li key='cancel'><button className='button button--secondary' onClick={e => this.props.closeModal()}>Annuler</button></li>,
+              <li key="submit">
+                <button
+                  className={classnames({
+                    button: true,
+                    'button--primary': true,
+                    hidden: !dateOk,
+                  })}
+                  onClick={this.makeBooking}
+                >
+                  Valider
+                </button>
+              </li>,
+              <li key="cancel">
+                <button
+                  className="button button--secondary"
+                  onClick={e => this.props.closeModal()}
+                >
+                  Annuler
+                </button>
+              </li>,
             ]}
-            {step === 'loading' && <li className='center'><Icon svg='loader-w' /></li>}
-            {step === 'confirmation' && <li><button className='button button--secondary' onClick={e => this.props.closeModal()}>OK</button></li>}
+            {step === 'loading' && (
+              <li className="center">
+                <Icon svg="loader-w" />
+              </li>
+            )}
+            {step === 'confirmation' && (
+              <li>
+                <button
+                  className="button button--secondary"
+                  onClick={e => this.props.closeModal()}
+                >
+                  OK
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </VersoWrapper>
@@ -187,8 +260,10 @@ export default connect(
     booking: selectBooking(state),
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
-    userMediation: selectCurrentUserMediation(state)
-  }), {
-  requestData,
-  closeModal,
-})(Booking)
+    userMediation: selectCurrentUserMediation(state),
+  }),
+  {
+    requestData,
+    closeModal,
+  }
+)(Booking)

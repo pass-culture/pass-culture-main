@@ -11,16 +11,17 @@ class OffererEditButton extends Component {
     const { showModal } = this.props
     showModal(<OffererForm />)
   }
-  render () {
+  render() {
     const { offerer } = this.props
     return (
-      <button className={classnames('button button--alive button--rounded',
-        {
-          'button--disabled': !offerer
+      <button
+        className={classnames('button button--alive button--rounded', {
+          'button--disabled': !offerer,
         })}
         disabled={!offerer}
-        onClick={this.onClick} >
-        <Icon name='perm-data-setting' />
+        onClick={this.onClick}
+      >
+        <Icon name="perm-data-setting" />
       </button>
     )
   }

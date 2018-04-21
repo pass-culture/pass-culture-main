@@ -6,7 +6,7 @@ export const SET_GEOLOCATION_WATCH_ID = 'SET_GEOLOCATION_WATCH_ID'
 const initialState = { position: null }
 
 // REDUCER
-function geolocation (state = initialState, action) {
+function geolocation(state = initialState, action) {
   switch (action.type) {
     case SET_GEOLOCATION_POSITION:
       return Object.assign({}, state, { position: action.position })
@@ -18,11 +18,11 @@ function geolocation (state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function setGeolocationPosition (position) {
+export function setGeolocationPosition(position) {
   return { type: SET_GEOLOCATION_POSITION, position }
 }
 
-export function setGeolocationWatchId (watchId) {
+export function setGeolocationWatchId(watchId) {
   return { type: SET_GEOLOCATION_WATCH_ID, watchId }
 }
 

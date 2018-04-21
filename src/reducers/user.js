@@ -6,18 +6,27 @@ export const SET_USER_OFFERER = 'SET_USER_OFFERER'
 const initialState = null
 
 // REDUCER
-function user (state = initialState, action) {
+function user(state = initialState, action) {
   switch (action.type) {
     case SET_USER:
-      return action.user && Object.assign({
-        isPro: action.user && action.user.userOfferers && action.user.userOfferers[0]
-      }, action.user)
+      return (
+        action.user &&
+        Object.assign(
+          {
+            isPro:
+              action.user &&
+              action.user.userOfferers &&
+              action.user.userOfferers[0],
+          },
+          action.user
+        )
+      )
     case SET_USER_OFFERER:
       if (!state) {
         return state
       }
       return Object.assign({}, state, {
-        offerer: state.userOfferers.find(({ id }) => id === action.id)
+        offerer: state.userOfferers.find(({ id }) => id === action.id),
       })
     default:
       return state
@@ -25,17 +34,17 @@ function user (state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function setUser (user) {
+export function setUser(user) {
   return {
     type: SET_USER,
-    user
+    user,
   }
 }
 
-export function setUserOfferer (id) {
+export function setUserOfferer(id) {
   return {
     type: SET_USER_OFFERER,
-    id
+    id,
   }
 }
 

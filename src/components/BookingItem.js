@@ -10,33 +10,32 @@ import Icon from '../components/Icon'
 import Thumb from '../components/Thumb'
 import { getDiscoveryPath } from '../utils/routes'
 
-const formatter = buildFormatter(Object.assign(frenchStrings, {
-  prefixAgo: 'Il y a',
-  prefixFromNow: 'Dans',
-}))
+const formatter = buildFormatter(
+  Object.assign(frenchStrings, {
+    prefixAgo: 'Il y a',
+    prefixFromNow: 'Dans',
+  })
+)
 
 const BookingItem = props => {
-  const { date,
-    mediation,
-    offer,
-    thumbUrl,
-    token
-  } = props
+  const { date, mediation, offer, thumbUrl, token } = props
   return (
     <li>
       <Link to={`${getDiscoveryPath(offer, mediation)}?to=verso`}>
         <Thumb src={thumbUrl} withMediation={mediation} />
-        <div className='infos'>
-          <div className='top'>
-            <h5 title={get(props, 'source.name')} >
-              <Dotdotdot clamp={date ? 2 : 3}>{get(props, 'source.name')}</Dotdotdot>
+        <div className="infos">
+          <div className="top">
+            <h5 title={get(props, 'source.name')}>
+              <Dotdotdot clamp={date ? 2 : 3}>
+                {get(props, 'source.name')}
+              </Dotdotdot>
             </h5>
             <TimeAgo date={date} formatter={formatter} />
           </div>
-          <div className='token'>{token}</div>
+          <div className="token">{token}</div>
         </div>
-        <div className='arrow'>
-          <Icon svg='ico-next-S' />
+        <div className="arrow">
+          <Icon svg="ico-next-S" />
         </div>
       </Link>
     </li>

@@ -22,8 +22,9 @@ class OfferItem extends Component {
     const { showModal } = this.props
     showModal(<OfferModify {...this.props} />, { onCloseClick })
   }
-  render () {
-    const { description,
+  render() {
+    const {
+      description,
       isMediations,
       isModify,
       isPrices,
@@ -31,44 +32,41 @@ class OfferItem extends Component {
       mediations,
       name,
       prices,
-      thumbUrl
+      thumbUrl,
     } = this.props
     console.log('mediations', mediations)
     return (
-      <div className={classnames(
-        'offer-item flex items-center justify-between p1 mb1', {
-          'offer-item--modify': isModify
-        })}
+      <div
+        className={classnames(
+          'offer-item flex items-center justify-between p1 mb1',
+          {
+            'offer-item--modify': isModify,
+          }
+        )}
         onClick={isModify && this.onClick}
       >
-        <img alt='thumbnail'
-          className='offer-item__image mr2'
-          src={thumbUrl}
-        />
-        <div className='offer-item__content flex-auto center left-align'>
-          <div className='h2 mb2 left-align'>
-            {name}
+        <img alt="thumbnail" className="offer-item__image mr2" src={thumbUrl} />
+        <div className="offer-item__content flex-auto center left-align">
+          <div className="h2 mb2 left-align">{name}</div>
+          <div className="offer-item__content__description mb2 left-align">
+            {description && description.length > maxDescriptionLength
+              ? `${description.slice(0, maxDescriptionLength)}...`
+              : description}
           </div>
-          <div className='offer-item__content__description mb2 left-align'>
-            {
-              (description && description.length > maxDescriptionLength)
-                ? `${description.slice(0, maxDescriptionLength)}...`
-                : description
-            }
-          </div>
-          <div className='flex items-center p1'>
-            <div className='flex flex-wrap items-center'>
-              {
-                isPrices && prices && prices.map((price, index) =>
-                  <PriceItem key={index} {...price} />)
-              }
+          <div className="flex items-center p1">
+            <div className="flex flex-wrap items-center">
+              {isPrices &&
+                prices &&
+                prices.map((price, index) => (
+                  <PriceItem key={index} {...price} />
+                ))}
             </div>
-            <div className='flex flex-wrap items-center mr1'>
-              {
-                isMediations && mediations &&
-                  mediations.map((mediation, index) =>
-                    <MediationItem key={index} {...mediation} />)
-              }
+            <div className="flex flex-wrap items-center mr1">
+              {isMediations &&
+                mediations &&
+                mediations.map((mediation, index) => (
+                  <MediationItem key={index} {...mediation} />
+                ))}
             </div>
           </div>
         </div>
@@ -78,7 +76,7 @@ class OfferItem extends Component {
 }
 
 OfferItem.defaultProps = {
-  maxDescriptionLength: 300
+  maxDescriptionLength: 300,
 }
 
 export default compose(

@@ -7,9 +7,8 @@ import { getFormValue, mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class FormInput extends Component {
-
-  constructor (props) {
-    super (props)
+  constructor(props) {
+    super(props)
     this.state = { localValue: null }
     this.onDebouncedMergeForm = debounce(
       this.onMergeForm,
@@ -21,25 +20,28 @@ class FormInput extends Component {
     const { type } = this.props
     event.persist()
     this.onDebouncedMergeForm(event)
-    if (type === 'checkbox' || type === 'radio' ) {
+    if (type === 'checkbox' || type === 'radio') {
       return
     }
     this.setState({ localValue: event.target.value })
   }
 
   onMergeForm = event => {
-    const { target: { checked, value } } = event
-    const { collectionName,
+    const {
+      target: { checked, value },
+    } = event
+    const {
+      collectionName,
       defaultValue,
       entityId,
       mergeForm,
       name,
       removeDataError,
-      type
+      type,
     } = this.props
     let mergedValue
-    if (type === 'checkbox' || type === 'radio' ) {
-      mergedValue = checked ? ( defaultValue || true ) : false
+    if (type === 'checkbox' || type === 'radio') {
+      mergedValue = checked ? defaultValue || true : false
     } else if (type === 'number') {
       mergedValue = Number(value)
     } else {
@@ -49,14 +51,15 @@ class FormInput extends Component {
     mergeForm(collectionName, entityId, name, mergedValue)
   }
 
-  componentWillMount () {
+  componentWillMount() {
     // fill automatically the form when it is a NEW POST action
     const { defaultValue, entityId } = this.props
-    defaultValue && entityId === NEW &&
-      this.onMergeForm({ target : { value : defaultValue } })
+    defaultValue &&
+      entityId === NEW &&
+      this.onMergeForm({ target: { value: defaultValue } })
   }
 
-  render () {
+  render() {
     const {
       className,
       defaultValue,
@@ -64,28 +67,26 @@ class FormInput extends Component {
       placeholder,
       autoComplete,
       type,
-      value
+      value,
     } = this.props
     const { localValue } = this.state
     return (
-      <input autoComplete={autoComplete}
+      <input
+        autoComplete={autoComplete}
         className={className || 'input'}
         id={id}
         onChange={this.onChange}
         placeholder={placeholder}
         type={type}
-        value={
-          localValue !== null
-          ? localValue
-          : value || defaultValue || ''
-        } />
+        value={localValue !== null ? localValue : value || defaultValue || ''}
+      />
     )
   }
 }
 
 FormInput.defaultProps = {
   debounceTimeout: 500,
-  entityId: NEW
+  entityId: NEW,
 }
 
 export default connect(

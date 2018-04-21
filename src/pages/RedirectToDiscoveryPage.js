@@ -7,7 +7,7 @@ import withLogin from '../hocs/withLogin'
 import { getDiscoveryPath } from '../utils/routes'
 
 class RedirectToDiscoveryPage extends Component {
-  constructor () {
+  constructor() {
     super()
     this.state = {
       redirectTo: null,
@@ -18,7 +18,7 @@ class RedirectToDiscoveryPage extends Component {
     const { userMediations } = props
     if (userMediations && userMediations.length === 0) {
       this.setState({
-        redirectTo: '/decouverte/empty'
+        redirectTo: '/decouverte/empty',
       })
       return
     }
@@ -31,40 +31,46 @@ class RedirectToDiscoveryPage extends Component {
     }
     // NOW CHOOSE AN OFFER AMONG THE ONES
     const userMediationOffers = aroundUserMediation.userMediationOffers
-    const chosenOffer = userMediationOffers &&
-      userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
+    const chosenOffer =
+      userMediationOffers &&
+      userMediationOffers[
+        Math.floor(Math.random() * userMediationOffers.length)
+      ]
     // BUILD THE URL NOW
     this.setState({
-      redirectTo: getDiscoveryPath(chosenOffer, aroundUserMediation.mediation)
+      redirectTo: getDiscoveryPath(chosenOffer, aroundUserMediation.mediation),
     })
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.handleSetRedirectTo(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.userMediations && (nextProps.userMediations !== this.props.userMediations)) {
+    if (
+      nextProps.userMediations &&
+      nextProps.userMediations !== this.props.userMediations
+    ) {
       this.handleSetRedirectTo(nextProps)
     }
   }
 
-  render () {
+  render() {
     if (this.state.redirectTo) {
-      return <Redirect to={this.state.redirectTo}/>
+      return <Redirect to={this.state.redirectTo} />
     }
     return <div />
   }
 }
 
 RedirectToDiscoveryPage.defaultProps = {
-  userMediations: []
+  userMediations: [],
 }
 
 export default compose(
   withLogin({ isRequired: true }),
   withRouter,
   connect(state => ({
-    userMediations: state.data.userMediations
+    userMediations: state.data.userMediations,
   }))
 )(RedirectToDiscoveryPage)

@@ -11,7 +11,7 @@ const initialState = {
 }
 
 // REDUCER
-function verso (state = initialState, action) {
+function verso(state = initialState, action) {
   switch (action.type) {
     case CLOSE_VERSO:
       return Object.assign({}, state, { isFlipped: false })
@@ -19,7 +19,7 @@ function verso (state = initialState, action) {
       return Object.assign({}, state, { isFlipped: true })
     case LOCATION_CHANGE: // Come from reservation
       if (action.payload.search.indexOf('to=verso') >= 0) {
-        return Object.assign({}, state, {isFlipped: true, unFlippable: true})
+        return Object.assign({}, state, { isFlipped: true, unFlippable: true })
       }
       return initialState
     default:
@@ -28,11 +28,11 @@ function verso (state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function flip (action = {}) {
+export function flip(action = {}) {
   return { type: SHOW_VERSO }
 }
 
-export function unFlip (action = {}) {
+export function unFlip(action = {}) {
   return { type: CLOSE_VERSO }
 }
 

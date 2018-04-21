@@ -1,29 +1,27 @@
 import React from 'react'
 
-const Select = ({ className,
+const Select = ({
+  className,
   defaultLabel,
   extraClass,
   onOptionClick,
   options,
-  value
+  value,
 }) => {
   return (
-    <select className={className || 'select'}
+    <select
+      className={className || 'select'}
       onChange={onOptionClick}
       value={value || defaultLabel}
     >
       <option key={-1} disabled>
         {defaultLabel}
       </option>
-      {
-        options.map(({ label, value }, index) => (
-          <option key={index}
-            value={value}
-          >
-            {label}
-          </option>
-        ))
-      }
+      {options.map(({ label, value }, index) => (
+        <option key={index} value={value}>
+          {label}
+        </option>
+      ))}
     </select>
   )
 }

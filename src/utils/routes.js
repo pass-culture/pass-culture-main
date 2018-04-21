@@ -12,88 +12,97 @@ import ProfilePage from '../pages/ProfilePage'
 import SigninPage from '../pages/SigninPage'
 import SignupPage from '../pages/SignupPage'
 
-export const getDiscoveryPath = (offer, mediation='') => {
-  const offerId = (typeof offer === 'string')
-    ? offer
-    : (typeof offer === 'object' ? offer.id : 'tuto');
-  const mediationId = (typeof mediation === 'string')
-    ? mediation
-    : (typeof mediation === 'object' ? mediation.id : '');
-  return `/decouverte/${offerId}/${mediationId}`;
+export const getDiscoveryPath = (offer, mediation = '') => {
+  const offerId =
+    typeof offer === 'string'
+      ? offer
+      : typeof offer === 'object'
+        ? offer.id
+        : 'tuto'
+  const mediationId =
+    typeof mediation === 'string'
+      ? mediation
+      : typeof mediation === 'object'
+        ? mediation.id
+        : ''
+  return `/decouverte/${offerId}/${mediationId}`
 }
 
 const routes = [
   {
     exact: true,
     path: '/',
-    render: () => <Redirect to='/beta' />
+    render: () => <Redirect to="/beta" />,
   },
   {
     exact: true,
     path: '/beta',
-    title: 'Bienvenue dans l\'avant-première du Pass Culture',
-    render: () => <BetaPage />
+    title: "Bienvenue dans l'avant-première du Pass Culture",
+    render: () => <BetaPage />,
   },
   {
     exact: true,
     path: '/connexion',
     title: 'Connexion',
-    render: () => <SigninPage />
+    render: () => <SigninPage />,
   },
   {
     exact: true,
     path: '/inscription',
     title: 'Inscription',
-    render: () => <SignupPage />
+    render: () => <SignupPage />,
   },
   {
     exact: true,
     path: '/decouverte',
-    render: () => <Redirect to='/decouverte/empty' />
+    render: () => <Redirect to="/decouverte/empty" />,
   },
   {
     exact: true,
     path: '/decouverte/:offerId/:mediationId?',
     title: 'Les offres',
-    render: ({ match: { params: { mediationId, offerId } } }) =>
-      <DiscoveryPage mediationId={mediationId} offerId={offerId}/>
+    render: ({
+      match: {
+        params: { mediationId, offerId },
+      },
+    }) => <DiscoveryPage mediationId={mediationId} offerId={offerId} />,
   },
   {
     exact: true,
     path: '/favoris',
     title: 'Mes favoris',
-    render: () => <FavoritesPage />
+    render: () => <FavoritesPage />,
   },
   {
     exact: true,
     path: '/inventaire',
     title: 'Inventaire',
-    render: () => <InventoryPage />
+    render: () => <InventoryPage />,
   },
   {
     exact: true,
     path: '/pro',
     title: 'Espace pro',
-    render: () => <ProfessionalPage />
+    render: () => <ProfessionalPage />,
   },
   {
     exact: true,
-    path:'/pro/:offererId',
+    path: '/pro/:offererId',
     title: 'Espace pro - Offre',
-    render: props => <OffererPage offererId={props.match.params.offererId} />
+    render: props => <OffererPage offererId={props.match.params.offererId} />,
   },
   {
     exact: true,
     path: '/profil',
     title: 'Profil',
-    render: () => <ProfilePage />
+    render: () => <ProfilePage />,
   },
   {
     exact: true,
     path: '/reservations',
     title: 'Réservations',
-    render: () => <BookingsPage />
-  }
+    render: () => <BookingsPage />,
+  },
 ]
 
 export default routes

@@ -81,7 +81,8 @@
     "pgbuild": "yarn build && node scripts/pgbuild.js",
     "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write src/**/*.js"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -128,5 +129,15 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "homepage": "."
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn prettier"
+    }
+  },
+  "homepage": ".",
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.4",
+    "prettier": "1.12.1"
+  }
 }

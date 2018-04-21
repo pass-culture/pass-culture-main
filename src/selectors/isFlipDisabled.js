@@ -9,6 +9,6 @@ export default createSelector(
   selectIsCurrentTuto,
   selectCurrentMediation,
   (currentUserMediation, isCurrentTuto, currentMediation) =>
-    !currentUserMediation
-      || (isCurrentTuto && currentMediation.thumbCount === 1)
+    !currentUserMediation ||
+    (isCurrentTuto && currentMediation.thumbCount === 1)
 )

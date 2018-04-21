@@ -7,23 +7,24 @@ import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 import selectCurrentSource from '../selectors/currentSource'
 import selectCurrentVenue from '../selectors/currentVenue'
 import selectIsCurrentTuto from '../selectors/isCurrentTuto'
-import { ROOT_PATH } from '../utils/config';
+import { ROOT_PATH } from '../utils/config'
 
 class VersoWrapper extends Component {
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (!this.props.isFlipped && prevProps.isFlipped) {
-      this.element.scrollTo(0,0)
+      this.element.scrollTo(0, 0)
     }
   }
 
   render() {
-    const { children,
+    const {
+      children,
       className,
       headerColor,
       source,
       venue,
       hasControlBar,
-      isCurrentTuto
+      isCurrentTuto,
     } = this.props
     const contentStyle = {}
     if (isCurrentTuto) {
@@ -34,14 +35,20 @@ class VersoWrapper extends Component {
     const author = get(source, 'extraData.author')
     return (
       <div className={`verso-wrapper ${className || ''}`}>
-        <div className='verso-header'
+        <div
+          className="verso-header"
           style={{ backgroundColor: headerColor }}
-          ref={element => this.element = element}>
-          <h2> { source && source.name }{ author && (", de " + author) } </h2>
-          <h6> { venue && venue.name } </h6>
+          ref={element => (this.element = element)}
+        >
+          <h2>
+            {' '}
+            {source && source.name}
+            {author && ', de ' + author}{' '}
+          </h2>
+          <h6> {venue && venue.name} </h6>
         </div>
         {hasControlBar && <ControlBar />}
-        <div className='content' style={{...contentStyle}} >
+        <div className="content" style={{ ...contentStyle }}>
           {children}
         </div>
       </div>
@@ -49,11 +56,10 @@ class VersoWrapper extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    headerColor: selectCurrentHeaderColor(state),
-    isFlipped: state.verso.isFlipped,
-    isCurrentTuto: selectIsCurrentTuto(state),
-    source: selectCurrentSource(state),
-    venue: selectCurrentVenue(state)
-  }))(VersoWrapper)
+export default connect(state => ({
+  headerColor: selectCurrentHeaderColor(state),
+  isFlipped: state.verso.isFlipped,
+  isCurrentTuto: selectIsCurrentTuto(state),
+  source: selectCurrentSource(state),
+  venue: selectCurrentVenue(state),
+}))(VersoWrapper)

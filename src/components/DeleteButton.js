@@ -13,36 +13,38 @@ class DeleteButton extends Component {
     const { collectionName, id, requestData } = this.props
     requestData('DELETE', `/${collectionName}?id:${id}`)
   }
-  render () {
+  render() {
     const { className, disabled, showModal, text } = this.props
     return (
-      <button className={className || 'button button--alive'}
+      <button
+        className={className || 'button button--alive'}
         disabled={disabled}
-        onClick={() => showModal(
-          <div>
-            <div className='mb2'>
-              Enlever ?
+        onClick={() =>
+          showModal(
+            <div>
+              <div className="mb2">Enlever ?</div>
+              <button
+                className="button button--alive mr2"
+                onClick={this.onConfirmClick}
+              >
+                Oui
+              </button>
+              <button
+                className="button button--alive"
+                onClick={this.onCancelClick}
+              >
+                Non
+              </button>
             </div>
-            <button className='button button--alive mr2'
-              onClick={this.onConfirmClick}
-            >
-              Oui
-            </button>
-            <button className='button button--alive'
-              onClick={this.onCancelClick}
-            >
-              Non
-            </button>
-          </div>
-        )}
+          )
+        }
       >
-        { text || <Icon name='delete' /> }
+        {text || <Icon name="delete" />}
       </button>
     )
   }
 }
 
-export default connect(
-  null,
-  { closeModal, requestData, showModal }
-)(DeleteButton)
+export default connect(null, { closeModal, requestData, showModal })(
+  DeleteButton
+)
