@@ -129,9 +129,9 @@ elif [[ "$CMD" == "reset-backend" ]]; then
 			 ./pc init;'
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-       docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,user_mediation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
-elif [[ "$CMD" == "reset-um-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,user_mediation,user_mediation_offer,user_mediation_booking RESTART IDENTITY;\""'
+       docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,recommendation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
+elif [[ "$CMD" == "reset-reco-db" ]]; then
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation,recommendation_offer,recommendation_booking RESTART IDENTITY;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
   if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
