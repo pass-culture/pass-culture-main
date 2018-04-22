@@ -1,7 +1,7 @@
 """ recommendations """
-from flask import current_app as app
 from datetime import datetime, timedelta
 from random import randint
+from flask import current_app as app
 from sqlalchemy.sql.expression import func
 
 from utils.attr_dict import AttrDict
@@ -10,39 +10,39 @@ from utils.content import get_source
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
 Mediation = app.model.Mediation
+Recommendation = app.model.Recommendation
+RecommendationOffer = app.model.RecommendationOffer
 Thing = app.model.Thing
-UserMediation = app.model.UserMediation
-UserMediationOffer = app.model.UserMediationOffer
 
-app.recommendations = AttrDict()
+app.datascience = AttrDict()
 
-from recommendations.offers import get_offers
+from datascience.offers import get_offers
 
 
 def create_recommendations(user, limit=3):
     if user.is_authenticated:
-        um_count = UserMediation.query.filter_by(user=user)\
+        recommendation_count = Recommendation.query.filter_by(user=user)\
                                 .count()
 
     offers = get_offers(user, limit)
 
     tuto_mediations = {}
 
-    for to in Mediation.query.filter(Mediation.tutoIndex!=None).all():
+    for to in Mediation.query.filter(Mediation.tutoIndex != None).all():
         tuto_mediations[to.tutoIndex] = to
 
     inserted_tuto_mediations = 0
     for (index, offer) in enumerate(offers):
 
-        while um_count+index+inserted_tuto_mediations in tuto_mediations:
+        while recommendation_count+index+inserted_tuto_mediations in tuto_mediations:
             insert_tuto_mediation(user,
-                                  tuto_mediations[um_count + index
+                                  tuto_mediations[recommendation_count + index
                                                   + inserted_tuto_mediations])
             inserted_tuto_mediations += 1
         # CREATE
-        um = UserMediation()
-        um.user = user
-        um.validUntilDate = datetime.now() + timedelta(days=2) # TODO: make this smart based on event dates, etc.
+        recommendation = Recommendation()
+        recommendation.user = user
+        recommendation.validUntilDate = datetime.now() + timedelta(days=2) # TODO: make this smart based on event dates, etc.
 
         # LOOK IF OFFER HAS A THING OR AN EVENT (IE A SOURCE) WITH MEDIATIONS
         # AND PICK ONE OF THEM
@@ -61,22 +61,22 @@ def create_recommendations(user, limit=3):
                                    .order_by(func.random())\
                                    .first()
         if mediation is not None:
-            um.mediation = mediation
+            recommendation.mediation = mediation
 
         # SAVE AND DO THE UM OFFER JOIN
-        app.model.PcObject.check_and_save(um)
-        umo = UserMediationOffer()
-        umo.offer = offer
-        umo.userMediation = um
-        app.model.PcObject.check_and_save(umo)
+        app.model.PcObject.check_and_save(recommendation)
+        recommendation_offer = RecommendationOffer()
+        recommendation_offer.offer = offer
+        recommendation_offer.recommendation = recommendation
+        app.model.PcObject.check_and_save(recommendation_offer)
 
 
 def insert_tuto_mediation(user, tuto_mediation):
-    um = UserMediation()
-    um.user = user
-    um.mediation = tuto_mediation
-    um.validUntilDate = datetime.now() + timedelta(weeks=2)
+    recommendation = Recommendation()
+    recommendation.user = user
+    recommendation.mediation = tuto_mediation
+    recommendation.validUntilDate = datetime.now() + timedelta(weeks=2)
     # ADD A TAG FOR THE FIRST UM
     if tuto_mediation.tutoIndex == 0:
-        um.isFirst = True
-    app.model.PcObject.check_and_save(um)
+        recommendation.isFirst = True
+    app.model.PcObject.check_and_save(recommendation)

@@ -1,11 +1,13 @@
+""" pc_object """
 from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from enum import Enum
-from flask import current_app as app, request
 from pprint import pprint
+from flask import current_app as app, request
 from psycopg2.extras import DateTimeRange
 from sqlalchemy.orm.collections import InstrumentedList
+
 from utils.human_ids import dehumanize, humanize
 
 db = app.db
@@ -17,10 +19,12 @@ def serialize(value):
     elif isinstance(value, datetime):
         return value.isoformat()
     elif isinstance(value, DateTimeRange):
-        return {'start': value.lower,
-               'end': value.upper}
+        return {
+            'start': value.lower,
+            'end': value.upper
+        }
     elif isinstance(value, list)\
-            and len(value)>0\
+            and len(value) > 0\
             and isinstance(value[0], DateTimeRange):
         return list(map(lambda d: {'start': d.lower,
                                    'end': d.upper},

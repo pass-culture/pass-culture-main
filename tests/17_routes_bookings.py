@@ -5,7 +5,7 @@ from utils.test_utils import API_URL, req, req_with_auth
 def test_10_create_booking():
     booking_json = {
         'offerId': humanize(3),
-        'userMediationId': humanize(1)
+        'recommendationId': humanize(1)
     }
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 201

@@ -24,4 +24,4 @@ pro_user = User.query\
            .first()
 
 # COOL CLI
-#printify(listify(app.recommendations.get_offers(client_user, 2), offers_includes, cut=10))
+#printify(listify(app.datascience.get_offers(client_user, 2), offers_includes, cut=10))

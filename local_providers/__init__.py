@@ -1,6 +1,6 @@
+import inspect
 from flask import current_app as app
 from utils.attr_dict import AttrDict
-import inspect
 
 app.local_providers = AttrDict()
 import local_providers.openagenda_events
@@ -28,4 +28,3 @@ for name in app.local_providers.keys():
         p.localClass = name
         app.db.session.add(p)
         app.db.session.commit()
-

@@ -1,17 +1,17 @@
 """ recommendations offers """
 from flask import current_app as app
 
-from recommendations.hoqs import with_event_deduplication, with_distance,\
+from datascience.hoqs import with_event_deduplication, with_distance,\
     with_event, with_event_mediation, with_thing, with_thing_mediation
 from utils.human_ids import dehumanize
 from utils.compose import compose
 from utils.content import get_mediation, get_source
 from utils.distance import distance
-from utils.includes import USER_MEDIATIONS_INCLUDES
+from utils.includes import RECOMMENDATIONS_INCLUDES
 
 Offer = app.model.Offer
-UserMediation = app.model.UserMediation
-UserMediationOffer = app.model.UserMediationOffer
+Recommendation = app.model.Recommendation
+RecommendationOffer = app.model.RecommendationOffer
 
 def get_offers(user, limit=3):
     # CHECK USER
@@ -23,22 +23,27 @@ def get_offers(user, limit=3):
     print('(reco) all offers.count', all_query.count())
 
     # REMOVE OFFERS FOR WHICH THERE IS ALREADY A RECOMMENDATION FOR THIS USER
-    user_mediations = UserMediation.query\
-                                   .filter(UserMediation.userId == user.id)\
+    recommendations = Recommendation.query\
+                                   .filter(Recommendation.userId == user.id)\
                                    .all()
-    user_mediation_ids = [um.id for um in user_mediations]
-    user_mediations = [
-        um._asdict(include=USER_MEDIATIONS_INCLUDES)
-        for um in user_mediations
+    recommendation_ids = [recommendation.id for recommendation in recommendations]
+    recommendations = [
+        recommendation._asdict(include=RECOMMENDATIONS_INCLUDES)
+        for recommendation in recommendations
     ]
     source_ids = [
-        dehumanize(get_source(get_mediation(um), um['userMediationOffers'][0])['id'])
-        for um in user_mediations if len(um['userMediationOffers'])
+        dehumanize(
+            get_source(
+                get_mediation(recommendation),
+                recommendation['recommendationOffers'][0]
+            )['id']
+        )
+        for recommendation in recommendations if len(recommendation['recommendationOffers'])
     ]
     user_query = all_query.filter(
-        ~Offer.userMediationOffers.any() |\
-        ~Offer.userMediationOffers.any(
-            UserMediationOffer.userMediationId.in_(user_mediation_ids)
+        ~Offer.recommendationOffers.any() |\
+        ~Offer.recommendationOffers.any(
+            RecommendationOffer.recommendationId.in_(recommendation_ids)
         )
     )
     print('(reco) not already used offers.count', user_query.count())
@@ -104,4 +109,4 @@ def get_offers(user, limit=3):
         key=lambda o:
         distance(o.offerer.venue.latitude, o.offerer.venue.longitude, LAT, LONG))
 
-app.recommendations.get_offers = get_offers
+app.datascience.get_offers = get_offers

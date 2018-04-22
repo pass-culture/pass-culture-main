@@ -37,6 +37,6 @@ class BytesEncoder(json.JSONEncoder):
         # Let the base class default method raise the TypeErro
         return json.JSONEncoder.default(self, obj)
 
-"""printify(app.get('user_mediations', None, get_content, cut=10)[0])"""
+"""printify(app.get('recommendations', None, get_content, cut=10)[0])"""
 def printify (elements):
     print(json.dumps(elements, cls=BytesEncoder, indent=2))

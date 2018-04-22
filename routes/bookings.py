@@ -37,8 +37,8 @@ def post_booking():
     token = random_token()
     new_booking.token = token
     new_booking.user = current_user
-    user_mediation_id = request.json.get('userMediationId')
-    if user_mediation_id is not None:
-        new_booking.userMediationId = dehumanize(user_mediation_id)
+    recommendation_id = request.json.get('recommendationId')
+    if recommendation_id is not None:
+        new_booking.recommendationId = dehumanize(recommendation_id)
     app.model.PcObject.check_and_save(new_booking)
     return jsonify(new_booking._asdict(include=BOOKINGS_INCLUDES)), 201
