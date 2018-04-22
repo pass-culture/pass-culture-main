@@ -46,7 +46,10 @@ class Deck extends Component {
     const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
     history.push(
-      getDiscoveryPath(nextRecommendation.offer, nextRecommendation.mediation)
+      getDiscoveryPath(
+        nextRecommendation.offer,
+        nextRecommendation.mediation
+      )
     )
     this.handleRefreshNext()
   }

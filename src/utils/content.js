@@ -8,14 +8,14 @@ export function getContentFromRecommendation(recommendation) {
   if (!recommendation) {
     return
   }
-  const { mediation, userMediationOffers } = recommendation
+  const { mediation, recommendationOffers } = recommendation
   // choose one of the associated offer
   // for now we just pick randomly one of them
   // and this is actually what we want for the case where we have an event
   // proposed by several ticketers
   const chosenOffer =
-    userMediationOffers &&
-    userMediationOffers[Math.floor(Math.random() * userMediationOffers.length)]
+    recommendationOffers &&
+    recommendationOffers[Math.floor(Math.random() * recommendationOffers.length)]
   // check
   if (!chosenOffer && !mediation) {
     return

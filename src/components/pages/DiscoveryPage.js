@@ -31,11 +31,11 @@ class DiscoveryPage extends Component {
     }
 
     // NOW CHOOSE AN OFFER AMONG THE ONES
-    const userMediationOffers = currentRecommendation.userMediationOffers
+    const recommendationOffers = currentRecommendation.recommendationOffers
     const chosenOffer =
-      userMediationOffers &&
-      userMediationOffers[
-        Math.floor(Math.random() * userMediationOffers.length)
+      recommendationOffers &&
+      recommendationOffers[
+        Math.floor(Math.random() * recommendationOffers.length)
       ]
 
     // PUSH

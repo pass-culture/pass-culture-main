@@ -20,7 +20,7 @@ class ControlBar extends Component {
   }
 
   onClickFavorite(type) {
-    this.props.requestData('POST', 'userMediations', {
+    this.props.requestData('POST', 'recommendations', {
       body: [
         {
           id: this.props.recommendation.id,

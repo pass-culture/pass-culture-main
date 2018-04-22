@@ -27,7 +27,7 @@ export default createSelector(
       recommendation = filteredRecommendations[0]
     } else {
       recommendation = filteredRecommendations.find(m =>
-        get(m, 'userMediationOffers', []).find(o => o.id === offerId)
+        get(m, 'recommendationOffers', []).find(o => o.id === offerId)
       )
     }
     const hydratedRecommendation = getRecommendation({

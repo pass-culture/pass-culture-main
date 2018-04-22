@@ -6,6 +6,6 @@ export default createSelector(
   selectCurrentRecommendation,
   recommendation =>
     recommendation &&
-    recommendation.userMediationOffers &&
-    recommendation.userMediationOffers.length === 0
+    recommendation.recommendationOffers &&
+    recommendation.recommendationOffers.length === 0
 )

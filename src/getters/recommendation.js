@@ -13,14 +13,14 @@ export default function getRecommendation(config = {}) {
   if (offerId) {
     offer = getOffer(recommendation, offerId)
   } else {
-    const userMediationOffers = recommendation.userMediationOffers
+    const recommendationOffers = recommendation.recommendationOffers
     if (
-      recommendation.userMediationOffers &&
-      recommendation.userMediationOffers.length
+      recommendation.recommendationOffers &&
+      recommendation.recommendationOffers.length
     ) {
       const randomOfferId =
-        userMediationOffers[
-          Math.floor(Math.random() * userMediationOffers.length)
+        recommendationOffers[
+          Math.floor(Math.random() * recommendationOffers.length)
         ].id
       offer = getOffer(recommendation, randomOfferId)
     }
