@@ -1,5 +1,5 @@
 .button {
-  background-color: $identity-color;
+  background-color: $menu-red;
   border: 1px solid transparent;
   border-top-left-radius: 2rem;
   border-top-right-radius: 2rem;
@@ -41,10 +41,10 @@
   }
   &--inversed {
     background-color: white;
-    border-color: $identity-color;
-    color: $identity-color;
+    border-color: $menu-red;
+    color: $menu-red;
     svg {
-      fill: $identity-color;
+      fill: $menu-red;
     }
   }
   &--rounded {
@@ -105,4 +105,34 @@
   &:focus {
     outline: none;
   }
+
+  &.back {
+    position: absolute;
+    z-index: 1;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    width: 16px;
+    font-size: 0;
+    height: 16px;
+
+    img {
+      width: 1.2rem;
+      height: 1.2rem;
+      position: relative;
+      left: -2px;
+    }
+  }
+
+  &.verso-btn {
+    background-color: $black;
+    z-index: 1100;
+    position: absolute;
+    padding: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0;
+    box-sizing: content-box;
+    border: none;
+  }
+
 }

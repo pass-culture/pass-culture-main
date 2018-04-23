@@ -25,7 +25,7 @@ const Recto = ({
     <div className="recto">
       <Thumb src={thumbUrl} withMediation={mediation} translated={isFlipped} />
       {IS_DEV && (
-        <div className="debug absolute left-0 ml2 p2">
+        <div className="debug absolute right-0 mr2 p2">
           <span>
             {id} {offer && offer.id} {index}
           </span>

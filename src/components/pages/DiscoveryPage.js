@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import Deck from '../client/Deck'
 import MenuButton from '../client/MenuButton'
 import withLogin from '../hocs/withLogin'
+import withBackButton from '../hocs/withBackButton'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
@@ -63,6 +64,9 @@ class DiscoveryPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
+  withBackButton(state => ({
+    isActive: state.router.location.search.indexOf('to=verso') > -1,
+  }), 'verso-btn'),
   withRouter,
   connect(state => ({ recommendations: state.data.recommendations }))
 )(DiscoveryPage)
