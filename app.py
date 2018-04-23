@@ -6,9 +6,11 @@ from utils.config import IS_DEV
 
 app = Flask(__name__, static_url_path='/static')
 
-app.secret_key = os.environ['FLASK_SECRET'] or '+%+3Q23!zbc+!Dd@'
+app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 
-cors = CORS(app, origins=(os.environ['CORS_DOMAIN'] or 'http://localhost:3000').split(','), supports_credentials=True)
+cors = CORS(app,
+            origins=os.environ.get('CORS_DOMAIN', os.environ.get('BROWSER_URL', 'http://localhost:3000')).split(','),
+            supports_credentials=True)
 
 # make Werkzeug match routing rules with or without a trailing slash
 app.url_map.strict_slashes = False
