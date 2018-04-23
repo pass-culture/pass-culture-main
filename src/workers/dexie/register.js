@@ -22,8 +22,8 @@ export default function register() {
 }
 
 export function syncRedux (payload) {
-  config.collections.forEach(({ name }) => {
-    const config = { local: true }
+  config.collections.forEach(({ key, name }) => {
+    const config = { key, local: true }
     const result = payload.results.find(result =>
       result && result.collectionName === name)
     config.deprecatedData = result && result.deprecatedData

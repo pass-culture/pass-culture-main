@@ -1,14 +1,14 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import selectCurrentUserMediation from './currentUserMediation'
+import selectCurrentRecommendation from './currentRecommendation'
 
 export default createSelector(
   state => state.data.bookings,
-  selectCurrentUserMediation,
-  (bookings, userMediation) => {
+  selectCurrentRecommendation,
+  (bookings, recommendation) => {
     return []
       .concat(bookings)
-      .find(b => get(b, 'userMediationId') === get(userMediation, 'id'))
+      .find(b => get(b, 'recommendationId') === get(recommendation, 'id'))
   }
 )

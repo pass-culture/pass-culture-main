@@ -142,7 +142,8 @@ export async function pushPull (state = {}) {
       const entityIds = uniq(flatten(
         differences.map(difference => difference.ids)))
       await db.differences.clear()
-      const entities = await table.filter(entity => entityIds.includes(entity.id))
+      const entities = await table.filter(entity =>
+          entityIds.includes(entity.id))
                                   .toArray()
       let config = {}
       if (entities) {
@@ -153,7 +154,9 @@ export async function pushPull (state = {}) {
     const method = isPullOnly ? 'GET' : 'PUT'
     let path = table.name
     if (query) {
-      const pathQuery = typeof query === 'function' ? query(state) : query
+      const pathQuery = typeof query === 'function'
+        ? query(state)
+        : query
       if (pathQuery && pathQuery !== '') {
         path = `${path}?${pathQuery}`
       }

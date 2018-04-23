@@ -9,7 +9,7 @@ export default createSelector(
     bookings.map(b =>
       Object.assign(
         {
-          source: getSource(getMediation(b.userMediation), b.offer),
+          source: getSource(getMediation(b.recommendation), b.offer),
         },
         b
       )

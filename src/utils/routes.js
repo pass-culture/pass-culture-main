@@ -1,16 +1,16 @@
 import React from 'react'
 import { Redirect } from 'react-router'
 
-import BetaPage from '../pages/BetaPage'
-import BookingsPage from '../pages/BookingsPage'
-import DiscoveryPage from '../pages/DiscoveryPage'
-import FavoritesPage from '../pages/FavoritesPage'
-import InventoryPage from '../pages/InventoryPage'
-import OffererPage from '../pages/OffererPage'
-import ProfessionalPage from '../pages/ProfessionalPage'
-import ProfilePage from '../pages/ProfilePage'
-import SigninPage from '../pages/SigninPage'
-import SignupPage from '../pages/SignupPage'
+import BetaPage from '../components/pages/BetaPage'
+import BookingsPage from '../components/pages/BookingsPage'
+import DiscoveryPage from '../components/pages/DiscoveryPage'
+import FavoritesPage from '../components/pages/FavoritesPage'
+import InventoryPage from '../components/pages/InventoryPage'
+import OffererPage from '../components/pages/OffererPage'
+import ProfessionalPage from '../components/pages/ProfessionalPage'
+import ProfilePage from '../components/pages/ProfilePage'
+import SigninPage from '../components/pages/SigninPage'
+import SignupPage from '../components/pages/SignupPage'
 
 export const getDiscoveryPath = (offer, mediation = '') => {
   const offerId =
