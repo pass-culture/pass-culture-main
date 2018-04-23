@@ -70,7 +70,7 @@ class Booking extends Component {
     const { availableHours } = this.getAvailableDateTimes(date)
     this.setState({
       date: date,
-      time: availableHours.length === 1 ? availableHours[0] : null,
+      time: availableHours[0],
     })
   }
 
