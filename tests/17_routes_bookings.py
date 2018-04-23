@@ -48,7 +48,7 @@ def test_11_create_booking_should_not_work_past_limit_date():
 
         booking_json = {
             'offerId': humanize(expired_offer.id),
-            'userMediationId': humanize(1)
+            'recommendationId': humanize(1)
         }
 
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
@@ -69,7 +69,7 @@ def test_12_create_booking_should_work_before_limit_date():
 
         booking_json = {
             'offerId': humanize(ok_offer.id),
-            'userMediationId': humanize(1)
+            'recommendationId': humanize(1)
         }
 
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
