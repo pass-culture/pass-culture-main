@@ -1,19 +1,18 @@
 from collections import Counter
 
 from utils.config import BLOB_SIZE
-from utils.human_ids import humanize
 from utils.test_utils import API_URL, req, req_with_auth
 
-UM_URL = API_URL + '/userMediations'
+RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
-def test_10_put_user_mediations_should_work_only_when_logged_in():
-    r = req.put(UM_URL)
+def test_10_put_recommendations_should_work_only_when_logged_in():
+    r = req.put(RECOMMENDATION_URL)
     assert r.status_code == 401
 
 
-def test_11_put_user_mediations_should_return_a_list_of_ums():
-    r = req_with_auth().put(UM_URL, json={})
+def test_11_put_recommendations_should_return_a_list_of_ums():
+    r = req_with_auth().put(RECOMMENDATION_URL, json={})
     assert r.status_code == 200
     ums = r.json()
     assert len(ums) <= BLOB_SIZE
@@ -28,8 +27,8 @@ def test_11_put_user_mediations_should_return_a_list_of_ums():
     assert len(list(filter(lambda v: v>1, Counter(ids).values()))) == 0
 
 
-def test_12_put_user_mediations_should_return_more_ums():
-    r = req_with_auth().put(UM_URL, json={})
+def test_12_put_recommendations_should_return_more_ums():
+    r = req_with_auth().put(RECOMMENDATION_URL, json={})
     assert r.status_code == 200
     ums = r.json()
     print(ums)

@@ -151,32 +151,32 @@ def do_init():
     set_from_mock("thumbs", mediation1, 1)
 
     """
-    user_mediation1 = model.UserMediation()
-    first_user_mediation = model.UserMediation.query\
+    recommendation1 = model.Recommendation()
+    first_recommendation = model.Recommendation.query\
                            .filter_by(user=client_user)\
                            .first()
-    if first_user_mediation is None:
-        user_mediation1.isFirst = True
-    user_mediation1.user = client_user
-    user_mediation1.validUntilDate = datetime.now() + timedelta(days=2)
-    user_mediation1.mediation = mediation1
-    check_and_save(user_mediation1)
+    if first_recommendation is None:
+        recommendation1.isFirst = True
+    recommendation1.user = client_user
+    recommendation1.validUntilDate = datetime.now() + timedelta(days=2)
+    recommendation1.mediation = mediation1
+    check_and_save(recommendation1)
 
-    umo1 = model.UserMediationOffer()
-    umo1.offer = offer1
-    umo1.userMediation = user_mediation1
-    check_and_save(umo1)
+    recommendation_offer1 = model.RecommendationOffer()
+    recommendation_offer1.offer = offer1
+    recommendation_offer1.Recommendation = recommendation1
+    check_and_save(recommendation_offer1)
 
     booking1 = model.Booking()
     booking1.user = client_user
     booking1.offer = offer1
     booking1.token = 'FUUEEM'
-    booking1.userMediation = user_mediation1
+    booking1.Recommendation = recommendation1
     check_and_save(booking1)
 
-    umb1 = model.UserMediationBooking()
+    umb1 = model.RecommendationBooking()
     umb1.booking = booking1
-    umb1.userMediation = user_mediation1
+    umb1.Recommendation = recommendation1
     check_and_save(umb1)
     """
 
@@ -205,15 +205,15 @@ def do_init():
     check_and_save(offer2)
 
     """
-    user_mediation2 = model.UserMediation()
-    user_mediation2.user = client_user
-    user_mediation2.validUntilDate = datetime.now() + timedelta(days=2)
-    check_and_save(user_mediation2)
+    recommendation2 = model.Recommendation()
+    recommendation2.user = client_user
+    recommendation2.validUntilDate = datetime.now() + timedelta(days=2)
+    check_and_save(recommendation2)
 
-    umo2 = app.model.UserMediationOffer()
-    umo2.offer = offer2
-    umo2.userMediation = user_mediation2
-    check_and_save(umo2)
+    recommendation_offer2 = app.model.RecommendationOffer()
+    recommendation_offer2.offer = offer2
+    recommendation_offer2.Recommendation = recommendation2
+    check_and_save(recommendation_offer2)
     """
 
     ## EVENT 3 WITH THUMB MEDIATION
@@ -248,15 +248,15 @@ def do_init():
     set_from_mock("thumbs", mediation3, 2)
 
     """
-    user_mediation3 = model.UserMediation()
-    user_mediation3.mediation = mediation3
-    user_mediation3.user = client_user
-    user_mediation3.validUntilDate = datetime.now() + timedelta(days=2)
-    check_and_save(user_mediation3)
-    umo3 = model.UserMediationOffer()
-    umo3.offer = offer3
-    umo3.userMediation = user_mediation3
-    check_and_save(umo3)
+    recommendation3 = model.Recommendation()
+    recommendation3.mediation = mediation3
+    recommendation3.user = client_user
+    recommendation3.validUntilDate = datetime.now() + timedelta(days=2)
+    check_and_save(recommendation3)
+    recommendation_offer3 = model.RecommendationOffer()
+    recommendation_offer3.offer = offer3
+    recommendation_offer3.Recommendation = recommendation3
+    check_and_save(recommendation_offer3)
     """
 
     ## THING 4 WITH TEXT MEDIATION
@@ -287,14 +287,14 @@ def do_init():
     mediation4.thing = thing4
 
     """
-    user_mediation4 = model.UserMediation()
-    user_mediation4.mediation = mediation4
-    user_mediation4.user = client_user
-    user_mediation4.validUntilDate = datetime.now() + timedelta(days=2)
-    check_and_save(user_mediation4)
+    recommendation4 = model.Recommendation()
+    recommendation4.mediation = mediation4
+    recommendation4.user = client_user
+    recommendation4.validUntilDate = datetime.now() + timedelta(days=2)
+    check_and_save(recommendation4)
 
-    umo4 = model.UserMediationOffer()
-    umo4.offer = offer4
-    umo4.userMediation = user_mediation4
-    check_and_save(umo4)
+    recommendation_offer4 = model.RecommendationOffer()
+    recommendation_offer4.offer = offer4
+    recommendation_offer4.Recommendation = recommendation4
+    check_and_save(recommendation_offer4)
     """

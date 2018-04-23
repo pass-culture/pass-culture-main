@@ -21,7 +21,7 @@ class Offer(app.model.PcObject,
                              nullable=False,
                              default=datetime.now)
 
-    userMediationOffers = db.relationship(lambda: app.model.UserMediationOffer,
+    recommendationOffers = db.relationship(lambda: app.model.RecommendationOffer,
                                           back_populates="offer")
 
     eventOccurenceId = db.Column(db.BigInteger,

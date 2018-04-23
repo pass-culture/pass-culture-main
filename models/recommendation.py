@@ -1,11 +1,11 @@
-""" user_mediation model """
+""" recommendation model """
 from datetime import datetime
 from flask import current_app as app
 
 db = app.db
 
 
-class UserMediation(app.model.PcObject, db.Model):
+class Recommendation(app.model.PcObject, db.Model):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -17,23 +17,23 @@ class UserMediation(app.model.PcObject, db.Model):
 
     user = db.relationship(lambda: app.model.User,
                            foreign_keys=[userId],
-                           backref='userMediations')
+                           backref='recommendations')
 
-    userMediationBookings = db.relationship(lambda: app.model.UserMediationBooking,
-                                            back_populates="userMediation")
+    recommendationBookings = db.relationship(lambda: app.model.RecommendationBooking,
+                                             back_populates="recommendation")
 
     # FIXME: Replace this with offerId (single offer)
     # + constraint ? (offerId XOR mediationId ?)
-    userMediationOffers = db.relationship(lambda: app.model.UserMediationOffer,
-                                          back_populates="userMediation")
+    recommendationOffers = db.relationship(lambda: app.model.RecommendationOffer,
+                                           back_populates="recommendation")
 
     mediationId = db.Column(db.BigInteger,
                             db.ForeignKey('mediation.id'),
-                            nullable=True) # NULL for userMediation created directly from an offer
+                            nullable=True) # NULL for recommendation created directly from an offer
 
     mediation = db.relationship(lambda: app.model.Mediation,
                                 foreign_keys=[mediationId],
-                                backref='userMediations')
+                                backref='recommendations')
 
     sharedByUserId = db.Column(db.BigInteger,
                                db.ForeignKey('user.id'),
@@ -41,7 +41,7 @@ class UserMediation(app.model.PcObject, db.Model):
 
     sharedByUser = db.relationship(lambda: app.model.User,
                                    foreign_keys=[sharedByUserId],
-                                   backref='sharedUserMediations')
+                                   backref='sharedRecommendations')
 
     shareMedium = db.Column(db.String(20),
                             nullable=True)
@@ -52,7 +52,7 @@ class UserMediation(app.model.PcObject, db.Model):
 
     inviteforEventOccurence = db.relationship(lambda: app.model.EventOccurence,
                                               foreign_keys=[inviteforEventOccurenceId],
-                                              backref='inviteUserMediations')
+                                              backref='inviteRecommendations')
 
     dateCreated = db.Column(db.DateTime,
                             nullable=False,
@@ -85,10 +85,10 @@ class UserMediation(app.model.PcObject, db.Model):
     def mediatedOccurences(self):
         #FIXME: try to turn this into a join
         if self.mediationId is None:
-            if self.userMediationOffers[0].eventOccurenceId is None:
+            if self.recommendationOffers[0].eventOccurenceId is None:
                 return None
             else:
-                return self.userMediationOffers[0].eventOccurence.event.occurences
+                return self.recommendationOffers[0].eventOccurence.event.occurences
         else:
             if self.mediation.event is None:
                 return None
@@ -96,4 +96,4 @@ class UserMediation(app.model.PcObject, db.Model):
                 return self.mediation.event.occurences
 
 
-app.model.UserMediation = UserMediation
+app.model.Recommendation = Recommendation

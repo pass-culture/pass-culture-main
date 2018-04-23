@@ -1,12 +1,11 @@
-from utils.config import IS_DEV
-from flask import current_app as app
 from flask_sqlalchemy import SQLAlchemy
+from flask import current_app as app
 from postgresql_audit.flask import versioning_manager
 import sqlalchemy as sa
 from sqlalchemy.exc import ProgrammingError
 
 from utils.attr_dict import AttrDict
-
+from utils.config import IS_DEV
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pass_culture:passq@postgres/pass_culture'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -35,10 +34,10 @@ import models.offerer_provider
 import models.local_provider_event
 import models.local_provider
 import models.provider
+import models.recommendation
+import models.recommendation_booking
+import models.recommendation_offer
 import models.thing
-import models.user_mediation
-import models.user_mediation_booking
-import models.user_mediation_offer
 import models.user_offerer
 import models.user
 import models.venue

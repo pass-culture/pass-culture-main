@@ -5,8 +5,8 @@ import routes.mediations
 import routes.offers
 import routes.offerers
 import routes.providers
+import routes.recommendations
 import routes.things
-import routes.user_mediations
 import routes.user_offerers
 import routes.users
 import routes.venues

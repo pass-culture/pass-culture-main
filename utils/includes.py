@@ -20,7 +20,7 @@ OFFERS_INCLUDES = [
         ]
     },
     {
-        "key": "userMediationOffers",
+        "key": "recommendationOffers",
         "sub_joins": [
             {
                 "key": "mediation"
@@ -30,14 +30,14 @@ OFFERS_INCLUDES = [
     "venue"
 ]
 
-USER_MEDIATIONS_INCLUDES =  [
+RECOMMENDATIONS_INCLUDES =  [
     "mediatedOccurences",
     {
         "key": "mediation",
         "sub_joins": ["event", "thing"]
     },
     {
-        "key": "userMediationBookings",
+        "key": "recommendationBookings",
         "resolve": (lambda element, filters: element['booking']),
         "sub_joins": [
             {
@@ -46,7 +46,7 @@ USER_MEDIATIONS_INCLUDES =  [
         ]
     },
     {
-        "key": "userMediationOffers",
+        "key": "recommendationOffers",
         "resolve": (lambda element, filters: element['offer']),
         "sub_joins": [
             {
@@ -66,8 +66,8 @@ USER_MEDIATIONS_INCLUDES =  [
 
 BOOKINGS_INCLUDES = [
     {
-        "key": "userMediation",
-        "sub_joins": USER_MEDIATIONS_INCLUDES
+        "key": "recommendation",
+        "sub_joins": RECOMMENDATIONS_INCLUDES
     },
     {
         "key": "offer",
@@ -78,5 +78,5 @@ BOOKINGS_INCLUDES = [
 includes = {
     'bookings': BOOKINGS_INCLUDES,
     'offers': OFFERS_INCLUDES,
-    'user_mediations': USER_MEDIATIONS_INCLUDES
+    'recommendations': RECOMMENDATIONS_INCLUDES
 }
