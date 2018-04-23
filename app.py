@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_cors import CORS
 
@@ -5,11 +6,9 @@ from utils.config import IS_DEV
 
 app = Flask(__name__, static_url_path='/static')
 
-app.secret_key = 'dev_secret_key'  # FIXME: get this from the environment
+app.secret_key = os.environ['FLASK_SECRET'] or '+%+3Q23!zbc+!Dd@'
 
-cors = CORS(app,
-            resources={r"/*": {"origins": "*"}},
-            supports_credentials=True)
+cors = CORS(app, origins=(os.environ['CORS_DOMAIN'] or 'http://localhost:3000').split(','), supports_credentials=True)
 
 # make Werkzeug match routing rules with or without a trailing slash
 app.url_map.strict_slashes = False
