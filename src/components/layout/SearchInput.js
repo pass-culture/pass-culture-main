@@ -46,14 +46,6 @@ class SearchInput extends Component {
         type="text"
       />,
     ]
-    /*
-    window.location.pathname.includes('/gestion') && children.push(
-      <Portal key={1}
-        node={document && document.getElementById('header__content')}>
-        <Loading />
-      </Portal>
-    )
-    */
     return children
   }
 }

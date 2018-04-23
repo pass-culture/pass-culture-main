@@ -174,7 +174,7 @@ class Deck extends Component {
       >
         {!unFlippable && (
           <button
-            className={classnames('button close', {
+            className={classnames('button close verso-btn', {
               hidden: !isFlipped,
             })}
             onClick={this.handleUnFlip}
@@ -258,7 +258,7 @@ class Deck extends Component {
           </ul>
         </div>
         {IS_DEV && (
-          <div className="debug absolute left-0 ml2 p2">
+          <div className="debug absolute right-0 mr2 p2">
             ({this.props.isLoadingBefore ? '?' : ' '}
             {this.props.previousLimit}){' '}
             {this.props.currentRecommendation &&
