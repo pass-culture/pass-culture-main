@@ -90,12 +90,14 @@ def upsertTutoMediation(index, has_back=False):
     with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
         mediation.save_thumb(f.read(),
                              0,
+                             no_convert=True,
                              image_type='png')
 
     if has_back:
         with open(TUTOS_PATH / (str(index) + '_verso.png'), "rb") as f:
             mediation.save_thumb(f.read(),
                                  1,
+                                 no_convert=True,
                                  image_type='png')
 
     app.model.PcObject.check_and_save(mediation)
