@@ -1,10 +1,13 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
+import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import Price from './Price'
 import Booking from './Booking'
+import Finishable from '../layout/Finishable'
 import Icon from '../layout/Icon'
 import selectBooking from '../../selectors/booking'
 import selectCurrentOffer from '../../selectors/currentOffer'
@@ -36,6 +39,7 @@ class ControlBar extends Component {
   }
 
   onClickJyVais = event => {
+    if (this.isFinished()) return;
     if (this.props.offer) {
       this.props.showModal(<Booking />, {
         fullscreen: true,
@@ -45,6 +49,10 @@ class ControlBar extends Component {
     } else {
       alert("Ce bouton vous permet d'effectuer une reservation")
     }
+  }
+
+  isFinished = () => {
+    return moment(get(this.props, 'offer.bookingLimitDatetime')) < moment()
   }
 
   render() {
@@ -81,17 +89,19 @@ class ControlBar extends Component {
               {' Réservé'}
             </Link>
           ) : (
-            <button
-              className="button button--primary button--go"
-              onClick={this.onClickJyVais}
-            >
-              <Price
-                value={get(offer, 'price') || get(offer, 'displayPrice')}
-                free="——"
-                className={offerer ? 'strike' : ''}
-              />
-              J'y vais!
-            </button>
+            <Finishable finished={this.isFinished()}>
+              <button
+                className='button button--primary button--go'
+                onClick={this.onClickJyVais}
+              >
+                <Price
+                  value={get(offer, 'price') || get(offer, 'displayPrice')}
+                  free="——"
+                  className={offerer ? 'strike' : ''}
+                />
+                J'y vais!
+              </button>
+            </Finishable>
           )}
         </li>
       </ul>
