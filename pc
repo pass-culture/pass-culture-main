@@ -47,6 +47,11 @@ fi
 CMD="$1"
 shift
 
+echo "ENV: $ENV"
+if [[ "$ENV" == "production" ]]; then
+  confirm "Are you sure you want to run $CMD in production ?"
+fi
+
 if [[ "$CMD" == "alembic" ]]; then
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && alembic '"$*"'"'
 elif [[ "$CMD" == "bash" ]]; then
@@ -85,6 +90,12 @@ elif [[ "$CMD" == "deploy-frontend" ]]; then
   cat "public/_redirects" >> build/_redirects
 
   netlify deploy -e "$ENV"
+
+  delivery_date=`( date --version 2>/dev/null | grep -q GNU\  && date +'%F_%H-%M-%S%N' ) || ( which gdate &>/dev/null && gdate +'%F_%H-%M-%S%N' ) || ( which python &> /dev/null && python -c 'import datetime; print datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S%f")' ) || ( date +'%F_%H-%M-%S' )`
+  delivery_date=${delivery_date:0:21}
+  tagname="deployed-$ENV-$delivery_date"
+  git tag $tagname
+  git push origin $tagname
 
   exit
 elif [[ "$CMD" == "dump-db" ]]; then
@@ -180,7 +191,6 @@ else
 fi
 
 if [[ "$ENV" == "production" ]]; then
-  confirm "Are you sure you want to run $CMD in production ?"
   echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
 elif [[ "$ENV" == "staging" ]]; then
   echo "$RUN" | ssh deploy@api.passculture-staging.beta.gouv.fr bash
