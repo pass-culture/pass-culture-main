@@ -18,11 +18,11 @@ class Booking(app.model.PcObject,
                              nullable=False,
                              default=datetime.now)
 
-    RecommendationId = db.Column(db.BigInteger,
+    recommendationId = db.Column(db.BigInteger,
                                 db.ForeignKey("recommendation.id"))
 
-    Recommendation = db.relationship(lambda: app.model.Recommendation,
-                                    foreign_keys=[RecommendationId])
+    recommendation = db.relationship(lambda: app.model.Recommendation,
+                                     foreign_keys=[recommendationId])
 
     offerId = db.Column(db.BigInteger,
                         db.ForeignKey("offer.id"),
