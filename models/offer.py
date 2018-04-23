@@ -1,6 +1,7 @@
 """ offer model """
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import current_app as app
+from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 
 db = app.db
@@ -70,9 +71,20 @@ class Offer(app.model.PcObject,
                           nullable=False,
                           default=1)
 
+    bookingLimitDatetime = db.Column(db.DateTime,
+                                     nullable=True)
+
     @hybrid_property
     def object(self):
         return self.thing or self.eventOccurence
 
 
 app.model.Offer = Offer
+
+
+@event.listens_for(Offer, 'before_insert')
+def page_defaults(mapper, configuration, target):
+    # `bookingLimitDatetime` defaults to midnight before `beginningDatetime`
+    # for eventOccurences
+    if target.eventOccurenceId and not target.bookingLimitDatetime:
+        target.bookingLimitDatetime = target.eventOccurence.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=2)

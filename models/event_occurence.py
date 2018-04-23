@@ -1,15 +1,4 @@
-from datetime import datetime
-from enum import Enum
 from flask import current_app as app
-from sqlalchemy import Index
-from sqlalchemy.dialects import postgresql
-from sqlalchemy.dialects.postgresql import TEXT
-from sqlalchemy.sql.expression import cast
-from sqlalchemy.sql.functions import coalesce
-from sqlalchemy.ext.hybrid import hybrid_property
-
-from utils.search import create_tsvector
-
 
 db = app.db
 
