@@ -14,6 +14,9 @@ config.collections.forEach(({ description, name }) =>
 
 export const db = new Dexie(config.name)
 db.version(config.version).stores(storesConfig)
+if (config.upgrate) {
+  db.upgrade(config.upgrate)
+}
 
 export async function getData (collectionName, query) {
   // check
@@ -141,10 +144,12 @@ export async function pushPull (state = {}) {
         difference.name === name).toArray()
       const entityIds = uniq(flatten(
         differences.map(difference => difference.ids)))
-      await db.differences.clear()
-      const entities = await table.filter(entity =>
-          entityIds.includes(entity.id))
-                                  .toArray()
+      await db.differences.filter(difference =>
+        difference.name === name).delete()
+      const entities = await table
+        .filter(entity => entityIds.includes(entity.id))
+        .toArray()
+        .catch(e => console.log(e))
       let config = {}
       if (entities) {
         config.body = entities
