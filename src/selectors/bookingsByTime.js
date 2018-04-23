@@ -4,7 +4,7 @@ import { createSelector } from 'reselect'
 import selectBookingsWithThumbUrl from './bookingsWithThumbUrl'
 
 const getDate = booking =>
-  get(booking, 'offer.eventOccurence.beginningDatetime')
+  new Date(get(booking, 'offer.eventOccurence.beginningDatetime'))
 
 export default createSelector(selectBookingsWithThumbUrl, bookings => {
   const twoDaysFromNow = new Date(

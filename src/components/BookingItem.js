@@ -18,7 +18,8 @@ const formatter = buildFormatter(
 )
 
 const BookingItem = props => {
-  const { date, mediation, offer, thumbUrl, token } = props
+  const { mediation, offer, thumbUrl, token } = props
+  const date = get(offer, 'eventOccurence.beginningDatetime')
   return (
     <li>
       <Link to={`${getDiscoveryPath(offer, mediation)}?to=verso`}>
