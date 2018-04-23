@@ -28,7 +28,7 @@ class OfferInfo extends Component {
     const infos = {
       image: thumbUrl,
       description: get(source, 'description'),
-      what: get(offer, 'eventOccurence.event.description'),
+      what: get(source, 'description') ? '' : get(offer, 'eventOccurence.event.description'), // TODO: add what when set in API
       when: get(recommendation, 'mediatedOccurences', []).map(
         o => o.beginningDatetime
       ),
@@ -44,14 +44,13 @@ class OfferInfo extends Component {
           <div className="offerer">Ce livre vous est offert par {offerer}.</div>
         )}
         {false && <img alt="" className="offerPicture" src={infos.image} />}
-        {infos.description &&
-          !infos.what && (
-            <div className="description">
-              {infos.description
-                .split('\n')
-                .map((p, index) => <p key={index}>{p}</p>)}
-            </div>
-          )}
+        {infos.description && (
+          <div className="description">
+            {infos.description
+              .split('\n')
+              .map((p, index) => <p key={index}>{p}</p>)}
+          </div>
+        )}
         {infos.what && (
           <div>
             <h3>Quoi ?</h3>
