@@ -4,9 +4,17 @@
   const archiver = require('archiver');
   const { exec } = require('child_process')
   const fs = require('fs');
-  const {promisify} = require('util');
+  const env = require('node-env-file');
+  const path =  require('path');
+  const util = require('util');
+  require('util.promisify').shim();
+  const { promisify } = util
   const pgb_client = require('phonegap-build-api');
   const request = require('request');
+
+
+  const fileDir = path.join(__dirname, '/../env_file')
+  if (fs.existsSync(fileDir)) { env(fileDir) }
 
   const APP_IDS = {
     production: 3110560,
