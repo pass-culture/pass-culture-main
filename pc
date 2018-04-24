@@ -56,9 +56,9 @@ if [[ "$CMD" == "alembic" ]]; then
 elif [[ "$CMD" == "build-pg" ]]; then
 	if [[ "$ENV" == "production" ]]; then
 		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild-prod'
-	else [[ "$ENV" == "staging" ]]; then
+	else
 		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild'
-	fi	 
+	fi
 elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
