@@ -29,7 +29,8 @@ class Booking(app.model.PcObject,
                         nullable=True)
 
     offer = db.relationship(lambda: app.model.Offer,
-                            foreign_keys=[offerId])
+                            foreign_keys=[offerId],
+                            backref='bookings')
 
     quantity = db.Column(db.Integer,
                          nullable=False,

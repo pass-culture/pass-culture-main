@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import current_app as app
 from mailjet_rest import Client
+from pprint import pformat
 from utils.config import ENV, IS_DEV, IS_STAGING
 import os
 
@@ -11,10 +12,10 @@ Offer = app.model.Offer
 
 
 def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
-    if MAILJET_API_KEY is None:
+    if MAILJET_API_KEY is None or MAILJET_API_KEY=='':
         raise ValueError("Missing environment variable MAILJET_API_KEY")
 
-    if MAILJET_API_SECRET is None:
+    if MAILJET_API_SECRET is None or MAILJET_API_SECRET=='':
         raise ValueError("Missing environment variable MAILJET_API_SECRET")
 
     mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET),
@@ -25,16 +26,20 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
     recipients = [offer.offerer.bookingEmail, 'pass@culture.gouv.fr']
 
     if IS_DEV or IS_STAGING:
-        email['Html-part'] = '<p>In production, email would have been sent to : '\
-                             + ", ".join(recipients)\
-                             + '</p>' + email['Html-part']
-        email['Subject'] = ('[%s] ' % ENV) + email['Subject']
-        email['Recipients'] = 'passculture-dev@beta.gouv.fr'
+        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : '
+                              + ", ".join(recipients)
+                              + '</p>' + email['Html-part']) % ENV
+        email['To'] = 'passculture-dev@beta.gouv.fr'
     else:
         assert False
-        email['Recipients'] = recipients
+        email['To'] = recipients
 
-    mailjet.send.create(email)
+    from pprint import pprint
+    pprint(email)
+
+    mailjet_result = mailjet.send.create(data=email)
+    if mailjet_result.status_code != 200:
+        raise Exception("Email send failed: "+pformat(vars(mailjet_result)))
 
     if booking is None:
         offer.bookingRecapSent = datetime.now()

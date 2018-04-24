@@ -88,6 +88,7 @@ class TiteLiveVenues(app.model.LocalProvider):
             obj.longitude = row[8]
         elif isinstance(obj, app.model.Offerer):
             obj.venue = self.providables[0]
+            obj.bookingEmail = 'passculture-dev@beta.gouv.fr'
         elif isinstance(obj, app.model.OffererProvider):
             obj.provider = self.titelive_offer_provider
             obj.offerer = self.providables[1]

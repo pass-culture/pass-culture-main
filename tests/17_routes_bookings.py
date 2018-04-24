@@ -41,6 +41,7 @@ def test_11_create_booking_should_not_work_past_limit_date():
         import models
         expired_offer = app.model.Offer()
         expired_offer.venueId = 1
+        expired_offer.offererId = 1
         expired_offer.thingId = 1
         expired_offer.price = 0
         expired_offer.bookingLimitDatetime = datetime.now() - timedelta(seconds=1)
@@ -62,6 +63,7 @@ def test_12_create_booking_should_work_before_limit_date():
         import models
         ok_offer = app.model.Offer()
         ok_offer.venueId = 1
+        ok_offer.offererId = 1
         ok_offer.thingId = 1
         ok_offer.price = 0
         ok_offer.bookingLimitDatetime = datetime.now() + timedelta(minutes=2)

@@ -55,7 +55,7 @@ class Offer(app.model.PcObject,
 
     offererId = db.Column(db.BigInteger,
                           db.ForeignKey("offerer.id"),
-                          nullable=True)
+                          nullable=False)
 
     offerer = db.relationship(lambda: app.model.Offerer,
                               foreign_keys=[offererId],

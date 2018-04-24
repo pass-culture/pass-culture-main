@@ -93,6 +93,10 @@ class TiteLiveOffers(app.model.LocalProvider):
                                     .filter_by(idAtProviders=str(line[1]))\
                                     .one_or_none()
 
+        self.offerer = app.model.Offerer.query\
+                                        .filter_by(idAtProviders=str(line[1]))\
+                                        .one_or_none()
+
         if self.venue is None:
             print("   No such venue : "+str(line[1]))
             return None
@@ -123,6 +127,7 @@ class TiteLiveOffers(app.model.LocalProvider):
         assert offer.idAtProviders == self.idAtProviders
         offer.thing = self.thing
         offer.venue = self.venue
+        offer.offerer = self.offerer
         offer.price = self.price
 
     def getDeactivatedObjectIds(self):

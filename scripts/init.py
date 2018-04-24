@@ -50,6 +50,7 @@ def do_init():
     offerer = model.Offerer()
     small_library_offerer = offerer
     offerer.name = "MaBoutique"
+    offerer.bookingEmail = "passculture-dev@beta.gouv.fr"
     offerer.offerProvider = "OpenAgendaOffers"
     offerer.idAtOfferProvider = "80942872"
     check_and_save(offerer)
@@ -77,6 +78,7 @@ def do_init():
     # le conservatoire (via spreadsheet)
     offerer = model.Offerer()
     offerer.name = "l'Avant Seine / théâtre de Colombes"
+    offerer.bookingEmail = "passculture-dev@beta.gouv.fr"
     offerer.offerProvider = "Spreadsheet"
     offerer.idAtOfferProvider = "avant_seine.xlsx"
     check_and_save(offerer)
