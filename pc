@@ -54,7 +54,11 @@ fi
 if [[ "$CMD" == "alembic" ]]; then
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && alembic '"$*"'"'
 elif [[ "$CMD" == "build-pg" ]]; then
-	 RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild'
+	if [[ "$ENV" == "production" ]]; then
+		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild-prod'
+	else [[ "$ENV" == "staging" ]]; then
+		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild'
+	fi	 
 elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
