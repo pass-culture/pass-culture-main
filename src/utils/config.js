@@ -68,7 +68,7 @@ if (window.cordova) {
   } else if (MOBILE_OS === 'ios') {
     //TODO
     document.body.className += ' cordova-ios'
-    CALC_ROOT_PATH = window.location.href.substring(0, 1)
+    CALC_ROOT_PATH = window.location.href.split('/').slice(0,9).join('/')
   }
   window.addEventListener('keyboardWillShow', function(e) {
     console.log('Keyboard show')
