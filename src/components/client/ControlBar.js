@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
