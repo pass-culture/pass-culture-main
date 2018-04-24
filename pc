@@ -47,7 +47,6 @@ fi
 CMD="$1"
 shift
 
-echo "ENV: $ENV"
 if [[ "$ENV" == "production" ]]; then
   confirm "Are you sure you want to run $CMD in production ?"
 fi
@@ -68,9 +67,9 @@ elif [[ "$CMD" == "deploy-frontend" ]]; then
 
   # Add generic redirects for netlify which work with everything routed to
   # index.htm and relative paths to main.js and main.css for phonegap
-  JSPATH=`grep main build/index.html | sed -e 's/.*src="\(.*\?.js\)".*/\\1/'`
+  JSPATH=`grep -o '\./static/js/main\.[a-z0-9]*\.js' build/index.html`
   JSHASH=`echo "$JSPATH" | cut -d\. -f 3`
-  CSSPATH=`grep main build/index.html | sed -e 's/.*href="\(.*\?.css\)".*/\\1/'`
+  CSSPATH=`grep -o '\./static/css/main\.[a-z0-9]*\.css' build/index.html`
   CSSHASH=`echo "$CSSPATH" | cut -d\. -f 3`
 
   echo "/:path1/main.$JSHASH.js /$JSPATH 301" > build/_redirects
