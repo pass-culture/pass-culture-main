@@ -44,7 +44,14 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
     def __next__(self):
         self.line = self.lines.__next__()[1]
 
-        while not is_filled(self.line['Date MAJ']):
+
+        for field in ['Date MAJ', 'Email contact', 'Latitude', 'Longitude', 'Nom', 'Adresse', 'Ref Lieu']:
+            while not is_filled(self.line[field]):
+                print(field+' is empty, skipping line')
+                self.__next__()
+
+        while '@' not in self.line['Email contact']:
+            print('Invalid email in "Email contact" column, skipping line')
             self.__next__()
 
         p_info_venue = app.model.ProvidableInfo()
@@ -70,6 +77,7 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
             obj.longitude = self.line['Longitude']
         else:
             obj.venue = self.providables[0]
+            obj.bookingEmail = self.line['Email contact'].replace('mailto:', '')
 
     def getDeactivatedObjectIds(self):
         return []

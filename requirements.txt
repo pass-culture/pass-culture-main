@@ -12,6 +12,7 @@ gunicorn
 hypothesis
 inflect
 isbnlib
+mailjet_rest
 nltk
 oauth2client
 pandas

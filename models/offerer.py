@@ -27,5 +27,7 @@ class Offerer(app.model.PcObject,
                             foreign_keys=[venueId],
                             backref='offerer')
 
+    bookingEmail = db.Column(db.String(120), nullable=False)
+
 
 app.model.Offerer = Offerer

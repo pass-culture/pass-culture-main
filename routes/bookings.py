@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 
 from models.api_errors import ApiErrors
 from utils.includes import BOOKINGS_INCLUDES
+from utils.mailing import send_booking_recap_emails
 from utils.rest import expect_json_data
 from utils.token import random_token
 from utils.human_ids import dehumanize
@@ -58,4 +59,6 @@ def post_booking():
     if recommendation_id is not None:
         new_booking.recommendationId = dehumanize(recommendation_id)
     app.model.PcObject.check_and_save(new_booking)
+    send_booking_recap_emails(app.model.Offer.query.get(new_booking.offerId),
+                              new_booking)
     return jsonify(new_booking._asdict(include=BOOKINGS_INCLUDES)), 201

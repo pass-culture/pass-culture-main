@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import current_app as app
 from mailjet_rest import Client
+from utils.config import ENV, IS_DEV, IS_STAGING
 import os
 
 MAILJET_API_KEY = os.environ['MAILJET_API_KEY']
@@ -16,21 +17,35 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
     if MAILJET_API_SECRET is None:
         raise ValueError("Missing environment variable MAILJET_API_SECRET")
 
-    mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+    mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET),
+                     version='v3')
 
     email = make_booking_recap_email(offer, booking, is_cancellation)
-    email['Recipients'] = []
-    for recipient in TODO:
-        email['Recipients'].append({'Email': recipient})
+
+    recipients = [offer.offerer.bookingEmail, 'pass@culture.gouv.fr']
+
+    if IS_DEV or IS_STAGING:
+        email['Html-part'] = '<p>In production, email would have been sent to : '\
+                             + ", ".join(recipients)\
+                             + '</p>' + email['Html-part']
+        email['Subject'] = ('[%s] ' % ENV) + email['Subject']
+        email['Recipients'] = 'passculture-dev@beta.gouv.fr'
+    else:
+        assert False
+        email['Recipients'] = recipients
 
     mailjet.send.create(email)
+
+    if booking is None:
+        offer.bookingRecapSent = datetime.now()
+        app.model.PcObject.check_and_save(offer)
 
 
 def make_booking_recap_email(offer, booking=None, is_cancellation=False):
     email_html = '<html><body>'
     email_html += '<p>Cher partenaire Pass Culture,</p>'
 
-    email_subject = '[Pass Culture Reservations] '
+    email_subject = '[Reservations] '
     if booking is not None:
         user = booking.user
         email_html += '<p>%s (%s)' % (user.publicName, user.email)
@@ -40,8 +55,9 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
         else:
             email_subject += 'Nouvelle reservation pour '
             email_html += ' vient de faire une nouvelle réservation'
-        if offer.event:
-            email_subject += '%s le %s' % (offer.event.name, offer.eventOccurence.beginningDatetime.strftime('%c'))
+        if offer.eventOccurence:
+            email_subject += '%s le %s' % (offer.eventOccurence.event.name,
+                                           offer.eventOccurence.beginningDatetime.strftime('%c'))
         elif offer.thing:
             email_subject += '%s (Ref: %s)' % (offer.thing.name, offer.thing.idAtProviders)
         email_html += '</p>'
@@ -66,8 +82,8 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
     email_html += '</body></html>'
 
     return {
-             'FromName': 'Pass Culture Réservations',
-             'FromEmail': 'reservations@passculture.beta.gouv.fr',
+             'FromName': 'Pass Culture',
+             'FromEmail': 'passculture@beta.gouv.fr',
              'Subject': email_subject,
              'Html-part': email_html,
            }
