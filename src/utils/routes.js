@@ -11,6 +11,7 @@ import ProfessionalPage from '../components/pages/ProfessionalPage'
 import ProfilePage from '../components/pages/ProfilePage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
+import TermsPage from '../components/pages/TermsPage'
 
 export const getDiscoveryPath = (offer, mediation = '') => {
   const offerId =
@@ -102,6 +103,12 @@ const routes = [
     path: '/reservations',
     title: 'Réservations',
     render: () => <BookingsPage />,
+  },
+  {
+    exact: true,
+    path: '/mentions-legales',
+    title: 'Mentions Légales',
+    render: () => <TermsPage />,
   },
 ]
 
