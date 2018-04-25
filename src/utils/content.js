@@ -15,7 +15,9 @@ export function getContentFromRecommendation(recommendation) {
   // proposed by several ticketers
   const chosenOffer =
     recommendationOffers &&
-    recommendationOffers[Math.floor(Math.random() * recommendationOffers.length)]
+    recommendationOffers[
+      Math.floor(Math.random() * recommendationOffers.length)
+    ]
   // check
   if (!chosenOffer && !mediation) {
     return

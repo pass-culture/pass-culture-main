@@ -8,7 +8,11 @@ export default createSelector(selectBookingsWithSource, (bookings = []) =>
   bookings.map(b =>
     Object.assign(
       {
-        thumbUrl: getThumbUrl(getMediation(b.recommendation), b.source, b.offer),
+        thumbUrl: getThumbUrl(
+          getMediation(b.recommendation),
+          b.source,
+          b.offer
+        ),
       },
       b
     )
