@@ -49,6 +49,7 @@ const SigninPage = ({ errors }) => {
       <footer>
         <NavLink to="/inscription">Inscription</NavLink>
         <SubmitButton
+          className='button button--alive button--cta'
           getBody={form => form.usersById[NEW]}
           getIsDisabled={form =>
             !get(form, 'usersById._new_.identifier') ||
