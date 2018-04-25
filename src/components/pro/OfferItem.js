@@ -77,5 +77,4 @@ OfferItem.defaultProps = {
   maxDescriptionLength: 300,
 }
 
-export default connect(null,
-  { assignData, resetForm, showModal })(OfferItem)
+export default connect(null, { assignData, resetForm, showModal })(OfferItem)

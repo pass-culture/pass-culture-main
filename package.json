@@ -84,7 +84,7 @@
     "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
-    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write src/**/*.js"
+    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
   },
   "jest": {
     "collectCoverageFrom": [

@@ -25,24 +25,24 @@ const SigninPage = ({ errors }) => {
               pour accéder aux offres.
             </div>
           </div>
-            <FormField
-              className={inputClassName}
-              type="email"
-              collectionName="users"
-              label={<Label title="Adresse e-mail:" />}
-              name="identifier"
-              placeholder="Identifiant (email)"
-              autoComplete="email"
-            />
-            <FormField
-              className={inputClassName}
-              collectionName="users"
-              label={<Label title="Mot de passe" />}
-              name="password"
-              type="password"
-              placeholder="Mot de passe"
-              autoComplete="current-password"
-            />
+          <FormField
+            className={inputClassName}
+            type="email"
+            collectionName="users"
+            label={<Label title="Adresse e-mail:" />}
+            name="identifier"
+            placeholder="Identifiant (email)"
+            autoComplete="email"
+          />
+          <FormField
+            className={inputClassName}
+            collectionName="users"
+            label={<Label title="Mot de passe" />}
+            name="password"
+            type="password"
+            placeholder="Mot de passe"
+            autoComplete="current-password"
+          />
           <div className="sign__error mt1">{errors}</div>
         </div>
         <footer>

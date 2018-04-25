@@ -24,7 +24,7 @@ const List = ({
       <div className="h2 mb2">{title}</div>
       <div className="list__control flex items-center flex-start">
         <SubmitButton
-          className='button button--alive button--cta'
+          className="button button--alive button--cta"
           getBody={getBody}
           getIsDisabled={getIsDisabled}
           getOptimistState={getOptimistState}

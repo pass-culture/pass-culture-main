@@ -11,35 +11,32 @@ class MenuButton extends Component {
     this.props.showModal(<Menu />)
   }
 
-  render () {
-    const { borderTop,
-      colored,
-      isFlipped
-    } = this.props
+  render() {
+    const { borderTop, colored, isFlipped } = this.props
     const maybeColored = {}
     if (colored) {
-      maybeColored.colored = "colored"
+      maybeColored.colored = 'colored'
     }
     const style = {}
     if (!colored) {
-      style.display = isFlipped
-        ? 'none'
-        : 'block'
+      style.display = isFlipped ? 'none' : 'block'
     }
     return (
-      <div className={classnames('menu-button', {
-        bordered: borderTop,
-        colored: colored,
-      })} style={style}>
+      <div
+        className={classnames('menu-button', {
+          bordered: borderTop,
+          colored: colored,
+        })}
+        style={style}
+      >
         <button onClick={this.onClick}>
-          <ProfilePicture {... maybeColored} />
+          <ProfilePicture {...maybeColored} />
         </button>
       </div>
     )
   }
 }
 
-export default connect(
-  state => ({ isFlipped: state.verso.isFlipped }),
-  { showModal }
-)(MenuButton)
+export default connect(state => ({ isFlipped: state.verso.isFlipped }), {
+  showModal,
+})(MenuButton)

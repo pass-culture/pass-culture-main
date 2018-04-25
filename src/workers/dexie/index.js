@@ -1,12 +1,9 @@
 /* global self */
 /* eslint no-restricted-globals: ["off", "self"] */
-import { db,
-  pushPull,
-  setUser
-} from './data'
+import { db, pushPull, setUser } from './data'
 
 class DexieWrapper {
-  constructor (worker) {
+  constructor(worker) {
     this.state = {}
     this.worker = worker
   }
@@ -21,26 +18,28 @@ class DexieWrapper {
       : this.onmessage({ data: message })
   }
 
-  async dexiePushPull () {
-    const message = { isSyncRedux: true, text: "dexiePushPull" }
-    message.results = this.state.user && await pushPull(this.state)
+  async dexiePushPull() {
+    const message = { isSyncRedux: true, text: 'dexiePushPull' }
+    message.results = this.state.user && (await pushPull(this.state))
     this.receiveMessage(message)
   }
 
-  async dexieSignin () {
+  async dexieSignin() {
     // check
     const { user } = this.state
-    if (!user) { return }
-    const message = { isSyncRedux: true, text: "dexieSignin" }
+    if (!user) {
+      return
+    }
+    const message = { isSyncRedux: true, text: 'dexieSignin' }
     message.results = await pushPull(this.state)
-    this.state.user && await setUser(this.state)
+    this.state.user && (await setUser(this.state))
     this.receiveMessage(message)
   }
 
-  dexieSignout () {
+  dexieSignout() {
     Object.keys(this.state).forEach(key => delete this.state[key])
     db.users.clear()
-    this.receiveMessage({ text: "dexieSignout" })
+    this.receiveMessage({ text: 'dexieSignout' })
   }
 
   onMessage = event => {
@@ -58,7 +57,7 @@ class DexieWrapper {
       this.worker.addEventListener('sync', this.dexiePushPull)
     } else if (key === 'dexie-ping') {
       console.log('DEXIE WORKER PING!')
-      this.receiveMessage({ log: "dexiePing" })
+      this.receiveMessage({ log: 'dexiePing' })
     } else if (key === 'dexie-push-pull') {
       this.dexiePushPull()
     } else if (key === 'dexie-signin') {

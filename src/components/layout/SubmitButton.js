@@ -8,7 +8,6 @@ import { requestData } from '../../reducers/data'
 import { randomHash } from '../../utils/random'
 
 class SubmitButton extends Component {
-
   constructor() {
     super()
     this.state = {
@@ -17,7 +16,7 @@ class SubmitButton extends Component {
   }
 
   onSubmitClick = event => {
-    if (this.state.submitRequestId) return;
+    if (this.state.submitRequestId) return
     event.preventDefault()
     const {
       add,
@@ -31,9 +30,9 @@ class SubmitButton extends Component {
       storeKey,
       requestData,
     } = this.props
-    const submitRequestId = randomHash();
+    const submitRequestId = randomHash()
     this.setState({
-      submitRequestId
+      submitRequestId,
     })
     requestData(method, path, {
       add,
@@ -48,28 +47,27 @@ class SubmitButton extends Component {
 
   static getDerivedStateFromProps(newProps, prevState) {
     if (prevState.submitRequestId) {
-      const returnedQuery = newProps.queries.find(q => q.id === prevState.submitRequestId)
+      const returnedQuery = newProps.queries.find(
+        q => q.id === prevState.submitRequestId
+      )
       return {
-        submitRequestId: get(returnedQuery, 'status', '') === 'PENDING' ? returnedQuery.id : null
+        submitRequestId:
+          get(returnedQuery, 'status', '') === 'PENDING'
+            ? returnedQuery.id
+            : null,
       }
     }
-    return null;
+    return null
   }
 
   render() {
-    const {
-      className,
-      getIsDisabled,
-      form,
-      text,
-      submittingText,
-    } = this.props
-    const {submitRequestId} = this.state
+    const { className, getIsDisabled, form, text, submittingText } = this.props
+    const { submitRequestId } = this.state
     const isDisabled = getIsDisabled(form)
     return (
       <button
         className={classnames(className, {
-          'disabled': isDisabled,
+          disabled: isDisabled,
         })}
         disabled={Boolean(submitRequestId) || isDisabled}
         onClick={this.onSubmitClick}
@@ -94,12 +92,9 @@ SubmitButton.propTypes = {
 }
 
 export default connect(
-  ({
+  ({ form, queries }) => ({
     form,
     queries,
-  }) => ({
-    form,
-    queries
   }),
   { requestData }
 )(SubmitButton)

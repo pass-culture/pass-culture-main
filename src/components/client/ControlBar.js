@@ -29,7 +29,7 @@ class ControlBar extends Component {
           isFavorite: true,
         },
       ],
-      storeKey: 'recommendations'
+      storeKey: 'recommendations',
     })
   }
 
@@ -38,7 +38,7 @@ class ControlBar extends Component {
   }
 
   onClickJyVais = event => {
-    if (this.isFinished()) return;
+    if (this.isFinished()) return
     if (this.props.offer) {
       this.props.showModal(<Booking />, {
         fullscreen: true,
@@ -90,7 +90,7 @@ class ControlBar extends Component {
           ) : (
             <Finishable finished={this.isFinished()}>
               <button
-                className='button button--primary button--go'
+                className="button button--primary button--go"
                 onClick={this.onClickJyVais}
               >
                 <Price

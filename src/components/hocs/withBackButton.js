@@ -5,20 +5,25 @@ import { compose } from 'redux'
 
 import Icon from '../layout/Icon'
 
-const withBackButton = (connectFn=()=>({}), btnClass='') => WrappedComponent => {
+const withBackButton = (
+  connectFn = () => ({}),
+  btnClass = ''
+) => WrappedComponent => {
   class _withBackButton extends Component {
-
     static defaultProps = {
       isActive: true,
     }
 
     render() {
-      const {isActive, history, ...otherProps} = this.props;
+      const { isActive, history, ...otherProps } = this.props
       if (isActive) {
         return (
           <div>
-            <button className={`button back ${btnClass}`} onClick={history.goBack}>
-              <Icon svg='ico-back-simple-w' />
+            <button
+              className={`button back ${btnClass}`}
+              onClick={history.goBack}
+            >
+              <Icon svg="ico-back-simple-w" />
             </button>
             <WrappedComponent {...otherProps} />
           </div>
@@ -29,10 +34,13 @@ const withBackButton = (connectFn=()=>({}), btnClass='') => WrappedComponent => 
   }
   return compose(
     withRouter,
-    connect(state => {
-      const {isActive} = connectFn(state)
-      return {isActive}
-    }, () => ({})),
+    connect(
+      state => {
+        const { isActive } = connectFn(state)
+        return { isActive }
+      },
+      () => ({})
+    )
   )(_withBackButton)
 }
 

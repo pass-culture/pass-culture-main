@@ -46,10 +46,7 @@ class Deck extends Component {
     const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
     history.push(
-      getDiscoveryPath(
-        nextRecommendation.offer,
-        nextRecommendation.mediation
-      )
+      getDiscoveryPath(nextRecommendation.offer, nextRecommendation.mediation)
     )
     this.handleRefreshNext()
   }
@@ -96,7 +93,8 @@ class Deck extends Component {
       (!nextProps.recommendations ||
         !this.props.recommendations ||
         nextProps.recommendations === this.props.recommendations ||
-        (!nextProps.currentRecommendation || !this.props.currentRecommendation) ||
+        (!nextProps.currentRecommendation ||
+          !this.props.currentRecommendation) ||
         nextProps.currentRecommendation.index ===
           this.props.currentRecommendation.index)
     ) {
@@ -202,7 +200,10 @@ class Deck extends Component {
         >
           <div>
             {previousRecommendation && (
-              <Card position="previous" recommendation={previousRecommendation} />
+              <Card
+                position="previous"
+                recommendation={previousRecommendation}
+              />
             )}
             <Card position="current" recommendation={currentRecommendation} />
             {nextRecommendation && (
@@ -264,7 +265,8 @@ class Deck extends Component {
             {this.props.currentRecommendation &&
               this.props.currentRecommendation.index}{' '}
             ({this.props.nextLimit} {this.props.isLoadingAfter ? '?' : ' '}) /{' '}
-            {this.props.recommendations && this.props.recommendations.length - 1}
+            {this.props.recommendations &&
+              this.props.recommendations.length - 1}
           </div>
         )}
       </div>
