@@ -1,5 +1,35 @@
 .menu-button {
 
+  .button-wrapper {
+    margin: 3px 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    button {
+      border: 0;
+      border-radius: 50%;
+      height: 100%;
+      width: $footer-height;
+      cursor: pointer;
+      display: block;
+      background: none;
+      margin: auto;
+      &:focus {
+        outline: none;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 50%;
+      }
+    }
+  }
+
   &.bordered {
     @include dotted($menu-red);
   }
@@ -11,32 +41,6 @@
     }
     button {
       background-color: white;
-    }
-  }
-
-  button {
-    position: absolute;
-    top: 3px;
-    bottom: 3px;
-    left: 0;
-    right: 0;
-    margin: auto;
-    border: 0;
-    border-radius: 50%;
-    width: 100%;
-    cursor: pointer;
-    display: block;
-    background: none;
-    &:focus {
-      outline: none;
-    }
-
-    img {
-      width: 100%;
-      height: auto;
-      max-width: 100%;
-      max-height: 100%;
-      border-radius: 50%;
     }
   }
 }

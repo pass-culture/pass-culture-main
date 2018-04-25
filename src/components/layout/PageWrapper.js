@@ -31,7 +31,7 @@ const PageWrapper = (props) => {
       'no-padding': noPadding,
     })}>
       {header}
-      <div className='content'>
+      <div className='page-content'>
         {content}
       </div>
       {footer || (menuButton && <MenuButton {...menuButton} />)}

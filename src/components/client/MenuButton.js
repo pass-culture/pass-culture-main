@@ -29,9 +29,11 @@ class MenuButton extends Component {
         })}
         style={style}
       >
-        <button onClick={this.onClick}>
-          <ProfilePicture {...maybeColored} />
-        </button>
+        <div className='button-wrapper'>
+          <button onClick={this.onClick}>
+            <ProfilePicture {...maybeColored} />
+          </button>
+        </div>
       </footer>
     )
   }
