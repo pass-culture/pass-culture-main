@@ -1,13 +1,7 @@
 .menu-button {
-  position: absolute;
-  padding: 3px 0;
-  bottom: -1px;
-  left: 0;
-  right: 0;
 
   &.bordered {
     @include dotted($menu-red);
-    // border-top: thin dotted rgba($white, 0.25);
   }
 
   &.colored {
@@ -21,11 +15,15 @@
   }
 
   button {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    right: 0;
+    margin: auto;
     border: 0;
     border-radius: 50%;
-    height: 2.8rem;
-    width: 2.8rem;
-    margin: 0 auto;
+    width: 100%;
     cursor: pointer;
     display: block;
     background: none;

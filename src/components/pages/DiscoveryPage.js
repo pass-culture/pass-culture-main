@@ -5,6 +5,7 @@ import { compose } from 'redux'
 
 import Deck from '../client/Deck'
 import MenuButton from '../client/MenuButton'
+import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import withBackButton from '../hocs/withBackButton'
 import { getDiscoveryPath } from '../../utils/routes'
@@ -54,10 +55,9 @@ class DiscoveryPage extends Component {
 
   render() {
     return (
-      <main className="page discovery-page center">
+      <PageWrapper name='discovery' noPadding menuButton={{borderTop: true}}>
         <Deck />
-        <MenuButton borderTop />
-      </main>
+      </PageWrapper>
     )
   }
 }

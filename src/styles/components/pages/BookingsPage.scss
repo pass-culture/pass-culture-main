@@ -1,33 +1,33 @@
 .bookings-page {
-  color: $white;
-  background-color: $menu-red;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  // color: $white;
+  // background-color: $menu-red;
+  // position: absolute;
+  // top: 0;
+  // bottom: 0;
+  // left: 0;
+  // right: 0;
 
   header {
-    position: absolute;
-    text-align: center;
-    font-weight: 500;
+    // position: absolute;
+    // text-align: center;
+    // font-weight: 500;
     // border-bottom: thin dotted $white;
-    @include dotted($white, bottom);
-    padding: 1rem 0;
-    top: 0;
-    left: 0;
-    right: 0;
+    // @include dotted($white, bottom);
+    // padding: 1rem 0;
+    // top: 0;
+    // left: 0;
+    // right: 0;
   }
 
   .content {
-    position: absolute;
-    top: 52px;
-    bottom: 52px;
-    left: 1rem;
-    right: 1rem;
+    // position: absolute;
+    // top: 52px;
+    // bottom: 52px;
+    // left: 1rem;
+    // right: 1rem;
     overflow-y: auto;
     font-size: 1.2rem;
-    padding: 1rem 0;
+    // padding: 1rem 0;
 
     h4 {
       text-transform: uppercase;
@@ -43,12 +43,15 @@
 
       li {
         background-color: $white;
-        margin-bottom: 1rem;
         border-radius: $border-radius;
         height: 150px;
         width: 100%;
         overflow: hidden;
         font-size: 1.2rem;
+        margin-bottom: 1rem;
+        &:last-child {
+          margin-bottom: 0;
+        }
         a {
           color: $black;
           width: 100%;

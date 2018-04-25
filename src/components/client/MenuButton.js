@@ -22,7 +22,7 @@ class MenuButton extends Component {
       style.display = isFlipped ? 'none' : 'block'
     }
     return (
-      <div
+      <footer
         className={classnames('menu-button', {
           bordered: borderTop,
           colored: colored,
@@ -32,7 +32,7 @@ class MenuButton extends Component {
         <button onClick={this.onClick}>
           <ProfilePicture {...maybeColored} />
         </button>
-      </div>
+      </footer>
     )
   }
 }
