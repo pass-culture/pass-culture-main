@@ -30,7 +30,7 @@ class OfferModify extends Component {
         <div>
           <SubmitButton
             add="append"
-            className='button button--alive button--cta mr1'
+            className="button button--alive button--cta mr1"
             getBody={form => form.offersById[id]}
             getIsDisabled={form =>
               !form ||

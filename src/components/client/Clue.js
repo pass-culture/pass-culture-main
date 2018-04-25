@@ -31,5 +31,5 @@ Clue.defaultProps = {
 export default connect(state => ({
   distance: selectDistance(state),
   isFlipped: state.verso.isFlipped,
-  offer: selectCurrentOffer(state)
+  offer: selectCurrentOffer(state),
 }))(Clue)

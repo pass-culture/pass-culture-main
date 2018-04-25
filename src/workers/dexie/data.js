@@ -9,8 +9,9 @@ import { fetchData } from '../../utils/request'
 import { IS_DEV } from '../../utils/config'
 
 const storesConfig = {}
-config.collections.forEach(({ description, name }) =>
-  storesConfig[name] = description)
+config.collections.forEach(
+  ({ description, name }) => (storesConfig[name] = description)
+)
 
 export const db = new Dexie(config.name)
 db.version(config.version).stores(storesConfig)
@@ -18,20 +19,28 @@ if (config.upgrate) {
   db.upgrade(config.upgrate)
 }
 
-export async function getData (collectionName, query) {
+export async function getData(collectionName, query) {
   // check
   const table = db[collectionName]
   if (!table) {
     return
   }
   // get
-  const data = await table.filter(element =>
-    Object.keys(query).every(key => element[key] === query[key])).toArray()
+  const data = await table
+    .filter(element =>
+      Object.keys(query).every(key => element[key] === query[key])
+    )
+    .toArray()
   // return
   return { data }
 }
 
-export async function putData (dexieMethod, collectionName, dataOrDatum, config = {}) {
+export async function putData(
+  dexieMethod,
+  collectionName,
+  dataOrDatum,
+  config = {}
+) {
   // unpack
   const diff = (typeof config.diff !== 'undefined' && config.diff) || true
   // check the table
@@ -43,9 +52,7 @@ export async function putData (dexieMethod, collectionName, dataOrDatum, config 
   const description = collectionConfig.description
   const result = { collectionName }
   // check format
-  let data = Array.isArray(dataOrDatum)
-    ? dataOrDatum
-    : [dataOrDatum]
+  let data = Array.isArray(dataOrDatum) ? dataOrDatum : [dataOrDatum]
   // update is when we want to update certain elements in the array
   const storedData = await table.toArray()
   // look for deprecation
@@ -55,8 +62,11 @@ export async function putData (dexieMethod, collectionName, dataOrDatum, config 
     if (storedDatum) {
       // bind temporaly the storedDatum
       datum._storedDatum = storedDatum
-      if (storedDatum.dateCreated && datum.dateCreated &&
-        moment(storedDatum.dateCreated) < moment(datum.dateCreated)) {
+      if (
+        storedDatum.dateCreated &&
+        datum.dateCreated &&
+        moment(storedDatum.dateCreated) < moment(datum.dateCreated)
+      ) {
         result.deprecatedData.push(storedDatum)
       }
     }
@@ -94,7 +104,7 @@ export async function putData (dexieMethod, collectionName, dataOrDatum, config 
     await db.differences.add({
       id: uuid(),
       name: collectionName,
-      ids: data.map(datum => datum.id)
+      ids: data.map(datum => datum.id),
     })
   }
   // get again
@@ -102,22 +112,23 @@ export async function putData (dexieMethod, collectionName, dataOrDatum, config 
   return result
 }
 
-export async function clear () {
+export async function clear() {
   const tables = db.tables.filter(table => !table.differences)
   return Promise.all(tables.map(async table => table.clear()))
 }
 
-export async function fetch (config = {}) {
+export async function fetch(config = {}) {
   const tables = db.tables.filter(table => !table.differences)
-  const results = await Promise.all(tables.map(async table =>
-    await table.toArray()))
+  const results = await Promise.all(
+    tables.map(async table => await table.toArray())
+  )
   if (config.console) {
     console.log(results)
   }
   return results
 }
 
-export async function setUser (state = {}) {
+export async function setUser(state = {}) {
   const { user } = state
   if (!user) {
     console.warn('We set user in dexie but user is not defined')
@@ -126,56 +137,57 @@ export async function setUser (state = {}) {
   await db.users.add(user)
 }
 
-export async function pushPull (state = {}) {
-  return Promise.all(config.collections.map(async ({ isPullOnly,
-      isSync,
-      name,
-      query
-    }) => {
-    // just do that for the collection with isSync or isPullOnly
-    if (!isSync && !isPullOnly) {
-      return
-    }
-    // table
-    const table = db[name]
-    // push
-    if (isSync) {
-      const differences = await db.differences.filter(difference =>
-        difference.name === name).toArray()
-      const entityIds = uniq(flatten(
-        differences.map(difference => difference.ids)))
-      await db.differences.filter(difference =>
-        difference.name === name).delete()
-      const entities = await table
-        .filter(entity => entityIds.includes(entity.id))
-        .toArray()
-        .catch(e => console.log(e))
-      let config = {}
-      if (entities) {
-        config.body = entities
+export async function pushPull(state = {}) {
+  return Promise.all(
+    config.collections.map(async ({ isPullOnly, isSync, name, query }) => {
+      // just do that for the collection with isSync or isPullOnly
+      if (!isSync && !isPullOnly) {
+        return
       }
-    }
-    // fetch
-    const method = isPullOnly ? 'GET' : 'PUT'
-    let path = table.name
-    if (query) {
-      const pathQuery = typeof query === 'function'
-        ? query(state)
-        : query
-      if (pathQuery && pathQuery !== '') {
-        path = `${path}?${pathQuery}`
+      // table
+      const table = db[name]
+      // push
+      if (isSync) {
+        const differences = await db.differences
+          .filter(difference => difference.name === name)
+          .toArray()
+        const entityIds = uniq(
+          flatten(differences.map(difference => difference.ids))
+        )
+        await db.differences
+          .filter(difference => difference.name === name)
+          .delete()
+        const entities = await table
+          .filter(entity => entityIds.includes(entity.id))
+          .toArray()
+          .catch(e => console.log(e))
+        let config = {}
+        if (entities) {
+          config.body = entities
+        }
       }
-    }
-    const result = await fetchData(method, path, config)
-    // bulk
-    if (result.data) {
-      const pathWithoutQuery = path.split('?')[0]
-      const collectionName = pathWithoutQuery.split('/')[0]
-      return await putData('bulk', collectionName, result.data, { isClear: true })
-    } else {
-      return result
-    }
-  }))
+      // fetch
+      const method = isPullOnly ? 'GET' : 'PUT'
+      let path = table.name
+      if (query) {
+        const pathQuery = typeof query === 'function' ? query(state) : query
+        if (pathQuery && pathQuery !== '') {
+          path = `${path}?${pathQuery}`
+        }
+      }
+      const result = await fetchData(method, path, config)
+      // bulk
+      if (result.data) {
+        const pathWithoutQuery = path.split('?')[0]
+        const collectionName = pathWithoutQuery.split('/')[0]
+        return await putData('bulk', collectionName, result.data, {
+          isClear: true,
+        })
+      } else {
+        return result
+      }
+    })
+  )
 }
 
 if (IS_DEV) {

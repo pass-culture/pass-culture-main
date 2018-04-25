@@ -13,11 +13,12 @@ ReactDOM.render(<Root />, document.getElementById('root'))
 if (module.hot) {
   module.hot.accept('./Root', () => {
     const NextRoot = require('./Root').default
-    ReactDOM.render((
+    ReactDOM.render(
       <AppContainer>
         <NextRoot />
-      </AppContainer>
-    ), document.getElementById('root'))
+      </AppContainer>,
+      document.getElementById('root')
+    )
   })
 }
 registerCacheWorker()

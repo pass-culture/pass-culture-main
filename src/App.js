@@ -5,7 +5,7 @@ import Splash from './components/layout/Splash'
 
 const App = ({ children }) => {
   return (
-    <div className='app'>
+    <div className="app">
       {children}
       <Modal />
       <Splash />

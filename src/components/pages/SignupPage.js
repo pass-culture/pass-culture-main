@@ -29,63 +29,63 @@ const SignupPage = ({ errors }) => {
           <p className="h2-black">
             Une minute pour créer un compte, et puis c'est tout !
           </p>
-            <FormField
-              className="input"
-              label={
-                <Label
-                  isJumpLine
-                  title="Identifiant"
-                  subtitle="...que verront les autres utilisateurs:"
-                />
-              }
-              required="true"
-              collectionName="users"
-              name="publicName"
-              autoComplete="name"
-              placeholder="Mon nom ou pseudo"
-              type="text"
-            />
-            <FormField
-              className="input"
-              label={
-                <Label
-                  isJumpLine
-                  title="Adresse e-mail"
-                  subtitle="...pour se connecter et récupérer son mot de passe en cas d'oubli:"
-                />
-              }
-              collectionName="users"
-              required="true"
-              autoComplete="email"
-              name="email"
-              type="email"
-              placeholder="nom@exemple.fr"
-            />
-            <FormField
-              className="input"
-              label={
-                <Label title="Mot de passe" subtitle="...pour se connecter:" />
-              }
-              collectionName="users"
-              required="true"
-              autoComplete="new-password"
-              name="password"
-              placeholder="Mon mot de passe"
-              type="password"
-            />
-            <FormField
-              label={
-                <span className="h4">
-                  {' '}
-                  J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
-                  <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.
-                </span>
-              }
-              collectionName="users"
-              required="true"
-              name="contact_ok"
-              type="checkbox"
-            />
+          <FormField
+            className="input"
+            label={
+              <Label
+                isJumpLine
+                title="Identifiant"
+                subtitle="...que verront les autres utilisateurs:"
+              />
+            }
+            required="true"
+            collectionName="users"
+            name="publicName"
+            autoComplete="name"
+            placeholder="Mon nom ou pseudo"
+            type="text"
+          />
+          <FormField
+            className="input"
+            label={
+              <Label
+                isJumpLine
+                title="Adresse e-mail"
+                subtitle="...pour se connecter et récupérer son mot de passe en cas d'oubli:"
+              />
+            }
+            collectionName="users"
+            required="true"
+            autoComplete="email"
+            name="email"
+            type="email"
+            placeholder="nom@exemple.fr"
+          />
+          <FormField
+            className="input"
+            label={
+              <Label title="Mot de passe" subtitle="...pour se connecter:" />
+            }
+            collectionName="users"
+            required="true"
+            autoComplete="new-password"
+            name="password"
+            placeholder="Mon mot de passe"
+            type="password"
+          />
+          <FormField
+            label={
+              <span className="h4">
+                {' '}
+                J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
+                <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.
+              </span>
+            }
+            collectionName="users"
+            required="true"
+            name="contact_ok"
+            type="checkbox"
+          />
           <div className="errors">{errors}</div>
         </div>
         <footer className="flex items-center">

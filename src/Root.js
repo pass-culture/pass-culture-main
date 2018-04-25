@@ -2,8 +2,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { matchPath, Redirect, Route, Switch } from 'react-router-dom'
 
-import 'react-dates/initialize';
-import 'react-dates/lib/css/_datepicker.css';
+import 'react-dates/initialize'
+import 'react-dates/lib/css/_datepicker.css'
 
 import { ConnectedRouter } from 'react-router-redux'
 
@@ -18,18 +18,29 @@ const Root = () => {
       <ConnectedRouter history={history}>
         <App>
           <Switch>
-            { routes.map((route, index) =>  (
-              <Route key={index} {...route} render={(match) => {
-                document.title = (route.title ? `${route.title} - ` : '') + 'Pass Culture';
-                return route.render(match);
-              }} />
+            {routes.map((route, index) => (
+              <Route
+                key={index}
+                {...route}
+                render={match => {
+                  document.title =
+                    (route.title ? `${route.title} - ` : '') + 'Pass Culture'
+                  return route.render(match)
+                }}
+              />
             ))}
-            <Route path="/:active?"
+            <Route
+              path="/:active?"
               render={props => {
                 const matchedRoute = routes.find(route =>
-                  matchPath(`/${props.match.params.active}`, route))
-                return props.location.pathname !== '/' && !matchedRoute && <Redirect to='/' />
-              }} />
+                  matchPath(`/${props.match.params.active}`, route)
+                )
+                return (
+                  props.location.pathname !== '/' &&
+                  !matchedRoute && <Redirect to="/" />
+                )
+              }}
+            />
           </Switch>
         </App>
       </ConnectedRouter>

@@ -28,7 +28,9 @@ class OfferInfo extends Component {
     const infos = {
       image: thumbUrl,
       description: get(source, 'description'),
-      what: get(source, 'description') ? '' : get(offer, 'eventOccurence.event.description'), // TODO: add what when set in API
+      what: get(source, 'description')
+        ? ''
+        : get(offer, 'eventOccurence.event.description'), // TODO: add what when set in API
       when: get(recommendation, 'mediatedOccurences', []).map(
         o => o.beginningDatetime
       ),

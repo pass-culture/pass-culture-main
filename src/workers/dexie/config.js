@@ -1,38 +1,34 @@
 const config = {
-  name: "pass_culture",
+  name: 'pass_culture',
   collections: [
     // NECESSARY FOR DOING DIFF PUSH PULL
     {
       description: 'id',
-      name: 'differences'
+      name: 'differences',
     },
     // SPECIFIC COLLECTIONS
     {
       description: 'index',
       name: 'recommendations',
-      query: ({ around,
-        mediationId,
-        offerId
-      }) => around
-        ? `around=${around}`
-        : (
-          mediationId
+      query: ({ around, mediationId, offerId }) =>
+        around
+          ? `around=${around}`
+          : mediationId
             ? `mediationId=${mediationId}`
-            : (offerId && `offerId=${offerId}`) || ''
-        ),
-      isSync: true
+            : (offerId && `offerId=${offerId}`) || '',
+      isSync: true,
     },
     {
       description: 'id',
       name: 'bookings',
-      isPullOnly: true
+      isPullOnly: true,
     },
     {
       description: 'id',
-      name: 'users'
-    }
+      name: 'users',
+    },
   ],
-  version: 1
+  version: 1,
 }
 
 export default config
