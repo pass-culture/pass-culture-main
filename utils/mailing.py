@@ -31,7 +31,6 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
                               + '</p>' + email['Html-part']) % ENV
         email['To'] = 'passculture-dev@beta.gouv.fr'
     else:
-        assert False
         email['To'] = recipients
 
     from pprint import pprint
@@ -74,7 +73,7 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
             email_html += '<h2>Récapitulatif final des réservations (total '
         else:
             email_html += '<h2>Récapitulatif des réservations à ce jour (total '
-        email_html += '%s</h2>)' % len(offer.bookings)
+        email_html += '%s)</h2>' % len(offer.bookings)
 
         email_html += '<table>'
         email_html += '<tr><th>Nom ou pseudo</th><th>Email</th></tr>'
