@@ -88,8 +88,7 @@ const SignupPage = ({ errors }) => {
         />
         <div className="errors">{errors}</div>
       </div>
-      <footer className="flex items-center">
-        <NavLink to="/connexion"><strong>J'ai déjà un compte</strong></NavLink>
+      <footer>
         <SubmitButton
           text="Créer"
           className="button button--primary"
@@ -102,6 +101,7 @@ const SignupPage = ({ errors }) => {
           path="users"
           storeKey="users"
         />
+        <NavLink to="/connexion"><strong>J'ai déjà un compte</strong></NavLink>
       </footer>
     </PageWrapper>
   )

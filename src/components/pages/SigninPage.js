@@ -46,7 +46,6 @@ const SigninPage = ({ errors }) => {
         <div className="sign__error mt1">{errors}</div>
       </div>
       <footer>
-        <NavLink to="/inscription"><strong>Inscription</strong></NavLink>
         <SubmitButton
           getBody={form => form.usersById[NEW]}
           getIsDisabled={form =>
@@ -58,6 +57,7 @@ const SigninPage = ({ errors }) => {
           storeKey="users"
           text="Connexion"
         />
+        <NavLink to="/inscription"><strong>Inscription</strong></NavLink>
       </footer>
     </PageWrapper>
   )

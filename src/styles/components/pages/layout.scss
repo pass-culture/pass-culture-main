@@ -64,6 +64,9 @@
       height: $footer-height;
       text-align: right;
       padding: $footer-height-padding $page-padding;
+      display: flex;
+      align-items: center;
+      flex-direction: row-reverse;
 
       a {
         background: none;
