@@ -2,7 +2,7 @@ import get from 'lodash.get'
 
 const PENDING = 'PENDING'
 const SUCCESS = 'SUCCESS'
-const FAILED = 'FAILED'
+const FAIL = 'FAIL'
 
 export default (state=[], action) => {
   const id = get(action, 'config.requestId')
@@ -11,10 +11,10 @@ export default (state=[], action) => {
       id,
       status: PENDING,
     })
-  } else if (/SUCCESS_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
-    return state.map(s => s.id === id ? {id, status: SUCCESS} : s)
-  } else if (/FAIL_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
-    return state.map(s => s.id === id ? {id, status: FAILED} : s)
+  } else if (/(SUCCESS|FAIL)_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
+    return state
+      .filter(s => s.status !== PENDING) // Delete the finished ones (SUCCESS/FAIL) in the next cycle
+      .map(s => s.id === id ? {id, status: action.type.indexOf(SUCCESS) === 0 ? SUCCESS : FAIL} : s)
   }
   return state
 }
