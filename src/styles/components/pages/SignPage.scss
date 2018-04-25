@@ -1,11 +1,23 @@
 .sign-page {
+  form {
+    display: flex;
+    font-size: 1.2rem;
+    flex-direction: column;
+    height: 100vh;
+    padding-bottom: 60px;
+    .form-input {
+      margin-top: 1.5rem;
+    }
+  }
 
-  color: $black;
-  display: flex;
-  font-size: 1.2rem;
-  flex-direction: column;
-  height: 100vh;
-  padding-bottom: 60px;
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-y: auto;
+    padding: 1.5rem;
+    justify-content: center;
+  }
 
   .h1 {
     font-weight: 800;
@@ -31,20 +43,6 @@
    display: block;
   }
 
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    overflow-y: auto;
-    padding: 1.5rem;
-    justify-content: center;
-  }
-
-  form {
-    .form-input {
-      margin-top: 1.5rem;
-    }
-  }
 
   &.signin-page form {
     .form-input {

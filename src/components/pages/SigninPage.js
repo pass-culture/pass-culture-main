@@ -16,51 +16,51 @@ const Label = ({ title }) => {
 const SigninPage = ({ errors }) => {
   return (
     <main className="page sign-page signin-page red">
-      <div className="form-container">
-        <div className="mt3">
-          <div className="h1 semibold">Bonjour&nbsp;!</div>
-          <div className="h2">
-            Identifiez-vous <br />
-            pour accéder aux offres.
+      <form>
+        <div className="form-container">
+          <div className="mt3">
+            <div className="h1 semibold">Bonjour&nbsp;!</div>
+            <div className="h2">
+              Identifiez-vous <br />
+              pour accéder aux offres.
+            </div>
           </div>
+            <FormField
+              className={inputClassName}
+              type="email"
+              collectionName="users"
+              label={<Label title="Adresse e-mail:" />}
+              name="identifier"
+              placeholder="Identifiant (email)"
+              autoComplete="email"
+            />
+            <FormField
+              className={inputClassName}
+              collectionName="users"
+              label={<Label title="Mot de passe" />}
+              name="password"
+              type="password"
+              placeholder="Mot de passe"
+              autoComplete="current-password"
+            />
+          <div className="sign__error mt1">{errors}</div>
         </div>
-        <form>
-          <FormField
-            className={inputClassName}
-            type="email"
-            collectionName="users"
-            label={<Label title="Adresse e-mail:" />}
-            name="identifier"
-            placeholder="Identifiant (email)"
-            autoComplete="email"
+        <footer>
+          <NavLink to="/inscription">Inscription</NavLink>
+          <SubmitButton
+            className='button button--alive button--cta'
+            getBody={form => form.usersById[NEW]}
+            getIsDisabled={form =>
+              !get(form, 'usersById._new_.identifier') ||
+              !get(form, 'usersById._new_.password')
+            }
+            className="button button--primary"
+            path="users/signin"
+            storeKey="users"
+            text="Connexion"
           />
-          <FormField
-            className={inputClassName}
-            collectionName="users"
-            label={<Label title="Mot de passe" />}
-            name="password"
-            type="password"
-            placeholder="Mot de passe"
-            autoComplete="current-password"
-          />
-        </form>
-        <div className="sign__error mt1">{errors}</div>
-      </div>
-      <footer>
-        <NavLink to="/inscription">Inscription</NavLink>
-        <SubmitButton
-          className='button button--alive button--cta'
-          getBody={form => form.usersById[NEW]}
-          getIsDisabled={form =>
-            !get(form, 'usersById._new_.identifier') ||
-            !get(form, 'usersById._new_.password')
-          }
-          className="button button--primary"
-          path="users/signin"
-          storeKey="users"
-          text="Connexion"
-        />
-      </footer>
+        </footer>
+      </form>
     </main>
   )
 }
