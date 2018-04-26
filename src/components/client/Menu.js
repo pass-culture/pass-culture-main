@@ -89,15 +89,15 @@ class Menu extends Component {
               Mentions légales
             </NavLink>
           </li>
+          <li>
+            <a onClick={this.onSignOutClick}>
+              <div className="menu-icon">
+                <Icon svg="ico-deconnect-w" />
+              </div>
+              Déconnexion
+            </a>
+          </li>
         </ul>
-        <div className="stick-to-bottom">
-          <button onClick={this.onSignOutClick} className="button">
-            <div className="menu-icon">
-              <Icon svg="ico-deconnect-w" />
-            </div>
-            Déconnexion
-          </button>
-        </div>
       </div>
     )
   }
