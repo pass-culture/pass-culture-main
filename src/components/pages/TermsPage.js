@@ -1,12 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 
 import PageWrapper from '../layout/PageWrapper'
-import MenuButton from '../client/MenuButton'
-import withLogin from '../hocs/withLogin'
 import withBackButton from '../hocs/withBackButton'
 
 // TODO: import this from other file

@@ -4,7 +4,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import Deck from '../client/Deck'
-import MenuButton from '../client/MenuButton'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import withBackButton from '../hocs/withBackButton'

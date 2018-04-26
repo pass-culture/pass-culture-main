@@ -4,7 +4,6 @@ import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import BookingItem from '../client/BookingItem'
-import MenuButton from '../client/MenuButton'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import withBackButton from '../hocs/withBackButton'
