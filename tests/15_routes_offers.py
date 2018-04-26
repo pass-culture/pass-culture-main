@@ -1,5 +1,22 @@
+from datetime import datetime, timedelta
+from flask import current_app as app, Flask
+from flask_script import Manager
+from sqlalchemy import desc
+
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req, req_with_auth
+from utils.token import random_token
+
+
+app = Flask(__name__)
+
+
+def create_app(env=None):
+    app.env = env
+    return app
+
+
+app.manager = Manager(create_app)
 
 
 def test_10_get_offers_should_return_a_list_of_offers():
@@ -46,3 +63,28 @@ def test_13_search_offers_by_author():
     offers = r.json()
     assert len(offers) > 0
 
+
+def test_14_update_offer_available_should_check_bookings():
+    with app.app_context():
+        import models
+        offer = app.model.Offer()
+        offer.venueId = 1
+        offer.thingId = 1
+        offer.price = 0
+        offer.available = 1
+        offer.bookingLimitDatetime = datetime.now() + timedelta(minutes=2)
+        app.model.PcObject.check_and_save(offer)
+
+        offerId= offer.id
+
+        booking = app.model.Booking()
+        booking.offerId = offerId
+        booking.recommendationId = 1
+        booking.token = random_token()
+        booking.userId = 1
+        app.model.PcObject.check_and_save(booking)
+
+    r_update = req_with_auth().patch(API_URL + '/offers/'+humanize(offerId),
+                                     json={'available': 0})
+    assert r_update.status_code == 400
+    assert 'available' in r_update.json()

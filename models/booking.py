@@ -1,6 +1,7 @@
 """ booking model """
 from datetime import datetime
 from flask import current_app as app
+from sqlalchemy import event, DDL
 
 db = app.db
 
@@ -50,3 +51,25 @@ class Booking(app.model.PcObject,
 
 
 app.model.Booking = Booking
+
+trig_ddl = DDL("""
+    CREATE OR REPLACE FUNCTION check_booking()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      IF EXISTS (SELECT "available" FROM offer WHERE id=NEW."offerId" AND "available" IS NOT NULL)
+         AND ((SELECT "available" FROM offer WHERE id=NEW."offerId")
+              < (SELECT COUNT(*) FROM booking WHERE "offerId"=NEW."offerId")) THEN
+          RAISE EXCEPTION 'Offer has too many bookings'
+                USING HINT = 'Number of bookings cannot exeed "offer.available"';
+      END IF;
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
+    ON booking
+    FOR EACH ROW EXECUTE PROCEDURE check_booking()
+    """)
+event.listen(Booking.__table__,
+             'after_create',
+             trig_ddl)

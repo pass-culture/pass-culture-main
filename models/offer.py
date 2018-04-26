@@ -1,7 +1,7 @@
 """ offer model """
 from datetime import datetime, timedelta
 from flask import current_app as app
-from sqlalchemy import event
+from sqlalchemy import event, DDL
 from sqlalchemy.ext.hybrid import hybrid_property
 
 db = app.db
@@ -91,3 +91,25 @@ def page_defaults(mapper, configuration, target):
     # for eventOccurences
     if target.eventOccurenceId and not target.bookingLimitDatetime:
         target.bookingLimitDatetime = target.eventOccurence.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=2)
+
+
+trig_ddl = DDL("""
+    CREATE OR REPLACE FUNCTION check_offer()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      IF NOT NEW.available IS NULL AND
+      ((SELECT COUNT(*) FROM booking WHERE "offerId"=NEW.id) > NEW.available) THEN
+        RAISE EXCEPTION 'Available too low'
+              USING HINT = 'offer.available cannot be lower than number of bookings';
+      END IF;
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE CONSTRAINT TRIGGER offer_update AFTER INSERT OR UPDATE
+    ON offer
+    FOR EACH ROW EXECUTE PROCEDURE check_offer()
+    """)
+event.listen(Offer.__table__,
+             'after_create',
+             trig_ddl)

@@ -2,6 +2,7 @@
 from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
+from sqlalchemy.exc import InternalError
 
 from models.api_errors import ApiErrors
 from utils.includes import BOOKINGS_INCLUDES
@@ -58,7 +59,17 @@ def post_booking():
     recommendation_id = request.json.get('recommendationId')
     if recommendation_id is not None:
         new_booking.recommendationId = dehumanize(recommendation_id)
-    app.model.PcObject.check_and_save(new_booking)
+
+    try:
+        app.model.PcObject.check_and_save(new_booking)
+    except InternalError as ie:
+        if 'check_booking' in str(ie.orig):
+            ae.addError('global', 'la quatité disponible pour cette offre'
+                                  + ' est atteinte')
+            return jsonify(ae.errors), 400
+        else:
+            raise ie
+
     send_booking_recap_emails(app.model.Offer.query.get(new_booking.offerId),
                               new_booking)
     return jsonify(new_booking._asdict(include=BOOKINGS_INCLUDES)), 201

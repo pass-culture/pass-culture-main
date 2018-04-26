@@ -141,6 +141,7 @@ def do_init():
     offer1.offerer = small_library_offerer
     offer1.thing = thing1
     offer1.price = 25
+    offer1.available = 2
     offer1.venue = venue_bookshop
     check_and_save(offer1)
 

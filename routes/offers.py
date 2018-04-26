@@ -1,6 +1,8 @@
 from flask import current_app as app, jsonify, request
+from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
+from models.api_errors import ApiErrors
 from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
 from utils.includes import OFFERS_INCLUDES
@@ -115,5 +117,15 @@ def edit_offer(offer_id):
     offer = query.first_or_404()
     ensure_provider_can_update(offer)
     update(offer, updated_offer_dict)
-    app.model.PcObject.check_and_save(offer)
+    try:
+        app.model.PcObject.check_and_save(offer)
+    except InternalError as ie:
+        if 'check_offer' in str(ie.orig):
+            ae = ApiErrors()
+            ae.addError('available', 'la quantité pour cette offre'
+                                     + ' ne peut pas être inférieure'
+                                     + ' au nombre de réservations existantes.')
+            return jsonify(ae.errors), 400
+        else:
+            raise ie
     return jsonify(offer._asdict(include=OFFERS_INCLUDES)), 200

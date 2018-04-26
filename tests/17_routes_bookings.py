@@ -81,3 +81,25 @@ def test_12_create_booking_should_work_before_limit_date():
     created_booking_json = r_check.json()
     for (key, value) in booking_json.items():
         assert created_booking_json[key] == booking_json[key]
+
+
+def test_13_create_booking_should_not_work_if_too_many_bookings():
+    with app.app_context():
+        import models
+        too_many_bookings_offer = app.model.Offer()
+        too_many_bookings_offer.venueId = 1
+        too_many_bookings_offer.thingId = 1
+        too_many_bookings_offer.price = 0
+        too_many_bookings_offer.available = 0
+        too_many_bookings_offer.bookingLimitDatetime = datetime.now() + timedelta(minutes=2)
+        app.model.PcObject.check_and_save(too_many_bookings_offer)
+
+        booking_json = {
+            'offerId': humanize(too_many_bookings_offer.id),
+            'recommendationId': humanize(1)
+        }
+
+    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    assert r_create.status_code == 400
+    assert 'global' in r_create.json()
+    assert 'quatité disponible' in r_create.json()['global'][0]
