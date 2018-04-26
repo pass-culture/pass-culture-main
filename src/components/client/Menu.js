@@ -57,8 +57,8 @@ class Menu extends Component {
               Mes réservations
             </NavLink>
           </li>
-          <li className="disabled">
-            <NavLink to="/favoris" onClick={this.onDisableClick}>
+          <li>
+            <NavLink to="/favoris">
               <div className="menu-icon">
                 <Icon svg="ico-like-w" />
               </div>
