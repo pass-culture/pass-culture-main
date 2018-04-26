@@ -5,8 +5,8 @@ from pprint import pformat
 from utils.config import ENV, IS_DEV, IS_STAGING
 import os
 
-MAILJET_API_KEY = os.environ['MAILJET_API_KEY']
-MAILJET_API_SECRET = os.environ['MAILJET_API_SECRET']
+MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
+MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
 
 Offer = app.model.Offer
 
@@ -93,4 +93,3 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
              'Subject': email_subject,
              'Html-part': email_html,
            }
-
