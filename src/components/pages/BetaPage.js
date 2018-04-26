@@ -4,6 +4,7 @@ import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import Icon from '../layout/Icon'
+import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import { closeSplash } from '../../reducers/splash'
 
@@ -15,7 +16,7 @@ class BetaPage extends Component {
 
   render() {
     return (
-      <div className="page beta-page">
+      <PageWrapper name="beta" redBg>
         <h1>
           <strong>Bienvenue</strong>
           <strong>dans l'avant-première</strong>
@@ -24,11 +25,13 @@ class BetaPage extends Component {
         <p>Et merci de votre participation pour nous aider à l'améliorer !</p>
         <footer>
           <Link to="/inscription">
-            C'est par là
-            <Icon svg="ico-next" />
+            <em>
+              C'est par là
+              <Icon svg="ico-next" />
+            </em>
           </Link>
         </footer>
-      </div>
+      </PageWrapper>
     )
   }
 }

@@ -42,7 +42,7 @@ a {
 }
 
 .app {
-  color: $dark-grey;
+  // color: $dark-grey;
   font-family: $font-family;
   min-height: 100vh;
   position: relative;
@@ -61,9 +61,9 @@ a {
   -ms-filter: "FlipH";
 }
 
-.h2 {
-  color: $very-dark-grey;
-}
+// .h2 {
+//   color: $very-dark-grey;
+// }
 
 .input {
   border: $border;
@@ -106,14 +106,14 @@ a {
 }
 
 label {
-  color: $very-dark-grey;
-  text-align: left;
+  // color: $very-dark-grey;
+  // text-align: left;
 }
 
-.page {
-  background-color: $very-very-light-grey;
-  min-height: 100%;
-}
+// .page {
+//   background-color: $very-very-light-grey;
+//   min-height: 100%;
+// }
 
 select {
   border: $border;
@@ -178,4 +178,18 @@ select {
   position: fixed;
   top: 0;
   z-index: 100000;
+}
+
+.markdown {
+  h1 {
+    margin: 0.67em 0;
+  }
+
+  h2 {
+    margin: 0.83em 0;
+  }
+
+  p {
+    margin: 1em 0;
+  }
 }

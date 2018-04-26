@@ -2,6 +2,7 @@ import get from 'lodash.get'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
+import PageWrapper from '../layout/PageWrapper'
 import FormField from '../layout/FormField'
 import SubmitButton from '../layout/SubmitButton'
 import withSign from '../hocs/withSign'
@@ -15,52 +16,52 @@ const Label = ({ title }) => {
 
 const SigninPage = ({ errors }) => {
   return (
-    <main className="page sign-page signin-page red">
-      <form>
-        <div className="form-container">
-          <div className="mt3">
-            <div className="h1 semibold">Bonjour&nbsp;!</div>
-            <div className="h2">
-              Identifiez-vous <br />
-              pour accéder aux offres.
-            </div>
+    <PageWrapper name="sign-in" Tag="form" redBg>
+      <div className="form-container">
+        <div className="mt3">
+          <div className="h1 semibold">Bonjour&nbsp;!</div>
+          <div className="h2">
+            Identifiez-vous <br />
+            pour accéder aux offres.
           </div>
-          <FormField
-            className={inputClassName}
-            type="email"
-            collectionName="users"
-            label={<Label title="Adresse e-mail:" />}
-            name="identifier"
-            placeholder="Identifiant (email)"
-            autoComplete="email"
-          />
-          <FormField
-            className={inputClassName}
-            collectionName="users"
-            label={<Label title="Mot de passe" />}
-            name="password"
-            type="password"
-            placeholder="Mot de passe"
-            autoComplete="current-password"
-          />
-          <div className="sign__error mt1">{errors}</div>
         </div>
-        <footer>
-          <NavLink to="/inscription">Inscription</NavLink>
-          <SubmitButton
-            getBody={form => form.usersById[NEW]}
-            getIsDisabled={form =>
-              !get(form, 'usersById._new_.identifier') ||
-              !get(form, 'usersById._new_.password')
-            }
-            className="button button--primary"
-            path="users/signin"
-            storeKey="users"
-            text="Connexion"
-          />
-        </footer>
-      </form>
-    </main>
+        <FormField
+          className={inputClassName}
+          type="email"
+          collectionName="users"
+          label={<Label title="Adresse e-mail:" />}
+          name="identifier"
+          placeholder="Identifiant (email)"
+          autoComplete="email"
+        />
+        <FormField
+          className={inputClassName}
+          collectionName="users"
+          label={<Label title="Mot de passe" />}
+          name="password"
+          type="password"
+          placeholder="Mot de passe"
+          autoComplete="current-password"
+        />
+        <div className="sign__error mt1">{errors}</div>
+      </div>
+      <footer>
+        <SubmitButton
+          getBody={form => form.usersById[NEW]}
+          getIsDisabled={form =>
+            !get(form, 'usersById._new_.identifier') ||
+            !get(form, 'usersById._new_.password')
+          }
+          className="button button--primary"
+          path="users/signin"
+          storeKey="users"
+          text="Connexion"
+        />
+        <NavLink to="/inscription">
+          <strong>Inscription</strong>
+        </NavLink>
+      </footer>
+    </PageWrapper>
   )
 }
 

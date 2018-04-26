@@ -181,7 +181,7 @@ class Deck extends Component {
           </button>
         )}
         <div
-          className={classnames('loading flex items-center justify-center', {
+          className={classnames('loading', {
             shown: !currentRecommendation,
           })}
         >

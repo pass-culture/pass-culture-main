@@ -16,12 +16,12 @@
   text-decoration: none;
   text-align: center;
   transition: all 0.4s ease-out;
-  @media (min-width: $mini) {
-    font-size: 14px;
-  }
-  @media (min-width: $lg) {
-    font-size: 18px;
-  }
+  // @media (min-width: $mini) {
+  //   font-size: 14px;
+  // }
+  // @media (min-width: $lg) {
+  //   font-size: 18px;
+  // }
   &--alive {
     &:hover,
     &:focus {

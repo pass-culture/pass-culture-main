@@ -57,12 +57,12 @@ class Menu extends Component {
               Mes réservations
             </NavLink>
           </li>
-          <li className="disabled">
-            <NavLink to="/favoris" onClick={this.onDisableClick}>
+          <li>
+            <NavLink to="/favoris">
               <div className="menu-icon">
                 <Icon svg="ico-like-w" />
               </div>
-              Mes favoris
+              Mes préférés
             </NavLink>
           </li>
           <li className="disabled">
@@ -81,15 +81,23 @@ class Menu extends Component {
               Mon profil
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/mentions-legales">
+              <div className="menu-icon">
+                <Icon svg="ico-settings-w" />
+              </div>
+              Mentions légales
+            </NavLink>
+          </li>
+          <li>
+            <a onClick={this.onSignOutClick}>
+              <div className="menu-icon">
+                <Icon svg="ico-deconnect-w" />
+              </div>
+              Déconnexion
+            </a>
+          </li>
         </ul>
-        <div className="stick-to-bottom">
-          <button onClick={this.onSignOutClick} className="button">
-            <div className="menu-icon">
-              <Icon svg="ico-deconnect-w" />
-            </div>
-            Déconnexion
-          </button>
-        </div>
       </div>
     )
   }

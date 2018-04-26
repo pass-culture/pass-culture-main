@@ -4,7 +4,7 @@
     width: 100%;
     position: relative;
     padding-bottom: 1rem;
-    
+
     &:after {
       content: '';
       border-bottom: thin solid #990026;
@@ -55,20 +55,28 @@
 
   ul {
     list-style: none;
-    padding-bottom: 2.7rem;
+    // padding-bottom: 2.7rem;
     margin-left: -6px;
+    margin-bottom: -1rem;
     li {
       @include dotted($text-color);
       &:first-child {
         background: none;
       }
+      &:last-child {
+        background-color: rgba($black, 0.2);
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding: 0 1rem;
+      }
     }
   }
-  a, button {
+  a {
     background-color: transparent;
     border: none;
     text-align: left;
     display: block;
+    width: 100%;
     line-height: 2rem;
     font-size: 1.1875rem;
     font-weight: 400;
@@ -87,21 +95,5 @@
         vertical-align: middle;
       }
     }
-  }
-
-  button {
-    margin-bottom: -12px;
-    margin-top: -4px;
-  }
-
-  .stick-to-bottom {
-    position: absolute;
-    bottom: -1rem;
-    right: -1rem;
-    left: -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    background-color: rgba($black, 0.2);
-    margin-left: -6px;
   }
 }

@@ -16,13 +16,14 @@ import { requestData } from '../../reducers/data'
 import { showModal } from '../../reducers/modal'
 
 class ControlBar extends Component {
+
   onClickDisable = event => {
     alert('Pas encore disponible')
     event.preventDefault()
   }
 
-  onClickFavorite(type) {
-    this.props.requestData('POST', 'recommendations', {
+  onClickFavorite = () => {
+    this.props.requestData('PUT', 'recommendations', {
       body: [
         {
           id: this.props.recommendation.id,
@@ -33,7 +34,7 @@ class ControlBar extends Component {
     })
   }
 
-  onClickShare() {
+  onClickShare = () => {
     // TODO
   }
 
@@ -65,7 +66,7 @@ class ControlBar extends Component {
         <li>
           <button
             className="button button--secondary disabled"
-            onClick={this.onClickDisable}
+            onClick={this.onClickFavorite}
           >
             <Icon svg={isFavorite ? 'ico-like-w' : 'ico-like-w'} />
           </button>

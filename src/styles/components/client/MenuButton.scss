@@ -1,13 +1,37 @@
 .menu-button {
-  position: absolute;
-  padding: 3px 0;
-  bottom: -1px;
-  left: 0;
-  right: 0;
+
+  .button-wrapper {
+    margin: 5px 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    button {
+      border: 0;
+      border-radius: 50%;
+      height: 100%;
+      width: $footer-height;
+      cursor: pointer;
+      display: block;
+      background: none;
+      margin: auto;
+      &:focus {
+        outline: none;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 50%;
+      }
+    }
+  }
 
   &.bordered {
     @include dotted($menu-red);
-    // border-top: thin dotted rgba($white, 0.25);
   }
 
   &.colored {
@@ -17,28 +41,6 @@
     }
     button {
       background-color: white;
-    }
-  }
-
-  button {
-    border: 0;
-    border-radius: 50%;
-    height: 2.8rem;
-    width: 2.8rem;
-    margin: 0 auto;
-    cursor: pointer;
-    display: block;
-    background: none;
-    &:focus {
-      outline: none;
-    }
-
-    img {
-      width: 100%;
-      height: auto;
-      max-width: 100%;
-      max-height: 100%;
-      border-radius: 50%;
     }
   }
 }
