@@ -5,6 +5,7 @@ import traceback
 
 from utils.mailing import send_booking_recap_emails
 
+EventOccurence = app.model.EventOccurence
 Offer = app.model.Offer
 
 
@@ -19,7 +20,10 @@ def send_final_booking_recaps():
 
 
 def do_send_final_booking_recaps():
-    for offer in Offer.query.filter((Offer.bookingLimitDatetime < datetime.now()) &\
+    for offer in Offer.query.outerjoin(EventOccurence)\
+                            .filter((datetime.now() > Offer.bookingLimitDatetime) &
+                                    ((Offer.eventOccurenceId == None) |
+                                     (EventOccurence.beginningDatetime > datetime.now())) &
                                     (Offer.bookingRecapSent == None)):
         print('Sending booking recap for ' + str(offer))
         send_booking_recap_emails(offer)
