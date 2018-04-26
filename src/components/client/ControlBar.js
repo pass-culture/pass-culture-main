@@ -16,12 +16,13 @@ import { requestData } from '../../reducers/data'
 import { showModal } from '../../reducers/modal'
 
 class ControlBar extends Component {
+
   onClickDisable = event => {
     alert('Pas encore disponible')
     event.preventDefault()
   }
 
-  onClickFavorite(type) {
+  onClickFavorite = () => {
     this.props.requestData('POST', 'recommendations', {
       body: [
         {
@@ -33,7 +34,7 @@ class ControlBar extends Component {
     })
   }
 
-  onClickShare() {
+  onClickShare = () => {
     // TODO
   }
 
