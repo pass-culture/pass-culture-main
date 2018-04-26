@@ -1,9 +1,10 @@
+""" mailing """
 from datetime import datetime
-from flask import current_app as app
-from mailjet_rest import Client
-from pprint import pformat
-from utils.config import ENV, IS_DEV, IS_STAGING
 import os
+from flask import current_app as app
+from pprint import pformat
+from mailjet_rest import Client
+from utils.config import ENV, IS_DEV, IS_STAGING
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
