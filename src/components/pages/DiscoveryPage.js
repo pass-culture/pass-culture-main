@@ -54,7 +54,7 @@ class DiscoveryPage extends Component {
 
   render() {
     return (
-      <PageWrapper name='discovery' noPadding menuButton={{borderTop: true}}>
+      <PageWrapper name="discovery" noPadding menuButton={{ borderTop: true }}>
         <Deck />
       </PageWrapper>
     )

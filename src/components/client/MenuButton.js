@@ -29,7 +29,7 @@ class MenuButton extends Component {
         })}
         style={style}
       >
-        <div className='button-wrapper'>
+        <div className="button-wrapper">
           <button onClick={this.onClick}>
             <ProfilePicture {...maybeColored} />
           </button>

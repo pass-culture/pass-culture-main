@@ -16,7 +16,7 @@ class BetaPage extends Component {
 
   render() {
     return (
-      <PageWrapper name='beta' redBg>
+      <PageWrapper name="beta" redBg>
         <h1>
           <strong>Bienvenue</strong>
           <strong>dans l'avant-première</strong>

@@ -22,7 +22,7 @@ class BookingsPage extends Component {
   render() {
     const { soonBookings, otherBookings } = this.props.bookingsByTime
     return (
-      <PageWrapper name='bookings' redBg menuButton={{borderTop: true}}>
+      <PageWrapper name="bookings" redBg menuButton={{ borderTop: true }}>
         <header>Mes réservations</header>
         {soonBookings.length > 0 && (
           <div>

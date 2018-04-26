@@ -21,7 +21,7 @@ const BookingItem = props => {
   const { mediation, offer, thumbUrl, token } = props
   const date = get(offer, 'eventOccurence.beginningDatetime')
   return (
-    <li className='booking-item'>
+    <li className="booking-item">
       <Link to={`${getDiscoveryPath(offer, mediation)}?to=verso`}>
         <Thumb src={thumbUrl} withMediation={mediation} />
         <div className="infos">

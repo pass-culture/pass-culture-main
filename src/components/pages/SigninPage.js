@@ -16,7 +16,7 @@ const Label = ({ title }) => {
 
 const SigninPage = ({ errors }) => {
   return (
-    <PageWrapper name='sign-in' Tag='form' redBg>
+    <PageWrapper name="sign-in" Tag="form" redBg>
       <div className="form-container">
         <div className="mt3">
           <div className="h1 semibold">Bonjour&nbsp;!</div>
@@ -57,7 +57,9 @@ const SigninPage = ({ errors }) => {
           storeKey="users"
           text="Connexion"
         />
-        <NavLink to="/inscription"><strong>Inscription</strong></NavLink>
+        <NavLink to="/inscription">
+          <strong>Inscription</strong>
+        </NavLink>
       </footer>
     </PageWrapper>
   )

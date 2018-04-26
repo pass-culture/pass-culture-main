@@ -22,27 +22,25 @@ class FavoritesPage extends Component {
   render() {
     const { favorites } = this.props
     return (
-      <PageWrapper name='favorites' redBg menuButton={{borderTop: true}}>
+      <PageWrapper name="favorites" redBg menuButton={{ borderTop: true }}>
         <header>Mes favoris</header>
         {favorites.length > 0 && (
           <div>
             <ul className="favorites">
-              {favorites.map((b, index) => (
-                <BookingItem key={index} {...b} />
-              ))}
+              {favorites.map((b, index) => <BookingItem key={index} {...b} />)}
             </ul>
           </div>
         )}
         {favorites.length === 0 && (
-            <div>
-              <p className="nothing">Pas encore de favoris.</p>
-              <p className="nothing">
-                <Link to="/decouverte" className="button button--primary">
-                  Allez-y !
-                </Link>
-              </p>
-            </div>
-          )}
+          <div>
+            <p className="nothing">Pas encore de favoris.</p>
+            <p className="nothing">
+              <Link to="/decouverte" className="button button--primary">
+                Allez-y !
+              </Link>
+            </p>
+          </div>
+        )}
       </PageWrapper>
     )
   }

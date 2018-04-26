@@ -24,7 +24,7 @@ const Label = ({ isJumpLine, subtitle, title }) => (
 
 const SignupPage = ({ errors }) => {
   return (
-    <PageWrapper name='sign-up' Tag='form'>
+    <PageWrapper name="sign-up" Tag="form">
       <div className="form-container">
         <p className="h2-black">
           Une minute pour créer un compte, et puis c'est tout !
@@ -101,7 +101,9 @@ const SignupPage = ({ errors }) => {
           path="users"
           storeKey="users"
         />
-        <NavLink to="/connexion"><strong>J'ai déjà un compte</strong></NavLink>
+        <NavLink to="/connexion">
+          <strong>J'ai déjà un compte</strong>
+        </NavLink>
       </footer>
     </PageWrapper>
   )

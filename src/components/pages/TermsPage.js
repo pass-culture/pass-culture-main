@@ -54,9 +54,9 @@ feugiat orci ut diam ullamcorper consequat.
 class TermsPage extends Component {
   render() {
     return (
-      <PageWrapper name='terms' menuButton={{borderTop: true, colored: true}}>
+      <PageWrapper name="terms" menuButton={{ borderTop: true, colored: true }}>
         <header>Mentions légales</header>
-        <div className='markdown'>
+        <div className="markdown">
           <ReactMarkdown source={mardownContent} />
         </div>
       </PageWrapper>
