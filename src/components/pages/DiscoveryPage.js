@@ -54,7 +54,7 @@ class DiscoveryPage extends Component {
 
   render() {
     return (
-      <PageWrapper name="discovery" noPadding menuButton={{ borderTop: true }}>
+      <PageWrapper name="discovery" noPadding menuButton={{ borderTop: true }} backButton={this.props.backButton ? {className: 'discovery'} : null}>
         <Deck />
       </PageWrapper>
     )
@@ -63,12 +63,9 @@ class DiscoveryPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
-  withBackButton(
-    state => ({
-      isActive: state.router.location.search.indexOf('to=verso') > -1,
-    }),
-    'verso-btn'
-  ),
   withRouter,
-  connect(state => ({ recommendations: state.data.recommendations }))
+  connect(state => ({
+    backButton: state.router.location.search.indexOf('to=verso') > -1,
+    recommendations: state.data.recommendations,
+  }))
 )(DiscoveryPage)

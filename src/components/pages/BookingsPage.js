@@ -22,7 +22,7 @@ class BookingsPage extends Component {
   render() {
     const { soonBookings, otherBookings } = this.props.bookingsByTime
     return (
-      <PageWrapper name="bookings" redBg menuButton={{ borderTop: true }}>
+      <PageWrapper name="bookings" redBg menuButton={{ borderTop: true }} backButton>
         <header>Mes réservations</header>
         {soonBookings.length > 0 && (
           <div>
@@ -62,7 +62,6 @@ class BookingsPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
-  withBackButton(),
   connect(
     state => ({
       bookingsByTime: selectBookingsByTime(state),

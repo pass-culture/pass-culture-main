@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
 import ReactMarkdown from 'react-markdown'
 
 import PageWrapper from '../layout/PageWrapper'
@@ -54,7 +52,7 @@ feugiat orci ut diam ullamcorper consequat.
 class TermsPage extends Component {
   render() {
     return (
-      <PageWrapper name="terms" menuButton={{ borderTop: true, colored: true }}>
+      <PageWrapper name="terms" menuButton={{ borderTop: true, colored: true }} backButton>
         <header>Mentions légales</header>
         <div className="markdown">
           <ReactMarkdown source={mardownContent} />
@@ -64,4 +62,4 @@ class TermsPage extends Component {
   }
 }
 
-export default compose(withBackButton(), connect())(TermsPage)
+export default TermsPage

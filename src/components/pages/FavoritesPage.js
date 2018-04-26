@@ -22,7 +22,7 @@ class FavoritesPage extends Component {
   render() {
     const { favorites } = this.props
     return (
-      <PageWrapper name="favorites" redBg menuButton={{ borderTop: true }}>
+      <PageWrapper name="favorites" redBg menuButton={{ borderTop: true }} backButton>
         <header>Mes favoris</header>
         {favorites.length > 0 && (
           <div>
@@ -48,7 +48,6 @@ class FavoritesPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
-  withBackButton(),
   connect(
     state => ({
       favorites: state.data.favorites || [],

@@ -2,9 +2,10 @@ import classnames from 'classnames'
 import React from 'react'
 
 import MenuButton from '../client/MenuButton'
+import BackButton from '../layout/BackButton'
 
 const PageWrapper = props => {
-  const { Tag, name, redBg, noPadding, menuButton, children } = props
+  const { Tag, name, redBg, noPadding, menuButton, backButton, children } = props
   const header = [].concat(children).find(e => e.type === 'header')
   const footer = [].concat(children).find(e => e.type === 'footer')
   const content = []
@@ -22,6 +23,7 @@ const PageWrapper = props => {
       })}
     >
       {header}
+      {backButton && <BackButton {...backButton} />}
       <div className="page-content">{content}</div>
       {footer || (menuButton && <MenuButton {...menuButton} />)}
     </Tag>
