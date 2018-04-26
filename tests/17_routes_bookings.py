@@ -88,6 +88,7 @@ def test_13_create_booking_should_not_work_if_too_many_bookings():
         import models
         too_many_bookings_offer = app.model.Offer()
         too_many_bookings_offer.venueId = 1
+        too_many_bookings_offer.offererId = 1
         too_many_bookings_offer.thingId = 1
         too_many_bookings_offer.price = 0
         too_many_bookings_offer.available = 0

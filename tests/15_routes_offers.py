@@ -69,6 +69,7 @@ def test_14_update_offer_available_should_check_bookings():
         import models
         offer = app.model.Offer()
         offer.venueId = 1
+        offer.offererId = 1
         offer.thingId = 1
         offer.price = 0
         offer.available = 1
