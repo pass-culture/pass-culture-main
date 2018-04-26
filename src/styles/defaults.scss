@@ -179,3 +179,17 @@ select {
   top: 0;
   z-index: 100000;
 }
+
+.markdown {
+  h1 {
+    margin: 0.67em 0;
+  }
+
+  h2 {
+    margin: 0.83em 0;
+  }
+
+  p {
+    margin: 1em 0;
+  }
+}

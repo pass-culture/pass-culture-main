@@ -62,7 +62,7 @@ class Menu extends Component {
               <div className="menu-icon">
                 <Icon svg="ico-like-w" />
               </div>
-              Mes favoris
+              Mes préférés
             </NavLink>
           </li>
           <li className="disabled">
@@ -79,6 +79,14 @@ class Menu extends Component {
                 <Icon svg="ico-user-w" />
               </div>
               Mon profil
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/mentions-legales">
+              <div className="menu-icon">
+                <Icon svg="ico-settings-w" />
+              </div>
+              Mentions légales
             </NavLink>
           </li>
         </ul>
