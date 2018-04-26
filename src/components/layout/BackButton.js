@@ -5,8 +5,14 @@ import { compose } from 'redux'
 
 import Icon from '../layout/Icon'
 
-
-const BackButton = ({ history, match, location, staticContext, className, ...otherProps }) => {
+const BackButton = ({
+  history,
+  match,
+  location,
+  staticContext,
+  className,
+  ...otherProps
+}) => {
   return (
     <button
       className={classnames('back-button', className)}
@@ -18,6 +24,4 @@ const BackButton = ({ history, match, location, staticContext, className, ...oth
   )
 }
 
-export default compose(
-  withRouter
-)(BackButton)
+export default compose(withRouter)(BackButton)

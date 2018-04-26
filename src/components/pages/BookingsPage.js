@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import BookingItem from '../client/BookingItem'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
-import withBackButton from '../hocs/withBackButton'
 import { requestData } from '../../reducers/data'
 import selectBookingsByTime from '../../selectors/bookingsByTime'
 
@@ -22,7 +21,12 @@ class BookingsPage extends Component {
   render() {
     const { soonBookings, otherBookings } = this.props.bookingsByTime
     return (
-      <PageWrapper name="bookings" redBg menuButton={{ borderTop: true }} backButton>
+      <PageWrapper
+        name="bookings"
+        redBg
+        menuButton={{ borderTop: true }}
+        backButton
+      >
         <header>Mes réservations</header>
         {soonBookings.length > 0 && (
           <div>

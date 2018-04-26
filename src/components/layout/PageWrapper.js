@@ -5,7 +5,15 @@ import MenuButton from '../client/MenuButton'
 import BackButton from '../layout/BackButton'
 
 const PageWrapper = props => {
-  const { Tag, name, redBg, noPadding, menuButton, backButton, children } = props
+  const {
+    Tag,
+    name,
+    redBg,
+    noPadding,
+    menuButton,
+    backButton,
+    children,
+  } = props
   const header = [].concat(children).find(e => e.type === 'header')
   const footer = [].concat(children).find(e => e.type === 'footer')
   const content = []

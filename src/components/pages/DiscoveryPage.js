@@ -6,7 +6,6 @@ import { compose } from 'redux'
 import Deck from '../client/Deck'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
-import withBackButton from '../hocs/withBackButton'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
@@ -54,7 +53,12 @@ class DiscoveryPage extends Component {
 
   render() {
     return (
-      <PageWrapper name="discovery" noPadding menuButton={{ borderTop: true }} backButton={this.props.backButton ? {className: 'discovery'} : null}>
+      <PageWrapper
+        name="discovery"
+        noPadding
+        menuButton={{ borderTop: true }}
+        backButton={this.props.backButton ? { className: 'discovery' } : null}
+      >
         <Deck />
       </PageWrapper>
     )

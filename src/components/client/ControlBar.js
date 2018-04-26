@@ -16,7 +16,6 @@ import { requestData } from '../../reducers/data'
 import { showModal } from '../../reducers/modal'
 
 class ControlBar extends Component {
-
   onClickDisable = event => {
     alert('Pas encore disponible')
     event.preventDefault()

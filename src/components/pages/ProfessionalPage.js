@@ -6,7 +6,7 @@ import PageWrapper from '../layout/PageWrapper'
 
 const ProfessionalPage = () => {
   return (
-    <PageWrapper name='professional' >
+    <PageWrapper name="professional">
       <div className="h2 mt2">Mes offres</div>
       <OfferersGrid />
     </PageWrapper>

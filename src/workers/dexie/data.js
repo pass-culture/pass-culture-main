@@ -95,8 +95,9 @@ export async function putData(
       const putDatum = Object.assign({}, localStoredDatum, datum)
       delete datum._storedDatum
       if (putDatum[description]) {
-        await table.put(putDatum[description], putDatum)
-                   .catch(error => console.warn(error))
+        await table
+          .put(putDatum[description], putDatum)
+          .catch(error => console.warn(error))
       }
     } else {
       await table.add(datum)

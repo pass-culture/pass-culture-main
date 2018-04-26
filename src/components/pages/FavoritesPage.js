@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import BookingItem from '../client/BookingItem'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
-import withBackButton from '../hocs/withBackButton'
 import { requestData } from '../../reducers/data'
 
 class FavoritesPage extends Component {
@@ -22,7 +21,12 @@ class FavoritesPage extends Component {
   render() {
     const { favorites } = this.props
     return (
-      <PageWrapper name="favorites" redBg menuButton={{ borderTop: true }} backButton>
+      <PageWrapper
+        name="favorites"
+        redBg
+        menuButton={{ borderTop: true }}
+        backButton
+      >
         <header>Mes favoris</header>
         {favorites.length > 0 && (
           <div>
