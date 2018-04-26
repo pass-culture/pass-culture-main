@@ -76,11 +76,15 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
 
         if len(offer.bookings) > 0:
             email_html += '<table>'
-            email_html += '<tr><th>Nom ou pseudo</th><th>Email</th></tr>'
+            email_html += '<tr><th>Nom ou pseudo</th>'\
+                            + '<th>Email</th>'\
+                            + '<th>Code réservation</th>'\
+                          '</tr>'
             for a_booking in offer.bookings:
                 email_html += '<tr>'\
                               + '<td>%s</td>' % a_booking.user.publicName\
                               + '<td>%s</td>' % a_booking.user.email\
+                              + '<td>%s</td>' % a_booking.token\
                             + '</tr>'
             email_html += '</table>'
         else:
