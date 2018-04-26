@@ -1,5 +1,6 @@
+""" offerers """
 from base64 import b64decode
-from flask import abort, current_app as app, jsonify, request
+from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from utils.human_ids import dehumanize, humanize
@@ -9,10 +10,12 @@ from utils.rest import handle_rest_get_list, login_or_api_key_required
 Offerer = app.model.Offerer
 UserOfferer = app.model.UserOfferer
 RightsType = app.model.RightsType
+User = app.model.User
 
 
 def check_offerer_user(query):
-    query.userOfferers.filter_by(userId=current_user.id).first_or_404()
+    return query.filter(Offerer.users.any(User.id == current_user.id))\
+                .first_or_404()
 
 
 offerer_include = [

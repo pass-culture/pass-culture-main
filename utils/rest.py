@@ -31,7 +31,6 @@ def login_or_api_key_required(f):
     def wrapper(*args, **kwds):
         request.provider = get_provider_from_api_key()
         if request.provider is None:
-            print(current_user)
             if not current_user.is_authenticated:
                 return "API key or login required", 403
         return f(*args, **kwds)
