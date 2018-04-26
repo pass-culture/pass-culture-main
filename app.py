@@ -1,8 +1,14 @@
 import os
+from os.path import isfile, join
+from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 
 from utils.config import IS_DEV
+
+env_file_dir = join(os.getcwd(), 'env_file')
+if isfile(env_file_dir):
+    load_dotenv(dotenv_path=env_file_dir)
 
 app = Flask(__name__, static_url_path='/static')
 

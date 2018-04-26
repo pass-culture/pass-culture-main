@@ -19,6 +19,7 @@ pandas
 PostgreSQL-Audit
 psycopg2-binary
 pytest
+python-dotenv
 requests
 simplejson
 wetransferpy
