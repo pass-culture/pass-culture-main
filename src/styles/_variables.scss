@@ -1,0 +1,19 @@
+$menu-red: #e60039;
+
+$primary: $menu-red;
+
+@import '~bulma/sass/utilities/initial-variables';
+
+$text: $black;
+$link: $text;
+$text-strong: inherit;
+
+$family-sans-serif: "Barlow", "Helvetica Neue", Arial, sans-serif;
+
+$weight-bold: 500;
+$body-line-height: initial;
+
+$input-border-color: $primary;
+$input-focus-border-color: $primary;
+$input-hover-border-color: $primary;
+$input-disabled-border-color: $primary;

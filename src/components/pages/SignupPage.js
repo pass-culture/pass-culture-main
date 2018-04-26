@@ -9,16 +9,10 @@ import SubmitButton from '../layout/SubmitButton'
 import withSign from '../hocs/withSign'
 import { NEW } from '../../utils/config'
 
-const Label = ({ isJumpLine, subtitle, title }) => (
-  <div
-    className={classnames('mb1', {
-      'left left-align': isJumpLine,
-      'flex col-12 items-baseline': !isJumpLine,
-    })}
-  >
-    <span className="h3 mr3"> {title} </span> {isJumpLine && <br />}
-    {!isJumpLine && <div className="flex-auto" />}
-    <span className="h4"> {subtitle} </span>
+const Label = ({ subtitle, title, inline }) => (
+  <div className={inline && 'inline'}>
+    <h3>{title}</h3>
+    <p>{subtitle}</p>
   </div>
 )
 
@@ -26,14 +20,13 @@ const SignupPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-up" Tag="form">
       <div className="form-container">
-        <p className="h2-black">
+        <h2>
           Une minute pour créer un compte, et puis c'est tout !
-        </p>
+        </h2>
         <FormField
           className="input"
           label={
             <Label
-              isJumpLine
               title="Identifiant"
               subtitle="...que verront les autres utilisateurs:"
             />
@@ -49,7 +42,6 @@ const SignupPage = ({ errors }) => {
           className="input"
           label={
             <Label
-              isJumpLine
               title="Adresse e-mail"
               subtitle="...pour se connecter et récupérer son mot de passe en cas d'oubli:"
             />
@@ -64,7 +56,7 @@ const SignupPage = ({ errors }) => {
         <FormField
           className="input"
           label={
-            <Label title="Mot de passe" subtitle="...pour se connecter:" />
+            <Label title="Mot de passe" subtitle="...pour se connecter:" inline />
           }
           collectionName="users"
           required="true"
@@ -75,11 +67,11 @@ const SignupPage = ({ errors }) => {
         />
         <FormField
           label={
-            <span className="h4">
+            <h4>
               {' '}
               J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
               <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.
-            </span>
+            </h4>
           }
           collectionName="users"
           required="true"

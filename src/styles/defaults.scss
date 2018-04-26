@@ -33,12 +33,12 @@ body {
 }
 
 a {
-  background-color: transparent;
-  border: none;
-  text-align: left;
-  font-size: 1.2rem;
-  padding: 0.5rem;
-  color: $white;
+  // background-color: transparent;
+  // border: none;
+  // text-align: left;
+  // font-size: 1.2rem;
+  // padding: 0.5rem;
+  // color: $white;
 }
 
 .app {
@@ -81,6 +81,7 @@ a {
     border: $border;
     border-radius: 4px !important;
     width: 25px;
+    height: 25px;
     display: inline-block;
     padding: 9px;
     position: relative;

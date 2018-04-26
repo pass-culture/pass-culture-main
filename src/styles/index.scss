@@ -1,7 +1,8 @@
+@import './_variables.scss';
+@import './vendors/index.scss';
 @import 'mixins/dotted.scss';
 @import 'colors.scss';
-@import 'variables.scss';
-@import './vendors/index.scss';
+@import 'variables-old.scss';
 @import 'defaults.scss';
 @import 'buttons.scss';
 @import 'typography.scss';

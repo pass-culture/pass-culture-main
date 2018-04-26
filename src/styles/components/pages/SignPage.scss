@@ -3,44 +3,44 @@
   font-size: 1.2rem;
   flex-direction: column;
 
-  .form-input {
-    margin-top: 1.5rem;
-  }
-
   .form-container {
     display: flex;
     flex-direction: column;
     min-height: 100%;
     overflow-y: auto;
-    // padding: 1.5rem;
     justify-content: center;
     flex: 1;
   }
 
-  .h1 {
-    font-weight: 800;
+  .form-input {
+    margin-top: 1.5rem;
+  }
+
+  h2 {
     font-style: italic;
   }
 
-  .h2 {
-    font-weight: 500;
-    font-style: italic;
-    color: white;
-    margin-top: 6px;
+  label {
+    margin-bottom: 0.5rem;
+
+    p {
+      font-size: 1rem;
+    }
+
+    .inline {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
   }
 
-  .h2-black {
-    font-weight: 500;
-    font-style: italic;
-    color: black;
-    margin-top: 6px;
+  h4 {
+    font-size: 1rem;
   }
 
-  label .h4 {
-   line-height: 1.1875rem;
-   display: block;
+  a {
+    text-decoration: underline;
   }
-
 
   &.signin-page form {
     .form-input {
@@ -48,12 +48,6 @@
     }
   }
 
-  a {
-    color: $black;
-    font-weight: 700;
-    font-size: 1.3rem;
-    padding: 0;
-  }
 
   footer {
     display: flex;
@@ -65,16 +59,16 @@
     }
   }
 
-  span {
-    a {
-      font-size: 1em;
-      font-weight: 400;
-    }
-  }
+  // span {
+  //   a {
+  //     font-size: 1em;
+  //     font-weight: 400;
+  //   }
+  // }
 
-  p {
-    font-weight: 500;
-  }
+  // p {
+  //   font-weight: 500;
+  // }
 
   .errors {
     color: $menu-red;
