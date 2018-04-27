@@ -53,7 +53,7 @@ class BookingsPage extends Component {
             <div>
               <p className="nothing">Pas encore de réservation.</p>
               <p className="nothing">
-                <Link to="/decouverte" className="button button--primary">
+                <Link to="/decouverte" className="button is-primary">
                   Allez-y !
                 </Link>
               </p>
