@@ -11,9 +11,9 @@ html {
 body {
   width: 100%;
   max-width: 500px;
-  margin: 0 auto;
   min-height: 100%;
-  font-size: 16px;
+  margin: 0 auto;
+  font-size: $font-size;
   -webkit-tap-highlight-color: rgba($white, 0);
   -webkit-tap-highlight-color: transparent;
   -moz-tap-highlight-color: rgba($white, 0);

@@ -1,24 +1,16 @@
-// Responsiveness
+@import '~bulma/sass/utilities/initial-variables';
 
-// The container horizontal gap, which acts as the offset for breakpoints
+// Responsive breakpoints
 $gap: 64px;
-// 960, 1152, and 1344 have been chosen because they are divisible by both 12 and 16
 $tablet: 769px;
-// 960px container + 4rem
-$desktop: 960px + (2 * $gap);
-// 1152px container + 4rem
-$widescreen: 1152px + (2 * $gap);
-$widescreen-enabled: true;
-// 1344px container + 4rem
-$fullhd: 1344px + (2 * $gap);
-$fullhd-enabled: true;
+$desktop: 960px + (2 * $gap); // 1088px
+$widescreen: 1152px + (2 * $gap); // 1280px
+$fullhd: 1344px + (2 * $gap); // 1472px
 
 // Colors
 $menu-red: #e60039;
 
 $primary: $menu-red;
-
-@import '~bulma/sass/utilities/initial-variables';
 
 $text: $black;
 $link: $text;
@@ -26,12 +18,19 @@ $title-color: inherit;
 $subtitle-color: inherit;
 $text-strong: inherit;
 
-
+// Typography
 $family-sans-serif: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
 
 $weight-normal: 400;
 $weight-semi-bold: 500;
 $weight-bold: 700;
+
+$font-size: 16px; // Single px-value. Use `rem` or `em` every elsewhere.
+
+$size-large: 2rem;
+$size-medium: 1.2rem;
+$size-normal: 1rem;
+$size-small: 0.75rem;
 
 $size-1: 2rem;
 $size-2: 1.5rem;
@@ -40,11 +39,11 @@ $size-4: 1.2rem;
 $size-5: 1.1rem;
 $size-6: 1rem;
 $size-7: 0.75rem;
-$size-medium: 1.2rem;
 
 $body-line-height: initial;
 $subtitle-line-height: initial;
 
+// Forms
 $control-border-width: 2px;
 $input-border-color: $primary;
 $input-focus-border-color: $primary;
@@ -53,12 +52,24 @@ $input-disabled-border-color: $primary;
 $input-focus-box-shadow-size: 0;
 $input-shadow: none;
 
+// Buttons
 $button-padding-vertical: 0.1em;
 $button-padding-horizontal: 0.75em;
 
-$section-padding: 0 0 1rem 0;
-
 $radius: 2rem;
 $radius-small: 4px;
+$radius-medium: 1rem;
 
 $button-disabled-opacity: 0.3;
+
+// Spacing
+$section-padding: 0 0 1rem 0;
+$page-padding: 1.5rem;
+$footer-height-padding: 1rem;
+
+$header-height: 3.5rem;
+$footer-height: 3.5rem;
+
+// Misc
+$box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+$box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
