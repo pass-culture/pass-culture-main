@@ -5,8 +5,8 @@ export default ({ finished, children }) => {
   if (finished) {
     return (
       <div className="finishable">
-        <Icon svg="badge-termine" className="finish-icon" />
         {children}
+        <Icon svg="badge-termine" className="finish-icon" />
       </div>
     )
   }

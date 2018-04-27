@@ -1,3 +1,4 @@
+
 @keyframes fadeIn {
   from {opacity: 0;}
   to {opacity: 1;}
@@ -81,6 +82,9 @@
       font-family: $font-family;
       font-weight: 500;
       height: 100%;
+      overflow: visible;
+      margin-left: 0;
+      max-height: none;
     }
   }
 }

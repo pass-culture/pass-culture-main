@@ -65,16 +65,16 @@ class Menu extends Component {
               Mes préférés
             </NavLink>
           </li>
-          <li className="disabled">
-            <NavLink to="/reglages" onClick={this.onDisableClick}>
+          <li>
+            <NavLink to="/reglages" onClick={this.onDisableClick} disabled>
               <div className="menu-icon">
                 <Icon svg="ico-settings-w" />
               </div>
               Réglages
             </NavLink>
           </li>
-          <li className="disabled">
-            <NavLink to="/profil" onClick={this.onDisableClick}>
+          <li>
+            <NavLink to="/profil" onClick={this.onDisableClick} disabled>
               <div className="menu-icon">
                 <Icon svg="ico-user-w" />
               </div>

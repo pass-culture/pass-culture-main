@@ -216,7 +216,7 @@ class Booking extends Component {
                 <button
                   className={classnames({
                     button: true,
-                    'button--primary': true,
+                    'is-primary': true,
                     hidden: !dateOk,
                   })}
                   onClick={this.makeBooking}
@@ -226,7 +226,7 @@ class Booking extends Component {
               </li>,
               <li key="cancel">
                 <button
-                  className="button button--secondary"
+                  className="button is-secondary"
                   onClick={e => this.props.closeModal()}
                 >
                   Annuler
@@ -241,7 +241,7 @@ class Booking extends Component {
             {step === 'confirmation' && (
               <li>
                 <button
-                  className="button button--secondary"
+                  className="button is-secondary"
                   onClick={e => this.props.closeModal()}
                 >
                   OK

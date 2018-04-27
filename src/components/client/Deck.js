@@ -187,7 +187,7 @@ class Deck extends Component {
         >
           <div>
             <Icon draggable={false} svg="ico-loading-card" />
-            <div className="h2">chargement des offres</div>
+            <h2 className="subtitle is-2">chargement des offres</h2>
           </div>
         </div>
         <Draggable

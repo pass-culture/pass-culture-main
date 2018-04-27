@@ -51,7 +51,7 @@
     }
   }
 
-  .content {
+  .verso-content {
     background-color: white;
     padding-bottom: 68px; // dirty
     flex: 1;
@@ -80,6 +80,7 @@
 
     ul.address-info {
       list-style: none;
+      margin-left: 0;
     }
   }
 }

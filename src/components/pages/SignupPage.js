@@ -20,7 +20,7 @@ const SignupPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-up" Tag="form">
       <div className="form-container">
-        <h2>
+        <h2 className='subtitle is-italic'>
           Une minute pour créer un compte, et puis c'est tout !
         </h2>
         <FormField
@@ -83,7 +83,7 @@ const SignupPage = ({ errors }) => {
       <footer>
         <SubmitButton
           text="Créer"
-          className="button button--primary"
+          className="button is-primary is-inverted is-medium"
           getBody={form => form.usersById[NEW]}
           getIsDisabled={form =>
             !get(form, 'usersById._new_.publicName') ||
@@ -93,8 +93,8 @@ const SignupPage = ({ errors }) => {
           path="users"
           storeKey="users"
         />
-        <NavLink to="/connexion">
-          <strong>J'ai déjà un compte</strong>
+        <NavLink to="/connexion" className='is-medium is-bold'>
+          J'ai déjà un compte
         </NavLink>
       </footer>
     </PageWrapper>

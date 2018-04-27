@@ -16,10 +16,6 @@
     margin-top: 1.5rem;
   }
 
-  h2 {
-    font-style: italic;
-  }
-
   label {
     margin-bottom: 0.5rem;
 
@@ -53,10 +49,10 @@
     display: flex;
     justify-content: space-between;
     background-color: $menu-red;
-    a {
-      color: white;
-      text-decoration: none;
-    }
+    // a {
+    //   color: white;
+    //   text-decoration: none;
+    // }
   }
 
   // span {

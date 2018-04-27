@@ -1,27 +1,33 @@
 .button {
-  background-color: $menu-red;
-  border: 1px solid transparent;
-  border-top-left-radius: 2rem;
-  border-top-right-radius: 2rem;
-  border-bottom-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
-  color: $white;
-  cursor: pointer;
-  display: inline-block;
-  fill: white;
-  font-family: $font-family;
-  font-size: 10px;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  text-align: center;
-  transition: all 0.4s ease-out;
-  // @media (min-width: $mini) {
-  //   font-size: 14px;
-  // }
-  // @media (min-width: $lg) {
-  //   font-size: 18px;
-  // }
+
+  &.is-primary {
+    background-color: $white;
+    color: $menu-red;
+    border-top-right-radius: 0;
+    font-weight: $weight-bold;
+    font-size: $size-medium;
+    // font-size: 1.25rem;
+    // line-height: 1.1rem;
+    // &.button--inversed {
+    //   background-color: $menu-red;
+    //   color: $white;
+    //   border-color: $white;
+    //   border-top-right-radius: 2rem;
+    //   border-bottom-left-radius: 0;
+    //   svg {
+    //     fill: $white;
+    //   }
+    // }
+  }
+
+  &.is-secondary {
+    background: none;
+    border: none;
+    color: $white;
+    font-weight: $weight-bold;
+    font-size: $size-medium;
+  }
+
   &--alive {
     &:hover,
     &:focus {
@@ -33,7 +39,7 @@
     min-width: 100px;
   }
   &--disabled, &.disabled {
-    opacity: 0.25;
+    // opacity: 0.25;
   }
   &--hidden, &.hidden {
     opacity: 0;
@@ -78,24 +84,7 @@
       vertical-align: top !important; // TODO: investigate why there is vertical-align: middle inline
     }
   }
-  &--primary {
-    background-color: $white;
-    color: $menu-red;
-    border-top-right-radius: 0;
-    font-weight: 700;
-    font-size: 1.25rem;
-    line-height: 1.1rem;
-    &.button--inversed {
-      background-color: $menu-red;
-      color: $white;
-      border-color: $white;
-      border-top-right-radius: 2rem;
-      border-bottom-left-radius: 0;
-      svg {
-        fill: $white;
-      }
-    }
-  }
+
   &--xlarge {
     font-size: 2.5em;
   }

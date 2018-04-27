@@ -18,12 +18,12 @@ const SigninPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-in" Tag="form" redBg>
       <div className="form-container">
-        <div className="mt3">
-          <div className="h1 semibold">Bonjour&nbsp;!</div>
-          <div className="h2">
+        <div className='section'>
+          <h1 className='title is-1 is-italic'>Bonjour&nbsp;!</h1>
+          <h2 className='subtitle is-2 is-italic'>
             Identifiez-vous <br />
             pour accéder aux offres.
-          </div>
+          </h2>
         </div>
         <FormField
           className={inputClassName}
@@ -52,13 +52,13 @@ const SigninPage = ({ errors }) => {
             !get(form, 'usersById._new_.identifier') ||
             !get(form, 'usersById._new_.password')
           }
-          className="button button--primary"
+          className="button is-primary is-inverted is-medium"
           path="users/signin"
           storeKey="users"
           text="Connexion"
         />
-        <NavLink to="/inscription">
-          <strong>Inscription</strong>
+        <NavLink to="/inscription" className='is-medium is-bold'>
+          Inscription
         </NavLink>
       </footer>
     </PageWrapper>
