@@ -5,7 +5,7 @@
     color: $menu-red;
     border-top-right-radius: 0;
     font-weight: $weight-bold;
-    font-size: $size-medium;
+    // font-size: $size-medium;
     // font-size: 1.25rem;
     // line-height: 1.1rem;
     // &.button--inversed {
@@ -25,7 +25,10 @@
     border: none;
     color: $white;
     font-weight: $weight-bold;
-    font-size: $size-medium;
+    text-decoration: none;
+    padding-left: 0;
+    padding-right: 0;
+    // font-size: $size-medium;
   }
 
   &--alive {

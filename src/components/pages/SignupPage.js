@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import get from 'lodash.get'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
@@ -85,7 +84,7 @@ const SignupPage = ({ errors }) => {
       <footer>
         <SubmitButton
           text="Créer"
-          className="button is-primary is-inverted is-medium"
+          className="button is-primary is-inverted"
           getBody={form => form.usersById[NEW]}
           getIsDisabled={form =>
             !get(form, 'usersById._new_.publicName') ||
@@ -95,7 +94,7 @@ const SignupPage = ({ errors }) => {
           path="users"
           storeKey="users"
         />
-        <NavLink to="/connexion" className='is-medium is-bold'>
+        <NavLink to="/connexion" className='button is-secondary'>
           J'ai déjà un compte
         </NavLink>
       </footer>

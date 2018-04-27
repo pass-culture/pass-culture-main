@@ -11,7 +11,7 @@ import { NEW } from '../../utils/config'
 const OfferJoinForm = ({ id, prices, mediations }) => {
   return (
     <div>
-      <div className="sep mt2 mb2" />
+      <hr />
       <List
         className="mb1"
         ContentComponent={PriceItem}
@@ -50,7 +50,7 @@ const OfferJoinForm = ({ id, prices, mediations }) => {
         title="Prix"
       />
 
-      <div className="sep mb2" />
+      <hr />
 
       <List
         className="mb1"

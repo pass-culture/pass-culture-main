@@ -30,16 +30,17 @@ $text-strong: inherit;
 $family-sans-serif: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
 
 $weight-normal: 400;
+$weight-semi-bold: 500;
 $weight-bold: 700;
 
 $size-1: 2rem;
 $size-2: 1.5rem;
 $size-3: 1.25rem;
-$size-4: 1.25rem;
-$size-5: 1.25rem;
+$size-4: 1.2rem;
+$size-5: 1.1rem;
 $size-6: 1rem;
 $size-7: 0.75rem;
-$size-medium: 1.25rem;
+$size-medium: 1.2rem;
 
 $body-line-height: initial;
 $subtitle-line-height: initial;
@@ -49,11 +50,14 @@ $input-border-color: $primary;
 $input-focus-border-color: $primary;
 $input-hover-border-color: $primary;
 $input-disabled-border-color: $primary;
+$input-focus-box-shadow-size: 0;
+$input-shadow: none;
+
+$button-padding-vertical: 0.1em;
+$button-padding-horizontal: 0.75em;
 
 $section-padding: 0 0 1rem 0;
 
 $radius: 2rem;
 
 $button-disabled-opacity: 0.3;
-
-$input-shadow: none;

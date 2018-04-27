@@ -52,12 +52,12 @@ const SigninPage = ({ errors }) => {
             !get(form, 'usersById._new_.identifier') ||
             !get(form, 'usersById._new_.password')
           }
-          className="button is-primary is-inverted is-medium"
+          className="button is-primary is-inverted"
           path="users/signin"
           storeKey="users"
           text="Connexion"
         />
-        <NavLink to="/inscription" className='is-medium is-bold'>
+        <NavLink to="/inscription" className='button is-secondary'>
           Inscription
         </NavLink>
       </footer>
