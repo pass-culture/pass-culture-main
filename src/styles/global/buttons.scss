@@ -2,14 +2,14 @@
 
   &.is-primary {
     background-color: $white;
-    color: $menu-red;
+    color: $primary;
     border-top-right-radius: 0;
     font-weight: $weight-bold;
     // font-size: $size-medium;
     // font-size: 1.25rem;
     // line-height: 1.1rem;
     // &.button--inversed {
-    //   background-color: $menu-red;
+    //   background-color: $primary;
     //   color: $white;
     //   border-color: $white;
     //   border-top-right-radius: 2rem;
@@ -50,10 +50,10 @@
   }
   &--inversed {
     background-color: white;
-    border-color: $menu-red;
-    color: $menu-red;
+    border-color: $primary;
+    color: $primary;
     svg {
-      fill: $menu-red;
+      fill: $primary;
     }
   }
   &--rounded {

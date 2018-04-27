@@ -28,7 +28,7 @@ li.booking-item {
     float: left;
     height: 100%;
     position: relative;
-    @include dotted($menu-red, left)
+    @include dotted($primary, left)
 
     .top {
       position: absolute;
@@ -53,9 +53,9 @@ li.booking-item {
 
     .token {
       padding: 0.5rem;
-      @include dotted($menu-red, top)
+      @include dotted($primary, top)
       font-size: 2.3em;
-      color: $menu-red;
+      color: $primary;
       position: absolute;
       top: 50%;
       left: 0;

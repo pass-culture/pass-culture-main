@@ -5,7 +5,7 @@
 
 
   &.red-bg {
-    background-color: $menu-red;
+    background-color: $primary;
     color: $white;
 
     header {
@@ -38,7 +38,7 @@
       height: $header-height;
       text-align: center;
       font-weight: 500;
-      background-color: $menu-red;
+      background-color: $primary;
       color: $white;
       line-height: $header-height;
       @include dotted($white, bottom);

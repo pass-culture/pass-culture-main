@@ -48,7 +48,7 @@
   footer {
     display: flex;
     justify-content: space-between;
-    background-color: $menu-red;
+    background-color: $primary;
     // a {
     //   color: white;
     //   text-decoration: none;
@@ -67,7 +67,7 @@
   // }
 
   .errors {
-    color: $menu-red;
+    color: $primary;
     font-size: 0.9rem;
     font-weight: 500;
     height: 2rem;
@@ -89,7 +89,7 @@
   }
 
   &.red {
-    background-color: $menu-red;
+    background-color: $primary;
     color: white;
 
     footer {
