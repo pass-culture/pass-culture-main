@@ -1,6 +1,6 @@
 .sign-in-page, .sign-up-page {
   display: flex;
-  font-size: 1.2rem;
+  font-size: $size-medium;
   flex-direction: column;
 
   .form-container {
@@ -20,7 +20,7 @@
     margin-bottom: 0.5rem;
 
     p {
-      font-size: 1rem;
+      font-size: $size-normal;
     }
 
     .inline {
@@ -31,17 +31,7 @@
   }
 
   h4 {
-    font-size: 1rem;
-  }
-
-  a {
-    text-decoration: underline;
-  }
-
-  &.signin-page form {
-    .form-input {
-      margin-top: 3rem;
-    }
+    font-size: $size-normal;
   }
 
 
@@ -49,22 +39,7 @@
     display: flex;
     justify-content: space-between;
     background-color: $primary;
-    // a {
-    //   color: white;
-    //   text-decoration: none;
-    // }
   }
-
-  // span {
-  //   a {
-  //     font-size: 1em;
-  //     font-weight: 400;
-  //   }
-  // }
-
-  // p {
-  //   font-weight: 500;
-  // }
 
   .errors {
     color: $primary;
@@ -103,13 +78,10 @@
       color: $white;
     }
   }
-}
 
-body.softkeyboard .sign-page,
-body.web .sign-page {
-  min-height: 100vh;
-  height: auto;
-  .form-container {
-    // flex: 1;
+  body.softkeyboard &, body.web & {
+    min-height: 100vh;
+    height: auto;
   }
+
 }

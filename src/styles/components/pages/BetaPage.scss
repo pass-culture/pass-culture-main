@@ -2,7 +2,7 @@
 
   .page-content {
     text-align: center;
-    font-size: 1.4rem;
+    font-size: $size-medium;
     font-style: italic;
     display: flex;
     justify-content: space-around;
@@ -15,12 +15,12 @@
         display: inline-block;
       }
       strong {
-        font-weight: 500;
+        font-weight: $weight-semi-bold;
       }
     }
 
     p {
-      font-weight: 500;
+      font-weight: $weight-semi-bold;
     }
 
   }
