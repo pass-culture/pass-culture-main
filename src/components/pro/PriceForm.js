@@ -17,18 +17,18 @@ class PriceForm extends Component {
         <div className="md-col md-col-6 relative mb2">
           <label className="mr1 right-align">à partir de</label>
           <FormInput
-            className="input price-form__form-input price-form__form-input--group-size mb1"
+            className="mb1"
             collectionName="prices"
             defaultValue={groupSize}
             isRequired
             name="groupSize"
             type="number"
           />
-          <span className="absolute price-form__suffix">pers.</span>
+          <span className="suffix">pers.</span>
           <br />
           <label className="mr1 right-align">prix</label>
           <FormInput
-            className="input price-form__form-input"
+            className="input"
             collectionName="prices"
             defaultValue={value}
             isRequired
@@ -38,7 +38,7 @@ class PriceForm extends Component {
         <div className="md-col md-col-6">
           <label className="mr1 right-align">début</label>
           <FormInput
-            className="input price-form__form-input mb1"
+            className="input mb1"
             collectionName="prices"
             defaultValue={startDate}
             name="startDate"
@@ -47,7 +47,7 @@ class PriceForm extends Component {
           <br />
           <label className="mr1 right-align">fin</label>
           <FormInput
-            className="input price-form__form-input"
+            className="input"
             collectionName="prices"
             defaultValue={endDate}
             name="endDate"

@@ -84,7 +84,8 @@
       }
     }
   }
-  &__success {
+  .success {
+    text-align: center;
     big {
       font-size: 3rem;
     }

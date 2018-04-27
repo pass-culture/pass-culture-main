@@ -15,7 +15,7 @@ class MediationForm extends Component {
     return (
       <div className="mediation-form">
         <FormTextarea
-          className="textarea mediation-form__textarea mt2"
+          className="textarea mt2"
           collectionName="mediations"
           name="description"
           placeholder="donnez la description de votre coup de coeur"

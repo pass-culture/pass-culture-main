@@ -42,7 +42,7 @@ class OfferForm extends Component {
         <div>
           <label className="block mb1">description</label>
           <FormTextarea
-            className="textarea offer-form__textarea"
+            className="textarea"
             collectionName="offers"
             defaultValue={description}
             entityId={id}

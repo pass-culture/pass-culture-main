@@ -187,7 +187,7 @@ class Booking extends Component {
           )}
           {step === 'loading' && <p>Réservation en cours ...</p>}
           {step === 'confirmation' && (
-            <div className="booking__success center p3">
+            <div className="section success">
               <Icon className="mb2" svg="picto-validation" />
               <p>Votre réservation est validée.</p>
               <p>

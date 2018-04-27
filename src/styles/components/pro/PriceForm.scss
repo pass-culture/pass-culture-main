@@ -12,13 +12,8 @@
   input {
     width: 150px;
   }
-  &__form-input {
-    border-radius: 5px;
-    font-size: 10px;
-    width: 100px;
-  }
-  &__suffix {
+  .suffix {
+    position: absolute;
     color: $grey-dark;
-    top: 4.5px;
   }
 }

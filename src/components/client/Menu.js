@@ -24,7 +24,7 @@ class Menu extends Component {
     const { user } = this.props
     return (
       <div className="menu">
-        <div className="menu__header">
+        <div className="header">
           <div className="profile-pic">
             <img
               src={`${ROOT_PATH}/icons/avatar-default-w-XL.svg`}

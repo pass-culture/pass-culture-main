@@ -22,9 +22,9 @@ class OfferModify extends Component {
     const { id, thing } = this.props
     const isNew = id === NEW
     return (
-      <div className="offer-modify p2">
-        <div className="h2 mt2 mb2"> Offre </div>
-        <ThingItem extraClass="mb2" {...thing} />
+      <div className="offer-modify">
+        <h2 className="title is-2"> Offre </h2>
+        <ThingItem {...thing} />
         <OfferForm {...this.props} />
         <div>
           <SubmitButton

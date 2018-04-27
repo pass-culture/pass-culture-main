@@ -43,7 +43,7 @@ const SigninPage = ({ errors }) => {
           placeholder="Mot de passe"
           autoComplete="current-password"
         />
-        <div className="sign__error mt1">{errors}</div>
+        <div className="errors">{errors}</div>
       </div>
       <footer>
         <SubmitButton
