@@ -1,4 +1,5 @@
 alembic
+babel
 bcrypt
 colorthief
 dateparser
