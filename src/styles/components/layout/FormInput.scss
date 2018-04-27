@@ -13,7 +13,7 @@
     input {
       margin-right: 0.5rem;
       -webkit-appearance: none;
-      border-radius: 4px !important;
+      border-radius: $radius-small;
       width: 1.5rem;
       height: 1.5rem;
       &:active, &:checked {
