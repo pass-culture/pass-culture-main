@@ -1,8 +1,8 @@
-@import 'typography.scss';
-@import './_variables.scss';
-@import './vendors/index.scss';
+@import '_typography.scss';
+@import '_variables.scss';
+
+@import 'vendors/index.scss';
 @import 'mixins/dotted.scss';
-@import 'colors.scss';
-@import 'defaults.scss';
-@import 'buttons.scss';
+
+@import 'global/index.scss';
 @import './components/index.scss';

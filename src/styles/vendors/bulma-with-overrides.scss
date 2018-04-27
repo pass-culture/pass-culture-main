@@ -1,0 +1,12 @@
+@import '~bulma/bulma';
+
+.button {
+  height: auto;
+  &.is-text {
+    padding: 0;
+  }
+}
+
+[disabled] {
+  opacity: $button-disabled-opacity;
+}

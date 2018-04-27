@@ -59,7 +59,7 @@
     margin-left: -6px;
     margin-bottom: -1rem;
     li {
-      @include dotted($text-color);
+      @include dotted($text);
       &:first-child {
         background: none;
       }

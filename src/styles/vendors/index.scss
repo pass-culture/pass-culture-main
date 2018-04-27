@@ -1,18 +1,2 @@
-@import '~bulma/bulma';
+@import './bulma-with-overrides.scss';
 @import '~react-dates/lib/css/_datepicker.css';
-
-.button {
-  height: auto;
-  &.is-text {
-    padding: 0;
-  }
-
-  // &.is-secondary {
-  //   background: none;
-  //   border: none;
-  // }
-}
-
-[disabled] {
-  opacity: $button-disabled-opacity;
-}
