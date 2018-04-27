@@ -13,10 +13,10 @@ class OffererItem extends Component {
     const { name, thumbUrl } = this.props
     return (
       <button
-        className="offerer-item button button--alive button--inversed mb1 mr2 center"
+        className="offerer-item button is-default is-inversed"
         onClick={this.onClick}
       >
-        <img alt="thumbnail" className="offerer-item__image" src={thumbUrl} />
+        <img alt="thumbnail" src={thumbUrl} />
         <div>{name}</div>
       </button>
     )

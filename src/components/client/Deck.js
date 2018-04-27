@@ -172,8 +172,8 @@ class Deck extends Component {
       >
         {!unFlippable && (
           <button
-            className={classnames('button close verso-btn', {
-              hidden: !isFlipped,
+            className={classnames('close-button', {
+              'is-hidden': !isFlipped,
             })}
             onClick={this.handleUnFlip}
           >
@@ -182,7 +182,7 @@ class Deck extends Component {
         )}
         <div
           className={classnames('loading', {
-            shown: !currentRecommendation,
+            'is-invisibile': currentRecommendation,
           })}
         >
           <div>
@@ -211,7 +211,7 @@ class Deck extends Component {
             )}
           </div>
         </Draggable>
-        <div className={classnames('board-wrapper', { hidden: isFlipped })}>
+        <div className={classnames('board-wrapper', { 'is-invisible': isFlipped })}>
           <div
             className="board-bg"
             style={{
@@ -220,14 +220,14 @@ class Deck extends Component {
           />
           <ul
             className={classnames('controls', {
-              hidden: isFlipped,
+              'is-invisible': isFlipped,
             })}
             style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
           >
             <li>
               <button
                 className={classnames('button before', {
-                  hidden: !previousRecommendation,
+                  'is-invisible': !previousRecommendation,
                 })}
                 onClick={this.handleGoPrevious}
               >
@@ -237,7 +237,7 @@ class Deck extends Component {
             <li>
               <button
                 className={classnames('button to-recto', {
-                  hidden: isFlipDisabled,
+                  'is-invisible': isFlipDisabled,
                 })}
                 disabled={isFlipDisabled}
                 onClick={this.handleFlip}
@@ -248,8 +248,8 @@ class Deck extends Component {
             </li>
             <li>
               <button
-                className={classnames('after button', {
-                  hidden: !nextRecommendation,
+                className={classnames('button after', {
+                  'is-invisible': !nextRecommendation,
                 })}
                 onClick={this.handleGoNext}
               >
@@ -259,7 +259,7 @@ class Deck extends Component {
           </ul>
         </div>
         {IS_DEV && (
-          <div className="debug absolute right-0 mr2 p2">
+          <div className="debug debug-deck">
             ({this.props.isLoadingBefore ? '?' : ' '}
             {this.props.previousLimit}){' '}
             {this.props.currentRecommendation &&

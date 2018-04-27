@@ -17,20 +17,20 @@ class DeleteButton extends Component {
     const { className, disabled, showModal, text } = this.props
     return (
       <button
-        className={className || 'button button--alive'}
+        className={className}
         disabled={disabled}
         onClick={() =>
           showModal(
             <div>
               <div className="mb2">Enlever ?</div>
               <button
-                className="button button--alive mr2"
+                className="button is-default"
                 onClick={this.onConfirmClick}
               >
                 Oui
               </button>
               <button
-                className="button button--alive"
+                className="button is-default"
                 onClick={this.onCancelClick}
               >
                 Non

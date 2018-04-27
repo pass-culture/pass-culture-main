@@ -20,7 +20,7 @@ class SourceItem extends Component {
           onClick={this.onToggle}
           type="checkbox"
         />
-        <button className="mr2 button button--alive" onClick={this.onClick}>
+        <button className="button is-default" onClick={this.onClick}>
           {name}
         </button>
       </div>

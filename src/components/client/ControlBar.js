@@ -65,7 +65,7 @@ class ControlBar extends Component {
         <li>
           <button
             disabled
-            className="button is-text"
+            className="button is-secondary"
             onClick={this.onClickFavorite}
           >
             <Icon svg={isFavorite ? 'ico-like-w' : 'ico-like-w'} />
@@ -74,7 +74,7 @@ class ControlBar extends Component {
         <li>
           <button
             disabled
-            className="button is-text"
+            className="button is-secondary"
             onClick={this.onClickDisable}
           >
             <Icon svg="ico-share-w" />

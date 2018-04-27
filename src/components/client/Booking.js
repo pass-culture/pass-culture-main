@@ -217,7 +217,7 @@ class Booking extends Component {
                   className={classnames({
                     button: true,
                     'is-primary': true,
-                    hidden: !dateOk,
+                    'is-hidden': !dateOk,
                   })}
                   onClick={this.makeBooking}
                 >

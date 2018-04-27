@@ -31,13 +31,11 @@ class ProfilePage extends Component {
             "vous n'etes pas connecté (ou attendez 2s...)"}
         </div>
         <button
-          className={classnames('button button--alive', {
-            'button--disabled': !user,
-          })}
+          className='button is-default'
           disabled={!user}
           onClick={this.onSignOutClick}
         >
-          Déconnection
+          Déconnexion
         </button>
       </main>
     )

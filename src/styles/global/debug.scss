@@ -1,0 +1,12 @@
+.debug {
+  position: absolute;
+  top: 4rem;
+  left: 1rem;
+  padding: 1rem;
+  z-index: 1000;
+  background: rgba($white, 0.5);
+
+  &.debug-recto {
+    top: 8rem;
+  }
+}

@@ -30,7 +30,7 @@ class OfferModify extends Component {
         <div>
           <SubmitButton
             add="append"
-            className="button button--alive button--cta mr1"
+            className="button is-primary"
             getBody={form => form.offersById[id]}
             getIsDisabled={form =>
               !form ||
@@ -59,9 +59,7 @@ class OfferModify extends Component {
             text={isNew ? 'Enregistrer' : 'Modifer'}
           />
           <DeleteButton
-            className={classnames('button button--alive mb2', {
-              'button--disabled': isNew,
-            })}
+            className='button is-default'
             collectionName="offers"
             disabled={isNew}
             id={id}
@@ -72,7 +70,7 @@ class OfferModify extends Component {
           <OfferJoinForm key="offer-join-form" {...this.props} />,
           <button
             key="ok"
-            className="button button--alive"
+            className="button is-default"
             onClick={this.onCloseClick}
           >
             Ok

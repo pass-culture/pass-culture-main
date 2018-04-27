@@ -1,7 +1,7 @@
 $button-margin: 0.75rem;
 $button-size: $header-height - 2 * $button-margin;
 
-button.back-button {
+button.back-button, button.close-button {
   position: absolute;
   width: $button-size;
   height: $button-size;
@@ -22,8 +22,14 @@ button.back-button {
     outline: none;
   }
 
-  &.discovery {
+  .discovery-page & {
     background-color: $black;
   }
+}
 
+button.close-button {
+  right: 0;
+  img {
+    left: 0;
+  }
 }

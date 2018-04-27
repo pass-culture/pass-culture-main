@@ -15,9 +15,7 @@ class OffererEditButton extends Component {
     const { offerer } = this.props
     return (
       <button
-        className={classnames('button button--alive button--rounded', {
-          'button--disabled': !offerer,
-        })}
+        className='button is-default'
         disabled={!offerer}
         onClick={this.onClick}
       >
