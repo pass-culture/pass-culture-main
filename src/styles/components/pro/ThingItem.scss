@@ -1,7 +1,6 @@
 .thing-item {
   box-shadow: $box-shadow;
-  border: $border;
-  border-radius: $border-radius;
+  border-radius: $radius;
   &__content {
     &__id {
       color: $medium-grey;

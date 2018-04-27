@@ -1,17 +1,18 @@
 .offer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   img {
     height: auto;
     width: 150px;
-    @media (min-width: $md) {
+    @media (min-width: $desktop) {
       width: 150px;
     }
   }
-  &--modify {
+  &.modify {
     cursor: pointer;
   }
-  &__content {
-    &__description {
-      font-size: 14px;
-    }
+  .content {
+
   }
 }

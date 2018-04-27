@@ -21,7 +21,7 @@ class FormField extends Component {
     } = this.props
     const inputId = id || `input_${collectionName}_${name}`
     const extraProps = {
-      className: classnames(className, `input input--${type} ${type}`),
+      className: classnames(className, `input ${type}`),
     }
     const labelMarkup = (
       <label htmlFor={id} key={'label_' + id}>

@@ -23,29 +23,13 @@ body {
   -moz-user-select: none;
   -o-user-select: none;
   user-select: none;
-  &.loading {
-    background-color: $menu-red;
-    background-image: url('/icons/logo-group.svg');
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-}
-
-a {
-  // background-color: transparent;
-  // border: none;
-  // text-align: left;
-  // font-size: 1.2rem;
-  // padding: 0.5rem;
-  // color: $white;
 }
 
 .app {
   // color: $dark-grey;
-  font-family: $font-family;
-  min-height: 100vh;
-  position: relative;
+  // font-family: $font-family;
+  // min-height: 100vh;
+  // position: relative;
 }
 
 // .disabled {
@@ -66,9 +50,6 @@ a {
 // }
 
 .input {
-  border: $border;
-  border-radius: $border-radius;
-  color: $very-dark-grey;
   font-family: $font-family;
   font-weight: 500;
   font-size: 20px;
@@ -76,7 +57,7 @@ a {
   &:focus {
     outline: none;
   }
-  &--checkbox {
+  &.checkbox {
     -webkit-appearance: none;
     border: $border;
     border-radius: 4px !important;
@@ -92,29 +73,17 @@ a {
     &:active,&:checked {
       color: $very-very-light-grey;
       &:after {
-      	content: '\2714';
-      	font-size: 18px;
-      	position: absolute;
-      	top: -3px;
-      	left: 3px;
-      	color: $menu-red;
+        content: '\2714';
+        font-size: 18px;
+        position: absolute;
+        top: -3px;
+        left: 3px;
+        color: $menu-red;
       }
     }
   }
-  &--text, &--email, &--password {
-    width: 100%;
-  }
 }
 
-label {
-  // color: $very-dark-grey;
-  // text-align: left;
-}
-
-// .page {
-//   background-color: $very-very-light-grey;
-//   min-height: 100%;
-// }
 
 select {
   border: $border;

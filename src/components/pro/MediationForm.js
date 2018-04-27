@@ -13,18 +13,14 @@ class MediationForm extends Component {
   }
   render() {
     return (
-      <div className="mediation-form mb2 relative p3">
+      <div className="mediation-form">
         <FormTextarea
           className="textarea mediation-form__textarea mt2"
           collectionName="mediations"
           name="description"
           placeholder="donnez la description de votre coup de coeur"
         />
-        {/*
-        <FormInput collectionName='venuesFavorites'
-          name='description'
-          placeholder='donnez quelques hashtags pour cibler votre audience' />
-        */}
+        {}
       </div>
     )
   }

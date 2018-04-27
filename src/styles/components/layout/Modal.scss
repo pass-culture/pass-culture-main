@@ -56,7 +56,7 @@
     margin-bottom: 0.75rem;
     margin-left: 0.75rem;
     margin-right: 0.75rem;
-    @media (min-width: $lg) {
+    @media (min-width: $widescreen) {
       // so we can avoid cropping things like dropdown lists inside modal.
       // Test that component if you're changing this value!
       overflow-y: visible;

@@ -20,9 +20,11 @@ const SignupPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-up" Tag="form">
       <div className="form-container">
-        <h2 className='subtitle is-italic'>
-          Une minute pour créer un compte, et puis c'est tout !
-        </h2>
+        <div className='section'>
+          <h2 className='subtitle is-italic'>
+            Une minute pour créer un compte, et puis c'est tout !
+          </h2>
+        </div>
         <FormField
           className="input"
           label={
