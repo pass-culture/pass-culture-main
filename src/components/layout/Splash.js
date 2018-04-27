@@ -7,12 +7,9 @@ import Icon from './Icon'
 const Splash = ({ isActive, transitionTimeout }) => {
   return (
     <div
-      className={classnames(
-        'splash',
-        {
-          'is-invisible': !isActive,
-        }
-      )}
+      className={classnames('splash', {
+        'is-invisible': !isActive,
+      })}
       style={{
         transition: `opacity ${transitionTimeout}ms, z-index 10ms ${transitionTimeout}ms`,
       }}

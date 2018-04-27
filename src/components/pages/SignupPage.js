@@ -19,8 +19,8 @@ const SignupPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-up" Tag="form">
       <div className="form-container">
-        <div className='section'>
-          <h2 className='subtitle is-italic'>
+        <div className="section">
+          <h2 className="subtitle is-italic">
             Une minute pour créer un compte, et puis c'est tout !
           </h2>
         </div>
@@ -57,7 +57,11 @@ const SignupPage = ({ errors }) => {
         <FormField
           className="input"
           label={
-            <Label title="Mot de passe" subtitle="...pour se connecter:" inline />
+            <Label
+              title="Mot de passe"
+              subtitle="...pour se connecter:"
+              inline
+            />
           }
           collectionName="users"
           required="true"
@@ -94,7 +98,7 @@ const SignupPage = ({ errors }) => {
           path="users"
           storeKey="users"
         />
-        <NavLink to="/connexion" className='button is-secondary'>
+        <NavLink to="/connexion" className="button is-secondary">
           J'ai déjà un compte
         </NavLink>
       </footer>

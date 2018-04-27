@@ -58,7 +58,7 @@ class OfferModify extends Component {
             text={isNew ? 'Enregistrer' : 'Modifer'}
           />
           <DeleteButton
-            className='button is-default'
+            className="button is-default"
             collectionName="offers"
             disabled={isNew}
             id={id}

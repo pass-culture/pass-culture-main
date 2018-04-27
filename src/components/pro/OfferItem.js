@@ -35,12 +35,9 @@ class OfferItem extends Component {
     console.log('mediations', mediations)
     return (
       <div
-        className={classnames(
-          'offer-item',
-          {
-            'modify': isModify,
-          }
-        )}
+        className={classnames('offer-item', {
+          modify: isModify,
+        })}
         onClick={isModify && this.onClick}
       >
         <img alt="thumbnail" src={thumbUrl} />

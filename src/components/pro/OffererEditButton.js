@@ -14,7 +14,7 @@ class OffererEditButton extends Component {
     const { offerer } = this.props
     return (
       <button
-        className='button is-default'
+        className="button is-default"
         disabled={!offerer}
         onClick={this.onClick}
       >

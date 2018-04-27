@@ -56,7 +56,7 @@ class ThingDetector extends Component {
                 value={identifier}
               />
               <button
-                className='button is-default'
+                className="button is-default"
                 disabled={isDisabled}
                 onClick={this.onSearchClick}
               >

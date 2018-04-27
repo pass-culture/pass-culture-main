@@ -7,7 +7,6 @@ import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
 import PageWrapper from '../layout/PageWrapper'
 
-
 class ProfilePage extends Component {
   onSignOutClick = () => {
     const { requestData } = this.props
@@ -33,7 +32,7 @@ class ProfilePage extends Component {
         <header>Mon profil</header>
         <h2 className="title is-2">Bienvenue !</h2>
         <button
-          className='button is-default'
+          className="button is-default"
           disabled={!user}
           onClick={this.onSignOutClick}
         >

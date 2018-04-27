@@ -211,7 +211,9 @@ class Deck extends Component {
             )}
           </div>
         </Draggable>
-        <div className={classnames('board-wrapper', { 'is-invisible': isFlipped })}>
+        <div
+          className={classnames('board-wrapper', { 'is-invisible': isFlipped })}
+        >
           <div
             className="board-bg"
             style={{

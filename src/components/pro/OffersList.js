@@ -56,9 +56,7 @@ class OffersList extends Component {
         {offers &&
           offers.map((offer, index) => [
             <OfferItem isMediations isModify isPrices key={index} {...offer} />,
-            index !== offers.length - 1 && (
-              <hr />
-            ),
+            index !== offers.length - 1 && <hr />,
           ])}
       </div>
     )

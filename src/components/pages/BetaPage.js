@@ -24,7 +24,10 @@ class BetaPage extends Component {
         </h1>
         <p>Et merci de votre participation pour nous aider à l'améliorer !</p>
         <footer>
-          <Link to="/inscription" className='button is-secondary has-text-weight-light is-italic'>
+          <Link
+            to="/inscription"
+            className="button is-secondary has-text-weight-light is-italic"
+          >
             C'est par là
             <Icon svg="ico-next" />
           </Link>

@@ -18,9 +18,9 @@ const SigninPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-in" Tag="form" redBg>
       <div className="form-container">
-        <div className='section'>
-          <h1 className='title is-1 is-italic'>Bonjour&nbsp;!</h1>
-          <h2 className='subtitle is-2 is-italic'>
+        <div className="section">
+          <h1 className="title is-1 is-italic">Bonjour&nbsp;!</h1>
+          <h2 className="subtitle is-2 is-italic">
             Identifiez-vous <br />
             pour accéder aux offres.
           </h2>
@@ -57,7 +57,7 @@ const SigninPage = ({ errors }) => {
           storeKey="users"
           text="Connexion"
         />
-        <NavLink to="/inscription" className='button is-secondary'>
+        <NavLink to="/inscription" className="button is-secondary">
           Inscription
         </NavLink>
       </footer>

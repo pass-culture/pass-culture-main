@@ -16,10 +16,7 @@ class OfferNewButton extends Component {
   }
   render() {
     return (
-      <button
-        className="button is-default is-rounded"
-        onClick={this.onClick}
-      >
+      <button className="button is-default is-rounded" onClick={this.onClick}>
         <Icon name="add" />
       </button>
     )
