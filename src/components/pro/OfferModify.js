@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
@@ -23,14 +22,14 @@ class OfferModify extends Component {
     const { id, thing } = this.props
     const isNew = id === NEW
     return (
-      <div className="offer-modify p2">
-        <div className="h2 mt2 mb2"> Offre </div>
-        <ThingItem extraClass="mb2" {...thing} />
+      <div className="offer-modify">
+        <h2 className="title is-2"> Offre </h2>
+        <ThingItem {...thing} />
         <OfferForm {...this.props} />
         <div>
           <SubmitButton
             add="append"
-            className="button button--alive button--cta mr1"
+            className="button is-primary"
             getBody={form => form.offersById[id]}
             getIsDisabled={form =>
               !form ||
@@ -59,9 +58,7 @@ class OfferModify extends Component {
             text={isNew ? 'Enregistrer' : 'Modifer'}
           />
           <DeleteButton
-            className={classnames('button button--alive mb2', {
-              'button--disabled': isNew,
-            })}
+            className="button is-default"
             collectionName="offers"
             disabled={isNew}
             id={id}
@@ -72,7 +69,7 @@ class OfferModify extends Component {
           <OfferJoinForm key="offer-join-form" {...this.props} />,
           <button
             key="ok"
-            className="button button--alive"
+            className="button is-default"
             onClick={this.onCloseClick}
           >
             Ok

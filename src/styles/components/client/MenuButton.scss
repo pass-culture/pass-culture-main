@@ -31,13 +31,13 @@
   }
 
   &.bordered {
-    @include dotted($menu-red);
+    @include dotted($primary);
   }
 
   &.colored {
     background-color: rgba($white, 0.9);
     &.bordered {
-      border-color: $menu-red;
+      border-color: $primary;
     }
     button {
       background-color: white;

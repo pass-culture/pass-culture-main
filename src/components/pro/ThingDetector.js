@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -57,9 +56,7 @@ class ThingDetector extends Component {
                 value={identifier}
               />
               <button
-                className={classnames('button button--alive', {
-                  'button--disabled': isDisabled,
-                })}
+                className="button is-default"
                 disabled={isDisabled}
                 onClick={this.onSearchClick}
               >

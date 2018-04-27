@@ -33,11 +33,6 @@ class PriceItem extends Component {
             </span>
           )}
         </div>
-        {/*
-          <div className='price-item__date'>
-            {formatStartDate} / {formatEndDate}
-          </div>
-          */}
       </div>
     )
   }

@@ -1,10 +1,9 @@
 .thing-item {
   box-shadow: $box-shadow;
-  border: $border;
-  border-radius: $border-radius;
-  &__content {
-    &__id {
-      color: $medium-grey;
+  border-radius: $radius;
+  .content {
+    .id {
+      color: $grey;
       font-weight: 400;
       font-style: italic;
     }

@@ -17,7 +17,7 @@
     .input {
       margin: auto;
       display: block;
-      border: thin solid $menu-red;
+      border: thin solid $primary;
       border-radius: 50px;
       font-weight: 500;
       background-color: transparent;
@@ -39,7 +39,7 @@
   // TODO: make a theme: https://github.com/airbnb/react-dates/#theming
   .SingleDatePicker {
     border-radius: 50px;
-    border: thin solid $menu-red;
+    border: thin solid $primary;
     .SingleDatePickerInput {
       background: transparent;
       .DateInput {
@@ -64,7 +64,7 @@
     }
   }
   ul.bottom-bar {
-    background-color: $menu-red;
+    background-color: $primary;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -84,7 +84,8 @@
       }
     }
   }
-  &__success {
+  .success {
+    text-align: center;
     big {
       font-size: 3rem;
     }

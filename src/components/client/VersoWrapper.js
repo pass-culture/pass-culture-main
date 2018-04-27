@@ -48,7 +48,7 @@ class VersoWrapper extends Component {
           <h6> {venue && venue.name} </h6>
         </div>
         {hasControlBar && <ControlBar />}
-        <div className="content" style={{ ...contentStyle }}>
+        <div className="verso-content" style={{ ...contentStyle }}>
           {children}
         </div>
       </div>

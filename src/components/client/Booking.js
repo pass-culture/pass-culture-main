@@ -187,7 +187,7 @@ class Booking extends Component {
           )}
           {step === 'loading' && <p>Réservation en cours ...</p>}
           {step === 'confirmation' && (
-            <div className="booking__success center p3">
+            <div className="section success">
               <Icon className="mb2" svg="picto-validation" />
               <p>Votre réservation est validée.</p>
               <p>
@@ -216,8 +216,8 @@ class Booking extends Component {
                 <button
                   className={classnames({
                     button: true,
-                    'button--primary': true,
-                    hidden: !dateOk,
+                    'is-primary': true,
+                    'is-hidden': !dateOk,
                   })}
                   onClick={this.makeBooking}
                 >
@@ -226,7 +226,7 @@ class Booking extends Component {
               </li>,
               <li key="cancel">
                 <button
-                  className="button button--secondary"
+                  className="button is-secondary"
                   onClick={e => this.props.closeModal()}
                 >
                   Annuler
@@ -241,7 +241,7 @@ class Booking extends Component {
             {step === 'confirmation' && (
               <li>
                 <button
-                  className="button button--secondary"
+                  className="button is-secondary"
                   onClick={e => this.props.closeModal()}
                 >
                   OK

@@ -64,7 +64,8 @@ class ControlBar extends Component {
         </li>
         <li>
           <button
-            className="button button--secondary disabled"
+            disabled
+            className="button is-secondary"
             onClick={this.onClickFavorite}
           >
             <Icon svg={isFavorite ? 'ico-like-w' : 'ico-like-w'} />
@@ -72,7 +73,8 @@ class ControlBar extends Component {
         </li>
         <li>
           <button
-            className="button button--secondary disabled"
+            disabled
+            className="button is-secondary"
             onClick={this.onClickDisable}
           >
             <Icon svg="ico-share-w" />
@@ -82,7 +84,7 @@ class ControlBar extends Component {
           {booking ? (
             <Link
               to="/reservations"
-              className="button button--primary button--inversed button--go"
+              className="button is-primary is-go is-medium"
             >
               <Icon name="Check" />
               {' Réservé'}
@@ -90,7 +92,7 @@ class ControlBar extends Component {
           ) : (
             <Finishable finished={this.isFinished()}>
               <button
-                className="button button--primary button--go"
+                className="button is-primary is-go is-medium"
                 onClick={this.onClickJyVais}
               >
                 <Price

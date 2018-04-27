@@ -35,31 +35,28 @@ class OfferItem extends Component {
     console.log('mediations', mediations)
     return (
       <div
-        className={classnames(
-          'offer-item flex items-center justify-between p1 mb1',
-          {
-            'offer-item--modify': isModify,
-          }
-        )}
+        className={classnames('offer-item', {
+          modify: isModify,
+        })}
         onClick={isModify && this.onClick}
       >
-        <img alt="thumbnail" className="offer-item__image mr2" src={thumbUrl} />
-        <div className="offer-item__content flex-auto center left-align">
-          <div className="h2 mb2 left-align">{name}</div>
-          <div className="offer-item__content__description mb2 left-align">
+        <img alt="thumbnail" src={thumbUrl} />
+        <div className="content">
+          <h2 className="title is-2">{name}</h2>
+          <div className="description">
             {description && description.length > maxDescriptionLength
               ? `${description.slice(0, maxDescriptionLength)}...`
               : description}
           </div>
-          <div className="flex items-center p1">
-            <div className="flex flex-wrap items-center">
+          <div>
+            <div>
               {isPrices &&
                 prices &&
                 prices.map((price, index) => (
                   <PriceItem key={index} {...price} />
                 ))}
             </div>
-            <div className="flex flex-wrap items-center mr1">
+            <div>
               {isMediations &&
                 mediations &&
                 mediations.map((mediation, index) => (

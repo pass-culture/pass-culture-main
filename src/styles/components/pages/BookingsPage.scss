@@ -1,10 +1,10 @@
 .bookings-page {
-  font-size: 1.2rem;
+  font-size: $size-medium;
 
   h4 {
     text-transform: uppercase;
     font-style: italic;
-    font-weight: 500;
+    font-weight: $weight-semi-bold;
     margin-bottom: 1rem;
   }
 

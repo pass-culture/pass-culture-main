@@ -3,16 +3,8 @@
     float: left;
     height: auto;
     width: 150px;
-    @media (min-width: $md) {
-      width: 150px;
-    }
   }
   &--modify {
     cursor: pointer;
-  }
-  &__content {
-    &__description {
-      font-size: 14px;
-    }
   }
 }

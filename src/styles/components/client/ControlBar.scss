@@ -1,6 +1,6 @@
 ul.control-bar {
   list-style: none;
-  background-color: $menu-red;
+  background-color: $primary;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   padding-left: 0.75rem;
@@ -22,7 +22,7 @@ ul.control-bar {
       display: block;
       font-size: 1.5em;
     }
-    .button--go {
+    .button.is-go {
       .price {
         font-weight: normal;
         border-right: thin solid;
@@ -32,6 +32,9 @@ ul.control-bar {
         padding-bottom: 0.5em;
         margin-top: -0.5em;
         margin-bottom: -0.5em;
+      }
+      svg {
+        margin-right: 5px;
       }
     }
   }

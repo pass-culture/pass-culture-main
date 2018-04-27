@@ -7,7 +7,7 @@ const ProviderForm = ({ offererIdAtOfferProvider }) => {
     <div>
       <label className="mr1 right-align">id</label>
       <FormInput
-        className="input offerer-provider-form__form-input"
+        className="input"
         collectionName="providers"
         defaultValue={offererIdAtOfferProvider}
         isRequired

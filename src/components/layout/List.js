@@ -21,10 +21,10 @@ const List = ({
 }) => {
   return (
     <div className={className || 'list'}>
-      <div className="h2 mb2">{title}</div>
-      <div className="list__control flex items-center flex-start">
+      <h2 className="title is-2">{title}</h2>
+      <div className="control">
         <SubmitButton
-          className="button button--alive button--cta"
+          className="button is-primary"
           getBody={getBody}
           getIsDisabled={getIsDisabled}
           getOptimistState={getOptimistState}
@@ -36,7 +36,7 @@ const List = ({
       </div>
       <FormComponent {...extra} />
       <div
-        className={classnames('list__content', {
+        className={classnames('content', {
           'flex items-center flex-wrap': isWrap,
         })}
       >

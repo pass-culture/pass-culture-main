@@ -3,7 +3,7 @@
 
   .offerer {
     text-align: right;
-    color: $menu-red;
+    color: $primary;
     font-size: 1.2em;
     margin-left: 40%;
     margin-bottom: 1rem;
@@ -12,12 +12,13 @@
   ul.dates-info {
     margin-bottom: 1rem;
     list-style: none;
+    margin-left: 0;
   }
   a.distance {
     float: right;
     padding: 0;
     font-weight: 500;
-    color: $menu-red;
+    color: $primary;
     font-size: 1.35rem;
     text-decoration: none;
     img {

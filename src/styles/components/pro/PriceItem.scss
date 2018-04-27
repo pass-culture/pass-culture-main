@@ -1,9 +1,5 @@
 .price-item {
   background-color: black;
-  border: $border;
-  border-radius: $border-radius;
+  border-radius: $radius;
   color: white;
-  &__date {
-    font-size: 12px;
-  }
 }

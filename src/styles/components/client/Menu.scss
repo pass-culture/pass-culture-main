@@ -1,6 +1,6 @@
 .menu {
   position: relative;
-  &__header {
+  .header {
     width: 100%;
     position: relative;
     padding-bottom: 1rem;
@@ -59,7 +59,7 @@
     margin-left: -6px;
     margin-bottom: -1rem;
     li {
-      @include dotted($text-color);
+      @include dotted($text);
       &:first-child {
         background: none;
       }

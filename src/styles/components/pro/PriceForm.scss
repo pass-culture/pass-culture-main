@@ -1,6 +1,5 @@
 .price-form {
-  border: $border;
-  border-radius: $border-radius;
+  border-radius: $radius;
   label {
     display: inline-block;
     font-size: 12px;
@@ -13,13 +12,8 @@
   input {
     width: 150px;
   }
-  &__form-input {
-    border-radius: 5px;
-    font-size: 10px;
-    width: 100px;
-  }
-  &__suffix {
-    color: $dark-grey;
-    top: 4.5px;
+  .suffix {
+    position: absolute;
+    color: $grey-dark;
   }
 }

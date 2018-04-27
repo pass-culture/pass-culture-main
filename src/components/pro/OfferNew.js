@@ -28,7 +28,7 @@ class OfferNew extends Component {
     return (
       <div
         className={classnames('offer-new', {
-          'offer-new--thing-detector mt2 flex items-center': !thing,
+          ' mt2 flex items-center': !thing,
         })}
       >
         {thing ? <OfferModify thing={thing} /> : <ThingDetector />}

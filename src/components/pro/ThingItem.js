@@ -21,11 +21,11 @@ const ThingItem = ({
     >
       <img
         alt="thumbnail"
-        className="thing-item__content__img mr2"
+        className="mr2"
         src={`${THUMBS_URL}/things/${id}`}
       />
       <div>
-        <div className="thing-item__content__id left-align mb1">
+        <div className="id left-align mb1">
           {type} {identifier}
         </div>
         <div className="h2 mb1 left-align">{name}</div>

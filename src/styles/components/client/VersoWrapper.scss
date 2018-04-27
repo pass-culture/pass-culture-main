@@ -1,5 +1,5 @@
 .verso-wrapper {
-  color: $text-color;
+  color: $text;
   text-align: left;
   min-height: 100%;
   position: relative;
@@ -51,7 +51,7 @@
     }
   }
 
-  .content {
+  .verso-content {
     background-color: white;
     padding-bottom: 68px; // dirty
     flex: 1;
@@ -63,7 +63,7 @@
     h3 {
       padding-top: 0.75rem;
       padding-bottom: 0.5rem;
-      color: $menu-red;
+      color: $primary;
       font-weight: 700;
       font-size: 1.5rem;
     }
@@ -80,6 +80,7 @@
 
     ul.address-info {
       list-style: none;
+      margin-left: 0;
     }
   }
 }
