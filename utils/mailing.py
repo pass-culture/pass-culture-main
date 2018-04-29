@@ -1,5 +1,6 @@
 """ mailing """
 from datetime import datetime
+from utils.date import format_datetime
 import os
 from flask import current_app as app
 from pprint import pformat
@@ -49,7 +50,7 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
 
     if offer.eventOccurence:
         description = '%s le %s' % (offer.eventOccurence.event.name,
-                                        offer.eventOccurence.beginningDatetime.strftime('%c'))
+                                        format_datetime(offer.eventOccurence.beginningDatetime))
     elif offer.thing:
         description = '%s (Ref: %s)' % (offer.thing.name, offer.thing.idAtProviders)
 
@@ -58,14 +59,14 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
         user = booking.user
         email_html += '<p>%s (%s)' % (user.publicName, user.email)
         if is_cancellation:
-            email_subject += 'Annulation de reservation pour ' + description
+            email_subject += 'Annulation pour ' + description
             email_html += ' vient d\'annuler sa réservation'
         else:
             email_subject += 'Nouvelle reservation pour ' + description
             email_html += ' vient de faire une nouvelle réservation'
         email_html += '</p>'
     else:
-        email_subject += 'Récapitulatif de réservation pour ' + description
+        email_subject += 'Récapitulatif pour ' + description
 
     if offer.bookingLimitDatetime is not None:
         if offer.bookingLimitDatetime < datetime.now():
