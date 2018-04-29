@@ -14,12 +14,6 @@ app = Flask(__name__, static_url_path='/static')
 
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 
-
-#ORIGINS = os.environ.get(
-#    'CORS_DOMAIN',
-#    os.environ.get('BROWSER_URL', 'http://localhost:3000')
-#).split(',')
-#print('ORIGINS', ORIGINS, dir(app))
 cors = CORS(app,
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True
