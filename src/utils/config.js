@@ -88,3 +88,5 @@ if (window.cordova) {
 }
 
 export const ROOT_PATH = CALC_ROOT_PATH
+
+export const DEFAULT_TO = '/gestion'

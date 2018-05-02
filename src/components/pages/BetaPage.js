@@ -7,6 +7,7 @@ import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import { closeSplash } from '../../reducers/splash'
+import { DEFAULT_TO } from '../../utils/config'
 
 class BetaPage extends Component {
   componentDidMount() {
@@ -38,7 +39,7 @@ class BetaPage extends Component {
 }
 
 export default compose(
-  withLogin({ redirectTo: '/decouverte' }),
+  withLogin({ redirectTo: DEFAULT_TO }),
   connect(state => ({ closeSplashTimeout: state.splash.closeTimeout }), {
     closeSplash,
   })

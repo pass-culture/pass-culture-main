@@ -7,6 +7,7 @@ import { compose } from 'redux'
 
 import { assignData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
+import { DEFAULT_TO } from '../../utils/config'
 
 const withSign = WrappedComponent => {
   class _withSign extends Component {
@@ -18,7 +19,7 @@ const withSign = WrappedComponent => {
     componentWillReceiveProps(nextProps) {
       const { errors, history, user } = nextProps
       if (user && !errors) {
-        history.push('/gestion')
+        history.push(DEFAULT_TO)
       }
     }
 
