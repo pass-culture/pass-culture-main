@@ -1,8 +1,8 @@
 import classnames from 'classnames'
 import React from 'react'
 
-import MenuButton from '../client/MenuButton'
-import BackButton from '../layout/BackButton'
+import BackButton from './BackButton'
+import MenuButton from './MenuButton'
 
 const PageWrapper = props => {
   const {

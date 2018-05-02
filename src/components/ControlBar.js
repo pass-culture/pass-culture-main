@@ -6,14 +6,14 @@ import { Link } from 'react-router-dom'
 
 import Price from './Price'
 import Booking from './Booking'
-import Finishable from '../layout/Finishable'
-import Icon from '../layout/Icon'
-import selectBooking from '../../selectors/booking'
-import selectCurrentOffer from '../../selectors/currentOffer'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
-import selectCurrentRecommendation from '../../selectors/currentRecommendation'
-import { requestData } from '../../reducers/data'
-import { showModal } from '../../reducers/modal'
+import Finishable from './layout/Finishable'
+import Icon from './layout/Icon'
+import selectBooking from '../selectors/booking'
+import selectCurrentOffer from '../selectors/currentOffer'
+import selectCurrentOfferer from '../selectors/currentOfferer'
+import selectCurrentRecommendation from '../selectors/currentRecommendation'
+import { requestData } from '../reducers/data'
+import { showModal } from '../reducers/modal'
 
 class ControlBar extends Component {
   onClickDisable = event => {

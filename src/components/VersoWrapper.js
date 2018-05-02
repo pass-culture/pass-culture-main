@@ -3,11 +3,11 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import ControlBar from './ControlBar'
-import selectCurrentHeaderColor from '../../selectors/currentHeaderColor'
-import selectCurrentSource from '../../selectors/currentSource'
-import selectCurrentVenue from '../../selectors/currentVenue'
-import selectIsCurrentTuto from '../../selectors/isCurrentTuto'
-import { ROOT_PATH } from '../../utils/config'
+import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
+import selectCurrentSource from '../selectors/currentSource'
+import selectCurrentVenue from '../selectors/currentVenue'
+import selectIsCurrentTuto from '../selectors/isCurrentTuto'
+import { ROOT_PATH } from '../utils/config'
 
 class VersoWrapper extends Component {
   componentDidUpdate(prevProps, prevState) {

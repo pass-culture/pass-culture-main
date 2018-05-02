@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
-import BookingItem from '../client/BookingItem'
+import BookingItem from '../BookingItem'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
