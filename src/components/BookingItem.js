@@ -6,9 +6,9 @@ import TimeAgo from 'react-timeago'
 import frenchStrings from 'react-timeago/lib/language-strings/fr-short'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 
-import Icon from '../layout/Icon'
-import Thumb from '../layout/Thumb'
-import { getDiscoveryPath } from '../../utils/routes'
+import Icon from './layout/Icon'
+import Thumb from './layout/Thumb'
+import { getDiscoveryPath } from '../utils/routes'
 
 const formatter = buildFormatter(
   Object.assign(frenchStrings, {

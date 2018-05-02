@@ -8,13 +8,13 @@ import { SingleDatePicker } from 'react-dates'
 
 import VersoWrapper from './VersoWrapper'
 import Price from './Price'
-import Icon from '../layout/Icon'
-import { requestData } from '../../reducers/data'
-import { closeModal } from '../../reducers/modal'
-import selectBooking from '../../selectors/booking'
-import selectCurrentOffer from '../../selectors/currentOffer'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
-import selectCurrentRecommendation from '../../selectors/currentRecommendation'
+import Icon from './layout/Icon'
+import { requestData } from '../reducers/data'
+import { closeModal } from '../reducers/modal'
+import selectBooking from '../selectors/booking'
+import selectCurrentOffer from '../selectors/currentOffer'
+import selectCurrentOfferer from '../selectors/currentOfferer'
+import selectCurrentRecommendation from '../selectors/currentRecommendation'
 
 moment.locale('fr')
 

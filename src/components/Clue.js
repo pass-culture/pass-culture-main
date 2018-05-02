@@ -4,9 +4,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Price from './Price'
-import Finishable from '../layout/Finishable'
-import selectDistance from '../../selectors/distance'
-import selectCurrentOffer from '../../selectors/currentOffer'
+import Finishable from './layout/Finishable'
+import selectDistance from '../selectors/distance'
+import selectCurrentOffer from '../selectors/currentOffer'
 
 const Clue = ({ distance, offer, isHidden, transitionTimeout }) => {
   const isFinished = moment(get(offer, 'bookingLimitDatetime')) < moment()

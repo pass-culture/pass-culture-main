@@ -2,12 +2,12 @@ import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import MenuButton from './MenuButton'
 import OfferInfo from './OfferInfo'
 import VersoWrapper from './VersoWrapper'
-import selectCurrentMediation from '../../selectors/currentMediation'
-import selectIsCurrentTuto from '../../selectors/isCurrentTuto'
-import { THUMBS_URL } from '../../utils/config'
+import MenuButton from './layout/MenuButton'
+import selectCurrentMediation from '../selectors/currentMediation'
+import selectIsCurrentTuto from '../selectors/isCurrentTuto'
+import { THUMBS_URL } from '../utils/config'
 
 class Verso extends Component {
   render() {

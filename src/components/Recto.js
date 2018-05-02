@@ -1,11 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Thumb from '../layout/Thumb'
-import selectCurrentRecommendation from '../../selectors/currentRecommendation'
-import selectNextRecommendation from '../../selectors/nextRecommendation'
-import selectPreviousRecommendation from '../../selectors/previousRecommendation'
-import { IS_DEV } from '../../utils/config'
+import Thumb from './layout/Thumb'
+import selectCurrentRecommendation from '../selectors/currentRecommendation'
+import selectNextRecommendation from '../selectors/nextRecommendation'
+import selectPreviousRecommendation from '../selectors/previousRecommendation'
+import { IS_DEV } from '../utils/config'
 
 const Recto = ({
   dateRead,
