@@ -18,7 +18,7 @@ const withSign = WrappedComponent => {
     componentWillReceiveProps(nextProps) {
       const { errors, history, user } = nextProps
       if (user && !errors) {
-        history.push('/decouverte')
+        history.push('/gestion')
       }
     }
 

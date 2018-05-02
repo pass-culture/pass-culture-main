@@ -22,7 +22,7 @@ const SigninPage = ({ errors }) => {
           <h1 className="title is-1 is-italic">Bonjour&nbsp;!</h1>
           <h2 className="subtitle is-2 is-italic">
             Identifiez-vous <br />
-            pour accéder aux offres.
+            pour rentrer vos offres.
           </h2>
         </div>
         <FormField

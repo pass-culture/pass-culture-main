@@ -19,17 +19,25 @@ const SignupPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-up" Tag="form">
       <div className="form-container">
-        <div className="section">
-          <h2 className="subtitle is-italic">
-            Une minute pour créer un compte, et puis c'est tout !
-          </h2>
-        </div>
+        <FormField
+          className="input"
+          label={
+            <Label
+              title="SIRET"
+            />
+          }
+          required="true"
+          collectionName="users"
+          name="siret"
+          autoComplete="siret"
+          placeholder="SIRET"
+          type="text"
+        />
         <FormField
           className="input"
           label={
             <Label
               title="Identifiant"
-              subtitle="...que verront les autres utilisateurs:"
             />
           }
           required="true"
@@ -44,7 +52,6 @@ const SignupPage = ({ errors }) => {
           label={
             <Label
               title="Adresse e-mail"
-              subtitle="...pour se connecter et récupérer son mot de passe en cas d'oubli:"
             />
           }
           collectionName="users"
@@ -59,7 +66,6 @@ const SignupPage = ({ errors }) => {
           label={
             <Label
               title="Mot de passe"
-              subtitle="...pour se connecter:"
               inline
             />
           }

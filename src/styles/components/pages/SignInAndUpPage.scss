@@ -10,6 +10,12 @@
     overflow-y: auto;
     justify-content: center;
     flex: 1;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    @media (min-width: $tablet) {
+      width: 50%;
+    }
   }
 
   .form-input {

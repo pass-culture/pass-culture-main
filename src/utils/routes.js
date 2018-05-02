@@ -2,6 +2,8 @@ import React from 'react'
 import { Redirect } from 'react-router'
 
 import BetaPage from '../components/pages/BetaPage'
+import ManagementPage from '../components/pages/ManagementPage'
+import OffererPage from '../components/pages/OffererPage'
 import ProfilePage from '../components/pages/ProfilePage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
@@ -24,6 +26,18 @@ const routes = [
     path: '/connexion',
     title: 'Connexion',
     render: () => <SigninPage />,
+  },
+  {
+    exact: true,
+    path: '/gestion',
+    title: 'Gestion',
+    render: () => <ManagementPage />,
+  },
+  {
+    exact: true,
+    path: '/gestion/:offererId',
+    title: 'Espace pro - Offre',
+    render: props => <OffererPage offererId={props.match.params.offererId} />,
   },
   {
     exact: true,
