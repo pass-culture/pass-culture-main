@@ -6,8 +6,6 @@ import BookingsPage from '../components/pages/BookingsPage'
 import DiscoveryPage from '../components/pages/DiscoveryPage'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import InventoryPage from '../components/pages/InventoryPage'
-import OffererPage from '../components/pages/OffererPage'
-import ProfessionalPage from '../components/pages/ProfessionalPage'
 import ProfilePage from '../components/pages/ProfilePage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
@@ -79,18 +77,6 @@ const routes = [
     path: '/inventaire',
     title: 'Inventaire',
     render: () => <InventoryPage />,
-  },
-  {
-    exact: true,
-    path: '/pro',
-    title: 'Espace pro',
-    render: () => <ProfessionalPage />,
-  },
-  {
-    exact: true,
-    path: '/pro/:offererId',
-    title: 'Espace pro - Offre',
-    render: props => <OffererPage offererId={props.match.params.offererId} />,
   },
   {
     exact: true,
