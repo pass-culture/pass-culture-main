@@ -42,7 +42,6 @@
     "node-env-file": "^0.1.8",
     "node-sass": "^4.7.2",
     "object-assign": "4.1.1",
-    "phonegap-build-api": "^0.4.0",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "promise": "8.0.1",
@@ -76,8 +75,6 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "pgbuild": "yarn build && node scripts/pgbuild.js",
-    "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
     "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
