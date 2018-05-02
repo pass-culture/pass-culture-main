@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="78px" height="78px" viewBox="0 0 78 78" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>FF250B24-BE04-41DF-8F3F-879E8AC82E80</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <circle id="path-1" cx="44" cy="44" r="44"></circle>
+        <circle id="path-3" cx="38" cy="38" r="38"></circle>
+    </defs>
+    <g id="Écrans" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc3-HP2-menu2" transform="translate(-35.000000, -23.000000)">
+            <g id="Group" transform="translate(30.000000, 18.000000)">
+                <g id="avatar-default-w">
+                    <g id="avatar">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="mask"></g>
+                        <g id="ICONS/ico-user-circled-w" mask="url(#mask-2)">
+                            <g id="ICONS/ico-user-w">
+                                <rect id="crop" x="0" y="0" width="88" height="88"></rect>
+                                <g id="user" transform="translate(6.000000, 6.000000)">
+                                    <mask id="mask-4" fill="white">
+                                        <use xlink:href="#path-3"></use>
+                                    </mask>
+                                    <use id="Oval-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xlink:href="#path-3"></use>
+                                    <path d="M51.8545866,27.2424242 C51.8730975,15.7474747 47.254902,10 38,10 C28.745098,10 24.1225882,15.7474747 24.1324705,27.2424242 C24.1324705,27.2424242 22,27.5922909 22,29.0653576 C22.9645875,34.9611798 23.9377048,37.9090909 24.9193521,37.9090909 C24.9193521,40.0681818 31.0086215,52 38.376307,52 C45.7429262,52 51.5133913,40.0681818 51.5133913,37.9090909 C52.4950386,37.9090909 53.3195938,35.2424242 53.9870571,29.9090909 C53.9870571,28.4360242 54.299464,27.2424242 51.8545866,27.2424242 Z" id="Stroke-1" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-4)"></path>
+                                    <g id="epaules" mask="url(#mask-4)" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                        <g transform="translate(10.000000, 50.000000)" id="Stroke-9">
+                                            <path d="M57.735,20.6666667 L57.735,18.0034587 C57.735,11.3115435 53.0405572,8.66666667 45.6215741,8.66666667 L41.6215741,8.07695633 C37.873858,8.07695633 36,5.38463756 36,0"></path>
+                                            <path d="M21.735,20.6666667 L21.735,18.0034587 C21.735,11.3115435 17.0405572,8.66666667 9.62157407,8.66666667 L5.62157407,8.07695633 C1.87385802,8.07695633 0,5.38463756 0,0" transform="translate(10.867500, 10.333333) scale(-1, 1) translate(-10.867500, -10.333333) "></path>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

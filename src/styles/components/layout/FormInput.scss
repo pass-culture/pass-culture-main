@@ -1,0 +1,33 @@
+.form-input {
+  label {
+    display: block;
+  }
+
+  input {
+    font-weight: $weight-semi-bold;
+  }
+
+  &.checkbox {
+    align-items: flex-start;
+    display: flex;
+    input {
+      margin-right: 0.5rem;
+      -webkit-appearance: none;
+      border-radius: $radius-small;
+      width: 1.5rem;
+      height: 1.5rem;
+      &:active, &:checked {
+        &:after {
+          content: '\2714';
+          font-size: 1.25rem;
+          position: absolute;
+          top: -3px;
+          left: 1px;
+          color: $primary;
+        }
+      }
+    }
+
+  }
+
+}

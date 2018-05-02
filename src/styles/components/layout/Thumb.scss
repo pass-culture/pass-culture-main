@@ -1,0 +1,47 @@
+.thumb {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+
+  .background {
+    filter: blur(20px);
+    background-size: 100% auto;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background-repeat: no-repeat;
+    box-sizing: content-box;
+    padding: 50px;
+    margin-top: -50px;
+    margin-left: -50px;
+    transition: all 0.25s ease-out;
+  }
+
+  .image {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &.translatable {
+      transition-duration: 250ms;
+      transition-delay: 50ms;
+      -webkit-transition-property: transform;
+      transition-property: transform;
+      will-change: transform;
+
+      &.translated {
+        transform: translate(0, -25%) scale(1.1);
+      }
+    }
+
+  }
+}

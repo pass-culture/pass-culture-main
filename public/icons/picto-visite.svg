@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="21px" viewBox="0 0 34 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>7999F6E4-12B6-4A84-AAE3-F90C938D6ACC</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <path d="M20,11 C13.22633,11 7.30554207,14.6247728 4,20.0434783 C7.30554207,25.4616245 13.22633,29.0869565 20,29.0869565 C26.77367,29.0869565 32.6944579,25.4616245 36,20.0434783 C32.6944579,14.6247728 26.77367,11 20,11 Z" id="path-1"></path>
+    </defs>
+    <g id="Écrans" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc3-pictosCatégories" transform="translate(-38.000000, -235.000000)">
+            <g id="ICONS/picto-visite" transform="translate(35.000000, 225.000000)">
+                <rect id="crop" x="0" y="0" width="40" height="40"></rect>
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Stroke-1" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xlink:href="#path-1"></use>
+                <circle id="Oval-2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-2)" cx="22.5950003" cy="17.675" r="7.375"></circle>
+                <circle id="Oval-2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-2)" cx="22.5950003" cy="17.675" r="2.38999987"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,10 @@
+.mediation-item {
+  background-color: black;
+  border-radius: $radius;
+  color: white;
+  max-width: 250px;
+  text-align: left;
+  svg {
+    width: 25px;
+  }
+}

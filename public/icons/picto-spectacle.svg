@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="39px" height="30px" viewBox="0 0 39 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>B67B8EAD-532C-4FE4-B131-EA86E28CAB6B</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <path d="M4.54747351e-13,0.11342155 L39.6351607,0.11342155 L39.6351607,29.9395085 L4.54747351e-13,29.9395085 L4.54747351e-13,0.11342155 Z M20.0535362,14.1538562 L15.9615461,18.5419784 L26.1127355,28.0081157 L30.2047257,23.6199935 L20.0535362,14.1538562 Z M11.0322924,12.5938567 L5.50926327,14.9382435 L11.2716977,28.5136882 L16.7947268,26.1693015 L11.0322924,12.5938567 Z" id="path-1"></path>
+    </defs>
+    <g id="Écrans" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc3-pictosCatégories" transform="translate(-35.000000, -443.000000)">
+            <g id="ICONS/picto-spectacle" transform="translate(34.000000, 435.000000)">
+                <g>
+                    <rect id="crop" x="1.02268431" y="0.869565217" width="40" height="40"></rect>
+                    <g id="Group-3-Copy" transform="translate(20.504726, 23.756144) scale(-1, 1) translate(-20.504726, -23.756144) translate(0.504726, 8.756144)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="msk"></g>
+                        <path d="M12.9829868,8.63705104 C17.445474,19.3574879 19.6767176,24.7177064 19.6767176,24.7177064 M33.6219901,24.7177064 C33.6219901,24.7177064 27.4860702,18.9878177 15.2142304,7.52804033" id="Oval-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-2)" transform="translate(23.302488, 16.122873) scale(-1, 1) translate(-23.302488, -16.122873) "></path>
+                        <path d="M33.6477443,0.208665679 L34.5221206,0.208665679 C36.1527017,0.208665679 37.4745489,1.53051282 37.4745489,3.16109391 L37.4745489,3.16109391 C37.4745489,4.791675 36.1527017,6.11352215 34.5221206,6.11352215 L33.6477443,6.11352215 L33.6477443,0.208665679 Z" id="Rectangle" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" mask="url(#mask-2)" transform="translate(35.561147, 3.161094) rotate(-60.000000) translate(-35.561147, -3.161094) "></path>
+                    </g>
+                    <g id="Group-3" transform="translate(13.438563, 7.869565)" stroke="#FFFFFF" stroke-linecap="round" stroke-width="2">
+                        <path d="M0,9.52362949 C4.536862,20.2440664 6.80529301,25.6042848 6.80529301,25.6042848 C6.80529301,26.8292642 9.97907786,28.6918715 13.8941399,28.6918715 C17.8092019,28.6918715 20.9829868,26.8292642 20.9829868,25.6042848 C20.9829868,25.6042848 14.7448015,19.8743961 2.268431,8.41461878" id="Oval-3" stroke-linejoin="round" transform="translate(10.491493, 18.553245) scale(-1, 1) translate(-10.491493, -18.553245) "></path>
+                        <path d="M20.9963465,1.26425902 L22.0950695,1.26425902 C23.6277674,1.26425902 24.8702645,2.50675613 24.8702645,4.03945399 L24.8702645,4.03945399 C24.8702645,5.57215185 23.6277674,6.81464897 22.0950695,6.81464897 L20.9963465,6.81464897 L20.9963465,1.26425902 Z" id="Rectangle" transform="translate(22.933306, 4.039454) rotate(-60.000000) translate(-22.933306, -4.039454) "></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

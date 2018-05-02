@@ -1,0 +1,37 @@
+// TODO: eventually remove unused dependencies
+@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/base/_all";
+@import "~bulma/sass/elements/_all";
+@import "~bulma/sass/components/_all";
+@import "~bulma/sass/grid/_all";
+@import "~bulma/sass/layout/_all";
+
+
+.button {
+  height: auto;
+
+  &:focus {
+    outline: none;
+  }
+
+  &.is-primary {
+    background-color: $white;
+    color: $primary;
+    border-top-right-radius: 0;
+    font-weight: $weight-bold;
+  }
+
+  &.is-secondary {
+    background: none;
+    border: none;
+    color: $white;
+    font-weight: $weight-bold;
+    text-decoration: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+[disabled] {
+  opacity: $button-disabled-opacity;
+}

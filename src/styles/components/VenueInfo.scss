@@ -1,0 +1,10 @@
+.venue-info {
+  img.venue-picture {
+    float: left;
+    height: auto;
+    width: 150px;
+  }
+  &--modify {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>BDFA6D53-399F-4560-B5BB-B244374FF272</title>
+    <desc>Created with sketchtool.</desc>
+    <defs></defs>
+    <g id="Écrans" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc-tunnel0-date" transform="translate(-269.000000, -236.000000)">
+            <g id="box" transform="translate(-176.000000, -238.000000)">
+                <g id="Content-[36v]" transform="translate(200.000000, 428.000000)">
+                    <g id="date-grp">
+                        <g id="date-field" transform="translate(34.000000, 38.000000)">
+                            <g id="ICONS/ico-calendar" transform="translate(203.000000, 0.000000)">
+                                <rect id="crop" x="0" y="0" width="44" height="44"></rect>
+                                <g id="Group-Copy" stroke-width="1" fill-rule="evenodd" transform="translate(9.000000, 9.000000)" stroke="#E60039" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect id="Rectangle-5" stroke-width="2" x="0" y="2" width="25" height="23"></rect>
+                                    <path d="M8,13 L9,13" id="Line-Copy" stroke-width="2"></path>
+                                    <path d="M8,17 L9,17" id="Line-Copy-5" stroke-width="2"></path>
+                                    <path d="M8,21 L9,21" id="Line-Copy-21" stroke-width="2"></path>
+                                    <path d="M4,13 L5,13" id="Line-Copy-4" stroke-width="2"></path>
+                                    <path d="M4,17 L5,17" id="Line-Copy-6" stroke-width="2"></path>
+                                    <path d="M4,21 L5,21" id="Line-Copy-22" stroke-width="2"></path>
+                                    <path d="M12,9 L13,9" id="Line" stroke-width="2"></path>
+                                    <path d="M12,13 L13,13" id="Line-Copy-2" stroke-width="2"></path>
+                                    <path d="M12,17 L13,17" id="Line-Copy-7" stroke-width="2"></path>
+                                    <path d="M16,9 L17,9" id="Line" stroke-width="2"></path>
+                                    <path d="M20,9 L21,9" id="Line-Copy-11" stroke-width="2"></path>
+                                    <path d="M16,13 L17,13" id="Line-Copy-3" stroke-width="2"></path>
+                                    <path d="M16,17 L17,17" id="Line-Copy-8" stroke-width="2"></path>
+                                    <path d="M20,13 L21,13" id="Line-Copy-13" stroke-width="2"></path>
+                                    <path d="M20,17 L21,17" id="Line-Copy-15" stroke-width="2"></path>
+                                    <path d="M6,0 L6,4" id="line" stroke-width="2" transform="translate(6.000000, 2.000000) scale(1, -1) translate(-6.000000, -2.000000) "></path>
+                                    <path d="M19,0 L19,4" id="line" stroke-width="2" transform="translate(19.000000, 2.000000) scale(1, -1) translate(-19.000000, -2.000000) "></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

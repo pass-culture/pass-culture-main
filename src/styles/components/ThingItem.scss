@@ -1,0 +1,11 @@
+.thing-item {
+  box-shadow: $box-shadow;
+  border-radius: $radius;
+  .content {
+    .id {
+      color: $grey;
+      font-weight: 400;
+      font-style: italic;
+    }
+  }
+}

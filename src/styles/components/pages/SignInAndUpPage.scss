@@ -1,0 +1,87 @@
+.sign-in-page, .sign-up-page {
+  display: flex;
+  font-size: $size-medium;
+  flex-direction: column;
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-y: auto;
+    justify-content: center;
+    flex: 1;
+  }
+
+  .form-input {
+    margin-top: 1.5rem;
+  }
+
+  label {
+    margin-bottom: 0.5rem;
+
+    p {
+      font-size: $size-normal;
+    }
+
+    .inline {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+  }
+
+  h4 {
+    font-size: $size-normal;
+  }
+
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    background-color: $primary;
+  }
+
+  .errors {
+    color: $primary;
+    font-size: 0.9rem;
+    font-weight: 500;
+    height: 2rem;
+    line-height: 2em;
+    list-style-type: none;
+    text-align: left;
+    transition: transform .2s ease-in-out;
+    &.pop {
+      transform: scale(1.04);
+      transform-origin: 0 50%;
+    }
+    img {
+      vertical-align: middle;
+      padding-right: 5px;
+    }
+    &:empty {
+      display: none;
+    }
+  }
+
+  &.red {
+    background-color: $primary;
+    color: white;
+
+    footer {
+      @include dotted($white, top);
+    }
+
+    label {
+      color: white;
+    }
+    .errors {
+      color: $white;
+    }
+  }
+
+  body.softkeyboard &, body.web & {
+    min-height: 100vh;
+    height: auto;
+  }
+
+}

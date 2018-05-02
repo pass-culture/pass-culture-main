@@ -1,0 +1,89 @@
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+.modal {
+  $modal-padding: 24px;
+  $modal-padding--large: 10px;
+
+  // on top of header in mobile view
+  z-index: 10000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+  // overlay
+  background-color: rgba($black, 0.8);
+  display: none;
+  opacity: 0;
+  will-change: opacity;
+
+  &.active {
+    display: flex;
+    align-items: flex-end;
+    opacity: 1;
+    // cannot just use opacity: 1 here,
+    // the element is display none - not rendered, when this class gets applied
+    animation: fadeIn 0.5s ease;
+  }
+
+  .modal-dialog {
+    transition-timing-function: ease-out;
+    transition-property: transform;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: $radius-medium;
+    box-shadow: $box-shadow;
+    max-width: 100%;
+    min-height: 4rem;
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 1rem;
+    position: relative;
+    text-align: center;
+    width: 100%;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    background-color: $primary;
+    margin-bottom: 0.75rem;
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+    @media (min-width: $widescreen) {
+      // so we can avoid cropping things like dropdown lists inside modal.
+      // Test that component if you're changing this value!
+      overflow-y: visible;
+    }
+    &.fullscreen {
+      margin: 0;
+      padding: 0;
+      border-radius: 0;
+      height: 100%;
+    }
+    button.close {
+      background-color: transparent;
+      top: 1rem;
+      right: 1rem;
+      border: none;
+      position: absolute;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .modal-content {
+      color: $white;
+      font-weight: 500;
+      height: 100%;
+      overflow: visible;
+      margin-left: 0;
+      max-height: none;
+    }
+  }
+}
