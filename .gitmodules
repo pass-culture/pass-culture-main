@@ -4,6 +4,9 @@
 [submodule "doc"]
 	path = doc
 	url = git@github.com:betagouv/pass-culture-doc.git
+[submodule "pro"]
+	path = pro
+	url = git@github.com:betagouv/pass-culture-pro.git
 [submodule "pro-packed-staging"]
 	path = pro-packed-staging
 	url = git@github.com:betagouv/pass-culture-pro-staging.git
