@@ -171,6 +171,8 @@ elif [[ "$CMD" == "start-backend" ]]; then
   RUN='docker-compose up'
 elif [[ "$CMD" == "start-browser" ]]; then
   RUN='cd $ROOT_PATH/webapp && yarn start'
+elif [[ "$CMD" == "start-browser-pro" ]]; then
+  RUN='cd $ROOT_PATH/pro && yarn start'
 elif [[ "$CMD" == "start-ios" ]]; then
 	RUN='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
 elif [[ "$CMD" == "symlink" ]]; then
