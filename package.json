@@ -85,6 +85,7 @@
     "pgbuild": "yarn build && node scripts/pgbuild.js",
     "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "build": "node scripts/build.js",
+    "ngrok": "ngrok start -config=./ngrok.yml --all",
     "test": "node scripts/test.js --env=jsdom",
     "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
   },
