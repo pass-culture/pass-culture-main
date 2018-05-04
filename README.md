@@ -84,18 +84,33 @@ C'est tout le framework du Pass Culture!
     ./pc -e production testcafe -b firefox
   ```
 
+### Développer en Android
+
+  Vous pouvez utiliser une ptite config ngrok pour l'api et la webapp par exemple:
+  ```
+    cd webapp/ && yarn run ngrok
+  ```
+  Ensuite il faut lancer l'application configurée avec ces tunnels:
+  ```
+    ./pc start-browser-webapp -t
+  ```
+  Vous pourrez alors utiliser l'url ngrok webapp pour dans votre navigateur android.
+
+
 ## Deploy
 
 ### FRONTEND WEB
   Pour déployer une nouvelle version, par exemple en staging:
   (Attention de ne pas déployer sur la prod sans authorisation !)
   ```bash
-    ./pc rebuild-frontend
     ./pc -e staging deploy-frontend
   ```
 
 ### FRONTEND MOBILE
-  TODO
+  Pour déployer une nouvelle version (par default c'est en staging)
+  ```bash
+    ./pc build-pg
+  ```
 
 ### BACKEND
 
