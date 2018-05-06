@@ -19,7 +19,10 @@ class DexieWrapper {
   }
 
   async dexiePushPull() {
-    const message = { isSyncRedux: true, text: 'dexiePushPull' }
+    const message = {
+      isSyncRedux: true,
+      text: 'dexiePushPull'
+    }
     message.results = this.state.user && (await pushPull(this.state))
     this.receiveMessage(message)
   }
@@ -30,9 +33,12 @@ class DexieWrapper {
     if (!user) {
       return
     }
-    const message = { isSyncRedux: true, text: 'dexieSignin' }
+    const message = {
+      isSyncRedux: true,
+      text: 'dexieSignin'
+    }
     message.results = await pushPull(this.state)
-    this.state.user && (await setUser(this.state))
+    user && (await setUser(this.state))
     this.receiveMessage(message)
   }
 
@@ -51,7 +57,7 @@ class DexieWrapper {
     // update
     event.data.state &&
       Object.keys(event.data.state).length > 0 &&
-      Object.assign(this.state, event.data.state, this.state)
+      Object.assign(this.state, event.data.state)
     // switch
     if (key === 'dexie-init') {
       this.worker.addEventListener('sync', this.dexiePushPull)

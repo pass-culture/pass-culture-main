@@ -1,23 +1,26 @@
 import moment from 'moment'
 import 'moment/locale/fr'
 
-moment.locale('fr-fr')
+moment.updateLocale('fr-fr')
 
 const { NODE_ENV } = process.env
 
 export const IS_DEBUG = true
 
 export const IS_DEV = NODE_ENV === 'development'
+export const IS_STG = /-staging/.test(document.location.host)
 export const IS_PROD = !IS_DEV
 
 export const NEW = '_new_'
 
-var CALCULATED_API_URL
+let CALCULATED_API_URL
 if (window.cordova) {
   CALCULATED_API_URL = 'https://api.passculture.beta.gouv.fr' // This will be replaced by 'yarn pgbuild' for staging
 } else {
   CALCULATED_API_URL = IS_DEV
-    ? 'http://localhost'
+    ? process.env.NGROK_API_URL && process.env.NGROK_API_URL.length
+      ? process.env.NGROK_API_URL
+      : 'http://localhost'
     : 'https://' + document.location.host.replace('app', 'api')
 }
 export const API_URL = CALCULATED_API_URL

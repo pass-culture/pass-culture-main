@@ -22,14 +22,21 @@ const withLogin = (config = {}) => WrappedComponent => {
     componentWillMount = () => {
       const { user, requestData } = this.props
       if (!user) {
-        requestData('GET', `users/me`, { key: 'users', local: true })
+        requestData('GET', `users/me`, {
+          key: 'users',
+          local: true
+        })
       } else if (redirectTo) {
         this.setState({ redirectTo })
       }
     }
 
     componentWillReceiveProps = nextProps => {
-      const { history, isModalActive, requestData } = this.props
+      const {
+        history,
+        isModalActive,
+        requestData
+      } = this.props
       if (nextProps.user && nextProps.user !== this.props.user) {
         // BUT ACTUALLY IT IS A SUCCESS FROM THE LOCAL USER
         // NOW BETTER IS TO ALSO TO DO A QUICK CHECK

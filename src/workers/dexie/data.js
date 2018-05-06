@@ -26,11 +26,13 @@ export async function getData(collectionName, query) {
     return
   }
   // get
-  const data = await table
-    .filter(element =>
+  let data = table
+  if (query && Object.keys(query).length) {
+    data = data.filter(element =>
       Object.keys(query).every(key => element[key] === query[key])
     )
-    .toArray()
+  }
+  data = await data.toArray()
   // return
   return { data }
 }
@@ -52,13 +54,16 @@ export async function putData(
   const description = collectionConfig.description
   const result = { collectionName }
   // check format
-  let data = Array.isArray(dataOrDatum) ? dataOrDatum : [dataOrDatum]
+  let data = Array.isArray(dataOrDatum)
+    ? dataOrDatum
+    : [dataOrDatum]
   // update is when we want to update certain elements in the array
   const storedData = await table.toArray()
   // look for deprecation
   result.deprecatedData = []
   for (let datum of data) {
-    const storedDatum = storedData.find(({ id }) => id === datum.id)
+    const storedDatum = storedData.find(({ id }) =>
+      id === datum.id)
     if (storedDatum) {
       // bind temporaly the storedDatum
       datum._storedDatum = storedDatum
@@ -75,13 +80,20 @@ export async function putData(
   if (dexieMethod === 'bulk') {
     // bulk is when we replace everything and index by the index in the array data
     await table.clear()
-    data = data.map((datum, index) => {
+    if (data && data.length === 0) {
+      result.data = []
+      return result
+    }
+    const bulkData = data.map((datum, index) => {
       if (datum._storedDatum) {
         delete datum._storedDatum
       }
-      return Object.assign({ index }, datum)
+      return Object.assign({ index: String(index) }, datum)
     })
-    await table.bulkPut(data)
+    await table.bulkPut(bulkData)
+               //.catch(error =>
+              // console.log('BULK ERROR', error))
+    return
     result.data = await table.toArray()
     return result
   }
@@ -90,17 +102,20 @@ export async function putData(
     if (datum._storedDatum) {
       const localStoredDatum = datum._storedDatum
       if (!localStoredDatum[description]) {
-        console.warn('storedDatum has not the description as a good key')
+        // console.warn('storedDatum has not the description as a good key')
       }
       const putDatum = Object.assign({}, localStoredDatum, datum)
       delete datum._storedDatum
       if (putDatum[description]) {
         await table
           .put(putDatum[description], putDatum)
-          .catch(error => console.warn(error))
+          //.catch(error => {})
       }
     } else {
       await table.add(datum)
+                 //.catch(error => {
+                //   console.log('YA UNE ERROR', error.message, collectionName, datum)
+                // })
     }
   }
   // diff or not
@@ -112,7 +127,7 @@ export async function putData(
     })
   }
   // get again
-  result.data = table.toArray()
+  result.data = await table.toArray()
   return result
 }
 
@@ -164,7 +179,6 @@ export async function pushPull(state = {}) {
         const entities = await table
           .filter(entity => entityIds.includes(entity.id))
           .toArray()
-          .catch(e => console.log(e))
         let config = {}
         if (entities) {
           config.body = entities
@@ -185,8 +199,8 @@ export async function pushPull(state = {}) {
         const pathWithoutQuery = path.split('?')[0]
         const collectionName = pathWithoutQuery.split('/')[0]
         return await putData('bulk', collectionName, result.data, {
-          isClear: true,
-        })
+            isClear: true,
+          })
       } else {
         return result
       }

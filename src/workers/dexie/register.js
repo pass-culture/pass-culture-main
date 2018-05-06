@@ -1,5 +1,6 @@
 import DexieWorker from './index.js'
 import config from './config'
+import { showEstimatedQuota } from './storage'
 import { requestData } from '../../reducers/data'
 import { IS_DEV } from '../../utils/config'
 import store from '../../utils/store'
@@ -19,6 +20,9 @@ export default function register() {
       }
     }
   }
+  // check if quota is okay
+  IS_DEV && showEstimatedQuota().then(quota =>
+    console.log('quota', quota))
 }
 
 export function syncRedux(payload) {

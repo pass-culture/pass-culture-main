@@ -9,8 +9,8 @@
 
   <description>Découvrez la culture autour de vous !</description>
 
-  <author href="https://passculture.beta.gouv.fr" email="pass@culture.gouv.fr">
-    Pass Culture
+  <author href="https://passculture-staging.beta.gouv.fr" email="pass@culture.gouv.fr">
+    Pass Culture Staging
   </author>
 
   <access origin="*" />
@@ -18,6 +18,8 @@
   <gap:config-file platform="android" parent="/manifest">
     <application android:debuggable="true" />
   </gap:config-file>
+
+  <allow-navigation href="gap:*" />
 
   <plugin name="cordova-plugin-device" spec="https://github.com/Addarkar/cordova-plugin-cookie-manager.git#51672c23204e1041fca651611aac6bc65a0759e3" />
   <plugin name="cordova-plugin-geolocation" spec="~4.0.1" />
