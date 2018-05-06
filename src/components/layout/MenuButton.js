@@ -12,17 +12,14 @@ class MenuButton extends Component {
   }
 
   render() {
-    const { borderTop, colored, isFlipped } = this.props
+    const { borderTop, colored } = this.props
     const maybeColored = {}
     if (colored) {
       maybeColored.colored = 'colored'
     }
     const style = {}
-    if (!colored) {
-      style.display = isFlipped ? 'none' : 'block'
-    }
     return (
-      <footer
+      <div
         className={classnames('menu-button', {
           bordered: borderTop,
           colored: colored,
@@ -34,11 +31,12 @@ class MenuButton extends Component {
             <ProfilePicture {...maybeColored} />
           </button>
         </div>
-      </footer>
+      </div>
     )
   }
 }
 
-export default connect(state => ({ isFlipped: state.verso.isFlipped }), {
-  showModal,
-})(MenuButton)
+export default connect(
+  null,
+  { showModal }
+)(MenuButton)

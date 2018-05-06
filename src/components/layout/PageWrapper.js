@@ -1,8 +1,8 @@
 import classnames from 'classnames'
 import React from 'react'
 
-import BackButton from '../layout/BackButton'
-import MenuButton from '../layout/MenuButton'
+import BackButton from './BackButton'
+import Header from './Header'
 
 const PageWrapper = props => {
   const {
@@ -24,16 +24,16 @@ const PageWrapper = props => {
       className={classnames({
         page: true,
         [`${name}-page`]: true,
-        'with-header': Boolean(header),
-        'with-footer': Boolean(footer) || Boolean(menuButton),
+        'with-header': Boolean(header)|| Boolean(menuButton),
+        'with-footer': Boolean(footer),
         'red-bg': redBg,
         'no-padding': noPadding,
       })}
     >
-      {header}
+      {header && <Header {...header} />}
       {backButton && <BackButton {...backButton} />}
       <div className="page-content">{content}</div>
-      {footer || (menuButton && <MenuButton {...menuButton} />)}
+      {footer}
     </Tag>
   )
 }

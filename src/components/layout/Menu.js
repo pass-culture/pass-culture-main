@@ -14,7 +14,7 @@ class Menu extends Component {
     event.preventDefault()
   }
 
-  onSignOutClick = () => {
+  onSignOutCdivck = () => {
     const { closeModal, requestData } = this.props
     requestData('GET', 'users/signout')
     closeModal()
@@ -31,73 +31,51 @@ class Menu extends Component {
               alt="Avatar"
               className="avatar"
             />
-            {user && user.publicName}
-          </div>
-          <div className="account">
-            <div>Mon Pass</div>
-            <div>
-              <strong>——&nbsp;€</strong>
-            </div>
+            {user && user.pubdivcName}
           </div>
         </div>
-        <ul>
-          <li>
+        <nav className="level">
+          <div className="level-item has-text-centered">
             <NavLink to="/decouverte">
-              <div className="menu-icon">
+              <div className="heading">
                 <Icon svg="ico-offres-w" />
               </div>
-              Les offres
+              <p className="title">
+                Gestion
+              </p>
             </NavLink>
-          </li>
-          <li>
-            <NavLink to="/reservations">
-              <div className="menu-icon">
-                <Icon svg="ico-calendar-w" />
-              </div>
-              Mes réservations
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/favoris">
-              <div className="menu-icon">
-                <Icon svg="ico-like-w" />
-              </div>
-              Mes préférés
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/reglages" onClick={this.onDisableClick} disabled>
-              <div className="menu-icon">
+          </div>
+          <div className="level-item has-text-centered">
+            <NavLink to="/réglages">
+              <div className="heading">
                 <Icon svg="ico-settings-w" />
               </div>
-              Réglages
+              <p className="title">
+                Réglages
+              </p>
             </NavLink>
-          </li>
-          <li>
-            <NavLink to="/profil" onClick={this.onDisableClick} disabled>
-              <div className="menu-icon">
+          </div>
+          <div className="level-item has-text-centered">
+            <NavLink to="/profil">
+              <div className="heading">
                 <Icon svg="ico-user-w" />
               </div>
-              Mon profil
+              <p className="title">
+                Mon profil
+              </p>
             </NavLink>
-          </li>
-          <li>
-            <NavLink to="/mentions-legales">
-              <div className="menu-icon">
-                <Icon svg="ico-settings-w" />
-              </div>
-              Mentions légales
-            </NavLink>
-          </li>
-          <li>
-            <a onClick={this.onSignOutClick}>
-              <div className="menu-icon">
+          </div>
+          <div className='level-item has-text-centered'>
+            <a onClick={this.onSignOutCdivck}>
+              <div className="heading">
                 <Icon svg="ico-deconnect-w" />
               </div>
-              Déconnexion
+              <p className="title">
+                Déconnexion
+              </p>
             </a>
-          </li>
-        </ul>
+          </div>
+        </nav>
       </div>
     )
   }

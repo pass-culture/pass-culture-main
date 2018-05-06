@@ -26,6 +26,7 @@ function* fromWatchSuccessSignActions() {
     (user.id !== currentUser.id ||
       moment(user.dateCreated) > moment(currentUser.dateCreated))
   if (user && (!currentUser || isDeprecatedCurrentUser)) {
+    console.log('ICI user', user)
     yield put(setUser(user))
   } else if (!user) {
     yield put(setUser(false))

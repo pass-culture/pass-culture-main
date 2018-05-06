@@ -6,7 +6,7 @@ import OffererItem from './OffererItem'
 
 const OfferersGrid = ({ offerers }) => {
   return (
-    <div className="flex flex-wrap items-center justify-center p2">
+    <div className="tile is-ancestor">
       {offerers &&
         offerers.map((offerer, index) => (
           <OffererItem key={index} {...offerer} />
@@ -16,5 +16,5 @@ const OfferersGrid = ({ offerers }) => {
 }
 
 export default compose(
-  connect(state => ({ offerers: state.user && state.user.userOfferers }))
+  connect(state => ({ offerers: state.user && state.user.offerers }))
 )(OfferersGrid)
