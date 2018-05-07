@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { NavLink } from 'react-router-dom'
 
 import Menu from './Menu'
+import SigninOut from './SigninOut'
 import { showModal } from '../../reducers/modal'
+import menu from '../../utils/menu'
 
 const Header = ({ showModal }) => {
   return (
@@ -22,25 +25,23 @@ const Header = ({ showModal }) => {
         </div>
         <div id="navbarMenuHeroC" className="navbar-menu">
           <div className="navbar-end">
-            <a className="navbar-item is-active">
-              Home
-            </a>
-            <a className="navbar-item">
-              Examples
-            </a>
-            <a className="navbar-item">
-              Documentation
-            </a>
-            <span className="navbar-item">
-              <a className="button is-success is-inverted">
-                <span className="icon">
-                  <i className="fab fa-github"></i>
-                </span>
-                <span>Download</span>
-              </a>
-            </span>
+            {
+              menu.links.map(({ path, title }, index) => (
+                <NavLink className="navbar-item is-active"
+                  key={index}
+                  to={path}
+                >
+                  {title}
+                </NavLink>
+              ))
+            }
           </div>
         </div>
+        <SigninOut className='navbar-item is-active is-hidden-mobile'>
+          <a className="navbar-item is-active">
+            Déconnexion
+          </a>
+        </SigninOut>
       </div>
     </header>
   )

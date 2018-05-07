@@ -1,23 +1,15 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import Icon from '../layout/Icon'
-// import ProfilePicture from './ProfilePicture'
-import { requestData } from '../../reducers/data'
-import { closeModal } from '../../reducers/modal'
+import Icon from './Icon'
+import SigninOut from './SigninOut'
 import { ROOT_PATH } from '../../utils/config'
+import menu from '../../utils/menu'
 
 class Menu extends Component {
   onDisableClick = event => {
     alert('Pas encore disponible')
     event.preventDefault()
-  }
-
-  onSignOutCdivck = () => {
-    const { closeModal, requestData } = this.props
-    requestData('GET', 'users/signout')
-    closeModal()
   }
 
   render() {
@@ -31,57 +23,37 @@ class Menu extends Component {
               alt="Avatar"
               className="avatar"
             />
-            {user && user.pubdivcName}
+            {user && user.publicName}
           </div>
         </div>
         <nav className="level">
-          <div className="level-item has-text-centered">
-            <NavLink to="/decouverte">
-              <div className="heading">
-                <Icon svg="ico-offres-w" />
+          {
+            menu.links.map(({ icon, path, title }, index) =>
+              <div className="level-item has-text-centered"
+                index={index}>
+                <NavLink to={path}>
+                  <div className="heading">
+                    <Icon svg={icon} />
+                  </div>
+                  <p className="title">
+                    {title}
+                  </p>
+                </NavLink>
               </div>
-              <p className="title">
-                Gestion
-              </p>
-            </NavLink>
-          </div>
-          <div className="level-item has-text-centered">
-            <NavLink to="/réglages">
-              <div className="heading">
-                <Icon svg="ico-settings-w" />
-              </div>
-              <p className="title">
-                Réglages
-              </p>
-            </NavLink>
-          </div>
-          <div className="level-item has-text-centered">
-            <NavLink to="/profil">
-              <div className="heading">
-                <Icon svg="ico-user-w" />
-              </div>
-              <p className="title">
-                Mon profil
-              </p>
-            </NavLink>
-          </div>
-          <div className='level-item has-text-centered'>
-            <a onClick={this.onSignOutCdivck}>
-              <div className="heading">
-                <Icon svg="ico-deconnect-w" />
-              </div>
-              <p className="title">
-                Déconnexion
-              </p>
-            </a>
-          </div>
+            )
+          }
+          <SigninOut>
+            <div className="heading">
+              <Icon svg='ico-deconnect-w' />
+            </div>
+            <p className="title">
+              Déconnexion
+            </p>
+          </SigninOut>
         </nav>
       </div>
     )
   }
 }
 
-export default connect(state => ({ user: state.user }), {
-  closeModal,
-  requestData,
-})(Menu)
+export default Menu
