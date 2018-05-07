@@ -1,7 +1,5 @@
 .offerer-item {
   border: 0;
-  img {
-    border-radius: $radius;
-    max-height: 200px;
-  }
+  border-bottom: 1px solid $grey;
+  padding-top: 1rem;
 }

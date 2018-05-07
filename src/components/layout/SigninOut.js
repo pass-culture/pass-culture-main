@@ -16,9 +16,9 @@ class SigninOut extends Component {
   render () {
     const { className, children } = this.props
     return (
-      <div className={className} onClick={this.onSignOutClick}>
+      <a className={className} onClick={this.onSignOutClick}>
         {children}
-      </div>
+      </a>
     )
   }
 }

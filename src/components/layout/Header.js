@@ -35,13 +35,12 @@ const Header = ({ showModal }) => {
                 </NavLink>
               ))
             }
+            <SigninOut className='navbar-item is-active is-hidden-mobile'>
+              Déconnexion
+            </SigninOut>
           </div>
         </div>
-        <SigninOut className='navbar-item is-active is-hidden-mobile'>
-          <a className="navbar-item is-active">
-            Déconnexion
-          </a>
-        </SigninOut>
+
       </div>
     </header>
   )
