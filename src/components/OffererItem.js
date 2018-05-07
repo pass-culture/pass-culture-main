@@ -1,8 +1,6 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import selectThumbUrl from '../selectors/thumbUrl'
 import { THUMBS_URL } from '../utils/config'
 
 const OffererItem = ({
@@ -18,7 +16,7 @@ const OffererItem = ({
         style={style}>
         <figure className="media-left">
           <p className="image is-64x64">
-            <img src={`${THUMBS_URL}/venues/${venue.id}`}/>
+            <img alt='thumbnail' src={`${THUMBS_URL}/venues/${venue.id}`}/>
           </p>
         </figure>
         <div className="media-content">

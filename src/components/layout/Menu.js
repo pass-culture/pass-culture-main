@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './Icon'
@@ -11,6 +12,7 @@ class Menu extends Component {
     alert('Pas encore disponible')
     event.preventDefault()
   }
+
 
   render() {
     const { user } = this.props
@@ -26,11 +28,11 @@ class Menu extends Component {
             {user && user.publicName}
           </div>
         </div>
-        <nav className="level">
+        <nav>
           {
             menu.links.map(({ icon, path, title }, index) =>
-              <div className="level-item has-text-centered"
-                index={index}>
+              <div className="has-text-centered"
+                key={index}>
                 <NavLink to={path}>
                   <div className="heading">
                     <Icon svg={icon} />

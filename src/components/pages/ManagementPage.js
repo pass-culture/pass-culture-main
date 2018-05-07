@@ -1,6 +1,6 @@
 import React from 'react'
 
-import OfferersGrid from '../OfferersGrid'
+import OfferersList from '../OfferersList'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 
@@ -8,7 +8,7 @@ import PageWrapper from '../layout/PageWrapper'
 const ManagementPage = () => {
   return (
     <PageWrapper menuButton name="professional">
-      <OfferersGrid />
+      <OfferersList />
     </PageWrapper>
   )
 }

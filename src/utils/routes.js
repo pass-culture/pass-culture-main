@@ -5,6 +5,7 @@ import BetaPage from '../components/pages/BetaPage'
 import ManagementPage from '../components/pages/ManagementPage'
 import OffererPage from '../components/pages/OffererPage'
 import ProfilePage from '../components/pages/ProfilePage'
+import SettingsPage from '../components/pages/SettingsPage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
@@ -56,6 +57,12 @@ const routes = [
     path: '/mentions-legales',
     title: 'Mentions Légales',
     render: () => <TermsPage />,
+  },
+  {
+    exact: true,
+    path: '/reglages',
+    title: 'Réglages',
+    render: () => <SettingsPage />,
   },
 ]
 

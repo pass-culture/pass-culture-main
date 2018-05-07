@@ -6,12 +6,12 @@ import { compose } from 'redux'
 
 import OffererItem from './OffererItem'
 
-const OfferersGrid = ({ height,
+const OfferersList = ({ height,
   offerers,
   width
 }) => {
   return (
-    <div className="columns">
+    <div className="columns is-6">
       {
         offerers && <List
           width={0.95 * width}
@@ -31,7 +31,7 @@ const OfferersGrid = ({ height,
   )
 }
 
-OfferersGrid.defaultProps = {
+OfferersList.defaultProps = {
   height: 1500,
   width: 1500
 }
@@ -42,4 +42,4 @@ export default compose(
     height
   })),
   connect(state => ({ offerers: state.user && state.user.offerers }))
-)(OfferersGrid)
+)(OfferersList)

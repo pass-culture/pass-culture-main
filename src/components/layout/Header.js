@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
@@ -17,7 +17,11 @@ const Header = ({ showModal }) => {
           </a>
           <span className="navbar-burger burger"
             data-target="navbarMenuHeroC"
-            onClick={() => showModal(<Menu />, { fromDirection: 'top' })}>
+            onClick={() => showModal(<Menu />,
+              {
+                fromDirection: 'right',
+                isClosingOnLocationChange: true
+              })}>
             <span></span>
             <span></span>
             <span></span>

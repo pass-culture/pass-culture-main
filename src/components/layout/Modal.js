@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 import Icon from './Icon'
 import { closeModal } from '../../reducers/modal'
@@ -55,7 +56,16 @@ class Modal extends Component {
     e.stopPropagation()
   }
 
-  componentDidMount() {}
+  componentDidUpdate (prevProps) {
+    const {
+      closeModal,
+      isClosingOnLocationChange,
+      location: { pathname }
+    } = this.props
+    if (isClosingOnLocationChange && pathname !== prevProps.location.pathname) {
+      closeModal()
+    }
+  }
 
   componentWillUnmount() {
     this.openTimeout && clearTimeout(this.openTimeout)
@@ -81,8 +91,10 @@ class Modal extends Component {
   render() {
     const {
       ContentComponent,
+      fullscreen,
       hasCloseButton,
       isUnclosable,
+      location: { pathname },
       maskColor,
       transitionDuration,
     } = this.props
@@ -97,7 +109,7 @@ class Modal extends Component {
       >
         <div
           className={classnames('modal-dialog', {
-            fullscreen: this.props.fullscreen,
+            fullscreen,
           })}
           role="document"
           style={{
@@ -128,8 +140,8 @@ Modal.defaultProps = {
   maskColor: 'rgba(0, 0, 0, 0.8)',
 }
 
-export default connect(
+export default  withRouter(connect(
   ({ modal: { config, ContentComponent, isActive } }) =>
     Object.assign({ ContentComponent, isActive }, config),
   { closeModal }
-)(Modal)
+)(Modal))

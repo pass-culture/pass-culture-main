@@ -5,7 +5,7 @@ export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
 
 // INITIAL STATE
 const initialState = {
-  config: { fromDirection: 'top' },
+  config: { fromDirection: 'right' },
   ContentComponent: null,
   isActive: false,
 }

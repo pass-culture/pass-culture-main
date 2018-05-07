@@ -3,10 +3,11 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import OffererEditButton from '../OffererEditButton'
-import OffersList from '../OffersList'
+import OffersGroupsList from '../OffersGroupsList'
 import OfferNewButton from '../OfferNewButton'
-import SearchInput from '../layout/SearchInput'
 import withLogin from '../hocs/withLogin'
+import SearchInput from '../layout/SearchInput'
+import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
 import { setUserOfferer } from '../../reducers/user'
 
@@ -26,14 +27,14 @@ class OffererPage extends Component {
 
   render() {
     return (
-      <main className="page offerer-page p2">
-        <div className="flex items-center flex-start mt2 mb2">
+      <PageWrapper name="offerer">
+        <div className="">
           <OfferNewButton />
           <OffererEditButton />
           <SearchInput collectionName="offers" isLoading />
         </div>
-        <OffersList />
-      </main>
+        <OffersGroupsList />
+      </PageWrapper>
     )
   }
 }
