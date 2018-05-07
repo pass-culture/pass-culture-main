@@ -61,7 +61,7 @@ def make_offer_query():
                     .filter(and_(*map(query_offers, ts_queries)))
     if 'offererId' in filters:
         query = query.filter(Offer.offererId == dehumanize(filters['offererId']))
-        check_offerer_user(query.first_or_404().offerer)
+        check_offerer_user(query.first_or_404().offerer.query)
     # PRICE
     if 'hasPrice' in filters and filters['hasPrice'].lower() == 'true':
         query = query.filter(Offer.price != None)
