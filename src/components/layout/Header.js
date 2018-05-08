@@ -5,16 +5,20 @@ import { NavLink } from 'react-router-dom'
 import Menu from './Menu'
 import SigninOut from './SigninOut'
 import { showModal } from '../../reducers/modal'
+import { ROOT_PATH } from '../../utils/config'
 import menu from '../../utils/menu'
 
 const Header = ({ showModal }) => {
   return (
-    <header className="navbar">
+    <header className="header navbar red-bg">
       <div className="container">
         <div className="navbar-brand">
-          <a className="navbar-item">
-            <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo" />
-          </a>
+          <div className="navbar-item">
+            <img src={`${ROOT_PATH}/icon/app-icon-app-store.png`} alt="Logo" />
+          </div>
+          <div className="navbar-item is-italic">
+            <b> Pass </b> Culture PRO
+          </div>
           <span className="navbar-burger burger"
             data-target="navbarMenuHeroC"
             onClick={() => showModal(<Menu />,
@@ -31,7 +35,7 @@ const Header = ({ showModal }) => {
           <div className="navbar-end">
             {
               menu.links.map(({ path, title }, index) => (
-                <NavLink className="navbar-item is-active"
+                <NavLink className="navbar-item is-active is-outlined"
                   key={index}
                   to={path}
                 >
@@ -39,9 +43,10 @@ const Header = ({ showModal }) => {
                 </NavLink>
               ))
             }
-            <SigninOut className='navbar-item is-active is-hidden-mobile'>
-              Déconnexion
-            </SigninOut>
+            <SigninOut
+              className='navbar-item is-active is-hidden-mobile'
+              signoutElement={<p>Déconnexion</p>}
+            />
           </div>
         </div>
 

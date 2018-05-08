@@ -3,6 +3,8 @@ import { Redirect } from 'react-router'
 
 import BetaPage from '../components/pages/BetaPage'
 import ManagementPage from '../components/pages/ManagementPage'
+import NewOfferPage from '../components/pages/NewOfferPage'
+import NewOffererPage from '../components/pages/NewOffererPage'
 import OfferPage from '../components/pages/OfferPage'
 import OffererPage from '../components/pages/OffererPage'
 import ProfilePage from '../components/pages/ProfilePage'
@@ -43,12 +45,24 @@ const routes = [
   },
   {
     exact: true,
+    path: '/gestion/new',
+    title: 'Gestion',
+    render: props => <NewOffererPage  />,
+  },
+  {
+    exact: true,
     path: '/gestion/:offererId/:offerId',
     title: 'Gestion',
     render: props => <OfferPage
       offererId={props.match.params.offererId}
       offerId={props.match.params.offerId}
     />,
+  },
+  {
+    exact: true,
+    path: '/gestion/:offererId/new',
+    title: 'Gestion',
+    render: props => <NewOfferPage  />,
   },
   {
     exact: true,

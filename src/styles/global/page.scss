@@ -8,10 +8,6 @@
     background-color: $primary;
     color: $white;
 
-    header {
-      @include dotted($white, bottom);
-    }
-
     footer {
       @include dotted($white);
     }

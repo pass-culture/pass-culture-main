@@ -29,7 +29,7 @@ const OffererItem = ({
         <nav className="level">
           <NavLink to={`/gestion/${id}`}>
             <button className="button is-primary level-item">
-              Modifier
+              Voir
             </button>
           </NavLink>
         </nav>

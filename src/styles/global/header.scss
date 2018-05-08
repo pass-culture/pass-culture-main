@@ -1,0 +1,16 @@
+.header {
+  &.red-bg {
+    background-color: $primary;
+    a, div {
+      color: $white;
+      font-size: $size-medium;
+      &.is-active:hover {
+        color: $red;
+      }
+    }
+  }
+
+  header {
+    @include dotted($white, bottom);
+  }
+}

@@ -23,14 +23,14 @@ const SignupPage = ({ errors }) => {
           className="input"
           label={
             <Label
-              title="SIRET"
+              title="SIREN"
             />
           }
           required="true"
           collectionName="users"
-          name="siret"
-          autoComplete="siret"
-          placeholder="SIRET"
+          name="siren"
+          autoComplete="siren"
+          placeholder="SIREN"
           type="text"
         />
         <FormField

@@ -15,7 +15,7 @@ class OfferNewButton extends Component {
   }
   render() {
     return (
-      <button className="button is-primary  level-item"
+      <button className="button is-primary level-item"
         onClick={this.onClick}>
         Nouvelle Offre
       </button>
