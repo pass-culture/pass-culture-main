@@ -27,7 +27,7 @@ class OffererPage extends Component {
 
   render() {
     return (
-      <PageWrapper name="offerer">
+      <PageWrapper name="offerer is-6">
         <div className="">
           <OfferNewButton />
           <OffererEditButton />

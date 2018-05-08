@@ -43,7 +43,7 @@ class OffersGroupsList extends Component {
           ({width, height}) => groups && <List
             height={height}
             rowCount={groups.length}
-            rowHeight={100}
+            rowHeight={height / groups.length}
             rowRenderer={({ index, key, style }) => (
               <div key={index} style={style}>
                 <OffersGroupItem
