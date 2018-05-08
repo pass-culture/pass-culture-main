@@ -40,10 +40,10 @@ class OffersGroupsList extends Component {
         <hr className='is-invisible' key='first'/>
         <AutoSizer>
         {
-          ({width, height}) => groups && <List
+          ({width, height}) => groups && groups.length ? <List
             height={height}
             rowCount={groups.length}
-            rowHeight={height / groups.length}
+            rowHeight={190}
             rowRenderer={({ index, key, style }) => (
               <div key={index} style={style}>
                 <OffersGroupItem
@@ -59,7 +59,7 @@ class OffersGroupsList extends Component {
               </div>
             )}
             width={width}
-          />
+          /> : ''
         }
         </AutoSizer>
       </div>

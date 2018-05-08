@@ -9,11 +9,11 @@ const OfferersList = ({ offerers }) => {
     <div className="offerers-list is-6">
         <AutoSizer>
         {
-          ({width, height}) => offerers && <List
-            width={0.95 * width}
+          ({width, height}) => offerers && offerers.length && <List
+            width={width}
             height={height}
             rowCount={offerers.length}
-            rowHeight={120}
+            rowHeight={100}
             rowRenderer={({ index, key, style }) => (
               <OffererItem
                 key={index}

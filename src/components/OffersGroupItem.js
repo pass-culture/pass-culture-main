@@ -33,7 +33,7 @@ class OffersGroupItem extends Component {
     return (
       <article className="offers-group-item media">
         <figure className="media-left">
-          <p className="image is-64x64">
+          <p className="image is-96x96 is-2by3">
             <img src={groupingSource.thumbUrl}/>
           </p>
         </figure>
@@ -42,11 +42,9 @@ class OffersGroupItem extends Component {
             <p className='title'>
               <strong>{groupingSource.name}</strong>
             </p>
-            <p className='is-small'>
-              <Dotdotdot clamp={3}>
-                {groupingSource.description}
-              </Dotdotdot>
-            </p>
+            <Dotdotdot className='is-small' clamp={3}>
+              {groupingSource.description}
+            </Dotdotdot>
           </div>
           <nav className="level is-mobile">
             <div className="level-left">

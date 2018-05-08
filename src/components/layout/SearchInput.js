@@ -14,12 +14,14 @@ class SearchInput extends Component {
       props.debounceTimeout
     )
   }
+
   componentWillReceiveProps(nextProps) {
     const { closeLoading, offers } = nextProps
     if (offers !== this.props.offers) {
       closeLoading()
     }
   }
+
   onRequestData = event => {
     const {
       target: { value },
@@ -29,24 +31,23 @@ class SearchInput extends Component {
     requestData('GET', `${collectionName}?search=${value}`, { hook, value })
     this._isDebouncing = false
   }
+
   onChange = event => {
     event.persist()
     //!this._isDebouncing && this.props.showLoading()
     this._isDebouncing = true
     this.onDebouncedRequestData(event)
   }
+
   render() {
-    const children = [
-      <input
-        className="input search-input mx-auto col-9"
-        key={0}
-        onChange={this.onChange}
-        placeholder="tape ta recherche"
-        ref={_element => (this._element = _element)}
-        type="text"
-      />,
-    ]
-    return children
+    return <input
+      className="input"
+      key={0}
+      onChange={this.onChange}
+      placeholder="tape ta recherche"
+      ref={_element => (this._element = _element)}
+      type="text"
+    />
   }
 }
 

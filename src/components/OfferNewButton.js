@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import OfferNew from './OfferNew'
-import Icon from './layout/Icon'
 import { assignData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
 import { showModal } from '../reducers/modal'
@@ -16,13 +15,15 @@ class OfferNewButton extends Component {
   }
   render() {
     return (
-      <button className="button is-default is-rounded" onClick={this.onClick}>
-        <Icon name="add" />
+      <button className="button is-primary  level-item"
+        onClick={this.onClick}>
+        Nouvelle Offre
       </button>
     )
   }
 }
 
-export default connect(null, { assignData, resetForm, showModal })(
-  OfferNewButton
-)
+export default connect(
+  null,
+  { assignData, resetForm, showModal }
+)(OfferNewButton)

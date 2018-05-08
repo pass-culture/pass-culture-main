@@ -15,17 +15,16 @@ class OffererEditButton extends Component {
     const { offerer } = this.props
     return (
       <button
-        className="button is-default"
-        disabled={!offerer}
+        className="button is-primary level-item"
         onClick={this.onClick}
       >
-        <Icon name="perm-data-setting" />
+        Mes sources
       </button>
     )
   }
 }
 
 export default connect(
-  state => ({ offerer: state.user && state.user.offerer }),
+  null,
   { showModal }
 )(OffererEditButton)

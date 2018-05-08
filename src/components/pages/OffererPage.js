@@ -27,12 +27,14 @@ class OffererPage extends Component {
 
   render() {
     return (
-      <PageWrapper name="offerer is-6">
-        <div className="">
-          <OfferNewButton />
-          <OffererEditButton />
-          <SearchInput collectionName="offers" isLoading />
-        </div>
+      <PageWrapper name="offerer">
+        <nav className="level is-mobile">
+          <div className="level-left">
+            <OfferNewButton />
+            <OffererEditButton />
+          </div>
+        </nav>  
+        <SearchInput collectionName="offers" isLoading />
         <OffersGroupsList />
       </PageWrapper>
     )
