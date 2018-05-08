@@ -3,24 +3,32 @@ import { connect } from 'react-redux'
 import { AutoSizer, List } from 'react-virtualized'
 
 import OffererItem from './OffererItem'
+import selectOfferersRows from '../selectors/offerersRows'
 
-const OfferersList = ({ offerers }) => {
+const OfferersList = ({ offerersRows }) => {
   return (
-    <div className="offerers-list is-6">
+    <div className="offerers-list">
         <AutoSizer>
         {
-          ({width, height}) => offerers && offerers.length && <List
-            width={width}
+          ({width, height}) => offerersRows && offerersRows.length && <List
             height={height}
-            rowCount={offerers.length}
-            rowHeight={100}
-            rowRenderer={({ index, key, style }) => (
-              <OffererItem
-                key={index}
-                {...offerers[index]}
+            rowCount={offerersRows.length}
+            rowHeight={220}
+            rowRenderer={({ index, key, style }) =>
+              <div className="columns"
+                key={key}
                 style={style}
-              />
-            )}
+              >
+                {
+                  offerersRows[index].map((offerer, index) =>
+                    <div className="column" key={index}>
+                      <OffererItem {...offerer} />
+                    </div>
+                  )
+                }
+              </div>
+            }
+            width={width}
            />
          }
          </AutoSizer>
@@ -29,5 +37,6 @@ const OfferersList = ({ offerers }) => {
 }
 
 export default connect(
-  state => ({ offerers: state.user && state.user.offerers })
+  () => (state, ownProps) =>
+    ({ offerersRows: selectOfferersRows(state, ownProps) })
 )(OfferersList)

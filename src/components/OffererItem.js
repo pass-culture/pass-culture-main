@@ -6,31 +6,35 @@ import { THUMBS_URL } from '../utils/config'
 const OffererItem = ({
   id,
   name,
-  style,
   venue
 }) => {
+  const src = `${THUMBS_URL}/venues/${venue.id}`
   return (
-    <NavLink to={`/gestion/${id}`}>
-      <article className="offerer-item media"
-        onClick={this.onClick}
-        style={style}>
-        <figure className="media-left">
-          <p className="image is-64x64">
-            <img alt='thumbnail' src={`${THUMBS_URL}/venues/${venue.id}`}/>
+    <article className="offerer-item media box">
+      <figure className="media-left">
+        <div className="image is-64x64" style={{
+          backgroundImage: `url('${src}')`,
+          backgroundSize: 'cover'
+        }} />
+      </figure>
+      <div className="media-content">
+        <div className="content">
+          <p className="title">
+            <strong>{name}</strong>
           </p>
-        </figure>
-        <div className="media-content">
-          <div className="content">
-            <p className="title">
-              <strong>{name}</strong>
-            </p>
-            <p className="subtitle">
-              {venue.address}
-            </p>
-          </div>
+          <p className="subtitle">
+            {venue.address}
+          </p>
         </div>
-      </article>
-    </NavLink>
+        <nav className="level">
+          <NavLink to={`/gestion/${id}`}>
+            <button className="button is-primary level-item">
+              Modifier
+            </button>
+          </NavLink>
+        </nav>
+      </div>
+    </article>
   )
 }
 
