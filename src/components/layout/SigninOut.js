@@ -1,6 +1,8 @@
+import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { NavLink } from 'react-router-dom'
+import { NavLink, withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Icon from './Icon'
 import { requestData } from '../../reducers/data'
@@ -14,6 +16,13 @@ class SigninOut extends Component {
     closeModal()
   }
 
+  componentDidUpdate (prevProps) {
+    const { history, user } = this.props
+    if (!user && prevProps.user) {
+      history.push('/connexion')
+    }
+  }
+
   render () {
     const { className,
       signinElement,
@@ -21,7 +30,8 @@ class SigninOut extends Component {
       user
     } = this.props
     return (
-      <NavLink className={className} to='/connexion'>
+      <NavLink className={classnames('signin-out', className)}
+        to={window.location.pathname}>
         {
           user
           ? (
@@ -36,7 +46,10 @@ class SigninOut extends Component {
   }
 }
 
-export default connect(
-  state => ({ user: state.user }),
-  { closeModal, requestData }
+export default compose(
+  withRouter,
+  connect(
+    state => ({ user: state.user }),
+    { closeModal, requestData }
+  )
 )(SigninOut)

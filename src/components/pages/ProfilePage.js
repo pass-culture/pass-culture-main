@@ -1,27 +1,16 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React from 'react'
 import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
 import PageWrapper from '../layout/PageWrapper'
 
-class ProfilePage extends Component {
-
-  render() {
-    const { user } = this.props
-    return (
-      <PageWrapper
-        name="profile"
-        backButton
-      >
-        PROFILE
-      </PageWrapper>
-    )
-  }
+const ProfilePage = ({ user }) => {
+  return (
+    <PageWrapper name="profile">
+      PROFILE
+    </PageWrapper>
+  )
 }
 
-export default compose(
-  withLogin({ isRequired: true })
-)(ProfilePage)
+export default withLogin({ isRequired: true })(ProfilePage)

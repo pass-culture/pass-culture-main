@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
 
@@ -36,6 +37,7 @@ class OfferPage extends Component {
 }
 
 export default compose(
+  withLogin({ isRequired: true }),
   withRouter,
   connect(
     state => ({}),

@@ -9,7 +9,7 @@ import SearchInput from '../layout/SearchInput'
 
 const ManagementPage = () => {
   return (
-    <PageWrapper header name="management">
+    <PageWrapper name="management">
       <nav className="level is-mobile">
         <div className="level-left">
           <NavLink to='/offerer/new'>

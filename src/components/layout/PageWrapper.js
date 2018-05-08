@@ -10,6 +10,7 @@ const PageWrapper = props => {
     Tag,
     name,
     redBg,
+    noHeader,
     noPadding,
     backButton,
     children,
@@ -19,7 +20,7 @@ const PageWrapper = props => {
     .concat(children)
     .filter(e => e.type !== 'header' && e.type !== 'footer')
   return [
-    header && <Header {...header} />,
+    !noHeader && <Header key='header' {...header} />,
     <Tag
       className={classnames({
         page: true,
@@ -29,6 +30,7 @@ const PageWrapper = props => {
         'red-bg': redBg,
         'no-padding': noPadding,
       })}
+      key='page-wrapper'
     >
       {backButton && <BackButton {...backButton} />}
       <div className="page-content">{content}</div>

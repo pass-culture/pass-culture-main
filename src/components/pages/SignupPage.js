@@ -17,7 +17,7 @@ const Label = ({ subtitle, title, inline }) => (
 
 const SignupPage = ({ errors }) => {
   return (
-    <PageWrapper name="sign-up" Tag="form">
+    <PageWrapper name="sign-up" noHeader Tag="form">
       <div className="form-container">
         <FormField
           className="input"

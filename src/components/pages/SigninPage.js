@@ -16,7 +16,7 @@ const Label = ({ title }) => {
 
 const SigninPage = ({ errors }) => {
   return (
-    <PageWrapper name="sign-in" Tag="form" redBg>
+    <PageWrapper name="sign-in" noHeader Tag="form" redBg>
       <div className="form-container">
         <div className="section">
           <h1 className="title is-1 is-italic">Bonjour&nbsp;!</h1>

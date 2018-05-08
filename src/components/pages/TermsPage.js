@@ -53,7 +53,7 @@ class TermsPage extends Component {
     return (
       <PageWrapper
         name="terms"
-        menuButton={{ borderTop: true, colored: true }}
+        noHeader
         backButton
       >
         <header>Mentions légales</header>

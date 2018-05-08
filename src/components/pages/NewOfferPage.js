@@ -1,5 +1,6 @@
 import React from 'react'
 
+import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 
 const NewOfferPage = () => {
@@ -10,4 +11,4 @@ const NewOfferPage = () => {
   )
 }
 
-export default NewOfferPage
+export default withLogin({ isRequired: true })(NewOfferPage)
