@@ -1,5 +1,16 @@
 .offerer-page {
-  width: 75%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
+
+  .level {
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+  }
+
+  .page-content {
+    padding: 0;
+    padding-top: 1rem;
+  }
 }

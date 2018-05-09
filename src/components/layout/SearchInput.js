@@ -42,7 +42,6 @@ class SearchInput extends Component {
   render() {
     return <input
       className="input"
-      key={0}
       onChange={this.onChange}
       placeholder="tape ta recherche"
       ref={_element => (this._element = _element)}

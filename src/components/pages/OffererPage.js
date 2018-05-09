@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import OffererEditButton from '../OffererEditButton'
 import OffersGroupsList from '../OffersGroupsList'
-import OfferNewButton from '../OfferNewButton'
 import withLogin from '../hocs/withLogin'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
@@ -26,15 +26,26 @@ class OffererPage extends Component {
   }
 
   render() {
+    const { offererId } = this.props
     return (
       <PageWrapper name="offerer">
         <nav className="level is-mobile">
           <div className="level-left">
-            <OfferNewButton />
-            <OffererEditButton />
+            <NavLink to={`/gestion/${offererId}/espace`}>
+              <button className="button is-primary level-item">
+                Configurer mon espace
+              </button>
+            </NavLink>
+            <NavLink to={`/gestion/${offererId}/creation`}>
+              <button className="button is-primary level-item">
+                Nouvelle Offre
+              </button>
+            </NavLink>
           </div>
-        </nav>  
-        <SearchInput collectionName="offers" isLoading />
+        </nav>
+        <nav className="level is-mobile">
+          <SearchInput collectionName="offers" isLoading />
+        </nav>
         <OffersGroupsList />
       </PageWrapper>
     )

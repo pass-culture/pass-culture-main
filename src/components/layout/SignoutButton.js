@@ -1,14 +1,13 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { NavLink, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Icon from './Icon'
 import { requestData } from '../../reducers/data'
 import { closeModal } from '../../reducers/modal'
 
-class SigninOut extends Component {
+class SignoutButton extends Component {
 
   onSignoutClick = () => {
     const { closeModal, requestData } = this.props
@@ -24,24 +23,10 @@ class SigninOut extends Component {
   }
 
   render () {
-    const { className,
-      signinElement,
-      signoutElement,
-      user
-    } = this.props
     return (
-      <NavLink className={classnames('signin-out', className)}
-        to={window.location.pathname}>
-        {
-          user
-          ? (
-            <span onClick={this.onSignoutClick}>
-              {signoutElement}
-            </span>
-          )
-          : signinElement
-        }
-      </NavLink>
+      <button className='button is-primary' onClick={this.onClick}>
+        Déconnexion
+      </button>
     )
   }
 }
@@ -52,4 +37,4 @@ export default compose(
     state => ({ user: state.user }),
     { closeModal, requestData }
   )
-)(SigninOut)
+)(SignoutButton)

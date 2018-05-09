@@ -23,8 +23,27 @@ body {
   -moz-user-select: none;
   -o-user-select: none;
   user-select: none;
+  &.no-scroll {
+    overflow-y: hidden;
+  }
 }
 
+.header {
+  &.red-bg {
+    background-color: $primary;
+    a, div {
+      color: $white;
+      font-size: $size-medium;
+      &.is-active:hover {
+        color: $red;
+      }
+    }
+  }
+
+  header {
+    @include dotted($white, bottom);
+  }
+}
 
 #android-statusbar-overlay {
   display: none;

@@ -24,7 +24,7 @@ class FormField extends Component {
       className: classnames(className, `input ${type}`),
     }
     const labelMarkup = (
-      <label htmlFor={id} key={'label_' + id}>
+      <label className='label' htmlFor={id} key={'label_' + id}>
         {label}
       </label>
     )
@@ -41,14 +41,18 @@ class FormField extends Component {
       )
     return [
       <div
-        className={classnames('form-input', {
+        className={classnames('field form-input', {
           checkbox: type === 'checkbox',
         })}
         key={0}
       >
-        {type === 'checkbox'
-          ? [inputMarkup, labelMarkup]
-          : [labelMarkup, inputMarkup]}
+        <div className='control'>
+          {
+            type === 'checkbox'
+            ? [inputMarkup, labelMarkup]
+            : [labelMarkup, inputMarkup]
+          }
+        </div>
       </div>,
       <ul className={classnames('errors', { pop: errors })} key={1}>
         {errors &&

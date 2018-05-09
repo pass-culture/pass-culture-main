@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Menu from './Menu'
-import SigninOut from './SigninOut'
 import { showModal } from '../../reducers/modal'
 import { ROOT_PATH } from '../../utils/config'
 import menu from '../../utils/menu'
@@ -43,10 +42,6 @@ const Header = ({ showModal }) => {
                 </NavLink>
               ))
             }
-            <SigninOut
-              className='navbar-item is-active is-hidden-mobile'
-              signoutElement={<p>Déconnexion</p>}
-            />
           </div>
         </div>
 

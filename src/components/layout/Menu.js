@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './Icon'
-import SigninOut from './SigninOut'
 import { ROOT_PATH } from '../../utils/config'
 import menu from '../../utils/menu'
 
@@ -44,14 +43,6 @@ class Menu extends Component {
               </div>
             )
           }
-          <SigninOut>
-            <div className="heading">
-              <Icon svg='ico-deconnect-w' />
-            </div>
-            <p className="title">
-              Déconnexion
-            </p>
-          </SigninOut>
         </nav>
       </div>
     )

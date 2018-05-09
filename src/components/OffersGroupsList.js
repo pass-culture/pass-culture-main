@@ -52,10 +52,6 @@ class OffersGroupsList extends Component {
                   isModify
                   isPrices
                 />
-                {
-                  (index !== groups.length -1) &&
-                  <hr />
-                }
               </div>
             )}
             width={width}
