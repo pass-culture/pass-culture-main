@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { parse } from 'query-string'
 
 import { API_URL } from './config'
@@ -42,8 +43,10 @@ export async function fetchData(method, path, config = {}) {
   const result = await fetch(`${API_URL}/${path}`, init)
   // const collectionName = path.split('?')[0]
   if (result.status === 200 || result.status === 201) {
-    if (window.cordova) {
+    if (get(window, 'cordova.plugins.CookieManagementPlugin.flush')) {
       window.cordova.plugins.CookieManagementPlugin.flush()
+    } else {
+      console.warn('CookieManagementPlugin.flush is not available here')
     }
     return { data: await result.json() }
   } else {
