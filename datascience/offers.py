@@ -106,9 +106,9 @@ def get_offers(limit=3, user=None, coords=None):
     # RETURN
     print('(reco) final count', len(final_offers))
     if LAT and LONG:
-        final_offers = sorted(final_offers,
-            key=lambda o:
-            distance(
+        final_offers = sorted(
+            final_offers,
+            key=lambda o: distance(
                 o.offerer.venue.latitude,
                 o.offerer.venue.longitude,
                 LAT,
