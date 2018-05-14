@@ -105,8 +105,16 @@ def get_offers(limit=3, user=None, coords=None):
 
     # RETURN
     print('(reco) final count', len(final_offers))
-    return sorted(final_offers,
-        key=lambda o:
-        distance(o.offerer.venue.latitude, o.offerer.venue.longitude, LAT, LONG))
+    if LAT and LONG:
+        final_offers = sorted(final_offers,
+            key=lambda o:
+            distance(
+                o.offerer.venue.latitude,
+                o.offerer.venue.longitude,
+                LAT,
+                LONG
+            )
+        )
+    return final_offers
 
 app.datascience.get_offers = get_offers
