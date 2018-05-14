@@ -2,6 +2,7 @@
 
 require('babel-polyfill');
 require('es5-shim');
+require('indexeddbshim');
 
 if (typeof Promise === 'undefined') {
   // Rejection tracking prevents a common issue where React gets into an
