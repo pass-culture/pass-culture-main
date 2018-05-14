@@ -84,13 +84,15 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
 
     def getObjectThumb(self, obj, index):
         assert obj.idAtProviders == str(self.line['Ref Lieu'])
-        return self.line['Lien Image']
+        if self.line['Lien Image']:
+            return self.line['Lien Image']
+        else:
+            raise ValueError('Unexpected Lien Image '
+                             + obj.__class__.__name__)
 
     def getObjectThumbDates(self, obj):
-        #if self.mock:
-            return []
-        #if is_filled(self.line['Lien Image']) != '':
-        #    return [read_date(self.line['Date MAJ'])]
+        if is_filled(self.line['Lien Image']) != '':
+            return [read_date(self.line['Date MAJ'])]
 
 
 app.local_providers.SpreadsheetExpVenues = SpreadsheetExpVenues

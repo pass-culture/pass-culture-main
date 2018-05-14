@@ -9,9 +9,9 @@ from pathlib import Path
 
 from models.api_errors import ApiErrors
 from utils.human_ids import humanize
+from utils.includes import USERS_INCLUDES
 from utils.object_storage import store_public_object
 
-user_include = ['offerers', '-password']
 User = app.model.User
 
 
@@ -23,7 +23,7 @@ def make_user_query():
 @app.route("/users/me", methods=["GET"])
 @login_required
 def get_profile():
-    return jsonify(current_user._asdict(include=user_include))
+    return jsonify(current_user._asdict(include=USERS_INCLUDES))
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -32,7 +32,7 @@ def signin():
     identifier = json.get("identifier")
     password = json.get("password")
     user = app.get_user_with_credentials(identifier, password)
-    return jsonify(user._asdict(include=user_include)), 200
+    return jsonify(user._asdict(include=USERS_INCLUDES)), 200
 
 
 @app.route("/users/signout", methods=["GET"])
@@ -91,4 +91,4 @@ def signup():
             request.json['thumb_content_type']
         )
     login_user(new_user)
-    return jsonify(new_user._asdict(include=user_include)), 201
+    return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201

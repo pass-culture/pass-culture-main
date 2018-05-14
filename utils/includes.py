@@ -75,8 +75,22 @@ BOOKINGS_INCLUDES = [
     }
 ]
 
+OFFERERS_INCLUDES = [
+    "venue"
+]
+
+USERS_INCLUDES = [
+    {
+        "key": 'offerers',
+        "sub_joins": OFFERERS_INCLUDES
+    },
+    '-password'
+]
+
 includes = {
     'bookings': BOOKINGS_INCLUDES,
+    'offerers': OFFERERS_INCLUDES,
     'offers': OFFERS_INCLUDES,
-    'recommendations': RECOMMENDATIONS_INCLUDES
+    'recommendations': RECOMMENDATIONS_INCLUDES,
+    'users': USERS_INCLUDES
 }
