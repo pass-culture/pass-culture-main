@@ -19,12 +19,12 @@ app.datascience = AttrDict()
 from datascience.offers import get_offers
 
 
-def create_recommendations(user, limit=3):
-    if user.is_authenticated:
+def create_recommendations(limit=3, user=None, coords=None):
+    if user and user.is_authenticated:
         recommendation_count = Recommendation.query.filter_by(user=user)\
                                 .count()
 
-    offers = get_offers(user, limit)
+    offers = get_offers(limit, user=user, coords=coords)
 
     tuto_mediations = {}
 
