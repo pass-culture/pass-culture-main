@@ -6,11 +6,10 @@ import { getData, putData } from '../workers/dexie/data'
 
 export async function fetchData(method, path, config = {}) {
   // unpack
-  const { body, position, token } = config
+  const { body, token } = config
   // init
   const init = {
     method,
-    // mode: 'cors',
     credentials: 'include',
   }
   if (method && method !== 'GET') {
