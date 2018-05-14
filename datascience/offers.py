@@ -13,10 +13,14 @@ Offer = app.model.Offer
 Recommendation = app.model.Recommendation
 RecommendationOffer = app.model.RecommendationOffer
 
-def get_offers(user, limit=3):
+def get_offers(limit=3, user=None, coords=None):
     # CHECK USER
     if not user or not user.is_authenticated():
         return []
+
+    # POSITION
+    LAT = coords and coords.get('latitude') and float(coords.get('latitude'))
+    LONG = coords and coords.get('longitude') and float(coords.get('longitude'))
 
     # ALL
     all_query = Offer.query
@@ -50,10 +54,8 @@ def get_offers(user, limit=3):
 
     # COMPOSE EVENTS
     # ... FROM MONTPELLIER
-    LAT = 43.608495
-    LONG = 3.893408
     event_mediation_query = compose(
-        with_distance(LAT, LONG),
+        LAT and LONG and with_distance(LAT, LONG),
         with_event_deduplication,
         with_event_mediation(source_ids)
     )(user_query)
@@ -63,11 +65,9 @@ def get_offers(user, limit=3):
     # LIMIT
     event_mediation_offers = [t[0] for t in event_mediation_query.limit(limit)]
 
-
     # COMPOSE THINGS
-    # ... FROM MONTPELLIER
     thing_mediation_query = compose(
-        with_distance(LAT, LONG),
+        LAT and LONG and with_distance(LAT, LONG),
         with_thing_mediation(source_ids)
     )(user_query)
     thing_mediation_query_count = thing_mediation_query.count()

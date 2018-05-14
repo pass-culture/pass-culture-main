@@ -1,6 +1,7 @@
 def compose (*functions):
     def inner(arg):
         for f in reversed(functions):
-            arg = f(arg)
+            if f:
+                arg = f(arg)
         return arg
     return inner

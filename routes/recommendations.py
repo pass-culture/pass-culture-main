@@ -19,6 +19,10 @@ RecommendationOffer = app.model.RecommendationOffer
 def update_recommendations():
     # USER
     user_id = current_user.get_id()
+    # POSITION
+    latitude = request.args.get('latitude')
+    longitude = request.args.get('longitude')
+    print('(position) latitude', latitude, 'longitude', longitude)
     # DETERMINE AROUND
     around = request.args.get('around')
     around_recommendation = None
@@ -106,7 +110,11 @@ def update_recommendations():
     print('(unread) count', unread_recommendations.count())
     if unread_recommendations.count() < unread_complementary_length:
         print('(check) need ' + str(unread_complementary_length) + ' unread recommendations')
-        create_recommendations(current_user, unread_complementary_length)
+        create_recommendations(
+            unread_complementary_length,
+            user=current_user,
+            coords=latitude and longitude and { 'latitude': latitude, 'longitude': longitude }
+        )
     # LIMIT UN READ
     unread_recommendations = unread_recommendations.order_by(Recommendation.dateUpdated.desc())\
                            .limit(unread_complementary_length)
