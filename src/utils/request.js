@@ -1,7 +1,7 @@
 import get from 'lodash.get'
 import { parse } from 'query-string'
 
-import { API_URL } from './config'
+import { API_URL, IS_DEV } from './config'
 import { getData, putData } from '../workers/dexie/data'
 
 export async function fetchData(method, path, config = {}) {
@@ -21,17 +21,6 @@ export async function fetchData(method, path, config = {}) {
     // body
     init.body = JSON.stringify(body || {})
   }
-  // position
-  if (position) {
-    const { latitude, longitude } = position.coords
-    if (body) {
-      init.body.latitude = latitude
-      init.body.longitude = longitude
-    } else {
-      const positionQuery = `latitude=${latitude}&&longitude=${longitude}`
-      path = `${path}${path.includes('?') ? '&&' : '?'}${positionQuery}`
-    }
-  }
   // token
   if (token) {
     if (!init.headers) {
@@ -45,7 +34,7 @@ export async function fetchData(method, path, config = {}) {
   if (result.status === 200 || result.status === 201) {
     if (get(window, 'cordova.plugins.CookieManagementPlugin.flush')) {
       window.cordova.plugins.CookieManagementPlugin.flush()
-    } else {
+    } else if (IS_DEV) {
       console.warn('CookieManagementPlugin.flush is not available here')
     }
     return { data: await result.json() }
