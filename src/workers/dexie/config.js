@@ -10,12 +10,18 @@ const config = {
     {
       description: 'id',
       name: 'recommendations',
-      query: ({ around, mediationId, offerId }) =>
-        around
+      query: ({ around, mediationId, offerId, position }) => {
+        let query = around
           ? `around=${around}`
           : mediationId
             ? `mediationId=${mediationId}`
-            : (offerId && `offerId=${offerId}`) || '',
+            : (offerId && `offerId=${offerId}`) || ''
+        if (position && position.coords) {
+          const { latitude, longitude } = position.coords
+          query = `${query}&&latitude=${latitude}&&longitude=${longitude}`
+        }
+        return query
+      },
       isSync: true,
     },
     {
