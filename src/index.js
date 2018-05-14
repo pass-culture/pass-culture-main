@@ -9,17 +9,25 @@ import Root from './Root'
 import registerCacheWorker from './workers/cache'
 import registerDexieWorker from './workers/dexie/register'
 
-ReactDOM.render(<Root />, document.getElementById('root'))
-if (module.hot) {
-  module.hot.accept('./Root', () => {
-    const NextRoot = require('./Root').default
-    ReactDOM.render(
-      <AppContainer>
-        <NextRoot />
-      </AppContainer>,
-      document.getElementById('root')
-    )
-  })
+function initApp() {
+  ReactDOM.render(<Root />, document.getElementById('root'))
+  if (module.hot) {
+    module.hot.accept('./Root', () => {
+      const NextRoot = require('./Root').default
+      ReactDOM.render(
+        <AppContainer>
+          <NextRoot />
+        </AppContainer>,
+        document.getElementById('root')
+      )
+    })
+  }
+  registerCacheWorker()
+  registerDexieWorker()
 }
-registerCacheWorker()
-registerDexieWorker()
+
+if (window.cordova) {
+  document.addEventListener("deviceready", initApp, false);
+} else {
+  initApp();
+}

@@ -12,7 +12,7 @@ import { ROOT_PATH } from '../utils/config'
 class VersoWrapper extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (!this.props.isFlipped && prevProps.isFlipped) {
-      this.element.scrollTo(0, 0)
+      this.element.scrollTo && this.element.scrollTo(0, 0)
     }
   }
 
