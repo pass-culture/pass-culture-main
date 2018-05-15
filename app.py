@@ -1,18 +1,11 @@
 import os
 from os.path import isfile, join
-from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 
 from utils.config import IS_DEV
 
-dev_env_file_dir = join(os.getcwd(), 'dev_env_file')
-if IS_DEV and isfile(dev_env_file_dir):
-    load_dotenv(dotenv_path=dev_env_file_dir, override=True)
-
-print('FLASK')
 app = Flask(__name__, static_url_path='/static')
-print('FLASK APRES')
 
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 
