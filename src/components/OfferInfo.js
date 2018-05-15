@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Icon from './layout/Icon'
+import Capitalize from './utils/Capitalize'
 import selectDistance from '../selectors/distance'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
@@ -67,9 +68,7 @@ class OfferInfo extends Component {
                 (occurence, index) =>
                   index < 7 && (
                     <li key={index}>
-                      <span>
-                        {moment(occurence).format('dddd DD/MM/YYYY à H:mm')}
-                      </span>
+                      <Capitalize>{moment(occurence).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
                     </li>
                   )
               )}
@@ -91,7 +90,7 @@ class OfferInfo extends Component {
                 <li>{infos.where.name}</li>
                 {infos.where.address
                   .split(/[,\n\r]/)
-                  .map((el, index) => <li key={index}>{el}</li>)}
+                  .map((el, index) => <li key={index}><Capitalize>{el}</Capitalize></li>)}
               </ul>
             </div>
           )}
