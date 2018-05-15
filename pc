@@ -149,10 +149,10 @@ elif [[ "$CMD" == "update-db" ]]; then
 elif [[ "$CMD" == "update-server" ]]; then
  	RUN='cd $ROOT_PATH;
  			git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard";
- 			git reset --hard origin/master;
+			git stash && git pull;
  			cd dockerfiles/nginx/conf.d;
  			sed -i -e "s/##FQDN##/"$API_HOST"/" flaskapp_ssl;
- 			ln -s  /etc/nginx/conf.d/flaskapp.conf;'
+ 			ln -sf /etc/nginx/conf.d/flaskapp.conf;'
 elif [[ "$CMD" == "reset-sandbox-db" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc reset-all-db;
