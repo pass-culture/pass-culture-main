@@ -23,6 +23,8 @@ services:
       - ${ENV:-development}_env_file
     environment:
       - ENV=${ENV:-development}
+      - MAILJET_API_KEY=$MAILJET_API_KEY
+      - MAILJET_API_SECRET=$MAILJET_API_SECRET
     networks:
       - db_nw
       - web_nw
