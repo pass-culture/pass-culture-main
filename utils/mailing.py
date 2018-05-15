@@ -14,6 +14,13 @@ Offer = app.model.Offer
 
 
 def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
+
+
+
+    print('MAILJET_API_KEY', MAILJET_API_KEY)
+    print('MAILJET_API_SECRET', MAILJET_API_SECRET)
+    print('IS_DEV', IS_DEV, 'IS_STAGING', IS_STAGING, 'ENV', ENV)
+
     if MAILJET_API_KEY is None or MAILJET_API_KEY=='':
         raise ValueError("Missing environment variable MAILJET_API_KEY")
 
@@ -27,7 +34,7 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
 
     recipients = [offer.offerer.bookingEmail, 'pass@culture.gouv.fr']
 
-    print('IS_DEV', IS_DEV, 'IS_STAGING', IS_STAGING, 'ENV', ENV)
+
     if IS_DEV or IS_STAGING:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : '
                               + ", ".join(recipients)
