@@ -152,7 +152,7 @@ elif [[ "$CMD" == "update-server" ]]; then
 			git stash && git pull;
  			cd dockerfiles/nginx/conf.d;
  			sed -i -e "s/##FQDN##/"$API_HOST"/" flaskapp_ssl;
- 			ln -sf /etc/nginx/conf.d/flaskapp.conf;'
+ 			ln -sf flaskapp_ssl flaskapp.conf;'
 elif [[ "$CMD" == "reset-sandbox-db" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc reset-all-db;
