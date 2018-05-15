@@ -27,7 +27,7 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
 
     recipients = [offer.offerer.bookingEmail, 'pass@culture.gouv.fr']
 
-    print('IS_DEV', IS_DEV, 'IS_STAGING', IS_STAGING)
+    print('IS_DEV', IS_DEV, 'IS_STAGING', IS_STAGING, 'ENV', ENV)
     if IS_DEV or IS_STAGING:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : '
                               + ", ".join(recipients)
