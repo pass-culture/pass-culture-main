@@ -9,6 +9,8 @@ from utils.config import ENV, IS_DEV, IS_STAGING
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
+print('MAILJET_API_KEY', MAILJET_API_KEY)
+print('MAILJET_API_SECRET', MAILJET_API_SECRET)
 
 Offer = app.model.Offer
 
