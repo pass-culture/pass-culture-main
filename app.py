@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 from utils.config import IS_DEV
 
-env_file_dir = join(os.getcwd(), 'dev_env_file')
+dev_env_file_dir = join(os.getcwd(), 'dev_env_file')
 if IS_DEV and isfile(dev_env_file_dir):
     load_dotenv(dotenv_path=dev_env_file_dir, override=True)
 
