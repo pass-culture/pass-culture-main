@@ -192,10 +192,11 @@ class Deck extends Component {
         </div>
         <Draggable
           axis={isFlipped ? 'none' : 'exclude'}
+          speed={{x: 5}}
           key={refreshKey}
           position={position}
           onStop={this.onStop}
-          bounds={isFlipped ? {} : { bottom: 0, top: -100 }}
+          bounds={isFlipped ? {} : { bottom: 0, top: -100, left: position.x - width, right: position.x + width }}
           enableUserSelectHack={false}
         >
           <div>
