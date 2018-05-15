@@ -222,7 +222,10 @@ else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
 
+echo $PWD
+echo $RUN
 if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
+	echo ICI
 	echo $RUN
   eval $RUN
 else
