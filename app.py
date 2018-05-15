@@ -8,7 +8,7 @@ from utils.config import IS_DEV
 
 env_file_dir = join(os.getcwd(), 'env_file')
 if isfile(env_file_dir):
-    load_dotenv(dotenv_path=env_file_dir)
+    load_dotenv(dotenv_path=env_file_dir, override=True)
 
 app = Flask(__name__, static_url_path='/static')
 
