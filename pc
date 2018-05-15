@@ -54,10 +54,6 @@ fi
 CMD="$1"
 shift
 
-if [[ "$ENV" == "production" ]]; then
-  confirm "Are you sure you want to run $CMD in production ?"
-fi
-
 if [[ "$CMD" == "alembic" ]]; then
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && alembic '"$*"'"'
 elif [[ "$CMD" == "build-pg" ]]; then
