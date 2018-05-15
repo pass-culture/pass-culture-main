@@ -222,13 +222,16 @@ else
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
 fi
 
-if [[ $PWD != "/home/deploy/pass-culture-main" ]]; then
+if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
+	echo $RUN
+  eval $RUN
+else
 	if [[ "$ENV" == "production" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
 	elif [[ "$ENV" == "staging" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture-staging.beta.gouv.fr bash
+	else
+		echo $RUN
+	  eval $RUN
 	fi
-else
-  echo $RUN
-  eval $RUN
 fi
