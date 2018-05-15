@@ -35,7 +35,7 @@ C'est tout le framework du Pass Culture!
     ./export HAS_WORKERS=true && pc start-frontend
   ```
 
-## Developer
+## Développeurs.ses
 
 ### Rebuild
   Pour reconstruire l'image docker sans cache
@@ -83,6 +83,43 @@ C'est tout le framework du Pass Culture!
   ```bash
     ./pc -e production testcafe -b firefox
   ```
+
+### Emuler avec Cordova
+
+```bash
+  yarn global add cordova-cli
+```
+
+```bash
+  cd webapp && cordova run ios
+```
+<!-- iPhone-5s, 11.2
+iPhone-6, 11.2
+iPhone-6-Plus, 11.2
+iPhone-6s, 11.2
+iPhone-6s-Plus, 11.2
+iPhone-7, 11.2
+iPhone-7-Plus, 11.2
+iPhone-SE, 11.2
+iPad-Air, 11.2
+iPad-Air-2, 11.2
+iPad--5th-generation-, 11.2
+iPad-Pro--12-9-inch---2nd-generation-, 11.2
+iPad-Pro--10-5-inch-, 11.2
+Apple-TV-1080p, tvOS 11.2
+Apple-TV-4K-4K, tvOS 11.2
+Apple-TV-4K-1080p, tvOS 11.2
+iPhone-8, 11.2
+iPhone-8-Plus, 11.2
+iPhone-X, 11.2
+iPad-Pro--9-7-inch-, 11.2
+iPad-Pro, 11.2
+Apple-Watch-38mm, watchOS 4.2
+Apple-Watch-42mm, watchOS 4.2
+Apple-Watch-Series-2-38mm, watchOS 4.2
+Apple-Watch-Series-2-42mm, watchOS 4.2
+Apple-Watch-Series-3-38mm, watchOS 4.2
+Apple-Watch-Series-3-42mm, watchOS 4.2 -->
 
 ### Développer en Android
 
