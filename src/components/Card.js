@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 
 import Recto from './Recto'
 import Verso from './Verso'
+import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 
 class Card extends Component {
   handleSetRead = props => {
@@ -28,7 +29,7 @@ class Card extends Component {
   }
 
   render() {
-    const { recommendation, position } = this.props
+    const { recommendation, position, currentHeaderColor } = this.props
     return (
       <div
         className={classnames('card', {
@@ -36,6 +37,7 @@ class Card extends Component {
         })}
         style={{
           transform: `translate(${get(recommendation, 'index') * 100}%, 0)`,
+          backgroundColor: currentHeaderColor,
         }}
       >
         <Recto {...recommendation} />
@@ -51,5 +53,6 @@ Card.defaultProps = {
 }
 
 export default connect(state => ({
+  currentHeaderColor: selectCurrentHeaderColor(state),
   isFlipped: state.verso.isFlipped,
 }))(Card)

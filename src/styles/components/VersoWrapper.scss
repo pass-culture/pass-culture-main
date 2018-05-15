@@ -53,7 +53,7 @@
 
   .verso-content {
     background-color: white;
-    padding-bottom: 68px; // dirty
+    padding-bottom: $footer-height;
     flex: 1;
 
     div.description {
