@@ -15,15 +15,14 @@ services:
     volumes:
       - ./api:/opt/services/flaskapp/src
       - type: bind
-        source: ./api/ftp_mirrors 
+        source: ./api/ftp_mirrors
         target: /opt/services/flaskapp/src/ftp_mirrors
         read_only: true
     env_file:
       - env_file
+      - ${ENV:-development}_env_file
     environment:
-      - ENV=${ENV}
-      - MAILJET_API_KEY=${MAILJET_API_KEY}
-      - MAILJET_API_SECRET=${MAILJET_API_SECRET}
+      - ENV=${ENV:-development}
     networks:
       - db_nw
       - web_nw
@@ -41,7 +40,7 @@ services:
       - ./certs-data:/data/letsencrypt
     networks:
       - web_nw
-    depends_on: 
+    depends_on:
       - flask
 
 networks:

@@ -26,7 +26,7 @@ function confirm {
 }
 
 function ensure_remote {
-  if [[ "$ENV" == "local" ]]; then
+  if [[ "$ENV" == "development" ]]; then
     echo "$1"
     exit 3
   fi
@@ -36,7 +36,14 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
   ENV=$2
   shift 2
 else
-  ENV="local"
+  ENV="development"
+fi
+
+API_HOST='localhost:80'
+if [[ "$ENV" == "production" ]]; then
+	API_HOST=api.passculture.beta.gouv.fr
+elif [[ "$ENV" == "staging" ]]; then
+	API_HOST=api.passculture-staging.beta.gouv.fr
 fi
 
 if [[ "$1" == "" ]]; then
@@ -131,16 +138,21 @@ elif [[ "$CMD" == "rebuild-backend" ]]; then
        sudo rm -rf $ROOT_PATH/api/postgres_data'
 elif [[ "$CMD" == "rebuild-frontend" ]]; then
 	RUN='cd $ROOT_PATH/webapp && npm run build'
-elif [[ "$CMD" == "reset-git" ]]; then
-	RUN='cd $ROOT_PATH && git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard"'
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
        sudo rm -rf $ROOT_PATH/api/postgres_data;
        docker-compose up --force-recreate'
-elif [[ "$CMD" == "update-prod-db" ]]; then
+elif [[ "$CMD" == "update-db" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc update_providables -p SpreadsheetExpVenues;
 			 ./pc update_providables -p SpreadsheetExpOffers;'
+elif [[ "$CMD" == "update-server" ]]; then
+ 	RUN='cd $ROOT_PATH;
+ 			git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard";
+ 			git stash && git pull;
+ 			cd dockerfiles/nginx/conf.d;
+ 			sed -i -e "s/##FQDN##/"$API_HOST/" flaskapp_ssl;
+ 			ln -s  /etc/nginx/conf.d/flaskapp.conf;'
 elif [[ "$CMD" == "reset-sandbox-db" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc reset-all-db;

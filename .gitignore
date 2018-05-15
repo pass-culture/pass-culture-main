@@ -1,3 +1,4 @@
 .DS_Store
 NOT_FORGET.md
 *.secret
+development_env_file
