@@ -149,7 +149,7 @@ elif [[ "$CMD" == "update-db" ]]; then
 elif [[ "$CMD" == "update-server" ]]; then
  	RUN='cd $ROOT_PATH;
  			git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard";
- 			git stash && git pull;
+ 			git reset --hard origin/master;
  			cd dockerfiles/nginx/conf.d;
  			sed -i -e "s/##FQDN##/"$API_HOST/" flaskapp_ssl;
  			ln -s  /etc/nginx/conf.d/flaskapp.conf;'
