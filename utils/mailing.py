@@ -9,20 +9,11 @@ from utils.config import ENV, IS_DEV, IS_STAGING
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
-print('MAILJET_API_KEY', MAILJET_API_KEY)
-print('MAILJET_API_SECRET', MAILJET_API_SECRET)
 
 Offer = app.model.Offer
 
 
 def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
-
-
-
-    print('MAILJET_API_KEY', MAILJET_API_KEY)
-    print('MAILJET_API_SECRET', MAILJET_API_SECRET)
-    print('IS_DEV', IS_DEV, 'IS_STAGING', IS_STAGING, 'ENV', ENV)
-
     if MAILJET_API_KEY is None or MAILJET_API_KEY=='':
         raise ValueError("Missing environment variable MAILJET_API_KEY")
 
