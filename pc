@@ -146,7 +146,7 @@ elif [[ "$CMD" == "update-db" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc update_providables -p SpreadsheetExpVenues;
 			 ./pc update_providables -p SpreadsheetExpOffers;'
-elif [[ "$CMD" == "update-server" ]]; then
+elif [[ "$CMD" == "update-code" ]]; then
  	RUN='cd $ROOT_PATH;
  			git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard";
 			git stash && git pull;

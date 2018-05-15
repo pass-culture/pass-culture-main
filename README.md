@@ -53,12 +53,12 @@ C'est tout le framework du Pass Culture!
   Si vos serveurs de dev tournent, et que vous souhaitez juste effacer
   les tables de la db:
   ```bash
-    ./pc reset-backend-dev
+    ./pc reset-sandbox-db
   ```
   Si vous voulez juste enlever les recommandations et bookings crées en dev par votre
   navigation:
   ```bash
-    ./pc reset-um-db
+    ./pc reset-reco-db
   ```
 
 ### Migrate
@@ -137,14 +137,14 @@ Apple-Watch-Series-3-42mm, watchOS 4.2 -->
 ## Deploy
 
 ### FRONTEND WEB
-  Pour déployer une nouvelle version, par exemple en staging:
+  Pour déployer une nouvelle version web, par exemple en staging:
   (Attention de ne pas déployer sur la prod sans authorisation !)
   ```bash
     ./pc -e staging deploy-frontend
   ```
 
 ### FRONTEND MOBILE
-  Pour déployer une nouvelle version (par default c'est en staging)
+  Pour déployer une nouvelle version phonegap (par default c'est en staging)
   ```bash
     ./pc build-pg
   ```
@@ -156,7 +156,7 @@ Apple-Watch-Series-3-42mm, watchOS 4.2 -->
 Vérifier déjà que l'un des admins (comme @arnoo) a
 enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/)
 
-#### Manuellement
+#### Updater le code
   Il faut se connecter à la machine
   ```
     ./pc -e staging ssh
@@ -167,12 +167,17 @@ enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.what
   ```
   Enfin dans le terminal du python flask, fait un contrôle d pour killer le process, puis:
   ```
-    cd /home/deploy/pass-culture-main/ && ./pc restart-backend
+    cd /home/deploy/pass-culture-main/ && ./pc update-code
   ```
 
-#### Automatiquement (WIP)
-  ```bash
-    ./pc -e staging deploy-backend
+#### Updater la db
+  Il faut se connecter à la machine
+  ```
+    ./pc -e staging ssh
+  ```
+  Enfin dans le terminal,
+  ```
+    cd /home/deploy/pass-culture-main/ && ./pc update-db
   ```
 
 #### Note pour une premiere configuration HTTPS (pour un premier build)
