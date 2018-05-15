@@ -106,4 +106,4 @@ static/object_store_data
 .pytest_cache/
 
 # env
-env_file
+dev_env_file
