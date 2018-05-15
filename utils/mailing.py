@@ -27,6 +27,7 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
 
     recipients = [offer.offerer.bookingEmail, 'pass@culture.gouv.fr']
 
+    print('IS_DEV', IS_DEV, 'IS_STAGING', IS_STAGING)
     if IS_DEV or IS_STAGING:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : '
                               + ", ".join(recipients)
@@ -34,6 +35,7 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
         email['To'] = 'passculture-dev@beta.gouv.fr'
     else:
         email['To'] = recipients
+    print('EMAIL', email['To'])
 
     mailjet_result = mailjet.send.create(data=email)
     if mailjet_result.status_code != 200:
