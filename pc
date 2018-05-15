@@ -153,7 +153,7 @@ elif [[ "$CMD" == "reset-all-db" ]]; then
 elif [[ "$CMD" == "reset-reco-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation,recommendation_offer,recommendation_booking RESTART IDENTITY;\""'
 elif [[ "$CMD" == "reset-users-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,recommendation_offer,recommendation_booking,user_offerer RESTART IDENTITY;\""'
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,recommendation_offer,recommendation_booking,user_offerer RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
   if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
@@ -166,7 +166,8 @@ elif [[ "$CMD" == "set-backend" ]]; then
 			 ./pc update-mocks;
 			 ./pc update_providables -m -p SpreadsheetExpVenues;
 			 ./pc update_providables -m -p SpreadsheetExpOffers;
-			 ./pc init;'
+			 ./pc sandbox;
+			'
 elif [[ "$CMD" == "ssh" ]]; then
 	if [[ "$ENV" == "production" ]]; then
 		ssh deploy@api.passculture.beta.gouv.fr
