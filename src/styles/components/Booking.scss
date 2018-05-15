@@ -21,9 +21,9 @@
       border-radius: 50px;
       font-weight: 500;
       background-color: transparent;
-      padding: 13px 12px 11px;
-      padding-right: 50px;
+      padding: 0 4em 0 1em;
       width: auto;
+      height: 3em;
     }
 
     .input-icon {
@@ -45,7 +45,10 @@
       .DateInput {
         background: transparent;
         .DateInput_input {
+          font-weight: normal;
           background: transparent;
+          color: inherit;
+          padding-left: 1em;
           &.DateInput_input__focused {
             border-bottom: none;
           }
