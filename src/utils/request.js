@@ -33,7 +33,7 @@ export async function fetchData(method, path, config = {}) {
   if (result.status === 200 || result.status === 201) {
     if (get(window, 'cordova.plugins.CookieManagementPlugin.flush')) {
       window.cordova.plugins.CookieManagementPlugin.flush()
-    } else if (IS_DEV) {
+    } else if (!IS_DEV) {
       console.warn('CookieManagementPlugin.flush is not available here')
     }
     return { data: await result.json() }

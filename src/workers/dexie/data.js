@@ -6,17 +6,21 @@ import uuid from 'uuid'
 
 import config from './config'
 import { fetchData } from '../../utils/request'
-import { IS_DEV } from '../../utils/config'
+import { IS_DEV, IS_DEXIE } from '../../utils/config'
 
 const storesConfig = {}
 config.collections.forEach(
   ({ description, name }) => (storesConfig[name] = description)
 )
 
-export const db = new Dexie(config.name)
-db.version(config.version).stores(storesConfig)
-if (config.upgrate) {
-  db.upgrade(config.upgrate)
+export const db = IS_DEXIE ? new Dexie(config.name) : {
+
+}
+if (IS_DEXIE) {
+  db.version(config.version).stores(storesConfig)
+  if (config.upgrate) {
+    db.upgrade(config.upgrate)
+  }
 }
 
 export async function getData(collectionName, query) {
@@ -32,7 +36,9 @@ export async function getData(collectionName, query) {
       Object.keys(query).every(key => element[key] === query[key])
     )
   }
-  data = await data.toArray()
+  if (IS_DEXIE) {
+    data = await data.toArray()
+  }
   // return
   return { data }
 }
@@ -46,7 +52,7 @@ export async function putData(
   // unpack
   const diff = (typeof config.diff !== 'undefined' && config.diff) || true
   // check the table
-  const table = db[collectionName]
+  let table = db[collectionName]
   if (!table) {
     return
   }
@@ -57,8 +63,15 @@ export async function putData(
   let data = Array.isArray(dataOrDatum)
     ? dataOrDatum
     : [dataOrDatum]
-  // update is when we want to update certain elements in the array
-  const storedData = await table.toArray()
+
+
+  let storedData
+  if (IS_DEXIE) {
+    // update is when we want to update certain elements in the array
+    storedData = await table.toArray()
+  } else {
+    storedData = table
+  }
   // look for deprecation
   result.deprecatedData = []
   for (let datum of data) {
@@ -78,8 +91,13 @@ export async function putData(
   }
   // bulk
   if (dexieMethod === 'bulk') {
-    // bulk is when we replace everything and index by the index in the array data
-    await table.clear()
+    if (IS_DEXIE) {
+      // bulk is when we replace everything and index by the index in the array data
+      await table.clear()
+    } else {
+      db[collectionName] = {}
+      table = db[collectionName]
+    }
     if (data && data.length === 0) {
       result.data = []
       return result
@@ -90,36 +108,48 @@ export async function putData(
       }
       return Object.assign({ index: String(index) }, datum)
     })
-    await table.bulkPut(bulkData)
-               //.catch(error =>
-              // console.log('BULK ERROR', error))
-    return
-    result.data = await table.toArray()
+    if (IS_DEXIE) {
+      await table.bulkPut(bulkData)
+        //.catch(error =>
+        // console.log('BULK ERROR', error))
+      result.data = await table.toArray()
+    } else {
+      table = bulkData
+      result.data = table
+    }
     return result
   }
   // update
   for (let datum of data) {
     if (datum._storedDatum) {
-      const localStoredDatum = datum._storedDatum
+      let localStoredDatum = datum._storedDatum
       if (!localStoredDatum[description]) {
         // console.warn('storedDatum has not the description as a good key')
       }
       const putDatum = Object.assign({}, localStoredDatum, datum)
       delete datum._storedDatum
       if (putDatum[description]) {
-        await table
-          .put(putDatum[description], putDatum)
-          //.catch(error => {})
+        if (IS_DEXIE) {
+          await table
+            .put(putDatum[description], putDatum)
+            //.catch(error => {})
+        } else {
+          localStoredDatum = Object.assign(localStoredDatum,  putDatum)
+        }
       }
     } else {
-      await table.add(datum)
-                 //.catch(error => {
-                //   console.log('YA UNE ERROR', error.message, collectionName, datum)
-                // })
+      if (IS_DEXIE) {
+        await table.add(datum)
+           //.catch(error => {
+          //   console.log('YA UNE ERROR', error.message, collectionName, datum)
+          // })
+      } else {
+        table.push(datum)
+      }
     }
   }
   // diff or not
-  if (diff) {
+  if (IS_DEXIE && diff) {
     await db.differences.add({
       id: uuid(),
       name: collectionName,
@@ -127,13 +157,19 @@ export async function putData(
     })
   }
   // get again
-  result.data = await table.toArray()
+  result.data = IS_DEXIE
+    ? await table.toArray()
+    : table
   return result
 }
 
 export async function clear() {
-  const tables = db.tables.filter(table => !table.differences)
-  return Promise.all(tables.map(async table => table.clear()))
+  if (IS_DEXIE) {
+    const tables = db.tables.filter(table => !table.differences)
+    return Promise.all(tables.map(async table => table.clear()))
+  } else {
+    config.collections.forEach(({ name }) => db[name] = {})
+  }
 }
 
 export async function fetch(config = {}) {
@@ -166,7 +202,7 @@ export async function pushPull(state = {}) {
       // table
       const table = db[name]
       // push
-      if (isSync) {
+      if (IS_DEXIE && isSync) {
         const differences = await db.differences
           .filter(difference => difference.name === name)
           .toArray()
@@ -200,9 +236,13 @@ export async function pushPull(state = {}) {
       if (result.data) {
         const pathWithoutQuery = path.split('?')[0]
         const collectionName = pathWithoutQuery.split('/')[0]
-        return await putData('bulk', collectionName, result.data, {
-            isClear: true,
-          })
+        if (IS_DEXIE) {
+          return await putData('bulk', collectionName, result.data, {
+              isClear: true,
+            })
+        } else {
+          db[collectionName] = result.data
+        }
       } else {
         return result
       }
