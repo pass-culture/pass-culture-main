@@ -40,6 +40,7 @@ else
 fi
 
 API_HOST='localhost:80'
+echo "PC" $ENV
 if [[ "$ENV" == "production" ]]; then
 	API_HOST=api.passculture.beta.gouv.fr
 elif [[ "$ENV" == "staging" ]]; then
