@@ -156,26 +156,31 @@ Apple-Watch-Series-3-42mm, watchOS 4.2 -->
 Vérifier déjà que l'un des admins (comme @arnoo) a
 enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/)
 
-#### Updater le code
-  Il faut se connecter à la machine
+#### Se connecter à la machine
   ```
     ./pc -e staging ssh
   ```
-  Et dans le terminal du server:
+
+#### Accéder aux runs
+  Une fois connecté:
   ```
-    screen -r
+    screen -ls
   ```
-  Enfin dans le terminal du python flask, fait un contrôle d pour killer le process, puis:
+  Pour savoir le screen où se passe le serveur. Et alors:
+  ```
+    screen -r <id session>
+  ```
+  Dans ce screen, vous pouvez faire un contrôle d pour killer le process, puis
+  n'importe quelle commande pc pour relancer les processes.
+
+#### Updater le code
+  Une fois connecté:
   ```
     cd /home/deploy/pass-culture-main/ && ./pc update-code
   ```
 
 #### Updater la db
-  Il faut se connecter à la machine
-  ```
-    ./pc -e staging ssh
-  ```
-  Enfin dans le terminal,
+  Une fois connecté:
   ```
     cd /home/deploy/pass-culture-main/ && ./pc update-db
   ```
