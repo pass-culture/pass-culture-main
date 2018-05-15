@@ -18,9 +18,13 @@ def get_offers(limit=3, user=None, coords=None):
     if not user or not user.is_authenticated():
         return []
 
-    # POSITION
-    LAT = coords and coords.get('latitude') and float(coords.get('latitude'))
-    LONG = coords and coords.get('longitude') and float(coords.get('longitude'))
+    # POSITION (STRASBOURG BY DEFAULT...)
+    LAT = 48.5692562
+    LONG = 7.6223528
+    if coords and coords.get('latitude'):
+        LAT = float(coords.get('latitude'))
+    if coords and coords.get('longitude'):
+        LONG = float(coords.get('longitude'))
 
     # ALL
     all_query = Offer.query
