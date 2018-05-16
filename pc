@@ -165,12 +165,13 @@ elif [[ "$CMD" == "reset-reco-db" ]]; then
 elif [[ "$CMD" == "reset-users-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,recommendation_offer,recommendation_booking,user_offerer RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
+  echo "Warning : RUN reset-all-db before running this !"
   if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
     exit
   fi
   backup_file="$1"
-  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c'
+  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c'
 elif [[ "$CMD" == "set-backend" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc update-mocks;
