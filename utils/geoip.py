@@ -1,20 +1,13 @@
 """geoip"""
-import gzip
-import requests
+import geoip2.database
+import os
 
-DB_FILE_LOCATION = 'data/GeoLite2-City.mmdb'
-DB_FILE_URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz'
+DB_FILE_LOCATION = os.getcwd() + '/geoip/GeoLite2-City.mmdb'
 
-def download_fresh_db():
-    req = requests.get(DB_FILE_URL, stream=True)
-    gzip_file_location = "{}.gz".format(DB_FILE_LOCATION)
+geolocation_reader = geoip2.database.Reader(DB_FILE_LOCATION)
 
-    with open(gzip_file_location,'wb') as f:
-        for chunk in req.iter_content(chunk_size=1024):
-            if chunk:
-                f.write(chunk)
-                f.flush()
+def get_db_reader():
+    return geoip2.database.Reader(DB_FILE_LOCATION)
 
-    with open(DB_FILE_LOCATION, 'wb') as f:
-        with gzip.open(gzip_file_location, 'rb') as g:
-            f.write(g.read())
+def get_geolocation(ip):
+    return geolocation_reader.city(ip).location

@@ -1,5 +1,5 @@
+""" app """
 import os
-from os.path import isfile, join
 from flask import Flask
 from flask_cors import CORS
 

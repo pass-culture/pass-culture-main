@@ -8,6 +8,7 @@ flask_cors
 flask-login
 flask_sqlalchemy
 flask_script
+geoip2
 gspread
 gunicorn
 hypothesis
