@@ -3,17 +3,16 @@ import config from './config'
 // import { showEstimatedQuota } from './storage'
 import { requestData } from '../../reducers/data'
 import { IS_DEV } from '../../utils/config'
-import store from '../../utils/store'
 
 export const worker = new DexieWorker()
 
-export default function register() {
+export default function register(store) {
   worker.onmessage = event => {
     if (event.data.error) {
       console.warn(event.data.error)
     } else {
       if (event.data.isSyncRedux) {
-        syncRedux(event.data)
+        syncRedux(store, event.data)
       }
       if (event.data.log) {
         console.log(event.data.log)
@@ -26,7 +25,7 @@ export default function register() {
   }
 }
 
-export function syncRedux(payload) {
+export function syncRedux(store, payload) {
   config.collections.forEach(({ key, name }) => {
     const config = { key, local: true }
     const result = payload.results.find(
