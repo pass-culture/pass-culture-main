@@ -8,7 +8,7 @@ const config = {
     },
     // SPECIFIC COLLECTIONS
     {
-      description: '_index',
+      description: 'dehumanizedId',
       isSync: true,
       name: 'recommendations',
       query: ({ around, mediationId, offerId, position }) => {
@@ -23,7 +23,7 @@ const config = {
         }
         return query
       },
-      sortBy: '_index',
+      sortBy: 'dehumanizedId',
     },
     {
       description: 'id',

@@ -13,7 +13,9 @@ const collections = config.collections
 collections.forEach(({ description, name }) =>
   (storesConfig[name] = description))
 
-export const db = IS_DEXIE ? new Dexie(config.name) : {}
+export const db = IS_DEXIE
+  ? new Dexie(config.name)
+  : {}
 
 if (IS_DEXIE) {
   db.version(config.version).stores(storesConfig)
@@ -104,11 +106,11 @@ export async function putData(
       result.data = []
       return result
     }
-    const bulkData = data.map((datum, index) => {
+    const bulkData = data.map(datum => {
       if (datum._storedDatum) {
         delete datum._storedDatum
       }
-      return Object.assign({ _index: index }, datum)
+      return datum
     })
     if (IS_DEXIE) {
       await table.bulkPut(bulkData)
