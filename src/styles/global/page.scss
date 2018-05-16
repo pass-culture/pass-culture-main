@@ -15,6 +15,10 @@
     footer {
       @include dotted($white);
     }
+
+    label {
+      color: $white;
+    }
   }
 
   .page-content {
