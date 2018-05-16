@@ -10,7 +10,7 @@ const App = ({ children }) => {
   return (
     <div className="app">
       {children}
-      <img src={`${ROOT_PATH}/beta.png`} className='beta' alt='beta' srcset={`${ROOT_PATH}/beta@2x.png`} />
+      <img src={`${ROOT_PATH}/beta.png`} className='beta' alt='beta' srcSet={`${ROOT_PATH}/beta@2x.png`} />
       <Modal />
       <Splash />
     </div>
