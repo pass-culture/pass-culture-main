@@ -9,10 +9,13 @@ import { fetchData } from '../../utils/request'
 import { IS_DEV, IS_DEXIE } from '../../utils/config'
 
 const storesConfig = {}
-config.collections.forEach(({ description, name }) =>
+const collections = config.collections
+collections.forEach(({ description, name }) =>
   (storesConfig[name] = description))
 
-export const db = IS_DEXIE ? new Dexie(config.name) : {}
+export const db = IS_DEXIE
+  ? new Dexie(config.name)
+  : {}
 
 if (IS_DEXIE) {
   db.version(config.version).stores(storesConfig)
@@ -30,6 +33,8 @@ export async function getData(collectionName, query) {
   if (!table) {
     return
   }
+  const { sortBy } = collections.find(collection =>
+    collection.name === collectionName)
   // get
   let data = table
   if (query && Object.keys(query).length) {
@@ -37,9 +42,17 @@ export async function getData(collectionName, query) {
       Object.keys(query).every(key => element[key] === query[key])
     )
   }
-  data = IS_DEXIE
-    ? await data.toArray()
-    : table.data
+  // dexie
+  if (IS_DEXIE) {
+    if (sortBy) {
+      data = await table.filter(() => true)
+                        .sortBy(sortBy)
+    } else {
+      data = await data.toArray()
+    }
+  } else {
+    data = table.data
+  }
   // return
   return { data }
 }
@@ -57,8 +70,8 @@ export async function putData(
   if (!table) {
     return
   }
-  const collectionConfig = storesConfig[collectionName]
-  const description = collectionConfig.description
+  const { description, sortBy } = collections.find(collection =>
+    collection.name === collectionName)
   const result = { collectionName }
   // check format
   let data = Array.isArray(dataOrDatum)
@@ -93,17 +106,23 @@ export async function putData(
       result.data = []
       return result
     }
-    const bulkData = data.map((datum, index) => {
+    const bulkData = data.map(datum => {
       if (datum._storedDatum) {
         delete datum._storedDatum
       }
-      return Object.assign({ index: String(index) }, datum)
+      return datum
     })
     if (IS_DEXIE) {
       await table.bulkPut(bulkData)
         //.catch(error =>
         // console.log('BULK ERROR', error))
-      result.data = await table.toArray()
+      result.data = table
+      if (sortBy) {
+        result.data = await result.data.filter(() => true)
+                                        .sortBy(sortBy)
+      } else {
+        result.data = await result.data.toArray()
+      }
     } else {
       table.data = bulkData
       result.data = table.data
@@ -189,7 +208,13 @@ export async function setUser(state = {}) {
 
 export async function pushPull(state = {}) {
   return Promise.all(
-    config.collections.map(async ({ isPullOnly, isSync, name, query }) => {
+    config.collections.map(async ({
+      isPullOnly,
+      isSync,
+      name,
+      query,
+      orderBy
+    }) => {
       // just do that for the collection with isSync or isPullOnly
       if (!isSync && !isPullOnly) {
         return
@@ -234,6 +259,7 @@ export async function pushPull(state = {}) {
         if (IS_DEXIE) {
           return await putData('bulk', collectionName, result.data, {
               isClear: true,
+              orderBy
             })
         } else {
           db[collectionName].data = result.data
