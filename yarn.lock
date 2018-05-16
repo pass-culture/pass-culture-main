@@ -7090,7 +7090,7 @@ react-dotdotdot@^1.2.3:
 
 react-draggable@augnustin/react-draggable#pass-culture:
   version "3.0.5"
-  resolved "https://codeload.github.com/augnustin/react-draggable/tar.gz/4df2d96f4707c74c5764670ac83b4a42771c9e03"
+  resolved "https://codeload.github.com/augnustin/react-draggable/tar.gz/6e78d1308eb60ec900c009cb49eb0beb3bec44a3"
   dependencies:
     classnames "^2.2.5"
     prop-types "^15.6.0"

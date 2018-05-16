@@ -9,11 +9,27 @@ import selectCurrentVenue from '../selectors/currentVenue'
 import selectIsCurrentTuto from '../selectors/isCurrentTuto'
 import { ROOT_PATH } from '../utils/config'
 
+import { makeDraggable, makeUndraggable } from '../reducers/verso'
+
 class VersoWrapper extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (!this.props.isFlipped && prevProps.isFlipped) {
       this.element.scrollTo && this.element.scrollTo(0, 0)
     }
+  }
+
+  componentDidMount() {
+    this.$el.addEventListener('touchmove', e => {
+      if (this.props.draggable && this.$el.scrollTop > 0){
+        this.props.makeUndraggable()
+      } else if (!this.props.draggable && this.$el.scrollTop <= 0) {
+        this.props.makeDraggable()
+      }
+    })
+  }
+
+  componentWillUnMount() {
+    this.$el.removeEventListener('touchmove')
   }
 
   render() {
@@ -34,7 +50,7 @@ class VersoWrapper extends Component {
     }
     const author = get(source, 'extraData.author')
     return (
-      <div className={`verso-wrapper ${className || ''}`}>
+      <div ref={$el => this.$el = $el} className={`verso-wrapper ${className || ''}`}>
         <div
           className="verso-header"
           style={{ backgroundColor: headerColor }}
@@ -59,7 +75,8 @@ class VersoWrapper extends Component {
 export default connect(state => ({
   headerColor: selectCurrentHeaderColor(state),
   isFlipped: state.verso.isFlipped,
+  draggable: state.verso.draggable,
   isCurrentTuto: selectIsCurrentTuto(state),
   source: selectCurrentSource(state),
   venue: selectCurrentVenue(state),
-}))(VersoWrapper)
+}), { makeDraggable, makeUndraggable })(VersoWrapper)
