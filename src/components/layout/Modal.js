@@ -85,6 +85,7 @@ class Modal extends Component {
       isUnclosable,
       maskColor,
       transitionDuration,
+      zIndex,
     } = this.props
     return (
       <div
@@ -92,7 +93,7 @@ class Modal extends Component {
           active: this.state.display,
         })}
         role="dialog"
-        style={{ backgroundColor: maskColor }}
+        style={{ backgroundColor: maskColor, zIndex: zIndex }}
         onClick={this.onCloseClick}
       >
         <div

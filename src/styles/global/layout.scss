@@ -44,5 +44,6 @@ body {
     left: 0;
     height: $footer-height;
     width: $footer-height;
+    z-index: 10001;
   }
 }
