@@ -121,7 +121,13 @@ def update_recommendations():
     print('(unread) ids', [humanize(unread_recommendation.id) for unread_recommendation in unread_recommendations])
     recommendations += list(unread_recommendations)
     # AS DICT
-    recommendations = [recommendation._asdict(include=RECOMMENDATIONS_INCLUDES) for recommendation in recommendations]
+    recommendations = [
+        recommendation._asdict(
+            include=RECOMMENDATIONS_INCLUDES,
+            has_dehumanized_id=True
+        )
+        for recommendation in recommendations
+    ]
     # ADD SOME PREVIOUS BEFORE IF recommendations has not the BLOB_SIZE
     if len(recommendations) < BLOB_SIZE:
         if len(recommendations):
@@ -134,7 +140,13 @@ def update_recommendations():
                               .limit(comp_size)\
                               .from_self()\
                               .order_by(Recommendation.id)
-            recommendations = [recommendation._asdict(include=RECOMMENDATIONS_INCLUDES) for recommendation in comp_before_recommendations] + recommendations
+            recommendations = [
+                recommendation._asdict(
+                    has_dehumanized_id=True,
+                    include=RECOMMENDATIONS_INCLUDES
+                )
+                for recommendation in comp_before_recommendations
+            ] + recommendations
             around_index += comp_before_recommendations.count()
             print('(before comp) count', comp_before_recommendations.count())
     if around_recommendation:

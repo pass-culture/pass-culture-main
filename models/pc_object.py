@@ -45,7 +45,7 @@ class PcObject():
     def _asdict(self, **options):
         result = OrderedDict()
         for key in self.__mapper__.c.keys():
-            if options and options['include']\
+            if options and options.get('include')\
                and "-"+key in options['include']:
                 continue
             value = getattr(self, key)
@@ -55,6 +55,8 @@ class PcObject():
                         value = value[:options['cut']] + '...'
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
+                if options and options.get('has_dehumanized_id'):
+                    result['dehumanized' + key.title()] = value
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
             else:
