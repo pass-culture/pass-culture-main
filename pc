@@ -109,6 +109,8 @@ elif [[ "$CMD" == "deploy-frontend" ]]; then
 elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
        docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
+elif [[ "$CMD" == "dump-prod-db-to-staging" ]]; then
+  RUN='docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c | ssh api.passculture-staging.beta.gouv.fr "cat > ~/dumps_prod/`date +%Y%m%d_%H%M%S`.pgdump"'
 elif [[ "$CMD" == "ftp_mirrors" ]]; then
   mkdir -p "$ROOT_PATH/api/ftp_mirrors"
   sshfs -o allow_other,idmap=user deploy@api.passculture-staging.beta.gouv.fr:/home/deploy/pass-culture-main/api/ftp_mirrors "$ROOT_PATH/api/ftp_mirrors"\
