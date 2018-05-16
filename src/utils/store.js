@@ -6,8 +6,6 @@ import init from './init'
 import rootReducer from '../reducers'
 import rootSaga from '../sagas'
 import history from './history'
-import { worker } from '../workers/dexie/register'
-
 
 // MIDDLEWARES
 const sagaMiddleware = createSagaMiddleware()

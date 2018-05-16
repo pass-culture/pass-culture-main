@@ -9,18 +9,19 @@ import { fetchData } from '../../utils/request'
 import { IS_DEV, IS_DEXIE } from '../../utils/config'
 
 const storesConfig = {}
-config.collections.forEach(
-  ({ description, name }) => (storesConfig[name] = description)
-)
+config.collections.forEach(({ description, name }) =>
+  (storesConfig[name] = description))
 
-export const db = IS_DEXIE ? new Dexie(config.name) : {
+export const db = IS_DEXIE ? new Dexie(config.name) : {}
 
-}
 if (IS_DEXIE) {
   db.version(config.version).stores(storesConfig)
   if (config.upgrate) {
     db.upgrade(config.upgrate)
   }
+} else {
+  config.collections.forEach(({ description, name }) =>
+    db[name] = { data: [], name })
 }
 
 export async function getData(collectionName, query) {
@@ -36,9 +37,9 @@ export async function getData(collectionName, query) {
       Object.keys(query).every(key => element[key] === query[key])
     )
   }
-  if (IS_DEXIE) {
-    data = await data.toArray()
-  }
+  data = IS_DEXIE
+    ? await data.toArray()
+    : table.data
   // return
   return { data }
 }
@@ -63,15 +64,10 @@ export async function putData(
   let data = Array.isArray(dataOrDatum)
     ? dataOrDatum
     : [dataOrDatum]
-
-
-  let storedData
-  if (IS_DEXIE) {
-    // update is when we want to update certain elements in the array
-    storedData = await table.toArray()
-  } else {
-    storedData = table
-  }
+  // update is when we want to update certain elements in the array
+  let storedData = IS_DEXIE
+    ? await table.toArray()
+    : table.data
   // look for deprecation
   result.deprecatedData = []
   for (let datum of data) {
@@ -91,13 +87,8 @@ export async function putData(
   }
   // bulk
   if (dexieMethod === 'bulk') {
-    if (IS_DEXIE) {
-      // bulk is when we replace everything and index by the index in the array data
-      await table.clear()
-    } else {
-      db[collectionName] = {}
-      table = db[collectionName]
-    }
+    // bulk is when we replace everything and index by the index in the array data
+    await table.clear()
     if (data && data.length === 0) {
       result.data = []
       return result
@@ -114,8 +105,8 @@ export async function putData(
         // console.log('BULK ERROR', error))
       result.data = await table.toArray()
     } else {
-      table = bulkData
-      result.data = table
+      table.data = bulkData
+      result.data = table.data
     }
     return result
   }
@@ -144,7 +135,7 @@ export async function putData(
           //   console.log('YA UNE ERROR', error.message, collectionName, datum)
           // })
       } else {
-        table.push(datum)
+        table.data.push(datum)
       }
     }
   }
@@ -159,7 +150,7 @@ export async function putData(
   // get again
   result.data = IS_DEXIE
     ? await table.toArray()
-    : table
+    : table.data
   return result
 }
 
@@ -168,7 +159,7 @@ export async function clear() {
     const tables = db.tables.filter(table => !table.differences)
     return Promise.all(tables.map(async table => table.clear()))
   } else {
-    config.collections.forEach(({ name }) => db[name] = {})
+    config.collections.forEach(({ name }) => db[name].data = [])
   }
 }
 
@@ -188,8 +179,12 @@ export async function setUser(state = {}) {
   if (!user) {
     console.warn('We set user in dexie but user is not defined')
   }
-  await db.users.clear()
-  await db.users.add(user)
+  if (IS_DEXIE) {
+    await db.users.clear()
+    await db.users.add(user)
+  } else {
+    db.users.data = [user]
+  }
 }
 
 export async function pushPull(state = {}) {
@@ -241,7 +236,7 @@ export async function pushPull(state = {}) {
               isClear: true,
             })
         } else {
-          db[collectionName] = result.data
+          db[collectionName].data = result.data
         }
       } else {
         return result
