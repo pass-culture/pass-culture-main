@@ -8,7 +8,8 @@ const config = {
     },
     // SPECIFIC COLLECTIONS
     {
-      description: 'id',
+      description: '_index',
+      isSync: true,
       name: 'recommendations',
       query: ({ around, mediationId, offerId, position }) => {
         let query = around
@@ -22,12 +23,12 @@ const config = {
         }
         return query
       },
-      isSync: true,
+      sortBy: '_index',
     },
     {
       description: 'id',
-      name: 'bookings',
       isPullOnly: true,
+      name: 'bookings',
     },
     {
       description: 'id',
