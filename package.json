@@ -54,7 +54,7 @@
     "query-string": "5",
     "raf": "3.4.0",
     "react": "^0.14||^15.5.4||^16.1.1",
-    "react-dates": "^16.6.1",
+    "react-dates": "augnustin/react-dates#pass-culture",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^0.14||^15.5.4||^16.1.1",
     "react-dotdotdot": "^1.2.3",

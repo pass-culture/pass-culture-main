@@ -36,3 +36,15 @@ body {
   top: 0;
   z-index: 100000;
 }
+
+.app {
+  position: relative;
+  .beta {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: $footer-height;
+    width: $footer-height;
+    z-index: 10001;
+  }
+}
