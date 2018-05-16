@@ -125,7 +125,7 @@
     checkLoop();
   });
 
-  const downloadApp = () => pgb_do()
+  const downloadApk = () => pgb_do()
     .then(api => promisify(api.get)(`/apps/${APP_ID}/android`))
     .then(data => {
       console.log('Downloading android app')
@@ -144,6 +144,7 @@
     return promise
       .then(() => monitorBuild())
       .then(data => console.log(`${PG_ENV} PGB Android build SUCCESS`, data))
+      .then(() => downloadApk())
       .catch(error => console.error(`${PG_ENV} PGB Android build FAILED`, error))
   }
 

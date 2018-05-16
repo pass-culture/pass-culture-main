@@ -6,6 +6,7 @@ import './styles/index.scss'
 import 'typeface-barlow'
 
 import Root from './Root'
+import store from './utils/store'
 import registerCacheWorker from './workers/cache'
 import registerDexieWorker from './workers/dexie/register'
 
@@ -23,7 +24,7 @@ function initApp() {
     })
   }
   registerCacheWorker()
-  registerDexieWorker()
+  registerDexieWorker(store)
 }
 
 if (window.cordova) {
