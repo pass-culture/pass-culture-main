@@ -91,10 +91,12 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
         for index, horaire in enumerate(self.line['Horaires'].split(';')):
             if is_filled(horaire):
-                horaire = HOUR_REGEX.sub(r'\1:\2', horaire)
+                horaire = HOUR_REGEX.sub(r'\1:\2', horaire.strip())
                 if horaire.endswith(':'):
                     horaire = horaire + '00'
                 evocc_dt = dateparser.parse(horaire, languages=['fr'])
+                if evocc_dt is None:
+                    print("Could not parse date : '"+horaire+"'")
 
                 p_info_evocc = app.model.ProvidableInfo()
                 p_info_evocc.type = EventOccurence
