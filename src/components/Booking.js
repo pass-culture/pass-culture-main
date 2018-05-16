@@ -105,7 +105,7 @@ class Booking extends Component {
                       noBorder={true}
                       initialVisibleMonth={() => moment.min(availableDates)}
                       inputIconPosition="after"
-                      anchorDirection="right"
+                      anchorDirection="center"
                       isDayBlocked={date =>
                         !availableDates.find(d => d.isSame(date, 'day'))
                       }
