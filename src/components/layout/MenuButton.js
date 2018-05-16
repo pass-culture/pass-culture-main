@@ -8,7 +8,7 @@ import { showModal } from '../../reducers/modal'
 
 class MenuButton extends Component {
   onClick = () => {
-    this.props.showModal(<Menu />)
+    this.props.showModal(<Menu />, {zIndex: 10002})
   }
 
   render() {

@@ -68,6 +68,7 @@
       height: $footer-height;
       text-align: right;
       padding: $footer-height-padding $page-padding;
+      padding-left: 3em; // Beta footer
       display: flex;
       align-items: center;
       flex-direction: row-reverse;
