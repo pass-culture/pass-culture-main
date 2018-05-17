@@ -11,6 +11,7 @@ import { THUMBS_URL } from '../utils/config'
 
 class Verso extends Component {
   render() {
+    window.log('hello')
     const { mediation, isFlipped, isCurrentTuto } = this.props
     return (
       <div
