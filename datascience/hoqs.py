@@ -1,11 +1,15 @@
 """ HOQS: for High Order Queries :) like HOCS in React """
+from datetime import datetime
 from flask import current_app as app
 from sqlalchemy import desc
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import func
 
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
 Mediation = app.model.Mediation
+Offer = app.model.Offer
+OfferAlias = aliased(Offer, name='offer_alias')
 Offerer = app.model.Offerer
 Thing = app.model.Thing
 Venue = app.model.Venue
@@ -15,6 +19,9 @@ def with_event_mediation(source_ids):
     def inner(query):
         return query.outerjoin(EventOccurence)\
                     .filter(~EventOccurence.eventId.in_(source_ids))\
+                    .join(OfferAlias)\
+                    .filter((OfferAlias.eventOccurenceId == EventOccurence.id) &
+                            (OfferAlias.bookingLimitDatetime > datetime.now()))\
                     .outerjoin(Event)\
                     .filter((Event.mediations.any(mediation_filter)))
     return inner
