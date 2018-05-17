@@ -7,11 +7,14 @@ const { NODE_ENV } = process.env
 
 export const IS_DEBUG = true
 
+/*
 export const IS_DEXIE = Boolean(window.indexedDB ||
                                 window.webkitIndexedDB ||
                                 window.mozIndexedDB ||
                                 window.msIndexedDB ||
                                 window.openDatabase)
+*/
+export const IS_DEXIE = false
 
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_STG = /-staging/.test(document.location.host)

@@ -9,15 +9,6 @@ import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
 
 class FavoritesPage extends Component {
-  componentDidMount() {
-    this.handleRequestBookings()
-  }
-
-  handleRequestBookings = () => {
-    // TODO
-    // this.props.requestData('GET', 'bookings', { local: true })
-  }
-
   render() {
     const { favorites } = this.props
     return (
