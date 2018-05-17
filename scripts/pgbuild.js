@@ -41,6 +41,20 @@
       password: PQ_PGB_PASSWORD,
   }).catch(raiseAndKill('Phonegap API authentication error'))
 
+  const addCordovaJsToIndexHtml = () => {
+    const indexHtml = `${__dirname}/../build/index.html`
+    return new Promise((resolve, reject) => {
+      fs.readFile(indexHtml, 'utf8', function (err, content) {
+        if (err) reject(err)
+        var newContent = content.replace(/<body>/, '<body><script type="text/javascript" src="cordova.js"></script>');
+        fs.writeFile(indexHtml, newContent, 'utf8', function (err) {
+           if (err) reject(err);
+           resolve();
+        });
+      });
+    })
+  }
+
   const pushToGit = () => {
     console.log('Pushing build to Github staging repo');
     const packed_dir = `${__dirname}/../../webapp-packed-staging/`
@@ -133,15 +147,16 @@
     });
 
   const main = () => {
-    let promise;
-    if (PG_ENV === 'staging') {
-      promise = pushToGit()
-        .then(() => triggerGithubBuild())
-    } else {
-      promise = createZip()
-        .then(() => uploadToPGB())
-    }
-    return promise
+    return addCordovaJsToIndexHtml()
+      .then(() => {
+        if (PG_ENV === 'staging') {
+          return pushToGit()
+            .then(() => triggerGithubBuild())
+        } else {
+          return createZip()
+            .then(() => uploadToPGB())
+        }
+      })
       .then(() => monitorBuild())
       .then(data => console.log(`${PG_ENV} PGB Android build SUCCESS`, data))
       .then(() => downloadApk())
