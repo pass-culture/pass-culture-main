@@ -1,7 +1,7 @@
 import get from 'lodash.get'
 import { parse } from 'query-string'
 
-import { API_URL, IS_DEV } from './config'
+import { API_URL } from './config'
 import { getData, putData } from '../workers/dexie/data'
 
 export async function fetchData(method, path, config = {}) {
@@ -33,7 +33,7 @@ export async function fetchData(method, path, config = {}) {
   if (result.status === 200 || result.status === 201) {
     if (get(window, 'cordova.plugins.CookieManagementPlugin.flush')) {
       window.cordova.plugins.CookieManagementPlugin.flush()
-    } else if (!IS_DEV) {
+    } else if (window.cordova) {
       console.warn('CookieManagementPlugin.flush is not available here')
     }
     return { data: await result.json() }

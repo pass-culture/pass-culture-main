@@ -22,7 +22,6 @@ const withLogin = (config = {}) => WrappedComponent => {
 
     componentWillMount = () => {
       const { user, requestData } = this.props
-      console.log('user', user)
       if (!user) {
         requestData('GET', `users/me`, {
           key: 'users',
