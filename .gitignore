@@ -91,6 +91,7 @@ ENV/
 # Rope project settings
 .ropeproject
 
+geoip
 ftp_mirrors
 postgres_data
 
