@@ -115,6 +115,7 @@ class Deck extends Component {
 
   onStop = (e, data) => {
     const {
+      draggable,
       horizontalSlideRatio,
       verticalSlideRatio,
       height,
@@ -126,7 +127,7 @@ class Deck extends Component {
       this.handleGoPrevious()
     } else if (-offset > horizontalSlideRatio) {
       this.handleGoNext()
-    } else if (data.y > height * verticalSlideRatio) {
+    } else if (draggable && data.y > height * verticalSlideRatio) {
       this.handleUnFlip()
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleFlip()
@@ -306,6 +307,7 @@ export default compose(
       previousRecommendation: selectPreviousRecommendation(state),
       recommendations: state.data.recommendations,
       unFlippable: state.verso.unFlippable,
+      draggable: state.verso.draggable,
     }),
     { flip, unFlip }
   )
