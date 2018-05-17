@@ -25,8 +25,9 @@ def update_recommendations():
     longitude = request.args.get('longitude')
     if not latitude or not longitude:
         geolocation = get_geolocation(request.remote_addr)
-        latitude = geolocation.latitude
-        longitude = geolocation.longitude
+        if geolocation:
+            latitude = geolocation.latitude
+            longitude = geolocation.longitude
     print('(position) latitude', latitude, 'longitude', longitude)
     # DETERMINE AROUND
     around = request.args.get('around')

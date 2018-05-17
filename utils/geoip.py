@@ -1,5 +1,6 @@
 """geoip"""
 import geoip2.database
+import geoip2.errors
 import os
 
 DB_FILE_LOCATION = os.getcwd() + '/geoip/GeoLite2-City.mmdb'
@@ -10,4 +11,7 @@ def get_db_reader():
     return geoip2.database.Reader(DB_FILE_LOCATION)
 
 def get_geolocation(ip):
-    return geolocation_reader.city(ip).location
+    try:
+        return geolocation_reader.city(ip).location
+    except geoip2.errors.AddressNotFoundError:
+        return None
