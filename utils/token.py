@@ -1,3 +1,4 @@
+""" token """
 import itertools
 import random
 
@@ -8,8 +9,10 @@ def tokenify(indexes):
 
 def random_token(length = 3):
     token = random.SystemRandom()
-    return tokenify([token.randint(1, 256) for index in range(length)])
+    return tokenify([token.randint(1, 255) for index in range(length)])
 
 def get_all_tokens(length = 3):
-    return map(tokenify,
-               itertools.product(*[range(1, 256) for index in range(length)]))
+    return map(
+        tokenify,
+        itertools.product(*[range(1, 256) for index in range(length)])
+    )
