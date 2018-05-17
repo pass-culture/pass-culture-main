@@ -7,9 +7,11 @@ import Price from './Price'
 import Finishable from './layout/Finishable'
 import selectDistance from '../selectors/distance'
 import selectCurrentOffer from '../selectors/currentOffer'
+import selectIsCurrentTuto from '../selectors/isCurrentTuto'
 
-const Clue = ({ distance, offer, isHidden, transitionTimeout }) => {
+const Clue = ({ distance, offer, isHidden, transitionTimeout, isCurrentTuto }) => {
   const isFinished = moment(get(offer, 'bookingLimitDatetime')) < moment()
+    && !isCurrentTuto // Hard coded to prevent a weird bug to arise, should be eventually removed
   return (
     <div
       className="clue"
@@ -32,4 +34,5 @@ export default connect(state => ({
   distance: selectDistance(state),
   isFlipped: state.verso.isFlipped,
   offer: selectCurrentOffer(state),
+  isCurrentTuto: selectIsCurrentTuto(state),
 }))(Clue)
