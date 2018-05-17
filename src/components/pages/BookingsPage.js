@@ -8,6 +8,7 @@ import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
 import selectBookingsByTime from '../../selectors/bookingsByTime'
+import { IS_DEXIE } from '../../utils/config'
 
 class BookingsPage extends Component {
   componentDidMount() {
@@ -15,7 +16,7 @@ class BookingsPage extends Component {
   }
 
   handleRequestBookings = () => {
-    this.props.requestData('GET', 'bookings', { local: true })
+    this.props.requestData('GET', 'bookings', { local: IS_DEXIE })
   }
 
   render() {
