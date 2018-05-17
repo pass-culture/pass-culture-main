@@ -8,6 +8,7 @@ flask_cors
 flask-login
 flask_sqlalchemy
 flask_script
+geoip2
 gspread
 gunicorn
 hypothesis
@@ -20,6 +21,7 @@ pandas
 PostgreSQL-Audit
 psycopg2-binary
 pytest
+python-geoip
 requests
 simplejson
 wetransferpy

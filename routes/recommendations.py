@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 from sqlalchemy import update
 
 from datascience import create_recommendations
+from utils.geoip import get_geolocation
 from utils.rest import expect_json_data
 from utils.config import BEFORE_AFTER_LIMIT, BLOB_SIZE
 from utils.human_ids import dehumanize, humanize
@@ -22,6 +23,11 @@ def update_recommendations():
     # POSITION
     latitude = request.args.get('latitude')
     longitude = request.args.get('longitude')
+    if not latitude or not longitude:
+        geolocation = get_geolocation(request.remote_addr)
+        if geolocation:
+            latitude = geolocation.latitude
+            longitude = geolocation.longitude
     print('(position) latitude', latitude, 'longitude', longitude)
     # DETERMINE AROUND
     around = request.args.get('around')
