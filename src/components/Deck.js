@@ -123,14 +123,14 @@ class Deck extends Component {
     } = this.props
     const index = get(this.props, 'currentRecommendation.index', 0)
     const offset = (data.x + width * index) / width
-    if (offset > horizontalSlideRatio) {
-      this.handleGoPrevious()
-    } else if (-offset > horizontalSlideRatio) {
-      this.handleGoNext()
-    } else if (draggable && data.y > height * verticalSlideRatio) {
+    if (draggable && data.y > height * verticalSlideRatio) {
       this.handleUnFlip()
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleFlip()
+    } else if (offset > horizontalSlideRatio) {
+      this.handleGoPrevious()
+    } else if (-offset > horizontalSlideRatio) {
+      this.handleGoNext()
     }
   }
 
