@@ -109,6 +109,8 @@ elif [[ "$CMD" == "deploy-frontend" ]]; then
 elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
        docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
+elif [[ "$CMD" == "dump-prod-db-to-staging" ]]; then
+  RUN='docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c | ssh api.passculture-staging.beta.gouv.fr "cat > ~/dumps_prod/`date +%Y%m%d_%H%M%S`.pgdump"'
 elif [[ "$CMD" == "ftp_mirrors" ]]; then
   mkdir -p "$ROOT_PATH/api/ftp_mirrors"
   sshfs -o allow_other,idmap=user deploy@api.passculture-staging.beta.gouv.fr:/home/deploy/pass-culture-main/api/ftp_mirrors "$ROOT_PATH/api/ftp_mirrors"\
@@ -169,12 +171,13 @@ elif [[ "$CMD" == "reset-reco-db" ]]; then
 elif [[ "$CMD" == "reset-users-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,recommendation_offer,recommendation_booking,user_offerer RESTART IDENTITY CASCADE;\""'
 elif [[ "$CMD" == "restore-db" ]]; then
+  echo "Warning : RUN reset-all-db before running this !"
   if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
     exit
   fi
   backup_file="$1"
-  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d' ' -f 1` pg_restore -d pass_culture -U pass_culture -c'
+  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c'
 elif [[ "$CMD" == "set-backend" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc update-mocks;
