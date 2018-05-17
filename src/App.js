@@ -1,4 +1,7 @@
 import React from 'react'
+import { compose } from 'redux'
+
+import withDebug from './components/hocs/withDebug'
 
 import Modal from './components/layout/Modal'
 import Splash from './components/layout/Splash'
@@ -17,4 +20,5 @@ const App = ({ children }) => {
   )
 }
 
-export default App
+// export default App
+export default compose(withDebug)(App)

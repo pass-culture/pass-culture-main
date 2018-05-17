@@ -10,3 +10,13 @@
     top: 8rem;
   }
 }
+
+.debug-modal {
+  width: 100%;
+  padding: 2rem 1rem;
+
+  pre {
+    text-align: left;
+    overflow-y: auto;
+  }
+}
