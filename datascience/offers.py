@@ -19,12 +19,12 @@ def get_offers(limit=3, user=None, coords=None):
         return []
 
     # POSITION (STRASBOURG BY DEFAULT...)
-    LAT = 48.5692562
-    LONG = 7.6223528
-    if coords and coords.get('latitude'):
-        LAT = float(coords.get('latitude'))
-    if coords and coords.get('longitude'):
-        LONG = float(coords.get('longitude'))
+    LAT = 48.585131
+    LONG = 7.757012
+#    if coords and coords.get('latitude'):
+#        LAT = float(coords.get('latitude'))
+#    if coords and coords.get('longitude'):
+#        LONG = float(coords.get('longitude'))
 
     # ALL
     all_query = Offer.query
