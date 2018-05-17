@@ -1,6 +1,7 @@
 /* global self */
 /* eslint no-restricted-globals: ["off", "self"] */
 import { db, pushPull, setUser } from './data'
+import { IS_DEXIE } from '../../utils/config'
 
 class DexieWrapper {
   constructor(worker) {
@@ -42,9 +43,13 @@ class DexieWrapper {
     this.receiveMessage(message)
   }
 
-  dexieSignout() {
+  async dexieSignout() {
     Object.keys(this.state).forEach(key => delete this.state[key])
-    db.users.clear()
+    if (IS_DEXIE) {
+      await db.users.clear()
+    } else {
+      db.users.data = []
+    }
     this.receiveMessage({ text: 'dexieSignout' })
   }
 
