@@ -78,10 +78,4 @@
       color: $white;
     }
   }
-
-  body.softkeyboard &, body.web & {
-    min-height: 100vh;
-    height: auto;
-  }
-
 }

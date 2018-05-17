@@ -4,14 +4,14 @@
   padding: 0;
 }
 
-html {
+html, body, #root, .app {
+  height: 100%;
   min-height: 100%;
 }
 
 body {
   width: 100%;
   max-width: 500px;
-  min-height: 100%;
   margin: 0 auto;
   font-size: $font-size;
   -webkit-tap-highlight-color: rgba($white, 0);
