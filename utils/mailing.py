@@ -14,6 +14,8 @@ Offer = app.model.Offer
 
 
 def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
+    if booking is None and len(offer.bookings)==0:
+        print("Not sending recap for  "+offer+" as it has no bookings")
     if MAILJET_API_KEY is None or MAILJET_API_KEY=='':
         raise ValueError("Missing environment variable MAILJET_API_KEY")
 
