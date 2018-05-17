@@ -121,8 +121,14 @@ elif [[ "$CMD" == "install" ]]; then
        git submodule init;
        git submodule update;
        git submodule foreach git checkout origin master;
+			 ./pc install-geoip;
 			 ./pc symlink;
        cd $ROOT_PATH/webapp && yarn'
+elif [[ "$CMD" == "install-geoip" ]]; then
+	RUN='wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz;
+	 		 gzip -df GeoLite2-City.mmdb.gz;
+			 mkdir -f $ROOT_PATH/api/geoip/;
+			 mv GeoLite2-City.mmdb $ROOT_PATH/api/geoip/'
 elif [[ "$CMD" == "psql" ]]; then
   COLUMNS=${COLUMNS:-''};
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
