@@ -15,10 +15,10 @@
 
   .verso-header {
     background-color: $black;
-    padding-top: 1rem;
-    padding-bottom: 1.75rem;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-top: 1.5 * $page-padding;
+    padding-bottom: 1.5 * $page-padding;
+    padding-left: $page-padding;
+    padding-right: $page-padding;
     color: white;
     position: relative;
     flex-shrink: 0;
@@ -40,10 +40,8 @@
 
     h2 {
       font-size: 2.5rem;
-      margin-bottom: 0.375rem;
-      -webkit-margin-after: 0;
       font-weight: 500;
-      line-height: 2.625 rem;
+      line-height: 2.7rem;
     }
     h6 {
       font-weight: 400;
