@@ -25,7 +25,7 @@ class VersoWrapper extends Component {
       } else if (!this.props.draggable && this.$el.scrollTop <= 0) {
         this.props.makeDraggable()
       }
-    })
+    }, {passive: true})
   }
 
   componentWillUnMount() {
