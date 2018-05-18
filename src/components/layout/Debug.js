@@ -28,7 +28,7 @@ class Debug extends Component {
   }
 
   handleTouchPress = (e) => {
-    if (get(e, 'touches', []).length >= 3) {
+    if (get(e, 'touches', []).length >= 2) {
       this.buttonPressTimer = setTimeout(() => {
         this.showDebug()
       }, this.props.timeoutDuration);
