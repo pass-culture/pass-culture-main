@@ -16,9 +16,7 @@ const data = (state = initialState, action) => {
     return Object.assign({}, state, { [action.key]: filteredElements })
   } else if (action.type === REMOVE_DATA_ERROR) {
     return Object.assign({}, state, {
-      errors: Object.assign({}, state.errors, {
-        [action.name]: null,
-      }),
+      errors: null,
     })
   } else if (/REQUEST_DATA_(POST|PUT|DELETE|PATCH)_(.*)/.test(action.type)) {
     const nextState = { isOptimist: true, previousOptimistState: state }
