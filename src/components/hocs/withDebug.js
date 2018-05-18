@@ -7,16 +7,11 @@ import moment from 'moment'
 import get from 'lodash.get'
 
 import { showModal } from '../../reducers/modal'
-import { randomHash } from '../../utils/random'
 
 import '../../utils/debugInitializer'
 
 const withDebug = WrappedComponent => {
   class _withDebug extends Component {
-
-    constructor(props) {
-      super(props)
-    }
 
     static defaultProps = {
       timeoutDuration: 3000,
