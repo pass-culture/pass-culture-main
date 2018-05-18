@@ -84,11 +84,11 @@ if (window.cordova) {
     CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
   }
   window.addEventListener('keyboardWillShow', function(e) {
-    console.log('Keyboard show')
+    window.log('Keyboard show')
     document.body.className += ' softkeyboard'
   })
   window.addEventListener('keyboardWillHide', function(e) {
-    console.log('Keyboard Hide')
+    window.log('Keyboard Hide')
     document.body.className = document.body.className
       .split(' ')
       .filter(c => c !== 'softkeyboard')

@@ -10,3 +10,32 @@
     top: 8rem;
   }
 }
+
+.debug-modal {
+  width: 100%;
+  margin-top: 1.5rem;
+  pre {
+    text-align: left;
+    overflow-y: auto;
+    padding: 0;
+    background: white;
+    code {
+      display: block;
+      padding: 0.5rem 1rem;
+      .header {
+        position: relative;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+      }
+
+      .log {
+        margin-left: 1rem;
+      }
+
+      &:nth-child(even) {
+        background-color: rgba($primary, 0.1);
+      }
+    }
+
+  }
+}
