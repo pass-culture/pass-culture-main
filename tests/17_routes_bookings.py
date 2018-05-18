@@ -103,4 +103,4 @@ def test_13_create_booking_should_not_work_if_too_many_bookings():
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
     assert 'global' in r_create.json()
-    assert 'quatité disponible' in r_create.json()['global'][0]
+    assert 'quantité disponible' in r_create.json()['global'][0]

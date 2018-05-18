@@ -64,7 +64,7 @@ def post_booking():
         app.model.PcObject.check_and_save(new_booking)
     except InternalError as ie:
         if 'check_booking' in str(ie.orig):
-            ae.addError('global', 'la quatité disponible pour cette offre'
+            ae.addError('global', 'la quantité disponible pour cette offre'
                                   + ' est atteinte')
             return jsonify(ae.errors), 400
         else:
