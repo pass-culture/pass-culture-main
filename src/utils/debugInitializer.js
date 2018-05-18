@@ -11,33 +11,30 @@ const appendToLog = ({method, values}) => {
       time: new Date(),
       hash: randomHash(),
     }])
+  return values[0]
 }
 
-const debug = (...values) => {
-  appendToLog({
-    method: 'debug',
-    values,
-  })
-}
-const log = (...values) => {
-  appendToLog({
-    method: 'log',
-    values,
-  })
-}
+const debug = (...values) => appendToLog({
+  method: 'debug',
+  values,
+})
 
-const warn = (...values) => {
-  appendToLog({
-    method: 'warn',
-    values,
-  })
-}
-const error = (...values) => {
-  appendToLog({
-    method: 'error',
-    values,
-  })
-}
+const log = (...values) => appendToLog({
+  method: 'log',
+  values,
+})
+
+
+const warn = (...values) => appendToLog({
+  method: 'warn',
+  values,
+})
+
+const error = (...values) => appendToLog({
+  method: 'error',
+  values,
+})
+
 
 const initialize = () => {
   if (window.logContent) return;
