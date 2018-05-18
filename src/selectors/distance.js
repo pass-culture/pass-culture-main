@@ -7,12 +7,12 @@ import { distanceInMeters } from '../utils/geolocation'
 export default createSelector(
   selectCurrentOffer,
   selectCurrentVenue,
-  state => state.geolocation.position,
-  (offer, venue, position) => {
-    if (!position || !offer || !venue) {
+  state => state.geolocation.latitude,
+  state => state.geolocation.longitude,
+  (offer, venue, latitude, longitude) => {
+    if (!latitude || !longitude || !offer || !venue) {
       return '-'
     }
-    const { latitude, longitude } = position.coords
     const distance = distanceInMeters(
       latitude,
       longitude,
