@@ -2,10 +2,12 @@ import classnames from 'classnames'
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import withSizes from 'react-sizes'
 
 import Recto from './Recto'
 import Verso from './Verso'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
+import { compose } from 'redux'
 
 class Card extends Component {
   handleSetRead = props => {
@@ -29,14 +31,14 @@ class Card extends Component {
   }
 
   render() {
-    const { recommendation, position, currentHeaderColor } = this.props
+    const { recommendation, position, currentHeaderColor, width } = this.props
     return (
       <div
         className={classnames('card', {
           current: position === 'current',
         })}
         style={{
-          transform: `translate(${get(recommendation, 'index') * 100}%, 0)`,
+          transform: `translate(${get(recommendation, 'index') * width}px, 0)`,
           backgroundColor: currentHeaderColor,
         }}
       >
@@ -52,7 +54,14 @@ Card.defaultProps = {
   readTimeout: 3000,
 }
 
-export default connect(state => ({
-  currentHeaderColor: selectCurrentHeaderColor(state),
-  isFlipped: state.verso.isFlipped,
-}))(Card)
+export default compose(
+  withSizes(({ width, height }) => ({
+    width: Math.min(width, 500), // body{max-width: 500px;}
+    height,
+  })),
+  connect(
+    state => ({
+      currentHeaderColor: selectCurrentHeaderColor(state),
+      isFlipped: state.verso.isFlipped,
+    }))
+)(Card)

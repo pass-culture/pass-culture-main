@@ -162,7 +162,7 @@ class Deck extends Component {
       x: -1 * width * index,
       y: 0,
     }
-
+    console.log('currentRecommendation', currentRecommendation)
     return (
       <div
         className="deck"
