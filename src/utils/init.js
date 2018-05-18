@@ -13,6 +13,8 @@ const init = store => {
       key: 'dexie-state',
       state: { position },
     })
+  }, (err) => {
+    window.warn('Could not get geoloc', err)
   })
   store.dispatch(setGeolocationWatchId(watchId))
 }

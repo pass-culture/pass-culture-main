@@ -10,7 +10,9 @@ import store from './utils/store'
 import registerCacheWorker from './workers/cache'
 import registerDexieWorker from './workers/dexie/register'
 
-function initApp() {
+
+const initApp = () => {
+
   ReactDOM.render(<Root />, document.getElementById('root'))
   if (module.hot) {
     module.hot.accept('./Root', () => {
