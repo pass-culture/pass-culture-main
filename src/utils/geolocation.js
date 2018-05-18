@@ -19,11 +19,11 @@ export function navigationLink(lat, long) {
   //see https://stackoverflow.com/questions/9688607/how-to-open-a-mobile-devices-map-app-when-a-user-clicks-on-a-link
   if (MOBILE_OS === 'ios') {
     return (
-      'maps://maps.google.com/maps?daddr=lat,long&amp;ll=' + long + ',' + lat
+      'maps://maps.google.com/maps?daddr=' + lat + ',' + long
     )
   } else if (MOBILE_OS === 'android') {
     return (
-      'http://maps.google.com/maps?daddr=lat,long&amp;ll=' + long + ',' + lat
+      'http://maps.google.com/maps?daddr=' + lat + ',' + long
     )
   } else {
     return 'https://www.openstreetmap.org/#map=18/' + lat + '/' + long
