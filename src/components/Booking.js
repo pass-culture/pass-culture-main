@@ -215,8 +215,7 @@ class Booking extends Component {
           )}
           {step === 'error' && (
             <div className="section success">
-              <Icon svg="picto-validation" />
-              <p>Une erreur est survenue lors de la réservation. :(</p>
+              <p>Une erreur est survenue lors de la réservation :</p>
               {error && <p><Capitalize>{error}</Capitalize></p>}
             </div>
           )}
