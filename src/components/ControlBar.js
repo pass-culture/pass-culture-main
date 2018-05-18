@@ -51,7 +51,7 @@ class ControlBar extends Component {
   }
 
   isFinished = () => {
-    return moment(get(this.props, 'offer.bookingLimitDatetime')) < moment() || this.props.offer.available <= 0
+    return moment(get(this.props, 'offer.bookingLimitDatetime')) < moment() || get(this.props, 'offer.available', 1) <= 0
   }
 
   render() {
