@@ -5,8 +5,9 @@ import {
 import { worker } from '../workers/dexie/register'
 
 const init = store => {
-  window.log('queries geoloc')
-  const watchId = navigator.geolocation.watchPosition(function(position) {
+  window.log('Geoloc queried')
+  const watchId = navigator.geolocation.watchPosition((position) => {
+    window.log('Geoloc received', position)
     store.dispatch(setGeolocationPosition(position))
     worker.postMessage({
       key: 'dexie-state',
