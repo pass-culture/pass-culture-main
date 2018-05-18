@@ -9,7 +9,8 @@ import { SingleDatePicker } from 'react-dates'
 import VersoWrapper from './VersoWrapper'
 import Price from './Price'
 import Icon from './layout/Icon'
-import { requestData } from '../reducers/data'
+import Capitalize from './utils/Capitalize'
+import { requestData, removeDataError } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 import selectBooking from '../selectors/booking'
 import selectCurrentOffer from '../selectors/currentOffer'
@@ -46,6 +47,7 @@ class Booking extends Component {
 
   currentStep() {
     const token = get(this.props, 'booking.token')
+    if (this.props.error) return 'error'
     if (token) return 'confirmation'
     if (this.state.bookingInProgress) return 'loading'
     return 'confirm'
@@ -74,9 +76,15 @@ class Booking extends Component {
     })
   }
 
+  closeBooking = () => {
+    this.props.removeDataError()
+    this.props.closeModal()
+  }
+
   render() {
     const token = get(this.props, 'booking.token')
     const price = get(this.props, 'offer.price')
+    const error = this.props.error
     const step = this.currentStep()
     const dateRequired =
       get(this.props, 'recommendation.mediatedOccurences', []).length > 1
@@ -210,6 +218,12 @@ class Booking extends Component {
               </p>
             </div>
           )}
+          {step === 'error' && (
+            <div className="section success">
+              <p>Une erreur est survenue lors de la réservation :</p>
+              {error && <p><Capitalize>{error}</Capitalize></p>}
+            </div>
+          )}
           <ul className="bottom-bar">
             {step === 'confirm' && [
               <li key="submit">
@@ -227,7 +241,7 @@ class Booking extends Component {
               <li key="cancel">
                 <button
                   className="button is-secondary"
-                  onClick={e => this.props.closeModal()}
+                  onClick={this.closeBooking}
                 >
                   Annuler
                 </button>
@@ -242,9 +256,19 @@ class Booking extends Component {
               <li>
                 <button
                   className="button is-secondary"
-                  onClick={e => this.props.closeModal()}
+                  onClick={this.closeBooking}
                 >
                   OK
+                </button>
+              </li>
+            )}
+            {step === 'error' && (
+              <li>
+                <button
+                  className="button is-secondary"
+                  onClick={this.closeBooking}
+                >
+                  Retour
                 </button>
               </li>
             )}
@@ -261,9 +285,11 @@ export default connect(
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
     recommendation: selectCurrentRecommendation(state),
+    error: get(state, 'data.errors.global'),
   }),
   {
     requestData,
     closeModal,
+    removeDataError,
   }
 )(Booking)
