@@ -9,65 +9,24 @@ import get from 'lodash.get'
 import { showModal } from '../../reducers/modal'
 import { randomHash } from '../../utils/random'
 
+import '../../utils/debugInitializer'
+
 const withDebug = WrappedComponent => {
   class _withDebug extends Component {
 
     constructor(props) {
       super(props)
-      window.debug = this.debug;
-      window.log = this.log;
-      window.warn = this.warn;
-      window.error = this.error;
-      window.logContent = [];
-      console.debug('Debug component started')
     }
 
     static defaultProps = {
-      logLength: 100,
       timeoutDuration: 3000,
-    }
-
-    appendToLog({method, values}) {
-      console[method](...values)
-      window.logContent = window.logContent.slice(-this.props.logLength).concat([{
-          method,
-          values,
-          time: new Date(),
-          hash: randomHash(),
-        }])
-    }
-
-    debug = (...values) => {
-      this.appendToLog({
-        method: 'debug',
-        values,
-      })
-    }
-    log = (...values) => {
-      this.appendToLog({
-        method: 'log',
-        values,
-      })
-    }
-
-    warn = (...values) => {
-      this.appendToLog({
-        method: 'warn',
-        values,
-      })
-    }
-    error = (...values) => {
-      this.appendToLog({
-        method: 'error',
-        values,
-      })
     }
 
     showDebug = () => {
       this.props.showModal(
         (<div className='debug-modal'>
           <h1 className='title'>Pass Culture Debug</h1>
-          <pre>{window.logContent.map(this.renderLine)}</pre>
+          <pre>{get(window, 'logContent', []).map(this.renderLine)}</pre>
         </div>), {
         fullscreen: true,
         maskColor: 'transparent',
