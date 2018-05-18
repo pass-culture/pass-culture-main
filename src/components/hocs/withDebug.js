@@ -1,50 +1,111 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
+import get from 'lodash.get'
 
 import { showModal } from '../../reducers/modal'
-
-import { debug, log, warn, error } from '../../reducers/log'
+import { randomHash } from '../../utils/random'
 
 const withDebug = WrappedComponent => {
   class _withDebug extends Component {
 
     constructor(props) {
       super(props)
-      window.debug = this.props.debug;
-      window.log = this.props.log;
-      window.warn = this.props.warn;
-      window.error = this.props.error;
+      window.debug = this.debug;
+      window.log = this.log;
+      window.warn = this.warn;
+      window.error = this.error;
+      this.state = {
+        logContent: [],
+      }
+      console.debug('Debug component started')
     }
 
     static defaultProps = {
+      logLength: 100,
       timeoutDuration: 3000,
+    }
+
+    appendToLog({method, values}) {
+      console[method](...values)
+      this.setState({
+        logContent: this.state.logContent.slice(-this.props.logLength).concat([{
+          method,
+          values,
+          time: new Date(),
+          hash: randomHash(),
+        }])
+      })
+    }
+
+    debug = (...values) => {
+      this.appendToLog({
+        method: 'debug',
+        values,
+      })
+    }
+    log = (...values) => {
+      this.appendToLog({
+        method: 'log',
+        values,
+      })
+    }
+
+    warn = (...values) => {
+      this.appendToLog({
+        method: 'warn',
+        values,
+      })
+    }
+    error = (...values) => {
+      this.appendToLog({
+        method: 'error',
+        values,
+      })
     }
 
     showDebug = () => {
       this.props.showModal(
         (<div className='debug-modal'>
-          <h1 className='title'>Debug</h1>
-          <pre>{this.props.logContent.map(({time, method, ...values}) => <code title={time}>{`${method.toUpperCase()}: ${values.join(' - ')}`}</code>)}</pre>
+          <h1 className='title'>Pass Culture Debug</h1>
+          <pre>{this.state.logContent.map(this.renderLine)}</pre>
         </div>), {
         fullscreen: true,
         maskColor: 'transparent',
       })
     }
 
-    handleTouchPress = () => {
-      this.buttonPressTimer = setTimeout(() => {
-        this.showDebug()
-      }, this.props.timeoutDuration);
+    handleTouchPress = (e) => {
+      if (get(e, 'touches', []).length > 1 || e.shiftKey) {
+        this.buttonPressTimer = setTimeout(() => {
+          this.showDebug()
+        }, this.props.timeoutDuration);
+      }
     }
 
     handleTouchRelease = () => {
       clearTimeout(this.buttonPressTimer);
     }
 
+    displayVariable = value => {
+      if (typeof value === 'string') return value;
+      return JSON.stringify(value, null, 2)
+        .replace(/"([^(")"]+)":/g,"$1:") // remove quotes
+    }
+
+    renderLine = ({time, method, hash, values}) => {
+      return (
+        <code key={hash} title={time}>
+          {`${method.toUpperCase()} | `}
+          <time dateTime={time}>{moment(time).format('h:mm:ss')}</time>
+          {`:\n${values.map(this.displayVariable).join('\n')}`}
+        </code>
+      )
+    }
+
     render() {
       return <div
-        onTouchStart={e => (e.touches && e.touches.length > 1 || e.shiftKey) && this.handleTouchPress()}
+        onTouchStart={this.handleTouchPress}
         onTouchEnd={this.handleTouchRelease}
         onClick={e => (e.detail === 3) && this.showDebug(e)}
         style={{height: 'inherit', width: 'inherit'}}
@@ -53,14 +114,8 @@ const withDebug = WrappedComponent => {
       </div>
     }
   }
-  return connect(state => ({
-    logContent: state.log
-  }), {
+  return connect(state => ({}), {
     showModal,
-    debug,
-    log,
-    warn,
-    error,
   })(_withDebug)
 }
 

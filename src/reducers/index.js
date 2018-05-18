@@ -5,7 +5,6 @@ import data from './data'
 import form from './form'
 import geolocation from './geolocation'
 import loading from './loading'
-import log from './log'
 import modal from './modal'
 import queries from './queries'
 import verso from './verso'
@@ -17,7 +16,6 @@ const rootReducer = combineReducers({
   form,
   geolocation,
   loading,
-  log,
   modal,
   queries,
   splash,
