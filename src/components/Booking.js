@@ -10,7 +10,7 @@ import VersoWrapper from './VersoWrapper'
 import Price from './Price'
 import Icon from './layout/Icon'
 import Capitalize from './utils/Capitalize'
-import { requestData } from '../reducers/data'
+import { requestData, removeDataError } from '../reducers/data'
 import { closeModal } from '../reducers/modal'
 import selectBooking from '../selectors/booking'
 import selectCurrentOffer from '../selectors/currentOffer'
@@ -74,6 +74,11 @@ class Booking extends Component {
       date: date,
       time: availableHours[0],
     })
+  }
+
+  closeBooking = () => {
+    this.props.removeDataError()
+    this.props.closeModal()
   }
 
   render() {
@@ -236,7 +241,7 @@ class Booking extends Component {
               <li key="cancel">
                 <button
                   className="button is-secondary"
-                  onClick={e => this.props.closeModal()}
+                  onClick={this.closeBooking}
                 >
                   Annuler
                 </button>
@@ -251,7 +256,7 @@ class Booking extends Component {
               <li>
                 <button
                   className="button is-secondary"
-                  onClick={e => this.props.closeModal()}
+                  onClick={this.closeBooking}
                 >
                   OK
                 </button>
@@ -261,7 +266,7 @@ class Booking extends Component {
               <li>
                 <button
                   className="button is-secondary"
-                  onClick={e => this.props.closeModal()}
+                  onClick={this.closeBooking}
                 >
                   Retour
                 </button>
@@ -285,5 +290,6 @@ export default connect(
   {
     requestData,
     closeModal,
+    removeDataError,
   }
 )(Booking)
