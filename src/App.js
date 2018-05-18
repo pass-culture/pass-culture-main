@@ -1,5 +1,4 @@
 import React from 'react'
-import { compose } from 'redux'
 
 import Debug from './components/layout/Debug'
 import Modal from './components/layout/Modal'
