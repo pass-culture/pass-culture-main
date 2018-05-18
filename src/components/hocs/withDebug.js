@@ -1,3 +1,6 @@
+// Warning: this component is volontarily impure.
+// Don't use it as an example unless you know what you are doing.
+
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
@@ -15,9 +18,7 @@ const withDebug = WrappedComponent => {
       window.log = this.log;
       window.warn = this.warn;
       window.error = this.error;
-      this.state = {
-        logContent: [],
-      }
+      window.logContent = [];
       console.debug('Debug component started')
     }
 
@@ -28,14 +29,12 @@ const withDebug = WrappedComponent => {
 
     appendToLog({method, values}) {
       console[method](...values)
-      this.setState({
-        logContent: this.state.logContent.slice(-this.props.logLength).concat([{
+      window.logContent = window.logContent.slice(-this.props.logLength).concat([{
           method,
           values,
           time: new Date(),
           hash: randomHash(),
         }])
-      })
     }
 
     debug = (...values) => {
@@ -68,7 +67,7 @@ const withDebug = WrappedComponent => {
       this.props.showModal(
         (<div className='debug-modal'>
           <h1 className='title'>Pass Culture Debug</h1>
-          <pre>{this.state.logContent.map(this.renderLine)}</pre>
+          <pre>{window.logContent.map(this.renderLine)}</pre>
         </div>), {
         fullscreen: true,
         maskColor: 'transparent',
@@ -96,9 +95,9 @@ const withDebug = WrappedComponent => {
     renderLine = ({time, method, hash, values}) => {
       return (
         <code key={hash} title={time}>
-          {`${method.toUpperCase()} | `}
-          <time dateTime={time}>{moment(time).format('h:mm:ss')}</time>
-          {`:\n${values.map(this.displayVariable).join('\n')}`}
+          <div className='header'>{`${method.toUpperCase()} | `}
+          <time dateTime={time}>{moment(time).format('h:mm:ss')}</time></div>
+          <div className='log'>{values.map(this.displayVariable).join('\n')}</div>
         </code>
       )
     }
