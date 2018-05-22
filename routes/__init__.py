@@ -2,6 +2,7 @@ from utils.config import IS_DEV
 
 import routes.bookings
 import routes.mediations
+import routes.occasions
 import routes.offers
 import routes.offerers
 import routes.providers
