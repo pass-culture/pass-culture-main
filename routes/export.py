@@ -1,5 +1,6 @@
 """ user mediations routes """
 import csv
+from inspect import isclass
 from io import BytesIO, StringIO
 from flask import current_app as app, jsonify, request, send_file
 import os
@@ -11,9 +12,6 @@ Recommendation = app.model.Recommendation
 RecommendationOffer = app.model.RecommendationOffer
 
 EXPORT_TOKEN = os.environ.get('EXPORT_TOKEN')
-
-if EXPORT_TOKEN is None or EXPORT_TOKEN == '':
-    raise ValueError("Missing environment variable EXPORT_TOKEN")
 
 
 def check_token():
@@ -31,13 +29,15 @@ def check_token():
 
 def is_exportable(model_name):
     return not model_name == 'PcObject'\
+           and isclass(app.model[model_name])\
            and issubclass(app.model[model_name], app.model.PcObject)
            
 
 @app.route('/export/', methods=['GET'])
 def list_export_urls():
     check_token()
-    return "\n".join(['/export/'+model_name
+    return "\n".join([request.host_url+'export/'+model_name
+                                      +'?token='+request.args.get('token')
                       for model_name in filter(is_exportable,
                                                app.model.keys())])
 
