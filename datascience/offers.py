@@ -107,9 +107,6 @@ def get_offers(limit=3, user=None, coords=None):
         """
         pass
 
-    # FIXME: ugly quick patch
-    final_offers = list(filter(lambda o: len(o.bookings)<o.available, final_offers))
-
     # RETURN
     print('(reco) final count', len(final_offers))
     if LAT and LONG:
@@ -122,7 +119,6 @@ def get_offers(limit=3, user=None, coords=None):
                 LONG
             )
         )
-    
     return final_offers
 
 app.datascience.get_offers = get_offers
