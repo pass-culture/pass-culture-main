@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { AutoSizer, List } from 'react-virtualized'
 import { compose } from 'redux'
-import { createSelector } from 'reselect'
 
 import OffersGroupItem from './OffersGroupItem'
 import { assignData, requestData } from '../reducers/data'

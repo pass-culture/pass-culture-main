@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Icon from './Icon'
 import { requestData } from '../../reducers/data'
 import { closeModal } from '../../reducers/modal'
 

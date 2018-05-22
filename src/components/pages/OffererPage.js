@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OffererEditButton from '../OffererEditButton'
 import OffersGroupsList from '../OffersGroupsList'
 import withLogin from '../hocs/withLogin'
 import SearchInput from '../layout/SearchInput'

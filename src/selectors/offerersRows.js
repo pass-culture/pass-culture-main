@@ -1,7 +1,4 @@
-import groupby from 'lodash.groupby'
 import { createSelector } from 'reselect'
-
-import selectOffersWithSource from './offersWithSource'
 
 const array_chunks = (array, chunk_size) =>
   Array(Math.ceil(array.length / chunk_size))

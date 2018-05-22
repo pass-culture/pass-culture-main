@@ -1,12 +1,9 @@
-import classnames from 'classnames'
 import Dotdotdot from 'react-dotdotdot'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OfferModify from './OfferModify'
-import Icon from './layout/Icon'
 import { assignData } from '../reducers/data'
 import { resetForm } from '../reducers/form'
 import { showModal } from '../reducers/modal'
@@ -19,22 +16,18 @@ class OffersGroupItem extends Component {
 
   render() {
     const {
-      isMediations,
-      isModify,
-      isPrices,
       match: { params: { offererId } },
-      offerer,
       offers
     } = this.props
     const groupingOffer = offers[0]
-    const groupingEventOccurence = groupingOffer.eventOccurence
+    // const groupingEventOccurence = groupingOffer.eventOccurence
     const groupingSource = groupingOffer.source
     // console.log('offerer', offerer, groupingSource, groupingOffer)
     return (
       <article className="offers-group-item media">
         <figure className="media-left">
           <p className="image is-96x96 is-2by3">
-            <img src={groupingSource.thumbUrl}/>
+            <img alt='thumbnail' src={groupingSource.thumbUrl}/>
           </p>
         </figure>
         <div className="media-content">

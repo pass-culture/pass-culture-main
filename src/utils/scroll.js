@@ -1,5 +1,3 @@
-const freezeVp = e => e.preventDefault()
-
 export function stopBodyScrolling (bool) {
   /*
   bool === true

@@ -94,7 +94,6 @@ class Modal extends Component {
       fullscreen,
       hasCloseButton,
       isUnclosable,
-      location: { pathname },
       maskColor,
       transitionDuration,
     } = this.props
