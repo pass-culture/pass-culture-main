@@ -23,6 +23,9 @@ body {
   -moz-user-select: none;
   -o-user-select: none;
   user-select: none;
+
+  // https://stackoverflow.com/questions/29008194/disabling-androids-chrome-pull-down-to-refresh-feature
+  overscroll-behavior: contain;
 }
 
 
