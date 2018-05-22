@@ -84,10 +84,18 @@ class Menu extends Component {
           <li>
             <NavLink to="/mentions-legales">
               <div className="menu-icon">
-                <Icon svg="ico-settings-w" />
+                <Icon svg="ico-txt-w" />
               </div>
               Mentions légales
             </NavLink>
+          </li>
+          <li>
+            <a href="mailto:pass@culture.gouv.fr">
+              <div className="menu-icon">
+                <Icon svg="ico-mail-w" />
+              </div>
+              Nous contacter
+            </a>
           </li>
           <li>
             <a onClick={this.onSignOutClick}>
