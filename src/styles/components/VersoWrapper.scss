@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   -webkit-overflow-scrolling: touch;
+  cursor: initial;
 
   &.with-padding-top {
     padding-top: 56.25%;
