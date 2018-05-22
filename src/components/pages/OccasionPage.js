@@ -7,13 +7,13 @@ import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
 
-class OfferPage extends Component {
+class OccasionPage extends Component {
   handleRequestData = () => {
     const {
-      match: { params: { offerId } },
+      match: { params: { occasionId, occasionType } },
       requestData
     } = this.props
-    requestData('GET', `offers?offerId=${offerId}`)
+    requestData('GET', `occasions/${occasionType}/${occasionId}`)
   }
 
   componentWillMount() {
@@ -43,4 +43,4 @@ export default compose(
     state => ({}),
     { requestData }
   )
-)(OfferPage)
+)(OccasionPage)
