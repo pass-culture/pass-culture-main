@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import createSelectOccasionItem from '../selectors/occasionItem'
+import createSelectOccasion from '../selectors/occasion'
 
 class OccasionItem extends Component {
   onDeactivateClick = () => {
@@ -16,6 +16,7 @@ class OccasionItem extends Component {
       description,
       id,
       name,
+      occasionType,
       thumbUrl
     } = this.props
     return (
@@ -36,7 +37,7 @@ class OccasionItem extends Component {
           </div>
           <nav className="level is-mobile">
             <div className="level-left">
-              <NavLink  to={`/gestion/${id}`}>
+              <NavLink  to={`/occasions/${occasionType}/${id}`}>
                 <button className="button is-primary level-item">
                   Modifier
                 </button>
@@ -63,8 +64,8 @@ export default compose(
   withRouter,
   connect(
     () => {
-      const selectOccasionItem = createSelectOccasionItem()
-      return (state, ownProps) => selectOccasionItem(state, ownProps)
+      const selectOccasion = createSelectOccasion()
+      return (state, ownProps) => selectOccasion(state, ownProps)
     }
   )
 )(OccasionItem)

@@ -10,7 +10,7 @@ const OffererItem = ({
 }) => {
   const src = `${THUMBS_URL}/venues/${venue.id}`
   return (
-    <article className="offerer-item media box">
+    <article className="offerer-item media">
       <figure className="media-left">
         <div className="image is-64x64" style={{
           backgroundImage: `url('${src}')`,
@@ -27,9 +27,9 @@ const OffererItem = ({
           </p>
         </div>
         <nav className="level">
-          <NavLink to={`/gestion/${id}`}>
+          <NavLink to={`/offerer/${id}`}>
             <button className="button is-primary level-item">
-              Voir
+              Configurer
             </button>
           </NavLink>
         </nav>
