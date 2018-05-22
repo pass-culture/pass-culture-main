@@ -62,7 +62,7 @@ class Debug extends Component {
       onTouchEnd={this.handleTouchRelease}
       onClick={e => (e.detail === 3 && e.shiftKey) && this.showDebug(e)}
       >
-      {this.props.children} />
+      {this.props.children}
     </div>
   }
 }
