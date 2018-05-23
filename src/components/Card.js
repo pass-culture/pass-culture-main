@@ -1,33 +1,64 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
+import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import withSizes from 'react-sizes'
+import { compose } from 'redux'
 
 import Recto from './Recto'
 import Verso from './Verso'
+import { requestData } from '../reducers/data'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
-import { compose } from 'redux'
+import { IS_DEXIE } from '../utils/config'
+
 
 class Card extends Component {
-  handleSetRead = props => {
-    // unpack and check
-    const { content, handleSetRead, item, readTimeout } = props
-    const { isRead } = this.state
-    if (!content || isRead) {
-      return
+
+  handleSetDateRead () {
+    const { isFlipped, position, recommendation } = this.props
+    if (recommendation && position === 'current') {
+      if (!isFlipped && !recommendation.dateRead) {
+        // TODO
+        /*
+        requestData('PUT', 'recommendations',
+          {
+            body: [{
+              dateRead: moment().toISOString(),
+              id: recommendation.id
+            }],
+            local: IS_DEXIE
+          }
+        )
+        */
+      }
     }
-    // wait a bit to trigger the fact that we stay on the same card
-    this.readTimeout = setTimeout(() => {
-      // make sure we are not going to do it circularly
-      this.setState({ isRead: true })
-      // check that style is still current
-      item === 0 && handleSetRead && handleSetRead(props)
-    }, readTimeout)
   }
 
-  componentWillUnmount() {
-    this.readTimeout && clearTimeout(this.readTimeout)
+  componentDidMount () {
+    this.handleSetDateRead()
+  }
+
+  componentDidUpdate (prevProps) {
+    const { isFlipped,
+      position,
+      recommendation,
+      requestData
+    } = this.props
+    if (recommendation && position === 'current') {
+      if (!prevProps.isFlipped && isFlipped && !recommendation.isClicked) {
+        requestData('PUT', 'recommendations',
+          {
+            body: [{
+              id: recommendation.id,
+              isClicked: true
+            }],
+            local: IS_DEXIE
+          }
+        )
+      }
+    }
+    this.handleSetDateRead()
   }
 
   render() {
@@ -63,5 +94,7 @@ export default compose(
     state => ({
       currentHeaderColor: selectCurrentHeaderColor(state),
       isFlipped: state.verso.isFlipped,
-    }))
+    }),
+    { requestData }
+  )
 )(Card)
