@@ -6,14 +6,18 @@ import { compose } from 'redux'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
+import createSelectOccasion from '../../selectors/occasion'
 
-class OfferPage extends Component {
+class OccasionPage extends Component {
   handleRequestData = () => {
     const {
-      match: { params: { offerId } },
+      match: { params: { occasionId, occasionType } },
       requestData
     } = this.props
-    requestData('GET', `offers?offerId=${offerId}`)
+    requestData('GET',
+      `occasions/${occasionType}/${occasionId}`,
+      { key: 'occasion' }
+    )
   }
 
   componentWillMount() {
@@ -36,11 +40,14 @@ class OfferPage extends Component {
   }
 }
 
+const selectOccasion = createSelectOccasion()
+
 export default compose(
   withLogin({ isRequired: true }),
   withRouter,
   connect(
-    state => ({}),
+    state => state.data.occasion &&
+      selectOccasion(state, state.data.occasion) || {},
     { requestData }
   )
-)(OfferPage)
+)(OccasionPage)

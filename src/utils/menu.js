@@ -6,11 +6,6 @@ const menu = {
       title: 'Gestion'
     },
     {
-      icon: 'ico-settings-w',
-      path: '/reglages',
-      title: 'Réglages'
-    },
-    {
       icon: 'ico-user-w',
       path: '/profil',
       title: 'Profil'
