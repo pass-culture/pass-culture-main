@@ -13,17 +13,14 @@ def list_occasions():
     event_ids = []
     occasions = []
     for offerer in current_user.offerers:
-        for offer in offerer.offers:
+        for eventOccurence in offerer.venue.eventOccurences:
             occasion = None
-            if offer.eventOccurence and offer.eventOccurence.event.id not in event_ids:
-                event_ids.append(offer.eventOccurence.event.id)
-                occasion = offer.eventOccurence.event._asdict(include=OCCASION_INCLUDES)
+            if eventOccurence.event.id not in event_ids:
+                event_ids.append(eventOccurence.event.id)
+                occasion = eventOccurence.event._asdict(include=OCCASION_INCLUDES)
                 occasion['occasionType'] = 'events'
                 occasions.append(occasion)
-            elif offer.thing:
-                occasion = offer.thing._asdict(include=OCCASION_INCLUDES)
-                occasion['occasionType'] = 'things'
-                occasions.append(occasion)
+        # TODO: find a similar method for things
     return jsonify(occasions)
 
 @app.route('/occasions/<occasionType>/<occasionId>', methods=['GET'])
