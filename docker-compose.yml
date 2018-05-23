@@ -20,6 +20,7 @@ services:
         read_only: true
     environment:
       - ENV=${ENV:-development}
+      - EXPORT_TOKEN=$EXPORT_TOKEN
       - MAILJET_API_KEY=${MAILJET_API_KEY:-20594a94ba962e549a7d5b1c3c6cd1ce}
       - MAILJET_API_SECRET=${MAILJET_API_SECRET:-9c55d1afb02b90e9150b316dc50a8dd6}
     env_file:
