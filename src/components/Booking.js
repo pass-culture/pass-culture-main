@@ -30,16 +30,26 @@ class Booking extends Component {
     }
   }
 
-  makeBooking = () => {
-    const { offer, recommendation, requestData } = this.props
+  makeBooking = event => {
+    const {
+      offer,
+      recommendation,
+      requestData
+    } = this.props
+    const { occurences } = this.state
     this.setState({
       bookingInProgress: true,
     })
+    const selectedOffer = occurences && occurences[0] &&
+      occurences[0].offer && occurences[0].offer[0]
+    const offerId = selectedOffer
+      ? selectedOffer.id
+      : offer.id
     requestData('POST', 'bookings', {
       add: 'append',
       body: {
         recommendationId: recommendation.id,
-        offerId: offer.id,
+        offerId,
         quantity: 1,
       },
     })
@@ -54,24 +64,35 @@ class Booking extends Component {
   }
 
   getAvailableDateTimes(selectedDate) {
-    const availableDates = get(
+    const mediatedOccurences = get(
       this.props,
       'recommendation.mediatedOccurences',
       []
-    ).map(o => moment(o.beginningDatetime))
-    const availableHours = availableDates.filter(d =>
-      d.isSame(selectedDate || this.state.date, 'day')
     )
+    const availableDates = mediatedOccurences.map(o => moment(o.beginningDatetime))
+    const availableMediatedOccurences = []
+    const availableHours = availableDates.filter((d, index) => {
+      const isFiltered = d.isSame(selectedDate || this.state.date, 'day')
+      if (isFiltered) {
+        availableMediatedOccurences.push(mediatedOccurences[index])
+      }
+      return isFiltered
+    })
     return {
       availableDates,
       availableHours,
+      availableMediatedOccurences
     }
   }
 
   handleDateSelect = date => {
-    const { availableHours } = this.getAvailableDateTimes(date)
+    const {
+      availableMediatedOccurences,
+      availableHours
+    } = this.getAvailableDateTimes(date)
     this.setState({
       date: date,
+      occurences: availableMediatedOccurences,
       time: availableHours[0],
     })
   }
