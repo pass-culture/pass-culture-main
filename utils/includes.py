@@ -34,10 +34,18 @@ OFFERS_INCLUDES = [
 ]
 
 RECOMMENDATIONS_INCLUDES = [
-    "mediatedOccurences",
+    {
+        "key": "mediatedOccurences",
+        "sub_joins": [
+            "offer"
+        ]
+    },
     {
         "key": "mediation",
-        "sub_joins": ["event", "thing"]
+        "sub_joins": [
+            "event",
+            "thing"
+        ]
     },
     {
         "key": "recommendationBookings",
