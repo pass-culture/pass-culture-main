@@ -77,9 +77,9 @@ def list_offers():
                                 include=OFFERS_INCLUDES,
                                 paginate=50)
 
-
-@app.route('/offers/<offer_id>', methods=['GET'],
-                                 defaults={'mediation_id': None})
+@app.route('/offers/<offer_id>',
+           methods=['GET'],
+           defaults={'mediation_id': None})
 @app.route('/offers/<offer_id>/<mediation_id>', methods=['GET'])
 def get_offer(offer_id, mediation_id):
     query = make_offer_query().filter_by(id=dehumanize(offer_id))

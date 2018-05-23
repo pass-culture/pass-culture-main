@@ -1,3 +1,6 @@
+OCCASION_INCLUDES = [
+    'mediations'
+]
 
 OFFERS_INCLUDES = [
     {
@@ -30,7 +33,7 @@ OFFERS_INCLUDES = [
     "venue"
 ]
 
-RECOMMENDATIONS_INCLUDES =  [
+RECOMMENDATIONS_INCLUDES = [
     "mediatedOccurences",
     {
         "key": "mediation",
@@ -89,6 +92,7 @@ USERS_INCLUDES = [
 
 includes = {
     'bookings': BOOKINGS_INCLUDES,
+    'occasions': OCCASION_INCLUDES,
     'offerers': OFFERERS_INCLUDES,
     'offers': OFFERS_INCLUDES,
     'recommendations': RECOMMENDATIONS_INCLUDES,
