@@ -131,11 +131,13 @@ class LocalProvider(Iterator):
                     if existing_date is not None:
                         obj.delete_thumb(index)
                         print("    Updating thumb #"+str(index)+" for "+str(obj))
-                        self.updatedThumbs += 1
                     else:
                         print("    Creating thumb #"+str(index)+" for "+str(obj))
-                        self.createdThumbs += 1
                     obj.save_thumb(thumb, index)
+                    if existing_date is not None:
+                        self.updatedThumbs += 1
+                    else:
+                        self.createdThumbs += 1
             if need_save:
                 app.model.PcObject.check_and_save(obj)
         except Exception as e:

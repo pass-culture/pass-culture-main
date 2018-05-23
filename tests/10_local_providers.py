@@ -164,10 +164,10 @@ with app.app_context():
                       createdObjects=18,
                       updatedObjects=0,
                       erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
+                      checkedThumbs=18,
+                      createdThumbs=10,
                       updatedThumbs=0,
-                      erroredThumbs=0,
+                      erroredThumbs=8,
                       Venue=9,
                       Offerer=9)
 
@@ -191,7 +191,4 @@ with app.app_context():
             import scripts
             from scripts.sandbox import sandbox
             sandbox()
-            assertCreatedCounts(User=2,
-                                Event=2,
-                                Thing=2,
-                                Offer=4)
+            assertCreatedCounts(User=2)
