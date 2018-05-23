@@ -22,10 +22,24 @@ def do_sandbox():
     check_and_save = app.model.PcObject.check_and_save
     model = app.model
 
+    # un jeune qui veut profiter du pass-culture
+    client_user = model.User()
+    client_user.publicName = "Utilisateur test jeune"
+    client_user.account = 100
+    client_user.email = "pctest.jeune@btmx.fr"
+    client_user.setPassword("pctestjeune")
+    check_and_save(client_user)
+    #set_from_mock("thumbs", client_user, 1)
+    client_user.save_thumb('https://avatars3.githubusercontent.com/u/185428?s=400&v=4', 0)
+    
     # un acteur culturel qui peut jouer a rajouter des offres partout
-    pro_user = model.User().query\
-                    .filter_by(email="erwan.ledoux@beta.gouv.fr")\
-                    .one()
+    pro_user = model.User()
+    pro_user.publicName = "Utilisateur test admin"
+    pro_user.email = "pctest.admin@btmx.fr"
+    pro_user.setPassword("pctestadmin")
+    check_and_save(pro_user)
+    set_from_mock("thumbs", pro_user, 2)
+
     for offerer in model.Offerer.query.all():
         userOfferer = model.UserOfferer()
         userOfferer.rights = "admin"

@@ -189,8 +189,8 @@ with app.app_context():
         with app.app_context():
             saveCounts()
             import scripts
-            from scripts.init import init
-            init()
+            from scripts.sandbox import sandbox
+            sandbox()
             assertCreatedCounts(User=2,
                                 Event=2,
                                 Thing=2,

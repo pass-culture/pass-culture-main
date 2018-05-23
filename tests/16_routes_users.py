@@ -88,8 +88,8 @@ def test_14_get_profile_should_return_the_users_profile_without_password_hash():
     r = req_with_auth().get(API_URL + '/users/me')
     assert r.status_code == 200
     user = r.json()
-    assert user['email'] == 'erwan.ledoux@beta.gouv.fr'
-    assert user['publicName'] == 'Erwan Ledoux'
+    assert user['email'] == 'pctest.admin@btmx.fr'
+    assert user['publicName'] == 'Utilisateur test admin'
     assert 'password' not in user
 
 
