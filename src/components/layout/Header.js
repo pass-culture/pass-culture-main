@@ -12,12 +12,10 @@ const Header = ({ showModal }) => {
     <header className="header navbar red-bg">
       <div className="container">
         <div className="navbar-brand">
-          <div className="navbar-item">
+          <NavLink to='/' className="navbar-item is-italic">
             <img src={`${ROOT_PATH}/icon/app-icon-app-store.png`} alt="Logo" />
-          </div>
-          <div className="navbar-item is-italic">
             <b> Pass </b> Culture PRO
-          </div>
+          </NavLink>
           <span className="navbar-burger burger"
             data-target="navbarMenuHeroC"
             onClick={() => showModal(<Menu />,

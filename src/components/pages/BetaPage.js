@@ -19,8 +19,7 @@ class BetaPage extends Component {
     return (
       <PageWrapper name="beta" noHeader redBg>
         <h1>
-          <strong>Bienvenue</strong>
-          <strong>dans l'avant-première</strong>
+          <strong>Bienvenue dans la version beta</strong>{ ' ' }
           <span>du Pass Culture</span>
         </h1>
         <p>Et merci de votre participation pour nous aider à l'améliorer !</p>
