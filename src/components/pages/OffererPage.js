@@ -65,8 +65,8 @@ class OffererPage extends Component {
               {
                 // TODO: plug this to a map
               }
-              <input type='hidden' name='latitude' value={latitude} />
-              <input type='hidden' name='longitude' value={longitude} />
+              <input type='hidden' name='latitude' value={latitude || ''} />
+              <input type='hidden' name='longitude' value={longitude || ''} />
               <div className='field'>
                 <label className='label'>Email de réservation</label>
                 <input className='input' autoComplete='email' type='email' name='bookingEmail' value={bookingEmail || ''} onChange={this.updateValue}  />
@@ -91,11 +91,11 @@ export default compose(
   withLogin({ isRequired: true }),
   withRouter,
   connect(
-    state => ({
+    (state, ownProps) => ({
       user: get(state, 'data.users.0'),
       // TODO put the following logic in a selector:
-      offerer: get(state, 'user.offerers', []).find(o => o.id === get(state, 'router.location.pathname', '').split('/').pop()),
-      isNew: get(state, 'router.location.pathname', '').split('/').pop() === 'nouveau',
+      offerer: get(state, 'user.offerers', []).find(o => o.id === get(ownProps, 'match.params.offererId', '')),
+      isNew: get(ownProps, 'match.params.offererId', '') === 'nouveau',
     }),
     { requestData }
   )

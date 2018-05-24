@@ -174,12 +174,13 @@ export default compose(
   withLogin({ isRequired: true }),
   withRouter,
   connect(
-    state => ({
+    (state, ownProps) => ({
+      youpi: console.log(ownProps),
       user: get(state, 'data.users.0'),
       // TODO put the following logic in a selector:
-      occasion: get(state, 'data.occasions', []).find(o => o.id === get(state, 'router.location.pathname', '').split('/').pop()),
-      isNew: get(state, 'router.location.pathname', '').split('/').pop() === 'nouveau',
-      type: get(state, 'router.location.pathname', '').split('/').slice(-2)[0],
+      occasion: get(state, 'data.occasions', []).find(o => o.id === get(ownProps, 'match.params.offerId', '')),
+      isNew: get(ownProps, 'match.params.offerId', '') === 'nouveau',
+      type: get(ownProps, 'match.params.offerType', ''),
     }),
     { requestData }
   )
