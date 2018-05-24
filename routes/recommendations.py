@@ -14,6 +14,8 @@ Offer = app.model.Offer
 Recommendation = app.model.Recommendation
 RecommendationOffer = app.model.RecommendationOffer
 
+PUT_KEYS = ['dateRead', 'isClicked', 'isFavorite']
+
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
@@ -61,15 +63,16 @@ def update_recommendations():
     # UPDATE FROM CLIENT LOCAL BUFFER
     print('(update) count', len(request.json))
     for recommendation in request.json:
-        print("recommendation['id'], recommendation['dateRead']", recommendation['id'], recommendation['dateRead'])
-        update_query = update(Recommendation)\
-                   .where((Recommendation.userId == user_id) &
-                          (Recommendation.id == dehumanize(recommendation['id'])))\
-                   .values({
-                       'dateRead': recommendation['dateRead'],
-                       'dateUpdated': recommendation['dateUpdated'],
-                       'isFavorite': recommendation['isFavorite']})
-        app.db.session.execute(update_query)
+        values = {}
+        for put_key in PUT_KEYS:
+            if put_key in recommendation:
+                values[put_key] = recommendation[put_key]
+        if values.keys():
+            update_query = update(Recommendation)\
+                       .where((Recommendation.userId == user_id) &
+                              (Recommendation.id == dehumanize(recommendation['id'])))\
+                       .values(values)
+            app.db.session.execute(update_query)
     app.db.session.commit()
     # GET AROUND THE CURSOR ID PLUS SOME NOT READ YET
     query = Recommendation.query.filter_by(userId=user_id)
