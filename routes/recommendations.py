@@ -34,7 +34,6 @@ def update_recommendations():
     # DETERMINE AROUND
     around = request.args.get('around')
     around_recommendation = None
-    print('(query) around', around)
     if around is not None:
         around_recommendation = Recommendation.query.filter_by(
             id=dehumanize(around)
@@ -53,13 +52,14 @@ def update_recommendations():
             around = humanize(around_recommendation.id)
         elif offer_id is not None:
             around_recommendation = Recommendation.query\
-                .filter(Recommendation.RecommendationOffers\
+                .filter(Recommendation.recommendationOffers\
                         .any(RecommendationOffer.offerId == dehumanize(offer_id)))\
                 .first()
             if around_recommendation is not None:
                 around = humanize(around_recommendation.id)
         if around is not None:
             print('(special) around_recommendation', around_recommendation)
+    print('(query) around', around)
     # UPDATE FROM CLIENT LOCAL BUFFER
     print('(update) count', len(request.json))
     for recommendation in request.json:
