@@ -4,6 +4,7 @@ import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
+import SubmitButton from '../layout/SubmitButton'
 import PageWrapper from '../layout/PageWrapper'
 
 const Label = ({ title }) => (
@@ -15,10 +16,10 @@ const Label = ({ title }) => (
 const ModifyOffererPage = ({ match: { params: { offererId } } }) => {
   return (
     <PageWrapper name='modify-offerer' noPadding>
-      <section class="hero">
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">
+      <section className="hero">
+        <div className="hero-body">
+          <div className="container">
+            <h1 className="title has-text-centered">
               {
                 offererId === 'creation'
                   ? 'Créez votre espace'
@@ -29,7 +30,7 @@ const ModifyOffererPage = ({ match: { params: { offererId } } }) => {
         </div>
       </section>
 
-      <div className="box form-container">
+      <form className="box form-container">
         <FormField
           label={
             <Label
@@ -55,22 +56,37 @@ const ModifyOffererPage = ({ match: { params: { offererId } } }) => {
           }
           required="true"
           collectionName="venues"
-          name="adress"
-          autoComplete="adress"
-          placeholder="8, boulevard des Capucines"
+          name="address"
+          autoComplete="address"
+          placeholder="3 rue de Valois, 75001 Paris"
           type="text"
         />
-      </div>
-
-      <section class="hero">
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">
-              Définir une image
-            </h1>
-          </div>
-        </div>
-      </section>
+        <FormField
+          label={
+            <Label
+              title="Email"
+            />
+          }
+          required="true"
+          collectionName="venues"
+          name="email"
+          autoComplete="email"
+          placeholder="nom@exemple.com"
+          type="email"
+        />
+        <FormField
+          label={
+            <Label
+              title="Image"
+            />
+          }
+          required="true"
+          collectionName="venues"
+          name="image"
+          type="file"
+        />
+        <SubmitButton className='button is-primary' path='/' />
+      </form>
     </PageWrapper>
   )
 }

@@ -8,34 +8,32 @@ import OccasionItem from './OccasionItem'
 import { assignData, requestData } from '../reducers/data'
 
 class OccasionsList extends Component {
-  handleRequestData = () => {
-    this.props.requestData('GET', `occasions`)
-  }
+  // handleRequestData = () => {
+  //   this.props.requestData('GET', `occasions`)
+  // }
 
-  componentWillMount() {
-    this.props.user && this.handleRequestData()
-  }
+  // componentWillMount() {
+  //   this.props.user && this.handleRequestData()
+  // }
 
-  componentDidUpdate(prevProps) {
-    const { user } = this.props
-    if (user && user !== prevProps.user) {
-      this.handleRequestData()
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   const { user } = this.props
+  //   if (user && user !== prevProps.user) {
+  //     this.handleRequestData()
+  //   }
+  // }
 
-  componentWillUnmount () {
-    this.props.assignData({ occasions: null })
-  }
+  // componentWillUnmount () {
+  //   this.props.assignData({ occasions: null })
+  // }
 
   render() {
     const { occasions } = this.props
     return (
       <div className="occasions-list">
-        <hr className='is-invisible' key='first'/>
         <AutoSizer>
         {
-          ({width, height}) => occasions && occasions.length
-            ? <List
+          ({width, height}) => <List
               height={height}
               rowCount={occasions.length}
               rowHeight={190}
@@ -46,7 +44,6 @@ class OccasionsList extends Component {
               )}
               width={width}
             />
-            : ''
         }
         </AutoSizer>
       </div>
@@ -58,9 +55,9 @@ export default compose(
   withRouter,
   connect(
     state => ({
-      occasions: state.data.occasions,
+      occasions: state.data.occasions || [],
       user: state.user
     }),
-    { assignData, requestData }
+    // { assignData, requestData }
   )
 )(OccasionsList)
