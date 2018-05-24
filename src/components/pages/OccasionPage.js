@@ -32,11 +32,6 @@ class OccasionPage extends Component {
     )
   }
 
-  // componentDidMount() {
-  //   console.log(this.props.user)
-  //   this.props.user && this.handleRequestData()
-  // }
-
   componentDidUpdate(prevProps) {
     const { user } = this.props
     if (user && user !== prevProps.user) {
@@ -60,10 +55,13 @@ class OccasionPage extends Component {
       durationMinutes,
       type,
       groupSize,
+      pmrGroupSize,
       bookingLimitDatetime,
       price,
+      contactName,
       contactEmail,
       contactPhone,
+      website,
     } = this.state.occasion || {}
 
     return (
@@ -121,8 +119,16 @@ class OccasionPage extends Component {
                 <input className='input' type='number' min={0} name='groupSize' value={groupSize || ''} onChange={this.updateValue}  />
               </div>
               <div className='field'>
+                <label className='label'>Places Personnes à Mobilité Réduite par horaire</label>
+                <input className='input' type='number' min={0} name='pmrGroupSize' value={pmrGroupSize || ''} onChange={this.updateValue}  />
+              </div>
+              <div className='field'>
                 <label className='label'>Date limite d'inscription (par défaut: 48h avant l'événement)</label>
                 <input className='input' type='date' name='bookingLimitDatetime' value={bookingLimitDatetime || ''} onChange={this.updateValue}  />
+              </div>
+              <div className='field'>
+                <label className='label'>Nom du contact</label>
+                <input className='input' autoComplete='name' type='text' name='contactName' value={contactName || ''} onChange={this.updateValue}  />
               </div>
               <div className='field'>
                 <label className='label'>Email de contact</label>
@@ -131,6 +137,10 @@ class OccasionPage extends Component {
               <div className='field'>
                 <label className='label'>Tel de contact</label>
                 <input className='input' autoComplete='email' type='email' name='contactPhone' value={contactPhone || ''} onChange={this.updateValue}  />
+              </div>
+              <div className='field'>
+                <label className='label'>Site internet</label>
+                <input className='input' autoComplete='url' type='url' name='website' value={website || ''} onChange={this.updateValue}  />
               </div>
               <div className="field is-grouped">
                 <div className="control">

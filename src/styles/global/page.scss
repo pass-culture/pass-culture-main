@@ -1,9 +1,10 @@
 .page {
   position: absolute;
-  top: $header-height;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+  // padding-top: $header-height;
   // padding: $page-padding;
 
   &.loading {
@@ -32,6 +33,7 @@
 
   .page-content {
     padding: $page-padding 1rem;
+    padding-top: $page-padding + $header-height;
     position: absolute;
     top: 0;
     bottom: 0;

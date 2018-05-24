@@ -12,7 +12,7 @@ const Header = ({ showModal }) => {
     <header className="header navbar red-bg">
       <div className="container">
         <div className="navbar-brand">
-          <NavLink to='/' className="navbar-item is-italic">
+          <NavLink to='/accueil' className="navbar-item is-italic">
             <img src={`${ROOT_PATH}/icon/app-icon-app-store.png`} alt="Logo" />
             <b> Pass </b> Culture PRO
           </NavLink>

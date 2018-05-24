@@ -2,13 +2,13 @@ const menu = {
   links: [
     {
       icon: 'ico-offres-w',
-      path: '/gestion',
-      title: 'Gestion'
+      path: '/offres',
+      title: 'Offres'
     },
     {
       icon: 'ico-user-w',
-      path: '/profil',
-      title: 'Profil'
+      path: '/lieux',
+      title: 'Lieux'
     }
   ]
 }

@@ -28,9 +28,9 @@ class OccasionItem extends Component {
         </figure>
         <div className="media-content">
           <div className="content">
-            <p className='title'>
-              <strong>{name}</strong>
-            </p>
+            <NavLink className='title is-block' to={`/occasions/${occasionType}/${id}`}>
+              {name}
+            </NavLink>
             <Dotdotdot className='is-small' clamp={3}>
               {description}
             </Dotdotdot>

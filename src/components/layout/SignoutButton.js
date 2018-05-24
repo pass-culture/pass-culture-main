@@ -23,7 +23,7 @@ class SignoutButton extends Component {
 
   render () {
     return (
-      <button className='button is-primary' onClick={this.onClick}>
+      <button className='button is-primary' onClick={this.onSignoutClick}>
         Déconnexion
       </button>
     )

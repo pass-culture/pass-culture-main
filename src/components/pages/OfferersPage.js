@@ -5,7 +5,7 @@ import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import SignoutButton from '../layout/SignoutButton'
 
-const ProfilePage = ({ user }) => {
+const OfferersPage = ({ user }) => {
   return [
     <PageWrapper key={0} name="profile">
       <p className="title">
@@ -13,14 +13,7 @@ const ProfilePage = ({ user }) => {
       </p>
       <OfferersList />
     </PageWrapper>,
-    <section key={1} className="hero is-primary">
-      <div className="hero-body">
-        <div className="container">
-          <SignoutButton />
-        </div>
-      </div>
-    </section>
   ]
 }
 
-export default withLogin({ isRequired: true })(ProfilePage)
+export default withLogin({ isRequired: true })(OfferersPage)

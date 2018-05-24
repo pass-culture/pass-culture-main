@@ -11,7 +11,7 @@ import withLogin from '../hocs/withLogin'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 
-class ManagementPage extends Component {
+class OffersPage extends Component {
   handleRequestData = () => {
     this.props.requestData('GET', `occasions`)
   }
@@ -49,4 +49,4 @@ export default compose(
     }),
     { assignData, requestData }
   )
-)(ManagementPage)
+)(OffersPage)
