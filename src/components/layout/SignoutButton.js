@@ -8,6 +8,10 @@ import { closeModal } from '../../reducers/modal'
 
 class SignoutButton extends Component {
 
+  static defaultProps = {
+    tagName: 'button',
+  }
+
   onSignoutClick = () => {
     const { closeModal, requestData } = this.props
     requestData('GET', 'users/signout')
@@ -22,10 +26,9 @@ class SignoutButton extends Component {
   }
 
   render () {
+    const TagName = this.props.tagName
     return (
-      <button className='button is-primary' onClick={this.onSignoutClick}>
-        Déconnexion
-      </button>
+      <TagName onClick={this.onSignoutClick} className={this.props.className}>{this.props.children}</TagName>
     )
   }
 }
