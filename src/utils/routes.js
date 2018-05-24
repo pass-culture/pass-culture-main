@@ -4,7 +4,8 @@ import { Redirect } from 'react-router'
 import BetaPage from '../components/pages/BetaPage'
 import HomePage from '../components/pages/HomePage'
 import OffersPage from '../components/pages/OffersPage'
-import OccasionPage from '../components/pages/OccasionPage'
+import OfferPage from '../components/pages/OfferPage'
+import OffererPage from '../components/pages/OffererPage'
 import OfferersPage from '../components/pages/OfferersPage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
@@ -48,17 +49,23 @@ const routes = [
   },
   {
     exact: true,
+    path: '/lieux/:offererId',
+    title: 'Lieux',
+    render: props => <OffererPage offererId={props.match.params.offererId} />,
+  },
+  {
+    exact: true,
     path: '/offres',
     title: 'Offres',
     render: () => <OffersPage />,
   },
   {
     exact: true,
-    path: '/occasions/:occasionType/:occasionId',
-    title: 'Occasion',
-    render: props => <OccasionPage
-      occasionId={props.match.params.occasionId}
-      occasionType={props.match.params.occasionType}
+    path: '/offres/:offerType/:offerId',
+    title: 'Offre',
+    render: props => <OfferPage
+      offerId={props.match.params.offerId}
+      offerType={props.match.params.offerType}
     />,
   },
   {

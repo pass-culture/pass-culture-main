@@ -1,20 +1,23 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import { BrowserRouter,
+import {
   matchPath,
   Redirect,
   Route,
   Switch
 } from 'react-router-dom'
 
+import { ConnectedRouter } from 'react-router-redux'
+
 import App from './App'
 import routes from './utils/routes'
 import store from './utils/store'
+import history from './utils/history'
 
 const Root = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter>
+      <ConnectedRouter history={history}>
         <App>
           <Switch>
             {routes.map((route, index) => (
@@ -42,7 +45,7 @@ const Root = () => {
             />
           </Switch>
         </App>
-      </BrowserRouter>
+      </ConnectedRouter>
     </Provider>
   )
 }

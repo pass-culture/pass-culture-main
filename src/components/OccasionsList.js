@@ -5,7 +5,6 @@ import { AutoSizer, List } from 'react-virtualized'
 import { compose } from 'redux'
 
 import OccasionItem from './OccasionItem'
-import { assignData, requestData } from '../reducers/data'
 
 class OccasionsList extends Component {
   // handleRequestData = () => {

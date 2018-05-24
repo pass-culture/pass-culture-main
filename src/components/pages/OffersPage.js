@@ -23,10 +23,16 @@ class OffersPage extends Component {
   render() {
     return (
       <PageWrapper name="offerer" loading={!this.props.occasions.length}>
+        <h1 className='title has-text-centered'>Vos offres</h1>
         <nav className="level is-mobile">
-          <NavLink to={`/gestion/creation`}>
+          <NavLink to={`/offres/events/nouveau`}>
             <button className="button is-primary level-item">
-              Nouvelle Offre
+              Nouvel événement
+            </button>
+          </NavLink>
+          <NavLink to={`/offres/things/nouveau`}>
+            <button className="button is-primary level-item">
+              Nouvel objet
             </button>
           </NavLink>
         </nav>

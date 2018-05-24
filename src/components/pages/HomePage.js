@@ -1,10 +1,8 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import OfferersList from '../OfferersList'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import SignoutButton from '../layout/SignoutButton'
 
 const HomePage = ({ user }) => {
   return (
@@ -14,7 +12,7 @@ const HomePage = ({ user }) => {
       <div className='content'>
         <p>Ici vous pouvez gérer :</p>
         <ul>
-          <li><NavLink to='/offreurs' className='is-primary'>Vos lieux</NavLink></li>
+          <li><NavLink to='/lieux' className='is-primary'>Vos lieux</NavLink></li>
           <li><NavLink to='/offres' className='is-primary'>Vos offres</NavLink></li>
         </ul>
       </div>

@@ -3,12 +3,13 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import get from 'lodash.get'
+import { NavLink } from 'react-router-dom'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
 
-class OccasionPage extends Component {
+class OfferPage extends Component {
 
   constructor() {
     super()
@@ -16,28 +17,29 @@ class OccasionPage extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.isNew) return {occasion: {}}
     return {
       occasion: nextProps.occasion
     }
   }
 
-  handleRequestData = () => {
-    const {
-      match: { params: { occasionId, occasionType } },
-      requestData
-    } = this.props
-    requestData('GET',
-      `occasions/${occasionType}/${occasionId}`,
-      { key: 'occasion' }
-    )
-  }
+  // handleRequestData = () => {
+  //   const {
+  //     match: { params: { occasionId, occasionType } },
+  //     requestData
+  //   } = this.props
+  //   requestData('GET',
+  //     `occasions/${occasionType}/${occasionId}`,
+  //     { key: 'occasion' }
+  //   )
+  // }
 
-  componentDidUpdate(prevProps) {
-    const { user } = this.props
-    if (user && user !== prevProps.user) {
-      this.handleRequestData()
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   const { user } = this.props
+  //   if (user && user !== prevProps.user) {
+  //     this.handleRequestData()
+  //   }
+  // }
 
   updateValue = e => {
     this.setState({
@@ -47,13 +49,18 @@ class OccasionPage extends Component {
 
   render () {
     const {
+      isNew,
+      occasion,
+      type,
+    } = this.props
+    const {
       author,
       stageDirector,
       performer,
       name,
       description,
       durationMinutes,
-      type,
+      eventType,
       groupSize,
       pmrGroupSize,
       bookingLimitDatetime,
@@ -64,11 +71,16 @@ class OccasionPage extends Component {
       website,
     } = this.state.occasion || {}
 
+    console.log(type)
+
     return (
-      <PageWrapper name='offer' loading={!this.props.occasion}>
+      <PageWrapper name='offer' loading={!(occasion || isNew)}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
-            <h1 className='title has-text-centered'>Modifier une occasion</h1>
+            <div className='has-text-right'>
+              <NavLink to='/offres' className="button is-primary is-outlined">Retour</NavLink>
+            </div>
+            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} {type === 'events' ? 'un événement' : 'un objet'}</h1>
             <form className=''>
               <div className='field'>
                 <label className='label'>Nom</label>
@@ -77,7 +89,7 @@ class OccasionPage extends Component {
               <div className='field'>
                 <label className='label'>Type</label>
                 <div className="select">
-                  <select value={type || ''} onChange={this.updateValue}>
+                  <select value={eventType || ''} onChange={this.updateValue}>
                     <option>Atelier</option>
                     <option>Exposition</option>
                     <option>Spectacle</option>
@@ -142,12 +154,12 @@ class OccasionPage extends Component {
                 <label className='label'>Site internet</label>
                 <input className='input' autoComplete='url' type='url' name='website' value={website || ''} onChange={this.updateValue}  />
               </div>
-              <div className="field is-grouped">
+              <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
-                  <button className="button is-primary">Enregistrer</button>
+                  <button className="button is-primary is-medium">Enregistrer</button>
                 </div>
                 <div className="control">
-                  <button className="button is-primary is-inverted">Retour</button>
+                  <NavLink to='/offres' className="button is-primary is-outlined is-medium">Retour</NavLink>
                 </div>
               </div>
             </form>
@@ -164,8 +176,11 @@ export default compose(
   connect(
     state => ({
       user: get(state, 'data.users.0'),
-      occasion: get(state, 'data.occasion.0')
+      // TODO put the following logic in a selector:
+      occasion: get(state, 'data.occasions', []).find(o => o.id === get(state, 'router.location.pathname', '').split('/').pop()),
+      isNew: get(state, 'router.location.pathname', '').split('/').pop() === 'nouveau',
+      type: get(state, 'router.location.pathname', '').split('/').slice(-2)[0],
     }),
     { requestData }
   )
-)(OccasionPage)
+)(OfferPage)

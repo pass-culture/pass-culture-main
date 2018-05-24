@@ -27,7 +27,7 @@ const OffererItem = ({
           </p>
         </div>
         <nav className="level">
-          <NavLink to={`/offerer/${id}`}>
+          <NavLink to={`/lieux/${id}`}>
             <button className="button is-primary level-item">
               Configurer
             </button>
