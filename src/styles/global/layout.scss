@@ -6,6 +6,7 @@
 
 html {
   min-height: 100%;
+  overflow-y: auto;
 }
 
 body {
@@ -28,20 +29,22 @@ body {
   }
 }
 
-.header {
-  &.red-bg {
-    background-color: $primary;
-    a, div {
-      color: $white;
-      font-size: $size-medium;
-      &.is-active:hover {
-        color: $red;
-      }
+.navbar.is-primary {
+
+  .navbar-brand {
+    & > .navbar-item:hover {
+      background: transparent !important; // Bug?
     }
   }
 
-  header {
-    @include dotted($white, bottom);
+  .icon {
+    margin-right: 0.5rem;
+  }
+
+  @media(max-width: $desktop) {
+    .navbar-menu {
+      background-color: #ccc; // TODO: make this white when icons have the color of the text
+    }
   }
 }
 

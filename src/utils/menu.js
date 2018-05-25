@@ -1,15 +1,15 @@
 const menu = {
   links: [
     {
-      icon: 'ico-offres-w',
-      path: '/gestion',
-      title: 'Gestion'
+      icon: 'ico-geoloc-solid2-w',
+      path: '/lieux',
+      title: 'Vos lieux'
     },
     {
-      icon: 'ico-user-w',
-      path: '/profil',
-      title: 'Profil'
-    }
+      icon: 'ico-calendar-w',
+      path: '/offres',
+      title: 'Vos Offres'
+    },
   ]
 }
 

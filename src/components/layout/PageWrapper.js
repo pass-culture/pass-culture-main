@@ -14,11 +14,12 @@ const PageWrapper = props => {
     noPadding,
     backButton,
     children,
+    loading,
   } = props
-  const footer = [].concat(children).find(e => e.type === 'footer')
+  const footer = [].concat(children).find(e => e && e.type === 'footer')
   const content = []
     .concat(children)
-    .filter(e => e.type !== 'header' && e.type !== 'footer')
+    .filter(e => e && e.type !== 'header' && e.type !== 'footer')
   return [
     !noHeader && <Header key='header' {...header} />,
     <Tag
@@ -29,11 +30,12 @@ const PageWrapper = props => {
         'with-footer': Boolean(footer),
         'red-bg': redBg,
         'no-padding': noPadding,
+        loading,
       })}
       key='page-wrapper'
     >
       {backButton && <BackButton {...backButton} />}
-      <div className="page-content">{content}</div>
+      <div className="page-content container">{content}</div>
       {footer}
     </Tag>
   ]

@@ -43,7 +43,7 @@ class SearchInput extends Component {
     return <input
       className="input"
       onChange={this.onChange}
-      placeholder="tape ta recherche"
+      placeholder="Saisissez une recherche"
       ref={_element => (this._element = _element)}
       type="text"
     />
