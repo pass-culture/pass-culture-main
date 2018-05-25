@@ -7,6 +7,7 @@ import OffersPage from '../components/pages/OffersPage'
 import OfferPage from '../components/pages/OfferPage'
 import OffererPage from '../components/pages/OffererPage'
 import OfferersPage from '../components/pages/OfferersPage'
+import ProfilePage from '../components/pages/ProfilePage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
@@ -67,6 +68,12 @@ const routes = [
       offerId={props.match.params.offerId}
       offerType={props.match.params.offerType}
     />,
+  },
+  {
+    exact: true,
+    path: '/profil',
+    title: 'Profil',
+    render: () => <ProfilePage />,
   },
   {
     exact: true,

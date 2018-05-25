@@ -4,12 +4,13 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
+import { SingleDatePicker } from 'react-dates'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
+import FormField from '../layout/FormField'
 import { requestData } from '../../reducers/data'
-
-class OffererPage extends Component {
+class ProfilePage extends Component {
 
   constructor() {
     super()
@@ -17,15 +18,14 @@ class OffererPage extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.isNew) return {occasion: {}}
     return {
-      offerer: nextProps.offerer
+      user: nextProps.user
     }
   }
 
   updateValue = e => {
     this.setState({
-      offerer: Object.assign({}, this.state.offerer, {[e.target.name]: e.target.value})
+      user: Object.assign({}, this.state.occasion, {[e.target.name]: e.target.value})
     })
   }
 
@@ -33,47 +33,35 @@ class OffererPage extends Component {
     // TODO
   }
 
-  render () {
+  render() {
+
+    console.log(this.props.user)
+
     const {
-      offerer,
-      isNew,
-    } = this.props
-    const {
+      publicName,
+      email,
       address,
-      bookingEmail,
-      name,
-    } = get(this.state, 'offerer', {})
-    const {
-      latitude,
-      longitude,
-    } = get(this.state, 'offerer.venue', {})
+
+    } = this.state.user || {}
 
     return (
-      <PageWrapper name='offer' loading={!(offerer || isNew)}>
+      <PageWrapper name="profile" loading={!this.props.user}>
+        <h1 className='title has-text-centered'>Profil</h1>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
-            <div className='has-text-right'>
-              <NavLink to='/offres' className="button is-primary is-outlined">Retour</NavLink>
-            </div>
 
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
             <form onSubmit={this.save}>
               <div className='field'>
                 <label className='label'>Nom</label>
-                <input className='input title' type='text' name='name' value={name || ''} onChange={this.updateValue} maxLength={140} />
+                <input className='input title' type='text' name='publicName' value={publicName || ''} onChange={this.updateValue} maxLength={140} />
               </div>
               <div className='field'>
                 <label className='label'>Adresse</label>
                 <input className='input' type='text' name='address' value={address || ''} onChange={this.updateValue}  />
               </div>
-              {
-                // TODO: plug this to a map
-              }
-              <input type='hidden' name='latitude' value={latitude || ''} />
-              <input type='hidden' name='longitude' value={longitude || ''} />
               <div className='field'>
                 <label className='label'>Email de réservation</label>
-                <input className='input' autoComplete='email' type='email' name='bookingEmail' value={bookingEmail || ''} onChange={this.updateValue}  />
+                <input className='input' autoComplete='email' type='email' name='email' value={email || ''} onChange={this.updateValue}  />
               </div>
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
@@ -96,11 +84,8 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => ({
-      user: get(state, 'data.users.0'),
-      // TODO put the following logic in a selector:
-      offerer: get(state, 'user.offerers', []).find(o => o.id === get(ownProps, 'match.params.offererId', '')),
-      isNew: get(ownProps, 'match.params.offererId', '') === 'nouveau',
+      user: get(state, 'user'),
     }),
     { requestData }
   )
-)(OffererPage)
+)(ProfilePage)

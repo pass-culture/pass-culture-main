@@ -58,3 +58,12 @@ body {
   top: 0;
   z-index: 100000;
 }
+
+
+// Bulma overrides
+
+.field {
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}

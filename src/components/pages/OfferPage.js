@@ -32,11 +32,12 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const {
-      match: { params: { occasionId, occasionType } },
-      requestData
+      offerId,
+      offerType,
+      requestData,
     } = this.props
     requestData('GET',
-      `occasions/${occasionType}/${occasionId}`,
+      `occasions/${offerType}/${offerId}`,
       { key: 'occasion' }
     )
   }
@@ -78,6 +79,10 @@ class OfferPage extends Component {
     this.updateOccasion(e.target.name, e.target.value)
   }
 
+  save = e => {
+    // TODO
+  }
+
   render () {
     const {
       isNew,
@@ -110,7 +115,7 @@ class OfferPage extends Component {
               <NavLink to='/offres' className="button is-primary is-outlined">Retour</NavLink>
             </div>
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} {type === 'events' ? 'un événement' : 'un objet'}</h1>
-            <form className=''>
+            <form onSubmit={this.save}>
               <div className='field'>
                 <label className='label'>Nom</label>
                 <input className='input title' type='text' name='name' value={name || ''} onChange={this.updateInput} maxLength={140} />
@@ -230,10 +235,9 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => ({
-      youpi: console.log(ownProps),
       user: get(state, 'data.users.0'),
       // TODO put the following logic in a selector:
-      occasion: get(state, 'data.occasions', []).find(o => o.id === get(ownProps, 'match.params.offerId', '')),
+      occasion: get(state, 'data.occasions', []).find(o => o.id === get(ownProps, 'match.params.offerId', '')) || get(state, 'data.occasion.0'),
       isNew: get(ownProps, 'match.params.offerId', '') === 'nouveau',
       type: get(ownProps, 'match.params.offerType', ''),
     }),
