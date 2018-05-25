@@ -19,6 +19,7 @@ class OfferPage extends Component {
       occasion: null,
       calendarFocused: false,
       time: '',
+      withError: false,
     }
   }
 
@@ -48,11 +49,16 @@ class OfferPage extends Component {
 
   updateOccasion = (key, value) => {
     this.setState({
+      withError: false,
       occasion: Object.assign({}, this.state.occasion, {[key]: value})
     })
   }
 
   handleDateChange = date => {
+    if (!this.state.time)
+      return this.setState({
+      withError: true
+    })
     const [hours, minutes] = this.state.time.split(':')
     const dateTime = date.hour(hours).minute(minutes)
     const dates = get(this.state, 'occasion.dates', [])
@@ -142,8 +148,8 @@ class OfferPage extends Component {
                 <SingleDatePicker
                   calendarInfoPosition="top"
                   renderCalendarInfo={() => (
-                    <div>
-                      <p>Sélectionnez d'abord l'heure, puis cliquez sur les dates concernées</p>
+                    <div className='box content'>
+                      <p className={this.state.withError ? 'has-text-weight-bold has-text-danger' : ''}>Sélectionnez d'abord l'heure, puis cliquez sur les dates concernées :</p>
                       <input required className='input' type='time' value={this.state.time} onChange={e => this.setState({time: e.target.value})} />
                     </div>
                   )}
