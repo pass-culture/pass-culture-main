@@ -10,7 +10,6 @@ import { BrowserRouter,
 import App from './App'
 import routes from './utils/routes'
 import store from './utils/store'
-import history from './utils/history'
 
 const Root = () => {
   return (
