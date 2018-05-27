@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
+import moment from 'moment'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -10,6 +11,7 @@ import withSizes from 'react-sizes'
 import Card from './Card'
 import Clue from './Clue'
 import Icon from './layout/Icon'
+import { requestData } from '../reducers/data'
 import { flip, unFlip } from '../reducers/verso'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
@@ -18,7 +20,7 @@ import selectNextLimit from '../selectors/nextLimit'
 import selectNextRecommendation from '../selectors/nextRecommendation'
 import selectPreviousLimit from '../selectors/previousLimit'
 import selectPreviousRecommendation from '../selectors/previousRecommendation'
-import { IS_DEV, ROOT_PATH } from '../utils/config'
+import { IS_DEV, IS_DEXIE, ROOT_PATH } from '../utils/config'
 import { getDiscoveryPath } from '../utils/routes'
 import { worker } from '../workers/dexie/register'
 
@@ -26,6 +28,7 @@ class Deck extends Component {
   constructor() {
     super()
     this.state = {
+      // isRead: false,
       refreshKey: 0,
     }
   }
@@ -40,6 +43,20 @@ class Deck extends Component {
     ) {
       nextProps.history.push('/decouverte')
     }
+  }
+
+  handleNoData = () => {
+    const { match: { params: { mediationId, offerId } } } = this.props
+    worker.postMessage({
+      key: 'dexie-push-pull',
+      state: { mediationId, offerId }
+    })
+    this.noDataTimeout = setTimeout(() => {
+      const { currentRecommendation, history } = this.props
+      if (!currentRecommendation) {
+        history.push('/decouverte')
+      }
+    }, this.props.noDataTimeout)
   }
 
   handleGoNext = () => {
@@ -103,6 +120,63 @@ class Deck extends Component {
     this.setState({ refreshKey: this.state.refreshKey + 1 })
   }
 
+  handleSetDateRead = prevProps => {
+    const {
+      currentRecommendation,
+      isFlipped,
+      readTimeout,
+      requestData
+    } = this.props
+    const { isRead } = this.state
+
+    // we don't need to go further if we are still on the same reco
+    if (!currentRecommendation ||
+      prevProps &&
+      prevProps.currentRecommendation &&
+      currentRecommendation &&
+      prevProps.currentRecommendation.id === currentRecommendation.id) {
+      return
+    }
+
+    // we need to delete the readTimeout in the case
+    // where we were on a previous reco
+    // and we just swipe to another before triggering the end of the readTimeout
+    if (this.currentReadRecommendationId !== currentRecommendation.id) {
+      clearTimeout(this.readTimeout)
+      delete this.readTimeout
+    }
+
+    // if the reco is not read yet
+    // we trigger a timeout in the end of which
+    // we will request a dateRead Patch if we are still
+    // on the same reco
+    if (!this.readTimeout && !isFlipped && !currentRecommendation.dateRead) {
+      // this.setState({ isRead: false })
+      this.currentReadRecommendationId = currentRecommendation.id
+      this.readTimeout = setTimeout(() => {
+        if (
+          this.props.currentRecommendation &&
+          !this.props.currentRecommendation.dateRead
+        ) {
+          requestData('PATCH', `recommendations/${this.props.currentRecommendation.id}`,
+            {
+              body: {
+                dateRead: moment().toISOString(),
+              },
+              key: 'recommendations',
+              local: IS_DEXIE
+            }
+          )
+          // this.setState({ isRead: true })
+          clearTimeout(this.readTimeout)
+          delete this.readTimeout
+        }
+      }, readTimeout)
+    } else if (!isRead && currentRecommendation && currentRecommendation.dateRead) {
+      // this.setState({ isRead: true })
+    }
+  }
+
   handleFlip = () => {
     if (this.props.isFlipDisabled) return
     this.props.flip()
@@ -135,12 +209,23 @@ class Deck extends Component {
   }
 
   componentDidMount() {
+    this.handleNoData()
     this.handleRefreshedData()
+    this.handleSetDateRead()
   }
 
   componentWillReceiveProps(nextProps) {
     this.handleRefreshedData(nextProps)
     this.handleDeprecatedData(nextProps)
+  }
+
+  componentDidUpdate (prevProps) {
+    this.handleSetDateRead(prevProps)
+  }
+
+  componentWillUnmount () {
+    this.readTimeout && clearTimeout(this.readTimeout)
+    this.noDataTimeout && clearTimeout(this.noDataTimeout)
   }
 
   render() {
@@ -155,13 +240,17 @@ class Deck extends Component {
       headerColor,
       width,
     } = this.props
-    const { refreshKey } = this.state
+    const {
+      // isRead,
+      refreshKey
+    } = this.state
 
     const index = get(this.props, 'currentRecommendation.index', 0)
     const position = {
       x: -1 * width * index,
       y: 0,
     }
+
     return (
       <div
         className="deck"
@@ -282,7 +371,8 @@ Deck.defaultProps = {
   horizontalSlideRatio: 0.2,
   verticalSlideRatio: 0.1,
   isDebug: false,
-  readTimeout: 3000,
+  noDataTimeout: 5000,
+  readTimeout: 2000,
   resizeTimeout: 250,
   transitionTimeout: 500,
 }
@@ -308,6 +398,6 @@ export default compose(
       unFlippable: state.verso.unFlippable,
       draggable: state.verso.draggable,
     }),
-    { flip, unFlip }
+    { flip, requestData, unFlip }
   )
 )(Deck)

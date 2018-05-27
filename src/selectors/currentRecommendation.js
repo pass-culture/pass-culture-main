@@ -1,13 +1,15 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
+import selectRecommendationQuery from './recommendationQuery'
 import selectRecommendationsWithIndex from './recommendationsWithIndex'
 import getRecommendation from '../getters/recommendation'
 
 export default createSelector(
   state => state.router.location.pathname,
   selectRecommendationsWithIndex,
-  (pathname, recommendations) => {
+  selectRecommendationQuery,
+  (pathname, recommendations, recommendationQuery) => {
     const [, , offerId, mediationId] = pathname.split('/')
     let filteredRecommendations
     // NORMALY mediationId is ENOUGH TO FIND THE MATCHING

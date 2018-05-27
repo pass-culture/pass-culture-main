@@ -23,8 +23,11 @@ if (IS_DEXIE) {
     db.upgrade(config.upgrate)
   }
 } else {
-  config.collections.forEach(({ description, name }) =>
-    db[name] = { data: [], name })
+  db.tables = []
+  config.collections.forEach(({ description, name }) => {
+    db[name] = { data: [], name }
+    db.tables.push(db[name])
+  })
 }
 
 export async function getData(collectionName, query) {
@@ -184,9 +187,11 @@ export async function clear() {
 
 export async function fetch(config = {}) {
   const tables = db.tables.filter(table => !table.differences)
-  const results = await Promise.all(
-    tables.map(async table => await table.toArray())
-  )
+  const results = IS_DEXIE
+    ? await Promise.all(
+      tables.map(async table => await table.toArray())
+    )
+    : tables.map(table => table.data)
   if (config.console) {
     console.log(results)
   }

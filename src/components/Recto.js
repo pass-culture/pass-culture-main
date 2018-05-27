@@ -12,6 +12,7 @@ const Recto = ({
   mediation,
   id,
   index,
+  isClicked,
   isFlipped,
   offer,
   thumbUrl,
@@ -26,13 +27,11 @@ const Recto = ({
       <Thumb src={thumbUrl} withMediation={mediation} translated={isFlipped} />
       {IS_DEV && (
         <div className="debug debug-recto">
-          <span>
+          <div>
             {id} {offer && offer.id} {index}
-          </span>
-          {dateRead && [
-            <span key={0}>&middot;</span>,
-            <span key={1}>{dateRead}</span>,
-          ]}
+          </div>
+          {dateRead && <div> déjà lue </div>}
+          {isClicked && <div> déjà retournée </div>}
         </div>
       )}
     </div>

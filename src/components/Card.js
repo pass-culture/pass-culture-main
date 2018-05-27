@@ -1,6 +1,5 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import withSizes from 'react-sizes'
@@ -15,30 +14,6 @@ import { IS_DEXIE } from '../utils/config'
 
 class Card extends Component {
 
-  handleSetDateRead () {
-    const { isFlipped, position, recommendation } = this.props
-    if (recommendation && position === 'current') {
-      if (!isFlipped && !recommendation.dateRead) {
-        // TODO
-        /*
-        requestData('PUT', 'recommendations',
-          {
-            body: [{
-              dateRead: moment().toISOString(),
-              id: recommendation.id
-            }],
-            local: IS_DEXIE
-          }
-        )
-        */
-      }
-    }
-  }
-
-  componentDidMount () {
-    this.handleSetDateRead()
-  }
-
   componentDidUpdate (prevProps) {
     const { isFlipped,
       position,
@@ -47,22 +22,26 @@ class Card extends Component {
     } = this.props
     if (recommendation && position === 'current') {
       if (!prevProps.isFlipped && isFlipped && !recommendation.isClicked) {
-        requestData('PUT', 'recommendations',
+        requestData('PATCH', `recommendations/${recommendation.id}`,
           {
-            body: [{
-              id: recommendation.id,
+            body: {
               isClicked: true
-            }],
+            },
+            key: 'recommendations',
             local: IS_DEXIE
           }
         )
       }
     }
-    this.handleSetDateRead()
   }
 
   render() {
-    const { recommendation, position, currentHeaderColor, width } = this.props
+    const {
+      currentHeaderColor,
+      recommendation,
+      position,
+      width
+    } = this.props
     return (
       <div
         className={classnames('card', {
@@ -81,8 +60,7 @@ class Card extends Component {
 }
 
 Card.defaultProps = {
-  isSetRead: true,
-  readTimeout: 3000,
+  readTimeout: 3000
 }
 
 export default compose(
