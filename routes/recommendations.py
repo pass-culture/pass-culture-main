@@ -1,25 +1,33 @@
 """ user mediations routes """
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
-from sqlalchemy import update
 
 from datascience import create_recommendations
-from utils.geoip import get_geolocation
-from utils.rest import expect_json_data
 from utils.config import BEFORE_AFTER_LIMIT, BLOB_SIZE
+from utils.geoip import get_geolocation
 from utils.human_ids import dehumanize, humanize
 from utils.includes import RECOMMENDATIONS_INCLUDES
+from utils.rest import expect_json_data,\
+                       update
 
-Offer = app.model.Offer
 Recommendation = app.model.Recommendation
 RecommendationOffer = app.model.RecommendationOffer
 
-PUT_KEYS = ['dateRead', 'isClicked', 'isFavorite']
+@app.route('/recommendations/<recommendationId>', methods=['PATCH'])
+@login_required
+@expect_json_data
+def patch_recommendation(recommendationId):
+    query = Recommendation.query.filter_by(id=dehumanize(recommendationId))
+    recommendation = query.first_or_404()
+    update(recommendation, request.json)
+    app.model.PcObject.check_and_save(recommendation)
+    return jsonify(recommendation._asdict()), 200
+
 
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
-def update_recommendations():
+def put_recommendations():
     # USER
     user_id = current_user.get_id()
     # POSITION
@@ -50,7 +58,7 @@ def update_recommendations():
                             .filter_by(mediationId=dehumanize(mediation_id),
                                        userId=user_id).first()
             around = humanize(around_recommendation.id)
-        elif offer_id is not None:
+        elif offer_id is not None and offer_id != 'empty':
             around_recommendation = Recommendation.query\
                 .filter(Recommendation.recommendationOffers\
                         .any(RecommendationOffer.offerId == dehumanize(offer_id)))\
@@ -60,20 +68,6 @@ def update_recommendations():
         if around is not None:
             print('(special) around_recommendation', around_recommendation)
     print('(query) around', around)
-    # UPDATE FROM CLIENT LOCAL BUFFER
-    print('(update) count', len(request.json))
-    for recommendation in request.json:
-        values = {}
-        for put_key in PUT_KEYS:
-            if put_key in recommendation:
-                values[put_key] = recommendation[put_key]
-        if values.keys():
-            update_query = update(Recommendation)\
-                       .where((Recommendation.userId == user_id) &
-                              (Recommendation.id == dehumanize(recommendation['id'])))\
-                       .values(values)
-            app.db.session.execute(update_query)
-    app.db.session.commit()
     # GET AROUND THE CURSOR ID PLUS SOME NOT READ YET
     query = Recommendation.query.filter_by(userId=user_id)
     unread_recommendations = query.filter_by(dateRead=None)

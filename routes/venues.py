@@ -1,5 +1,6 @@
+""" venues """
 from base64 import b64decode
-from flask import abort, current_app as app, jsonify, request
+from flask import current_app as app, jsonify, request
 
 from utils.human_ids import dehumanize, humanize
 from utils.object_storage import store_public_object
@@ -13,19 +14,22 @@ venueModel = app.model.Venue
 def store_public_venue_objects(venueId, json):
     humanized_venue_id = humanize(venueId)
     if 'spreadsheet_content' in json:
-        store_public_object('spreadsheets',
+        store_public_object(
+            'spreadsheets',
             'venues/' + humanized_venue_id,
             b64decode(json['spreadsheet_content']),
             'application/CSV'
         )
     if 'thumb_content' in json:
-        store_public_object('thumbs',
+        store_public_object(
+            'thumbs',
             'venues/' + humanized_venue_id,
             b64decode(json['thumb_content']),
             json['thumb_content_type']
         )
     if 'zip_content' in json:
-        store_public_object('zips',
+        store_public_object(
+            'zips',
             'venues/' + humanized_venue_id,
             b64decode(json['zip_content']),
             'application/zip'

@@ -47,7 +47,7 @@ def expect_json_data(f):
 
 
 def update(obj, new_properties):
-    print(new_properties)
+    # print("update", new_properties)
     for (key, value) in new_properties.items():
         if key == 'id':
             continue
