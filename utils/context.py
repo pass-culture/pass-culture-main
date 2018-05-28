@@ -14,6 +14,7 @@ def with_app_context(app):
             return func_with_app_context
         app.model.PcObject.check_and_save = call_with_app_context(app.model.PcObject.check_and_save)
         app.db.session.execute = call_with_app_context(app.db.session.execute)
+        app.db.session.merge = call_with_app_context(app.db.session.merge)
         app.db.session.query = call_with_app_context(app.db.session.query)
         app.get = call_with_app_context(get)
         app.datascience.get_offers = call_with_app_context(app.datascience.get_offers)
