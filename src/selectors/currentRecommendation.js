@@ -9,7 +9,18 @@ export default createSelector(
   state => state.router.location.pathname,
   selectRecommendationsWithIndex,
   selectRecommendationQuery,
-  (pathname, recommendations, recommendationQuery) => {
+  (
+    pathname,
+    recommendations,
+    recommendationQuery
+  ) => {
+
+    // NOTE: you will see that recommendationQuery is not actually
+    // used in the body of this function, but it is still necessary
+    // to trigger this selector again when /recommendations/<recommendationId>
+    // requests has been called
+    // (as the state.data.recommendations is not mutated through these kinds of calls)
+
     const [, , offerId, mediationId] = pathname.split('/')
     let filteredRecommendations
     // NORMALY mediationId is ENOUGH TO FIND THE MATCHING

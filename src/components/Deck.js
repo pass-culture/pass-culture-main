@@ -131,10 +131,12 @@ class Deck extends Component {
 
     // we don't need to go further if we are still on the same reco
     if (!currentRecommendation ||
-      prevProps &&
-      prevProps.currentRecommendation &&
-      currentRecommendation &&
-      prevProps.currentRecommendation.id === currentRecommendation.id) {
+      (
+        prevProps &&
+        prevProps.currentRecommendation &&
+        currentRecommendation &&
+        prevProps.currentRecommendation.id === currentRecommendation.id)
+      ) {
       return
     }
 
@@ -371,7 +373,7 @@ Deck.defaultProps = {
   horizontalSlideRatio: 0.2,
   verticalSlideRatio: 0.1,
   isDebug: false,
-  noDataTimeout: 5000,
+  noDataTimeout: 20000,
   readTimeout: 2000,
   resizeTimeout: 250,
   transitionTimeout: 500,
