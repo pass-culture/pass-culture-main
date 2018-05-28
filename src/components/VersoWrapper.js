@@ -56,11 +56,11 @@ class VersoWrapper extends Component {
           style={{ backgroundColor: headerColor }}
           ref={element => (this.element = element)}
         >
-          <h2>
+          <h1>
             {' '}
             {source && source.name}
             {author && ', de ' + author}{' '}
-          </h2>
+          </h1>
           <h6> {venue && venue.name} </h6>
         </div>
         {hasControlBar && <ControlBar />}

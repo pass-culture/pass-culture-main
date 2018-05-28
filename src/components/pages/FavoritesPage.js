@@ -18,7 +18,7 @@ class FavoritesPage extends Component {
         menuButton={{ borderTop: true }}
         backButton
       >
-        <header>Mes favoris</header>
+        <header><h1>Mes favoris</h1></header>
         {favorites.length > 0 && (
           <div>
             <ul className="favorites">

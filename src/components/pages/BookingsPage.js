@@ -28,7 +28,7 @@ class BookingsPage extends Component {
         menuButton={{ borderTop: true }}
         backButton
       >
-        <header>Mes réservations</header>
+        <header><h1>Mes réservations</h1></header>
         {soonBookings.length > 0 && (
           <div>
             <h4>C'est bientôt !</h4>
