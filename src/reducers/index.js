@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux'
-import { routerReducer } from 'react-router-redux'
 
 import data from './data'
 import form from './form'
@@ -17,7 +16,6 @@ const rootReducer = combineReducers({
   queries,
   splash,
   user,
-  router: routerReducer,
 })
 
 export default rootReducer
