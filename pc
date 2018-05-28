@@ -67,10 +67,14 @@ elif [[ "$CMD" == "bash" ]]; then
 elif [[ "$CMD" == "deploy-backend" ]]; then
   ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-backend\"."
   RUN='cd $ROOT_PATH && ./pc reset-git'
-elif [[ "$CMD" == "deploy-frontend" ]]; then
-  ensure_remote "Deploy fontend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-frontend\"."
-
-  cd $ROOT_PATH/webapp
+elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-pro" ]]; then
+  ensure_remote "Deploy fontend cannot be run on the local environment. Use (for example) \"pc -e staging "$CMD"\"."
+	if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
+		APP_PATH=$ROOT_PATH/webapp
+	else
+		APP_PATH=$ROOT_PATH/pro
+	fi
+  cd $APP_PATH
 
   NODE_ENV="$ENV" yarn build || exit
 
