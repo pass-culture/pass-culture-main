@@ -31,18 +31,18 @@ def do_sandbox():
     check_and_save(client_user)
     #set_from_mock("thumbs", client_user, 1)
     client_user.save_thumb('https://avatars3.githubusercontent.com/u/185428?s=400&v=4', 0)
-    
+
     # un acteur culturel qui peut jouer a rajouter des offres partout
-    pro_user = model.User()
-    pro_user.publicName = "Utilisateur test admin"
-    pro_user.email = "pctest.admin@btmx.fr"
-    pro_user.setPassword("pctestadmin")
-    check_and_save(pro_user)
-    set_from_mock("thumbs", pro_user, 2)
+    admin_user = model.User()
+    admin_user.publicName = "Utilisateur test admin"
+    admin_user.email = "pctest.admin@btmx.fr"
+    admin_user.setPassword("pctestadmin")
+    check_and_save(admin_user)
+    set_from_mock("thumbs", admin_user, 2)
 
     for offerer in model.Offerer.query.all():
         userOfferer = model.UserOfferer()
         userOfferer.rights = "admin"
-        userOfferer.user = pro_user
+        userOfferer.user = admin_user
         userOfferer.offerer = offerer
         check_and_save(userOfferer)
