@@ -31,7 +31,7 @@ class MenuButton extends Component {
       >
         <div className="button-wrapper">
           <button onClick={this.onClick}>
-            <ProfilePicture {...maybeColored} />
+            <ProfilePicture alt='Mon menu' {...maybeColored} />
           </button>
         </div>
       </footer>
