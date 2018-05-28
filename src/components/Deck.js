@@ -177,7 +177,7 @@ class Deck extends Component {
             })}
             onClick={this.handleUnFlip}
           >
-            <Icon svg="ico-close" />
+            <Icon svg="ico-close" alt="Fermer" />
           </button>
         )}
         <div
@@ -186,7 +186,7 @@ class Deck extends Component {
           })}
         >
           <div>
-            <Icon draggable={false} svg="ico-loading-card" />
+            <Icon draggable={false} svg="ico-loading-card" alt="Chargement ..." />
             <h2 className="subtitle is-2">chargement des offres</h2>
           </div>
         </div>
@@ -234,7 +234,7 @@ class Deck extends Component {
                 })}
                 onClick={this.handleGoPrevious}
               >
-                <Icon svg="ico-prev-w-group" />
+                <Icon svg="ico-prev-w-group" alt="Précédent" />
               </button>
             </li>
             <li>
@@ -245,7 +245,7 @@ class Deck extends Component {
                 disabled={isFlipDisabled}
                 onClick={this.handleFlip}
               >
-                <Icon svg="ico-slideup-w" />
+                <Icon svg="ico-slideup-w" alt="Plus d'infos" />
               </button>
               <Clue />
             </li>
@@ -256,7 +256,7 @@ class Deck extends Component {
                 })}
                 onClick={this.handleGoNext}
               >
-                <Icon svg="ico-next-w-group" />
+                <Icon svg="ico-next-w-group" alt="Suivant" />
               </button>
             </li>
           </ul>

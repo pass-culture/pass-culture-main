@@ -36,7 +36,7 @@ const BookingItem = props => {
           <div className="token">{token}</div>
         </div>
         <div className="arrow">
-          <Icon svg="ico-next-S" />
+          <Icon svg="ico-next-S" className="Suivant" />
         </div>
       </Link>
     </li>

@@ -84,7 +84,7 @@ class OfferInfo extends Component {
                 href={navigationLink(venue.latitude, venue.longitude)}
               >
                 {distance}
-                <Icon svg="ico-geoloc-solid2" />
+                <Icon svg="ico-geoloc-solid2" alt="Géolocalisation" />
               </a>
               <ul className="address-info">
                 <li>{infos.where.name}</li>

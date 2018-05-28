@@ -119,7 +119,7 @@ class Modal extends Component {
           {!isUnclosable &&
             hasCloseButton && (
               <button className="close" onClick={this.onCloseClick}>
-                <Icon svg="ico-close" />
+                <Icon svg="ico-close" alt="Fermer" />
               </button>
             )}
           <div className="modal-content">

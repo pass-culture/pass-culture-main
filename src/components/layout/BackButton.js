@@ -19,7 +19,7 @@ const BackButton = ({
       onClick={history.goBack}
       {...otherProps}
     >
-      <Icon svg="ico-back-simple-w" />
+      <Icon svg="ico-back-simple-w" alt="Retour" />
     </button>
   )
 }

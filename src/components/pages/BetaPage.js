@@ -28,7 +28,7 @@ class BetaPage extends Component {
             className="button is-secondary has-text-weight-light is-italic"
           >
             C'est par là
-            <Icon svg="ico-next" />
+            <Icon svg="ico-next" alt="Suivant" />
           </Link>
         </footer>
       </PageWrapper>

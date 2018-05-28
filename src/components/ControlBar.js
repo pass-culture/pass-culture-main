@@ -68,7 +68,7 @@ class ControlBar extends Component {
             className="button is-secondary"
             onClick={this.onClickFavorite}
           >
-            <Icon svg={isFavorite ? 'ico-like-w' : 'ico-like-w'} />
+            <Icon svg={isFavorite ? 'ico-like-w-on' : 'ico-like-w'} alt={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' } />
           </button>
         </li>
         <li>
@@ -77,7 +77,7 @@ class ControlBar extends Component {
             className="button is-secondary"
             onClick={this.onClickDisable}
           >
-            <Icon svg="ico-share-w" />
+            <Icon svg="ico-share-w" alt='Partager' />
           </button>
         </li>
         <li>

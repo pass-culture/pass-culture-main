@@ -138,9 +138,8 @@ class Booking extends Component {
                       isDayBlocked={date =>
                         !availableDates.find(d => d.isSame(date, 'day'))
                       }
-                      customInputIcon={<Icon svg="ico-calendar" />}
-                      // customArrowIcon={<Icon svg='ico-next' />} // need in black
-                      // customCloseIcon={<Icon svg='ico-close' />} // need in black
+                      customInputIcon={<Icon svg="ico-calendar" alt="calendrier" />}
+                      customCloseIcon={<Icon svg='ico-close-b' alt="Fermer" />}
                       displayFormat="LL"
                     />
                   </div>
@@ -163,7 +162,7 @@ class Booking extends Component {
                       ))}
                     </select>
                     <label htmlFor="time">
-                      <Icon svg="ico-hour-list" className="input-icon" />
+                      <Icon svg="ico-hour-list" className="input-icon" alt='Horaires' />
                     </label>
                   </div>
                 </div>
@@ -217,7 +216,7 @@ class Booking extends Component {
           {step === 'loading' && <p>Réservation en cours ...</p>}
           {step === 'confirmation' && (
             <div className="section success">
-              <Icon className="mb2" svg="picto-validation" />
+              <Icon className="mb2" svg="picto-validation" alt='Réservation validée' />
               <p>Votre réservation est validée.</p>
               <p>
                 {price > 0 && (
@@ -270,7 +269,7 @@ class Booking extends Component {
             ]}
             {step === 'loading' && (
               <li className="center">
-                <Icon svg="loader-w" />
+                <Icon svg="loader-w" alt='Chargement ...' />
               </li>
             )}
             {step === 'confirmation' && (

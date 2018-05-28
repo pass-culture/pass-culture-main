@@ -23,7 +23,7 @@ const withBackButton = (
               className={`button back ${btnClass}`}
               onClick={history.goBack}
             >
-              <Icon svg="ico-back-simple-w" />
+              <Icon svg="ico-back-simple-w" alt="Retour" />
             </button>
             <WrappedComponent {...otherProps} />
           </div>

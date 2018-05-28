@@ -54,7 +54,7 @@ class FormField extends Component {
         {errors &&
           errors.map((e, index) => (
             <li key={index}>
-              <Icon svg="picto-warning" /> {e}
+              <Icon svg="picto-warning" alt="Warning" /> {e}
             </li>
           ))}
       </ul>,

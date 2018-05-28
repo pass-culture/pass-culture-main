@@ -44,7 +44,7 @@ class Menu extends Component {
           <li>
             <NavLink to="/decouverte">
               <div className="menu-icon">
-                <Icon svg="ico-offres-w" />
+                <Icon svg="ico-offres-w" alt="Les offres" />
               </div>
               Les offres
             </NavLink>
@@ -52,7 +52,7 @@ class Menu extends Component {
           <li>
             <NavLink to="/reservations">
               <div className="menu-icon">
-                <Icon svg="ico-calendar-w" />
+                <Icon svg="ico-calendar-w" alt="Mes réservations" />
               </div>
               Mes réservations
             </NavLink>
@@ -60,7 +60,7 @@ class Menu extends Component {
           <li>
             <NavLink to="/favoris">
               <div className="menu-icon">
-                <Icon svg="ico-like-w" />
+                <Icon svg="ico-like-w" alt="Mes préférés" />
               </div>
               Mes préférés
             </NavLink>
@@ -68,7 +68,7 @@ class Menu extends Component {
           <li>
             <NavLink to="/reglages" onClick={this.onDisableClick} disabled>
               <div className="menu-icon">
-                <Icon svg="ico-settings-w" />
+                <Icon svg="ico-settings-w" alt="Réglages" />
               </div>
               Réglages
             </NavLink>
@@ -76,7 +76,7 @@ class Menu extends Component {
           <li>
             <NavLink to="/profil" onClick={this.onDisableClick} disabled>
               <div className="menu-icon">
-                <Icon svg="ico-user-w" />
+                <Icon svg="ico-user-w" alt="Mon profil" />
               </div>
               Mon profil
             </NavLink>
@@ -84,7 +84,7 @@ class Menu extends Component {
           <li>
             <NavLink to="/mentions-legales">
               <div className="menu-icon">
-                <Icon svg="ico-txt-w" />
+                <Icon svg="ico-txt-w" alt="Mentions légales" />
               </div>
               Mentions légales
             </NavLink>
@@ -92,7 +92,7 @@ class Menu extends Component {
           <li>
             <a href="mailto:pass@culture.gouv.fr">
               <div className="menu-icon">
-                <Icon svg="ico-mail-w" />
+                <Icon svg="ico-mail-w" alt="Nous contacter" />
               </div>
               Nous contacter
             </a>
@@ -100,7 +100,7 @@ class Menu extends Component {
           <li>
             <a onClick={this.onSignOutClick}>
               <div className="menu-icon">
-                <Icon svg="ico-deconnect-w" />
+                <Icon svg="ico-deconnect-w" alt="Déconnexion" />
               </div>
               Déconnexion
             </a>
