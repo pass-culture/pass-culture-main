@@ -35,8 +35,13 @@ class OfferPage extends Component {
       offerType,
       requestData,
     } = this.props
+    const collectionName = offerType === 'evenements'
+      ? 'events'
+      : offerType === 'things'
+        ? 'things'
+        : null
     requestData('GET',
-      `occasions/${offerType}/${offerId}`,
+      `occasions/${collectionName}/${offerId}`,
       { key: 'occasion' }
     )
   }
@@ -113,7 +118,9 @@ class OfferPage extends Component {
             <div className='has-text-right'>
               <NavLink to='/offres' className="button is-primary is-outlined">Retour</NavLink>
             </div>
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} {type === 'events' ? 'un événement' : 'un objet'}</h1>
+            <h1 className='title has-text-centered'>
+              {isNew ? 'Créer' : 'Modifier'} {type === 'events' ? 'un événement' : 'un objet'}
+            </h1>
             <form onSubmit={this.save}>
               <div className='field'>
                 <label className='label'>Nom</label>
@@ -236,7 +243,9 @@ export default compose(
     (state, ownProps) => ({
       user: get(state, 'data.users.0'),
       // TODO put the following logic in a selector:
-      occasion: get(state, 'data.occasions', []).find(o => o.id === get(ownProps, 'match.params.offerId', '')) || get(state, 'data.occasion.0'),
+      occasion: get(state, 'data.occasions', [])
+        .find(o => o.id === get(ownProps, 'match.params.offerId', '')) ||
+        get(state, 'data.occasion.0'),
       isNew: get(ownProps, 'match.params.offerId', '') === 'nouveau',
       type: get(ownProps, 'match.params.offerType', ''),
     }),
