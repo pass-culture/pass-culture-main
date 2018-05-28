@@ -75,7 +75,7 @@ const SignupPage = ({ errors }) => {
             <h4>
               {' '}
               J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
-              <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.
+              <a href="http://passculture.beta.gouv.fr" style={{textDecoration: 'underline'}}>Pass Culture</a>.
             </h4>
           }
           collectionName="users"

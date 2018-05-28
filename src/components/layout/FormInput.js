@@ -79,6 +79,7 @@ class FormInput extends Component {
         placeholder={placeholder}
         type={type}
         value={localValue !== null ? localValue : value || defaultValue || ''}
+        aria-describedby={this.props['aria-describedby']}
       />
     )
   }

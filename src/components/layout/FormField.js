@@ -35,9 +35,10 @@ class FormField extends Component {
           {...extraProps}
           id={inputId}
           key={inputId}
+          aria-describedby={`${inputId}-error`}
         />
       ) : (
-        <FormInput {...this.props} {...extraProps} id={inputId} key={inputId} />
+        <FormInput {...this.props} {...extraProps} id={inputId} key={inputId} aria-describedby={`${inputId}-error`} />
       )
     return [
       <div
@@ -50,7 +51,7 @@ class FormField extends Component {
           ? [inputMarkup, labelMarkup]
           : [labelMarkup, inputMarkup]}
       </div>,
-      <ul className={classnames('errors', { pop: errors })} key={1}>
+      <ul role='alert' id={`${inputId}-error`} className={classnames('errors', { pop: errors })} key={1}>
         {errors &&
           errors.map((e, index) => (
             <li key={index}>
