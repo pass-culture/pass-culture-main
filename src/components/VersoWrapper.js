@@ -61,7 +61,7 @@ class VersoWrapper extends Component {
             {source && source.name}
             {author && ', de ' + author}{' '}
           </h1>
-          <h6> {venue && venue.name} </h6>
+          <h2> {venue && venue.name} </h2>
         </div>
         {hasControlBar && <ControlBar />}
         <div className="verso-content" style={{ ...contentStyle }}>
