@@ -50,16 +50,25 @@ class Modal extends Component {
     e.preventDefault()
   }
 
+  escapeClose = e => {
+    if (e.keyCode == 27) {
+      this.onCloseClick(e)
+    }
+  }
+
   stopPropagation(e) {
     e.nativeEvent.stopImmediatePropagation() // Prevent click bubbling and closing modal
     e.stopPropagation()
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    document.addEventListener('keyup', this.escapeClose)
+  }
 
   componentWillUnmount() {
     this.openTimeout && clearTimeout(this.openTimeout)
     this.closeTimeout && clearTimeout(this.closeTimeout)
+    document.removeEventListener('keyup', this.escapeClose)
   }
 
   transform() {
