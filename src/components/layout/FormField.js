@@ -24,7 +24,7 @@ class FormField extends Component {
       className: classnames(className, `input ${type}`),
     }
     const labelMarkup = (
-      <label htmlFor={id} key={'label_' + id}>
+      <label htmlFor={inputId} key={'label_' + id}>
         {label}
       </label>
     )
