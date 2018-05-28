@@ -45,20 +45,6 @@ class Deck extends Component {
     }
   }
 
-  handleNoData = () => {
-    const { match: { params: { mediationId, offerId } } } = this.props
-    worker.postMessage({
-      key: 'dexie-push-pull',
-      state: { mediationId, offerId }
-    })
-    this.noDataTimeout = setTimeout(() => {
-      const { currentRecommendation, history } = this.props
-      if (!currentRecommendation) {
-        history.push('/decouverte')
-      }
-    }, this.props.noDataTimeout)
-  }
-
   handleGoNext = () => {
     const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
@@ -211,7 +197,6 @@ class Deck extends Component {
   }
 
   componentDidMount() {
-    this.handleNoData()
     this.handleRefreshedData()
     this.handleSetDateRead()
   }
