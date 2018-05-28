@@ -67,7 +67,7 @@ class ProfilePage extends Component {
                 <input className='input' type='text' name='address' value={address || ''} onChange={this.updateValue}  />
               </div>
               <div className='field'>
-                <label className='label'>Email de réservation</label>
+                <label className='label'>Email</label>
                 <input className='input' autoComplete='email' type='email' name='email' value={email || ''} onChange={this.updateValue}  />
               </div>
               <div className='field'>
