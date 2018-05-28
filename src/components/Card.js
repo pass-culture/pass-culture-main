@@ -3,35 +3,45 @@ import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import withSizes from 'react-sizes'
+import { compose } from 'redux'
 
 import Recto from './Recto'
 import Verso from './Verso'
+import { requestData } from '../reducers/data'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
-import { compose } from 'redux'
+import { IS_DEXIE } from '../utils/config'
+
 
 class Card extends Component {
-  handleSetRead = props => {
-    // unpack and check
-    const { content, handleSetRead, item, readTimeout } = props
-    const { isRead } = this.state
-    if (!content || isRead) {
-      return
-    }
-    // wait a bit to trigger the fact that we stay on the same card
-    this.readTimeout = setTimeout(() => {
-      // make sure we are not going to do it circularly
-      this.setState({ isRead: true })
-      // check that style is still current
-      item === 0 && handleSetRead && handleSetRead(props)
-    }, readTimeout)
-  }
 
-  componentWillUnmount() {
-    this.readTimeout && clearTimeout(this.readTimeout)
+  componentDidUpdate (prevProps) {
+    const { isFlipped,
+      position,
+      recommendation,
+      requestData
+    } = this.props
+    if (recommendation && position === 'current') {
+      if (!prevProps.isFlipped && isFlipped && !recommendation.isClicked) {
+        requestData('PATCH', `recommendations/${recommendation.id}`,
+          {
+            body: {
+              isClicked: true
+            },
+            key: 'recommendations',
+            local: IS_DEXIE
+          }
+        )
+      }
+    }
   }
 
   render() {
-    const { recommendation, position, currentHeaderColor, width } = this.props
+    const {
+      currentHeaderColor,
+      recommendation,
+      position,
+      width
+    } = this.props
     return (
       <div
         className={classnames('card', {
@@ -50,8 +60,7 @@ class Card extends Component {
 }
 
 Card.defaultProps = {
-  isSetRead: true,
-  readTimeout: 3000,
+  readTimeout: 3000
 }
 
 export default compose(
@@ -63,5 +72,7 @@ export default compose(
     state => ({
       currentHeaderColor: selectCurrentHeaderColor(state),
       isFlipped: state.verso.isFlipped,
-    }))
+    }),
+    { requestData }
+  )
 )(Card)

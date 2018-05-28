@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import OfferInfo from './OfferInfo'
@@ -9,39 +9,36 @@ import selectCurrentMediation from '../selectors/currentMediation'
 import selectIsCurrentTuto from '../selectors/isCurrentTuto'
 import { THUMBS_URL } from '../utils/config'
 
-class Verso extends Component {
-  render() {
-    const { mediation, isFlipped, isCurrentTuto } = this.props
-    return (
-      <div
-        className={classnames('verso', {
-          flipped: isFlipped,
-        })}
+const Verso = ({ mediation, isFlipped, isCurrentTuto }) => {
+  return (
+    <div
+      className={classnames('verso', {
+        flipped: isFlipped,
+      })}
+    >
+      <VersoWrapper
+        hasControlBar={!isCurrentTuto}
+        className="with-padding-top"
       >
-        <VersoWrapper
-          hasControlBar={!isCurrentTuto}
-          className="with-padding-top"
-        >
-          {isCurrentTuto ? (
-            mediation && (
-              <img
-                alt="verso"
-                className="verso-tuto-mediation"
-                src={`${THUMBS_URL}/mediations/${mediation.id}_1`}
-              />
-            )
-          ) : (
-            <OfferInfo />
-          )}
-        </VersoWrapper>
         {isCurrentTuto ? (
-          <MenuButton borderTop />
+          mediation && (
+            <img
+              alt="verso"
+              className="verso-tuto-mediation"
+              src={`${THUMBS_URL}/mediations/${mediation.id}_1`}
+            />
+          )
         ) : (
-          <MenuButton borderTop colored />
+          <OfferInfo />
         )}
-      </div>
-    )
-  }
+      </VersoWrapper>
+      {isCurrentTuto ? (
+        <MenuButton borderTop />
+      ) : (
+        <MenuButton borderTop colored />
+      )}
+    </div>
+  )
 }
 
 export default connect(state => ({

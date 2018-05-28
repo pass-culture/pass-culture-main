@@ -1,13 +1,26 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
+import selectRecommendationQuery from './recommendationQuery'
 import selectRecommendationsWithIndex from './recommendationsWithIndex'
 import getRecommendation from '../getters/recommendation'
 
 export default createSelector(
   state => state.router.location.pathname,
   selectRecommendationsWithIndex,
-  (pathname, recommendations) => {
+  selectRecommendationQuery,
+  (
+    pathname,
+    recommendations,
+    recommendationQuery
+  ) => {
+
+    // NOTE: you will see that recommendationQuery is not actually
+    // used in the body of this function, but it is still necessary
+    // to trigger this selector again when /recommendations/<recommendationId>
+    // requests has been called
+    // (as the state.data.recommendations is not mutated through these kinds of calls)
+
     const [, , offerId, mediationId] = pathname.split('/')
     let filteredRecommendations
     // NORMALY mediationId is ENOUGH TO FIND THE MATCHING
