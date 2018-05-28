@@ -30,12 +30,10 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 2rem;
-      height: 2rem;
-      background: $black;
+      margin: 1rem;
       border: none;
-      border-bottom-left-radius: $radius;
       cursor: pointer;
+      background: transparent;
     }
 
     canvas {

@@ -77,7 +77,7 @@ class ProfilePage extends Component {
                   onDrop={this.handleDrop}
                   disableClick={Boolean(this.state.image)}
                 >
-                  { this.state.image && <button onClick={ e => this.setState({image: null})} className='remove-image'><Icon svg='ico-close' alt="Enlever l'image" /></button> }
+                  { this.state.image && <button onClick={ e => this.setState({image: null})} className='remove-image'><Icon svg='ico-close-b' alt="Enlever l'image" /></button> }
                   { !this.state.image && <p className="drag-n-drop">Cliquez ou glissez-déposez pour charger une image</p>}
                   <AvatarEditor width={250} height={250} scale={this.state.zoom} border={50} borderRadius={250} color={[255, 255, 255, this.state.image ? 0.6 : 1]} image={this.state.image} />
                   { this.state.image && <input className="zoom" type="range" min="1" max="2" step="0.01" value={this.state.zoom} onChange={e => this.setState({zoom: parseFloat(e.target.value)})} />}
