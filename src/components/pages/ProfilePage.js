@@ -4,12 +4,11 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
-import { SingleDatePicker } from 'react-dates'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import FormField from '../layout/FormField'
 import { requestData } from '../../reducers/data'
+
 class ProfilePage extends Component {
 
   constructor() {
