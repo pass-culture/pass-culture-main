@@ -34,8 +34,6 @@ class ProfilePage extends Component {
 
   render() {
 
-    console.log(this.props.user)
-
     const {
       publicName,
       email,

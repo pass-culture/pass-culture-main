@@ -18,7 +18,7 @@ if (window.cordova) {
 } else {
   CALCULATED_API_URL = IS_DEV
     ? 'http://localhost'
-    : 'https://' + document.location.host.replace('app', 'api')
+    : 'https://' + document.location.host.replace('pro', 'api')
 }
 export const API_URL = CALCULATED_API_URL
 
