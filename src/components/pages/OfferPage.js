@@ -10,6 +10,7 @@ import withLogin from '../hocs/withLogin'
 import Price from '../Price'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
+import selectCurrentOccasion from '../../selectors/currentOccasion'
 
 class OfferPage extends Component {
 
@@ -34,23 +35,25 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const {
-      offerId,
-      offerType,
+      collectionName,
+      occasionId,
       requestData,
     } = this.props
-    const collectionName = offerType === 'evenements'
-      ? 'events'
-      : offerType === 'things'
-        ? 'things'
-        : null
-    requestData('GET',
-      `occasions/${collectionName}/${offerId}`,
-      { key: 'occasion' }
+    console.log('WTF', occasionId)
+    occasionId !== 'nouveau' && requestData(
+      'GET',
+      `occasions/${collectionName}/${occasionId}`,
+      { key: 'occasions' }
     )
   }
 
+  componentDidMount() {
+    this.handleRequestData()
+  }
+
   componentDidUpdate(prevProps) {
-    if (!this.props.occasion) {
+    const { occasion, occasionId } = this.props
+    if (!occasion && occasionId !== prevProps.occasionId) {
       this.handleRequestData()
     }
   }
@@ -83,7 +86,8 @@ class OfferPage extends Component {
   }
 
   removeDate = occurrence => {
-    this.updateOccasion('occurrences', get(this.state, 'occasion.occurrences', []).filter(o => !o.datetime.isSame(occurrence.datetime)))
+    this.updateOccasion('occurrences', get(this.state, 'occasion.occurrences', [])
+      .filter(o => !o.datetime.isSame(occurrence.datetime)))
   }
 
   updateInput = e => {
@@ -93,13 +97,38 @@ class OfferPage extends Component {
   save = e => {
     e.preventDefault()
     // TODO
+    const {
+      collectionName,
+      isNew,
+      occasionId,
+      requestData
+    } = this.props
+    const { occasion } = this.state
+    e.preventDefault()
+    const body = Object.assign({}, occasion)
+    let path =  `occasions/${collectionName}`
+    if (!isNew) {
+      path = `${path}/${occasionId}`
+    } else {
+      // body.venueId
+    }
+    requestData(
+      isNew
+        ? 'POST'
+        : 'PATCH',
+      path,
+      {
+        body,
+        key: 'occasion'
+      }
+    )
   }
 
   render () {
     const {
       isNew,
       occasion,
-      type,
+      occasionType,
     } = this.props
     const {
       author,
@@ -124,15 +153,25 @@ class OfferPage extends Component {
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to='/offres' className="button is-primary is-outlined">Retour</NavLink>
+              <NavLink to='/offres' className="button is-primary is-outlined">
+                Retour
+              </NavLink>
             </div>
             <h1 className='title has-text-centered'>
-              {isNew ? 'Créer' : 'Modifier'} {type === 'events' ? 'un événement' : 'un objet'}
+              {isNew ? 'Créer' : 'Modifier'} {occasionType === 'events' ? 'un événement' : 'un objet'}
             </h1>
             <form onSubmit={this.save}>
               <div className='field'>
                 <label className='label'>Nom</label>
-                <input className='input title' type='text' name='name' value={name || ''} onChange={this.updateInput} maxLength={140} />
+                <input
+                  autoComplete='name'
+                  className='input title'
+                  type='text'
+                  name='name'
+                  value={name || ''}
+                  onChange={this.updateInput}
+                  maxLength={140}
+                />
               </div>
               <hr />
               <h2 className='subtitle is-2'>Infos pratiques</h2>
@@ -294,17 +333,19 @@ class OfferPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
-  withRouter,
   connect(
-    (state, ownProps) => ({
-      user: get(state, 'data.users.0'),
-      // TODO put the following logic in a selector:
-      occasion: get(state, 'data.occasions', [])
-        .find(o => o.id === get(ownProps, 'match.params.offerId', '')) ||
-        get(state, 'data.occasion.0'),
-      isNew: get(ownProps, 'match.params.offerId', '') === 'nouveau',
-      type: get(ownProps, 'match.params.offerType', ''),
-    }),
+    (state, ownProps) => {
+      return {
+        collectionName: ownProps.occasionType === 'evenements'
+          ? 'events'
+          : ownProps.occasionType === 'things'
+            ? 'things'
+            : null,
+        user: state.user,
+        occasion: selectCurrentOccasion(state, ownProps),
+        isNew: ownProps.occasionId === 'nouveau',
+      }
+    },
     { requestData }
   )
 )(OfferPage)

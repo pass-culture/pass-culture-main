@@ -2,6 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 import { THUMBS_URL } from '../utils/config'
+import collectionToPath from '../utils/collectionToPath'
 
 const OffererItem = ({
   id,
@@ -27,7 +28,7 @@ const OffererItem = ({
           </p>
         </div>
         <nav className="level">
-          <NavLink to={`/lieux/${id}`}>
+          <NavLink to={`/${collectionToPath('venues')}/${id}`}>
             <button className="button is-primary level-item">
               Configurer
             </button>
