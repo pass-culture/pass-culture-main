@@ -5,6 +5,7 @@ import { AutoSizer, List } from 'react-virtualized'
 import { compose } from 'redux'
 
 import OccasionItem from './OccasionItem'
+import selectOccasions from '../selectors/occasions'
 
 class OccasionsList extends Component {
   // handleRequestData = () => {
@@ -54,7 +55,7 @@ export default compose(
   withRouter,
   connect(
     state => ({
-      occasions: state.data.occasions || [],
+      occasions: selectOccasions(state),
       user: state.user
     }),
     // { assignData, requestData }
