@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import get from 'lodash.get'
 import { SingleDatePicker } from 'react-dates'
+import { connect } from 'react-redux'
+import moment from 'moment'
 
-import Icon from './layout/Icon'
 import Price from './Price'
 
 class OccurenceManager extends Component {
@@ -58,6 +57,8 @@ class OccurenceManager extends Component {
   }
 
   render() {
+    const occurences = this.state.occurences || this.props.occurences
+    console.log('occurences', occurences)
     return (
       <div>
         <table className='table is-striped is-hoverable'>
@@ -69,19 +70,19 @@ class OccurenceManager extends Component {
               <td>Nombre de place total</td>
               <td>Nombre de place Personnes à Mobilité Réduite (PMR)</td>
               <td></td>
-              <td></td>
             </tr>
           </thead>
           <tbody>
-            {this.state.occurrences.map(o => (
-              <tr key={o.datetime} className=''>
-                <td>{o.datetime.format('DD/MM/YYYY')}</td>
-                <td>{o.datetime.format('HH:mm')}</td>
-                <td><Price value={o.price} /></td>
-                <td>{o.groupSize || 'Illimité'}</td>
-                <td>{o.pmrGroupSize || 'Illimité'}</td>
-                <td>{'?'}</td>
-                <td><button className="delete is-small" onClick={e => this.removeDate(o)}></button></td>
+            {occurences && occurences.map((o, index) => (
+              <tr key={index} className=''>
+                <td>{moment(o.beginningDatetime).format('DD/MM/YYYY')}</td>
+                <td>{moment(o.beginningDatetime).format('HH:mm')}</td>
+                <td><Price value={o.offer[0].price} /></td>
+                <td>{o.offer[0].groupSize || 'Illimité'}</td>
+                <td>{o.offer[0].pmrGroupSize || 'Illimité'}</td>
+                <td>
+                  <button className="delete is-small" onClick={e => this.removeDate(o)}/>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -141,6 +142,8 @@ class OccurenceManager extends Component {
   }
 }
 
-export default connect(state => ({ isEditing: Object.keys(state.form) > 0 }))(
-  OccurenceManager
-)
+export default connect(
+  state => ({
+    isEditing: Object.keys(state.form) > 0
+  })
+)(OccurenceManager)

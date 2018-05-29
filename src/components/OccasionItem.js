@@ -21,6 +21,7 @@ class OccasionItem extends Component {
       occasionType,
       thumbUrl
     } = this.props
+    console.log('occasionType', occasionType)
     return (
       <article className="occasion-item media">
         <figure className="media-left">

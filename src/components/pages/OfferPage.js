@@ -140,10 +140,11 @@ class OfferPage extends Component {
       contactName,
       contactEmail,
       contactPhone,
-      occurrences,
       website,
       mediaUrls,
     } = this.state.occasion || {}
+    const occurences = (this.state.occasion && this.state.occasion.occurences)
+      || (occasion && occasion.occurences)
     return (
       <PageWrapper name='offer' loading={!(occasion || isNew)}>
         <div className='columns'>
@@ -189,7 +190,7 @@ class OfferPage extends Component {
               </div>
               <div className='field'>
               <label className='label'>Horaires</label>
-              <OccurenceManager occurrences={occurrences} onChange={occurrences => this.updateOccasion('occurrences', occurrences)} />
+              <OccurenceManager occurences={occurences} onChange={occurences => this.updateOccasion('occurences', occurences)} />
               </div>
               <div className='field'>
                 <label className='label'>Durée (en minutes)</label>

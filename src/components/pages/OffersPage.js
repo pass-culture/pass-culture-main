@@ -40,7 +40,7 @@ class OffersPage extends Component {
               Nouvel événement
             </button>
           </NavLink>
-          <NavLink to={`/offres/${collectionToPath('objects')}/nouveau`}>
+          <NavLink to={`/offres/${collectionToPath('things')}/nouveau`}>
             <button className="button is-primary level-item">
               Nouvel objet
             </button>
