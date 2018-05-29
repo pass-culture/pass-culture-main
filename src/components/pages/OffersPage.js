@@ -4,25 +4,34 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
-import { assignData, requestData } from '../../reducers/data'
-
 import OccasionsList from '../OccasionsList'
 import withLogin from '../hocs/withLogin'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
+import { assignData, requestData } from '../../reducers/data'
+import selectOccasions from '../../selectors/occasions'
+
 
 class OffersPage extends Component {
   handleRequestData = () => {
-    this.props.requestData('GET', `occasions`)
+    this.props.requestData('GET', 'occasions')
   }
 
   componentDidMount() {
     this.props.user && this.handleRequestData()
   }
 
+  componentDidUpdate(prevProps) {
+    const { user } = this.props
+    if (user && user !== prevProps.user) {
+      this.handleRequestData()
+    }
+  }
+
   render() {
+    const { occasions } = this.props
     return (
-      <PageWrapper name="offerer" loading={!this.props.occasions.length}>
+      <PageWrapper name="offerer" loading={!occasions.length}>
         <h1 className='title has-text-centered'>Vos offres</h1>
         <nav className="level is-mobile">
           <NavLink to={`/offres/evenements/nouveau`}>
@@ -39,7 +48,7 @@ class OffersPage extends Component {
         <nav className="level is-mobile">
           <SearchInput collectionNames={["events", "things"]} isLoading />
         </nav>
-        {this.props.occasions.length && <OccasionsList />}
+        {occasions.length && <OccasionsList />}
       </PageWrapper>
     )
   }
@@ -50,7 +59,7 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     state => ({
-      occasions: state.data.occasions || [],
+      occasions: selectOccasions(state),
       user: state.user
     }),
     { assignData, requestData }
