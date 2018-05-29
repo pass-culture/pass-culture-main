@@ -4,12 +4,12 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
-import { SingleDatePicker } from 'react-dates'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
+import OccurenceManager from '../OccurenceManager'
 
 class OfferPage extends Component {
 
@@ -17,9 +17,6 @@ class OfferPage extends Component {
     super()
     this.state = {
       occasion: null,
-      calendarFocused: false,
-      time: '',
-      withError: false,
     }
   }
 
@@ -36,7 +33,6 @@ class OfferPage extends Component {
       occasionId,
       requestData,
     } = this.props
-    console.log('WTF', occasionId)
     occasionId !== 'nouveau' && requestData(
       'GET',
       `occasions/${collectionName}/${occasionId}`,
@@ -56,38 +52,28 @@ class OfferPage extends Component {
   }
 
   updateOccasion = (key, value) => {
+    const newValue = key.split('.').reverse().reduce((result, keyElement) => {
+      return {[keyElement]: (result || value)}
+    }, null)
     this.setState({
-      withError: false,
-      occasion: Object.assign({}, this.state.occasion, {[key]: value})
+      occasion: Object.assign({}, this.state.occasion, newValue)
     })
-  }
-
-  handleDateChange = date => {
-    if (!this.state.time)
-      return this.setState({
-      withError: true
-    })
-    const [hours, minutes] = this.state.time.split(':')
-    const dateTime = date.hour(hours).minute(minutes)
-    const dates = get(this.state, 'occasion.dates', [])
-    const isPresent = dates.find(d => dateTime.isSame(d))
-    this.updateOccasion('dates',
-      dates
-        .filter(d => isPresent ? !dateTime.isSame(d) : true)
-        .concat(isPresent ? [] : [dateTime])
-        .sort((d1, d2) => d1.isBefore(d2) ? -1 : 1))
-  }
-
-  removeDate = date => {
-    this.updateOccasion('dates', get(this.state, 'occasion.dates', [])
-        .filter(d => !date.isSame(d)))
   }
 
   updateInput = e => {
     this.updateOccasion(e.target.name, e.target.value)
   }
 
+  addMediaUrl = () => {
+    this.updateOccasion('mediaUrls', Object.values(get(this.state, 'occasion.mediaUrls', [])).concat(''))
+  }
+
+  deleteMediaUrl = index => {
+    this.updateOccasion('mediaUrls', Object.values(get(this.state, 'occasion.mediaUrls', [])).filter((_, i) => index !== i))
+  }
+
   save = e => {
+    e.preventDefault()
     // TODO
     const {
       collectionName,
@@ -137,7 +123,9 @@ class OfferPage extends Component {
       contactName,
       contactEmail,
       contactPhone,
+      occurrences,
       website,
+      mediaUrls,
     } = this.state.occasion || {}
 
     return (
@@ -165,6 +153,8 @@ class OfferPage extends Component {
                   maxLength={140}
                 />
               </div>
+              <hr />
+              <h2 className='subtitle is-2'>Infos pratiques</h2>
               <div className='field'>
                 <label className='label'>Type</label>
                 <div className="select">
@@ -182,35 +172,19 @@ class OfferPage extends Component {
                 </div>
               </div>
               <div className='field'>
-                <label className='label'>Prix</label>
-                <input className='input' type='number' min={0} name='price' value={price || ''} onChange={this.updateInput}  />
+                <label className='label'>Horaires</label>
+                <OccurenceManager occurrences={occurrences} onChange={occurrences => this.updateOccasion('occurrences', occurrences)} />
               </div>
               <div className='field'>
-                <label className='label'>Horaires</label>
-                <ul className='tags'>
-                  {get(this.state, 'occasion.dates', []).map(d => (
-                    <span key={d} className='tag is-primary is-medium'>
-                      {d.format('DD/MM/YYYY HH:mm')}
-                      <button className="delete is-small" onClick={e => this.removeDate(d)}></button>
-                    </span>
-                  ))}
-                </ul>
-                <SingleDatePicker
-                  calendarInfoPosition="top"
-                  renderCalendarInfo={() => (
-                    <div className='box content'>
-                      <p className={this.state.withError ? 'has-text-weight-bold has-text-danger' : ''}>Sélectionnez d'abord l'heure, puis cliquez sur les dates concernées :</p>
-                      <input required className='input' type='time' value={this.state.time} onChange={e => this.setState({time: e.target.value})} />
-                    </div>
-                  )}
-                  onDateChange={this.handleDateChange}
-                  focused={this.state.calendarFocused}
-                  onFocusChange={e => this.setState({calendarFocused: !this.state.calendarFocused})}
-                  keepOpenOnDateSelect={true}
-                  isDayHighlighted={d1 => get(this.state, 'occasion.dates', []).some(d2 => d1.isSame(d2, 'day'))}
-                  placeholder='Sélectionnez les dates et heures'
-                />
+                <label className='label'>Durée (en minutes)</label>
+                <input className='input' type='number' min={0} name='durationMinutes' value={durationMinutes || ''} onChange={this.updateInput}  />
               </div>
+              <div className='field'>
+                <label className='label'>Date limite d'inscription (par défaut: 48h avant l'événement)</label>
+                <input className='input' type='date' name='bookingLimitDatetime' value={bookingLimitDatetime || ''} onChange={this.updateInput}  />
+              </div>
+              <hr />
+              <h2 className='subtitle is-2'>Infos artistiques</h2>
               <div className='field'>
                 <label className='label'>Description</label>
                 <textarea className='textarea' name='description' value={description || ''} onChange={this.updateInput} />
@@ -227,22 +201,8 @@ class OfferPage extends Component {
                 <label className='label'>Interprète</label>
                 <input className='input' type='text' name='performer' value={performer || ''} onChange={this.updateInput}  />
               </div>
-              <div className='field'>
-                <label className='label'>Durée (en minutes)</label>
-                <input className='input' type='number' min={0} name='durationMinutes' value={durationMinutes || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Places par horaire</label>
-                <input className='input' type='number' min={0} name='groupSize' value={groupSize || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Places Personnes à Mobilité Réduite par horaire</label>
-                <input className='input' type='number' min={0} name='pmrGroupSize' value={pmrGroupSize || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Date limite d'inscription (par défaut: 48h avant l'événement)</label>
-                <input className='input' type='date' name='bookingLimitDatetime' value={bookingLimitDatetime || ''} onChange={this.updateInput}  />
-              </div>
+              <hr />
+              <h2 className='subtitle is-2'>Infos de contact</h2>
               <div className='field'>
                 <label className='label'>Nom du contact</label>
                 <input className='input' autoComplete='name' type='text' name='contactName' value={contactName || ''} onChange={this.updateInput}  />
@@ -256,9 +216,26 @@ class OfferPage extends Component {
                 <input className='input' autoComplete='email' type='email' name='contactPhone' value={contactPhone || ''} onChange={this.updateInput}  />
               </div>
               <div className='field'>
-                <label className='label'>Site internet</label>
-                <input className='input' autoComplete='url' type='url' name='website' value={website || ''} onChange={this.updateInput}  />
+                <label className='label'>Media URLs</label>
+                <ul>
+                  { Object.values(mediaUrls || {}).map((m, i) => (
+                    <li className='field has-addons' key={i}>
+                      <div className='control is-expanded'>
+                        <input className='input' autoComplete='url' type='url' name={`mediaUrls.${i}`} value={m || ''} onChange={this.updateInput}  />
+                      </div>
+                      <div className='control'>
+                        <a class="button is-medium is-primary" onClick={e => this.deleteMediaUrl(i)}>
+                          &nbsp;
+                          <span className='delete'></span>
+                          &nbsp;
+                        </a>
+                      </div>
+                    </li>
+                  )) }
+                  <li className='has-text-right'><button className='button is-primary is-outlined is-small' onClick={this.addMediaUrl}>Ajouter une URL</button></li>
+                </ul>
               </div>
+              <hr />
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
                   <button className="button is-primary is-medium">Enregistrer</button>
