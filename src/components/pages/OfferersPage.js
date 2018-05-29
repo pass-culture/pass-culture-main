@@ -9,6 +9,7 @@ import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
+import collectionToPath from '../../utils/collectionToPath'
 
 class OfferersPage extends Component {
   render() {
@@ -19,7 +20,7 @@ class OfferersPage extends Component {
       <PageWrapper name="profile" loading={!offerers}>
         <h1 className="title has-text-centered">Vos lieux</h1>
         <nav className="level is-mobile">
-          <NavLink to={`/lieux/nouveau`}>
+          <NavLink to={`/${collectionToPath('venues')}/nouveau`}>
             <button className="button is-primary level-item">
               Nouveau lieu
             </button>

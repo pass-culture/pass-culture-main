@@ -10,6 +10,7 @@ import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { assignData, requestData } from '../../reducers/data'
 import selectOccasions from '../../selectors/occasions'
+import collectionToPath from '../../utils/collectionToPath'
 
 
 class OffersPage extends Component {
@@ -34,12 +35,12 @@ class OffersPage extends Component {
       <PageWrapper name="offerer" loading={!occasions.length}>
         <h1 className='title has-text-centered'>Vos offres</h1>
         <nav className="level is-mobile">
-          <NavLink to={`/offres/evenements/nouveau`}>
+          <NavLink to={`/offres/${collectionToPath('events')}/nouveau`}>
             <button className="button is-primary level-item">
               Nouvel événement
             </button>
           </NavLink>
-          <NavLink to={`/offres/objets/nouveau`}>
+          <NavLink to={`/offres/${collectionToPath('objects')}/nouveau`}>
             <button className="button is-primary level-item">
               Nouvel objet
             </button>
