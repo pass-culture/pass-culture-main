@@ -10,6 +10,11 @@ const menu = {
       path: '/offres',
       title: 'Vos Offres'
     },
+    {
+      icon: 'ico-accounting',
+      path: '/comptabilite',
+      title: 'Votre Comptabilité'
+    },
   ]
 }
 

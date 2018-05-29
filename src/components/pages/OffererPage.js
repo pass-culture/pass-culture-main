@@ -8,6 +8,7 @@ import { NavLink } from 'react-router-dom'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
+import collectionToPath from '../../utils/collectionToPath'
 
 class OffererPage extends Component {
 
@@ -53,7 +54,7 @@ class OffererPage extends Component {
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to='/offres' className="button is-primary is-outlined">Retour</NavLink>
+              <NavLink to={`/${collectionToPath('venues')}`} className="button is-primary is-outlined">Retour</NavLink>
             </div>
 
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
@@ -80,7 +81,7 @@ class OffererPage extends Component {
                   <button className="button is-primary is-medium">Enregistrer</button>
                 </div>
                 <div className="control">
-                  <NavLink to='/lieux' className="button is-primary is-outlined is-medium">Retour</NavLink>
+                  <NavLink to={`/${collectionToPath('venues')}`} className="button is-primary is-outlined is-medium">Retour</NavLink>
                 </div>
               </div>
             </form>

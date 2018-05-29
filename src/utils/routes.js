@@ -1,6 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router'
 
+import AccoutingPage from '../components/pages/AccountingPage'
 import BetaPage from '../components/pages/BetaPage'
 import HomePage from '../components/pages/HomePage'
 import OffersPage from '../components/pages/OffersPage'
@@ -17,6 +18,12 @@ const routes = [
     exact: true,
     path: '/',
     render: () => <Redirect to="/beta" />,
+  },
+  {
+    exact: true,
+    path: '/comptabilite',
+    title: "Comptabilité",
+    render: () => <AccoutingPage />,
   },
   {
     exact: true,
@@ -62,11 +69,11 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:offerType/:offerId',
+    path: '/offres/:occasionType/:occasionId',
     title: 'Offre',
     render: props => <OfferPage
-      offerId={props.match.params.offerId}
-      offerType={props.match.params.offerType}
+      occasionId={props.match.params.occasionId}
+      occasionType={props.match.params.occasionType}
     />,
   },
   {
