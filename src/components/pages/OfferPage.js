@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
@@ -73,7 +72,9 @@ class OfferPage extends Component {
   }
 
   save = e => {
+    // prevent to do a page refresh
     e.preventDefault()
+
     // TODO
     const {
       collectionName,
@@ -82,14 +83,31 @@ class OfferPage extends Component {
       requestData
     } = this.props
     const { occasion } = this.state
-    e.preventDefault()
-    const body = Object.assign({}, occasion)
+
+    // NOTE: for now we don't do field type validation
+    // so we provide default values just for making the api working
+    const body = Object.assign(
+      isNew
+        ? {
+          description: '',
+          durationMinutes: '0h30',
+          name: ''
+        }
+        : {},
+      occasion
+    )
+
     let path =  `occasions/${collectionName}`
     if (!isNew) {
       path = `${path}/${occasionId}`
     } else {
       // body.venueId
     }
+
+
+
+
+    console.log('body', body)
     requestData(
       isNew
         ? 'POST'
@@ -119,7 +137,6 @@ class OfferPage extends Component {
       groupSize,
       pmrGroupSize,
       bookingLimitDatetime,
-      price,
       contactName,
       contactEmail,
       contactPhone,
@@ -127,7 +144,6 @@ class OfferPage extends Component {
       website,
       mediaUrls,
     } = this.state.occasion || {}
-
     return (
       <PageWrapper name='offer' loading={!(occasion || isNew)}>
         <div className='columns'>
@@ -172,8 +188,8 @@ class OfferPage extends Component {
                 </div>
               </div>
               <div className='field'>
-                <label className='label'>Horaires</label>
-                <OccurenceManager occurrences={occurrences} onChange={occurrences => this.updateOccasion('occurrences', occurrences)} />
+              <label className='label'>Horaires</label>
+              <OccurenceManager occurrences={occurrences} onChange={occurrences => this.updateOccasion('occurrences', occurrences)} />
               </div>
               <div className='field'>
                 <label className='label'>Durée (en minutes)</label>
