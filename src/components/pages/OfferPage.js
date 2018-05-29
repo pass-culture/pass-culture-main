@@ -84,6 +84,7 @@ class OfferPage extends Component {
   }
 
   save = e => {
+    e.preventDefault()
     // TODO
   }
 

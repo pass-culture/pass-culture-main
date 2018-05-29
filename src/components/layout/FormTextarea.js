@@ -20,9 +20,9 @@ class FormTextarea extends Component {
       console.warn('value reached maxLength')
     }
   }
-  
+
   render() {
-    const { className, defaultValue, id, placeholder, type, value } = this.props
+    const { className, defaultValue, id, placeholder, type, value, } = this.props
     return (
       <textarea
         className={className || 'textarea'}

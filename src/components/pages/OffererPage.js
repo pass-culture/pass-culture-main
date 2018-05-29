@@ -30,6 +30,7 @@ class OffererPage extends Component {
   }
 
   save = e => {
+    e.preventDefault()
     // TODO
   }
 
