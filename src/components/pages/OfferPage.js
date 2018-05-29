@@ -4,11 +4,18 @@ import { compose } from 'redux'
 import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
 
+import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
+import FormField from '../layout/FormField'
 import PageWrapper from '../layout/PageWrapper'
+import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
-import OccurenceManager from '../OccurenceManager'
+import { NEW } from '../../utils/config'
+
+const Label = ({ title }) => {
+  return <div className="title">{title}</div>
+}
 
 class OfferPage extends Component {
 
@@ -145,6 +152,7 @@ class OfferPage extends Component {
     } = this.state.occasion || {}
     const occurences = (this.state.occasion && this.state.occasion.occurences)
       || (occasion && occasion.occurences)
+    const occasionId = isNew ? NEW : this.props.occasionId
     return (
       <PageWrapper name='offer' loading={!(occasion || isNew)}>
         <div className='columns'>
@@ -158,18 +166,14 @@ class OfferPage extends Component {
               {isNew ? 'Créer' : 'Modifier'} {occasionType === 'events' ? 'un événement' : 'un objet'}
             </h1>
             <form onSubmit={this.save}>
-              <div className='field'>
-                <label className='label'>Nom</label>
-                <input
-                  autoComplete='name'
-                  className='input title'
-                  type='text'
-                  name='name'
-                  value={name || ''}
-                  onChange={this.updateInput}
-                  maxLength={140}
-                />
-              </div>
+              <FormField
+                defaultValue={name}
+                collectionName="events"
+                label={<Label title="Titre" />}
+                name="name"
+                placeholder=""
+                autoComplete="name"
+              />
               <hr />
               <h2 className='subtitle is-2'>Infos pratiques</h2>
               <div className='field'>
@@ -188,57 +192,116 @@ class OfferPage extends Component {
                   </select>
                 </div>
               </div>
+              -
               <div className='field'>
-              <label className='label'>Horaires</label>
-              <OccurenceManager occurences={occurences} onChange={occurences => this.updateOccasion('occurences', occurences)} />
+                <label className='label'>Horaires</label>
+                <OccurenceManager occurences={occurences} onChange={occurences => this.updateOccasion('occurences', occurences)} />
               </div>
-              <div className='field'>
-                <label className='label'>Durée (en minutes)</label>
-                <input className='input' type='number' min={0} name='durationMinutes' value={durationMinutes || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Date limite d'inscription (par défaut: 48h avant l'événement)</label>
-                <input className='input' type='date' name='bookingLimitDatetime' value={bookingLimitDatetime || ''} onChange={this.updateInput}  />
-              </div>
+
+              <FormField
+                defaultValue={durationMinutes}
+                type="number"
+                collectionName="events"
+                label={<Label title="Durée (en minutes)" />}
+                name="durationMinutes"
+                placeholder=""
+                autoComplete="durationMinutes"
+              />
+              <FormField
+                defaultValue={bookingLimitDatetime}
+                type="date"
+                collectionName="events"
+                label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
+                name="bookingLimitDatetime"
+                placeholder=""
+                autoComplete="durationMinutes"
+              />
+
               <hr />
               <h2 className='subtitle is-2'>Infos artistiques</h2>
-              <div className='field'>
-                <label className='label'>Description</label>
-                <textarea className='textarea' name='description' value={description || ''} onChange={this.updateInput} />
-              </div>
-              <div className='field'>
-                <label className='label'>Auteur</label>
-                <input className='input' type='text' name='author' value={author || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Metteur en scène</label>
-                <input className='input' type='text' name='stageDirector' value={stageDirector || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Interprète</label>
-                <input className='input' type='text' name='performer' value={performer || ''} onChange={this.updateInput}  />
-              </div>
+              <FormField
+                defaultValue={description}
+                type="textarea"
+                collectionName="events"
+                label={<Label title="Description" />}
+                name="description"
+                placeholder=""
+                autoComplete="description"
+              />
+              <FormField
+                defaultValue={bookingLimitDatetime}
+                type="date"
+                collectionName="events"
+                label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
+                name="bookingLimitDatetime"
+                placeholder=""
+                autoComplete="durationMinutes"
+              />
+              <FormField
+                defaultValue={author}
+                collectionName="events"
+                label={<Label title="Auteur" />}
+                name="author"
+                placeholder=""
+                autoComplete="author"
+              />
+              <FormField
+                defaultValue={stageDirector}
+                collectionName="events"
+                label={<Label title="Metteur en scène" />}
+                name="stageDirector"
+                placeholder=""
+                autoComplete="stageDirector"
+              />
+              <FormField
+                defaultValue={performer}
+                collectionName="events"
+                label={<Label title="Interprète" />}
+                name="performer"
+                placeholder=""
+                autoComplete="performer"
+              />
               <hr />
               <h2 className='subtitle is-2'>Infos de contact</h2>
-              <div className='field'>
-                <label className='label'>Nom du contact</label>
-                <input className='input' autoComplete='name' type='text' name='contactName' value={contactName || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Email de contact</label>
-                <input className='input' autoComplete='email' type='email' name='contactEmail' value={contactEmail || ''} onChange={this.updateInput}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Tel de contact</label>
-                <input className='input' autoComplete='email' type='email' name='contactPhone' value={contactPhone || ''} onChange={this.updateInput}  />
-              </div>
+              <FormField
+                defaultValue={contactName}
+                collectionName="events"
+                label={<Label title="Nom du contact" />}
+                name="contactName"
+                placeholder=""
+                autoComplete="contactName"
+              />
+              <FormField
+                defaultValue={contactEmail}
+                collectionName="events"
+                label={<Label title="Email de contact" />}
+                name="contactEmail"
+                placeholder=""
+                type="email"
+                autoComplete="contactEmail"
+              />
+              <FormField
+                defaultValue={contactPhone}
+                collectionName="events"
+                label={<Label title="Tel de contact" />}
+                name="contactPhone"
+                placeholder=""
+                autoComplete="contactPhone"
+              />
               <div className='field'>
                 <label className='label'>Media URLs</label>
                 <ul>
                   { Object.values(mediaUrls || {}).map((m, i) => (
                     <li className='field has-addons' key={i}>
                       <div className='control is-expanded'>
-                        <input className='input' autoComplete='url' type='url' name={`mediaUrls.${i}`} value={m || ''} onChange={this.updateInput}  />
+                        <FormField
+                          defaultValue={m}
+                          collectionName="events"
+                          name={`mediaUrls.${i}`}
+                          placeholder=""
+                          type="url"
+                          autoComplete="url"
+                        />
                       </div>
                       <div className='control'>
                         <a className="button is-medium is-primary" onClick={e => this.deleteMediaUrl(i)}>
@@ -255,7 +318,17 @@ class OfferPage extends Component {
               <hr />
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
-                  <button className="button is-primary is-medium">Enregistrer</button>
+                  <SubmitButton
+                    getBody={form => form.eventsById[occasionId]}
+                    getIsDisabled={form =>
+                      !get(form, `eventsById.${occasionId}.description`) ||
+                      !get(form, `eventsById.${occasionId}.name`)
+                    }
+                    className="button is-primary is-medium"
+                    path={`occasions/${occasionType}`}
+                    storeKey="occasions"
+                    text="Enregistrer"
+                  />
                 </div>
                 <div className="control">
                   <NavLink to='/offres' className="button is-primary is-outlined is-medium">Retour</NavLink>
