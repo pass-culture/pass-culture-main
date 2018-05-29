@@ -224,7 +224,7 @@ class OfferPage extends Component {
                         <input className='input' autoComplete='url' type='url' name={`mediaUrls.${i}`} value={m || ''} onChange={this.updateInput}  />
                       </div>
                       <div className='control'>
-                        <a class="button is-medium is-primary" onClick={e => this.deleteMediaUrl(i)}>
+                        <a className="button is-medium is-primary" onClick={e => this.deleteMediaUrl(i)}>
                           &nbsp;
                           <span className='delete'></span>
                           &nbsp;
