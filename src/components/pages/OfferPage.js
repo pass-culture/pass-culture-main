@@ -13,6 +13,13 @@ import OccurenceManager from '../OccurenceManager'
 
 class OfferPage extends Component {
 
+  constructor() {
+    super()
+    this.state = {
+      occasion: null,
+    }
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.isNew) return {occasion: {}}
     return {
@@ -26,7 +33,6 @@ class OfferPage extends Component {
       occasionId,
       requestData,
     } = this.props
-    console.log('WTF', occasionId)
     occasionId !== 'nouveau' && requestData(
       'GET',
       `occasions/${collectionName}/${occasionId}`,
@@ -46,13 +52,24 @@ class OfferPage extends Component {
   }
 
   updateOccasion = (key, value) => {
+    const newValue = key.split('.').reverse().reduce((result, keyElement) => {
+      return {[keyElement]: (result || value)}
+    }, null)
     this.setState({
-      occasion: Object.assign({}, this.state.occasion, {[key]: value})
+      occasion: Object.assign({}, this.state.occasion, newValue)
     })
   }
 
   updateInput = e => {
     this.updateOccasion(e.target.name, e.target.value)
+  }
+
+  addMediaUrl = () => {
+    this.updateOccasion('mediaUrls', Object.values(get(this.state, 'occasion.mediaUrls', [])).concat(''))
+  }
+
+  deleteMediaUrl = index => {
+    this.updateOccasion('mediaUrls', Object.values(get(this.state, 'occasion.mediaUrls', [])).filter((_, i) => index !== i))
   }
 
   save = e => {
@@ -106,9 +123,10 @@ class OfferPage extends Component {
       contactName,
       contactEmail,
       contactPhone,
+      occurrences,
       website,
+      mediaUrls,
     } = this.state.occasion || {}
-    const occurrences = get(this.state, 'occasion.occurrences', [])
 
     return (
       <PageWrapper name='offer' loading={!(occasion || isNew)}>
@@ -198,8 +216,24 @@ class OfferPage extends Component {
                 <input className='input' autoComplete='email' type='email' name='contactPhone' value={contactPhone || ''} onChange={this.updateInput}  />
               </div>
               <div className='field'>
-                <label className='label'>Site internet</label>
-                <input className='input' autoComplete='url' type='url' name='website' value={website || ''} onChange={this.updateInput}  />
+                <label className='label'>Media URLs</label>
+                <ul>
+                  { Object.values(mediaUrls || {}).map((m, i) => (
+                    <li className='field has-addons' key={i}>
+                      <div className='control is-expanded'>
+                        <input className='input' autoComplete='url' type='url' name={`mediaUrls.${i}`} value={m || ''} onChange={this.updateInput}  />
+                      </div>
+                      <div className='control'>
+                        <a class="button is-medium is-primary" onClick={e => this.deleteMediaUrl(i)}>
+                          &nbsp;
+                          <span className='delete'></span>
+                          &nbsp;
+                        </a>
+                      </div>
+                    </li>
+                  )) }
+                  <li className='has-text-right'><button className='button is-primary is-outlined is-small' onClick={this.addMediaUrl}>Ajouter une URL</button></li>
+                </ul>
               </div>
               <hr />
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>

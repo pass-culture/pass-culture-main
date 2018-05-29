@@ -21,6 +21,10 @@ class OccurenceManager extends Component {
     }
   }
 
+  static defaultProps = {
+    occurrences: [],
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
     return {
       occurrences: nextProps.occurrences,
