@@ -5,6 +5,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
+import FormSelect from './FormSelect'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 
@@ -24,41 +25,48 @@ class FormField extends Component {
       className: classnames(className, `input ${type}`),
     }
     const labelMarkup = (
-      <label className='label' htmlFor={id} key={'label_' + id}>
+      <label htmlFor={inputId} key={'label_' + id}>
         {label}
       </label>
     )
     const inputMarkup =
-      type === 'textarea' ? (
-        <FormTextarea
+      type === 'textarea'
+      ? <FormTextarea
           {...this.props}
           {...extraProps}
           id={inputId}
           key={inputId}
+          aria-describedby={`${inputId}-error`}
         />
-      ) : (
-        <FormInput {...this.props} {...extraProps} id={inputId} key={inputId} />
+      : (
+        type === 'select'
+        ? <FormSelect {...this.props} {...extraProps}
+          id={inputId}
+          key={inputId}
+          aria-describedby={`${inputId}-error`}
+        />
+        : <FormInput {...this.props} {...extraProps}
+            id={inputId}
+            key={inputId}
+            aria-describedby={`${inputId}-error`}
+          />
       )
     return [
       <div
-        className={classnames('field form-input', {
+        className={classnames('form-input', {
           checkbox: type === 'checkbox',
         })}
         key={0}
       >
-        <div className='control'>
-          {
-            type === 'checkbox'
-            ? [inputMarkup, labelMarkup]
-            : [labelMarkup, inputMarkup]
-          }
-        </div>
+        {type === 'checkbox'
+          ? [inputMarkup, labelMarkup]
+          : [labelMarkup, inputMarkup]}
       </div>,
-      <ul className={classnames('errors', { pop: errors })} key={1}>
+      <ul role='alert' id={`${inputId}-error`} className={classnames('errors', { pop: errors })} key={1}>
         {errors &&
           errors.map((e, index) => (
             <li key={index}>
-              <Icon svg="picto-warning" /> {e}
+              <Icon svg="picto-warning" alt="Warning" /> {e}
             </li>
           ))}
       </ul>,

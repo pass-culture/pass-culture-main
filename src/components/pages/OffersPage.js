@@ -10,7 +10,7 @@ import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { assignData, requestData } from '../../reducers/data'
 import selectOccasions from '../../selectors/occasions'
-import collectionToPath from '../../utils/collectionToPath'
+import { collectionToPath } from '../../utils/translate'
 
 
 class OffersPage extends Component {
