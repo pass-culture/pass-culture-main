@@ -11,7 +11,9 @@
   height: auto;
 
   &:focus {
-    outline: none;
+    &:not(:active) {
+      box-shadow: none;
+    }
   }
 
   &.is-primary {

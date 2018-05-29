@@ -18,7 +18,7 @@ const data = (state = initialState, action) => {
     return Object.assign({}, state, {
       errors: null,
     })
-  } else if (/REQUEST_DATA_(POST|PUT|DELETE|PATCH)_(.*)/.test(action.type)) {
+  } else if (/REQUEST_DATA_(DELETE|PATCH|POST|PUT)_(.*)/.test(action.type)) {
     const nextState = { isOptimist: true, previousOptimistState: state }
     if (action.config && action.config.getOptimistState) {
       const nextState = { isOptimist: true, previousOptimistState: state }
@@ -29,7 +29,7 @@ const data = (state = initialState, action) => {
     return Object.assign({}, state, nextState)
   } else if (action.type === RESET_DATA) {
     return initialState
-  } else if (/SUCCESS_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
+  } else if (/SUCCESS_DATA_(GET|PATCH|POST|PUT)_(.*)/.test(action.type)) {
     const key =
       action.config.key || action.path.replace(/\/$/, '').replace(/\?.*$/, '')
     const nextState = { isOptimist: false }
@@ -46,15 +46,15 @@ const data = (state = initialState, action) => {
       previousData = [previousData]
     }
     // update
-    if (action.method === 'PUT') {
-      // for put we need just to 'override pre existing data' or append it in the end
+    if (/PATCH|PUT/.test(action.method)) {
+      // for mutation we need just to 'override pre existing data' or append it in the end
       nextState[key] = [...previousData]
       const previousIds = previousData.map(({ id }) => id)
       nextData.forEach(datum => {
         const previousIndex = previousIds.indexOf(datum.id)
-        const putIndex =
+        const mutatingIndex =
           previousIndex === -1 ? nextState[key].length : previousIndex
-        nextState[key][putIndex] = Object.assign(
+        nextState[key][mutatingIndex] = Object.assign(
           {},
           previousIndex !== -1 && nextState[key][previousIndex],
           datum

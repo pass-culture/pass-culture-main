@@ -16,7 +16,7 @@ class DexieWrapper {
   receiveMessage = message => {
     this.worker
       ? this.worker.postMessage(message)
-      : this.onmessage({ data: message })
+      : this.onmessage && this.onmessage({ data: message })
   }
 
   async dexiePushPull() {

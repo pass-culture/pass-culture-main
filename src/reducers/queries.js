@@ -6,13 +6,14 @@ const FAIL = 'FAIL'
 
 export default (state = [], action) => {
   const id = get(action, 'config.requestId')
-  if (/REQUEST_DATA_(POST|PUT|DELETE|PATCH)_(.*)/.test(action.type)) {
+  if (/REQUEST_DATA_(PATCH|POST|PUT|DELETE)_(.*)/.test(action.type)) {
     return state.concat({
       id,
+      path: action.path,
       status: PENDING,
     })
   } else if (
-    /(SUCCESS|FAIL)_DATA_(GET|POST|PUT|PATCH)_(.*)/.test(action.type)
+    /(SUCCESS|FAIL)_DATA_(GET|PATCH|POST|PUT)_(.*)/.test(action.type)
   ) {
     return state
       .filter(s => s.status !== PENDING) // Delete the finished ones (SUCCESS/FAIL) in the next cycle
