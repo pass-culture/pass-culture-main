@@ -134,6 +134,8 @@ class OfferPage extends Component {
                 <label className='label'>Nom</label>
                 <input className='input title' type='text' name='name' value={name || ''} onChange={this.updateInput} maxLength={140} />
               </div>
+              <hr />
+              <h2 className='subtitle is-2'>Infos pratiques</h2>
               <div className='field'>
                 <label className='label'>Type</label>
                 <div className="select">
@@ -237,6 +239,8 @@ class OfferPage extends Component {
                 <label className='label'>Date limite d'inscription (par défaut: 48h avant l'événement)</label>
                 <input className='input' type='date' name='bookingLimitDatetime' value={bookingLimitDatetime || ''} onChange={this.updateInput}  />
               </div>
+              <hr />
+              <h2 className='subtitle is-2'>Infos artistiques</h2>
               <div className='field'>
                 <label className='label'>Description</label>
                 <textarea className='textarea' name='description' value={description || ''} onChange={this.updateInput} />
@@ -253,6 +257,8 @@ class OfferPage extends Component {
                 <label className='label'>Interprète</label>
                 <input className='input' type='text' name='performer' value={performer || ''} onChange={this.updateInput}  />
               </div>
+              <hr />
+              <h2 className='subtitle is-2'>Infos de contact</h2>
               <div className='field'>
                 <label className='label'>Nom du contact</label>
                 <input className='input' autoComplete='name' type='text' name='contactName' value={contactName || ''} onChange={this.updateInput}  />
@@ -269,6 +275,7 @@ class OfferPage extends Component {
                 <label className='label'>Site internet</label>
                 <input className='input' autoComplete='url' type='url' name='website' value={website || ''} onChange={this.updateInput}  />
               </div>
+              <hr />
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
                   <button className="button is-primary is-medium">Enregistrer</button>
