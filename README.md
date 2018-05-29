@@ -9,7 +9,7 @@ C'est tout le framework du Pass Culture!
 
   Installer docker (https://docs.docker.com/install/) et docker-compose (https://docs.docker.com/compose/install/#install-compose)
 
-  Installer yarn (voir le README dans le dépot pass-culture-webapp), puis:
+  Installer yarn (voir le README dans le dépot https://github.com/betagouv/pass-culture-browser/), puis:
 
   ```bash
     ./pc install
