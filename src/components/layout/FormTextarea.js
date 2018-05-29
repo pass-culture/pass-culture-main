@@ -30,6 +30,7 @@ class FormTextarea extends Component {
         ref={_element => (this._element = _element)}
         type={type}
         value={value || defaultValue || ''}
+        aria-describedby={this.props['aria-describedby']}
       />
     )
   }
