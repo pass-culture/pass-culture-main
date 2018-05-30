@@ -20,7 +20,6 @@ export default createSelector(
     // closest one at the beginning
     sortedRecommendations.sort((recommendation1, recommendation2) =>
       recommendation1.distance - recommendation2.distance)
-    console.log('sortedRecommendations', sortedRecommendations)
     return sortedRecommendations
   }
 )
