@@ -26,11 +26,7 @@ def check_recos(recos):
             assert not all([offer['bookingLimitDatetime'] is not None and
                             parse_date(offer['bookingLimitDatetime']) <= datetime.now()
                             for offer in oc['offers'] for oc in reco['mediatedOccurences']])
-                # TODO: ensure we have no offers with available slots left
-                # TODO: ensure I never see offers I have already booked... unless the booking is canceled
-                # TODO: ensure I only see recos for the relevant departementCode
-                # TODO: ensure I only see recos for my userId
-
+            assert not all([oc['venue']['departementCode']!='93' for oc in reco['mediatedOccurences']])
 
 def subtest_initial_recos():
     r = req_with_auth().put(RECOMMENDATION_URL, json={})
