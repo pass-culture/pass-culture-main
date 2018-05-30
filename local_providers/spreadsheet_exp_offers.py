@@ -1,13 +1,13 @@
+""" spreadsheet exp offers"""
 from datetime import datetime
 import dateparser
 from flask import current_app as app
-from math import floor
 from os import path
 from pandas import read_csv
 from pathlib import Path
 import re
 
-from utils.string_processing import parse_timedelta
+from utils.date import format_duration
 
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
@@ -130,7 +130,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
             obj.name = self.line['Titre']
             obj.description = self.line['Description']
             obj.mediaUrls = [self.line['Lien Internet']]
-            obj.durationMinutes = floor(parse_timedelta(self.line['Durée']).total_seconds()/60)
+            obj.durationMinutes = format_duration(self.line['Durée'])
             self.eos = {}
         elif isinstance(obj, EventOccurence):
             obj.beginningDatetime = dateparser.parse(obj.idAtProviders.split('_')[1])

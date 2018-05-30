@@ -1,5 +1,9 @@
 OCCASION_INCLUDES = [
-    'mediations'
+    {
+        "key": "occurences",
+        "sub_joins": ['offer']
+    },
+    "mediations"
 ]
 
 OFFERS_INCLUDES = [
