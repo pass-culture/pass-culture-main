@@ -129,7 +129,8 @@ elif [[ "$CMD" == "install" ]]; then
        git submodule foreach git checkout origin master;
 			 ./pc install-geoip;
 			 ./pc symlink;
-       cd $ROOT_PATH/webapp && yarn'
+       cd $ROOT_PATH/webapp && yarn;
+			 cd $ROOT_PATH/pro && yarn'
 elif [[ "$CMD" == "install-geoip" ]]; then
 	RUN='wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz;
 	 		 gzip -df GeoLite2-City.mmdb.gz;
