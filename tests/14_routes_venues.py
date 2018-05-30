@@ -38,4 +38,4 @@ def test_12_create_venue():
     for (key, value) in venue_data.items():
         assert created_venue_data[key] == venue_data[key]
     #TODO: check thumb presence
-
+    #TODO: check offerer linked to venue at creation

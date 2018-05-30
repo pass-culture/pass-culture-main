@@ -1,6 +1,7 @@
 """ venues """
 from base64 import b64decode
 from flask import current_app as app, jsonify, request
+from flask_login import current_user
 
 from utils.human_ids import dehumanize, humanize
 from utils.object_storage import store_public_object
@@ -9,6 +10,8 @@ from utils.rest import expect_json_data,\
                        update
 
 venueModel = app.model.Venue
+offererModel = app.model.Offerer
+userOffererModel = app.model.UserOfferer
 
 
 def store_public_venue_objects(venueId, json):
@@ -53,6 +56,18 @@ def get_venue(venueId):
 def create_venue():
     new_venue = venueModel(from_dict=request.json)
     app.model.PcObject.check_and_save(new_venue)
+    new_offerer = offererModel()
+    new_offerer.venue = new_venue
+    new_offerer.name = new_venue.name
+    new_offerer.address = new_venue.address
+
+    app.model.PcObject.check_and_save(new_offerer)
+
+    user_offerer = userOffererModel()
+    user_offerer.offer = new_offerer
+    user_offerer.user = current_user
+
+    app.model.PcObject.check_and_save(user_offerer)
 
     if 'thumb_content' in request.json:
         store_public_venue_objects(new_venue.id, request.json)
