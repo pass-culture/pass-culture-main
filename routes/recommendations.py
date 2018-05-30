@@ -7,6 +7,7 @@ from sqlalchemy import update
 from sqlalchemy.sql.expression import func
 
 from datascience import create_recommendation, create_recommendations
+from models.api_errors import ApiErrors
 from utils.geoip import get_geolocation
 from utils.rest import expect_json_data
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
@@ -37,7 +38,10 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
         elif occasion_type == 'event':
             filter = (Recommendation.eventId == mediation_id)
         else:
-            raise ValueError("Invalid occasion type : "+occasion_type)
+            ae = ApiErrors()
+            ae.addError('occasion_type',
+                        "Invalid occasion type : "+occasion_type)
+            raise ae
     requested_recommendation = query.filter(filter & (Recommendation.userId==user.id))\
                                     .first()
 
@@ -46,7 +50,7 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
             occasion = Thing.query.get(occasion_id)
         elif occasion_type == 'event':
             occasion = Event.query.get(occasion_id)
-        mediation = Event.query.get(mediation_id)
+        mediation = Mediation.query.get(mediation_id)
         requested_recommendation = create_recommendation(user, occasion, mediation=mediation)
 
     return requested_recommendation
@@ -124,8 +128,9 @@ def put_recommendations():
     print('(all read recos) count', all_read_recos_count)
 
     tuto_recos = Recommendation.query.join(Mediation)\
-                               .filter((Mediation.tutoIndex >= all_read_recos_count)
+                               .filter((Mediation.tutoIndex != None)
                                        & (Recommendation.user == current_user))\
+                               .order_by(Mediation.tutoIndex)\
                                .all()
     print('(tuto recos) count', len(tuto_recos))
 
@@ -139,7 +144,10 @@ def put_recommendations():
                     + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
 
     if requested_recommendation:
-        recos.remove(requested_recommendation)
+        try:
+            recos.remove(requested_recommendation)
+        except ValueError:
+            pass
         recos = [requested_recommendation] + recos
 
     print('(recap reco) ',

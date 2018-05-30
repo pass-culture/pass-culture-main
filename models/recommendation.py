@@ -45,16 +45,8 @@ class Recommendation(app.model.PcObject, db.Model):
                         nullable=True) # NULL for recommendation created a mediation or an offer
 
     event = db.relationship(lambda: app.model.Event,
-                                foreign_keys=[eventId],
-                                backref='recommendations')
-
-    sharedByUserId = db.Column(db.BigInteger,
-                               db.ForeignKey('user.id'),
-                               nullable=True)
-
-    sharedByUser = db.relationship(lambda: app.model.User,
-                                   foreign_keys=[sharedByUserId],
-                                   backref='sharedRecommendations')
+                            foreign_keys=[eventId],
+                            backref='recommendations')
 
     shareMedium = db.Column(db.String(20),
                             nullable=True)
