@@ -10,25 +10,15 @@ import FormField from '../layout/FormField'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
+import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectCurrentPath from '../../selectors/currentPath'
+import selectEventTypes from '../../selectors/eventTypes'
 import { NEW } from '../../utils/config'
 
 const Label = ({ title }) => {
   return <div className="subtitle">{title}</div>
 }
-
-const options = [
-  'Atelier',
-  'Exposition',
-  'Spectacle',
-  'Théâtre',
-  'Concert',
-  'Danse',
-  'Festival',
-  'Musée',
-  'Documentaire'
-]
 
 class OfferPage extends Component {
 
@@ -61,6 +51,7 @@ class OfferPage extends Component {
 
   componentDidMount() {
     this.handleRequestData()
+    this.props.requestData('GET', 'eventTypes')
   }
 
   componentDidUpdate(prevProps) {
@@ -94,14 +85,32 @@ class OfferPage extends Component {
     )
   }
 
+  onSubmitClick = () => {
+    this.props.resetForm()
+  }
+
   render () {
     const {
+      author,
+      bookingLimitDatetime,
+      contactName,
+      contactEmail,
+      contactPhone,
+      description,
+      durationMinutes,
+      eventTypes,
+      id,
       isNew,
+      mediaUrls,
+      name,
       occasion,
       occasionType,
       path,
+      performer,
+      stageDirector,
+      type
     } = this.props
-    const entityId = occasion && occasion.id
+    /*
     const {
       author,
       stageDirector,
@@ -119,11 +128,12 @@ class OfferPage extends Component {
       website,
       mediaUrls,
     } = this.state.occasion || {}
+    */
     const occurences = (this.state.occasion && this.state.occasion.occurences)
       || (occasion && occasion.occurences)
     const occasionId = isNew ? NEW : this.props.occasionId
     return (
-      <PageWrapper name='offer' loading={!(occasion || isNew)}>
+      <PageWrapper name='offer' loading={!(id || isNew)}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
@@ -134,26 +144,25 @@ class OfferPage extends Component {
             <h1 className='title has-text-centered'>
               {isNew ? 'Créer' : 'Modifier'} {occasionType === 'events' ? 'un événement' : 'un objet'}
             </h1>
-            <form onSubmit={this.save}>
+            <form>
               <FormField
                 autoComplete="name"
                 collectionName="events"
                 defaultValue={name}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Titre" />}
                 name="name"
               />
               <hr />
               <h2 className='subtitle is-2'>Infos pratiques</h2>
               <FormField
-                autoComplete="name"
                 collectionName="events"
-                defaultValue={eventType}
-                entityId={entityId}
+                defaultValue={type || ''}
+                entityId={id}
                 label={<Label title="Type" />}
-                name="eventType"
+                name="type"
                 type="select"
-                options={options}
+                options={eventTypes}
               />
               -
               <div className='field'>
@@ -165,16 +174,16 @@ class OfferPage extends Component {
                 autoComplete="durationMinutes"
                 collectionName="events"
                 defaultValue={durationMinutes}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Durée (en minutes)" />}
                 name="durationMinutes"
                 type="number"
               />
               <FormField
-                autoComplete="durationMinutes"
+                autoComplete="bookingLimitDatetimes"
                 collectionName="events"
                 defaultValue={bookingLimitDatetime}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
                 name="bookingLimitDatetime"
                 type="date"
@@ -186,25 +195,16 @@ class OfferPage extends Component {
                 autoComplete="description"
                 collectionName="events"
                 defaultValue={description}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Description" />}
                 name="description"
                 type="textarea"
               />
               <FormField
-                autoComplete="durationMinutes"
-                collectionName="events"
-                defaultValue={bookingLimitDatetime}
-                entityId={entityId}
-                label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
-                name="bookingLimitDatetime"
-                type="date"
-              />
-              <FormField
                 autoComplete="author"
                 collectionName="events"
                 defaultValue={author}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Auteur" />}
                 name="author"
               />
@@ -212,7 +212,7 @@ class OfferPage extends Component {
                 autoComplete="stageDirector"
                 collectionName="events"
                 defaultValue={stageDirector}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Metteur en scène" />}
                 name="stageDirector"
               />
@@ -220,7 +220,7 @@ class OfferPage extends Component {
                 autoComplete="performer"
                 collectionName="events"
                 defaultValue={performer}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Interprète" />}
                 name="performer"
               />
@@ -230,7 +230,7 @@ class OfferPage extends Component {
                 autoComplete="contactName"
                 collectionName="events"
                 defaultValue={contactName}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Nom du contact" />}
                 name="contactName"
               />
@@ -238,7 +238,7 @@ class OfferPage extends Component {
                 autoComplete="contactEmail"
                 collectionName="events"
                 defaultValue={contactEmail}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Email de contact" />}
                 name="contactEmail"
                 type="email"
@@ -248,7 +248,7 @@ class OfferPage extends Component {
                 autoComplete="contactPhone"
                 collectionName="events"
                 defaultValue={contactPhone}
-                entityId={entityId}
+                entityId={id}
                 label={<Label title="Tel de contact" />}
                 name="contactPhone"
               />
@@ -262,7 +262,7 @@ class OfferPage extends Component {
                           autoComplete="url"
                           collectionName="events"
                           defaultValue={m}
-                          entityId={entityId}
+                          entityId={id}
                           name={`mediaUrls.${i}`}
                           type="url"
                         />
@@ -287,12 +287,15 @@ class OfferPage extends Component {
                     getIsDisabled={form =>
                       isNew
                       ? !get(form, `eventsById.${occasionId}.description`) ||
-                        !get(form, `eventsById.${occasionId}.name`)
+                        !get(form, `eventsById.${occasionId}.name`) ||
+                        typeof get(form, `eventsById.${occasionId}.type`) !== 'string'
                       : !get(form, `eventsById.${occasionId}.description`) &&
-                        !get(form, `eventsById.${occasionId}.name`)
+                        !get(form, `eventsById.${occasionId}.name`) &&
+                        typeof get(form, `eventsById.${occasionId}.type`) !== 'string'
                     }
                     className="button is-primary is-medium"
                     method={isNew ? 'POST' : 'PATCH'}
+                    onClick={this.onSubmitClick}
                     path={path}
                     storeKey="occasions"
                     text="Enregistrer"
@@ -314,18 +317,18 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => {
-      return {
+      return Object.assign({
         collectionName: ownProps.occasionType === 'evenements'
           ? 'events'
           : ownProps.occasionType === 'things'
             ? 'things'
             : null,
+        eventTypes: selectEventTypes(state),
         isNew: ownProps.occasionId === 'nouveau',
-        occasion: selectCurrentOccasion(state, ownProps),
         path: selectCurrentPath(state, ownProps),
         user: state.user,
-      }
+      }, selectCurrentOccasion(state, ownProps))
     },
-    { requestData }
+    { resetForm, requestData }
   )
 )(OfferPage)

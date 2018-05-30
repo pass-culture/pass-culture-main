@@ -14,26 +14,31 @@ class FormSelect extends Component {
 
   onChange = ({ target: { value } }) => {
     const { collectionName, entityId, mergeForm, name, maxLength } = this.props
-    if (value.length < maxLength) {
-      mergeForm(collectionName, entityId, name, value)
-    } else {
-      console.warn('value reached maxLength')
-    }
+    mergeForm(collectionName, entityId, name, value)
   }
 
   render() {
     const { className,
       defaultValue,
       id,
+      name,
       options,
       type,
       value
     } = this.props
+    console.log('options', options, 'value', value)
     return (
       <div className={className || 'select'}>
-        <select className='container' value={defaultValue} onChange={this.onChange}>
+        <select
+          className='container'
+          value={typeof value === 'string' ? value : defaultValue}
+          onChange={this.onChange}
+        >
           {
-            options.map((option, index) => <option key={index}> {option} </option>)
+            options && options.map((option, index) => (
+              <option key={index} value={option.value}>
+                {option.label}
+              </option>))
           }
         </select>
       </div>
@@ -42,8 +47,7 @@ class FormSelect extends Component {
 }
 
 FormSelect.defaultProps = {
-  entityId: NEW,
-  maxLength: 200,
+  entityId: NEW
 }
 
 FormSelect.propTypes = {
