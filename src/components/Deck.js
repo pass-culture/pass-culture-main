@@ -20,6 +20,7 @@ import selectNextLimit from '../selectors/nextLimit'
 import selectNextRecommendation from '../selectors/nextRecommendation'
 import selectPreviousLimit from '../selectors/previousLimit'
 import selectPreviousRecommendation from '../selectors/previousRecommendation'
+import selectSortedRecommendations from '../selectors/sortedRecommendations'
 import { IS_DEV, IS_DEXIE, ROOT_PATH } from '../utils/config'
 import { getDiscoveryPath } from '../utils/routes'
 import { worker } from '../workers/dexie/register'
@@ -41,7 +42,7 @@ class Deck extends Component {
       deprecatedRecommendations &&
       deprecatedRecommendations !== this.props.deprecatedRecommendations
     ) {
-      nextProps.history.push('/decouverte')
+      // nextProps.history.push('/decouverte')
     }
   }
 
@@ -198,7 +199,7 @@ class Deck extends Component {
 
   componentDidMount() {
     this.handleRefreshedData()
-    this.handleSetDateRead()
+    //this.handleSetDateRead()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -207,7 +208,7 @@ class Deck extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    this.handleSetDateRead(prevProps)
+    //this.handleSetDateRead(prevProps)
   }
 
   componentWillUnmount () {
@@ -342,6 +343,9 @@ class Deck extends Component {
             ({this.props.isLoadingBefore ? '?' : ' '}
             {this.props.previousLimit}){' '}
             {this.props.currentRecommendation &&
+              this.props.currentRecommendation.mediation &&
+              this.props.currentRecommendation.mediation.id}{' '}
+            {this.props.currentRecommendation &&
               this.props.currentRecommendation.index}{' '}
             ({this.props.nextLimit} {this.props.isLoadingAfter ? '?' : ' '}) /{' '}
             {this.props.recommendations &&
@@ -381,7 +385,7 @@ export default compose(
       nextRecommendation: selectNextRecommendation(state),
       previousLimit: selectPreviousLimit(state),
       previousRecommendation: selectPreviousRecommendation(state),
-      recommendations: state.data.recommendations,
+      recommendations: selectSortedRecommendations(state),
       unFlippable: state.verso.unFlippable,
       draggable: state.verso.draggable,
     }),
