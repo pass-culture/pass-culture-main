@@ -61,6 +61,20 @@ C'est tout le framework du Pass Culture!
     ./pc reset-reco-db
   ```
 
+### Dump Prod To Staging
+
+  ssh to the prod server
+  ```bash
+  $ cd ~/pass-culture-main && ./pc dump-prod-db-to-staging
+  ```
+
+  Then connect to the staging server:
+  ```bash
+    cd ~/pass-culture-main
+    cat "../dumps_prod/2018053<TO BE COMPLETED> docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
+    ./pc update-db
+  ```
+
 ### Migrate
   Vous pouvez passer toutes les cli classiques d'alembic
   comme ceci:
