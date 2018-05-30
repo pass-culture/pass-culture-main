@@ -73,6 +73,7 @@ C'est tout le framework du Pass Culture!
     cd ~/pass-culture-main
     cat "../dumps_prod/2018053<TO BE COMPLETED> docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
     ./pc update-db
+    ./pc sandbox
   ```
 
 ### Migrate
