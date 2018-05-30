@@ -1,6 +1,7 @@
 import get from 'lodash.get'
 import { parse } from 'query-string'
-
+import uuid from 'uuid'
+import {version} from '../../package.json'
 import { API_URL } from './config'
 import { getData, putData } from '../workers/dexie/data'
 
@@ -16,6 +17,8 @@ export async function fetchData(method, path, config = {}) {
     init.headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'AppVersion': version,
+      'X-Request-ID': uuid()
     }
     // body
     init.body = JSON.stringify(body || {})
