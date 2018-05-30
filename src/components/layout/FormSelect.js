@@ -26,7 +26,6 @@ class FormSelect extends Component {
       type,
       value
     } = this.props
-    console.log('options', options, 'value', value)
     return (
       <div className={className || 'select'}>
         <select

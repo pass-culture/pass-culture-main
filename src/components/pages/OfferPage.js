@@ -105,32 +105,12 @@ class OfferPage extends Component {
       name,
       occasion,
       occasionType,
+      occurences,
       path,
       performer,
       stageDirector,
       type
     } = this.props
-    /*
-    const {
-      author,
-      stageDirector,
-      performer,
-      name,
-      description,
-      durationMinutes,
-      eventType,
-      groupSize,
-      pmrGroupSize,
-      bookingLimitDatetime,
-      contactName,
-      contactEmail,
-      contactPhone,
-      website,
-      mediaUrls,
-    } = this.state.occasion || {}
-    */
-    const occurences = (this.state.occasion && this.state.occasion.occurences)
-      || (occasion && occasion.occurences)
     const occasionId = isNew ? NEW : this.props.occasionId
     return (
       <PageWrapper name='offer' loading={!(id || isNew)}>
@@ -167,7 +147,10 @@ class OfferPage extends Component {
               -
               <div className='field'>
                 <label className='label'>Horaires</label>
-                <OccurenceManager occurences={occurences} onChange={occurences => this.updateOccasion('occurences', occurences)} />
+                <OccurenceManager
+                  occurences={occurences}
+                  onChange={occurences => this.updateOccasion('occurences', occurences)}
+                />
               </div>
 
               <FormField
