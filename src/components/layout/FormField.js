@@ -5,10 +5,12 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
+import FormPassword from './FormPassword'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 
 class FormField extends Component {
+
   render() {
     const {
       className,
@@ -21,20 +23,17 @@ class FormField extends Component {
       required,
     } = this.props
     const inputId = id || `input_${collectionName}_${name}`
-    const extraProps = {
-      className: classnames(className, `input ${type}`),
-    }
     const isCheckbox = type === 'checkbox';
     const inputMarkup =
       type === 'textarea' ? (
         <FormTextarea
           {...this.props}
-          {...extraProps}
           id={inputId}
           key={inputId}
         />
       ) : (
-        <FormInput {...this.props} {...extraProps} id={inputId} key={inputId} />
+        type === 'password' ? ( <FormPassword {...this.props} id={inputId} key={inputId} />) :
+        <FormInput {...this.props} id={inputId} key={inputId} />
       )
       const labelMarkup = (
         <label className={classnames(isCheckbox ? 'checkbox' : 'label', {required: required})} htmlFor={inputId} key={'label_' + inputId}>
@@ -44,9 +43,7 @@ class FormField extends Component {
       )
     return [
       <div
-        className={classnames('field form-input', {
-          checkbox: type === 'checkbox',
-        })}
+        className={`field ${type}`}
         key={0}
       >
         <div className='control'>
