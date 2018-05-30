@@ -9,40 +9,38 @@
     margin: 0;
 
     .column {
-      &.has-big-margin {
-        @media (min-width: $tablet) {
-          margin-top: 10rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      // &.has-big-margin {
+      //   @media (min-width: $tablet) {
+      //     margin-top: 10rem;
 
-          .hero {
-            margin-top: -3rem;
-          }
-        }
-      }
+      //     .hero {
+      //       margin-top: -3rem;
+      //     }
+      //   }
+      // }
     }
   }
 
   .logo-column {
     background-color: $red;
     color: $white;
-    font-size: 1.5rem;
+    font-size: 3rem;
     padding: 2.5rem 1rem;
     text-align: center;
-
   }
 
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    overflow-y: auto;
-    justify-content: center;
-    flex: 1;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    @media (min-width: $tablet) {
-      width: 50%;
+  .title, .subtitle {
+    font-style: italic;
+    span {
+      display: inline-block;
     }
+  }
+
+  .subtitle {
+    margin-bottom: 3rem;
   }
 
   label {
@@ -84,13 +82,6 @@
   h4 {
     font-size: $size-normal;
     float: left;
-  }
-
-
-  footer {
-    display: flex;
-    justify-content: space-between;
-    background-color: $primary;
   }
 
   .errors {
