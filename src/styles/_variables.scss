@@ -9,6 +9,7 @@ $fullhd: 1344px + (2 * $gap); // 1472px
 
 // Colors
 $red: #e60039;
+$violet: #bd10e0;
 
 $primary: $red;
 
@@ -46,18 +47,18 @@ $subtitle-line-height: initial;
 
 // Forms
 $control-border-width: 2px;
-$input-border-color: $primary;
+$input-border-color: $grey-light;
 $input-focus-border-color: $primary;
-$input-hover-border-color: $primary;
+$input-hover-border-color: $grey-light;
 $input-disabled-border-color: $primary;
 $input-focus-box-shadow-size: 0;
 $input-shadow: none;
+$label-weight: $weight-normal;
 
 // Buttons
 $button-padding-vertical: 0.1em;
 $button-padding-horizontal: 0.75em;
-
-$radius: 0.5rem;
+$radius: 0;
 $radius-small: 4px;
 $radius-medium: 1rem;
 
@@ -74,3 +75,4 @@ $footer-height: 3.5rem;
 // Misc
 $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 $box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
+

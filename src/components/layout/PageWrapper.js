@@ -10,6 +10,7 @@ const PageWrapper = props => {
     Tag,
     name,
     redBg,
+    noContainer,
     noHeader,
     noPadding,
     backButton,
@@ -35,7 +36,7 @@ const PageWrapper = props => {
       key='page-wrapper'
     >
       {backButton && <BackButton {...backButton} />}
-      <div className="page-content container">{content}</div>
+      <div className={classnames('page-content', {container: !noContainer})}>{content}</div>
       {footer}
     </Tag>
   ]

@@ -1,0 +1,22 @@
+a.logo {
+  font-weight: $weight-light;
+  // font-size: $size-medium;
+  font-style: italic;
+  color: $white;
+  padding-right: 0.8em;
+  img {
+    margin: -0.5em 0;
+    max-height: 2.75em;
+    height: 2.75em;
+    vertical-align: middle;
+  }
+
+  sub {
+    font-size: 0.4em;
+    vertical-align: text-top;
+    position: relative;
+    font-style: normal;
+    font-weight: $weight-semi-bold;
+  }
+
+}

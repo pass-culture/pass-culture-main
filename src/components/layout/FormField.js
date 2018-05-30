@@ -18,16 +18,13 @@ class FormField extends Component {
       label,
       name,
       type,
+      required,
     } = this.props
     const inputId = id || `input_${collectionName}_${name}`
     const extraProps = {
       className: classnames(className, `input ${type}`),
     }
-    const labelMarkup = (
-      <label className='label' htmlFor={id} key={'label_' + id}>
-        {label}
-      </label>
-    )
+    const isCheckbox = type === 'checkbox';
     const inputMarkup =
       type === 'textarea' ? (
         <FormTextarea
@@ -39,6 +36,12 @@ class FormField extends Component {
       ) : (
         <FormInput {...this.props} {...extraProps} id={inputId} key={inputId} />
       )
+      const labelMarkup = (
+        <label className={classnames(isCheckbox ? 'checkbox' : 'label', {required: required})} htmlFor={inputId} key={'label_' + inputId}>
+          { isCheckbox && inputMarkup }
+          {label}
+        </label>
+      )
     return [
       <div
         className={classnames('field form-input', {
@@ -48,8 +51,8 @@ class FormField extends Component {
       >
         <div className='control'>
           {
-            type === 'checkbox'
-            ? [inputMarkup, labelMarkup]
+            isCheckbox
+            ? labelMarkup
             : [labelMarkup, inputMarkup]
           }
         </div>

@@ -66,12 +66,14 @@ class FormInput extends Component {
       id,
       placeholder,
       autoComplete,
+      required,
       type,
       value,
     } = this.props
     const { localValue } = this.state
     return (
       <input
+        required={required}
         autoComplete={autoComplete}
         className={className || 'input'}
         id={id}
