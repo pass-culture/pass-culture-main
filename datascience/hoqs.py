@@ -55,6 +55,15 @@ def with_distance(latitude, longitude):
     return inner
 
 
+# FILTER OFFERS THAT ARE IN THE RIGHT "DEPARTEMENTS"
+def with_departement_codes(departement_codes):
+    def inner(query):
+        return query.join(Offerer)\
+                    .join(Venue)\
+                    .filter_by(Venue.postCode in departement_codes)
+    return inner
+
+
 # FILTER OFFER WITH ONE OFFER PER EVENT
 # THE ONE THAT IS WITH THE SOONER EVENT OCCURENCE
 row_number_column = func.row_number()\

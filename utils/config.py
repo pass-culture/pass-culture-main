@@ -5,5 +5,6 @@ ENV = os.environ.get('ENV', 'dev')
 IS_DEV = ENV == 'development'
 IS_STAGING = ENV == 'staging'
 
-BEFORE_AFTER_LIMIT = 5
 BLOB_SIZE = 80
+BLOB_UNREAD_NUMBER = int(BLOB_SIZE/5)
+BLOB_READ_NUMBER = int(BLOB_SIZE/5)

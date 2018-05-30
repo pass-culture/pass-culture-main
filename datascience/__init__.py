@@ -2,21 +2,62 @@
 from datetime import datetime, timedelta
 from random import randint
 from flask import current_app as app
+from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
 from utils.attr_dict import AttrDict
-from utils.content import get_source
 
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
 Mediation = app.model.Mediation
+Offer = app.model.Offer
 Recommendation = app.model.Recommendation
-RecommendationOffer = app.model.RecommendationOffer
 Thing = app.model.Thing
 
 app.datascience = AttrDict()
+from datascience.occasions import get_occasions
 
-from datascience.offers import get_offers
+
+def create_recommendation(user, occasion, mediation=None):
+
+    if occasion is None:
+        return None
+
+    recommendation = Recommendation()
+    recommendation.user = user
+
+    if mediation:
+        recommendation.mediation = mediation
+    else:
+        if isinstance(occasion, Thing):
+            query = Mediation.query.filter_by(thing=occasion)
+        else:
+            query = Mediation.query.filter_by(event=occasion)
+        with app.db.session.no_autoflush:
+            random_mediation = query.order_by(func.random())\
+                                    .first()
+
+        if random_mediation:
+            recommendation.mediation = random_mediation
+        elif isinstance(occasion, Thing):
+            recommendation.thing = occasion
+        elif isinstance(occasion, Event):
+            recommendation.event = occasion
+
+    if isinstance(occasion, Thing):
+        last_offer = Offer.query.filter(Offer.thing == occasion)\
+                                .order_by(desc(Offer.bookingLimitDatetime))\
+                                .first()
+    else:
+        last_offer = Offer.query.join(EventOccurence)\
+                                .filter(EventOccurence.eventId == occasion.id)\
+                                .order_by(desc(Offer.bookingLimitDatetime))\
+                                .first()
+
+    recommendation.validUntilDate = last_offer.bookingLimitDatetime - timedelta(minutes=1)
+
+    app.model.PcObject.check_and_save(recommendation)
+    return recommendation
 
 
 def create_recommendations(limit=3, user=None, coords=None):
@@ -24,51 +65,23 @@ def create_recommendations(limit=3, user=None, coords=None):
         recommendation_count = Recommendation.query.filter_by(user=user)\
                                 .count()
 
-    offers = get_offers(limit, user=user, coords=coords)
-
+    recommendations = []
     tuto_mediations = {}
 
     for to in Mediation.query.filter(Mediation.tutoIndex != None).all():
         tuto_mediations[to.tutoIndex] = to
 
     inserted_tuto_mediations = 0
-    for (index, offer) in enumerate(offers):
+    for (index, occasion) in enumerate(get_occasions(limit, user=user, coords=coords)):
 
-        while recommendation_count+index+inserted_tuto_mediations in tuto_mediations:
+        while recommendation_count + index + inserted_tuto_mediations\
+              in tuto_mediations:
             insert_tuto_mediation(user,
                                   tuto_mediations[recommendation_count + index
                                                   + inserted_tuto_mediations])
             inserted_tuto_mediations += 1
-        # CREATE
-        recommendation = Recommendation()
-        recommendation.user = user
-        recommendation.validUntilDate = datetime.now() + timedelta(days=2) # TODO: make this smart based on event dates, etc.
-
-        # LOOK IF OFFER HAS A THING OR AN EVENT (IE A SOURCE) WITH MEDIATIONS
-        # AND PICK ONE OF THEM
-        mediation_query = Mediation.query
-        mediation_filter = None
-        if offer.thingId:
-            mediation_filter = offer.thingId and (Thing.id == offer.thingId)
-            mediation_query = mediation_query.outerjoin(Thing)
-        else:
-            event_id = Event.query.filter(
-                Event.occurences.any(EventOccurence.id == offer.eventOccurenceId))\
-                           .first().id
-            mediation_filter = Event.id == event_id
-            mediation_query = mediation_query.outerjoin(Event)
-        mediation = mediation_query.filter(mediation_filter)\
-                                   .order_by(func.random())\
-                                   .first()
-        if mediation is not None:
-            recommendation.mediation = mediation
-
-        # SAVE AND DO THE UM OFFER JOIN
-        app.model.PcObject.check_and_save(recommendation)
-        recommendation_offer = RecommendationOffer()
-        recommendation_offer.offer = offer
-        recommendation_offer.recommendation = recommendation
-        app.model.PcObject.check_and_save(recommendation_offer)
+        recommendations.append(create_recommendation(user, occasion))
+    return recommendations
 
 
 def insert_tuto_mediation(user, tuto_mediation):
@@ -76,7 +89,4 @@ def insert_tuto_mediation(user, tuto_mediation):
     recommendation.user = user
     recommendation.mediation = tuto_mediation
     recommendation.validUntilDate = datetime.now() + timedelta(weeks=2)
-    # ADD A TAG FOR THE FIRST UM
-    if tuto_mediation.tutoIndex == 0:
-        recommendation.isFirst = True
     app.model.PcObject.check_and_save(recommendation)

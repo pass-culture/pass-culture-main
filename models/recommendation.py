@@ -13,26 +13,39 @@ class Recommendation(app.model.PcObject, db.Model):
 
     userId = db.Column(db.BigInteger,
                        db.ForeignKey('user.id'),
-                       nullable=False)
+                       nullable=False,
+                       index=True)
 
     user = db.relationship(lambda: app.model.User,
                            foreign_keys=[userId],
                            backref='recommendations')
 
-    recommendationBookings = db.relationship(lambda: app.model.RecommendationBooking,
-                                             back_populates="recommendation")
-
-    # FIXME: Replace this with offerId (single offer)
-    # + constraint ? (offerId XOR mediationId ?)
-    recommendationOffers = db.relationship(lambda: app.model.RecommendationOffer,
-                                           back_populates="recommendation")
-
     mediationId = db.Column(db.BigInteger,
                             db.ForeignKey('mediation.id'),
-                            nullable=True) # NULL for recommendation created directly from an offer
+                            nullable=True) # NULL for recommendation created directly from a thing or an event
 
     mediation = db.relationship(lambda: app.model.Mediation,
                                 foreign_keys=[mediationId],
+                                backref='recommendations')
+
+    thingId = db.Column(db.BigInteger,
+                        db.ForeignKey('thing.id'),
+                        nullable=True) # NULL for recommendation created from a mediation or an event
+
+    thing = db.relationship(lambda: app.model.Thing,
+                            foreign_keys=[thingId],
+                            backref='recommendations')
+
+    eventId = db.Column(db.BigInteger,
+                        db.ForeignKey('event.id'),
+                        db.CheckConstraint('("mediationId" IS NOT NULL AND "thingId" IS NULL AND "eventId" IS NULL)'
+                                           + 'OR ("mediationId" IS NULL AND "thingId" IS NOT NULL AND "eventId" IS NULL)'
+                                           + 'OR ("mediationId" IS NULL AND "thingId" IS NULL AND "eventId" IS NOT NULL)',
+                                           name='check_reco_has_mediationid_xor_thingid_xor_eventid'),
+                        nullable=True) # NULL for recommendation created a mediation or an offer
+
+    event = db.relationship(lambda: app.model.Event,
+                                foreign_keys=[eventId],
                                 backref='recommendations')
 
     sharedByUserId = db.Column(db.BigInteger,
@@ -63,10 +76,11 @@ class Recommendation(app.model.PcObject, db.Model):
                             default=datetime.now)
 
     dateRead = db.Column(db.DateTime,
-                         nullable=True)
+                         nullable=True,
+                         index=True)
 
     validUntilDate = db.Column(db.DateTime,
-                               nullable=False)
+                               nullable=True)
 
     isClicked = db.Column(db.Boolean,
                           nullable=False,

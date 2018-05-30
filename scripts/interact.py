@@ -34,4 +34,4 @@ def change_password(user, password):
 
 
 # COOL CLI
-#printify(listify(app.datascience.get_offers(client_user, 2), offers_includes, cut=10))
+#printify(listify(app.datascience.get_occasions(client_user, 2), offers_includes, cut=10))

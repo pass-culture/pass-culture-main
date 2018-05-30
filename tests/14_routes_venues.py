@@ -26,6 +26,7 @@ def test_12_create_venue():
     venue_data = {'name': 'Ma venue',
                   'siret': '50290276000045',
                   'address': '75 Rue Charles Fourier, 75013 Paris',
+                  'departementCode': '75',
                   'latitude': 48.82387,
                   'longitude': 2.35284
                  }

@@ -7,10 +7,6 @@ import os
 
 from models.api_errors import ApiErrors
 
-Offer = app.model.Offer
-Recommendation = app.model.Recommendation
-RecommendationOffer = app.model.RecommendationOffer
-
 EXPORT_TOKEN = os.environ.get('EXPORT_TOKEN')
 
 

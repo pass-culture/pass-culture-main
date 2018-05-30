@@ -29,6 +29,7 @@ def do_sandbox():
     client_user.publicName = "Utilisateur test jeune"
     client_user.account = 100
     client_user.email = "pctest.jeune@btmx.fr"
+    client_user.departementCode = "93"
     client_user.setPassword("pctestjeune")
     check_and_save(client_user)
     #set_from_mock("thumbs", client_user, 1)
@@ -42,6 +43,7 @@ def do_sandbox():
         admin_user = model.User()
     admin_user.publicName = "Utilisateur test admin"
     admin_user.email = "pctest.admin@btmx.fr"
+    admin_user.departementCode = "93"
     admin_user.setPassword("pctestadmin")
     check_and_save(admin_user)
     set_from_mock("thumbs", admin_user, 2)

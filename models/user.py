@@ -23,6 +23,8 @@ class User(app.model.PcObject,
 
     clearTextPassword = None
 
+    departementCode = db.Column(db.String(3), nullable=False)
+
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 

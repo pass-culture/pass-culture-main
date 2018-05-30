@@ -22,9 +22,6 @@ class Offer(app.model.PcObject,
                              nullable=False,
                              default=datetime.now)
 
-    recommendationOffers = db.relationship(lambda: app.model.RecommendationOffer,
-                                           back_populates="offer")
-
     eventOccurenceId = db.Column(db.BigInteger,
                                  db.ForeignKey("event_occurence.id"),
                                  db.CheckConstraint('"eventOccurenceId" IS NOT NULL OR "thingId" IS NOT NULL',

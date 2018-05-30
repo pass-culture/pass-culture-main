@@ -17,7 +17,7 @@ def with_app_context(app):
         app.db.session.merge = call_with_app_context(app.db.session.merge)
         app.db.session.query = call_with_app_context(app.db.session.query)
         app.get = call_with_app_context(get)
-        app.datascience.get_offers = call_with_app_context(app.datascience.get_offers)
+        app.datascience.get_occasions = call_with_app_context(app.datascience.get_occasions)
         def model_with_app_context(model):
             if not hasattr(model, 'query'):
                 return

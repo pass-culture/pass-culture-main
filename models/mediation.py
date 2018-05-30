@@ -62,7 +62,8 @@ class Mediation(app.model.PcObject,
                             backref='mediations')
 
     tutoIndex = db.Column(db.Integer,
-                          nullable=True)
+                          nullable=True,
+                          index=True)
 
 
 Mediation.__table_args__ = (
