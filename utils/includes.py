@@ -61,7 +61,7 @@ RECOMMENDATIONS_INCLUDES = [
     {
         "key": "mediatedOccurences",
         "sub_joins": [
-            "offer"
+            "offers"
         ]
     },
     {

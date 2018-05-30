@@ -38,8 +38,8 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
             filter = (Recommendation.eventId == mediation_id)
         else:
             raise ValueError("Invalid occasion type : "+occasion_type)
-    requested_recommendation = query.filter(filter & Recommendation.userId==user.id)\
-                                    .first_or_none()
+    requested_recommendation = query.filter(filter & (Recommendation.userId==user.id))\
+                                    .first()
 
     if requested_recommendation is None:
         if occasion_type == 'thing':
@@ -106,9 +106,11 @@ def put_recommendations():
     while len(recos) < BLOB_SIZE\
           and (len(unread_recos) > 0
                or len(read_recos) > 0):
+
         nb_new_unread = min(BLOB_UNREAD_NUMBER, len(unread_recos))
         recos += unread_recos[0:nb_new_unread]
         unread_recos = unread_recos[nb_new_unread:]
+
         nb_new_read = min(BLOB_READ_NUMBER, len(read_recos))
         recos += read_recos[0:nb_new_read]
         read_recos = read_recos[nb_new_read:]
@@ -127,11 +129,17 @@ def put_recommendations():
                                .all()
     print('(tuto recos) count', len(tuto_recos))
 
+    tutos_read = 0
     for tuto_reco in tuto_recos:
-        if len(recos)>=tuto_reco.mediation.tutoIndex:
-            recos = recos[0:tuto_reco.mediation.tutoIndex] + [tuto_reco] + recos[tuto_reco.mediation.tutoIndex:]
+        if tuto_reco.dateRead is not None:
+            tutos_read += 1
+        elif len(recos) >= tuto_reco.mediation.tutoIndex-tutos_read:
+            recos = recos[0:tuto_reco.mediation.tutoIndex-tutos_read]\
+                    + [tuto_reco]\
+                    + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
 
     if requested_recommendation:
+        recos.remove(requested_recommendation)
         recos = [requested_recommendation] + recos
 
     print('(recap reco) ',

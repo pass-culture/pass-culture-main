@@ -30,7 +30,7 @@ class Offer(app.model.PcObject,
 
     eventOccurence = db.relationship(lambda: app.model.EventOccurence,
                                      foreign_keys=[eventOccurenceId],
-                                     backref='offer')
+                                     backref='offers')
 
     thingId = db.Column(db.BigInteger,
                         db.ForeignKey("thing.id"),
