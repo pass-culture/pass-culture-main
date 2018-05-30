@@ -22,9 +22,9 @@ class Header extends Component {
       <header className="navbar is-primary">
         <div className="container">
           <div className="navbar-brand">
-            <NavLink to='/accueil' className="navbar-item is-italic is-size-3" isActive={() => false}>
+            <NavLink to='/accueil' className="navbar-item" isActive={() => false}>
               <img src={`${ROOT_PATH}/icon/app-icon-app-store.png`} alt="Logo" />
-              <strong>Pass</strong> Culture PRO
+              <strong>pass</strong>culture <sub>PRO</sub>
             </NavLink>
             <span className="navbar-burger" onClick={e => this.setState({
               showMobileMenu: !this.state.showMobileMenu
