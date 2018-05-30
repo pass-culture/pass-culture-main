@@ -215,8 +215,8 @@ class Booking extends Component {
           )}
           {step === 'loading' && <p>Réservation en cours ...</p>}
           {step === 'confirmation' && (
-            <div className="section success">
-              <Icon className="mb2" svg="picto-validation" alt='Réservation validée' />
+            <div className="section finished">
+              <Icon svg="picto-validation" alt='Réservation validée' />
               <p>Votre réservation est validée.</p>
               <p>
                 {price > 0 && (
@@ -239,7 +239,8 @@ class Booking extends Component {
             </div>
           )}
           {step === 'error' && (
-            <div className="section success">
+            <div className="section finished">
+              <Icon svg="picto-echec" alt='Echec de réservation' />
               <p>Une erreur est survenue lors de la réservation :</p>
               {error && <p><Capitalize>{error}</Capitalize></p>}
             </div>
