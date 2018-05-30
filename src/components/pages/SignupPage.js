@@ -33,21 +33,23 @@ const SignupPage = ({ errors }) => {
         </div>
         <div className='column is-one-quarter has-big-margin'>
           <form>
-            <FormField
-              className="input is-rounded"
-              label={
-                <Label
-                  title="SIREN"
-                  subtitle="... qui rend mon compte unique :"
-                />
-              }
-              required
-              collectionName="users"
-              name="siren"
-              autoComplete="siren"
-              placeholder="SIREN"
-              type="text"
-            />
+            {false && (
+              <FormField
+                className="input is-rounded"
+                label={
+                  <Label
+                    title="SIREN"
+                    subtitle="... qui rend mon compte unique :"
+                  />
+                }
+                required
+                collectionName="users"
+                name="siren"
+                autoComplete="siren"
+                placeholder="SIREN"
+                type="text"
+              />
+            )}
             <FormField
               className="input is-rounded"
               label={

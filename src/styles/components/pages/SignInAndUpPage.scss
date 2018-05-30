@@ -11,7 +11,7 @@
     .column {
       &.has-big-margin {
         @media (min-width: $tablet) {
-          margin-top: 8rem;
+          margin-top: 10rem;
 
           .hero {
             margin-top: -3rem;
@@ -97,11 +97,16 @@
     color: $primary;
     font-size: 0.9rem;
     font-weight: 500;
-    height: 2rem;
+    // height: 2rem;
     line-height: 2em;
     list-style-type: none;
     text-align: left;
     transition: transform .2s ease-in-out;
+
+    li {
+      margin-bottom: 1rem;
+    }
+
     &.pop {
       transform: scale(1.04);
       transform-origin: 0 50%;
