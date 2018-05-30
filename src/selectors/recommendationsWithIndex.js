@@ -1,7 +1,9 @@
 import { createSelector } from 'reselect'
 
+import selectSortedRecommendations from './sortedRecommendations'
+
 export default createSelector(
-  state => state.data.recommendations || [],
+  selectSortedRecommendations,
   recommendations =>
-    recommendations.map((um, index) => Object.assign(um, { index }))
+    recommendations.map((reco, index) => Object.assign(reco, { index }))
 )

@@ -51,7 +51,7 @@ class Modal extends Component {
   }
 
   escapeClose = e => {
-    if (e.keyCode == 27) {
+    if (e.keyCode === 27) {
       this.onCloseClick(e)
     }
   }
