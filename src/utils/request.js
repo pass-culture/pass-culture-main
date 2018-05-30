@@ -1,4 +1,6 @@
 import { API_URL } from './config'
+import uuid from 'uuid'
+import {version} from '../../package.json'
 
 export async function fetchData(method, path, config = {}) {
   // unpack
@@ -13,6 +15,8 @@ export async function fetchData(method, path, config = {}) {
     init.headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'AppVersion': version,
+      'X-Request-ID': uuid()
     }
     // body
     init.body = JSON.stringify(body || {})
