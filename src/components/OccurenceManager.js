@@ -4,6 +4,11 @@ import { connect } from 'react-redux'
 import moment from 'moment'
 
 import Price from './Price'
+import FormField from './layout/FormField'
+import Label from './layout/Label'
+import { mergeForm } from '../reducers/form'
+import selectEventOccurences from '../selectors/eventOccurences'
+import { DELETE } from '../utils/config'
 
 class OccurenceManager extends Component {
 
@@ -49,9 +54,8 @@ class OccurenceManager extends Component {
         .sort((o1, o2) => o1.datetime.isBefore(o2.datetime) ? -1 : 1))
   }
 
-  removeDate = occurrence => {
-    this.props.onChange(this.state.occurrences
-      .filter(o => !o.datetime.isSame(occurrence.datetime)))
+  removeDate = ({ id }) => {
+    this.props.mergeForm('eventOccurences', id, { DELETE, id })
   }
 
   render() {
@@ -91,40 +95,43 @@ class OccurenceManager extends Component {
             <div className='box content'>
               <p className={this.state.withError ? 'has-text-weight-bold has-text-danger' : ''}>Sélectionnez d'abord l'heure, le prix et le nombre de place disponibles puis cliquez sur les dates concernées :</p>
               <div className="field is-horizontal">
-                <div className="field-label is-normal">
-                  <label className="label">Heure</label>
-                </div>
-                <div className="field-body">
-                  <p>
-                    <input required className='input' type='time' value={this.state.time} onChange={e => this.setState({time: e.target.value})} />
-                  </p>
-                </div>
+                <FormField
+                  collectionName="eventOccurencesById"
+                  label={<Label title="Heure" />}
+                  name="time"
+                  required
+                  type="time"
+                />
               </div>
               <div className="field is-horizontal">
-                <div className="field-label is-normal">
-                  <label className="label">Prix</label>
-                </div>
-                <div className="field-body">
-                  <p className="control has-icons-right">
-                    <input className="input" type="number" placeholder="Prix" min={0} name='price' value={this.state.price} onChange={e => this.setState({price: e.target.value})} />
-                    <span className="icon is-small is-right">
-                      €
-                    </span>
-                  </p>
-                </div>
+                <FormField
+                  collectionName="eventOccurencesById"
+                  label={<Label title="Prix (€)" />}
+                  min={0}
+                  name="price"
+                  required
+                  type="number"
+                />
               </div>
               <div className="field is-horizontal">
-                <div className="field-label is-normal">
-                  <label className="label">Nombre de places</label>
-                </div>
-                <div className="field-body">
-                  <p className='field'>
-                    <input placeholder='Laissez vide si pas de limite' className='input' type='number' min={0} name='groupSize' value={this.state.groupSize} onChange={e => this.setState({groupSize: e.target.value})}  />
-                  </p>
-                  <p className='field'>
-                    <input placeholder='Places en PMR' className='input' type='number' min={0} name='pmrGroupSize' value={this.state.pmrGroupSize} onChange={e => this.setState({pmrGroupSize: e.target.value})}  />
-                  </p>
-                </div>
+                <FormField
+                  collectionName="eventOccurencesById"
+                  label={<Label title="Nombre de places" />}
+                  min={0}
+                  name="groupSize"
+                  placeholder="Laissez vide si pas de limite"
+                  required
+                  type="number"
+                />
+                <FormField
+                  collectionName="eventOccurencesById"
+                  label={<Label title="Places en PMR" />}
+                  min={0}
+                  name="pmrGroupSize"
+                  placeholder="Laissez vide si pas de limite"
+                  required
+                  type="number"
+                />
               </div>
             </div>
           )}
@@ -141,7 +148,9 @@ class OccurenceManager extends Component {
 }
 
 export default connect(
-  state => ({
-    isEditing: Object.keys(state.form) > 0
-  })
+  (state, ownProps) => ({
+    isEditing: Object.keys(state.form) > 0,
+    occurences: selectEventOccurences(state, ownProps)
+  }),
+  { mergeForm }
 )(OccurenceManager)

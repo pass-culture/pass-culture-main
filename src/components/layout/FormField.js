@@ -38,7 +38,7 @@ class FormField extends Component {
       {...this.props}
       className={classnames(className, {
         checkbox: type === 'checkbox',
-        input: type !== 'textarea',
+        input: type !== 'textarea' && type !== 'select',
         textarea: type === 'textarea',
       })}
       id={inputId}
