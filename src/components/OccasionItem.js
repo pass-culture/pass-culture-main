@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import createSelectOccasion from '../selectors/occasion'
+import selectOccasionThumbUrl from '../selectors/occasionThumbUrl'
 import { collectionToPath } from '../utils/translate'
 
 class OccasionItem extends Component {
@@ -65,8 +65,9 @@ export default compose(
   withRouter,
   connect(
     () => {
-      const selectOccasion = createSelectOccasion()
-      return (state, ownProps) =>  selectOccasion(state, ownProps)
+      return (state, ownProps) => ({
+        thumbUrl: selectOccasionThumbUrl(state, ownProps)
+      })
     }
   )
 )(OccasionItem)
