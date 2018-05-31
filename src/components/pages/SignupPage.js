@@ -113,9 +113,10 @@ const SignupPage = ({ errors }) => {
                     className="button is-primary is-outlined"
                     getBody={form => form.usersById[NEW]}
                     getIsDisabled={form =>
-                      !get(form, 'usersById._new_.publicName') ||
-                      !get(form, 'usersById._new_.email') ||
-                      !get(form, 'usersById._new_.password')
+                      !(get(form, 'usersById._new_.publicName') &&
+                        get(form, 'usersById._new_.email') &&
+                        get(form, 'usersById._new_.contact_ok') &&
+                        get(form, 'usersById._new_.password'))
                     }
                     path="users"
                     storeKey="users"

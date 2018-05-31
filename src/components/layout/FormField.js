@@ -32,9 +32,10 @@ class FormField extends Component {
           key={inputId}
         />
       ) : (
-        type === 'password' ? ( <FormPassword {...this.props} id={inputId} key={inputId} />) :
+        type === 'password' ? (
+        <FormPassword {...this.props} id={inputId} key={inputId} />) : (
         <FormInput {...this.props} id={inputId} key={inputId} />
-      )
+      ))
       const labelMarkup = (
         <label className={classnames(isCheckbox ? 'checkbox' : 'label', {required: required})} htmlFor={inputId} key={'label_' + inputId}>
           { isCheckbox && inputMarkup }

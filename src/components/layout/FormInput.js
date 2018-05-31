@@ -9,7 +9,9 @@ import { NEW } from '../../utils/config'
 class FormInput extends Component {
   constructor(props) {
     super(props)
-    this.state = { localValue: null }
+    this.state = {
+      localValue: null,
+    }
     this.onDebouncedMergeForm = debounce(
       this.onMergeForm,
       props.debounceTimeout

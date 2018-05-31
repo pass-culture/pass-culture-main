@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { requestData } from '../../reducers/data'
 import { randomHash } from '../../utils/random'
 import Icon from './Icon'
+import FormInput from './FormInput'
 
 class FormPassword extends Component {
   constructor() {
@@ -26,12 +27,12 @@ class FormPassword extends Component {
   render() {
     return (
       <div className="field has-addons">
-        <div className="control">
-          <input {...this.props} type={this.state.isHidden ? 'password' : 'text'} />
+        <div className="control is-expanded">
+          <FormInput {...this.props} type={this.state.isHidden ? 'password' : 'text'} />
         </div>
         <div className="control">
-          <button className="button is-primary is-rounded is-medium" onClick={this.toggleHidden}>
-            <Icon svg="picto-visite" />
+          <button className="button is-rounded is-medium" onClick={this.toggleHidden}>
+            <Icon svg={this.state.isHidden ? 'ico-eye close' : 'ico-eye'} />
             &nbsp;
           </button>
         </div>

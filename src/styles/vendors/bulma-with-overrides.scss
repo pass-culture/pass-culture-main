@@ -56,3 +56,21 @@ input[type="checkbox"], input[type="radio"] {
     }
   }
 }
+
+
+.field {
+  &.has-addons {
+    .control {
+      &:not(:last-child) {
+        input {
+          border-right: none;
+        }
+      }
+      &:last-child {
+        button {
+          border-left: none;
+        }
+      }
+    }
+  }
+}
