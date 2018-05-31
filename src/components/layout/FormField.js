@@ -9,6 +9,12 @@ import FormSelect from './FormSelect'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 
+const FormComponentsByName = {
+  FormInput,
+  FormSelect,
+  FormTextarea
+}
+
 class FormField extends Component {
   render() {
     const {
@@ -29,28 +35,16 @@ class FormField extends Component {
         {label}
       </label>
     )
-    const inputMarkup =
-      type === 'textarea'
-      ? <FormTextarea
-          {...this.props}
-          {...extraProps}
-          id={inputId}
-          key={inputId}
-          aria-describedby={`${inputId}-error`}
-        />
-      : (
-        type === 'select'
-        ? <FormSelect {...this.props} {...extraProps}
-          id={inputId}
-          key={inputId}
-          aria-describedby={`${inputId}-error`}
-        />
-        : <FormInput {...this.props} {...extraProps}
-            id={inputId}
-            key={inputId}
-            aria-describedby={`${inputId}-error`}
-          />
-      )
+    const inputComponentName = `Form${type[0].toUpperCase()}${type.slice(1)}`
+    console.log('inputComponentName', inputComponentName)
+    const InputComponent = FormComponentsByName[inputComponentName] || FormInput
+    const inputMarkup = <InputComponent
+      {...this.props}
+      {...extraProps}
+      id={inputId}
+      key={inputId}
+      aria-describedby={`${inputId}-error`}
+    />
     return [
       <div
         className={classnames('form-input', {
@@ -74,9 +68,13 @@ class FormField extends Component {
   }
 }
 
-FormInput.propTypes = {
+FormField.defaultProps = {
+  type: 'input'
+}
+
+FormField.propTypes = {
   collectionName: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired
 }
 
 export default compose(
