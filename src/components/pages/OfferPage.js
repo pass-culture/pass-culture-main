@@ -122,7 +122,7 @@ class OfferPage extends Component {
               </NavLink>
             </div>
             <h1 className='title has-text-centered'>
-              {isNew ? 'Créer' : 'Modifier'} {occasionType === 'events' ? 'un événement' : 'un objet'}
+              {isNew ? 'Créer' : 'Modifier'} {occasionType === 'evenements' ? 'un événement' : 'un objet'}
             </h1>
             <form>
               <FormField
@@ -144,9 +144,8 @@ class OfferPage extends Component {
                 type="select"
                 options={eventTypes}
               />
-              -
               <div className='field'>
-                <label className='label'>Horaires</label>
+              <Label title='Horaires' />
                 <OccurenceManager occurences={occurences} />
               </div>
 

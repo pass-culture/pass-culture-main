@@ -20,7 +20,6 @@ class OccasionItem extends Component {
       occasionType,
       thumbUrl
     } = this.props
-    console.log('occasionType', occasionType)
     return (
       <article className="occasion-item media">
         <figure className="media-left">
@@ -30,7 +29,7 @@ class OccasionItem extends Component {
         </figure>
         <div className="media-content">
           <div className="content">
-            <NavLink className='title is-block' to={`/offres/${collectionToPath(occasionType)}/${id}`}>
+            <NavLink className='title is-block' to={`/offres/${(occasionType)}/${id}`}>
               {name}
             </NavLink>
             <Dotdotdot className='is-small' clamp={3}>
@@ -39,7 +38,7 @@ class OccasionItem extends Component {
           </div>
           <nav className="level is-mobile">
             <div className="level-left">
-              <NavLink  to={`/offres/${collectionToPath(occasionType)}/${id}`}>
+              <NavLink  to={`/offres/${(occasionType)}/${id}`}>
                 <button className="button is-primary level-item">
                   Modifier
                 </button>
@@ -67,7 +66,7 @@ export default compose(
   connect(
     () => {
       const selectOccasion = createSelectOccasion()
-      return (state, ownProps) => selectOccasion(state, ownProps)
+      return (state, ownProps) =>  selectOccasion(state, ownProps)
     }
   )
 )(OccasionItem)

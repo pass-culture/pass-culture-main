@@ -5,6 +5,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
+import FormPassword from './FormPassword'
 import FormSelect from './FormSelect'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
@@ -16,6 +17,36 @@ const FormComponentsByName = {
 }
 
 class FormField extends Component {
+
+  // inputMarkup(id) {
+  //   const {
+  //     className,
+  //     type,
+  //   } = this.props
+  //   const isCheckbox = type === 'checkbox';
+
+  //   const inputProps = Object.assign({}, this.props, {
+  //     className: classnames(className, {
+  //       checkbox: type === 'checkbox',
+  //       input: type !== 'textarea',
+  //       textarea: type === 'textarea',
+  //     }),
+  //     'aria-describedby': `${id}-error`,
+  //     key: id,
+  //     id,
+  //   })
+  //   switch(type) {
+  //     case 'textarea':
+  //       return <FormTextarea {...inputProps} />
+  //     case 'password':
+  //       return <FormPassword {...inputProps} />
+  //     case 'select':
+  //       return <FormSelect {...inputProps} />
+  //     default:
+  //       return <FormInput {...inputProps} />
+  //   }
+  // }
+
   render() {
     const {
       className,
@@ -25,36 +56,46 @@ class FormField extends Component {
       label,
       name,
       type,
+      required,
     } = this.props
     const inputId = id || `input_${collectionName}_${name}`
-    const extraProps = {
-      className: classnames(className, `input ${type}`),
-    }
-    const labelMarkup = (
-      <label htmlFor={inputId} key={'label_' + id}>
-        {label}
-      </label>
-    )
+    const isCheckbox = type === 'checkbox';
+    const isSelect = type === 'select';
     const inputComponentName = `Form${type[0].toUpperCase()}${type.slice(1)}`
-    console.log('inputComponentName', inputComponentName)
     const InputComponent = FormComponentsByName[inputComponentName] || FormInput
     const inputMarkup = <InputComponent
       {...this.props}
-      {...extraProps}
+      className={classnames(className, {
+        checkbox: type === 'checkbox',
+        input: type !== 'textarea',
+        textarea: type === 'textarea',
+      })}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
     />
+    const labelMarkup = (
+      <label className={classnames({
+        checkbox: isCheckbox,
+        label: !isCheckbox,
+        required: required,
+      })} htmlFor={inputId} key={'label_' + inputId}>
+        { isCheckbox && inputMarkup }
+        {label}
+      </label>
+    )
     return [
       <div
-        className={classnames('form-input', {
-          checkbox: type === 'checkbox',
+        className={classnames({
+          field: true,
+          checkbox: isCheckbox,
         })}
         key={0}
       >
-        {type === 'checkbox'
-          ? [inputMarkup, labelMarkup]
-          : [labelMarkup, inputMarkup]}
+        <div className='control'>
+          { isCheckbox && labelMarkup }
+          { !isCheckbox && [labelMarkup, inputMarkup]}
+        </div>
       </div>,
       <ul role='alert' id={`${inputId}-error`} className={classnames('errors', { pop: errors })} key={1}>
         {errors &&

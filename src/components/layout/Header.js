@@ -6,7 +6,7 @@ import get from 'lodash.get'
 
 import Icon from './Icon'
 import SignoutButton from './SignoutButton'
-import { ROOT_PATH } from '../../utils/config'
+import Logo from './Logo'
 import menu from '../../utils/menu'
 
 class Header extends Component {
@@ -22,10 +22,7 @@ class Header extends Component {
       <header className="navbar is-primary">
         <div className="container">
           <div className="navbar-brand">
-            <NavLink to='/accueil' className="navbar-item is-italic is-size-3" isActive={() => false}>
-              <img src={`${ROOT_PATH}/icon/app-icon-app-store.png`} alt="Logo" />
-              <strong>Pass</strong> Culture PRO
-            </NavLink>
+            <Logo className="navbar-item" />
             <span className="navbar-burger" onClick={e => this.setState({
               showMobileMenu: !this.state.showMobileMenu
             })}>

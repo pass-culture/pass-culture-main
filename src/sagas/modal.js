@@ -3,7 +3,7 @@ import { takeEvery } from 'redux-saga/effects'
 import { CLOSE_MODAL, SHOW_MODAL } from '../reducers/modal'
 
 function fromWatchCloseModalAction(action) {
-  document.body.style.overflow = 'auto'
+  document.body.style.overflow = 'initial'
 }
 
 function fromWatchShowModalAction(action) {

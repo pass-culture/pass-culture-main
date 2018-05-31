@@ -1,61 +1,104 @@
 .sign-in-page, .sign-up-page {
-  display: flex;
-  font-size: $size-medium;
-  flex-direction: column;
 
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    overflow-y: auto;
-    justify-content: center;
-    flex: 1;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    @media (min-width: $tablet) {
-      width: 50%;
+  .page-content {
+    padding: 0;
+  }
+
+  .columns {
+    height: 100%;
+    margin: 0;
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      // &.has-big-margin {
+      //   @media (min-width: $tablet) {
+      //     margin-top: 10rem;
+
+      //     .hero {
+      //       margin-top: -3rem;
+      //     }
+      //   }
+      // }
     }
   }
 
-  .form-input {
-    margin-top: 1.5rem;
+  .logo-column {
+    background-color: $red;
+    color: $white;
+    font-size: 3rem;
+    padding: 2.5rem 1rem;
+    text-align: center;
+  }
+
+  .title, .subtitle {
+    font-style: italic;
+    span {
+      display: inline-block;
+    }
+  }
+
+  .subtitle {
+    margin-bottom: 3rem;
   }
 
   label {
     margin-bottom: 0.5rem;
 
-    p {
-      font-size: $size-normal;
+    h3 {
+      float: left;
+      position: relative;
     }
 
-    .inline {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
+    p {
+      font-size: 0.9rem;
+      text-align: right;
     }
+    a {
+      text-decoration: underline;
+    }
+
+    &.required {
+      h3:after {
+        content: '';
+        width: 4px;
+        height: 4px;
+        border-radius: 3px;
+        background-color: $violet;
+        top: 4px;
+        right: -5px;
+        display: block;
+        position: absolute;
+      }
+    }
+  }
+
+  .buttons-field {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
   }
 
   h4 {
     font-size: $size-normal;
-  }
-
-
-  footer {
-    display: flex;
-    justify-content: space-between;
-    background-color: $primary;
+    float: left;
   }
 
   .errors {
     color: $primary;
     font-size: 0.9rem;
     font-weight: 500;
-    height: 2rem;
+    // height: 2rem;
     line-height: 2em;
     list-style-type: none;
     text-align: left;
     transition: transform .2s ease-in-out;
+
+    li {
+      margin-bottom: 1rem;
+    }
+
     &.pop {
       transform: scale(1.04);
       transform-origin: 0 50%;
@@ -69,25 +112,39 @@
     }
   }
 
-  &.red {
-    background-color: $primary;
-    color: white;
 
-    footer {
-      @include dotted($white, top);
-    }
-
+  .field {
     label {
-      color: white;
+      display: block;
     }
-    .errors {
-      color: $white;
-    }
-  }
 
-  body.softkeyboard &, body.web & {
-    min-height: 100vh;
-    height: auto;
+    input {
+      font-weight: $weight-semibold;
+    }
+
+    &.checkbox {
+      align-items: flex-start;
+      display: flex;
+      input {
+        margin-right: 0.5rem;
+        -webkit-appearance: none;
+        border-radius: $radius-small;
+        width: 1.5rem;
+        height: 1.5rem;
+        &:active, &:checked {
+          &:after {
+            content: '\2714';
+            font-size: 1.25rem;
+            position: absolute;
+            top: -5px;
+            left: 2px;
+            color: $primary;
+          }
+        }
+      }
+
+    }
+
   }
 
 }

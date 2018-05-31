@@ -9,7 +9,9 @@ import { NEW } from '../../utils/config'
 class FormInput extends Component {
   constructor(props) {
     super(props)
-    this.state = { localValue: null }
+    this.state = {
+      localValue: null,
+    }
     this.onDebouncedMergeForm = debounce(
       this.onMergeForm,
       props.debounceTimeout
@@ -66,12 +68,14 @@ class FormInput extends Component {
       id,
       placeholder,
       autoComplete,
+      required,
       type,
       value,
     } = this.props
     const { localValue } = this.state
     return (
       <input
+        required={required}
         autoComplete={autoComplete}
         className={className || 'input'}
         id={id}
