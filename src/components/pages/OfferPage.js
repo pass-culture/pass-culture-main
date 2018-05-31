@@ -114,6 +114,9 @@ class OfferPage extends Component {
             <h1 className='title has-text-centered'>
               {isNew ? 'Créer' : 'Modifier'} {occasionPath === 'evenements' ? 'un événement' : 'un objet'}
             </h1>
+            <div className='field'>
+              <NavLink to={`/offres/${occasionPath}/${occasionId}/accroches/nouveau`} className='button is-primary is-outlined'>Nouvelle accroche</NavLink>
+            </div>
             <FormField
               collectionName={occasionPath}
               defaultValue={name}
@@ -137,7 +140,6 @@ class OfferPage extends Component {
             <Label title='Horaires' />
               <OccurenceManager occurences={occurences} />
             </div>
-
             <FormField
               collectionName={occasionPath}
               defaultValue={durationMinutes}
