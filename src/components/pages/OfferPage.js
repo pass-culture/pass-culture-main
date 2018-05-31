@@ -147,10 +147,7 @@ class OfferPage extends Component {
               -
               <div className='field'>
                 <label className='label'>Horaires</label>
-                <OccurenceManager
-                  occurences={occurences}
-                  onChange={occurences => this.updateOccasion('occurences', occurences)}
-                />
+                <OccurenceManager occurences={occurences} />
               </div>
 
               <FormField

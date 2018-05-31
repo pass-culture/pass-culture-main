@@ -33,9 +33,7 @@ class OccurenceManager extends Component {
 
   handleDateChange = date => {
     if (!this.state.time)
-      return this.setState({
-      withError: true,
-    })
+      return this.setState({ withError: true })
     const [hours, minutes] = this.state.time.split(':')
     const datetime = date.clone().hour(hours).minute(minutes)
     const isAlreadySelected = this.state.occurrences.find(o => o.datetime.isSame(datetime))
