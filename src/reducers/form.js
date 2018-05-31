@@ -36,13 +36,6 @@ export const mergeForm = (collectionName, id, name, value) => ({
   value,
 })
 
-/*
-export const mergeForm = patch => ({
-  patch,
-  type: MERGE_FORM
-})
-*/
-
 export const resetForm = patch => ({ type: RESET_FORM })
 
 // SELECTORS
@@ -59,7 +52,7 @@ export function getFormEntity(state, ownProps) {
   if (!collection) {
     return
   }
-  return collection[ownProps.id || NEW]
+  return collection[ownProps.entityId || NEW]
 }
 
 export function getFormValue(state, ownProps) {

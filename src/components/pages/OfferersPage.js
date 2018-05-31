@@ -9,7 +9,7 @@ import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
-import collectionToPath from '../../utils/collectionToPath'
+import { collectionToPath } from '../../utils/translate'
 
 class OfferersPage extends Component {
   render() {

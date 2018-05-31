@@ -10,7 +10,7 @@ import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { assignData, requestData } from '../../reducers/data'
 import selectOccasions from '../../selectors/occasions'
-import collectionToPath from '../../utils/collectionToPath'
+import { collectionToPath } from '../../utils/translate'
 
 
 class OffersPage extends Component {
@@ -40,7 +40,7 @@ class OffersPage extends Component {
               Nouvel événement
             </button>
           </NavLink>
-          <NavLink to={`/offres/${collectionToPath('objects')}/nouveau`}>
+          <NavLink to={`/offres/${collectionToPath('things')}/nouveau`}>
             <button className="button is-primary level-item">
               Nouvel objet
             </button>
