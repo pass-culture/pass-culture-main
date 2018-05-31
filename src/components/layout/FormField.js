@@ -17,8 +17,14 @@ class FormField extends Component {
       className,
       type,
     } = this.props
+    const isCheckbox = type === 'checkbox';
+
     const inputProps = Object.assign({}, this.props, {
-      className: classnames(className, `input ${type}`),
+      className: classnames(className, {
+        checkbox: type === 'checkbox',
+        input: type !== 'textarea',
+        textarea: type === 'textarea',
+      }),
       'aria-describedby': `${id}-error`,
       key: id,
       id,
@@ -48,24 +54,26 @@ class FormField extends Component {
     } = this.props
     const inputId = id || `input_${collectionName}_${name}`
     const isCheckbox = type === 'checkbox';
+    const isSelect = type === 'select';
     const inputMarkup = this.inputMarkup(inputId)
     const labelMarkup = (
-      <label className={classnames(isCheckbox ? 'checkbox' : 'label', {required: required})} htmlFor={inputId} key={'label_' + inputId}>
+      <label className={classnames({
+        checkbox: isCheckbox,
+        label: !isCheckbox,
+        required: required,
+      })} htmlFor={inputId} key={'label_' + inputId}>
         { isCheckbox && inputMarkup }
         {label}
       </label>
     )
     return [
       <div
-        className={`field ${type}`}
+        className={`field ${isCheckbox && type}`}
         key={0}
       >
         <div className='control'>
-          {
-            isCheckbox
-            ? labelMarkup
-            : [labelMarkup, inputMarkup]
-          }
+          { isCheckbox && labelMarkup }
+          { !isCheckbox && [labelMarkup, inputMarkup]}
         </div>
       </div>,
       <ul role='alert' id={`${inputId}-error`} className={classnames('errors', { pop: errors })} key={1}>

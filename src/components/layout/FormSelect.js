@@ -27,9 +27,9 @@ class FormSelect extends Component {
       value
     } = this.props
     return (
-      <div className={className || 'select'}>
+      <div className={'select'}>
         <select
-          className='container'
+          className=''
           value={typeof value === 'string' ? value : defaultValue}
           onChange={this.onChange}
         >
