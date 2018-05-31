@@ -78,11 +78,7 @@ const routes = [
     exact: true,
     path: '/offres/:occasionType/:occasionId/accroches/:mediationId',
     title: 'Accroche',
-    render: props => <MediationPage
-      occasionId={props.match.params.occasionId}
-      occasionType={props.match.params.occasionType}
-      mediationId={props.match.params.mediationId}
-    />,
+    render: props => <MediationPage />,
   },
   {
     exact: true,

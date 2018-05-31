@@ -12,6 +12,7 @@ import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
+import selectCurrentMediation from '../../selectors/currentMediation'
 import selectCurrentPath from '../../selectors/currentPath'
 import selectEventTypes from '../../selectors/eventTypes'
 import { NEW } from '../../utils/config'
@@ -76,35 +77,24 @@ class MediationPage extends Component {
 
   render () {
     const {
-      author,
-      bookingLimitDatetime,
-      contactName,
-      contactEmail,
-      contactPhone,
-      description,
-      durationMinutes,
-      eventTypes,
-      id,
       isNew,
-      mediaUrls,
-      name,
+      mediation,
       occasion,
       occasionId,
-      occasionType,
-      occurences,
-      path,
-      performer,
-      stageDirector,
-      type
+      occasionPath,
     } = this.props
+
+    const {
+      id
+    } = mediation
+
     const mediationId = isNew ? NEW : this.props.mediationId
-    console.log(occasion)
     return (
       <PageWrapper name='mediation' loading={!(id || isNew)}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to={`/offres/${occasionType}/${occasionId}`} className="button is-primary is-outlined">
+              <NavLink to={`/offres/${occasionPath}/${occasionId}`} className="button is-primary is-outlined">
                 Retour
               </NavLink>
             </div>
@@ -148,15 +138,11 @@ export default compose(
   connect(
     (state, ownProps) => {
       return Object.assign({
-        collectionName: ownProps.occasionType === 'evenements'
-          ? 'events'
-          : ownProps.occasionType === 'things'
-            ? 'things'
-            : null,
-        eventTypes: selectEventTypes(state),
-        isNew: ownProps.mediationId === 'nouveau',
-        path: selectCurrentPath(state, ownProps),
+        isNew: ownProps.match.params.mediationId === 'nouveau',
         user: state.user,
+        mediation: selectCurrentMediation(state, ownProps),
+        occasionPath: ownProps.match.params.occasionPath,
+        occasionId: ownProps.match.params.occasionId,
         occasion: selectCurrentOccasion(state, ownProps),
       })
     },
