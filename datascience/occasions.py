@@ -19,12 +19,30 @@ EventOccurence = app.model.EventOccurence
 Mediation = app.model.Mediation
 Offer = app.model.Offer
 Recommendation = app.model.Recommendation
+Thing = app.model.Thing
 Venue = app.model.Venue
 
 
 def print_dev(*args):
     if IS_DEV:
         print(*args)
+
+
+def make_score_tuples(occasions, departement_codes):
+    if len(occasions) == 0:
+        return []
+    sort_function = score_event if isinstance(occasions, Event) else score_thing
+    scored_occasions = list(map(lambda e: (e, sort_function(e, departement_codes)),
+                                occasions))
+    print_dev('(reco) scored occasions', [(se[0], se[1]) for se in scored_occasions])
+    return scored_occasions
+
+
+def sort_by_score(score_tuples):
+    return list(map(lambda st: st[0],
+                    sorted(filter(lambda st: st[1] is not None, score_tuples),
+                           key=lambda st: st[1],
+                           reverse=True)))
 
 
 def score_event(event, departement_codes):
@@ -50,6 +68,33 @@ def score_event(event, departement_codes):
     return score
 
 
+def score_thing(thing, departement_codes):
+    score = 0
+
+    # a bit of randomness so we don't always return the same events
+    score += randint(0, 10)
+
+    return score
+
+
+def bookable_occasions(query):
+    query = query.join(Offer)\
+                 .filter(((Offer.bookingLimitDatetime == None)
+                          | (Offer.bookingLimitDatetime > datetime.now()))
+                         & ((Offer.available == None) |
+                            (Offer.available > Booking.query.filter(Booking.offerId == Offer.id).count())))\
+                 .distinct()
+    print_dev('(reco) bookable events.count', query.count())
+    return query
+
+
+def not_yet_recommended_occasions(query, user):
+    query = query.filter(~ ((Event.recommendations.any(Recommendation.userId == user.id))
+                         | (Event.mediations.any(Mediation.recommendations.any(Recommendation.userId == user.id)))))
+    print_dev('(reco) not already used occasions.count', query.count())
+    return query
+
+
 def get_occasions(limit=3, user=None, coords=None):
     # CHECK USER
     if not user or not user.is_authenticated():
@@ -59,7 +104,7 @@ def get_occasions(limit=3, user=None, coords=None):
                           if user.departementCode == '93'\
                           else [user.departementCode]
 
-    # ALL
+    # ALL EVENTS
     event_query = Event.query
     print_dev('(reco) all events.count', event_query.count())
 
@@ -74,34 +119,33 @@ def get_occasions(limit=3, user=None, coords=None):
     event_query = event_query.filter(Event.occurences.any(EventOccurence.beginningDatetime > datetime.now()))
     print_dev('(reco) future events.count', event_query.count())
 
-    # REMOVE EVENTS FOR WHICH THERE ARE NO AVAILABLE EVENTS PAST THEIR BOOKING LIMIT DATE
-    event_query = event_query.join(Offer)\
-                             .filter(((Offer.bookingLimitDatetime == None)
-                                      | (Offer.bookingLimitDatetime > datetime.now()))
-                                     & ((Offer.available == None) |
-                                        (Offer.available > Booking.query.filter(Booking.offerId == Offer.id).count())))
-    print_dev('(reco) bookable events.count', event_query.count())
+    event_query = bookable_occasions(event_query)
+    event_query = not_yet_recommended_occasions(event_query, user)
 
-    # REMOVE EVENTS FOR WHICH THERE IS ALREADY A RECOMMENDATION FOR THIS USER
-    event_query = event_query.filter(~ ((Event.recommendations.any(Recommendation.userId == user.id))
-                                        | (Event.mediations.any(Mediation.recommendations.any(Recommendation.userId == user.id)))))
-    print_dev('(reco) not already used offers.count', event_query.count())
+    events = sort_by_score(make_score_tuples(event_query.all(),
+                                             departement_codes))
 
-    scored_events = map(lambda e: (e, score_event(e, departement_codes)), event_query.all())
-    events = list(map(lambda se: se[0],
-                      sorted(filter(lambda se: se[1] is not None, scored_events),
-                             key=lambda se: se[1],
-                             reverse=True)))
-
-#    thing_query = Things.query
+    # ALL THINGS
+#    thing_query = Thing.query
 #    print_dev('(reco) all things.count', thing_query.count())
-    #TODO
+#
+#    # LIMIT TO THINGS IN RELEVANT DEPARTEMENTS
+#    thing_query = thing_query.join(Offer)\
+#                             .join(Venue)\
+#                             .filter(Venue.departementCode.in_(departement_codes))\
+#                             .distinct()
+#    print_dev('(reco) departement things.count', thing_query.count())
+#
+#    thing_query = bookable_occasions(thing_query)
+#    thing_query = not_yet_recommended_occasions(thing_query, user)
+#    things = sort_by_score(make_score_tuples(thing_query.all(),
+#                           departement_codes))
+    things = []
 
-    # PREPARE FINAL OFFERS (TODO: ALTERNATE THINGS AND EVENTS ?)
-    final_occasions = events
+    final_occasions = events + things
 
     # RETURN
     print('(reco) final count', len(final_occasions))
-    return final_occasions[0:min(limit, len(final_occasions))]
+    return final_occasions[:limit]
 
 app.datascience.get_occasions = get_occasions

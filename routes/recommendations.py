@@ -44,9 +44,10 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
             raise ae
     requested_recommendation = query.filter(filter & (Recommendation.userId==user.id))\
                                     .first()
-
     if requested_recommendation is None:
-        if occasion_type == 'thing':
+        if mediation_id:
+            return None
+        elif occasion_type == 'thing':
             occasion = Thing.query.get(occasion_id)
         elif occasion_type == 'event':
             occasion = Event.query.get(occasion_id)
@@ -88,21 +89,26 @@ def put_recommendations():
                                   .order_by(func.random())\
                                   .limit(BLOB_SIZE)\
                                   .all()
+    #print('(unread recos)', unread_recos)
     print('(unread reco) count', len(unread_recos))
 
     read_recos = query.filter(Recommendation.dateRead != None)\
                       .order_by(func.random())\
                       .limit(BLOB_SIZE)\
                       .all()
+    #print('(read recos)', read_recos)
     print('(read reco) count', len(read_recos))
 
     needed_new_recos = BLOB_SIZE\
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER)\
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
+    print('(needed new recos) count', needed_new_recos)
+
     new_recos = create_recommendations(needed_new_recos,
                                        user=current_user)
 
+    print('(new recos)', [(reco, reco.mediation, reco.dateRead) for reco in new_recos])
     print('(new reco) count', len(new_recos))
 
     recos = new_recos
@@ -139,19 +145,19 @@ def put_recommendations():
         if tuto_reco.dateRead is not None:
             tutos_read += 1
         elif len(recos) >= tuto_reco.mediation.tutoIndex-tutos_read:
-            recos = recos[0:tuto_reco.mediation.tutoIndex-tutos_read]\
+            recos = recos[:tuto_reco.mediation.tutoIndex-tutos_read]\
                     + [tuto_reco]\
                     + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
 
     if requested_recommendation:
-        try:
-            recos.remove(requested_recommendation)
-        except ValueError:
-            pass
+        for i, reco in enumerate(recos):
+            if reco.id == requested_recommendation.id:
+                recos = recos[:i]+recos[i+1:]
+                break
         recos = [requested_recommendation] + recos
 
     print('(recap reco) ',
-          [(reco.id, reco.dateRead) for reco in recos],
+          [(reco, reco.mediation, reco.dateRead) for reco in recos],
           len(recos))
 
     # RETURN

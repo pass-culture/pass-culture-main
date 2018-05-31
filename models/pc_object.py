@@ -211,6 +211,7 @@ class PcObject():
         db.session.add(self)
 
     def __repr__(self):
-        return '<%s #%r>' % (self.__class__.__name__, self.id)
+        return '<%s #%s>' % (self.__class__.__name__,
+                             str(self.id) + "/" + humanize(self.id))
 
 app.model.PcObject = PcObject
