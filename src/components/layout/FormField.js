@@ -9,6 +9,7 @@ import FormPassword from './FormPassword'
 import FormSelect from './FormSelect'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
+import { capitalize } from '../../utils/string'
 
 const FormComponentsByName = {
   FormInput,
@@ -61,8 +62,7 @@ class FormField extends Component {
     const inputId = id || `input_${collectionName}_${name}`
     const isCheckbox = type === 'checkbox';
     const isSelect = type === 'select';
-    const inputComponentName = `Form${type[0].toUpperCase()}${type.slice(1)}`
-    const InputComponent = FormComponentsByName[inputComponentName] || FormInput
+    const InputComponent = FormComponentsByName[`Form${capitalize(type)}`] || FormInput
     const inputMarkup = <InputComponent
       {...this.props}
       className={classnames(className, {
