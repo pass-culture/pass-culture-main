@@ -23,7 +23,7 @@ class Offer(app.model.PcObject,
                              default=datetime.now)
 
     recommendationOffers = db.relationship(lambda: app.model.RecommendationOffer,
-                                          back_populates="offer")
+                                           back_populates="offer")
 
     eventOccurenceId = db.Column(db.BigInteger,
                                  db.ForeignKey("event_occurence.id"),

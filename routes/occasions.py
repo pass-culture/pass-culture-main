@@ -5,9 +5,26 @@ from flask_login import current_user
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES
 from utils.rest import expect_json_data,\
-                       login_or_api_key_required,\
-                       update
+                       login_or_api_key_required
 from utils.string_processing import inflect_engine
+
+OCCASION_KEYS = [
+    'author',
+    'description',
+    'durationMinutes',
+    'name',
+    'performer',
+    'stageDirector',
+    'type'
+]
+
+def feed_occasion(occasion, json):
+    for occasion_key in OCCASION_KEYS:
+        if occasion_key in json:
+            if occasion_key == 'type' and json[occasion_key] == '':
+                occasion.type = None
+            else:
+                occasion.__setattr__(occasion_key, json[occasion_key])
 
 @app.route('/occasions', methods=['GET'])
 @login_or_api_key_required
@@ -23,7 +40,7 @@ def list_occasions():
                     include=OCCASION_INCLUDES,
                     has_dehumanized_id=True
                 )
-                occasion['occasionType'] = 'evenements'
+                occasion['occasionType'] = 'events'
                 occasions.append(occasion)
         # TODO: find a similar method for things
     return jsonify(occasions)
@@ -42,10 +59,34 @@ def get_occasion(occasionType, occasionId):
 @expect_json_data
 def post_occasion(occasionType):
     model_name = inflect_engine.singular_noun(occasionType.title(), 1)
-    occasion = app.model[model_name](from_dict=request.json)
 
+    print('request.json', request.json)
 
-    #current_user.
+    # CREATE THE OCCASION (EVENT OR THING)
+    occasion = app.model[model_name]()
+    feed_occasion(occasion, request.json)
+    app.model.PcObject.check_and_save(occasion)
+
+    # TODO: FIND THE CORRESPONDING VENUE
+    offerer = current_user.offerers[0]
+    venue = offerer.venue
+
+    # CREATE CORRESPONDING EVENT OCCURENCES
+    dates = request.json.get('dates')
+    if dates:
+        for date in dates:
+            event_occurence = app.model.EventOccurence()
+            event_occurence.event = occasion
+            event_occurence.beginningDatetime = date
+            event_occurence.venue = venue
+            app.model.PcObject.check_and_save(event_occurence)
+
+            # CREATE OFFER
+            offer = app.model.Offer()
+            offer.eventOccurence = event_occurence
+            offer.offerer = offerer
+            offer.price = request.json['price']
+            app.model.PcObject.check_and_save(offer)
 
     return jsonify(occasion._asdict(include=OCCASION_INCLUDES)), 201
 
@@ -54,9 +95,25 @@ def post_occasion(occasionType):
 @expect_json_data
 def patch_occasion(occasionType, occasionId):
     model_name = inflect_engine.singular_noun(occasionType.title(), 1)
+
+    # GET THE OCCASION
     occasion = app.model[model_name].query\
                                     .filter_by(id=dehumanize(occasionId))\
                                     .first_or_404()
-    update(occasion, request.json)
+    feed_occasion(occasion, request.json)
     app.model.PcObject.check_and_save(occasion)
+
+    # UPDATE CORRESPONDING EVENT OCCURENCES
+    dates = request.json.get('dates')
+    if dates:
+        for date in dates:
+            pass
+            """
+            event_occurence = app.model.EventOccurence()
+            event_occurence.event = occasion
+            event_occurence.beginningDatetime = date
+            event_occurence.venue = venue
+            app.model.PcObject.check_and_save(event_occurence)
+            """
+
     return jsonify(occasion._asdict(include=OCCASION_INCLUDES, has_dehumanized_id=True)), 200
