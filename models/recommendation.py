@@ -72,7 +72,8 @@ class Recommendation(app.model.PcObject, db.Model):
                          index=True)
 
     validUntilDate = db.Column(db.DateTime,
-                               nullable=True)
+                               nullable=True,
+                               index=True)
 
     isClicked = db.Column(db.Boolean,
                           nullable=False,

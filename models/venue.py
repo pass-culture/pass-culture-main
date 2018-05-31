@@ -22,7 +22,7 @@ class Venue(app.model.PcObject,
 
     address = db.Column(db.String(200), nullable=True)
 
-    departementCode = db.Column(db.String(3), nullable=False)
+    departementCode = db.Column(db.String(3), nullable=False, index=True)
 
     latitude = db.Column(db.Numeric(8, 5), nullable=True)
 

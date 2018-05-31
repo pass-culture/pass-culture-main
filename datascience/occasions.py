@@ -97,11 +97,11 @@ def get_occasions(limit=3, user=None, coords=None):
 #    print_dev('(reco) all things.count', thing_query.count())
     #TODO
 
-    # PREPARE FINAL OFFERS (TODO: ALTERNATE THINGS AND EVENTS, RANDOMIZE EACH A BIT FIRST)
+    # PREPARE FINAL OFFERS (TODO: ALTERNATE THINGS AND EVENTS ?)
     final_occasions = events
 
     # RETURN
     print('(reco) final count', len(final_occasions))
-    return final_occasions
+    return final_occasions[0:min(limit, len(final_occasions))]
 
 app.datascience.get_occasions = get_occasions

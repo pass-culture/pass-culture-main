@@ -17,7 +17,7 @@ def test_10_put_recommendations_should_work_only_when_logged_in():
 
 def check_recos(recos):
     # ensure we have no duplicates
-    ids = list(map(lambda reco: reco['id'], recos))
+    ids = list(map(lambda reco: reco['mediationId'], recos))
     assert len(list(filter(lambda v: v>1, Counter(ids).values()))) == 0
 
     # ensure we have no mediations for which all offers are past their bookingLimitDatetime

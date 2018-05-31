@@ -164,10 +164,10 @@ with app.app_context():
                       createdObjects=18,
                       updatedObjects=0,
                       erroredObjects=0,
-                      checkedThumbs=18,
-                      createdThumbs=10,
+                      checkedThumbs=0,
+                      createdThumbs=0,
                       updatedThumbs=0,
-                      erroredThumbs=8,
+                      erroredThumbs=0,
                       Venue=9,
                       Offerer=9)
 

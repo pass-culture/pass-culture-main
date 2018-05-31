@@ -92,6 +92,8 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
                              + obj.__class__.__name__)
 
     def getObjectThumbDates(self, obj):
+        if self.mock:
+            return []
         if is_filled(self.line['Lien Image']) != '':
             return [read_date(self.line['Date MAJ'])]
 

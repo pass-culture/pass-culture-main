@@ -32,8 +32,7 @@ def do_sandbox():
     client_user.departementCode = "93"
     client_user.setPassword("pctestjeune")
     check_and_save(client_user)
-    #set_from_mock("thumbs", client_user, 1)
-    client_user.save_thumb('https://avatars3.githubusercontent.com/u/185428?s=400&v=4', 0)
+    set_from_mock("thumbs", client_user, 1)
 
     # un acteur culturel qui peut jouer a rajouter des offres partout
     admin_query = model.User.query.filter_by(email="pctest.admin@btmx.fr")
