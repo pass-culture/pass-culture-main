@@ -1,12 +1,11 @@
-import Dotdotdot from 'react-dotdotdot'
 import React, { Component } from 'react'
+import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import collectionToPath from '../utils/collectionToPath'
-
 import createSelectOccasion from '../selectors/occasion'
+import { collectionToPath } from '../utils/translate'
 
 class OccasionItem extends Component {
   onDeactivateClick = () => {
@@ -21,6 +20,7 @@ class OccasionItem extends Component {
       occasionType,
       thumbUrl
     } = this.props
+    console.log('occasionType', occasionType)
     return (
       <article className="occasion-item media">
         <figure className="media-left">

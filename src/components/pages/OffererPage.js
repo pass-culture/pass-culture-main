@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
-import collectionToPath from '../../utils/collectionToPath'
+import { collectionToPath } from '../../utils/translate'
 
 class OffererPage extends Component {
 

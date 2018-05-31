@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 import { THUMBS_URL } from '../utils/config'
-import collectionToPath from '../utils/collectionToPath'
+import { collectionToPath } from '../utils/translate'
 
 const OffererItem = ({
   id,
