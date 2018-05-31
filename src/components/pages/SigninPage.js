@@ -58,10 +58,10 @@ const SigninPage = ({ errors }) => {
                     className="button is-primary is-outlined"
                     getBody={form => form.usersById[NEW]}
                     getIsDisabled={form =>
-                      !(get(form, 'usersById._new_.email') &&
+                      !(get(form, 'usersById._new_.identifier') &&
                         get(form, 'usersById._new_.password'))
                     }
-                    path="users"
+                    path="users/signin"
                     storeKey="users"
                   />
                 </div>
