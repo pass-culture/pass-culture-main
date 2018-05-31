@@ -61,7 +61,8 @@ RECOMMENDATIONS_INCLUDES = [
     {
         "key": "mediatedOccurences",
         "sub_joins": [
-            "offers"
+            "offers", "offer" # FIXME: Once all request come with the version header,
+                              # remove "offer" (see model/offer.py)
         ]
     },
     {
