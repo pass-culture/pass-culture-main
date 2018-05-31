@@ -84,7 +84,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
         p_info_event = app.model.ProvidableInfo()
         p_info_event.type = Event
-        p_info_event.idAtProviders = str(self.line['Ref Évènement'])
+        p_info_event.idAtProviders = str(int(self.line['Ref Évènement']))
         p_info_event.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
         providables.append(p_info_event)
@@ -100,7 +100,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
                 p_info_evocc = app.model.ProvidableInfo()
                 p_info_evocc.type = EventOccurence
-                p_info_evocc.idAtProviders = str(self.line['Ref Évènement']) + '_'\
+                p_info_evocc.idAtProviders = str(int(self.line['Ref Évènement'])) + '_'\
                                              + evocc_dt.isoformat()
                 p_info_evocc.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
@@ -108,7 +108,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
                 p_info_offer = app.model.ProvidableInfo()
                 p_info_offer.type = Offer
-                p_info_offer.idAtProviders = str(self.line['Ref Évènement']) + '_'\
+                p_info_offer.idAtProviders = str(int(self.line['Ref Évènement'])) + '_'\
                                              + evocc_dt.isoformat()
                 p_info_offer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
@@ -118,7 +118,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
            is_filled(self.line['Texte Accroche']):
             p_info_med = app.model.ProvidableInfo()
             p_info_med.type = Mediation
-            p_info_med.idAtProviders = str(self.line['Ref Évènement'])
+            p_info_med.idAtProviders = str(int(self.line['Ref Évènement']))
             p_info_med.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
             providables.append(p_info_med)
@@ -158,7 +158,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
         return []
 
     def getObjectThumb(self, obj, index):
-        assert obj.idAtProviders == str(self.line['Ref Évènement'])
+        assert obj.idAtProviders == str(int(self.line['Ref Évènement']))
         thumb_url = None
         if isinstance(obj, Mediation):
             thumb_url = self.line['Lien Image Accroche']
