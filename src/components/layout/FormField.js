@@ -14,6 +14,7 @@ import { capitalize } from '../../utils/string'
 const FormComponentsByName = {
   FormInput,
   FormSelect,
+  FormPassword,
   FormTextarea
 }
 
@@ -32,7 +33,6 @@ class FormField extends Component {
     } = this.props
     const inputId = id || `input_${collectionName}_${name}`
     const isCheckbox = type === 'checkbox';
-    const isSelect = type === 'select';
     const InputComponent = FormComponentsByName[`Form${capitalize(type)}`] || FormInput
     const inputMarkup = <InputComponent
       {...this.props}

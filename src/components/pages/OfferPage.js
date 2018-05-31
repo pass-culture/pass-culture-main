@@ -13,7 +13,6 @@ import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectCurrentPath from '../../selectors/currentPath'
-import selectEventTypes from '../../selectors/eventTypes'
 import { NEW } from '../../utils/config'
 import { collectionToPath, pathToCollection} from '../../utils/translate'
 
