@@ -98,32 +98,39 @@ class MediationPage extends Component {
                 Retour
               </NavLink>
             </div>
-            <h2 className='subtitle'>{get(occasion, 'name')}</h2>
-            <h1 className='title has-text-centered'>
-              {isNew ? 'Créez' : 'Modifiez'} une accroche
-            </h1>
-            <form>
+            <section className='section'>
+              <h2 className='subtitle'>{get(occasion, 'name')}</h2>
+              <h1 className='title has-text-centered'>
+                {isNew ? 'Créez' : 'Modifiez'} une accroche
+              </h1>
               <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
-              <FormField
-                autoComplete="url"
-                collectionName="events"
-                entityId={id}
-                label={<Label title="Depuis une adresse Internet :" />}
-                name="url"
-                type='url'
-              />
-              <div className="file">
-                <label className="file-label">
-                  <input className="file-input" type="file" name="resume" />
-                  <span className="file-cta">
-                    <span className="file-icon">
-                      <i className="fas fa-upload"></i>
+              </section>
+            <form>
+              <div className='field'>
+                <label class="label"><Label title='Depuis une adresse Internet :' /></label>
+                <div className="field is-grouped">
+                  <p className="control is-expanded">
+                    <input className="input is-rounded" type="url" placeholder="http://www.example.com" />
+                  </p>
+                  <p className="control">
+                    <a className="button is-primary is-outlined is-medium">
+                      OK
+                    </a>
+                  </p>
+                </div>
+              </div>
+              <div className='field'>
+                <label class="label"><Label title='... ou depuis votre poste :' /></label>
+                <div className="file is-primary is-outlined">
+                  <label className="file-label">
+                    <input className="file-input" type="file" name="resume" />
+                    <span className="file-cta">
+                      <span className="file-label">
+                        Choisir un fichier
+                      </span>
                     </span>
-                    <span className="file-label">
-                      Choose a file…
-                    </span>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
             </form>
           </div>
