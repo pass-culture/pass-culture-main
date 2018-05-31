@@ -19,35 +19,6 @@ const FormComponentsByName = {
 
 class FormField extends Component {
 
-  // inputMarkup(id) {
-  //   const {
-  //     className,
-  //     type,
-  //   } = this.props
-  //   const isCheckbox = type === 'checkbox';
-
-  //   const inputProps = Object.assign({}, this.props, {
-  //     className: classnames(className, {
-  //       checkbox: type === 'checkbox',
-  //       input: type !== 'textarea',
-  //       textarea: type === 'textarea',
-  //     }),
-  //     'aria-describedby': `${id}-error`,
-  //     key: id,
-  //     id,
-  //   })
-  //   switch(type) {
-  //     case 'textarea':
-  //       return <FormTextarea {...inputProps} />
-  //     case 'password':
-  //       return <FormPassword {...inputProps} />
-  //     case 'select':
-  //       return <FormSelect {...inputProps} />
-  //     default:
-  //       return <FormInput {...inputProps} />
-  //   }
-  // }
-
   render() {
     const {
       className,
