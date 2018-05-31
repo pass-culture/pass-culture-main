@@ -3,13 +3,9 @@ import { createSelector } from 'reselect'
 import { pathToCollection } from '../utils/translate'
 
 export default createSelector(
-  (state, ownProps) => ownProps.occasionType,
-  (state, ownProps) => ownProps.occasionId,
-  (occasionType, occasionId) => {
-    let path = `occasions/${pathToCollection(occasionType)}`
-    if (occasionId) {
-      path = `${path}/${occasionId}`
-    }
-    return path
+  (state, ownProps) => ownProps.match.params.occasionPath,
+  (state, ownProps) => ownProps.match.params.occasionId,
+  (occasionPath, occasionId) => {
+    return `occasions/${pathToCollection(occasionPath)}/${occasionId !== 'nouveau' ? occasionId : ''}`
   }
 )

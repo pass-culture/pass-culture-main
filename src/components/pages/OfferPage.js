@@ -15,6 +15,7 @@ import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectCurrentPath from '../../selectors/currentPath'
 import selectEventTypes from '../../selectors/eventTypes'
 import { NEW } from '../../utils/config'
+import { collectionToPath, pathToCollection} from '../../utils/translate'
 
 const Label = ({ title }) => {
   return <div className="subtitle">{title}</div>
@@ -38,13 +39,13 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const {
-      collectionName,
+      occasionPath,
       occasionId,
       requestData,
     } = this.props
     occasionId !== 'nouveau' && requestData(
       'GET',
-      `occasions/${collectionName}/${occasionId}`,
+      `occasions/${pathToCollection(occasionPath)}/${occasionId}`,
       { key: 'occasions' }
     )
   }
@@ -91,6 +92,19 @@ class OfferPage extends Component {
 
   render () {
     const {
+      isNew,
+      eventTypes,
+      occasion,
+      occasionId,
+      occasionPath,
+      path,
+    } = this.props
+
+    const {
+      id,
+      name,
+      performer,
+      stageDirector,
       author,
       bookingLimitDatetime,
       contactName,
@@ -98,20 +112,13 @@ class OfferPage extends Component {
       contactPhone,
       description,
       durationMinutes,
-      eventTypes,
-      id,
-      isNew,
       mediaUrls,
-      name,
-      occasion,
-      occasionType,
       occurences,
-      path,
-      performer,
-      stageDirector,
-      type
-    } = this.props
-    const occasionId = isNew ? NEW : this.props.occasionId
+      type,
+    } = occasion || {}
+
+    const occasionIdOrNew = isNew ? NEW : occasionId
+    const occasionCollectionName = pathToCollection(occasionPath)
     return (
       <PageWrapper name='offer' loading={!(id || isNew)}>
         <div className='columns'>
@@ -122,23 +129,23 @@ class OfferPage extends Component {
               </NavLink>
             </div>
             <h1 className='title has-text-centered'>
-              {isNew ? 'Créer' : 'Modifier'} {occasionType === 'evenements' ? 'un événement' : 'un objet'}
+              {isNew ? 'Créer' : 'Modifier'} {occasionPath === 'evenements' ? 'un événement' : 'un objet'}
             </h1>
             <form>
               <FormField
                 autoComplete="name"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={name}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Titre" />}
                 name="name"
               />
               <hr />
               <h2 className='subtitle is-2'>Infos pratiques</h2>
               <FormField
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={type || ''}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Type" />}
                 name="type"
                 type="select"
@@ -151,18 +158,18 @@ class OfferPage extends Component {
 
               <FormField
                 autoComplete="durationMinutes"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={durationMinutes}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Durée (en minutes)" />}
                 name="durationMinutes"
                 type="number"
               />
               <FormField
                 autoComplete="bookingLimitDatetimes"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={bookingLimitDatetime}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
                 name="bookingLimitDatetime"
                 type="date"
@@ -172,34 +179,34 @@ class OfferPage extends Component {
               <h2 className='subtitle is-2'>Infos artistiques</h2>
               <FormField
                 autoComplete="description"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={description}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Description" />}
                 name="description"
                 type="textarea"
               />
               <FormField
                 autoComplete="author"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={author}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Auteur" />}
                 name="author"
               />
               <FormField
                 autoComplete="stageDirector"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={stageDirector}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Metteur en scène" />}
                 name="stageDirector"
               />
               <FormField
                 autoComplete="performer"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={performer}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Interprète" />}
                 name="performer"
               />
@@ -207,17 +214,17 @@ class OfferPage extends Component {
               <h2 className='subtitle is-2'>Infos de contact</h2>
               <FormField
                 autoComplete="contactName"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={contactName}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Nom du contact" />}
                 name="contactName"
               />
               <FormField
                 autoComplete="contactEmail"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={contactEmail}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Email de contact" />}
                 name="contactEmail"
                 type="email"
@@ -225,9 +232,9 @@ class OfferPage extends Component {
               />
               <FormField
                 autoComplete="contactPhone"
-                collectionName="events"
+                collectionName={occasionCollectionName}
                 defaultValue={contactPhone}
-                entityId={id}
+                entityId={occasionId}
                 label={<Label title="Tel de contact" />}
                 name="contactPhone"
               />
@@ -239,9 +246,9 @@ class OfferPage extends Component {
                       <div className='control is-expanded'>
                         <FormField
                           autoComplete="url"
-                          collectionName="events"
+                          collectionName={occasionCollectionName}
                           defaultValue={m}
-                          entityId={id}
+                          entityId={occasionId}
                           name={`mediaUrls.${i}`}
                           type="url"
                         />
@@ -262,15 +269,15 @@ class OfferPage extends Component {
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
                   <SubmitButton
-                    getBody={form => form.eventsById[occasionId]}
+                    getBody={form => form.eventsById[occasionIdOrNew]}
                     getIsDisabled={form =>
                       isNew
-                      ? !get(form, `eventsById.${occasionId}.description`) ||
-                        !get(form, `eventsById.${occasionId}.name`) ||
-                        typeof get(form, `eventsById.${occasionId}.type`) !== 'string'
-                      : !get(form, `eventsById.${occasionId}.description`) &&
-                        !get(form, `eventsById.${occasionId}.name`) &&
-                        typeof get(form, `eventsById.${occasionId}.type`) !== 'string'
+                      ? !get(form, `eventsById.${occasionIdOrNew}.description`) ||
+                        !get(form, `eventsById.${occasionIdOrNew}.name`) ||
+                        typeof get(form, `eventsById.${occasionIdOrNew}.type`) !== 'string'
+                      : !get(form, `eventsById.${occasionIdOrNew}.description`) &&
+                        !get(form, `eventsById.${occasionIdOrNew}.name`) &&
+                        typeof get(form, `eventsById.${occasionIdOrNew}.type`) !== 'string'
                     }
                     className="button is-primary is-medium"
                     method={isNew ? 'POST' : 'PATCH'}
@@ -296,17 +303,15 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => {
-      return Object.assign({
-        collectionName: ownProps.occasionType === 'evenements'
-          ? 'events'
-          : ownProps.occasionType === 'things'
-            ? 'things'
-            : null,
-        eventTypes: selectEventTypes(state),
-        isNew: ownProps.occasionId === 'nouveau',
-        path: selectCurrentPath(state, ownProps),
+      return {
         user: state.user,
-      }, selectCurrentOccasion(state, ownProps))
+        occasionPath: ownProps.match.params.occasionPath,
+        occasionId: ownProps.match.params.occasionId,
+        isNew: ownProps.match.params.occasionId === 'nouveau',
+        eventTypes: selectEventTypes(state),
+        path: selectCurrentPath(state, ownProps),
+        occasion: selectCurrentOccasion(state, ownProps),
+      }
     },
     { resetForm, requestData }
   )

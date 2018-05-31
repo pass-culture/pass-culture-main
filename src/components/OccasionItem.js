@@ -29,7 +29,7 @@ class OccasionItem extends Component {
         </figure>
         <div className="media-content">
           <div className="content">
-            <NavLink className='title is-block' to={`/offres/${(occasionType)}/${id}`}>
+            <NavLink className='title is-block' to={`/offres/${collectionToPath(occasionType)}/${id}`}>
               {name}
             </NavLink>
             <Dotdotdot className='is-small' clamp={3}>
@@ -38,7 +38,7 @@ class OccasionItem extends Component {
           </div>
           <nav className="level is-mobile">
             <div className="level-left">
-              <NavLink  to={`/offres/${(occasionType)}/${id}`}>
+              <NavLink  to={`/offres/${collectionToPath(occasionType)}/${id}`}>
                 <button className="button is-primary level-item">
                   Modifier
                 </button>

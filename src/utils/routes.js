@@ -59,7 +59,7 @@ const routes = [
     exact: true,
     path: '/lieux/:offererId',
     title: 'Lieux',
-    render: props => <OffererPage offererId={props.match.params.offererId} />,
+    render: () => <OffererPage />,
   },
   {
     exact: true,
@@ -69,12 +69,9 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionType/:occasionId',
+    path: '/offres/:occasionPath/:occasionId',
     title: 'Offre',
-    render: props => <OfferPage
-      occasionId={props.match.params.occasionId}
-      occasionType={props.match.params.occasionType}
-    />,
+    render: () => <OfferPage />,
   },
   {
     exact: true,
