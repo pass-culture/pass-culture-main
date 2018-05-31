@@ -9,8 +9,8 @@ import FormField from '../layout/FormField'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
+import { resetForm } from '../../reducers/form'
 import { collectionToPath } from '../../utils/translate'
-// import collectionToPath from '../../utils/collectionToPath'
 
 import { NEW } from '../../utils/config'
 
@@ -23,6 +23,10 @@ class OffererPage extends Component {
   constructor() {
     super()
     this.state = {}
+  }
+
+  componentWillUnmount() {
+    this.props.resetForm()
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -74,7 +78,7 @@ class OffererPage extends Component {
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
             <form onSubmit={this.save}>
             <FormField
-              autoComplete="siret"
+              autoComplete="on"
               collectionName="venues"
               defaultValue={siret}
               entityId={venueId}
@@ -83,7 +87,7 @@ class OffererPage extends Component {
               type="siret"
             />
             <FormField
-              autoComplete="name"
+              autoComplete="on"
               collectionName="venues"
               defaultValue={name}
               entityId={venueId}
@@ -91,15 +95,16 @@ class OffererPage extends Component {
               name="name"
             />
             <FormField
-              autoComplete="address"
+              autoComplete="on"
               collectionName="venues"
               defaultValue={address || ''}
               entityId={venueId}
               label={<Label title="Adresse" />}
               name="address"
+              type="adress"
             />
             <FormField
-              autoComplete="bookingEmail"
+              autoComplete="on"
               collectionName="venues"
               defaultValue={bookingEmail || ''}
               entityId={venueId}
@@ -147,6 +152,6 @@ export default compose(
       offerer: get(state, 'user.offerers', []).find(o => o.id === get(ownProps, 'match.params.offererId', '')),
       isNew: ownProps.offererId === 'nouveau',
     }),
-    { requestData }
+    { requestData, resetForm }
   )
 )(OffererPage)

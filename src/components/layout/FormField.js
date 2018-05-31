@@ -8,6 +8,7 @@ import FormInput from './FormInput'
 import FormPassword from './FormPassword'
 import FormSelect from './FormSelect'
 import FormTextarea from './FormTextarea'
+import FormSiret from './FormSiret'
 import Icon from './Icon'
 import { capitalize } from '../../utils/string'
 
@@ -15,6 +16,7 @@ const FormComponentsByName = {
   FormInput,
   FormSelect,
   FormPassword,
+  FormSiret,
   FormTextarea
 }
 
