@@ -7,7 +7,7 @@ export function collectionToPath (collectionName) {
     case 'venues':
       return 'lieux';
     default:
-      return '';
+      return collectionName;
   }
 }
 
@@ -20,6 +20,6 @@ export function pathToCollection (path) {
     case 'lieux':
       return 'venues';
     default:
-      return '';
+      return path;
   }
 }
