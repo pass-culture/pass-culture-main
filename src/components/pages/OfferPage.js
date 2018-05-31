@@ -144,9 +144,8 @@ class OfferPage extends Component {
                 type="select"
                 options={eventTypes}
               />
-              -
               <div className='field'>
-                <label className='label'>Horaires</label>
+              <Label title='Horaires' />
                 <OccurenceManager occurences={occurences} />
               </div>
 

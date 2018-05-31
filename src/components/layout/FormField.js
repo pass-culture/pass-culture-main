@@ -68,7 +68,10 @@ class FormField extends Component {
     )
     return [
       <div
-        className={`field ${isCheckbox && type}`}
+        className={classnames({
+          field: true,
+          checkbox: isCheckbox,
+        })}
         key={0}
       >
         <div className='control'>
