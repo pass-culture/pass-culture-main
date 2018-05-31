@@ -11,6 +11,7 @@ import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import { collectionToPath } from '../../utils/translate'
 // import collectionToPath from '../../utils/collectionToPath'
+
 import { NEW } from '../../utils/config'
 
 const Label = ({ title }) => {
@@ -57,6 +58,7 @@ class OffererPage extends Component {
       longitude,
       name,
       id,
+      siret
     } = get(this.state, 'offerer.venue', {})
 
     const venueId = isNew ? NEW : id
@@ -71,10 +73,15 @@ class OffererPage extends Component {
 
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
             <form onSubmit={this.save}>
-              {/* <div className='field'>
-              <label className='label'>Nom</label>
-              <input className='input title' type='text' name='name' value={name || ''} onChange={this.updateValue} maxLength={140} />
-            </div> */}
+            <FormField
+              autoComplete="siret"
+              collectionName="venues"
+              defaultValue={siret}
+              entityId={venueId}
+              label={<Label title="Siret" />}
+              name="siret"
+              type="siret"
+            />
             <FormField
               autoComplete="name"
               collectionName="venues"
@@ -83,19 +90,28 @@ class OffererPage extends Component {
               label={<Label title="Nom" />}
               name="name"
             />
-            <div className='field'>
-              <label className='label'>Adresse</label>
-              <input className='input' type='text' name='address' value={address || ''} onChange={this.updateValue}  />
-            </div>
+            <FormField
+              autoComplete="address"
+              collectionName="venues"
+              defaultValue={address || ''}
+              entityId={venueId}
+              label={<Label title="Adresse" />}
+              name="address"
+            />
+            <FormField
+              autoComplete="bookingEmail"
+              collectionName="venues"
+              defaultValue={bookingEmail || ''}
+              entityId={venueId}
+              label={<Label title="Email de réservation" />}
+              name="bookingEmail"
+            />
+            <input type='hidden' name='latitude' value={latitude || ''} />
+            <input type='hidden' name='longitude' value={longitude || ''} />
             {
               // TODO: plug this to a map
             }
-            <input type='hidden' name='latitude' value={latitude || ''} />
-            <input type='hidden' name='longitude' value={longitude || ''} />
-            <div className='field'>
-              <label className='label'>Email de réservation</label>
-              <input className='input' autoComplete='email' type='email' name='bookingEmail' value={bookingEmail || ''} onChange={this.updateValue}  />
-            </div>
+
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 {/* <button className="button is-primary is-medium">Enregistrer</button> */}
