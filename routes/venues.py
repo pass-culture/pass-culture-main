@@ -13,6 +13,27 @@ venueModel = app.model.Venue
 offererModel = app.model.Offerer
 userOffererModel = app.model.UserOfferer
 
+VENUE_KEYS = [
+    'siret',
+    'name',
+    'address',
+    'latitude',
+    'longitude'
+]
+
+def feed_venue(venue, json):
+    for venue_key in VENUE_KEYS:
+        if venue_key in json:
+            venue.__setattr__(venue_key, json[venue_key])
+
+OFFERER_KEYS = [
+    'bookingEmail'
+]
+
+def feed_offerer(offerer, json):
+    for offerer_key in OFFERER_KEYS:
+        if offerer_key in json:
+            offerer.__setattr__(offerer_key, json[offerer_key])
 
 def store_public_venue_objects(venueId, json):
     humanized_venue_id = humanize(venueId)
@@ -54,17 +75,19 @@ def get_venue(venueId):
 @app.route('/venues', methods=['POST'])
 @expect_json_data
 def create_venue():
-    new_venue = venueModel(from_dict=request.json)
+    new_venue = venueModel()
+    feed_venue(new_venue, request.json)
     app.model.PcObject.check_and_save(new_venue)
     new_offerer = offererModel()
     new_offerer.venue = new_venue
     new_offerer.name = new_venue.name
     new_offerer.address = new_venue.address
+    feed_offerer(new_offerer, request.json )
 
     app.model.PcObject.check_and_save(new_offerer)
 
     user_offerer = userOffererModel()
-    user_offerer.offer = new_offerer
+    user_offerer.offerer = new_offerer
     user_offerer.user = current_user
 
     app.model.PcObject.check_and_save(user_offerer)

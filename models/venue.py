@@ -17,6 +17,8 @@ class Venue(app.model.PcObject,
 
     name = db.Column(db.String(140), nullable=False)
 
+    siret = db.Column(db.String(14))
+
     address = db.Column(db.String(200), nullable=True)
 
     latitude = db.Column(db.Numeric(8, 5), nullable=True)
