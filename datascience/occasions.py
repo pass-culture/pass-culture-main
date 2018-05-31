@@ -3,10 +3,9 @@ from datetime import datetime
 from flask import current_app as app
 from random import randint
 from sqlalchemy import func
+from sqlalchemy.orm import aliased
 
 from utils.config import IS_DEV
-from datascience.hoqs import with_event_deduplication, with_departement_codes,\
-    with_event, with_event_mediation, with_thing, with_thing_mediation
 from utils.human_ids import dehumanize
 from utils.compose import compose
 from utils.content import get_mediation, get_source
@@ -28,10 +27,13 @@ def print_dev(*args):
         print(*args)
 
 
+# --- SCORING ---
+
 def make_score_tuples(occasions, departement_codes):
     if len(occasions) == 0:
         return []
-    sort_function = score_event if isinstance(occasions, Event) else score_thing
+    sort_function = score_event if isinstance(occasions[0], Event)\
+                                else score_thing
     scored_occasions = list(map(lambda e: (e, sort_function(e, departement_codes)),
                                 occasions))
     print_dev('(reco) scored occasions', [(se[0], se[1]) for se in scored_occasions])
@@ -77,13 +79,36 @@ def score_thing(thing, departement_codes):
     return score
 
 
-def bookable_occasions(query):
-    query = query.join(Offer)\
-                 .filter(((Offer.bookingLimitDatetime == None)
-                          | (Offer.bookingLimitDatetime > datetime.now()))
-                         & ((Offer.available == None) |
-                            (Offer.available > Booking.query.filter(Booking.offerId == Offer.id).count())))\
-                 .distinct()
+# --- FILTERING ---
+
+def departement_occasions(query, occasion_type, departement_codes):
+    if occasion_type == Event:
+        join_table = EventOccurence
+    else:
+        join_table = aliased(Offer)
+
+    query = query.join(join_table)\
+                 .join(Venue)\
+                 .filter(Venue.departementCode.in_(departement_codes))\
+                 .distinct(occasion_type.id)
+    print_dev('(reco) departement occasions.count', query.count())
+    return query
+
+
+def bookable_occasions(query, occasion_type):
+    # remove events for which all occurences are in the past
+    # (crude filter to limit joins before the more complete one below)
+    if occasion_type == Event:
+        query = query.filter(Event.occurences.any(EventOccurence.beginningDatetime > datetime.now()))
+        print_dev('(reco) future events.count', query.count())
+
+    bo_Offer = aliased(Offer)
+    query = query.join(bo_Offer)\
+                 .filter(((bo_Offer.bookingLimitDatetime == None)
+                          | (bo_Offer.bookingLimitDatetime > datetime.now()))
+                         & ((bo_Offer.available == None) |
+                            (bo_Offer.available > Booking.query.filter(Booking.offerId == bo_Offer.id).count())))\
+                 .distinct(occasion_type.id)
     print_dev('(reco) bookable events.count', query.count())
     return query
 
@@ -95,8 +120,25 @@ def not_yet_recommended_occasions(query, user):
     return query
 
 
+# --- MAIN ---
+
+def get_occasions_by_type(occasion_type,
+                          limit=3,
+                          user=None,
+                          coords=None,
+                          departement_codes=None):
+    query = occasion_type.query
+    print_dev('(reco) all '+str(occasion_type)+'.count', query.count())
+
+    query = departement_occasions(query, occasion_type, departement_codes)
+    query = bookable_occasions(query, occasion_type)
+    query = not_yet_recommended_occasions(query, user)
+
+    return sort_by_score(make_score_tuples(query.all(),
+                                           departement_codes))
+
+
 def get_occasions(limit=3, user=None, coords=None):
-    # CHECK USER
     if not user or not user.is_authenticated():
         return []
 
@@ -104,48 +146,19 @@ def get_occasions(limit=3, user=None, coords=None):
                           if user.departementCode == '93'\
                           else [user.departementCode]
 
-    # ALL EVENTS
-    event_query = Event.query
-    print_dev('(reco) all events.count', event_query.count())
+    occasions = get_occasions_by_type(Event,
+                                      limit=limit,
+                                      user=user,
+                                      coords=coords,
+                                      departement_codes=departement_codes)\
+              + get_occasions_by_type(Thing,
+                                      limit=limit,
+                                      user=user,
+                                      coords=coords,
+                                      departement_codes=departement_codes)
 
-    # LIMIT TO EVENTS IN RELEVANT DEPARTEMENTS
-    event_query = event_query.join(EventOccurence)\
-                             .join(Venue)\
-                             .filter(Venue.departementCode.in_(departement_codes))\
-                             .distinct()
-    print_dev('(reco) departement events.count', event_query.count())
+    print('(reco) final occasions (events + things) count', len(occasions))
+    return occasions[:limit]
 
-    # REMOVE EVENTS FOR WHICH ALL OCCURENCES ARE IN THE PAST (CRUDE FILTER TO LIMIT JOINS BEFORE THE MORE COMPLETE ONE BELOW)
-    event_query = event_query.filter(Event.occurences.any(EventOccurence.beginningDatetime > datetime.now()))
-    print_dev('(reco) future events.count', event_query.count())
-
-    event_query = bookable_occasions(event_query)
-    event_query = not_yet_recommended_occasions(event_query, user)
-
-    events = sort_by_score(make_score_tuples(event_query.all(),
-                                             departement_codes))
-
-    # ALL THINGS
-#    thing_query = Thing.query
-#    print_dev('(reco) all things.count', thing_query.count())
-#
-#    # LIMIT TO THINGS IN RELEVANT DEPARTEMENTS
-#    thing_query = thing_query.join(Offer)\
-#                             .join(Venue)\
-#                             .filter(Venue.departementCode.in_(departement_codes))\
-#                             .distinct()
-#    print_dev('(reco) departement things.count', thing_query.count())
-#
-#    thing_query = bookable_occasions(thing_query)
-#    thing_query = not_yet_recommended_occasions(thing_query, user)
-#    things = sort_by_score(make_score_tuples(thing_query.all(),
-#                           departement_codes))
-    things = []
-
-    final_occasions = events + things
-
-    # RETURN
-    print('(reco) final count', len(final_occasions))
-    return final_occasions[:limit]
 
 app.datascience.get_occasions = get_occasions

@@ -16,23 +16,27 @@ def test_10_put_recommendations_should_work_only_when_logged_in():
 
 
 def check_recos(recos):
-    # ensure we have no duplicates
-    ids = list(map(lambda reco: reco['mediationId'], recos))
+    # ensure we have no duplicate mediations
+    ids = list(filter(lambda id: id != None,
+                      map(lambda reco: reco['mediationId'],
+                          recos)))
     assert len(list(filter(lambda v: v>1, Counter(ids).values()))) == 0
 
     # ensure we have no mediations for which all offers are past their bookingLimitDatetime
     for reco in recos:
-        if 'tutoIndex' not in reco['mediation']:
+        if 'mediation' in reco\
+           and 'tutoIndex' not in reco['mediation']:
             assert not all([offer['bookingLimitDatetime'] is not None and
                             parse_date(offer['bookingLimitDatetime']) <= datetime.now()
                             for offer in oc['offers'] for oc in reco['mediatedOccurences']])
-            assert not all([oc['venue']['departementCode']!='93' for oc in reco['mediatedOccurences']])
+            assert not all([oc['venue']['departementCode'] != '93' for oc in reco['mediatedOccurences']])
+
 
 def subtest_initial_recos():
     r = req_with_auth().put(RECOMMENDATION_URL, json={})
     assert r.status_code == 200
     recos = r.json()
-    assert len(recos) <= BLOB_SIZE
+    assert len(recos) <= BLOB_SIZE + 2
 
     assert recos[0]['mediation']['tutoIndex'] == 0
     assert recos[1]['mediation']['tutoIndex'] == 1
@@ -53,7 +57,7 @@ def subtest_recos_with_params(params,
     assert r.status_code == expected_status
     if expected_status == 200:
         recos = r.json()
-        assert len(recos) <= BLOB_SIZE
+        assert len(recos) <= BLOB_SIZE + 2
         assert recos[1]['mediation']['tutoIndex'] is not None
         check_recos(recos)
         return recos
@@ -153,7 +157,8 @@ def test_16_once_marked_as_read_tutos_should_not_come_back():
     assert r.status_code == 200
     recos_after = r.json()
     assert recos_after[0]['mediation']['tutoIndex'] == 1
-    assert recos_after[1]['mediation']['tutoIndex'] is None
+    assert 'mediation' not in recos_after[1]\
+           or recos_after[1]['mediation']['tutoIndex'] is None
 
 
 def test_17_put_recommendations_should_return_more_recos():
