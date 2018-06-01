@@ -16,7 +16,7 @@ const errors = (state = initialState, action) => {
           [action.name]: null,
         })
     case RESET_ERRORS:
-      return null
+      return initialState
     default:
       return state
   }
@@ -33,9 +33,9 @@ export const removeErrors = name => ({
   type: REMOVE_ERRORS,
 })
 
-export const resetErrors = () => {
+export const resetErrors = () => ({
   type: RESET_ERRORS
-}
+})
 
 
 // default

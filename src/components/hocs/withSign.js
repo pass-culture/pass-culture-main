@@ -13,7 +13,7 @@ const withSign = WrappedComponent => {
   class _withSign extends Component {
     constructor (props) {
       super()
-      props.resetErrors({ errors: null })
+      props.resetErrors()
     }
 
     componentDidUpdate() {

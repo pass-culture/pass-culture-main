@@ -13,8 +13,7 @@ import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectCurrentMediation from '../../selectors/currentMediation'
-import selectCurrentPath from '../../selectors/currentPath'
-import selectEventTypes from '../../selectors/eventTypes'
+import selectOccasionPath from '../../selectors/occasionPath'
 import { NEW } from '../../utils/config'
 
 const Label = ({ title }) => {
