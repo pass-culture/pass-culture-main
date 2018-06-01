@@ -1,20 +1,32 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
 
 import withLogin from '../hocs/withLogin'
+import FormField from '../layout/FormField'
 import PageWrapper from '../layout/PageWrapper'
+import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
+import { resetForm } from '../../reducers/form'
 import { collectionToPath } from '../../utils/translate'
+
+import { NEW } from '../../utils/config'
+
+const Label = ({ title }) => {
+  return <div className="subtitle">{title}</div>
+}
 
 class OffererPage extends Component {
 
   constructor() {
     super()
     this.state = {}
+  }
+
+  componentWillUnmount() {
+    this.props.resetForm()
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -43,12 +55,17 @@ class OffererPage extends Component {
     const {
       address,
       bookingEmail,
-      name,
+      // name,
     } = get(this.state, 'offerer', {})
     const {
       latitude,
       longitude,
+      name,
+      id,
+      siret
     } = get(this.state, 'offerer.venue', {})
+
+    const venueId = isNew ? NEW : id
 
     return (
       <PageWrapper name='offer' loading={!(offerer || isNew)}>
@@ -60,49 +77,81 @@ class OffererPage extends Component {
 
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
             <form onSubmit={this.save}>
-              <div className='field'>
-                <label className='label'>Nom</label>
-                <input className='input title' type='text' name='name' value={name || ''} onChange={this.updateValue} maxLength={140} />
+            <FormField
+              autoComplete="on"
+              collectionName="venues"
+              defaultValue={siret}
+              entityId={venueId}
+              label={<Label title="Siret" />}
+              name="siret"
+              type="siret"
+            />
+            <FormField
+              autoComplete="on"
+              collectionName="venues"
+              defaultValue={name}
+              entityId={venueId}
+              label={<Label title="Nom" />}
+              name="name"
+            />
+            <FormField
+              autoComplete="on"
+              collectionName="venues"
+              defaultValue={address || ''}
+              entityId={venueId}
+              label={<Label title="Adresse" />}
+              name="address"
+              type="adress"
+            />
+            <FormField
+              autoComplete="on"
+              collectionName="venues"
+              defaultValue={bookingEmail || ''}
+              entityId={venueId}
+              label={<Label title="Email de réservation" />}
+              name="bookingEmail"
+            />
+            <input type='hidden' name='latitude' value={latitude || ''} />
+            <input type='hidden' name='longitude' value={longitude || ''} />
+            {
+              // TODO: plug this to a map
+            }
+
+            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+              <div className="control">
+                {/* <button className="button is-primary is-medium">Enregistrer</button> */}
+                <SubmitButton
+                  getBody={form => form.venuesById[venueId]}
+                  getIsDisabled={form => !get(form, `venuesById.${venueId}.name`)
+                  }
+                  className="button is-primary is-medium"
+                  method={isNew ? 'POST' : 'PATCH'}
+                  path={isNew ? `venues/` : `venues/${venueId}`}
+                  storeKey="venues"
+                  text="Enregistrer"
+                />
               </div>
-              <div className='field'>
-                <label className='label'>Adresse</label>
-                <input className='input' type='text' name='address' value={address || ''} onChange={this.updateValue}  />
+              <div className="control">
+                <NavLink to={`/${collectionToPath('venues')}`} className="button is-primary is-outlined is-medium">Retour</NavLink>
               </div>
-              {
-                // TODO: plug this to a map
-              }
-              <input type='hidden' name='latitude' value={latitude || ''} />
-              <input type='hidden' name='longitude' value={longitude || ''} />
-              <div className='field'>
-                <label className='label'>Email de réservation</label>
-                <input className='input' autoComplete='email' type='email' name='bookingEmail' value={bookingEmail || ''} onChange={this.updateValue}  />
-              </div>
-              <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-                <div className="control">
-                  <button className="button is-primary is-medium">Enregistrer</button>
-                </div>
-                <div className="control">
-                  <NavLink to={`/${collectionToPath('venues')}`} className="button is-primary is-outlined is-medium">Retour</NavLink>
-                </div>
-              </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
-      </PageWrapper>
-    )
-  }
+      </div>
+    </PageWrapper>
+  )
+}
 }
 
 export default compose(
   withLogin({ isRequired: true }),
-  withRouter,
   connect(
     (state, ownProps) => ({
       user: get(state, 'data.users.0'),
       // TODO put the following logic in a selector:
       offerer: get(state, 'user.offerers', []).find(o => o.id === get(ownProps, 'match.params.offererId', '')),
-      isNew: get(ownProps, 'match.params.offererId', '') === 'nouveau',
+      isNew: ownProps.offererId === 'nouveau',
     }),
-    { requestData }
+    { requestData, resetForm }
   )
 )(OffererPage)
