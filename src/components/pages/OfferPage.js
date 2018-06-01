@@ -115,7 +115,7 @@ class OfferPage extends Component {
               {isNew ? 'Créer' : 'Modifier'} {occasionPath === 'evenements' ? 'un événement' : 'un objet'}
             </h1>
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={name}
               entityId={id}
               label={<Label title="Titre" />}
@@ -125,7 +125,7 @@ class OfferPage extends Component {
             <hr />
             <h2 className='subtitle is-2'>Infos pratiques</h2>
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={type || ''}
               entityId={id}
               label={<Label title="Type" />}
@@ -139,7 +139,7 @@ class OfferPage extends Component {
             </div>
 
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={durationMinutes}
               entityId={id}
               label={<Label title="Durée (en minutes)" />}
@@ -148,7 +148,7 @@ class OfferPage extends Component {
               type="number"
             />
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={bookingLimitDatetime}
               entityId={id}
               label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
@@ -159,7 +159,7 @@ class OfferPage extends Component {
             <hr />
             <h2 className='subtitle is-2'>Infos artistiques</h2>
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={description}
               entityId={id}
               label={<Label title="Description" />}
@@ -168,21 +168,21 @@ class OfferPage extends Component {
               type="textarea"
             />
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={author}
               entityId={id}
               label={<Label title="Auteur" />}
               name="author"
             />
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={stageDirector}
               entityId={id}
               label={<Label title="Metteur en scène" />}
               name="stageDirector"
             />
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={performer}
               entityId={id}
               label={<Label title="Interprète" />}
@@ -191,14 +191,14 @@ class OfferPage extends Component {
             <hr />
             <h2 className='subtitle is-2'>Infos de contact</h2>
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={contactName}
               entityId={id}
               label={<Label title="Nom du contact" />}
               name="contactName"
             />
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={contactEmail}
               entityId={id}
               label={<Label title="Email de contact" />}
@@ -207,7 +207,7 @@ class OfferPage extends Component {
               type="email"
             />
             <FormField
-              collectionName={occasionType}
+              collectionName={occasionPath}
               defaultValue={contactPhone}
               entityId={id}
               label={<Label title="Tel de contact" />}
@@ -220,7 +220,7 @@ class OfferPage extends Component {
                   <li className='field has-addons' key={i}>
                     <div className='control is-expanded'>
                       <FormField
-                        collectionName={occasionType}
+                        collectionName={occasionPath}
                         defaultValue={m}
                         entityId={id}
                         name={`mediaUrls.${i}`}
@@ -244,19 +244,18 @@ class OfferPage extends Component {
               <div className="control">
                 <SubmitButton
                   getBody={form => ({
-                    occasion: get(form, `${occasionType}ById.${occasionId}`),
+                    occasion: get(form, `${occasionPath}ById.${occasionId}`),
                     eventOccurences: form.eventOccurencesById && Object.values(form.eventOccurencesById)
                   })}
                   getIsDisabled={form =>
                     isNew
-                    ? false
-                      // !get(form, `${occasionType}ById.${occasionId}.description`) ||
-                      //!get(form, `${occasionType}ById.${occasionId}.name`) ||
-                      //typeof get(form, `${occasionType}ById.${occasionId}.type`) !== 'string' ||
-                      //(!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
-                    : !get(form, `${occasionType}ById.${occasionId}.description`) &&
-                      !get(form, `${occasionType}ById.${occasionId}.name`) &&
-                      typeof get(form, `${occasionType}ById.${occasionId}.type`) !== 'string' &&
+                    ? !get(form, `${occasionPath}ById.${occasionId}.description`) ||
+                      !get(form, `${occasionPath}ById.${occasionId}.name`) ||
+                      typeof get(form, `${occasionPath}ById.${occasionId}.type`) !== 'string' ||
+                      (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
+                    : !get(form, `${occasionPath}ById.${occasionId}.description`) &&
+                      !get(form, `${occasionPath}ById.${occasionId}.name`) &&
+                      typeof get(form, `${occasionPath}ById.${occasionId}.type`) !== 'string' &&
                       (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                   }
                   className="button is-primary is-medium"
