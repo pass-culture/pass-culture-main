@@ -1,6 +1,4 @@
-// import merge from 'lodash.merge'
-
-import { NEW } from '../utils/config'
+import { DELETE, NEW } from '../utils/config'
 
 // INITIAL STATE
 const initialState = {}
@@ -16,10 +14,15 @@ const form = (state = initialState, action) => {
       const collectionKey = `${action.collectionName}ById`
       const collection = Object.assign({}, state[collectionKey])
       const entity = Object.assign({}, collection[action.id])
-      collection[action.id] = entity
-      entity[action.name] = action.value
+      if (typeof action.nameOrObject === 'object' && !action.value) {
+        collection[action.id] = action.nameOrObject
+      } else if (action.nameOrObject === DELETE) {
+        collection[action.id] = DELETE
+      } else {
+        collection[action.id] = entity
+        entity[action.nameOrObject] = action.value
+      }
       return Object.assign({}, state, { [collectionKey]: collection })
-    // return merge({}, state, action.patch)
     case RESET_FORM:
       return {}
     default:
@@ -28,10 +31,10 @@ const form = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
-export const mergeForm = (collectionName, id, name, value) => ({
+export const mergeForm = (collectionName, id, nameOrObject, value) => ({
   collectionName,
   id,
-  name,
+  nameOrObject,
   type: MERGE_FORM,
   value,
 })

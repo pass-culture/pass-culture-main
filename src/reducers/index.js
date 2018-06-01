@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 
 import data from './data'
+import errors from './errors'
 import form from './form'
 import loading from './loading'
 import modal from './modal'
@@ -10,6 +11,7 @@ import user from './user'
 
 const rootReducer = combineReducers({
   data,
+  errors,
   form,
   loading,
   modal,

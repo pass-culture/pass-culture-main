@@ -5,19 +5,19 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { assignData } from '../../reducers/data'
+import { resetErrors } from '../../reducers/errors'
 import { resetForm } from '../../reducers/form'
 import { DEFAULT_TO } from '../../utils/config'
 
 const withSign = WrappedComponent => {
   class _withSign extends Component {
-    componentWillMount() {
-      const { assignData } = this.props
-      assignData({ errors: null })
+    constructor (props) {
+      super()
+      props.resetErrors({ errors: null })
     }
 
-    componentWillReceiveProps(nextProps) {
-      const { errors, history, user } = nextProps
+    componentDidUpdate() {
+      const { errors, history, user } = this.props
       if (user && !errors) {
         history.push(DEFAULT_TO)
       }
@@ -35,11 +35,11 @@ const withSign = WrappedComponent => {
     withRouter,
     connect(
       (state, ownProps) => ({
-        errors: state.data.errors && state.data.errors.global,
+        errors: state.errors.global,
         form: state.form,
         user: state.user,
       }),
-      { assignData, resetForm }
+      { resetErrors, resetForm }
     )
   )(_withSign)
 }

@@ -13,21 +13,18 @@ class FormSelect extends Component {
   }
 
   onChange = ({ target: { value } }) => {
-    const { collectionName, entityId, mergeForm, name, maxLength } = this.props
+    const { collectionName, entityId, mergeForm, name } = this.props
     mergeForm(collectionName, entityId, name, value)
   }
 
   render() {
     const { className,
       defaultValue,
-      id,
-      name,
       options,
-      type,
       value
     } = this.props
     return (
-      <div className={'select'}>
+      <div className={className || 'select'}>
         <select
           className=''
           value={typeof value === 'string' ? value : defaultValue}
