@@ -13,26 +13,12 @@ import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
-import selectCurrentPath from '../../selectors/currentPath'
+import selectOccasionPath from '../../selectors/occasionPath'
 import { NEW } from '../../utils/config'
 import { collectionToPath, pathToCollection} from '../../utils/translate'
 
 
 class OfferPage extends Component {
-
-  constructor() {
-    super()
-    this.state = {
-      occasion: null,
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.isNew) return {occasion: {}}
-    return {
-      occasion: nextProps.occasion
-    }
-  }
 
   handleRequestData = () => {
     const {
@@ -129,12 +115,12 @@ class OfferPage extends Component {
               {isNew ? 'Créer' : 'Modifier'} {occasionPath === 'evenements' ? 'un événement' : 'un objet'}
             </h1>
             <FormField
-              autoComplete="name"
               collectionName={occasionType}
               defaultValue={name}
               entityId={id}
               label={<Label title="Titre" />}
               name="name"
+              required
             />
             <hr />
             <h2 className='subtitle is-2'>Infos pratiques</h2>
@@ -158,6 +144,7 @@ class OfferPage extends Component {
               entityId={id}
               label={<Label title="Durée (en minutes)" />}
               name="durationMinutes"
+              required
               type="number"
             />
             <FormField
@@ -177,10 +164,10 @@ class OfferPage extends Component {
               entityId={id}
               label={<Label title="Description" />}
               name="description"
+              required
               type="textarea"
             />
             <FormField
-              autoComplete="on"
               collectionName={occasionType}
               defaultValue={author}
               entityId={id}
@@ -188,7 +175,6 @@ class OfferPage extends Component {
               name="author"
             />
             <FormField
-              autoComplete="stageDirector"
               collectionName={occasionType}
               defaultValue={stageDirector}
               entityId={id}
@@ -196,7 +182,6 @@ class OfferPage extends Component {
               name="stageDirector"
             />
             <FormField
-              autoComplete="performer"
               collectionName={occasionType}
               defaultValue={performer}
               entityId={id}
@@ -206,7 +191,6 @@ class OfferPage extends Component {
             <hr />
             <h2 className='subtitle is-2'>Infos de contact</h2>
             <FormField
-              autoComplete="contactName"
               collectionName={occasionType}
               defaultValue={contactName}
               entityId={id}
@@ -214,16 +198,15 @@ class OfferPage extends Component {
               name="contactName"
             />
             <FormField
-              autoComplete="contactEmail"
               collectionName={occasionType}
               defaultValue={contactEmail}
               entityId={id}
               label={<Label title="Email de contact" />}
               name="contactEmail"
+              required
               type="email"
             />
             <FormField
-              autoComplete="contactPhone"
               collectionName={occasionType}
               defaultValue={contactPhone}
               entityId={id}
@@ -237,7 +220,6 @@ class OfferPage extends Component {
                   <li className='field has-addons' key={i}>
                     <div className='control is-expanded'>
                       <FormField
-                        autoComplete="url"
                         collectionName={occasionType}
                         defaultValue={m}
                         entityId={id}
@@ -263,14 +245,15 @@ class OfferPage extends Component {
                 <SubmitButton
                   getBody={form => ({
                     occasion: get(form, `${occasionType}ById.${occasionId}`),
-                    eventOccurences: Object.values(form.eventOccurencesById)
+                    eventOccurences: form.eventOccurencesById && Object.values(form.eventOccurencesById)
                   })}
                   getIsDisabled={form =>
                     isNew
-                    ? !get(form, `${occasionType}ById.${occasionId}.description`) ||
-                      !get(form, `${occasionType}ById.${occasionId}.name`) ||
-                      typeof get(form, `${occasionType}ById.${occasionId}.type`) !== 'string' ||
-                      (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
+                    ? false
+                      // !get(form, `${occasionType}ById.${occasionId}.description`) ||
+                      //!get(form, `${occasionType}ById.${occasionId}.name`) ||
+                      //typeof get(form, `${occasionType}ById.${occasionId}.type`) !== 'string' ||
+                      //(!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                     : !get(form, `${occasionType}ById.${occasionId}.description`) &&
                       !get(form, `${occasionType}ById.${occasionId}.name`) &&
                       typeof get(form, `${occasionType}ById.${occasionId}.type`) !== 'string' &&
@@ -300,13 +283,13 @@ export default compose(
   connect(
     (state, ownProps) => {
       return {
-        user: state.user,
+        isNew: ownProps.match.params.occasionId === 'nouveau',
+        eventTypes: state.data.eventTypes,
         occasionPath: ownProps.match.params.occasionPath,
         occasionId: ownProps.match.params.occasionId,
-        isNew: ownProps.match.params.occasionId === 'nouveau',
-        eventTypes: selectEventTypes(state),
-        path: selectCurrentPath(state, ownProps),
+        path: selectOccasionPath(state, ownProps),
         occasion: selectCurrentOccasion(state, ownProps),
+        user: state.user,
       }
     },
     { resetForm, requestData }

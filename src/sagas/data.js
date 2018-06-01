@@ -1,6 +1,7 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
-import { assignData, failData, successData } from '../reducers/data'
+import { failData, successData } from '../reducers/data'
+import { assignErrors } from '../reducers/errors'
 import { fetchData } from '../utils/request'
 
 function* fromWatchRequestDataActions(action) {
@@ -30,8 +31,8 @@ function* fromWatchRequestDataActions(action) {
 }
 
 function* fromWatchFailDataActions(action) {
-  const errors = yield select(state => state.data.errors)
-  yield put(assignData({ errors: Object.assign({}, errors, action.errors) }))
+
+  yield put(assignErrors(action.errors))
 }
 
 export function* watchDataActions() {

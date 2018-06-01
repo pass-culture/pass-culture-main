@@ -60,7 +60,6 @@ class OccurenceManager extends Component {
 
   render() {
     const occurences = this.state.occurences || this.props.occurences
-    console.log('occurences', occurences)
     return (
       <div>
         <table className='table is-striped is-hoverable'>

@@ -8,7 +8,7 @@ import OccasionsList from '../OccasionsList'
 import withLogin from '../hocs/withLogin'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
-import { assignData, requestData } from '../../reducers/data'
+import { requestData } from '../../reducers/data'
 import selectOccasions from '../../selectors/occasions'
 import { collectionToPath } from '../../utils/translate'
 
@@ -63,6 +63,6 @@ export default compose(
       occasions: selectOccasions(state),
       user: state.user
     }),
-    { assignData, requestData }
+    { requestData }
   )
 )(OffersPage)

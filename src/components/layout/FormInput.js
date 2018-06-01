@@ -2,7 +2,7 @@ import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { removeDataError } from '../../reducers/data'
+import { removeErrors } from '../../reducers/errors'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
 
@@ -38,7 +38,7 @@ class FormInput extends Component {
       entityId,
       mergeForm,
       name,
-      removeDataError,
+      removeErrors,
       type,
     } = this.props
     let mergedValue
@@ -49,7 +49,7 @@ class FormInput extends Component {
     } else {
       mergedValue = value
     }
-    removeDataError(name)
+    removeErrors(name)
     mergeForm(collectionName, entityId, name, mergedValue)
   }
 
@@ -95,5 +95,5 @@ FormInput.defaultProps = {
 
 export default connect(
   (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
-  { mergeForm, removeDataError }
+  { mergeForm, removeErrors }
 )(FormInput)
