@@ -1,8 +1,7 @@
-import { createSelector } from 'reselect'
 import get from 'lodash.get'
+import { createSelector } from 'reselect'
 
 import selectCurrentOccasion from './currentOccasion'
-import { pathToCollection } from '../utils/translate'
 
 export default createSelector(
   selectCurrentOccasion,

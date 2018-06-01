@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
-import get from 'lodash.get'
-import { NavLink } from 'react-router-dom'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
+import { connect } from 'react-redux'
+import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
+
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
@@ -48,7 +47,6 @@ class ProfilePage extends Component {
       publicName,
       email,
       address,
-      profilePicture,
     } = this.state.user || {}
 
     return (
@@ -101,10 +99,9 @@ class ProfilePage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
-  withRouter,
   connect(
-    (state, ownProps) => ({
-      user: get(state, 'user'),
+    state => ({
+      user: state.user,
     }),
     { requestData }
   )

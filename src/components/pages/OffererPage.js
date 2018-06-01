@@ -1,74 +1,46 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
-import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
+import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
+import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { collectionToPath } from '../../utils/translate'
-
 import { NEW } from '../../utils/config'
 
-const Label = ({ title }) => {
-  return <div className="subtitle">{title}</div>
-}
 
 class OffererPage extends Component {
-
-  constructor() {
-    super()
-    this.state = {}
-  }
 
   componentWillUnmount() {
     this.props.resetForm()
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.isNew) return {occasion: {}}
-    return {
-      offerer: nextProps.offerer
-    }
-  }
-
-  updateValue = e => {
-    this.setState({
-      offerer: Object.assign({}, this.state.offerer, {[e.target.name]: e.target.value})
-    })
-  }
-
-  save = e => {
-    e.preventDefault()
-    // TODO
-  }
-
   render () {
-    const {
-      offerer,
-      isNew,
-    } = this.props
     const {
       address,
       bookingEmail,
-      // name,
-    } = get(this.state, 'offerer', {})
+      offererId,
+      venue
+    } = this.props
     const {
-      latitude,
-      longitude,
       name,
       id,
       siret
-    } = get(this.state, 'offerer.venue', {})
-
+    } = (venue || {})
+    const isNew = offererId === 'nouveau'
+    const isLoading = !(this.props.id || isNew)
+    const method = isNew ? 'POST' : 'PATCH'
     const venueId = isNew ? NEW : id
-
+    const submitPath = isNew ? `venues/` : `venues/${venueId}`
     return (
-      <PageWrapper name='offer' loading={!(offerer || isNew)}>
+      <PageWrapper name='offer' loading={isLoading}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
@@ -111,28 +83,30 @@ class OffererPage extends Component {
               label={<Label title="Email de réservation" />}
               name="bookingEmail"
             />
-            <input type='hidden' name='latitude' value={latitude || ''} />
-            <input type='hidden' name='longitude' value={longitude || ''} />
-            {
-              // TODO: plug this to a map
-            }
-
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
-                {/* <button className="button is-primary is-medium">Enregistrer</button> */}
                 <SubmitButton
                   getBody={form => form.venuesById[venueId]}
-                  getIsDisabled={form => !get(form, `venuesById.${venueId}.name`)
+                  getIsDisabled={form =>
+                    isNew
+                      ? !get(form, `venuesById.${venueId}.name`) &&
+                        !get(form, `venuesById.${venueId}.adress`)
+                      : !get(form, `venuesById.${venueId}.name`) ||
+                        !get(form, `venuesById.${venueId}.adress`)
                   }
                   className="button is-primary is-medium"
-                  method={isNew ? 'POST' : 'PATCH'}
-                  path={isNew ? `venues/` : `venues/${venueId}`}
+                  method={method}
+                  path={submitPath}
                   storeKey="venues"
                   text="Enregistrer"
                 />
               </div>
               <div className="control">
-                <NavLink to={`/${collectionToPath('venues')}`} className="button is-primary is-outlined is-medium">Retour</NavLink>
+                <NavLink
+                  className="button is-primary is-outlined is-medium"
+                  to={`/${collectionToPath('venues')}`} >
+                  Retour
+                </NavLink>
               </div>
             </div>
           </form>
@@ -146,12 +120,10 @@ class OffererPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => ({
-      user: get(state, 'data.users.0'),
-      // TODO put the following logic in a selector:
-      offerer: get(state, 'user.offerers', []).find(o => o.id === get(ownProps, 'match.params.offererId', '')),
-      isNew: ownProps.offererId === 'nouveau',
-    }),
+    (state, ownProps) => Object.assign(
+      { user: state.user },
+      selectCurrentOfferer(state, ownProps)
+    ),
     { requestData, resetForm }
   )
 )(OffererPage)

@@ -1,24 +1,17 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
-import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
-import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
-import FormField from '../layout/FormField'
+import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectCurrentMediation from '../../selectors/currentMediation'
-import selectOccasionPath from '../../selectors/occasionPath'
-import { NEW } from '../../utils/config'
 
-const Label = ({ title }) => {
-  return <div className="subtitle">{title}</div>
-}
 
 class MediationPage extends Component {
 
@@ -76,18 +69,18 @@ class MediationPage extends Component {
 
   render () {
     const {
-      isNew,
+      mediationId,
+      occasionId,
+      occasionPath
+    } = this.props.match
+    const {
       mediation,
       occasion,
-      occasionId,
-      occasionPath,
     } = this.props
-
     const {
       id
     } = mediation
-
-    const mediationId = isNew ? NEW : this.props.mediationId
+    const isNew = mediationId === 'nouveau'
     return (
       <PageWrapper name='mediation' loading={!(id || isNew)}>
         <div className='columns'>
@@ -144,11 +137,8 @@ export default compose(
   connect(
     (state, ownProps) => {
       return Object.assign({
-        isNew: ownProps.match.params.mediationId === 'nouveau',
         user: state.user,
         mediation: selectCurrentMediation(state, ownProps),
-        occasionPath: ownProps.match.params.occasionPath,
-        occasionId: ownProps.match.params.occasionId,
         occasion: selectCurrentOccasion(state, ownProps),
       })
     },

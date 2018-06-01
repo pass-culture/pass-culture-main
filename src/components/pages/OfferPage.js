@@ -1,8 +1,9 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
-import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
+
 
 import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
@@ -14,8 +15,7 @@ import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectOccasionPath from '../../selectors/occasionPath'
-import { NEW } from '../../utils/config'
-import { collectionToPath, pathToCollection} from '../../utils/translate'
+import { pathToCollection} from '../../utils/translate'
 
 
 class OfferPage extends Component {
@@ -100,8 +100,6 @@ class OfferPage extends Component {
       type,
     } = occasion || {}
 
-    const occasionIdOrNew = isNew ? NEW : occasionId
-    const occasionCollectionName = pathToCollection(occasionPath)
     return (
       <PageWrapper name='offer' loading={!(id || isNew)}>
         <div className='columns'>

@@ -8,50 +8,49 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import selectEventOccurences from '../selectors/eventOccurences'
-import { DELETE } from '../utils/config'
+import { DELETE, NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
-
-  constructor() {
+  constructor () {
     super()
     this.state = {
-      occurrences: [],
-      calendarFocused: false,
-      time: '',
-      price: 0,
-      groupSize: '',
-      pmrGroupSize: '',
-      withError: false,
-    }
-  }
-
-  static defaultProps = {
-    occurrences: [],
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return {
-      occurrences: nextProps.occurrences,
-      withError: false,
+      calendarFocused: false
     }
   }
 
   handleDateChange = date => {
-    if (!this.state.time)
+    const {
+      mergeForm,
+      newDate,
+      newOffer,
+      occurences
+    } = this.props
+
+    // build the datetime based on the date plus the time
+    // given in the horaire form field
+    if (!newDate || !newDate.time || !newOffer) {
       return this.setState({ withError: true })
-    const [hours, minutes] = this.state.time.split(':')
+    }
+    const [hours, minutes] = newDate.time.split(':')
     const datetime = date.clone().hour(hours).minute(minutes)
-    const isAlreadySelected = this.state.occurrences.find(o => o.datetime.isSame(datetime))
-    this.props.onChange(
-      this.state.occurrences
-        .filter(o => isAlreadySelected ? !o.datetime.isSame(datetime) : true)
-        .concat(isAlreadySelected ? [] : [{
-          price: this.state.price,
-          groupSize: this.state.groupSize,
-          pmrGroupSize: this.state.pmrGroupSize,
-          datetime,
-        }])
-        .sort((o1, o2) => o1.datetime.isBefore(o2.datetime) ? -1 : 1))
+
+    // check that it does not match already an occurence
+    const alreadySelectedOccurence = occurences.find(o =>
+      o.beginningDatetimeMoment.isSame(datetime))
+    if (alreadySelectedOccurence) {
+      return
+    }
+
+    // add in the occurences form
+    const eventOccurenceId = !occurences
+      ? `NEW_0`
+      : `${NEW}_${occurences.length}`
+    mergeForm('eventOccurences', eventOccurenceId, {
+      beginningDatetime: datetime,
+      id: eventOccurenceId,
+      // TODO: SHOULD BE FIXED WITH SOON API NEW MERGE
+      offer: [newOffer]
+    })
   }
 
   removeDate = ({ id }) => {
@@ -59,7 +58,7 @@ class OccurenceManager extends Component {
   }
 
   render() {
-    const occurences = this.state.occurences || this.props.occurences
+    const { occurences } = this.props
     return (
       <div>
         <table className='table is-striped is-hoverable'>
@@ -76,13 +75,16 @@ class OccurenceManager extends Component {
           <tbody>
             {occurences && occurences.map((o, index) => (
               <tr key={index} className=''>
-                <td>{moment(o.beginningDatetime).format('DD/MM/YYYY')}</td>
-                <td>{moment(o.beginningDatetime).format('HH:mm')}</td>
+                <td>{o.beginningDatetimeMoment.format('DD/MM/YYYY')}</td>
+                <td>{o.beginningDatetimeMoment.format('HH:mm')}</td>
                 <td><Price value={o.offer[0].price} /></td>
                 <td>{o.offer[0].groupSize || 'Illimité'}</td>
                 <td>{o.offer[0].pmrGroupSize || 'Illimité'}</td>
                 <td>
-                  <button className="delete is-small" onClick={e => this.removeDate(o)}/>
+                  <button
+                    className="delete is-small"
+                    onClick={e => this.removeDate(o)}
+                  />
                 </td>
               </tr>
             ))}
@@ -92,10 +94,16 @@ class OccurenceManager extends Component {
           calendarInfoPosition="top"
           renderCalendarInfo={() => (
             <div className='box content'>
-              <p className={this.state.withError ? 'has-text-weight-bold has-text-danger' : ''}>Sélectionnez d'abord l'heure, le prix et le nombre de place disponibles puis cliquez sur les dates concernées :</p>
+              <p className={
+                this.state.withError
+                ? 'has-text-weight-bold has-text-danger'
+                : ''
+              }>
+                Sélectionnez d'abord l'heure, le prix et le nombre de place disponibles puis cliquez sur les dates concernées :
+              </p>
               <div className="field is-horizontal">
                 <FormField
-                  collectionName="eventOccurencesById"
+                  collectionName="dates"
                   label={<Label title="Heure" />}
                   name="time"
                   required
@@ -104,7 +112,7 @@ class OccurenceManager extends Component {
               </div>
               <div className="field is-horizontal">
                 <FormField
-                  collectionName="eventOccurencesById"
+                  collectionName="offers"
                   label={<Label title="Prix (€)" />}
                   min={0}
                   name="price"
@@ -114,7 +122,7 @@ class OccurenceManager extends Component {
               </div>
               <div className="field is-horizontal">
                 <FormField
-                  collectionName="eventOccurencesById"
+                  collectionName="offers"
                   label={<Label title="Nombre de places" />}
                   min={0}
                   name="groupSize"
@@ -123,7 +131,7 @@ class OccurenceManager extends Component {
                   type="number"
                 />
                 <FormField
-                  collectionName="eventOccurencesById"
+                  collectionName="offers"
                   label={<Label title="Places en PMR" />}
                   min={0}
                   name="pmrGroupSize"
@@ -136,9 +144,14 @@ class OccurenceManager extends Component {
           )}
           onDateChange={this.handleDateChange}
           focused={this.state.calendarFocused}
-          onFocusChange={e => this.setState({calendarFocused: !this.state.calendarFocused})}
+          onFocusChange={e => this.setState({
+              calendarFocused: !this.state.calendarFocused
+            })
+          }
           keepOpenOnDateSelect={true}
-          isDayHighlighted={d1 => this.state.occurrences.some(d2 => d1.isSame(d2.datetime, 'day'))}
+          isDayHighlighted={d1 =>
+            occurences && occurences.some(o =>
+              d1.isSame(o.beginningDatetimeMoment, 'day'))}
           placeholder='Ajouter un horaire'
         />
       </div>
@@ -148,7 +161,8 @@ class OccurenceManager extends Component {
 
 export default connect(
   (state, ownProps) => ({
-    isEditing: Object.keys(state.form) > 0,
+    newDate: state.form.datesById && state.form.datesById[NEW],
+    newOffer: state.form.offersById && state.form.offersById[NEW],
     occurences: selectEventOccurences(state, ownProps)
   }),
   { mergeForm }

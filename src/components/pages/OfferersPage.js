@@ -6,7 +6,6 @@ import get from 'lodash.get'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import { requestData } from '../../reducers/data'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
 import { collectionToPath } from '../../utils/translate'
