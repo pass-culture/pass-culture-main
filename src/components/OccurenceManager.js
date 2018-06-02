@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { SingleDatePicker } from 'react-dates'
 import { connect } from 'react-redux'
-import moment from 'moment'
 
 import Price from './Price'
 import FormField from './layout/FormField'

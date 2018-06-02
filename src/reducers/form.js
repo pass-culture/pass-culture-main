@@ -5,14 +5,21 @@ const initialState = {}
 
 // ACTIONS
 const MERGE_FORM = 'MERGE_FORM'
+const REMOVE_FORM = 'REMOVE_FORM'
 const RESET_FORM = 'RESET_FORM'
 
 // REDUCER
 const form = (state = initialState, action) => {
+  let collectionKey, collection
   switch (action.type) {
+    case REMOVE_FORM:
+      collectionKey = `${action.collectionName}ById`
+      collection = Object.assign({}, state[collectionKey])
+      delete collection[action.id]
+      return Object.assign({}, state, { [collectionKey]: collection })
     case MERGE_FORM:
-      const collectionKey = `${action.collectionName}ById`
-      const collection = Object.assign({}, state[collectionKey])
+      collectionKey = `${action.collectionName}ById`
+      collection = Object.assign({}, state[collectionKey])
       const entity = Object.assign({}, collection[action.id])
       if (typeof action.nameOrObject === 'object' && !action.value) {
         collection[action.id] = action.nameOrObject
@@ -37,6 +44,12 @@ export const mergeForm = (collectionName, id, nameOrObject, value) => ({
   nameOrObject,
   type: MERGE_FORM,
   value,
+})
+
+export const removeForm = (collectionName, id) => ({
+  collectionName,
+  id,
+  type: REMOVE_FORM,
 })
 
 export const resetForm = patch => ({ type: RESET_FORM })

@@ -15,6 +15,7 @@ import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectOccasionPath from '../../selectors/occasionPath'
+import { SEARCH } from '../../utils/config'
 import { pathToCollection} from '../../utils/translate'
 
 
@@ -99,7 +100,7 @@ class OfferPage extends Component {
       occurences,
       type,
     } = occasion || {}
-
+    console.log('occurences', occurences)
     return (
       <PageWrapper name='offer' loading={!(id || isNew)}>
         <div className='columns'>
@@ -134,28 +135,57 @@ class OfferPage extends Component {
               type="select"
               options={eventTypes}
             />
-            <div className='field'>
-            <Label title='Horaires' />
-              <OccurenceManager occurences={occurences} />
-            </div>
             <FormField
-              collectionName={occasionPath}
-              defaultValue={durationMinutes}
-              entityId={id}
-              label={<Label title="Durée (en minutes)" />}
-              name="durationMinutes"
-              required
-              type="number"
+              collectionName='offerers'
+              defaultValue={occurences && occurences[0].offer[0].offerer}
+              ItemComponent={({ address, name, onItemClick }) => (
+                <div className='venue-item' onClick={onItemClick}>
+                  <b> {name} </b> {address}
+                </div>
+              )}
+              key={0}
+              label={<Label title="Etablissement" />}
+              type="search"
             />
-            <FormField
-              collectionName={occasionPath}
-              defaultValue={bookingLimitDatetime}
-              entityId={id}
-              label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
-              name="bookingLimitDatetime"
-              type="date"
-            />
-
+            {
+              occasionPath === 'evenements' && [
+                <FormField
+                  collectionName='venues'
+                  defaultValue={occurences && occurences[0].venue}
+                  ItemComponent={({ address, name, onItemClick }) => (
+                    <div className='venue-item' onClick={onItemClick}>
+                      <b> {name} </b> {address}
+                    </div>
+                  )}
+                  key={0}
+                  label={<Label title="Lieu" />}
+                  type="search"
+                />,
+                <div className='field' key={1}>
+                  <Label title='Horaires' />
+                  <OccurenceManager occurences={occurences} />
+                </div>,
+                <FormField
+                  collectionName={occasionPath}
+                  defaultValue={durationMinutes}
+                  entityId={id}
+                  key={2}
+                  label={<Label title="Durée (en minutes)" />}
+                  name="durationMinutes"
+                  required
+                  type="number"
+                />,
+                <FormField
+                  collectionName={occasionPath}
+                  defaultValue={bookingLimitDatetime}
+                  entityId={id}
+                  key={3}
+                  label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
+                  name="bookingLimitDatetime"
+                  type="date"
+                />
+              ]
+            }
             <hr />
             <h2 className='subtitle is-2'>Infos artistiques</h2>
             <FormField
@@ -174,20 +204,26 @@ class OfferPage extends Component {
               label={<Label title="Auteur" />}
               name="author"
             />
-            <FormField
-              collectionName={occasionPath}
-              defaultValue={stageDirector}
-              entityId={id}
-              label={<Label title="Metteur en scène" />}
-              name="stageDirector"
-            />
-            <FormField
-              collectionName={occasionPath}
-              defaultValue={performer}
-              entityId={id}
-              label={<Label title="Interprète" />}
-              name="performer"
-            />
+            {
+              occasionPath === 'evements' && [
+                <FormField
+                  collectionName={occasionPath}
+                  defaultValue={stageDirector}
+                  entityId={id}
+                  key={0}
+                  label={<Label title="Metteur en scène" />}
+                  name="stageDirector"
+                />,
+                <FormField
+                  collectionName={occasionPath}
+                  defaultValue={performer}
+                  entityId={id}
+                  key={1}
+                  label={<Label title="Interprète" />}
+                  name="performer"
+                />
+              ]
+            }
             <hr />
             <h2 className='subtitle is-2'>Infos de contact</h2>
             <FormField
@@ -245,10 +281,15 @@ class OfferPage extends Component {
                 <SubmitButton
                   getBody={form => ({
                     occasion: get(form, `${occasionPath}ById.${occasionId}`),
-                    eventOccurences: form.eventOccurencesById && Object.values(form.eventOccurencesById)
+                    eventOccurences: form.eventOccurencesById && Object.values(form.eventOccurencesById),
+                    venueId: get(form, `venuesById.${SEARCH}.id`)
                   })}
-                  getIsDisabled={form =>
-                    isNew
+                  getIsDisabled={form => {
+                    const venueId = get(form, `venuesById.${SEARCH}.id`)
+                    if (!venueId) {
+                      return true
+                    }
+                    return isNew
                     ? !get(form, `${occasionPath}ById.${occasionId}.description`) ||
                       !get(form, `${occasionPath}ById.${occasionId}.name`) ||
                       typeof get(form, `${occasionPath}ById.${occasionId}.type`) !== 'string' ||
@@ -257,7 +298,7 @@ class OfferPage extends Component {
                       !get(form, `${occasionPath}ById.${occasionId}.name`) &&
                       typeof get(form, `${occasionPath}ById.${occasionId}.type`) !== 'string' &&
                       (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
-                  }
+                  }}
                   className="button is-primary is-medium"
                   method={isNew ? 'POST' : 'PATCH'}
                   onClick={this.onSubmitClick}

@@ -6,14 +6,16 @@ import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
 import FormPassword from './FormPassword'
+import FormSearch from './FormSearch'
 import FormSelect from './FormSelect'
-import FormTextarea from './FormTextarea'
 import FormSiret from './FormSiret'
+import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 import { capitalize } from '../../utils/string'
 
 const FormComponentsByName = {
   FormInput,
+  FormSearch,
   FormSelect,
   FormPassword,
   FormSiret,
@@ -87,8 +89,7 @@ FormField.defaultProps = {
 }
 
 FormField.propTypes = {
-  collectionName: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired
+  collectionName: PropTypes.string.isRequired
 }
 
 export default compose(
