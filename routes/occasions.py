@@ -12,6 +12,8 @@ OCCASION_KEYS = [
     'author',
     'description',
     'durationMinutes',
+    'isActive',
+    'mediaUrls',
     'name',
     'performer',
     'stageDirector',
@@ -32,15 +34,32 @@ EVENT_OCCURENCE_KEYS = [
 
 def feed_event_occurence(mapper, json):
     for key in EVENT_OCCURENCE_KEYS:
-        mapper.__setattr__(key, json[key])
+        if key in json:
+            mapper.__setattr__(key, json[key])
 
 OFFER_KEYS = [
+    'groupSize',
+    #'pmrGroupSize',
     'price'
 ]
 
 def feed_offer(mapper, json):
     for key in OFFER_KEYS:
-        mapper.__setattr__(key, json[key])
+        if key in json:
+            mapper.__setattr__(key, json[key])
+
+def create_event_occurence(json, occasion, offerer, venue):
+    event_occurence = app.model.EventOccurence()
+    event_occurence.event = occasion
+    event_occurence.venue = venue
+    feed_event_occurence(event_occurence, json)
+    app.model.PcObject.check_and_save(event_occurence)
+
+    offer = app.model.Offer()
+    offer.eventOccurence = event_occurence
+    offer.offerer = offerer
+    feed_offer(offer, json['offer'][0])
+    app.model.PcObject.check_and_save(offer)
 
 @app.route('/occasions', methods=['GET'])
 @login_or_api_key_required
@@ -76,33 +95,31 @@ def get_occasion(occasionType, occasionId):
 def post_occasion(occasionType):
     model_name = inflect_engine.singular_noun(occasionType.title(), 1)
 
-    print('request.json', request.json)
-
     # CREATE THE OCCASION (EVENT OR THING)
     occasion = app.model[model_name]()
     feed_occasion(occasion, request.json['occasion'])
     app.model.PcObject.check_and_save(occasion)
 
-    # TODO: FIND THE CORRESPONDING VENUE
-    offerer = current_user.offerers[0]
-    venue = offerer.venue
+    # DETERMINE OFFERER
+    offerer = app.model.Offerer.query\
+                       .filter_by(id=dehumanize(request.json['offererId']))\
+                       .first_or_404()
+
+    # DETERMINE VENUE
+    venue = app.model.Venue.query\
+                           .filter_by(id=dehumanize(request.json['venueId']))\
+                           .first_or_404()
 
     # CREATE CORRESPONDING EVENT OCCURENCES
     event_occurences = request.json.get('eventOccurences')
     if event_occurences:
         for event_occurence_dict in event_occurences:
-            event_occurence = app.model.EventOccurence()
-            event_occurence.event = occasion
-            event_occurence.venue = venue
-            feed_event_occurence(event_occurence, event_occurence_dict)
-            app.model.PcObject.check_and_save(event_occurence)
-
-            # CREATE OFFER
-            offer = app.model.Offer()
-            offer.eventOccurence = event_occurence
-            offer.offerer = offerer
-            feed_offer(offer, event_occurence_dict)
-            app.model.PcObject.check_and_save(offer)
+            create_event_occurence(
+                event_occurence_dict,
+                occasion,
+                offerer,
+                venue
+            )
 
     return jsonify(occasion._asdict(include=OCCASION_INCLUDES)), 201
 
@@ -120,23 +137,31 @@ def patch_occasion(occasionType, occasionId):
     if occasion_dict:
         feed_occasion(occasion, occasion_dict)
         app.model.PcObject.check_and_save(occasion)
+    first_occurence = occasion.occurences[0]
+    first_offer = first_occurence.offer[0]
+    offerer = first_offer.offerer
+    venue = first_occurence.venue
+
 
     # UPDATE CORRESPONDING EVENT OCCURENCES
     event_occurences = request.json.get('eventOccurences')
     if event_occurences:
         for event_occurence_dict in event_occurences:
-            event_occurence = app.model.EventOccurence\
-                          .query\
-                          .filter_by(id=dehumanize(event_occurence_dict['id']))
-            if event_occurence_dict['DELETE'] == '_delete_':
+            if event_occurence_dict.get('DELETE') == '_delete_':
                 app.model.Offer\
                          .query\
                          .filter_by(eventOccurenceId=dehumanize(event_occurence_dict['id']))\
                          .delete()
-                event_occurence.delete()
+                app.model.EventOccurence\
+                         .query\
+                         .filter_by(id=dehumanize(event_occurence_dict['id']))\
+                         .delete()
                 app.db.session.commit()
             else:
-                event_occurence = event_occurence.first_or_404()
-                feed_event_occurence(event_occurence, event_occurence_dict)
-                app.model.PcObject.check_and_save(event_occurence)
+                create_event_occurence(
+                    event_occurence_dict,
+                    occasion,
+                    offerer,
+                    venue
+                )
     return jsonify(occasion._asdict(include=OCCASION_INCLUDES, has_dehumanized_id=True)), 200

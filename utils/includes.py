@@ -1,7 +1,14 @@
+""" includes """
 OCCASION_INCLUDES = [
     {
         "key": "occurences",
-        "sub_joins": ['offer']
+        "sub_joins": [
+            {
+                "key": "offer",
+                "sub_joins": ["offerer"]
+            },
+            'venue'
+        ]
     },
     "mediations"
 ]

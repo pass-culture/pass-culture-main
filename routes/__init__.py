@@ -9,6 +9,7 @@ import routes.offers
 import routes.offerers
 import routes.providers
 import routes.recommendations
+import routes.search
 import routes.things
 import routes.user_offerers
 import routes.users
