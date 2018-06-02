@@ -67,6 +67,11 @@ class Offer(app.model.PcObject,
     available = db.Column(db.Integer,
                           nullable=True)
 
+    # TODO: add pmr
+    #pmrGroupSize = db.Column(db.Integer,
+    #                         nullable=False,
+    #                         default=1)
+
     groupSize = db.Column(db.Integer,
                           nullable=False,
                           default=1)

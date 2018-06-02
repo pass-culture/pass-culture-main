@@ -1,3 +1,4 @@
+""" event occurence """
 from flask import current_app as app
 
 db = app.db
@@ -7,7 +8,7 @@ class EventOccurence(app.model.PcObject,
                      db.Model,
                      app.model.DeactivableMixin,
                      app.model.ProvidableMixin
-                     ):
+                    ):
     id = db.Column(db.BigInteger,
                    primary_key=True)
 
