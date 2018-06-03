@@ -86,7 +86,12 @@ def get_occasion(occasionType, occasionId):
     model_name = inflect_engine.singular_noun(occasionType.title(), 1)
     occasion = app.model[model_name]\
                   .query.filter_by(id=dehumanize(occasionId)).one()
-    return jsonify(occasion._asdict(include=OCCASION_INCLUDES, has_dehumanized_id=True))
+    occasion_dict = occasion._asdict(
+        include=OCCASION_INCLUDES,
+        has_dehumanized_id=True
+    )
+    occasion_dict['occasionType'] = occasionType
+    return jsonify(occasion_dict)
 
 
 @app.route('/occasions/<occasionType>', methods=['POST'])
