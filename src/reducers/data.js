@@ -11,8 +11,10 @@ const initialState = {}
 const data = (state = initialState, action) => {
   if (action.type === ASSIGN_DATA) {
     return Object.assign({}, state, action.patch)
+
   } else if (action.type === RESET_DATA) {
     return initialState
+    
   } else if (/SUCCESS_DATA_(DELETE|GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
     // unpack config
     const key = action.config.key ||

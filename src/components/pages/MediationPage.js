@@ -28,13 +28,17 @@ class MediationPage extends Component {
   }
 
   onUploadClick = e => {
-    this.props.requestData(
+    const {
+      id,
+      requestData
+    } = this.props
+    requestData(
       'POST',
-      'mediations',
+      `storage/mediations/${id}/0`,
       {
-        body: {
-          image: e.target.value
-        }
+        body: e.target.value,
+        encode: 'multipart/form-data',
+        key: 'mediationImage'
       }
     )
   }
