@@ -31,3 +31,20 @@ export function pathToCollection (path) {
       return path;
   }
 }
+
+export function pathToModel (path) {
+  switch(path) {
+    case 'accroches':
+      return 'mediation'
+    case 'evenements':
+      return 'event'
+    case 'lieux':
+      return 'venue'
+    case 'objets':
+      return 'thing';
+    case 'etablissements':
+      return 'offerer'
+    default:
+      return path;
+  }
+}

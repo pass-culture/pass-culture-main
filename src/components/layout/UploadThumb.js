@@ -23,7 +23,11 @@ class UploadThumb extends Component {
   }
 
   onUploadClick = e => {
-    this.props.onUploadClick && this.props.onUploadClick(e, this.props, this.state)
+    const localFormData = new FormData()
+    localFormData.append('uploader', this.state.image)
+    e.target.value = localFormData
+    window && window.URL.revokeObjectURL(this.state.image.preview)
+    this.props.onUploadClick && this.props.onUploadClick(e)
   }
 
   onZoomChange = e => {
