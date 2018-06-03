@@ -8,6 +8,7 @@ export default createSelector(
   (state, ownProps) => ownProps.match.params.mediationId,
   (occasion, mediationId) => {
     if (mediationId === 'nouveau') return {}
-    return get(occasion, 'mediations', []).find(m => m.id === mediationId)
+    return get(occasion, 'mediations', [])
+      .find(m => m.id === mediationId)
   }
 )

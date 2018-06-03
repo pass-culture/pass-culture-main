@@ -67,14 +67,15 @@ class OfferPage extends Component {
 
   render () {
     const {
+      occasionId,
+      occasionPath
+    } = this.props.match.params
+    const {
       isNew,
       eventTypes,
       occasion,
-      occasionId,
-      occasionPath,
       path,
     } = this.props
-
     const {
       id,
       name,
@@ -104,7 +105,11 @@ class OfferPage extends Component {
               {isNew ? 'Créer' : 'Modifier'} {occasionPath === 'evenements' ? 'un événement' : 'un objet'}
             </h1>
             <div className='field'>
-              <NavLink to={`/offres/${occasionPath}/${occasionId}/accroches/nouveau`} className='button is-primary is-outlined'>Nouvelle accroche</NavLink>
+              <NavLink
+                to={`/offres/${occasionPath}/${occasionId}/accroches/nouveau`}
+                className='button is-primary is-outlined'>
+                Nouvelle accroche
+              </NavLink>
             </div>
             <FormField
               collectionName={occasionPath}
@@ -301,8 +306,6 @@ export default compose(
       return {
         isNew: ownProps.match.params.occasionId === 'nouveau',
         eventTypes: state.data.eventTypes,
-        occasionPath: ownProps.match.params.occasionPath,
-        occasionId: ownProps.match.params.occasionId,
         path: selectOccasionPath(state, ownProps),
         occasion: selectCurrentOccasion(state, ownProps),
         user: state.user,

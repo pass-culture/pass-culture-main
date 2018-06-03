@@ -15,20 +15,6 @@ import selectCurrentMediation from '../../selectors/currentMediation'
 
 class MediationPage extends Component {
 
-  constructor() {
-    super()
-    this.state = {
-      mediation: null,
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.isNew) return {mediation: {}}
-    return {
-      mediation: nextProps.mediation
-    }
-  }
-
   handleRequestData = () => {
     // TODO: replug
     // const {
@@ -54,15 +40,6 @@ class MediationPage extends Component {
     }
   }
 
-  // updateOccasion = (key, value) => {
-  //   const newValue = key.split('.').reverse().reduce((result, keyElement) => {
-  //     return {[keyElement]: (result || value)}
-  //   }, null)
-  //   this.setState({
-  //     occasion: Object.assign({}, this.state.occasion, newValue)
-  //   })
-  // }
-
   onSubmitClick = () => {
     this.props.resetForm()
   }
@@ -72,14 +49,11 @@ class MediationPage extends Component {
       mediationId,
       occasionId,
       occasionPath
-    } = this.props.match
+    } = this.props.match.params
     const {
-      mediation,
+      id,
       occasion,
     } = this.props
-    const {
-      id
-    } = mediation
     const isNew = mediationId === 'nouveau'
     return (
       <PageWrapper name='mediation' loading={!(id || isNew)}>
@@ -99,7 +73,9 @@ class MediationPage extends Component {
               </section>
             <form>
               <div className='field'>
-                <label class="label"><Label title='Depuis une adresse Internet :' /></label>
+                <label className="label">
+                  <Label title='Depuis une adresse Internet :' />
+                </label>
                 <div className="field is-grouped">
                   <p className="control is-expanded">
                     <input className="input is-rounded" type="url" placeholder="http://www.example.com" />
@@ -112,7 +88,9 @@ class MediationPage extends Component {
                 </div>
               </div>
               <div className='field'>
-                <label class="label"><Label title='... ou depuis votre poste :' /></label>
+                <label className="label">
+                  <Label title='... ou depuis votre poste :' />
+                </label>
                 <div className="file is-primary is-outlined">
                   <label className="file-label">
                     <input className="file-input" type="file" name="resume" />
@@ -135,13 +113,11 @@ class MediationPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => {
-      return Object.assign({
+    (state, ownProps) =>
+      Object.assign({
         user: state.user,
-        mediation: selectCurrentMediation(state, ownProps),
         occasion: selectCurrentOccasion(state, ownProps),
-      })
-    },
+      }, selectCurrentMediation(state, ownProps)),
     { resetForm, requestData }
   )
 )(MediationPage)
