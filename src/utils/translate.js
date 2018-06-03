@@ -2,27 +2,31 @@ export function collectionToPath (collectionName) {
   switch(collectionName) {
     case 'events':
       return 'evenements'
+    case 'mediations':
+      return 'accroches'
     case 'venues':
       return 'lieux';
+    case 'offerers':
+      return 'etablissements'
     case 'things':
-      return 'objets';
-    case 'venues':
-      return 'lieux';
+      return 'objets'
     default:
-      return collectionName;
+      return collectionName
   }
 }
 
 export function pathToCollection (path) {
   switch(path) {
+    case 'accroches':
+      return 'mediations'
     case 'evenements':
       return 'events'
     case 'lieux':
-      return 'venues';
+      return 'venues'
     case 'objets':
       return 'things';
     case 'etablissements':
-      return 'offerers';
+      return 'offerers'
     default:
       return path;
   }

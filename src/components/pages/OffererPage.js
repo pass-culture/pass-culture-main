@@ -9,7 +9,6 @@ import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { collectionToPath } from '../../utils/translate'
@@ -124,6 +123,6 @@ export default compose(
       { user: state.user },
       selectCurrentOfferer(state, ownProps)
     ),
-    { requestData, resetForm }
+    { resetForm }
   )
 )(OffererPage)

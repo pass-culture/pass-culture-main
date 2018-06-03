@@ -1,49 +1,16 @@
-import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
+import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
-import { requestData } from '../../reducers/data'
-import { resetForm } from '../../reducers/form'
-import selectCurrentOccasion from '../../selectors/currentOccasion'
-import selectCurrentMediation from '../../selectors/currentMediation'
 
 
 class MediationPage extends Component {
-
-  handleRequestData = () => {
-    // TODO: replug
-    // const {
-    //   collectionName,
-    //   occasionId,
-    //   requestData,
-    // } = this.props
-    // occasionId !== 'nouveau' && requestData(
-    //   'GET',
-    //   `occasions/${collectionName}/${occasionId}`,
-    //   { key: 'occasions' }
-    // )
-  }
-
-  componentDidMount() {
-    this.handleRequestData()
-  }
-
-  componentDidUpdate(prevProps) {
-    const { mediation, mediationId } = this.props
-    if (!mediation && mediationId !== prevProps.mediationId) {
-      this.handleRequestData()
-    }
-  }
-
-  onSubmitClick = () => {
-    this.props.resetForm()
-  }
 
   render () {
     const {
@@ -53,7 +20,7 @@ class MediationPage extends Component {
     } = this.props.match.params
     const {
       id,
-      occasion,
+      name,
     } = this.props
     const isNew = mediationId === 'nouveau'
     return (
@@ -70,7 +37,7 @@ class MediationPage extends Component {
             <br/>
             <section className='section'>
               <h2 className='subtitle'>
-                {get(occasion, 'name')}
+                {name}
               </h2>
               <br/>
               <h1 className='title has-text-centered'>
@@ -126,12 +93,5 @@ class MediationPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
-  connect(
-    (state, ownProps) =>
-      Object.assign({
-        user: state.user,
-        occasion: selectCurrentOccasion(state, ownProps),
-      }, selectCurrentMediation(state, ownProps)),
-    { resetForm, requestData }
-  )
+  withCurrentOccasion
 )(MediationPage)

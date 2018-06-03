@@ -5,6 +5,7 @@ import AccoutingPage from '../components/pages/AccountingPage'
 import BetaPage from '../components/pages/BetaPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
+import MediationsPage from '../components/pages/MediationsPage'
 import OffersPage from '../components/pages/OffersPage'
 import OfferPage from '../components/pages/OfferPage'
 import OffererPage from '../components/pages/OffererPage'
@@ -76,7 +77,13 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionType/:occasionId/accroches/:mediationId',
+    path: '/offres/:occasionPath/:occasionId/accroches',
+    title: 'Accroches',
+    render: props => <MediationsPage />,
+  },
+  {
+    exact: true,
+    path: '/offres/:occasionPath/:occasionId/accroches/:mediationId',
     title: 'Accroche',
     render: props => <MediationPage />,
   },

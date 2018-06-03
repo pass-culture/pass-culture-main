@@ -8,8 +8,9 @@ class SwitchButton extends Component {
   }
 
   onClick = event => {
-    this.setState({ isSwitched: !this.state.isSwitched })
-    event.target.value = !this.state.isSwitched
+    const isSwitched = !this.state.isSwitched
+    this.setState({ isSwitched })
+    event.target.value = isSwitched
     this.props.onClick && this.props.onClick(event)
   }
 

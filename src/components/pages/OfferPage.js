@@ -7,44 +7,20 @@ import { compose } from 'redux'
 
 import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
+import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
-import selectCurrentOccasion from '../../selectors/currentOccasion'
-import selectOccasionPath from '../../selectors/occasionPath'
 import { SEARCH } from '../../utils/config'
-import { pathToCollection} from '../../utils/translate'
 
 
 class OfferPage extends Component {
 
-  handleRequestData = () => {
-    const {
-      occasionPath,
-      occasionId,
-      requestData,
-    } = this.props
-    occasionId !== 'nouveau' && requestData(
-      'GET',
-      `occasions/${pathToCollection(occasionPath)}/${occasionId}`,
-      { key: 'occasions' }
-    )
-  }
-
   componentDidMount() {
-    this.handleRequestData()
     this.props.requestData('GET', 'eventTypes')
-  }
-
-  componentDidUpdate(prevProps) {
-    const { occasion, occasionId } = this.props
-    if (!occasion && occasionId !== prevProps.occasionId) {
-      this.handleRequestData()
-    }
   }
 
   onSubmitClick = () => {
@@ -71,12 +47,8 @@ class OfferPage extends Component {
       occasionPath
     } = this.props.match.params
     const {
-      isNew,
+      apiPath,
       eventTypes,
-      occasion,
-      path,
-    } = this.props
-    const {
       id,
       name,
       performer,
@@ -88,12 +60,14 @@ class OfferPage extends Component {
       contactPhone,
       description,
       durationMinutes,
+      isLoading,
+      isNew,
       mediaUrls,
       occurences,
       type,
-    } = occasion || {}
+    } = this.props
     return (
-      <PageWrapper name='offer' loading={!(id || isNew)}>
+      <PageWrapper name='offer' loading={isLoading}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
@@ -104,15 +78,6 @@ class OfferPage extends Component {
             <h1 className='title has-text-centered'>
               {isNew ? 'Créer' : 'Modifier'} {occasionPath === 'evenements' ? 'un événement' : 'un objet'}
             </h1>
-            {/*
-            <div className='field'>
-              <NavLink
-                to={`/offres/${occasionPath}/${occasionId}/accroches/nouveau`}
-                className='button is-primary is-outlined'>
-                Nouvelle accroche
-              </NavLink>
-            </div>
-           */}
             <FormField
               collectionName={occasionPath}
               defaultValue={name}
@@ -122,7 +87,9 @@ class OfferPage extends Component {
               required
             />
             <hr />
-            <h2 className='subtitle is-2'>Infos pratiques</h2>
+            <h2 className='subtitle is-2'>
+              Infos pratiques
+            </h2>
             <FormField
               collectionName={occasionPath}
               defaultValue={type || ''}
@@ -285,7 +252,7 @@ class OfferPage extends Component {
                   className="button is-primary is-medium"
                   method={isNew ? 'POST' : 'PATCH'}
                   onClick={this.onSubmitClick}
-                  path={path}
+                  path={apiPath}
                   storeKey="occasions"
                   text="Enregistrer"
                 />
@@ -303,16 +270,9 @@ class OfferPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
+  withCurrentOccasion,
   connect(
-    (state, ownProps) => {
-      return {
-        isNew: ownProps.match.params.occasionId === 'nouveau',
-        eventTypes: state.data.eventTypes,
-        path: selectOccasionPath(state, ownProps),
-        occasion: selectCurrentOccasion(state, ownProps),
-        user: state.user,
-      }
-    },
-    { resetForm, requestData, showModal }
+    state => ({ eventTypes: state.data.eventTypes }),
+    { resetForm, showModal }
   )
 )(OfferPage)

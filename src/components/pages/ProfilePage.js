@@ -9,7 +9,6 @@ import { compose } from 'redux'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import Icon from '../layout/Icon'
-import { requestData } from '../../reducers/data'
 
 class ProfilePage extends Component {
 
@@ -139,7 +138,6 @@ export default compose(
   connect(
     state => ({
       user: state.user,
-    }),
-    { requestData }
+    })
   )
 )(ProfilePage)
