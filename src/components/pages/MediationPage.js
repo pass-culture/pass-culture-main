@@ -5,12 +5,16 @@ import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
-import FormField from '../layout/FormField'
+import UploadThumb from '../layout/UploadThumb'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 
 
 class MediationPage extends Component {
+
+  onUploadClick = (e, props, { image }) => {
+    this.props.requestData('POST', 'mediations', { body: { image } })
+  }
 
   render () {
     const {
@@ -29,7 +33,7 @@ class MediationPage extends Component {
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
               <NavLink
-                to={`/offres/${occasionPath}/${occasionId}`}
+                to={`/offres/${occasionPath}/${occasionId}/accroches`}
                 className="button is-primary is-outlined">
                 Retour
               </NavLink>
@@ -45,9 +49,11 @@ class MediationPage extends Component {
               </h1>
               <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
             </section>
-            <FormField
+            <UploadThumb
+              borderRadius={0}
               collectionName='mediations'
               entityId={id}
+              onUploadClick={this.onUploadClick}
               type='thumb'
               required />
             {/*

@@ -10,7 +10,6 @@ import FormPassword from './FormPassword'
 import FormSearch from './FormSearch'
 import FormSelect from './FormSelect'
 import FormSiret from './FormSiret'
-import FormThumb from './FormThumb'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 import { capitalize } from '../../utils/string'
@@ -22,8 +21,7 @@ const FormComponentsByName = {
   FormSelect,
   FormPassword,
   FormSiret,
-  FormTextarea,
-  FormThumb
+  FormTextarea
 }
 
 class FormField extends Component {

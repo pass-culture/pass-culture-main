@@ -12,7 +12,6 @@ export default createSelector(
         occasionPath === collectionToPath(o.occasionType) &&
         o.id === occasionId
     )
-    console.log('currentOccasion', currentOccasion, occasionPath, occasionId, occasions)
     return currentOccasion
   }
 )

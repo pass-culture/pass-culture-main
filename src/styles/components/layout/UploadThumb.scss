@@ -1,10 +1,11 @@
-.form-thumb {
+.upload-thumb {
   position: relative;
   display: block;
   height: auto;
   cursor: pointer;
   text-align: center;
   overflow: hidden;
+
   .drag-n-drop {
     position: absolute;
     top: 0;
@@ -15,9 +16,9 @@
     width: 255px;
     height: 255px;
     background: #eee;
-    border-radius: 255px;
     padding-top: 22%;
   }
+
   &.has-image {
     background: transparent;
     .drag-n-drop {
