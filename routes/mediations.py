@@ -9,7 +9,6 @@ from utils.human_ids import dehumanize
 @login_required
 def create_mediation():
     new_mediation = app.model.Mediation()
-    print('request.json', request.json)
     new_mediation.author = current_user
     new_mediation.eventId = dehumanize(request.json['eventId'])
     new_mediation.offererId = dehumanize(request.json['offererId'])
