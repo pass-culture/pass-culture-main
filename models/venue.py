@@ -31,7 +31,8 @@ class Venue(app.model.PcObject,
     # open thursday 9 to 18, closed the rest of the week
 
 Venue.__ts_vector__ = create_tsvector(
-    cast(coalesce(Venue.name, ''), TEXT)
+    cast(coalesce(Venue.name, ''), TEXT),
+    cast(coalesce(Venue.address, ''), TEXT)
 )
 
 Venue.__table_args__ = (
