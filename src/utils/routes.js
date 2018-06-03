@@ -52,14 +52,14 @@ const routes = [
   },
   {
     exact: true,
-    path: '/lieux',
-    title: 'Lieux',
+    path: '/etablissements',
+    title: 'etablissements',
     render: () => <OfferersPage />,
   },
   {
     exact: true,
-    path: '/lieux/:offererId',
-    title: 'Lieux',
+    path: '/etablissements/:offererId',
+    title: 'etablissements',
     render: () => <OffererPage />,
   },
   {

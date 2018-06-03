@@ -12,7 +12,7 @@ const HomePage = ({ user }) => {
       <div className='content'>
         <p>Ici vous pouvez gérer :</p>
         <ul>
-          <li><NavLink to='/lieux' className='is-primary'>Vos lieux</NavLink></li>
+          <li><NavLink to='/etablissements' className='is-primary'>Vos etablissements</NavLink></li>
           <li><NavLink to='/offres' className='is-primary'>Vos offres</NavLink></li>
         </ul>
       </div>

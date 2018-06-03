@@ -5,7 +5,7 @@ export function collectionToPath (collectionName) {
     case 'things':
       return 'objets';
     case 'venues':
-      return 'lieux';
+      return 'etablissements';
     default:
       return collectionName;
   }
@@ -17,7 +17,7 @@ export function pathToCollection (path) {
       return 'events'
     case 'objets':
       return 'things';
-    case 'lieux':
+    case 'etablissements':
       return 'venues';
     default:
       return path;

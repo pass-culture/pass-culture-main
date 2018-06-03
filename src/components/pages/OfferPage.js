@@ -153,7 +153,7 @@ class OfferPage extends Component {
                     </div>
                   )}
                   key={0}
-                  label={<Label title="Lieu" />}
+                  label={<Label title="Etablissement" />}
                   type="search"
                 />,
                 <div className='field' key={1}>

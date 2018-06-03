@@ -47,7 +47,7 @@ class OffererPage extends Component {
               <NavLink to={`/${collectionToPath('venues')}`} className="button is-primary is-outlined">Retour</NavLink>
             </div>
 
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
+            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un etablissement</h1>
             <form onSubmit={this.save}>
             <FormField
               autoComplete="on"
