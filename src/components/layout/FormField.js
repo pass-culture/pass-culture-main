@@ -5,6 +5,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
+import FormList from './FormList'
 import FormPassword from './FormPassword'
 import FormSearch from './FormSearch'
 import FormSelect from './FormSelect'
@@ -15,6 +16,7 @@ import { capitalize } from '../../utils/string'
 
 const FormComponentsByName = {
   FormInput,
+  FormList,
   FormSearch,
   FormSelect,
   FormPassword,

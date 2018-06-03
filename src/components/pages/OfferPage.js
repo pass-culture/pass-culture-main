@@ -100,7 +100,6 @@ class OfferPage extends Component {
       occurences,
       type,
     } = occasion || {}
-    console.log('occurences', occurences)
     return (
       <PageWrapper name='offer' loading={!(id || isNew)}>
         <div className='columns'>
@@ -249,32 +248,14 @@ class OfferPage extends Component {
               label={<Label title="Tel de contact" />}
               name="contactPhone"
             />
-            <div className='field'>
-              <label className='label'>Media URLs</label>
-              <ul>
-                { Object.values(mediaUrls || {}).map((m, i) => (
-                  <li className='field has-addons' key={i}>
-                    <div className='control is-expanded'>
-                      <FormField
-                        collectionName={occasionPath}
-                        defaultValue={m}
-                        entityId={id}
-                        name={`mediaUrls.${i}`}
-                        type="url"
-                      />
-                    </div>
-                    <div className='control'>
-                      <a className="button is-medium is-primary" onClick={e => this.deleteMediaUrl(i)}>
-                        &nbsp;
-                        <span className='delete'></span>
-                        &nbsp;
-                      </a>
-                    </div>
-                  </li>
-                )) }
-                <li className='has-text-right'><button className='button is-primary is-outlined is-small' onClick={this.addMediaUrl}>Ajouter une URL</button></li>
-              </ul>
-            </div>
+            <FormField
+              collectionName={occasionPath}
+              defaultValue={mediaUrls}
+              entityId={id}
+              label={<Label title="Media URLs" />}
+              name="mediaUrls"
+              type="list"
+            />
             <hr />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
@@ -282,20 +263,24 @@ class OfferPage extends Component {
                   getBody={form => ({
                     occasion: get(form, `${occasionPath}ById.${occasionId}`),
                     eventOccurences: form.eventOccurencesById && Object.values(form.eventOccurencesById),
+                    offererId: get(form, `offerersById.${SEARCH}.id`),
                     venueId: get(form, `venuesById.${SEARCH}.id`)
                   })}
                   getIsDisabled={form => {
+                    const offererId = get(form, `offerersById.${SEARCH}.id`)
                     const venueId = get(form, `venuesById.${SEARCH}.id`)
-                    if (!venueId) {
+                    if (!offererId || !venueId) {
                       return true
                     }
                     return isNew
                     ? !get(form, `${occasionPath}ById.${occasionId}.description`) ||
                       !get(form, `${occasionPath}ById.${occasionId}.name`) ||
+                      !get(form, `${occasionPath}ById.${occasionId}.mediaUrls`) ||
                       typeof get(form, `${occasionPath}ById.${occasionId}.type`) !== 'string' ||
                       (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                     : !get(form, `${occasionPath}ById.${occasionId}.description`) &&
                       !get(form, `${occasionPath}ById.${occasionId}.name`) &&
+                      !get(form, `${occasionPath}ById.${occasionId}.mediaUrls`) &&
                       typeof get(form, `${occasionPath}ById.${occasionId}.type`) !== 'string' &&
                       (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                   }}

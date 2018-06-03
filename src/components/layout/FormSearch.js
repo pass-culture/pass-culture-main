@@ -39,7 +39,6 @@ class FormSearch extends Component {
       mergeForm
     } = this.props
     mergeForm(collectionName, SEARCH, found)
-    this.setState({ found, hasFound: true })
   }
 
   onResetFound = () => {
@@ -66,7 +65,6 @@ class FormSearch extends Component {
   handleSetDefaultValue () {
     // fill automatically the form when it is a NEW POST action
     const { defaultValue, entityId } = this.props
-    console.log('defaultValue', defaultValue)
     defaultValue &&
       entityId === NEW &&
       this.onItemClick(null, defaultValue)
@@ -100,12 +98,13 @@ class FormSearch extends Component {
     const {
       localValue
     } = this.state
+    const foundValue = found || defaultValue
     return [
-      found
+      foundValue
         ? <ItemComponent
           key={-2}
           onItemClick={this.onResetFound}
-          {...found}
+          {...foundValue}
         />
         : <input
             required={required}

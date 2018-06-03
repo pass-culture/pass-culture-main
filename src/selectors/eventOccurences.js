@@ -21,7 +21,7 @@ export default createSelector(
       const formEventOccurences = Object.values(formEventOccurencesById)
       for (let occurence of occurences) {
         const index = formEventOccurences.findIndex(formEventOccurence =>
-          formEventOccurence.id === occurence.id)
+          (formEventOccurence && formEventOccurence.id) === occurence.id)
         if (index > -1) {
           const formEventOccurence = formEventOccurences[index]
           if (formEventOccurence.DELETE === DELETE) {

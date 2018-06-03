@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { DELETE, NEW } from '../utils/config'
 
 // INITIAL STATE
@@ -27,7 +28,15 @@ const form = (state = initialState, action) => {
         collection[action.id] = DELETE
       } else {
         collection[action.id] = entity
-        entity[action.nameOrObject] = action.value
+        if (action.nameOrObject.includes('.')) {
+          const chunks = action.nameOrObject.split('.')
+          const chainKey = chunks.slice(0, -1).join('.')
+          const lastKey = chunks.slice(-1)[0]
+          const value = get(entity, chainKey)
+          value[lastKey] = action.value
+        } else  {
+          entity[action.nameOrObject] = action.value
+        }
       }
       return Object.assign({}, state, { [collectionKey]: collection })
     case RESET_FORM:

@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { SingleDatePicker } from 'react-dates'
 import { connect } from 'react-redux'
@@ -76,9 +77,9 @@ class OccurenceManager extends Component {
               <tr key={index} className=''>
                 <td>{o.beginningDatetimeMoment.format('DD/MM/YYYY')}</td>
                 <td>{o.beginningDatetimeMoment.format('HH:mm')}</td>
-                <td><Price value={o.offer[0].price} /></td>
-                <td>{o.offer[0].groupSize || 'Illimité'}</td>
-                <td>{o.offer[0].pmrGroupSize || 'Illimité'}</td>
+                <td><Price value={get(o, 'offer.0..price')} /></td>
+                <td>{get(o, 'offer.0.groupSize') || 'Illimité'}</td>
+                <td>{get(o, 'offer.0.pmrGroupSize') || 'Illimité'}</td>
                 <td>
                   <button
                     className="delete is-small"
