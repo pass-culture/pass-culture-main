@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import FormInput from './layout/FormInput'
 import selectOccasionThumbUrl from '../selectors/occasionThumbUrl'
 import { collectionToPath } from '../utils/translate'
 
@@ -16,6 +17,7 @@ class OccasionItem extends Component {
     const {
       description,
       id,
+      isActive,
       name,
       occasionType,
       thumbUrl
@@ -43,10 +45,27 @@ class OccasionItem extends Component {
                   Modifier
                 </button>
               </NavLink>
+              <NavLink  to={`/offres/${collectionToPath(occasionType)}/${id}`}>
+                <button className="button is-primary level-item">
+                  Accroches
+                </button>
+              </NavLink>
+              {/*
               <button className="button is-primary level-item"
                 onClick={this.onDeactivateClick}>
                 Désactiver
               </button>
+              */}
+
+              <FormInput
+                collectionName={occasionType}
+                defaultValue={isActive}
+                entityId={id}
+                name='isActive'
+                OffElement={<p> Désactivé </p>}
+                OnElement={<p> Activé </p>}
+                type='switch'
+              />
             </div>
           </nav>
         </div>

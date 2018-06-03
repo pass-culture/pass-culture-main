@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
+import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import { requestData } from '../../reducers/data'
@@ -60,17 +61,29 @@ class MediationPage extends Component {
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to={`/offres/${occasionPath}/${occasionId}`} className="button is-primary is-outlined">
+              <NavLink
+                to={`/offres/${occasionPath}/${occasionId}`}
+                className="button is-primary is-outlined">
                 Retour
               </NavLink>
             </div>
+            <br/>
             <section className='section'>
-              <h2 className='subtitle'>{get(occasion, 'name')}</h2>
+              <h2 className='subtitle'>
+                {get(occasion, 'name')}
+              </h2>
+              <br/>
               <h1 className='title has-text-centered'>
                 {isNew ? 'Créez' : 'Modifiez'} une accroche
               </h1>
               <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
-              </section>
+            </section>
+            <FormField
+              collectionName='mediations'
+              entityId={id}
+              type='thumb'
+              required />
+            {/*
             <form>
               <div className='field'>
                 <label className="label">
@@ -103,6 +116,7 @@ class MediationPage extends Component {
                 </div>
               </div>
             </form>
+            */}
           </div>
         </div>
       </PageWrapper>
