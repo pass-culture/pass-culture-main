@@ -32,8 +32,14 @@ const form = (state = initialState, action) => {
           const chunks = action.nameOrObject.split('.')
           const chainKey = chunks.slice(0, -1).join('.')
           const lastKey = chunks.slice(-1)[0]
-          const value = get(entity, chainKey)
-          value[lastKey] = action.value
+          let value = get(entity, chainKey)
+          if (!value && !chainKey.includes('.')) {
+            entity[chainKey] = action.parentValue
+          }
+          value = entity[chainKey]
+          if (value) {
+            value[lastKey] = action.value
+          }
         } else  {
           entity[action.nameOrObject] = action.value
         }
@@ -47,12 +53,13 @@ const form = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
-export const mergeForm = (collectionName, id, nameOrObject, value) => ({
+export const mergeForm = (collectionName, id, nameOrObject, value, parentValue) => ({
   collectionName,
   id,
   nameOrObject,
   type: MERGE_FORM,
   value,
+  parentValue
 })
 
 export const removeForm = (collectionName, id) => ({

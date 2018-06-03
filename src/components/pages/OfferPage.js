@@ -13,6 +13,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
+import { showModal } from '../../reducers/modal'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import selectOccasionPath from '../../selectors/occasionPath'
 import { SEARCH } from '../../utils/config'
@@ -46,32 +47,22 @@ class OfferPage extends Component {
     }
   }
 
-  updateOccasion = (key, value) => {
-    const newValue = key.split('.').reverse().reduce((result, keyElement) => {
-      return {[keyElement]: (result || value)}
-    }, null)
-    this.setState({
-      occasion: Object.assign({}, this.state.occasion, newValue)
-    })
-  }
-
-  addMediaUrl = () => {
-    this.updateOccasion(
-      'mediaUrls',
-      Object.values(get(this.state, 'occasion.mediaUrls', [])).concat('')
-    )
-  }
-
-  deleteMediaUrl = index => {
-    this.updateOccasion(
-      'mediaUrls',
-      Object.values(get(this.state, 'occasion.mediaUrls', []))
-            .filter((_, i) => index !== i)
-    )
-  }
-
   onSubmitClick = () => {
-    this.props.resetForm()
+    const {
+      history,
+      resetForm,
+      showModal
+    } = this.props
+    resetForm()
+    showModal(
+      <div>
+        C'est soumis!
+      </div>,
+      {
+        onCloseClick: () => history.push('/offres')
+      }
+    )
+
   }
 
   render () {
@@ -136,7 +127,7 @@ class OfferPage extends Component {
             />
             <FormField
               collectionName='offerers'
-              defaultValue={occurences && occurences[0].offer[0].offerer}
+              defaultValue={get(occurences, '0.offer.0.offerer')}
               ItemComponent={({ address, name, onItemClick }) => (
                 <div className='venue-item' onClick={onItemClick}>
                   <b> {name} </b> {address}
@@ -150,7 +141,7 @@ class OfferPage extends Component {
               occasionPath === 'evenements' && [
                 <FormField
                   collectionName='venues'
-                  defaultValue={occurences && occurences[0].venue}
+                  defaultValue={get(occurences, '0.venue')}
                   ItemComponent={({ address, name, onItemClick }) => (
                     <div className='venue-item' onClick={onItemClick}>
                       <b> {name} </b> {address}
@@ -317,6 +308,6 @@ export default compose(
         user: state.user,
       }
     },
-    { resetForm, requestData }
+    { resetForm, requestData, showModal }
   )
 )(OfferPage)

@@ -19,11 +19,11 @@ class FormList extends Component {
     const addedValue = items
       ? [...items]
       : []
-    addedValue.push('')
+    addedValue.push(null)
     mergeForm(collectionName, entityId, name, addedValue)
   }
 
-  deleteItem = index => {
+  deleteItem = item => {
     const {
       collectionName,
       defaultValue,
@@ -33,10 +33,32 @@ class FormList extends Component {
       value
     } = this.props
     const items = value || defaultValue
-    const deletedValue = [...items]
-    delete deletedValue[index]
+    const deletedValue = items.filter(i => i !== item)
     mergeForm(collectionName, entityId, name, deletedValue)
   }
+
+  /*
+  handleSetDefaultValue = () => {
+    const {
+      collectionName,
+      defaultValue,
+      entityId,
+      mergeForm,
+      name
+    } = this.props
+    entityId && mergeForm(collectionName, entityId, name, defaultValue)
+  }
+
+  componentDidMount () {
+    this.handleSetDefaultValue()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.defaultValue && !prevProps.defaultValue) {
+      this.handleSetDefaultValue()
+    }
+  }
+  */
 
   render () {
     const {
@@ -56,12 +78,13 @@ class FormList extends Component {
                   {...this.props}
                   defaultValue={m}
                   name={`${name}.${i}`}
+                  parentValue={items}
                 />
               </div>
               <div className='control'>
                 <a
                   className="button is-medium is-primary"
-                  onClick={e => this.deleteItem(i)}
+                  onClick={e => this.deleteItem(m)}
                 >
                   &nbsp;
                   <span className='delete'/>

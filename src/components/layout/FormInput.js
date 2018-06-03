@@ -38,6 +38,7 @@ class FormInput extends Component {
       entityId,
       mergeForm,
       name,
+      parentValue,
       removeErrors,
       type,
     } = this.props
@@ -50,7 +51,7 @@ class FormInput extends Component {
       mergedValue = value
     }
     removeErrors(name)
-    mergeForm(collectionName, entityId, name, mergedValue)
+    mergeForm(collectionName, entityId, name, mergedValue, parentValue)
   }
 
   componentWillMount() {
