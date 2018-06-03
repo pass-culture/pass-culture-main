@@ -2,6 +2,7 @@ import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import SwitchButton from './SwitchButton'
 import { removeErrors } from '../../reducers/errors'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
@@ -22,7 +23,7 @@ class FormInput extends Component {
     const { type } = this.props
     event.persist()
     this.onDebouncedMergeForm(event)
-    if (type === 'checkbox' || type === 'radio') {
+    if (type === 'checkbox' || type === 'radio' || 'type' === 'switch') {
       return
     }
     this.setState({ localValue: event.target.value })
@@ -38,19 +39,22 @@ class FormInput extends Component {
       entityId,
       mergeForm,
       name,
+      parentValue,
       removeErrors,
-      type,
+      type
     } = this.props
     let mergedValue
     if (type === 'checkbox' || type === 'radio') {
-      mergedValue = checked ? defaultValue || true : false
+      mergedValue = checked ? (defaultValue || true) : false
+    } else if (type === 'switch') {
+      mergedValue = value
     } else if (type === 'number') {
       mergedValue = Number(value)
     } else {
       mergedValue = value
     }
     removeErrors(name)
-    mergeForm(collectionName, entityId, name, mergedValue)
+    mergeForm(collectionName, entityId, name, mergedValue, parentValue)
   }
 
   componentWillMount() {
@@ -74,16 +78,25 @@ class FormInput extends Component {
     } = this.props
     const { localValue } = this.state
     return (
-      <input
-        required={required}
-        autoComplete={autoComplete}
-        className={className || 'input'}
-        id={id}
-        onChange={this.onChange}
-        placeholder={placeholder}
-        type={type}
-        value={localValue !== null ? localValue : value || defaultValue || ''}
-      />
+      type !== 'switch'
+      ? (
+        <input
+          required={required}
+          autoComplete={autoComplete}
+          className={className || 'input'}
+          id={id}
+          onChange={this.onChange}
+          placeholder={placeholder}
+          type={type}
+          value={localValue !== null ? localValue : value || defaultValue || ''}
+        />
+      )
+      : (
+        <SwitchButton {...this.props}
+          isInitialActive={defaultValue}
+          onClick={this.onChange}
+        />
+      )
     )
   }
 }

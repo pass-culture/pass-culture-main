@@ -1,21 +1,43 @@
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
-import { NavLink, withRouter } from 'react-router-dom'
-import { compose } from 'redux'
+import { NavLink } from 'react-router-dom'
 
+// import FormInput from './layout/FormInput'
+import SwitchButton from './layout/SwitchButton'
+import { requestData } from '../reducers/data'
 import selectOccasionThumbUrl from '../selectors/occasionThumbUrl'
 import { collectionToPath } from '../utils/translate'
 
 class OccasionItem extends Component {
-  onDeactivateClick = () => {
-
+  onDeactivateClick = event => {
+    const {
+      id,
+      occasionType,
+      requestData
+    } = this.props
+    requestData(
+      'PATCH',
+      `occasions/${occasionType}/${id}`,
+        {
+          body: {
+            occasion: {
+              isActive: event.target.value
+            }
+          },
+          key: 'occasions',
+          isMergingDatum: true,
+          isMutatingDatum: true,
+          isMutaginArray: false
+        }
+      )
   }
 
   render() {
     const {
       description,
       id,
+      isActive,
       name,
       occasionType,
       thumbUrl
@@ -43,10 +65,33 @@ class OccasionItem extends Component {
                   Modifier
                 </button>
               </NavLink>
+              <NavLink  to={`/offres/${collectionToPath(occasionType)}/${id}/accroches`}>
+                <button className="button is-primary level-item">
+                  Accroches
+                </button>
+              </NavLink>
+              {/*
               <button className="button is-primary level-item"
                 onClick={this.onDeactivateClick}>
                 Désactiver
               </button>
+              */}
+              {/*
+              <FormInput
+                collectionName={occasionType}
+                defaultValue={isActive}
+                entityId={id}
+                name='isActive'
+
+                type='switch'
+              />
+              */}
+              <SwitchButton
+                isInitialActive={isActive}
+                OffElement={<p> Désactivé </p>}
+                OnElement={<p> Activé </p>}
+                onClick={this.onDeactivateClick}
+              />
             </div>
           </nav>
         </div>
@@ -61,13 +106,11 @@ OccasionItem.defaultProps = {
 
 
 
-export default compose(
-  withRouter,
-  connect(
-    () => {
-      return (state, ownProps) => ({
-        thumbUrl: selectOccasionThumbUrl(state, ownProps)
-      })
-    }
-  )
+export default connect(
+  () => {
+    return (state, ownProps) => ({
+      thumbUrl: selectOccasionThumbUrl(state, ownProps)
+    })
+  },
+  { requestData }
 )(OccasionItem)

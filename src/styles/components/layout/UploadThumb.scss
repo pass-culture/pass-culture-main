@@ -1,0 +1,52 @@
+.upload-thumb {
+  position: relative;
+  display: block;
+  height: auto;
+  cursor: pointer;
+  text-align: center;
+  overflow: hidden;
+
+  .drag-n-drop {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 255px;
+    height: 255px;
+    background: #eee;
+    padding-top: 22%;
+  }
+
+  &.has-image {
+    background: transparent;
+    .drag-n-drop {
+      display: none;
+    }
+  }
+
+  .remove-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  canvas {
+    display: block;
+    margin: auto;
+  }
+  .zoom {
+    // margin-top: 1rem;
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    width: 50%;
+    margin: auto;
+  }
+}

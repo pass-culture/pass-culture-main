@@ -1,112 +1,158 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
-import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
-import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
+import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
+import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import { requestData } from '../../reducers/data'
-import { resetForm } from '../../reducers/form'
-import selectCurrentOccasion from '../../selectors/currentOccasion'
+import UploadThumb from '../layout/UploadThumb'
+import { assignData } from '../../reducers/data'
 import selectCurrentMediation from '../../selectors/currentMediation'
-import selectOccasionPath from '../../selectors/occasionPath'
-import { NEW } from '../../utils/config'
+import selectCurrentOfferer from '../../selectors/currentOfferer'
+import { pathToModel } from '../../utils/translate'
 
-const Label = ({ title }) => {
-  return <div className="subtitle">{title}</div>
-}
 
 class MediationPage extends Component {
 
-  constructor() {
-    super()
+  constructor () {
+    super ()
     this.state = {
-      mediation: null,
+      isLoading: false,
+      isNew: false
     }
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.isNew) return {mediation: {}}
+  onUploadClick = e => {
+    const {
+      id,
+      requestData
+    } = this.props
+    requestData(
+      'POST',
+      `storage/mediations/${id}/0`,
+      {
+        body: e.target.value,
+        encode: 'multipart/form-data',
+        key: 'mediationImage'
+      }
+    )
+  }
+
+  static getDerivedStateFromProps (nextProps) {
+    const {
+      mediationId,
+      occasionId,
+      occasionPath
+    } = nextProps.match.params
+    const {
+      offerer,
+      name,
+    } = nextProps
+    const {
+      id
+    } = (nextProps.mediation || {})
+    const isNew = mediationId === 'nouveau'
     return {
-      mediation: nextProps.mediation
+      apiPath: `mediations${isNew ? '' : `/${id}`}`,
+      method: isNew ? 'POST' : 'PATCH',
+      occasionModel: pathToModel(occasionPath),
+      isLoading: !(name || offerer || (id && !isNew) ),
+      isNew,
+      routePath: `/offres/${occasionPath}/${occasionId}/accroches`
     }
   }
 
-  handleRequestData = () => {
-    // TODO: replug
-    // const {
-    //   collectionName,
-    //   occasionId,
-    //   requestData,
-    // } = this.props
-    // occasionId !== 'nouveau' && requestData(
-    //   'GET',
-    //   `occasions/${collectionName}/${occasionId}`,
-    //   { key: 'occasions' }
-    // )
-  }
-
-  componentDidMount() {
-    this.handleRequestData()
-  }
-
-  componentDidUpdate(prevProps) {
-    const { mediation, mediationId } = this.props
-    if (!mediation && mediationId !== prevProps.mediationId) {
-      this.handleRequestData()
+  componentDidUpdate (prevProps) {
+    const {
+      history,
+      assignData
+    } = this.props
+    const id = get(this.props, 'mediation.id')
+    if (!get(prevProps, 'mediation.id') && id) {
+      history.push(`${this.state.routePath}/${id}`)
+      assignData({ mediations: null })
     }
-  }
-
-  // updateOccasion = (key, value) => {
-  //   const newValue = key.split('.').reverse().reduce((result, keyElement) => {
-  //     return {[keyElement]: (result || value)}
-  //   }, null)
-  //   this.setState({
-  //     occasion: Object.assign({}, this.state.occasion, newValue)
-  //   })
-  // }
-
-  onSubmitClick = () => {
-    this.props.resetForm()
   }
 
   render () {
     const {
-      isNew,
-      mediation,
-      occasion,
-      occasionId,
-      occasionPath,
+      offerer,
+      name,
     } = this.props
-
+    const occasionId = this.props.id
     const {
       id
-    } = mediation
+    } = (this.props.mediation || {})
+    console.log('this.props', this.props)
+    const {
+      apiPath,
+      isLoading,
+      isNew,
+      method,
+      occasionModel,
+      routePath
+    } = this.state
 
-    const mediationId = isNew ? NEW : this.props.mediationId
+    console.log('offerer', offerer)
+
     return (
-      <PageWrapper name='mediation' loading={!(id || isNew)}>
+      <PageWrapper name='mediation' loading={isLoading}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to={`/offres/${occasionPath}/${occasionId}`} className="button is-primary is-outlined">
+              <NavLink
+                to={routePath}
+                className="button is-primary is-outlined">
                 Retour
               </NavLink>
             </div>
-            <section className='section'>
-              <h2 className='subtitle'>{get(occasion, 'name')}</h2>
+            <br/>
+            <section className='section' key={0}>
               <h1 className='title has-text-centered'>
-                {isNew ? 'Créez' : 'Modifiez'} une accroche
+                {isNew ? 'Créez' : 'Modifiez'} une accroche pour {name}
               </h1>
-              <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
-              </section>
+            </section>
+            <SubmitButton
+              getBody={form => ({
+                [`${occasionModel}Id`]: occasionId,
+                offererId: offerer && offerer.id
+              })}
+              className="button is-primary is-medium"
+              getIsDisabled={form => !offerer || !occasionId}
+              method={method}
+              path={apiPath}
+              storeKey="mediations"
+              text={isNew ? 'Créer' : 'Modifier'}
+            />
+            <br/>
+            <br/>
+            {
+              !isNew && [
+                <section className='section' key={0}>
+                  <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
+                </section>,
+                <UploadThumb
+                  borderRadius={0}
+                  collectionName='mediations'
+                  entityId={id}
+                  key={1}
+                  onUploadClick={this.onUploadClick}
+                  type='thumb'
+                  required
+                />
+              ]
+            }
+            {/*
             <form>
               <div className='field'>
-                <label class="label"><Label title='Depuis une adresse Internet :' /></label>
+                <label className="label">
+                  <Label title='Depuis une adresse Internet :' />
+                </label>
                 <div className="field is-grouped">
                   <p className="control is-expanded">
                     <input className="input is-rounded" type="url" placeholder="http://www.example.com" />
@@ -119,7 +165,9 @@ class MediationPage extends Component {
                 </div>
               </div>
               <div className='field'>
-                <label class="label"><Label title='... ou depuis votre poste :' /></label>
+                <label className="label">
+                  <Label title='... ou depuis votre poste :' />
+                </label>
                 <div className="file is-primary is-outlined">
                   <label className="file-label">
                     <input className="file-input" type="file" name="resume" />
@@ -132,6 +180,7 @@ class MediationPage extends Component {
                 </div>
               </div>
             </form>
+            */}
           </div>
         </div>
       </PageWrapper>
@@ -141,17 +190,12 @@ class MediationPage extends Component {
 
 export default compose(
   withLogin({ isRequired: true }),
+  withCurrentOccasion,
   connect(
-    (state, ownProps) => {
-      return Object.assign({
-        isNew: ownProps.match.params.mediationId === 'nouveau',
-        user: state.user,
-        mediation: selectCurrentMediation(state, ownProps),
-        occasionPath: ownProps.match.params.occasionPath,
-        occasionId: ownProps.match.params.occasionId,
-        occasion: selectCurrentOccasion(state, ownProps),
-      })
-    },
-    { resetForm, requestData }
+    (state,ownProps) => ({
+      mediation: selectCurrentMediation(state, ownProps),
+      offerer: selectCurrentOfferer(state, ownProps)
+    }),
+    { assignData }
   )
 )(MediationPage)

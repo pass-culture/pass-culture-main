@@ -6,7 +6,6 @@ import get from 'lodash.get'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import { requestData } from '../../reducers/data'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
 import { collectionToPath } from '../../utils/translate'
@@ -18,11 +17,11 @@ class OfferersPage extends Component {
     } = this.props
     return (
       <PageWrapper name="profile" loading={!offerers}>
-        <h1 className="title has-text-centered">Vos lieux</h1>
+        <h1 className="title has-text-centered">Vos établissements</h1>
         <nav className="level is-mobile">
           <NavLink to={`/${collectionToPath('venues')}/nouveau`}>
             <button className="button is-primary level-item">
-              Nouveau lieu
+              Nouvel établissement
             </button>
           </NavLink>
         </nav>

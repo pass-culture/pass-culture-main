@@ -1,11 +1,5 @@
-import get from 'lodash.get'
-import classnames from 'classnames'
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 
-import { requestData } from '../../reducers/data'
-import { randomHash } from '../../utils/random'
 import Icon from './Icon'
 import FormInput from './FormInput'
 

@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { DELETE, NEW } from '../utils/config'
 
 // INITIAL STATE
@@ -5,14 +6,21 @@ const initialState = {}
 
 // ACTIONS
 const MERGE_FORM = 'MERGE_FORM'
+const REMOVE_FORM = 'REMOVE_FORM'
 const RESET_FORM = 'RESET_FORM'
 
 // REDUCER
 const form = (state = initialState, action) => {
+  let collectionKey, collection
   switch (action.type) {
+    case REMOVE_FORM:
+      collectionKey = `${action.collectionName}ById`
+      collection = Object.assign({}, state[collectionKey])
+      delete collection[action.id]
+      return Object.assign({}, state, { [collectionKey]: collection })
     case MERGE_FORM:
-      const collectionKey = `${action.collectionName}ById`
-      const collection = Object.assign({}, state[collectionKey])
+      collectionKey = `${action.collectionName}ById`
+      collection = Object.assign({}, state[collectionKey])
       const entity = Object.assign({}, collection[action.id])
       if (typeof action.nameOrObject === 'object' && !action.value) {
         collection[action.id] = action.nameOrObject
@@ -20,7 +28,21 @@ const form = (state = initialState, action) => {
         collection[action.id] = DELETE
       } else {
         collection[action.id] = entity
-        entity[action.nameOrObject] = action.value
+        if (action.nameOrObject.includes('.')) {
+          const chunks = action.nameOrObject.split('.')
+          const chainKey = chunks.slice(0, -1).join('.')
+          const lastKey = chunks.slice(-1)[0]
+          let value = get(entity, chainKey)
+          if (!value && !chainKey.includes('.')) {
+            entity[chainKey] = action.parentValue
+          }
+          value = entity[chainKey]
+          if (value) {
+            value[lastKey] = action.value
+          }
+        } else  {
+          entity[action.nameOrObject] = action.value
+        }
       }
       return Object.assign({}, state, { [collectionKey]: collection })
     case RESET_FORM:
@@ -31,12 +53,19 @@ const form = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
-export const mergeForm = (collectionName, id, nameOrObject, value) => ({
+export const mergeForm = (collectionName, id, nameOrObject, value, parentValue) => ({
   collectionName,
   id,
   nameOrObject,
   type: MERGE_FORM,
   value,
+  parentValue
+})
+
+export const removeForm = (collectionName, id) => ({
+  collectionName,
+  id,
+  type: REMOVE_FORM,
 })
 
 export const resetForm = patch => ({ type: RESET_FORM })

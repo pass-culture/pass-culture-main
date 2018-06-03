@@ -10,8 +10,11 @@ export const IS_DEBUG = true
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 
+export const AND = '_and_'
 export const DELETE = '_delete_'
 export const NEW = '_new_'
+export const SEARCH = '_search_'
+export const SPACE = ' '
 
 var CALCULATED_API_URL
 if (window.cordova) {

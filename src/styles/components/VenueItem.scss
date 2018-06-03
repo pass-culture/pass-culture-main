@@ -1,0 +1,14 @@
+.venue-item {
+  border-bottom: 2px solid whitesmoke;
+  cursor: pointer;
+  padding: 0.25rem;
+  margin-bottom: 0.5rem;
+
+  &:hover {
+    background-color: whitesmoke;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
