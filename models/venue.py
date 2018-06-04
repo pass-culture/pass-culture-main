@@ -25,6 +25,14 @@ class Venue(app.model.PcObject,
 
     longitude = db.Column(db.Numeric(8, 5), nullable=True)
 
+    managingOffererId = db.Column(db.BigInteger,
+                                  db.ForeignKey("offerer.id"),
+                                  unique=True,
+                                  nullable=True)
+    managingOfferer = db.relationship(lambda: app.model.Offerer,
+                                      foreign_keys=[managingOffererId],
+                                      backref='managedVenues')
+
     #openingHours = db.Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
     # means open monday 9 to 18 and tuesday 9 to 19, closed wednesday,

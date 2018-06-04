@@ -25,14 +25,7 @@ class Offerer(app.model.PcObject,
     offererProviders = db.relationship(lambda: app.model.OffererProvider,
                                        back_populates="offerer")
 
-    venueId = db.Column(db.BigInteger,
-                        db.ForeignKey("venue.id"),
-                        unique=True,
-                        nullable=True)
-    venue = db.relationship(lambda: app.model.Venue,
-                            foreign_keys=[venueId],
-                            backref='offerer')
-
+    
     bookingEmail = db.Column(db.String(120), nullable=False)
 
 
