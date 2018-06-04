@@ -8,8 +8,6 @@ import Icon from './Icon'
 import { requestData } from '../../reducers/data'
 import { API_URL, NEW } from '../../utils/config'
 
-function formatBytes(a,b){if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
-
 class UploadThumb extends Component {
 
   constructor() {
@@ -24,8 +22,8 @@ class UploadThumb extends Component {
 
   handleDrop = dropped => {
     const image = dropped[0]
+    // convert into MB
     const size = image.size/1048576
-    console.log('size', image.size, (image.size/1048576).toFixed(2))
     this.setState({
       image,
       isUploadDisabled: size > this.props.maxSize,
