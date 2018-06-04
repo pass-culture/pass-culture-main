@@ -31,10 +31,11 @@ class FormSelect extends Component {
           onChange={this.onChange}
         >
           {
-            options && options.map((option, index) => (
-              <option key={index} value={option.value}>
-                {option.label}
-              </option>))
+            options && options.map(({ label, value }, index) => (
+              <option key={index} value={value}>
+                {label}
+              </option>
+            ))
           }
         </select>
       </div>

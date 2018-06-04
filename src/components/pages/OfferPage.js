@@ -14,6 +14,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
+import selectOffererOptions from '../../selectors/offererOptions'
 import { SEARCH } from '../../utils/config'
 
 
@@ -64,8 +65,11 @@ class OfferPage extends Component {
       isNew,
       mediaUrls,
       occurences,
+      offererOptions,
       type,
+      user
     } = this.props
+    console.log('user', user)
     return (
       <PageWrapper name='offer' loading={isLoading}>
         <div className='columns'>
@@ -100,20 +104,17 @@ class OfferPage extends Component {
               options={eventTypes}
             />
             <FormField
-              collectionName='offerers'
+              collectionName='events'
               defaultValue={get(occurences, '0.offer.0.offerer')}
-              ItemComponent={({ address, name, onItemClick }) => (
-                <div className='venue-item' onClick={onItemClick}>
-                  <b> {name} </b> {address}
-                </div>
-              )}
               key={0}
               label={<Label title="Structure" />}
-              type="search"
+              name='offererId'
+              options={offererOptions}
+              type="select"
             />
             {
               occasionPath === 'evenements' && [
-                <FormField
+                null && <FormField
                   collectionName='venues'
                   defaultValue={get(occurences, '0.venue')}
                   ItemComponent={({ address, name, onItemClick }) => (
@@ -122,8 +123,8 @@ class OfferPage extends Component {
                     </div>
                   )}
                   key={0}
-                  label={<Label title="Structure" />}
-                  type="search"
+                  label={<Label title="Lieu" />}
+                  type="select"
                 />,
                 <div className='field' key={1}>
                   <Label title='Horaires' />
@@ -275,7 +276,10 @@ export default compose(
   withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
-    state => ({ eventTypes: state.data.eventTypes }),
+    state => ({
+      eventTypes: state.data.eventTypes,
+      offererOptions: selectOffererOptions(state)
+    }),
     { resetForm, showModal }
   )
 )(OfferPage)
