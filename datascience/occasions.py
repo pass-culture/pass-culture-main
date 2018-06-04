@@ -73,7 +73,12 @@ def score_event(event, departement_codes):
 def score_thing(thing, departement_codes):
     score = 0
 
-    # a bit of randomness so we don't always return the same events
+    app.db.session.query(Mediation.query.filter(Mediation.thing == thing).exists())
+
+    if len(thing.mediations) > 0:
+        score += 20
+
+    # a bit of randomness so we don't always return the same things
     score += randint(0, 10)
 
     return score
