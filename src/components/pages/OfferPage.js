@@ -108,7 +108,7 @@ class OfferPage extends Component {
                 </div>
               )}
               key={0}
-              label={<Label title="Etablissement" />}
+              label={<Label title="Structure" />}
               type="search"
             />
             {
@@ -122,7 +122,7 @@ class OfferPage extends Component {
                     </div>
                   )}
                   key={0}
-                  label={<Label title="Etablissement" />}
+                  label={<Label title="Structure" />}
                   type="search"
                 />,
                 <div className='field' key={1}>

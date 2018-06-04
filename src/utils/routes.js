@@ -53,14 +53,14 @@ const routes = [
   },
   {
     exact: true,
-    path: '/etablissements',
-    title: 'etablissements',
+    path: '/structures',
+    title: 'structures',
     render: () => <OfferersPage />,
   },
   {
     exact: true,
-    path: '/etablissements/:offererId',
-    title: 'etablissements',
+    path: '/structures/:offererId',
+    title: 'structures',
     render: () => <OffererPage />,
   },
   {

@@ -16,11 +16,11 @@ class OfferersPage extends Component {
     } = this.props
     return (
       <PageWrapper name="profile" loading={!offerers}>
-        <h1 className="title has-text-centered">Vos établissements</h1>
+        <h1 className="title has-text-centered">Vos structures</h1>
         <nav className="level is-mobile">
-          <NavLink to={`/etablissements/nouveau`}>
+          <NavLink to={`/structures/nouveau`}>
             <button className="button is-primary level-item">
-              Nouvel établissement
+              Nouvelle structure
             </button>
           </NavLink>
         </nav>

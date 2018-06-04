@@ -120,7 +120,7 @@ class ProfilePage extends Component {
                   </button>
                 </div>
                 <div className="control">
-                  <NavLink to='/etablissements' className="button is-primary is-outlined is-medium">
+                  <NavLink to='/structures' className="button is-primary is-outlined is-medium">
                     Retour
                   </NavLink>
                 </div>

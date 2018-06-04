@@ -43,10 +43,10 @@ class FormSirene extends Component {
 
       } else {
         response.json().then(body => {
-          const name = body.etablissement.l1_declaree
-          const address = body.etablissement.geo_adresse
-          const latitude = body.etablissement.latitude
-          const longitude = body.etablissement.longitude
+          const name = body.structure.l1_declaree
+          const address = body.structure.geo_adresse
+          const latitude = body.structure.latitude
+          const longitude = body.structure.longitude
           mergeForm('venues', entityId, { address, latitude, longitude, name })
         }
       )

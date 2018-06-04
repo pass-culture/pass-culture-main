@@ -9,7 +9,7 @@ const OffererItem = ({
   id,
   name
 }) => {
-  const src = `${THUMBS_URL}/etablissements/${id}`
+  const src = `${THUMBS_URL}/structures/${id}`
   return (
     <article className="offerer-item media">
       <figure className="media-left">
@@ -28,7 +28,7 @@ const OffererItem = ({
           </p>
         </div>
         <nav className="level">
-          <NavLink to={`/etablissements/${id}`}>
+          <NavLink to={`/structures/${id}`}>
             <button className="button is-primary level-item">
               Configurer
             </button>

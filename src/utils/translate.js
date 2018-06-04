@@ -7,7 +7,7 @@ export function collectionToPath (collectionName) {
     case 'venues':
       return 'lieux';
     case 'offerers':
-      return 'etablissements'
+      return 'structures'
     case 'things':
       return 'objets'
     default:
@@ -25,7 +25,7 @@ export function pathToCollection (path) {
       return 'venues'
     case 'objets':
       return 'things';
-    case 'etablissements':
+    case 'structures':
       return 'offerers'
     default:
       return path;
@@ -42,7 +42,7 @@ export function pathToModel (path) {
       return 'venue'
     case 'objets':
       return 'thing';
-    case 'etablissements':
+    case 'structures':
       return 'offerer'
     default:
       return path;

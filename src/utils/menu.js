@@ -2,8 +2,8 @@ const menu = {
   links: [
     {
       icon: 'ico-geoloc-solid2-w',
-      path: '/etablissements',
-      title: 'Vos etablissements'
+      path: '/structures',
+      title: 'Vos structures'
     },
     {
       icon: 'ico-calendar-w',

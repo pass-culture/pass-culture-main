@@ -64,13 +64,13 @@ class OffererPage extends Component {
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to='/etablissements'
+              <NavLink to='/structures'
                 className="button is-primary is-outlined">
                 Retour
               </NavLink>
             </div>
 
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un etablissement</h1>
+            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un structure</h1>
             <FormField
               autoComplete="siren"
               collectionName="offerers"
@@ -126,7 +126,7 @@ class OffererPage extends Component {
               <div className="control">
                 <NavLink
                   className="button is-primary is-outlined is-medium"
-                  to='/etablissements' >
+                  to='/structures' >
                   Retour
                 </NavLink>
               </div>
