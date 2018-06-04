@@ -258,7 +258,10 @@ class OfferPage extends Component {
                 />
               </div>
               <div className="control">
-                <NavLink to='/offres' className="button is-primary is-outlined is-medium">Retour</NavLink>
+                <NavLink to='/offres'
+                  className="button is-primary is-outlined is-medium">
+                  Retour
+                </NavLink>
               </div>
             </div>
           </div>

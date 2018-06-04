@@ -11,7 +11,6 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
-import { collectionToPath } from '../../utils/translate'
 import { NEW } from '../../utils/config'
 
 
@@ -43,7 +42,10 @@ class OffererPage extends Component {
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to={`/${collectionToPath('venues')}`} className="button is-primary is-outlined">Retour</NavLink>
+              <NavLink to='/etablissements'
+                className="button is-primary is-outlined">
+                Retour
+              </NavLink>
             </div>
 
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un etablissement</h1>
@@ -103,7 +105,7 @@ class OffererPage extends Component {
               <div className="control">
                 <NavLink
                   className="button is-primary is-outlined is-medium"
-                  to={`/${collectionToPath('venues')}`} >
+                  to='/etablissements' >
                   Retour
                 </NavLink>
               </div>
