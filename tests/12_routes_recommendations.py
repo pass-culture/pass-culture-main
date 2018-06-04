@@ -36,7 +36,7 @@ def subtest_initial_recos():
     r = req_with_auth().put(RECOMMENDATION_URL, json={})
     assert r.status_code == 200
     recos = r.json()
-    assert len(recos) <= BLOB_SIZE + 2
+    assert len(recos) == BLOB_SIZE + 2
 
     assert recos[0]['mediation']['tutoIndex'] == 0
     assert recos[1]['mediation']['tutoIndex'] == 1
@@ -57,7 +57,8 @@ def subtest_recos_with_params(params,
     assert r.status_code == expected_status
     if expected_status == 200:
         recos = r.json()
-        assert len(recos) <= BLOB_SIZE + 2
+        assert len(recos) <= BLOB_SIZE + (2 if expected_mediation_id is None
+                                            else 3)
         assert recos[1]['mediation']['tutoIndex'] is not None
         check_recos(recos)
         return recos
@@ -168,12 +169,6 @@ def test_17_put_recommendations_should_return_more_recos():
     # ensure we still have no duplicates
     ids = list(map(lambda reco: reco['id'], recos))
     assert len(list(filter(lambda v: v > 1, Counter(ids).values()))) == 0
-
-    assert len(list(filter(
-        lambda reco:
-        'mediatedOccurences' in reco and reco['mediatedOccurences'] is not None and
-        len(reco['mediatedOccurences']) > 1,
-    recos))) > 0
 
 
 def test_18_patch_recommendations_should_return_is_clicked_true():

@@ -81,17 +81,20 @@ def score_thing(thing, departement_codes):
 
 # --- FILTERING ---
 
-def departement_occasions(query, occasion_type, departement_codes):
+def aliased_join_table(occasion_type):
     if occasion_type == Event:
-        join_table = EventOccurence
+        return aliased(EventOccurence)
     else:
-        join_table = aliased(Offer)
+        return aliased(Offer)
 
+
+def departement_occasions(query, occasion_type, departement_codes):
+    join_table = aliased_join_table(occasion_type)
     query = query.join(join_table)\
                  .join(Venue)\
                  .filter(Venue.departementCode.in_(departement_codes))\
                  .distinct(occasion_type.id)
-    print_dev('(reco) departement occasions.count', query.count())
+    print_dev('(reco) departement '+str(occasion_type)+'.count', query.count())
     return query
 
 
@@ -101,6 +104,8 @@ def bookable_occasions(query, occasion_type):
     if occasion_type == Event:
         query = query.filter(Event.occurences.any(EventOccurence.beginningDatetime > datetime.now()))
         print_dev('(reco) future events.count', query.count())
+        join_table = aliased_join_table(occasion_type)
+        query = query.join(join_table)
 
     bo_Offer = aliased(Offer)
     query = query.join(bo_Offer)\
@@ -109,14 +114,14 @@ def bookable_occasions(query, occasion_type):
                          & ((bo_Offer.available == None) |
                             (bo_Offer.available > Booking.query.filter(Booking.offerId == bo_Offer.id).count())))\
                  .distinct(occasion_type.id)
-    print_dev('(reco) bookable events.count', query.count())
+    print_dev('(reco) bookable '+str(occasion_type)+'.count', query.count())
     return query
 
 
-def not_yet_recommended_occasions(query, user):
-    query = query.filter(~ ((Event.recommendations.any(Recommendation.userId == user.id))
-                         | (Event.mediations.any(Mediation.recommendations.any(Recommendation.userId == user.id)))))
-    print_dev('(reco) not already used occasions.count', query.count())
+def not_yet_recommended_occasions(query, occasion_type, user):
+    query = query.filter(~ ((occasion_type.recommendations.any(Recommendation.userId == user.id))
+                         | (occasion_type.mediations.any(Mediation.recommendations.any(Recommendation.userId == user.id)))))
+    print_dev('(reco) not already used '+str(occasion_type)+'occasions.count', query.count())
     return query
 
 
@@ -132,7 +137,7 @@ def get_occasions_by_type(occasion_type,
 
     query = departement_occasions(query, occasion_type, departement_codes)
     query = bookable_occasions(query, occasion_type)
-    query = not_yet_recommended_occasions(query, user)
+    query = not_yet_recommended_occasions(query, occasion_type, user)
 
     return sort_by_score(make_score_tuples(query.all(),
                                            departement_codes))

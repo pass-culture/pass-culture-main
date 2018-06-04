@@ -117,11 +117,15 @@ def put_recommendations():
           and (len(unread_recos) > 0
                or len(read_recos) > 0):
 
-        nb_new_unread = min(BLOB_UNREAD_NUMBER, len(unread_recos))
+        nb_new_unread = min(BLOB_UNREAD_NUMBER,
+                            len(unread_recos),
+                            BLOB_SIZE-len(recos))
         recos += unread_recos[0:nb_new_unread]
         unread_recos = unread_recos[nb_new_unread:]
 
-        nb_new_read = min(BLOB_READ_NUMBER, len(read_recos))
+        nb_new_read = min(BLOB_READ_NUMBER,
+                          len(read_recos),
+                          BLOB_SIZE-len(recos))
         recos += read_recos[0:nb_new_read]
         read_recos = read_recos[nb_new_read:]
 
