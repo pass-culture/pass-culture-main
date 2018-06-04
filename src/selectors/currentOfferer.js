@@ -5,8 +5,13 @@ import selectCurrentOccasion from './currentOccasion'
 
 export default createSelector(
   selectCurrentOccasion,
+  state => get(state, 'user.offerers'),
+  (state, ownProps) => ownProps.match.params.offererId,
   (state, ownProps) => ownProps.match.params.occasionPath,
-  (occasion, occasionPath) => {
+  (occasion, offerers, offererId, occasionPath) => {
+    if (offererId) {
+      return offerers && offerers.find(o => o.id === offererId)
+    }
     if (!occasion) { return }
     if (occasionPath === 'evenements') {
       return get(occasion, 'occurences.0.offer.0.offerer')

@@ -49,14 +49,15 @@ class OffererPage extends Component {
     const {
       address,
       bookingEmail,
-      id,
+      name,
       siren
     } = this.props
     const {
       apiPath,
-      isLoading
+      isLoading,
       isNew,
-      method
+      method,
+      offererId
     } = this.state
     return (
       <PageWrapper name='offerer' loading={isLoading}>
@@ -70,21 +71,20 @@ class OffererPage extends Component {
             </div>
 
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un etablissement</h1>
-            <form onSubmit={this.save}>
             <FormField
               autoComplete="siren"
               collectionName="offerers"
               defaultValue={siren}
-              entityId={id}
-              label={<Label title="Siret" />}
+              entityId={offererId}
+              label={<Label title="Siren" />}
               name="siren"
-              type="siren"
+              type="sirene"
             />
             <FormField
               autoComplete="name"
               collectionName="offerers"
               defaultValue={name}
-              entityId={id}
+              entityId={offererId}
               label={<Label title="Nom" />}
               name="name"
             />
@@ -92,7 +92,7 @@ class OffererPage extends Component {
               autoComplete="address"
               collectionName="offerers"
               defaultValue={address || ''}
-              entityId={id}
+              entityId={offererId}
               label={<Label title="Adresse" />}
               name="address"
               type="adress"
@@ -101,7 +101,7 @@ class OffererPage extends Component {
               autoComplete="email"
               collectionName="offerers"
               defaultValue={bookingEmail || ''}
-              entityId={id}
+              entityId={offererId}
               label={<Label title="Email de réservation" />}
               name="bookingEmail"
             />
@@ -131,7 +131,6 @@ class OffererPage extends Component {
                 </NavLink>
               </div>
             </div>
-          </form>
         </div>
       </div>
     </PageWrapper>

@@ -5,11 +5,11 @@ import { THUMBS_URL } from '../utils/config'
 import { collectionToPath } from '../utils/translate'
 
 const OffererItem = ({
+  address,
   id,
-  name,
-  venue
+  name
 }) => {
-  const src = `${THUMBS_URL}/venues/${venue.id}`
+  const src = `${THUMBS_URL}/etablissements/${id}`
   return (
     <article className="offerer-item media">
       <figure className="media-left">
@@ -24,11 +24,11 @@ const OffererItem = ({
             <strong>{name}</strong>
           </p>
           <p className="subtitle">
-            {venue.address}
+            {address}
           </p>
         </div>
         <nav className="level">
-          <NavLink to={`/${collectionToPath('venues')}/${id}`}>
+          <NavLink to={`/etablissements/${id}`}>
             <button className="button is-primary level-item">
               Configurer
             </button>

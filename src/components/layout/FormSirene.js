@@ -6,7 +6,7 @@ import { assignErrors, removeErrors } from '../../reducers/errors'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
 
-class FormSiret extends Component {
+class FormSirene extends Component {
   constructor(props) {
     super(props)
     this.state = { localValue: null }
@@ -109,7 +109,7 @@ class FormSiret extends Component {
   }
 }
 
-FormSiret.defaultProps = {
+FormSirene.defaultProps = {
   debounceTimeout: 500,
   entityId: NEW,
 }
@@ -117,4 +117,4 @@ FormSiret.defaultProps = {
 export default connect(
   (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
   { assignErrors, mergeForm, removeErrors }
-)(FormSiret)
+)(FormSirene)

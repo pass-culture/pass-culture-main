@@ -9,7 +9,7 @@ import FormList from './FormList'
 import FormPassword from './FormPassword'
 import FormSearch from './FormSearch'
 import FormSelect from './FormSelect'
-import FormSiret from './FormSiret'
+import FormSirene from './FormSirene'
 import FormTextarea from './FormTextarea'
 import Icon from './Icon'
 import { capitalize } from '../../utils/string'
@@ -20,7 +20,7 @@ const FormComponentsByName = {
   FormSearch,
   FormSelect,
   FormPassword,
-  FormSiret,
+  FormSirene,
   FormTextarea
 }
 
