@@ -191,7 +191,9 @@ def put_recommendations():
                 occurences = recos[index].mediation.event.occurences
             ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
                            occurences))
-            reco['recommendationOffers'] = ros
+            reco['recommendationOffers'] = sorted(ros,
+                                                  key=lambda ro: ro['bookingLimitDatetime'],
+                                                  reverse=True)
 
     # RETURN
     return jsonify(dict_recos), 200
