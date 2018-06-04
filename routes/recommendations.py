@@ -194,6 +194,9 @@ def put_recommendations():
             reco['recommendationOffers'] = sorted(ros,
                                                   key=lambda ro: ro['bookingLimitDatetime'],
                                                   reverse=True)
+        elif recos[index].mediation and\
+             recos[index].mediation.tutoIndex is not None:
+            reco['recommendationOffers'] = []
 
     # RETURN
     return jsonify(dict_recos), 200
