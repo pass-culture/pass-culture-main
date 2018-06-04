@@ -1,6 +1,7 @@
+""" venue """
 from flask import current_app as app
 from sqlalchemy import Index
-from sqlalchemy.dialects.postgresql import ARRAY, TEXT, TIME
+from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 

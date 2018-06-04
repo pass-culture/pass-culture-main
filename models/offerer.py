@@ -1,3 +1,4 @@
+""" offerer """
 from flask import current_app as app
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TEXT
@@ -28,6 +29,7 @@ class Offerer(app.model.PcObject,
 
     bookingEmail = db.Column(db.String(120), nullable=False)
 
+    siren = db.Column(db.String(9))
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),

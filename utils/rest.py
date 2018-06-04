@@ -116,3 +116,8 @@ def ensure_provider_can_update(obj):
     if request.provider\
        and obj.lastProvider != request.provider:
         return "API key or login required", 403
+
+def feed(entity, json, keys):
+    for key in keys:
+        if key in json:
+            entity.__setattr__(key, json[key])

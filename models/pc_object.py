@@ -84,7 +84,7 @@ class PcObject():
                     value = value()
                 if value is not None:
                     if isinstance(value, InstrumentedList)\
-                       or value.__class__.__name__=='AppenderBaseQuery'\
+                       or value.__class__.__name__ == 'AppenderBaseQuery'\
                        or isinstance(value, list):
                         if refine is None:
                             final_value = value

@@ -98,7 +98,7 @@ BOOKINGS_INCLUDES = [
 ]
 
 OFFERERS_INCLUDES = [
-    "venue"
+    "managedVenues"
 ]
 
 USERS_INCLUDES = [
