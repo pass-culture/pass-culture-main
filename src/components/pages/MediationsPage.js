@@ -18,6 +18,12 @@ const MediationsPage = ({
       <h2 className='title has-text-centered'>
         Vos accroches
       </h2>
+      <div className='has-text-right'>
+        <NavLink to='/offres'
+          className="button is-primary is-outlined">
+          Retour
+        </NavLink>
+      </div>
       <nav className="level is-mobile">
         <NavLink to={`${routePath}/accroches/nouveau`}>
           <button className="button is-primary level-item">

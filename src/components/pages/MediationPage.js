@@ -27,22 +27,6 @@ class MediationPage extends Component {
     }
   }
 
-  onUploadClick = e => {
-    const {
-      id,
-      requestData
-    } = this.props
-    requestData(
-      'POST',
-      `storage/mediations/${id}/0`,
-      {
-        body: e.target.value,
-        encode: 'multipart/form-data',
-        key: 'mediationImage'
-      }
-    )
-  }
-
   static getDerivedStateFromProps (nextProps) {
     const {
       mediationId,
@@ -69,14 +53,26 @@ class MediationPage extends Component {
 
   componentDidUpdate (prevProps) {
     const {
+      assignData,
       history,
-      assignData
+      thumbedMediation
     } = this.props
+
     const id = get(this.props, 'mediation.id')
     if (!get(prevProps, 'mediation.id') && id) {
       history.push(`${this.state.routePath}/${id}`)
-      assignData({ mediations: null })
     }
+
+    if (thumbedMediation && !prevProps.thumbedMediation) {
+      history.push(this.state.routePath)
+    }
+  }
+
+  componentWillUnmount () {
+    this.props.assignData({
+      thumbedMediation: null,
+      mediations: null
+    })
   }
 
   render () {
@@ -88,7 +84,6 @@ class MediationPage extends Component {
     const {
       id
     } = (this.props.mediation || {})
-    console.log('this.props', this.props)
     const {
       apiPath,
       isLoading,
@@ -98,8 +93,7 @@ class MediationPage extends Component {
       routePath
     } = this.state
 
-    console.log('offerer', offerer)
-
+    console.log('id', id)
     return (
       <PageWrapper name='mediation' loading={isLoading}>
         <div className='columns'>
@@ -141,46 +135,13 @@ class MediationPage extends Component {
                   collectionName='mediations'
                   entityId={id}
                   key={1}
-                  onUploadClick={this.onUploadClick}
+                  index={0}
+                  storeKey='thumbedMediation'
                   type='thumb'
                   required
                 />
               ]
             }
-            {/*
-            <form>
-              <div className='field'>
-                <label className="label">
-                  <Label title='Depuis une adresse Internet :' />
-                </label>
-                <div className="field is-grouped">
-                  <p className="control is-expanded">
-                    <input className="input is-rounded" type="url" placeholder="http://www.example.com" />
-                  </p>
-                  <p className="control">
-                    <a className="button is-primary is-outlined is-medium">
-                      OK
-                    </a>
-                  </p>
-                </div>
-              </div>
-              <div className='field'>
-                <label className="label">
-                  <Label title='... ou depuis votre poste :' />
-                </label>
-                <div className="file is-primary is-outlined">
-                  <label className="file-label">
-                    <input className="file-input" type="file" name="resume" />
-                    <span className="file-cta">
-                      <span className="file-label">
-                        Choisir un fichier
-                      </span>
-                    </span>
-                  </label>
-                </div>
-              </div>
-            </form>
-            */}
           </div>
         </div>
       </PageWrapper>
@@ -193,6 +154,7 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state,ownProps) => ({
+      thumbedMediation: state.data.thumbedMediation,
       mediation: selectCurrentMediation(state, ownProps),
       offerer: selectCurrentOfferer(state, ownProps)
     }),

@@ -71,6 +71,11 @@ const routes = [
   },
   {
     exact: true,
+    path: '/offres/:occasionPath',
+    render: () => <Redirect to="/offres" />,
+  },
+  {
+    exact: true,
     path: '/offres/:occasionPath/:occasionId',
     title: 'Offre',
     render: () => <OfferPage />,

@@ -48,7 +48,7 @@ class MediationItem extends Component {
           </div>
           <nav className="level is-mobile">
             <div className="level-left">
-              <NavLink  to={routePath}>
+              <NavLink to={routePath}>
                 <button className="button is-primary level-item">
                   Modifier
                 </button>
