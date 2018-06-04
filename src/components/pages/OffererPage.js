@@ -16,29 +16,50 @@ import { NEW } from '../../utils/config'
 
 class OffererPage extends Component {
 
+  constructor () {
+    super()
+    this.state = {
+      isLoading: false,
+      isNew: false
+    }
+  }
+
   componentWillUnmount() {
     this.props.resetForm()
+  }
+
+  static getDerivedStateFromProps (nextProps) {
+    const {
+      id,
+      match: { params },
+    } = nextProps
+    const isNew = params.offererId === 'nouveau'
+    const isLoading = !(id || isNew)
+    const method = isNew ? 'POST' : 'PATCH'
+    return {
+      apiPath: isNew ? `offerers/` : `offerers/${id}`,
+      isLoading,
+      isNew,
+      method,
+      offererId: isNew ? NEW : id
+    }
   }
 
   render () {
     const {
       address,
       bookingEmail,
-      offererId,
-      venue
+      id,
+      siren
     } = this.props
     const {
-      name,
-      id,
-      siret
-    } = (venue || {})
-    const isNew = offererId === 'nouveau'
-    const isLoading = !(this.props.id || isNew)
-    const method = isNew ? 'POST' : 'PATCH'
-    const venueId = isNew ? NEW : id
-    const submitPath = isNew ? `venues/` : `venues/${venueId}`
+      apiPath,
+      isLoading
+      isNew,
+      method
+    } = this.state
     return (
-      <PageWrapper name='offer' loading={isLoading}>
+      <PageWrapper name='offerer' loading={isLoading}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
@@ -51,54 +72,54 @@ class OffererPage extends Component {
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un etablissement</h1>
             <form onSubmit={this.save}>
             <FormField
-              autoComplete="on"
-              collectionName="venues"
-              defaultValue={siret}
-              entityId={venueId}
+              autoComplete="siren"
+              collectionName="offerers"
+              defaultValue={siren}
+              entityId={id}
               label={<Label title="Siret" />}
-              name="siret"
-              type="siret"
+              name="siren"
+              type="siren"
             />
             <FormField
-              autoComplete="on"
-              collectionName="venues"
+              autoComplete="name"
+              collectionName="offerers"
               defaultValue={name}
-              entityId={venueId}
+              entityId={id}
               label={<Label title="Nom" />}
               name="name"
             />
             <FormField
-              autoComplete="on"
-              collectionName="venues"
+              autoComplete="address"
+              collectionName="offerers"
               defaultValue={address || ''}
-              entityId={venueId}
+              entityId={id}
               label={<Label title="Adresse" />}
               name="address"
               type="adress"
             />
             <FormField
-              autoComplete="on"
-              collectionName="venues"
+              autoComplete="email"
+              collectionName="offerers"
               defaultValue={bookingEmail || ''}
-              entityId={venueId}
+              entityId={id}
               label={<Label title="Email de réservation" />}
               name="bookingEmail"
             />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
-                  getBody={form => form.venuesById[venueId]}
+                  getBody={form => form.offerersById[offererId]}
                   getIsDisabled={form =>
                     isNew
-                      ? !get(form, `venuesById.${venueId}.name`) &&
-                        !get(form, `venuesById.${venueId}.adress`)
-                      : !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.adress`)
+                      ? !get(form, `offerersById.${offererId}.name`) &&
+                        !get(form, `offerersById.${offererId}.adress`)
+                      : !get(form, `offerersById.${offererId}.name`) ||
+                        !get(form, `offerersById.${offererId}.adress`)
                   }
                   className="button is-primary is-medium"
                   method={method}
-                  path={submitPath}
-                  storeKey="venues"
+                  path={apiPath}
+                  storeKey="offerers"
                   text="Enregistrer"
                 />
               </div>
