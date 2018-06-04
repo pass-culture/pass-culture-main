@@ -8,7 +8,6 @@ import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
-import { collectionToPath } from '../../utils/translate'
 
 class OfferersPage extends Component {
   render() {
@@ -19,7 +18,7 @@ class OfferersPage extends Component {
       <PageWrapper name="profile" loading={!offerers}>
         <h1 className="title has-text-centered">Vos établissements</h1>
         <nav className="level is-mobile">
-          <NavLink to={`/${collectionToPath('venues')}/nouveau`}>
+          <NavLink to={`/etablissements/nouveau`}>
             <button className="button is-primary level-item">
               Nouvel établissement
             </button>
