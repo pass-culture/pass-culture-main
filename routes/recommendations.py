@@ -183,8 +183,8 @@ def put_recommendations():
         reco['recommendationBookings'] = rbs
 
         if recos[index].event:
-            ros = map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
-                      recos[index].event.occurences)
+            ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
+                           recos[index].event.occurences))
             reco['recommendationOffers'] = ros
 
     # RETURN
