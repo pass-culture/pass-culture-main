@@ -112,41 +112,4 @@ class Recommendation(app.model.PcObject, db.Model):
             else:
                 return self.mediation.event.occurences
 
-    # FIXME: This is to support legacy code in the webapp
-    # it should be removed once all requests from the webapp
-    # have an app version header, which will mean that all
-    # clients (or at least those who do use the app) have
-    # a recent version of the app
-
-    @property
-    def recommendationBookings(self):
-        rbs = []
-        for b in self.bookings:
-            rb = {}
-            rb['booking'] = b
-            rb['recommendation'] = self
-            rbs.append(rb)
-        return rbs
-
-    # FIXME: This is to support legacy code in the webapp
-    # it should be removed once all requests from the webapp
-    # have an app version header, which will mean that all
-    # clients (or at least those who do use the app) have
-    # a recent version of the app
-    @property
-    def recommendationOffers(self):
-        ros = []
-        if self.event:
-            for eo in self.event.occurences:
-                ro = app.model.PcObject()
-                ro.offer = eo.offers[0]
-                ro.recommendation = self
-                ros.append(ro)
-        else:
-            ro = app.model.PcObject()
-            ro.offer = self.thing.offers[0]
-            ro.recommendation = self
-            ros.append(ro)
-        return ros
-
 app.model.Recommendation = Recommendation

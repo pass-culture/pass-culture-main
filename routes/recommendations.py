@@ -13,7 +13,8 @@ from utils.rest import expect_json_data
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
                          BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize, humanize
-from utils.includes import RECOMMENDATIONS_INCLUDES
+from utils.includes import RECOMMENDATIONS_INCLUDES,\
+                           RECOMMENDATION_OFFER_INCLUDES
 from utils.rest import expect_json_data,\
                        update
 
@@ -164,7 +165,27 @@ def put_recommendations():
           [(reco, reco.mediation, reco.dateRead) for reco in recos],
           len(recos))
 
+    # FIXME: This is to support legacy code in the webapp
+    # it should be removed once all requests from the webapp
+    # have an app version header, which will mean that all
+    # clients (or at least those who do use the app) have
+    # a recent version of the app
+
+    dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATIONS_INCLUDES),
+                          recos))
+
+    for index, reco in enumerate(dict_recos):
+        rbs = []
+        for b in recos[index].bookings:
+            rb = {}
+            rb['booking'] = b
+            rbs.append(rb)
+        reco['recommendationBookings'] = rbs
+
+        if recos[index].event:
+            ros = map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
+                      recos[index].event.occurences)
+            reco['recommendationOffers'] = ros
+
     # RETURN
-    return jsonify(list(map(lambda r: r._asdict(include=RECOMMENDATIONS_INCLUDES),
-                            recos))),\
-           200
+    return jsonify(dict_recos), 200

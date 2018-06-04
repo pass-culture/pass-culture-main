@@ -90,25 +90,26 @@ RECOMMENDATIONS_INCLUDES = [
                 "key": "booking"
             }
         ]
-    },
-    {
-        "key": "recommendationOffers",
-        "resolve": (lambda element, filters: element['offer']),
-        "sub_joins": [
-            {
-                "key": "offer",
-                "sub_joins": [
-                    {
-                        "key": "eventOccurence",
-                        "sub_joins": ["event", "venue"],
-                    },
-                    "thing",
-                    "venue"
-                ]
-            }
-        ]
     }
 ]
+
+RECOMMENDATION_OFFER_INCLUDES = {
+    "key": "recommendationOffers",
+    "resolve": (lambda element, filters: element['offer']),
+    "sub_joins": [
+        {
+            "key": "offer",
+            "sub_joins": [
+                {
+                    "key": "eventOccurence",
+                    "sub_joins": ["event", "venue"],
+                },
+                "thing",
+                "venue"
+            ]
+        }
+    ]
+}
 
 BOOKINGS_INCLUDES = [
     {
