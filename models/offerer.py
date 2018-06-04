@@ -25,7 +25,7 @@ class Offerer(app.model.PcObject,
     offererProviders = db.relationship(lambda: app.model.OffererProvider,
                                        back_populates="offerer")
 
-    
+
     bookingEmail = db.Column(db.String(120), nullable=False)
 
 

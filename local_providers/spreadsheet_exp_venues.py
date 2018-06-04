@@ -1,9 +1,9 @@
+""" spreadsheet exp venues """
 from datetime import datetime
-from flask import current_app as app
-from os import path
-from pandas import read_csv
 from pathlib import Path
-import requests
+from os import path
+from flask import current_app as app
+from pandas import read_csv
 
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
@@ -44,7 +44,6 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
     def __next__(self):
         self.line = self.lines.__next__()[1]
 
-
         for field in ['Date MAJ', 'Email contact', 'Latitude', 'Longitude', 'Nom', 'Adresse', 'Ref Lieu']:
             while not is_filled(self.line[field]):
                 print(field+' is empty, skipping line')
@@ -54,17 +53,17 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
             print('Invalid email in "Email contact" column, skipping line')
             self.__next__()
 
-        p_info_venue = app.model.ProvidableInfo()
-        p_info_venue.type = Venue
-        p_info_venue.idAtProviders = str(self.line['Ref Lieu'])
-        p_info_venue.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
-
         p_info_offerer = app.model.ProvidableInfo()
         p_info_offerer.type = Offerer
         p_info_offerer.idAtProviders = str(self.line['Ref Lieu'])
         p_info_offerer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
-        return p_info_venue, p_info_offerer
+        p_info_venue = app.model.ProvidableInfo()
+        p_info_venue.type = Venue
+        p_info_venue.idAtProviders = str(self.line['Ref Lieu'])
+        p_info_venue.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+
+        return p_info_offerer, p_info_venue
 
     def updateObject(self, obj):
         assert obj.idAtProviders == str(self.line['Ref Lieu'])
@@ -75,9 +74,12 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
         if isinstance(obj, Venue):
             obj.latitude = self.line['Latitude']
             obj.longitude = self.line['Longitude']
+            obj.managingOfferer = self.providables[0]
+
+        # IMPLICITLY IT IS THE MANAGING OFFERER
         else:
-            obj.venue = self.providables[0]
             obj.bookingEmail = self.line['Email contact'].replace('mailto:', '')
+
 
     def getDeactivatedObjectIds(self):
         return []

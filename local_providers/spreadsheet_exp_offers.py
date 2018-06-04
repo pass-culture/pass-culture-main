@@ -62,10 +62,6 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
                                     .filter_by(idAtProviders=venueIdAtProviders)\
                                     .one_or_none()
 
-        self.offerer = app.model.Offerer.query\
-                                        .filter_by(idAtProviders=venueIdAtProviders)\
-                                        .one_or_none()
-
         if self.venue is None:
             print('Venue #' + venueIdAtProviders
                   + ' not found, skipping line')
