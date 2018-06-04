@@ -88,6 +88,7 @@ export function getFormEntity(state, ownProps) {
 }
 
 export function getFormValue(state, ownProps) {
+  console.log('ownProps', ownProps)
   const entity = getFormEntity(state, ownProps)
   if (!entity) {
     return

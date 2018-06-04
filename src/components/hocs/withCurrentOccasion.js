@@ -5,6 +5,7 @@ import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
+import { NEW } from '../../utils/config'
 import { pathToCollection } from '../../utils/translate'
 
 const withCurrentOccasion = WrappedComponent => {
@@ -56,13 +57,16 @@ const withCurrentOccasion = WrappedComponent => {
       const {
         id
       } = nextProps
-      const isNew = nextProps.match.params.occasionId === 'nouveau'
-      const apiPath = `occasions/${pathToCollection(occasionPath)}/${occasionId}`
-      const routePath = `/offres/${occasionPath}/${occasionId !== 'nouveau' ? occasionId : ''}`
+      const isNew = occasionId === 'nouveau'
+      const occasionCollection = pathToCollection(occasionPath)
+      const apiPath = `occasions/${occasionCollection}/${occasionId}`
+      const routePath = `/offres/${occasionPath}${isNew ? `/${occasionId}` : ''}`
       return {
         apiPath,
         isLoading: !(id || isNew),
         isNew,
+        occasionCollection,
+        occasionId: isNew ? NEW : occasionId,
         routePath
       }
     }
