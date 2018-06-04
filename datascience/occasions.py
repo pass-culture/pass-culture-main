@@ -1,6 +1,7 @@
 """ recommendations offers """
 from datetime import datetime
 from flask import current_app as app
+from itertools import cycle, islice
 from random import randint
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
@@ -28,6 +29,19 @@ def print_dev(*args):
 
 
 # --- SCORING ---
+
+def roundrobin(*iterables):
+    "roundrobin('ABC', 'D', 'EF') --> A D E B F C"
+    # Recipe credited to George Sakkis
+    pending = len(iterables)
+    nexts = cycle(iter(it).__next__ for it in iterables)
+    while pending:
+        try:
+            for next in nexts:
+                yield next()
+        except StopIteration:
+            pending -= 1
+            nexts = cycle(islice(nexts, pending))
 
 def make_score_tuples(occasions, departement_codes):
     if len(occasions) == 0:
@@ -144,8 +158,9 @@ def get_occasions_by_type(occasion_type,
     query = bookable_occasions(query, occasion_type)
     query = not_yet_recommended_occasions(query, occasion_type, user)
 
-    return sort_by_score(make_score_tuples(query.all(),
-                                           departement_codes))
+    occasions = sort_by_score(make_score_tuples(query.all(),
+                                                departement_codes))
+    return occasions[:limit]
 
 
 def get_occasions(limit=3, user=None, coords=None):
@@ -156,19 +171,20 @@ def get_occasions(limit=3, user=None, coords=None):
                           if user.departementCode == '93'\
                           else [user.departementCode]
 
-    occasions = get_occasions_by_type(Event,
-                                      limit=limit,
-                                      user=user,
-                                      coords=coords,
-                                      departement_codes=departement_codes)\
-              + get_occasions_by_type(Thing,
-                                      limit=limit,
-                                      user=user,
-                                      coords=coords,
-                                      departement_codes=departement_codes)
+    events = get_occasions_by_type(Event,
+                                   limit=limit,
+                                   user=user,
+                                   coords=coords,
+                                   departement_codes=departement_codes)
+    things = get_occasions_by_type(Thing,
+                                   limit=limit,
+                                   user=user,
+                                   coords=coords,
+                                   departement_codes=departement_codes)
 
-    print('(reco) final occasions (events + things) count', len(occasions))
-    return occasions[:limit]
+    print('(reco) final occasions (events + things) count (',
+          len(events), ' + ', len(things), ')')
+    return list(roundrobin(events, things))[:limit]
 
 
 app.datascience.get_occasions = get_occasions

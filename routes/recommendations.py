@@ -162,7 +162,7 @@ def put_recommendations():
         recos = [requested_recommendation] + recos
 
     print('(recap reco) ',
-          [(reco, reco.mediation, reco.dateRead) for reco in recos],
+          [(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos],
           len(recos))
 
     # FIXME: This is to support legacy code in the webapp
@@ -182,9 +182,15 @@ def put_recommendations():
             rbs.append(rb)
         reco['recommendationBookings'] = rbs
 
-        if recos[index].event:
+        if recos[index].event is not None or\
+           (recos[index].mediation is not None and
+            recos[index].mediation.event is not None):
+            if recos[index].event is not None:
+                occurences = recos[index].event.occurences
+            else:
+                occurences = recos[index].mediation.event.occurences
             ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
-                           recos[index].event.occurences))
+                           occurences))
             reco['recommendationOffers'] = ros
 
     # RETURN

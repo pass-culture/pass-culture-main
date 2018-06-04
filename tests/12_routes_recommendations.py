@@ -44,6 +44,8 @@ def subtest_initial_recos():
     assert len(list(filter(lambda reco: 'mediation' in reco and
                                         reco['mediation']['tutoIndex'] is not None,
                            recos))) == 2
+
+
     check_recos(recos)
     return recos
 
@@ -66,6 +68,10 @@ def subtest_recos_with_params(params,
 
 def test_11_put_recommendations_should_return_a_list_of_recos():
     recos1 = subtest_initial_recos()
+    assert len(list(filter(lambda reco: 'mediation' in reco and
+                                        'event' in reco['mediation'] and
+                                        reco['mediation']['event'] is not None,
+                           recos1))) > 0
     recos2 = subtest_initial_recos()
     assert len(recos1) == len(recos2)
     assert any([recos1[i]['id'] != recos2[i]['id']

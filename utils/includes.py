@@ -62,7 +62,7 @@ RECOMMENDATIONS_INCLUDES = [
         "key": "mediatedOccurences",
         "sub_joins": [
             {
-                "key": "offers",
+                "key": "offer",
                 "sub_joins": [
                     {
                         "key": "eventOccurence",
@@ -93,23 +93,12 @@ RECOMMENDATIONS_INCLUDES = [
     }
 ]
 
-RECOMMENDATION_OFFER_INCLUDES = {
-    "key": "recommendationOffers",
-    "resolve": (lambda element, filters: element['offer']),
-    "sub_joins": [
-        {
-            "key": "offer",
-            "sub_joins": [
-                {
-                    "key": "eventOccurence",
-                    "sub_joins": ["event", "venue"],
-                },
-                "thing",
-                "venue"
-            ]
-        }
-    ]
-}
+RECOMMENDATION_OFFER_INCLUDES =  [
+    {
+        "key": "eventOccurence",
+        "sub_joins": ["event", "venue"]
+    }
+]
 
 BOOKINGS_INCLUDES = [
     {
