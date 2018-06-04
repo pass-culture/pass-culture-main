@@ -138,14 +138,14 @@ class Recommendation(app.model.PcObject, db.Model):
         ros = []
         if self.event:
             for eo in self.event.occurences:
-                ro = {}
-                ro['offer'] = eo.offers[0]
-                ro['recommendation'] = self
+                ro = app.model.PcObject()
+                ro.offer = eo.offers[0]
+                ro.recommendation = self
                 ros.append(ro)
         else:
-            ro = {}
-            ro['offer'] = self.thing.offers[0]
-            ro['recommendation'] = self
+            ro = app.model.PcObject()
+            ro.offer = self.thing.offers[0]
+            ro.recommendation = self
             ros.append(ro)
         return ros
 
