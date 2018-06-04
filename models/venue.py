@@ -1,6 +1,7 @@
+""" venue """
 from flask import current_app as app
 from sqlalchemy import Index
-from sqlalchemy.dialects.postgresql import ARRAY, TEXT, TIME
+from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
@@ -24,6 +25,14 @@ class Venue(app.model.PcObject,
     latitude = db.Column(db.Numeric(8, 5), nullable=True)
 
     longitude = db.Column(db.Numeric(8, 5), nullable=True)
+
+    managingOffererId = db.Column(db.BigInteger,
+                                  db.ForeignKey("offerer.id"),
+                                  unique=True,
+                                  nullable=True)
+    managingOfferer = db.relationship(lambda: app.model.Offerer,
+                                      foreign_keys=[managingOffererId],
+                                      backref='managedVenues')
 
     #openingHours = db.Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]

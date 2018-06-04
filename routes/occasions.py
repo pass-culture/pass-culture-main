@@ -4,7 +4,8 @@ from flask_login import current_user
 
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES
-from utils.rest import expect_json_data,\
+from utils.rest import feed,\
+                       expect_json_data,\
                        login_or_api_key_required
 from utils.string_processing import inflect_engine
 
@@ -32,10 +33,6 @@ EVENT_OCCURENCE_KEYS = [
     'beginningDatetime'
 ]
 
-def feed_event_occurence(mapper, json):
-    for key in EVENT_OCCURENCE_KEYS:
-        if key in json:
-            mapper.__setattr__(key, json[key])
 
 OFFER_KEYS = [
     'groupSize',
@@ -43,22 +40,18 @@ OFFER_KEYS = [
     'price'
 ]
 
-def feed_offer(mapper, json):
-    for key in OFFER_KEYS:
-        if key in json:
-            mapper.__setattr__(key, json[key])
 
 def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = app.model.EventOccurence()
     event_occurence.event = occasion
     event_occurence.venue = venue
-    feed_event_occurence(event_occurence, json)
+    feed(event_occurence, json)
     app.model.PcObject.check_and_save(event_occurence)
 
     offer = app.model.Offer()
     offer.eventOccurence = event_occurence
     offer.offerer = offerer
-    feed_offer(offer, json['offer'][0])
+    feed(offer, json['offer'][0])
     app.model.PcObject.check_and_save(offer)
 
 @app.route('/occasions', methods=['GET'])
@@ -67,17 +60,18 @@ def list_occasions():
     event_ids = []
     occasions = []
     for offerer in current_user.offerers:
-        for eventOccurence in offerer.venue.eventOccurences:
-            occasion = None
-            if eventOccurence.event.id not in event_ids:
-                event_ids.append(eventOccurence.event.id)
-                occasion = eventOccurence.event._asdict(
-                    include=OCCASION_INCLUDES,
-                    has_dehumanized_id=True
-                )
-                occasion['occasionType'] = 'events'
-                occasions.append(occasion)
-        # TODO: find a similar method for things
+        for managedVenue in offerer.managedVenues:
+            for eventOccurence in managedVenue.eventOccurences:
+                occasion = None
+                if eventOccurence.event.id not in event_ids:
+                    event_ids.append(eventOccurence.event.id)
+                    occasion = eventOccurence.event._asdict(
+                        include=OCCASION_INCLUDES,
+                        has_dehumanized_id=True
+                    )
+                    occasion['occasionType'] = 'events'
+                    occasions.append(occasion)
+            # TODO: find a similar method for things
     return jsonify(occasions)
 
 @app.route('/occasions/<occasionType>/<occasionId>', methods=['GET'])
@@ -85,7 +79,8 @@ def list_occasions():
 def get_occasion(occasionType, occasionId):
     model_name = inflect_engine.singular_noun(occasionType.title(), 1)
     occasion = app.model[model_name]\
-                  .query.filter_by(id=dehumanize(occasionId)).one()
+                  .query.filter_by(id=dehumanize(occasionId))\
+                  .first_or_404()
     occasion_dict = occasion._asdict(
         include=OCCASION_INCLUDES,
         has_dehumanized_id=True

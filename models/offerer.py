@@ -1,3 +1,4 @@
+""" offerer """
 from flask import current_app as app
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TEXT
@@ -25,16 +26,10 @@ class Offerer(app.model.PcObject,
     offererProviders = db.relationship(lambda: app.model.OffererProvider,
                                        back_populates="offerer")
 
-    venueId = db.Column(db.BigInteger,
-                        db.ForeignKey("venue.id"),
-                        unique=True,
-                        nullable=True)
-    venue = db.relationship(lambda: app.model.Venue,
-                            foreign_keys=[venueId],
-                            backref='offerer')
 
     bookingEmail = db.Column(db.String(120), nullable=False)
 
+    siren = db.Column(db.String(9))
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
