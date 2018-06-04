@@ -37,4 +37,6 @@ def post_storage_file(collectionName, id, index):
                 }), 400
         print('ALORS', request.files, list(request.files.keys()))
         entity.save_thumb(request.files['image'], index)
-    return jsonify({'text': "upload is a success"})
+        return jsonify({'text': "upload is a success"})
+    else:
+        return jsonify({'text': "upload is not authorized for this model"})

@@ -1,22 +1,20 @@
 """users routes"""
 from base64 import b64decode
+from os import path
+from pathlib import Path
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from os import path
-from pathlib import Path
+
 
 from models.api_errors import ApiErrors
 from utils.human_ids import humanize
 from utils.includes import USERS_INCLUDES
-from utils.object_storage import store_public_object
-
-User = app.model.User
-
+from utils.object_storage import save_thumb
 
 def make_user_query():
-    query = User.query
+    query = app.model.User.query
     return query
 
 
@@ -79,16 +77,10 @@ def signup():
             e.addError('email', "Addresse non autorisée pour l'expérimentation")
             return jsonify(e.errors), 400
 
-    new_user = User(from_dict=request.json)
+    new_user = app.model.User(from_dict=request.json)
     new_user.id = None
     app.model.PcObject.check_and_save(new_user)
     # thumb
-    if 'thumb_content' in request.json:
-        store_public_object(
-            "thumbs",
-            "users/"+humanize(new_user.id),
-            b64decode(request.json['thumb_content']),
-            request.json['thumb_content_type']
-        )
+    save_thumb(new_user.id, request.json)
     login_user(new_user)
     return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201
