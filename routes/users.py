@@ -1,5 +1,4 @@
 """users routes"""
-from base64 import b64decode
 from os import path
 from pathlib import Path
 from flask import current_app as app, jsonify, request
@@ -9,9 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 from models.api_errors import ApiErrors
-from utils.human_ids import humanize
 from utils.includes import USERS_INCLUDES
-from utils.object_storage import save_thumb
 
 def make_user_query():
     query = app.model.User.query
@@ -21,7 +18,8 @@ def make_user_query():
 @app.route("/users/me", methods=["GET"])
 @login_required
 def get_profile():
-    return jsonify(current_user._asdict(include=USERS_INCLUDES))
+    user = current_user._asdict(include=USERS_INCLUDES)
+    return jsonify(user)
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -80,7 +78,5 @@ def signup():
     new_user = app.model.User(from_dict=request.json)
     new_user.id = None
     app.model.PcObject.check_and_save(new_user)
-    # thumb
-    save_thumb(new_user.id, request.json)
     login_user(new_user)
     return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201

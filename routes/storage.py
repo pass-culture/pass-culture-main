@@ -23,7 +23,7 @@ def send_storage_file(bucketId, objectId):
         return "file not found", 404
     return send_file(open(path, "rb"), mimetype=mimetype)
 
-@app.route('/storage/<collectionName>/<id>/<index>', methods=['POST'])
+@app.route('/storage/thumb/<collectionName>/<id>/<index>', methods=['POST'])
 def post_storage_file(collectionName, id, index):
     model_name = inflect_engine.singular_noun(collectionName.title(), 1)
     if model_name in GENERIC_STORAGE_MODEL_NAMES:
@@ -35,8 +35,10 @@ def post_storage_file(collectionName, id, index):
                 return jsonify({
                     'text': "user is not allowed to add mediation in this offerer"
                 }), 400
-        print('ALORS', request.files, list(request.files.keys()))
-        entity.save_thumb(request.files['image'], index)
-        return jsonify({'text': "upload is a success"})
+        entity.save_thumb(
+            request.files['file'].read(),
+            int(index)
+        )
+        return jsonify(entity._asdict()), 200
     else:
-        return jsonify({'text': "upload is not authorized for this model"})
+        return jsonify({'text': "upload is not authorized for this model"}), 400

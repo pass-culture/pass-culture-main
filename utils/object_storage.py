@@ -55,27 +55,3 @@ def get_public_object_date(bucket, id):
     if not os.path.isfile(lpath):
         return None
     return datetime.fromtimestamp(os.path.getmtime(lpath))
-
-def save_thumb(id, json):
-    humanized_id = humanize(id)
-    if 'spreadsheet_content' in json:
-        store_public_object(
-            'spreadsheets',
-            'venues/' + humanized_id,
-            b64decode(json['spreadsheet_content']),
-            'application/CSV'
-        )
-    if 'thumb_content' in json:
-        store_public_object(
-            'thumbs',
-            'venues/' + humanized_id,
-            b64decode(json['thumb_content']),
-            json['thumb_content_type']
-        )
-    if 'zip_content' in json:
-        store_public_object(
-            'zips',
-            'venues/' + humanized_id,
-            b64decode(json['zip_content']),
-            'application/zip'
-        )

@@ -1,11 +1,21 @@
 """ includes """
+
+OFFERERS_INCLUDES = [
+    "managedVenues"
+]
+
 OCCASION_INCLUDES = [
     {
         "key": "occurences",
         "sub_joins": [
             {
                 "key": "offer",
-                "sub_joins": ["offerer"]
+                "sub_joins": [
+                    {
+                        "key": "offerer",
+                        "sub_joins": OFFERERS_INCLUDES
+                    }
+                ]
             },
             'venue'
         ]
@@ -25,7 +35,10 @@ OFFERS_INCLUDES = [
         ]
     },
     "occurencesAtVenue",
-    "offerer",
+    {
+        "key": "offerer",
+        #"sub_joins": OFFERERS_INCLUDES
+    },
     {
         "key": "thing",
         "sub_joins": [
@@ -95,10 +108,6 @@ BOOKINGS_INCLUDES = [
         "key": "offer",
         "sub_joins": OFFERS_INCLUDES
     }
-]
-
-OFFERERS_INCLUDES = [
-    "managedVenues"
 ]
 
 USERS_INCLUDES = [

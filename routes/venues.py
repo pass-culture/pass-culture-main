@@ -2,7 +2,6 @@
 from flask import current_app as app, jsonify, request
 
 from utils.human_ids import dehumanize, humanize
-from utils.object_storage import save_thumb
 from utils.rest import expect_json_data,\
                        feed,\
                        handle_rest_get_list
@@ -34,7 +33,6 @@ def create_venue():
     new_venue = app.model.Venue()
     feed(new_venue, request.json, VENUE_KEYS)
     app.model.PcObject.check_and_save(new_venue)
-    save_thumb(new_venue.id, request.json)
     return jsonify(new_venue._asdict()), 201
 
 
@@ -46,5 +44,4 @@ def edit_venue(venueId):
                     .first_or_404()
     feed(venue, request.json, VENUE_KEYS)
     app.model.PcObject.check_and_save(venue)
-    save_thumb(venue.id, request.json)
     return jsonify(venue._asdict()), 200

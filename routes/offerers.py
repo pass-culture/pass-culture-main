@@ -4,7 +4,6 @@ from flask_login import current_user, login_required
 
 from utils.human_ids import dehumanize
 from utils.includes import OFFERERS_INCLUDES
-from utils.object_storage import save_thumb
 from utils.rest import expect_json_data,\
                        feed,\
                        handle_rest_get_list,\
@@ -60,7 +59,6 @@ def create_offerer():
 
 
     app.model.PcObject.check_and_save(offerer)
-    save_thumb(offerer.id, request.json)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 201
 
 @app.route('/offerers/<offererId>', methods=['PATCH'])
@@ -71,5 +69,4 @@ def patch_offerer(offererId):
                        .query.filter_by(id=dehumanize(offererId))
     feed(offerer, request.json, OFFERER_KEYS)
     app.model.PcObject.check_and_save(offerer)
-    save_thumb(offerer.id, request.json)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 200
