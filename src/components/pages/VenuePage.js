@@ -14,7 +14,7 @@ import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { NEW } from '../../utils/config'
 
 
-class OffererPage extends Component {
+class VenuePage extends Component {
 
   constructor () {
     super()
@@ -33,100 +33,106 @@ class OffererPage extends Component {
       id,
       match: { params },
     } = nextProps
-    const isNew = params.offererId === 'nouveau'
+    const isNew = params.venueId === 'nouveau'
     const isLoading = !(id || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `offerers/` : `offerers/${id}`,
+      apiPath: isNew ? `venues/` : `venues/${id}`,
       isLoading,
       isNew,
       method,
-      offererId: isNew ? NEW : id
+      venueId: isNew ? NEW : id
     }
   }
 
   render () {
     const {
       address,
-      bookingEmail,
       name,
-      siren
+      siret,
+      user,
+      managingOffererId
     } = this.props
     const {
       apiPath,
       isLoading,
       isNew,
       method,
-      offererId
+      venueId
     } = this.state
+    const isSiret = true
+
     return (
       <PageWrapper name='offerer' loading={isLoading}>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
             <div className='has-text-right'>
-              <NavLink to='/etablissements'
-                className="button is-primary is-outlined">
-                Retour
-              </NavLink>
             </div>
 
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un etablissement</h1>
+            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
+            { user && user.offerers &&
+                <FormField
+                  collectionName="venues"
+                  defaultValue={managingOffererId || ''}
+                  entityId={venueId}
+                  label={<Label title="Choisissez la structure" />}
+                  name="managingOffererId"
+                  type="select"
+                  options={(get(user, 'offerers') || []).map(o =>
+                ({ label: o.name, value: o.id }))}
+              />
+            }
+
             <FormField
-              autoComplete="siren"
-              collectionName="offerers"
-              defaultValue={siren}
-              entityId={offererId}
-              label={<Label title="Siren" />}
-              name="siren"
+              autoComplete="siret"
+              collectionName="venues"
+              defaultValue={siret}
+              entityId={venueId}
+              label={<Label title="Siret" />}
+              name="siret"
               type="sirene"
+              isSiret={isSiret}
+              // isSiren={isSiren}
             />
             <FormField
               autoComplete="name"
-              collectionName="offerers"
+              collectionName="venues"
               defaultValue={name}
-              entityId={offererId}
+              entityId={venueId}
               label={<Label title="Nom" />}
               name="name"
             />
             <FormField
               autoComplete="address"
-              collectionName="offerers"
+              collectionName="venues"
               defaultValue={address || ''}
-              entityId={offererId}
+              entityId={venueId}
               label={<Label title="Adresse" />}
               name="address"
               type="adress"
             />
-            <FormField
-              autoComplete="email"
-              collectionName="offerers"
-              defaultValue={bookingEmail || ''}
-              entityId={offererId}
-              label={<Label title="Email de réservation" />}
-              name="bookingEmail"
-            />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
-                  getBody={form => form.offerersById[offererId]}
+                  getBody={form => form.venuesById[venueId]}
                   getIsDisabled={form =>
                     isNew
-                      ? !get(form, `offerersById.${offererId}.name`) &&
-                        !get(form, `offerersById.${offererId}.adress`)
-                      : !get(form, `offerersById.${offererId}.name`) ||
-                        !get(form, `offerersById.${offererId}.adress`)
+                      ? !get(form, `venuesById.${venueId}.name`) &&
+                        !get(form, `venuesById.${venueId}.adress`)
+                      : !get(form, `venuesById.${venueId}.name`) ||
+                        !get(form, `venuesById.${venueId}.adress`)
                   }
                   className="button is-primary is-medium"
                   method={method}
                   path={apiPath}
-                  storeKey="offerers"
+                  storeKey="venues"
                   text="Enregistrer"
                 />
               </div>
               <div className="control">
                 <NavLink
                   className="button is-primary is-outlined is-medium"
-                  to='/etablissements' >
+                  to='/lieux' >
                   Retour
                 </NavLink>
               </div>
@@ -147,4 +153,4 @@ export default compose(
     ),
     { resetForm }
   )
-)(OffererPage)
+)(VenuePage)

@@ -27,36 +27,58 @@ class FormSirene extends Component {
       assignErrors,
       collectionName,
       entityId,
-      mergeForm
+      mergeForm,
+      isSiren,
+      isSiret
     } = this.props
 
     if (!this.state.localValue) {
       return
     }
-    const siretWithoutSpaces = this.state.localValue.replace(/ /g, '')
+
+    if (isSiret) {
+      const siretWithoutSpaces = this.state.localValue.replace(/ /g, '')
 
       fetch(`https://sirene.entreprise.api.gouv.fr/v1/siret/${siretWithoutSpaces}`).then(response => {
         if (response.status === 404)  {
-          assignErrors('siret', ['Siret invalide'])
+          assignErrors({'siret': ['Siret invalide']})
           this.setState({localValue: ''})
           mergeForm(collectionName, entityId, 'siret', null)
 
-      } else {
-        response.json().then(body => {
-          const name = body.structure.l1_declaree
-          const address = body.structure.geo_adresse
-          const latitude = body.structure.latitude
-          const longitude = body.structure.longitude
-          mergeForm('venues', entityId, { address, latitude, longitude, name })
-        }
-      )
+        } else {
+          response.json().then(body => {
+            const name = body.etablissement.l1_declaree
+            const address = body.etablissement.geo_adresse
+            const latitude = body.etablissement.latitude
+            const longitude = body.etablissement.longitude
+            const siret = body.etablissement.siret
+            mergeForm('venues', entityId, { address, latitude, longitude, name, siret })
+          }
+        )
       }
-    }).catch((e) => {
-      console.log('erreur', e);
+    }).catch((e) => { console.log('erreur', e)})
     }
+    if (isSiren) {
+      const sirenWithoutSpaces = this.state.localValue.replace(/ /g, '')
 
-    )
+      fetch(`https://sirene.entreprise.api.gouv.fr/v1/siren/${sirenWithoutSpaces}`).then(response => {
+        if (response.status === 404)  {
+          assignErrors({'siren': ['Siren invalide']})
+          this.setState({localValue: ''})
+          mergeForm(collectionName, entityId, 'siren', null)
 
+        } else {
+          response.json().then(body => {
+            const name = body.siege_social[0].l1_declaree
+            const address = body.siege_social[0].geo_adresse
+            const latitude = body.siege_social[0].latitude
+            const longitude = body.siege_social[0].longitude
+            mergeForm('venues', entityId, { address, latitude, longitude, name })
+          }
+        )
+      }
+    }).catch((e) => { console.log('erreur', e)})
+    }
   }
 
   onMergeForm = event => {
