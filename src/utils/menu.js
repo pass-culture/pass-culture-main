@@ -8,12 +8,12 @@ const menu = {
     {
       icon: 'ico-calendar-w',
       path: '/offres',
-      title: 'Vos Offres'
+      title: 'Vos offres'
     },
     {
       icon: 'ico-accounting',
       path: '/comptabilite',
-      title: 'Votre Comptabilité'
+      title: 'Comptabilité'
     },
   ]
 }

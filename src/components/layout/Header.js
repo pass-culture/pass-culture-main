@@ -52,11 +52,13 @@ class Header extends Component {
                     <Icon svg='ico-user-w' />
                   </span>
                   <span>
-                    {this.props.name}
+                    Profile
                   </span>
                 </a>
                 <div className="navbar-dropdown is-right">
-                  <SignoutButton tagName='a' className='navbar-item'>Déconnexion</SignoutButton>
+                  <SignoutButton tagName='a' className='navbar-item'>
+                    Déconnexion
+                  </SignoutButton>
                 </div>
               </div>
             </div>
