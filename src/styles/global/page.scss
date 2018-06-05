@@ -1,9 +1,6 @@
 .page {
+  height: 100%;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
 
   &.loading {
     &:before {
@@ -20,75 +17,17 @@
     }
   }
 
-  &.red-bg {
-    background-color: $primary;
-    color: $white;
-
-    footer {
-      @include dotted($white);
-    }
-  }
-
-  .page-content {
-    padding: $page-padding 1rem;
-    padding-top: $page-padding + $header-height;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    left: 0;
-    right: 0;
-  }
-
-  &.with-header {
-
-    header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: $header-height;
-      text-align: center;
-      font-weight: 500;
-      background-color: $primary;
-      color: $white;
-      line-height: $header-height;
-      @include dotted($white, bottom);
-    }
-
+  &.container {
+    position: relative;
     .page-content {
-      top: $header-height;
+      min-height: 100vh;
+      padding: $page-padding 1rem;
+      position: relative;
+      top: $header-height - $header-display-height;
+      margin: 0 5rem;
+      z-index: 10;
+      background: white;
+      box-shadow: 0 1rem 3rem $grey;
     }
-  }
-
-
-  &.with-footer {
-
-    .page-content {
-      bottom: $footer-height;
-    }
-
-    footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: $footer-height;
-      text-align: right;
-      padding: $footer-height-padding $page-padding;
-      display: flex;
-      align-items: center;
-      flex-direction: row-reverse;
-
-      a, button {
-        font-size: $size-medium;
-      }
-    }
-
-  }
-
-  &.no-padding .page-content {
-    padding: 0;
-    bottom: 0;
   }
 }

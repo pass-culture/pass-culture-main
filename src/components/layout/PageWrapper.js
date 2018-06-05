@@ -31,12 +31,13 @@ const PageWrapper = props => {
         'with-footer': Boolean(footer),
         'red-bg': redBg,
         'no-padding': noPadding,
+        container: !noContainer,
         loading,
       })}
       key='page-wrapper'
     >
       {backButton && <BackButton {...backButton} />}
-      <div className={classnames('page-content', {container: !noContainer})}>{content}</div>
+      <div className={classnames('page-content')}>{content}</div>
       {footer}
     </Tag>
   ]

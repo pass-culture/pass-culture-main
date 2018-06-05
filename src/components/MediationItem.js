@@ -36,7 +36,7 @@ class MediationItem extends Component {
     return (
       <article className="mediation-item media box">
         <figure className="media-left">
-          <p className="image is-96x96 is-2by3">
+          <p className="image is-96x96">
             <img alt='thumbnail' src={thumbUrl}/>
           </p>
         </figure>
