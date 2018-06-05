@@ -52,7 +52,7 @@ class Header extends Component {
                     <Icon svg='ico-user-w' />
                   </span>
                   <span>
-                    Profile
+                    Profil
                   </span>
                 </a>
                 <div className="navbar-dropdown is-right">
