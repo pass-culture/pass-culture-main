@@ -7,6 +7,7 @@ import { compose } from 'redux'
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
+import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
@@ -135,8 +136,16 @@ class OffererPage extends Component {
             </div>
         </div>
       </div>
-    </PageWrapper>
-  )
+      <div className='has-text-right'>
+        <NavLink to='/lieux/nouveau'
+        className="button is-primary is-outlined">
+        Nouveau lieu
+      </NavLink>
+    </div>
+    <h1 className='title has-text-centered'>Vos lieux</h1>
+    <VenuesList />
+  </PageWrapper>
+)
 }
 }
 
