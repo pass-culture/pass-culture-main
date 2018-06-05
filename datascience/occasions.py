@@ -131,7 +131,8 @@ def bookable_occasions(query, occasion_type):
                  .filter(((bo_Offer.bookingLimitDatetime == None)
                           | (bo_Offer.bookingLimitDatetime > datetime.now()))
                          & ((bo_Offer.available == None) |
-                            (bo_Offer.available > Booking.query.filter(Booking.offerId == bo_Offer.id).count())))\
+                            (bo_Offer.available > Booking.query.filter(Booking.offerId == bo_Offer.id)
+                                                         .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))\
                  .distinct(occasion_type.id)
     print_dev('(reco) bookable '+str(occasion_type)+'.count', query.count())
     return query
