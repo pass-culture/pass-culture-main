@@ -113,7 +113,7 @@ class Recommendation(app.model.PcObject, db.Model):
             else:
                 occurences = self.mediation.event.occurences
         return sorted(occurences,
-                      key=lambda ro: ro.bookingLimitDatetime,
+                      key=lambda o: o.beginningDatetime,
                       reverse=True)
 
 app.model.Recommendation = Recommendation
