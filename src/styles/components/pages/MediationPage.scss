@@ -1,0 +1,17 @@
+.mediation-page {
+
+  .mediation-thumb-wrapper {
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 100px;
+      left: 25%;
+      right: 25%;
+      margin: auto;
+      height: 40%;
+      border: 2px solid $red;
+    }
+  }
+}

@@ -13,10 +13,32 @@
     left: 0;
     right: 0;
     margin: auto;
-    width: 255px;
-    height: 255px;
-    background: #eee;
-    padding-top: 22%;
+    background: $grey-lighter;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+
+    &:before {
+      content: '';
+      position: absolute;
+      border-radius: inherit;
+      margin: 1rem;
+      border: thin dashed $grey-light;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    &.dragged {
+      font-weight: $weight-bold;
+      outline-color: $text;
+      &:before {
+        border-color: $text;
+      }
+    }
   }
 
   &.has-image {
@@ -48,5 +70,7 @@
     right: 0;
     width: 50%;
     margin: auto;
+    z-index: 10;
+    cursor: pointer;
   }
 }

@@ -16,6 +16,7 @@ import selectCurrentMediation from '../../selectors/currentMediation'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { pathToModel } from '../../utils/translate'
 
+import { THUMBS_URL } from '../../utils/config'
 
 class MediationPage extends Component {
 
@@ -47,7 +48,8 @@ class MediationPage extends Component {
       occasionModel: pathToModel(occasionPath),
       isLoading: !(name || offerer || (id && !isNew) ),
       isNew,
-      routePath: `/offres/${occasionPath}/${occasionId}/accroches`
+      routePath: `/offres/${occasionPath}/${occasionId}/accroches`,
+      thumbUrl: `${THUMBS_URL}/mediations/${id}`,
     }
   }
 
@@ -75,6 +77,21 @@ class MediationPage extends Component {
     })
   }
 
+  drawRectangles(ctx) {
+    console.log('youpi', ctx)
+    // const $canvas = document.getElementsByTagName('canvas')[0]
+    // const ctx = $canvas.getContext('2d');
+    // ctx.beginPath();
+    // ctx.strokeStyle="red";
+    // ctx.rect(20,20,150,100);
+    // ctx.stroke();
+    // ctx.beginPath();
+    // ctx.strokeStyle="blue";
+    // ctx.rect(100,20,150,100);
+    // ctx.stroke();
+    // ctx.save()
+  }
+
   render () {
     const {
       offerer,
@@ -92,8 +109,6 @@ class MediationPage extends Component {
       occasionModel,
       routePath
     } = this.state
-
-    console.log('id', id)
     return (
       <PageWrapper name='mediation' loading={isLoading}>
         <div className='columns'>
@@ -131,13 +146,17 @@ class MediationPage extends Component {
                   <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
                 </section>,
                 <UploadThumb
+                  image={isNew ? this.state.thumbUrl : null}
                   borderRadius={0}
                   collectionName='mediations'
                   entityId={id}
                   key={1}
                   index={0}
+                  width={250}
+                  height={250}
                   storeKey='thumbedMediation'
                   type='thumb'
+                  onImageChange={this.drawRectangles}
                   required
                 />
               ]
