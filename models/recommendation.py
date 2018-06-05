@@ -101,15 +101,19 @@ class Recommendation(app.model.PcObject, db.Model):
 
     @property
     def mediatedOccurences(self):
+        occurences = []
         if self.mediationId is None:
             if self.event is None:
                 return None
             else:
-                return self.event.occurences
+                occurences = self.event.occurences
         else:
             if self.mediation.event is None:
                 return None
             else:
-                return self.mediation.event.occurences
+                occurences = self.mediation.event.occurences
+        return sorted(occurences,
+                      key=lambda ro: ro.bookingLimitDatetime,
+                      reverse=True)
 
 app.model.Recommendation = Recommendation
