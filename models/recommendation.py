@@ -102,10 +102,10 @@ class Recommendation(app.model.PcObject, db.Model):
     @property
     def mediatedOccurences(self):
         if self.mediationId is None:
-            if self.recommendationOffers[0].eventOccurenceId is None:
+            if self.event is None:
                 return None
             else:
-                return self.recommendationOffers[0].eventOccurence.event.occurences
+                return self.event.occurences
         else:
             if self.mediation.event is None:
                 return None
