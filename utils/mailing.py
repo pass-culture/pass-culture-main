@@ -31,9 +31,9 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
 
 
     if IS_DEV or IS_STAGING:
-        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : '
-                              + ", ".join(recipients)
-                              + '</p>' + email['Html-part']) % ENV
+        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV)\
+                              + ", ".join(recipients)\
+                              + '</p>' + email['Html-part']
         email['To'] = 'passculture-dev@beta.gouv.fr'
     else:
         email['To'] = ", ".join(recipients)
