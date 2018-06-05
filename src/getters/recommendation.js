@@ -18,11 +18,8 @@ export default function getRecommendation(config = {}) {
       recommendation.recommendationOffers &&
       recommendation.recommendationOffers.length
     ) {
-      const randomOfferId =
-        recommendationOffers[
-          Math.floor(Math.random() * recommendationOffers.length)
-        ].id
-      offer = getOffer(recommendation, randomOfferId)
+      const offerId = recommendationOffers[0].id
+      offer = getOffer(recommendation, offerId)
     }
   }
   // GET OTHER PROPERTIES
