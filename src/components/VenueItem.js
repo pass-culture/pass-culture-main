@@ -6,9 +6,10 @@ import { THUMBS_URL } from '../utils/config'
 const VenueItem = ({
   address,
   id,
+  managingOffererId,
   name
 }) => {
-  const src = `${THUMBS_URL}/lieux/${id}`
+  const src = `${THUMBS_URL}/structures//lieux/${id}`
   return (
     <article className="venue-item media">
       <figure className="media-left">
@@ -27,7 +28,7 @@ const VenueItem = ({
           </p>
         </div>
         <nav className="level">
-          <NavLink to={`/lieux/${id}`}>
+          <NavLink to={`/structures/${managingOffererId}/lieux/${id}`}>
             <button className="button is-primary level-item">
               Configurer
             </button>

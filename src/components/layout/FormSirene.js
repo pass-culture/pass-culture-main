@@ -52,7 +52,9 @@ class FormSirene extends Component {
             const latitude = body.etablissement.latitude
             const longitude = body.etablissement.longitude
             const siret = body.etablissement.siret
-            mergeForm('venues', entityId, { address, latitude, longitude, name, siret })
+            const departementCode = body.etablissement.code_postal
+            const city = body.etablissement.libelle_commune
+            mergeForm('venues', entityId, { address, latitude, longitude, name, siret, departementCode, city })
           }
         )
       }

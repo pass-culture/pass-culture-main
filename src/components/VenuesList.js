@@ -1,35 +1,63 @@
-import React from 'react'
+import React, { Component } from 'react'
+import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { AutoSizer, List } from 'react-virtualized'
+import { List } from 'react-virtualized'
+import { withRouter } from 'react-router'
 
-import OffererItem from './OffererItem'
+import { requestData } from '../reducers/data'
+import selectCurrentOfferer from '../selectors/currentOfferer'
+import VenueItem from './VenueItem'
 
-const OfferersList = ({ offerers }) => {
-  return (
-    <div className="offerers-list">
-      <AutoSizer>
-      {
-        ({width, height}) => offerers && offerers.length
-          ? <List
-            height={height}
-            rowCount={offerers.length}
-            rowHeight={190}
-            rowRenderer={({ index, key, style }) => (
-              <div key={index} style={style}>
-                <OffererItem {...offerers[index]} />
-              </div>
-            )}
-            width={width}
-          />
-          : ''
-      }
-      </AutoSizer>
-    </div>
-  )
+class VenuesList extends Component {
+  componentDidMount() {
+    this.handleRequestData()
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
+    }
+  }
+
+  handleRequestData =() => {
+    if (this.props.user && this.props.id) {
+      this.props.requestData('GET', `offerers/${this.props.id}/venues`, { key: 'venues' })
+    }
+  }
+  render() {
+    const {
+      managedVenues
+    } = this.props
+    return (
+      <div className="managedVenues-list">
+
+        {
+         managedVenues && managedVenues.length
+            ? <List
+              height={400}
+              rowCount={managedVenues.length}
+              rowHeight={190}
+              rowRenderer={({ index, key, style }) => (
+                <div key={index} style={style}>
+                  <VenueItem {...managedVenues[index]} />
+                </div>
+              )}
+              width={400}
+            />
+            : "Vous n'avez pas encore ajouté de lieux"
+        }
+      </div>
+    )
+  }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    offerers: state.user && state.user.offerers
-  })
-)(OfferersList)
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => Object.assign(
+      { user: state.user,
+       venues: state => state.data.venues },
+      selectCurrentOfferer(state, ownProps)
+    ),
+    { requestData }
+  )
+)(VenuesList)
