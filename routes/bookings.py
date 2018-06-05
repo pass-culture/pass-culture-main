@@ -45,7 +45,7 @@ def post_booking():
         return jsonify(ae.errors), 400
 
     if offer.bookingLimitDatetime is not None and\
-       offer.bookingLimitDatetime < datetime.now():
+       offer.bookingLimitDatetime < datetime.utcnow():
         ae.addError('global', 'la date limite de réservation de cette offre'
                               + ' est dépassée')
         return jsonify(ae.errors), 400

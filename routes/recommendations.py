@@ -66,7 +66,7 @@ def patch_recommendation(recommendationId):
     recommendation = query.first_or_404()
     update(recommendation, request.json)
     app.model.PcObject.check_and_save(recommendation)
-    return jsonify(recommendation._asdict()), 200
+    return jsonify(recommendation._asdict(venueTz=True)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -171,7 +171,7 @@ def put_recommendations():
     # clients (or at least those who do use the app) have
     # a recent version of the app
 
-    dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATIONS_INCLUDES),
+    dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATIONS_INCLUDES, venueTz=True),
                           recos))
 
     for index, reco in enumerate(dict_recos):
@@ -189,7 +189,7 @@ def put_recommendations():
                 occurences = recos[index].event.occurences
             else:
                 occurences = recos[index].mediation.event.occurences
-            ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
+            ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES, venueTz=True),
                            occurences))
             reco['recommendationOffers'] = sorted(ros,
                                                   key=lambda ro: ro['bookingLimitDatetime'],

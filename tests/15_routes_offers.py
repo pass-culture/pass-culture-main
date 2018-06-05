@@ -73,7 +73,7 @@ def test_14_update_offer_available_should_check_bookings():
         offer.thingId = 1
         offer.price = 0
         offer.available = 1
-        offer.bookingLimitDatetime = datetime.now() + timedelta(minutes=2)
+        offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
         app.model.PcObject.check_and_save(offer)
 
         offerId= offer.id

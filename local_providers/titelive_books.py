@@ -63,7 +63,7 @@ class TiteLiveThings(app.model.LocalProvider):
         if 'mock' in options and options['mock']:
             ordered_thing_files = all_thing_files
         else:
-            today = datetime.now().day
+            today = datetime.utcnow().day
             # Titelive 'Quotidien' files stay on the server only for about
             # 26 days. A file with today's date can therefore only be from
             # today, and should always be imported last

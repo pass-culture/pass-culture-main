@@ -91,5 +91,5 @@ def insert_tuto_mediation(user, tuto_mediation):
     recommendation = Recommendation()
     recommendation.user = user
     recommendation.mediation = tuto_mediation
-    recommendation.validUntilDate = datetime.now() + timedelta(weeks=2)
+    recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
     app.model.PcObject.check_and_save(recommendation)

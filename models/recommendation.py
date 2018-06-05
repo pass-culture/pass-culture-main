@@ -87,6 +87,26 @@ class Recommendation(app.model.PcObject, db.Model):
                         nullable=False,
                         default=False)
 
+    def _asdict(self, **options):
+        if 'venueTz' in options\
+           and options['venueTz']\
+           and (self.mediation is None
+                or self.mediation.tutoIndex is None):
+            venue = None
+            if self.event is not None:
+                venue = self.event.occurences[0].venue
+            elif self.mediation is not None\
+                 and self.mediation.event is not None:
+                venue = self.mediation.event.occurences[0].venue
+            elif self.thing is not None:
+                venue = self.thing.offers[0].venue
+            elif self.mediation is not None\
+                 and self.mediation.thing is not None:
+                venue = self.mediation.thing.offers[0].venue
+            options['timezone'] = 'UTC-3' if venue.departementCode == '97'\
+                                          else 'Europe/Paris'
+        return super()._asdict(**options)
+
 
     @property
     def mediatedOffers(self):
