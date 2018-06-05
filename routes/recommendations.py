@@ -190,7 +190,8 @@ def put_recommendations():
             else:
                 occurences = recos[index].mediation.event.occurences
             ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES, venueTz=True),
-                           occurences))
+                           filter(lambda eo: len(eo.offers) > 0,
+                                  occurences)))
             reco['recommendationOffers'] = sorted(ros,
                                                   key=lambda ro: ro['bookingLimitDatetime'],
                                                   reverse=True)
