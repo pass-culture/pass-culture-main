@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { AutoSizer, List } from 'react-virtualized'
 
 import OffererItem from './OffererItem'
+import selectOfferers from '../selectors/offerers'
 
 const OfferersList = ({ offerers }) => {
   return (
@@ -29,7 +30,5 @@ const OfferersList = ({ offerers }) => {
 }
 
 export default connect(
-  (state, ownProps) => ({
-    offerers: state.user && state.user.offerers
-  })
+  state => ({ offerers: selectOfferers(state) })
 )(OfferersList)

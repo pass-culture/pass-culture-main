@@ -39,7 +39,7 @@ class SearchInput extends Component {
       showLoading
     } = this.props
     showLoading('search')
-    const path = `search?collectionNames=${collectionNames.join(AND)}&q=${value.replace(/\s/g, AND)}`
+    const path = `search?collectionNames=${collectionNames.join(AND)}&q=${value}`
     requestData('GET', path, config)
     this._isDebouncing = false
     onChange && onChange(event)
