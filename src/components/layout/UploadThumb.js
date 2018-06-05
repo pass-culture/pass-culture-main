@@ -20,7 +20,6 @@ class UploadThumb extends Component {
       isDragging: false,
       zoom: 1,
     }
-    this.$avatarComponent = React.createRef()
   }
 
   static getDerivedStateFromProps(props) {
@@ -132,7 +131,6 @@ class UploadThumb extends Component {
           }
           <div className='avatar-wrapper'>
             <AvatarEditor
-              ref={this.$avatarComponent}
               width={width}
               height={height}
               scale={zoom}
