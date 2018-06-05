@@ -59,7 +59,6 @@ class OffererPage extends Component {
       method,
       offererId
     } = this.state
-    const isSiren = true
 
     return (
       <PageWrapper name='offerer' loading={isLoading}>
@@ -81,7 +80,7 @@ class OffererPage extends Component {
               label={<Label title="Siren" />}
               name="siren"
               type="sirene"
-              isSiren={isSiren}
+              sireType="siren"
             />
             <FormField
               autoComplete="name"

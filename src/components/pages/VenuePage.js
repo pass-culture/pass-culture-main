@@ -60,7 +60,6 @@ class VenuePage extends Component {
       method,
       venueId
     } = this.state
-    const isSiret = true
 
     return (
       <PageWrapper name='offerer' loading={isLoading}>
@@ -91,8 +90,8 @@ class VenuePage extends Component {
               label={<Label title="Siret" />}
               name="siret"
               type="sirene"
-              isSiret={isSiret}
-              // isSiren={isSiren}
+              sireType="siret"
+
             />
             <FormField
               autoComplete="name"
@@ -132,7 +131,7 @@ class VenuePage extends Component {
               <div className="control">
                 <NavLink
                   className="button is-primary is-outlined is-medium"
-                  to='/lieux' >
+                  to={`/structures/${managingOffererId}`}>
                   Retour
                 </NavLink>
               </div>
