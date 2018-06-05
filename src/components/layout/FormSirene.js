@@ -41,7 +41,7 @@ class FormSirene extends Component {
 
       fetch(`https://sirene.entreprise.api.gouv.fr/v1/siret/${siretWithoutSpaces}`).then(response => {
         if (response.status === 404)  {
-          assignErrors({'siret': ['Siret invalide']})
+          assignErrors({siret: ['Siret invalide']})
           this.setState({localValue: ''})
           mergeForm(collectionName, entityId, 'siret', null)
 
@@ -62,7 +62,7 @@ class FormSirene extends Component {
 
     fetch(`https://sirene.entreprise.api.gouv.fr/v1/siren/${sirenWithoutSpaces}`).then(response => {
       if (response.status === 404)  {
-        assignErrors({'siren': ['Siren invalide']})
+        assignErrors({siren: ['Siren invalide']})
         this.setState({localValue: ''})
         mergeForm(collectionName, entityId, 'siren', null)
 
