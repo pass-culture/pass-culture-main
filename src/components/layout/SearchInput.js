@@ -1,10 +1,11 @@
+import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
-// import { Portal } from 'react-portal'
 import { connect } from 'react-redux'
 
 import { requestData } from '../../reducers/data'
 import { closeLoading, showLoading } from '../../reducers/loading'
+import { AND } from '../../utils/config'
 
 class SearchInput extends Component {
   constructor(props) {
@@ -16,7 +17,10 @@ class SearchInput extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { closeLoading, offers } = nextProps
+    const {
+      closeLoading,
+      offers
+    } = nextProps
     if (offers !== this.props.offers) {
       closeLoading()
     }
@@ -26,10 +30,19 @@ class SearchInput extends Component {
     const {
       target: { value },
     } = event
-    const { collectionName, hook, requestData, showLoading } = this.props
+    const {
+      collectionNames,
+      config,
+      hook,
+      onChange,
+      requestData,
+      showLoading
+    } = this.props
     showLoading('search')
-    requestData('GET', `${collectionName}?search=${value}`, { hook, value })
+    const path = `search?collectionNames=${collectionNames.join(AND)}&q=${value.replace(/\s/g, AND)}`
+    requestData('GET', path, config)
     this._isDebouncing = false
+    onChange && onChange(event)
   }
 
   onChange = event => {
@@ -54,9 +67,11 @@ SearchInput.defaultProps = {
   debounceTimeout: 1000,
 }
 
+SearchInput.propTypes = {
+  collectionNames: PropTypes.array.isRequired
+}
+
 export default connect(
-  (state, ownProps) => ({
-    [ownProps.collectionName]: state.data[ownProps.collectionName],
-  }),
+  null,
   { closeLoading, requestData, showLoading }
 )(SearchInput)
