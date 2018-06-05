@@ -29,11 +29,12 @@ class Offerer(app.model.PcObject,
 
     bookingEmail = db.Column(db.String(120), nullable=False)
 
-    siren = db.Column(db.String(9))
+    siren = db.Column(db.String(9), nullable=False)
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
-    cast(coalesce(Offerer.address, ''), TEXT)
+    cast(coalesce(Offerer.address, ''), TEXT),
+    cast(coalesce(Offerer.siren, ''), TEXT)
 )
 
 Offerer.__table_args__ = (
