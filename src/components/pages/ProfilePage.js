@@ -74,6 +74,7 @@ class ProfilePage extends Component {
               <div className='field'>
                 <label className='label'>Photo de profil</label>
                 <UploadThumb
+                  className='input'
                   image={this.state.thumbUrl}
                   borderRadius={250}
                   collectionName='users'

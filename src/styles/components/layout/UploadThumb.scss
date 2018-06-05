@@ -12,12 +12,12 @@
     bottom: 0;
     left: 0;
     right: 0;
-    margin: auto;
     background: $grey-lighter;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    margin: auto;
 
     &:before {
       content: '';

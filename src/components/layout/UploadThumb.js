@@ -22,11 +22,11 @@ class UploadThumb extends Component {
     }
   }
 
-  static getDerivedStateFromProps(props) {
-    return {
-      image: props.image,
-    }
-  }
+  // static getDerivedStateFromProps(props) {
+  //   return {
+  //     image: props.image,
+  //   }
+  // }
 
   handleDragStart = e => {
     this.setState({
@@ -95,7 +95,8 @@ class UploadThumb extends Component {
       borderRadius,
       height,
       maxSize,
-      width
+      width,
+      onImageChange,
     } = this.props
     const {
       dragging,
@@ -108,7 +109,7 @@ class UploadThumb extends Component {
     return [
       <div className='field' key={0}>
         <Dropzone
-          className={`input upload-thumb ${image && 'has-image'}`}
+          className={`${this.props.className} upload-thumb ${image && 'has-image'}`}
           onDragEnter={this.handleDragStart}
           onDragLeave={this.handleDragStop}
           onDrop={this.handleDrop}
@@ -124,22 +125,21 @@ class UploadThumb extends Component {
               </button>
             )
             : (
-              <div className={`drag-n-drop ${dragging ? 'dragged' : ''}`} style={{ borderRadius, margin: `${this.props.border}px` }}>
+              <div className={`drag-n-drop ${dragging ? 'dragged' : ''}`} style={{ borderRadius, width, height }}>
                 Cliquez ou glissez-déposez pour charger une image
               </div>
             )
           }
-          <div className='avatar-wrapper'>
-            <AvatarEditor
-              width={width}
-              height={height}
-              scale={zoom}
-              border={border}
-              borderRadius={borderRadius}
-              color={[255, 255, 255, image ? 0.6 : 1]}
-              image={image}
-            />
-          </div>
+          <AvatarEditor
+            width={width}
+            height={height}
+            scale={zoom}
+            border={border}
+            borderRadius={borderRadius}
+            color={[255, 255, 255, image ? 0.6 : 1]}
+            image={image}
+            onImageChange={ctx => onImageChange(this.state.image, ctx)}
+          />
           {
             image && (
               <input
