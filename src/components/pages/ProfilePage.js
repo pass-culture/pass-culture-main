@@ -4,12 +4,15 @@ import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
-
+import get from 'lodash.get'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import Icon from '../layout/Icon'
 import UploadThumb from '../layout/UploadThumb'
+import Label from '../layout/Label'
+import FormField from '../layout/FormField'
+import SubmitButton from '../layout/SubmitButton'
 
 class ProfilePage extends Component {
 
@@ -21,36 +24,48 @@ class ProfilePage extends Component {
     }
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return {
-      user: nextProps.user
-    }
-  }
-
   handleDrop = dropped => {
     this.setState({ image: dropped[0] })
   }
 
   updateValue = e => {
+    const newUser = Object.assign({}, this.state.user, {[e.target.name]: e.target.value})
+    console.log(newUser)
     this.setState({
-      user: Object.assign({}, this.state.occasion, {[e.target.name]: e.target.value})
+      user: newUser
     })
   }
 
-  save = e => {
-    // TODO
+
+  onSubmitClick = () => {
+    // const {
+    //   history,
+    //   resetForm,
+    //   showModal
+    // } = this.props
+    // resetForm()
+    // showModal(
+    //   <div>
+    //     C'est soumis!
+    //   </div>,
+    //   {
+    //     onCloseClick: () => history.push('/offres')
+    //   }
+    // )
   }
 
   render() {
+
+    const {
+      apiPath,
+    } = this.props
 
     const {
       id,
       publicName,
       email,
       address,
-    } = this.state.user || {}
-
-    console.log(this.props.user)
+    } = this.props.user || {}
 
     return (
       <PageWrapper name="profile" loading={!this.props.user}>
@@ -58,19 +73,24 @@ class ProfilePage extends Component {
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
 
-            <form onSubmit={this.save}>
-              <div className='field'>
-                <label className='label'>Nom</label>
-                <input className='input title' type='text' name='publicName' value={publicName || ''} onChange={this.updateValue} maxLength={140} />
-              </div>
-              <div className='field'>
-                <label className='label'>Adresse</label>
-                <input className='input' type='text' name='address' value={address || ''} onChange={this.updateValue}  />
-              </div>
-              <div className='field'>
-                <label className='label'>Email</label>
-                <input className='input' autoComplete='email' type='email' name='email' value={email || ''} onChange={this.updateValue}  />
-              </div>
+            <form>
+              <FormField
+                collectionName='users'
+                defaultValue={publicName}
+                entityId={id}
+                label={<Label title="Nom" />}
+                name="publicName"
+                className='title'
+                required
+              />
+              <FormField
+                collectionName='users'
+                defaultValue={email}
+                entityId={id}
+                label={<Label title="Email" />}
+                name="email"
+                required
+              />
               <div className='field'>
                 <label className='label'>Photo de profil</label>
                 <UploadThumb
@@ -82,16 +102,25 @@ class ProfilePage extends Component {
                   index={0}
                   width={250}
                   height={250}
-                  storeKey='thumbedMediation'
+                  storeKey='thumbedUser'
                   type='thumb'
-                  required
                  />
               </div>
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
-                  <button className="button is-primary is-medium">
-                    Enregistrer
-                  </button>
+                <SubmitButton
+                  getBody={form => (get(form, `usersById.${id}`))}
+                  getIsDisabled={form => {
+                    return !get(form, `usersById.${id}.publicName`) &&
+                      !get(form, `usersById.${id}.email`)
+                  }}
+                  className="button is-primary is-medium"
+                  method='PATCH'
+                  onClick={this.onSubmitClick}
+                  path='users/me'
+                  storeKey="occasions"
+                  text="Enregistrer"
+                />
                 </div>
                 <div className="control">
                   <NavLink to='/structures' className="button is-primary is-outlined is-medium">

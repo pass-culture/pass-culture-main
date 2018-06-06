@@ -138,7 +138,7 @@ class UploadThumb extends Component {
             borderRadius={borderRadius}
             color={[255, 255, 255, image ? 0.6 : 1]}
             image={image}
-            onImageChange={ctx => onImageChange(this.state.image, ctx)}
+            onImageChange={ctx => onImageChange && onImageChange(this.state.image, ctx)}
           />
           {
             image && (
