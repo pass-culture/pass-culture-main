@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import ProviderManager from '../ProviderManager'
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
@@ -46,20 +47,27 @@ class OffererPage extends Component {
     }
   }
 
+  onAddProviderClick = () => {
+    console.log('OUAI')
+    this.setState({ isNewProvider: true })
+  }
+
   render () {
     const {
       address,
       bookingEmail,
+      managedVenues,
       name,
-      siren,
-      managedVenues
+      providers,
+      siren
     } = this.props
     const {
       apiPath,
       isLoading,
       isNew,
       method,
-      offererId
+      offererId,
+      offererProviders
     } = this.state
 
     return (
@@ -137,7 +145,16 @@ class OffererPage extends Component {
                 </NavLink>
               </div>
             </div>
+
+            <br />
+            <ProviderManager
+              offererProviders={offererProviders}
+            />
+
+
         </div>
+
+
       </div>
       <div className='column is-half is-offset-one-quarter'>
         <h1 className='title has-text-centered'>Vos lieux</h1>
@@ -158,7 +175,7 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => Object.assign(
-      { user: state.user },
+      {},
       selectCurrentOfferer(state, ownProps)
     ),
     { resetForm }
