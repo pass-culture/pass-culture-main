@@ -44,7 +44,7 @@ def test_11_create_booking_should_not_work_past_limit_date():
         expired_offer.offererId = 1
         expired_offer.thingId = 1
         expired_offer.price = 0
-        expired_offer.bookingLimitDatetime = datetime.now() - timedelta(seconds=1)
+        expired_offer.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
         app.model.PcObject.check_and_save(expired_offer)
 
         booking_json = {
@@ -66,7 +66,7 @@ def test_12_create_booking_should_work_before_limit_date():
         ok_offer.offererId = 1
         ok_offer.thingId = 1
         ok_offer.price = 0
-        ok_offer.bookingLimitDatetime = datetime.now() + timedelta(minutes=2)
+        ok_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
         app.model.PcObject.check_and_save(ok_offer)
 
         booking_json = {
@@ -92,7 +92,7 @@ def test_13_create_booking_should_not_work_if_too_many_bookings():
         too_many_bookings_offer.thingId = 1
         too_many_bookings_offer.price = 0
         too_many_bookings_offer.available = 0
-        too_many_bookings_offer.bookingLimitDatetime = datetime.now() + timedelta(minutes=2)
+        too_many_bookings_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
         app.model.PcObject.check_and_save(too_many_bookings_offer)
 
         booking_json = {

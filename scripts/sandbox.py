@@ -29,10 +29,10 @@ def do_sandbox():
     client_user.publicName = "Utilisateur test jeune"
     client_user.account = 100
     client_user.email = "pctest.jeune@btmx.fr"
+    client_user.departementCode = "93"
     client_user.setPassword("pctestjeune")
     check_and_save(client_user)
-    #set_from_mock("thumbs", client_user, 1)
-    client_user.save_thumb('https://avatars3.githubusercontent.com/u/185428?s=400&v=4', 0)
+    set_from_mock("thumbs", client_user, 1)
 
     # un acteur culturel qui peut jouer a rajouter des offres partout
     admin_query = model.User.query.filter_by(email="pctest.admin@btmx.fr")
@@ -42,6 +42,7 @@ def do_sandbox():
         admin_user = model.User()
     admin_user.publicName = "Utilisateur test admin"
     admin_user.email = "pctest.admin@btmx.fr"
+    admin_user.departementCode = "93"
     admin_user.setPassword("pctestadmin")
     check_and_save(admin_user)
     set_from_mock("thumbs", admin_user, 2)

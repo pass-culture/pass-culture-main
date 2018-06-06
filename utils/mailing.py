@@ -31,9 +31,9 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
 
 
     if IS_DEV or IS_STAGING:
-        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : '
-                              + ", ".join(recipients)
-                              + '</p>' + email['Html-part']) % ENV
+        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV)\
+                              + ", ".join(recipients)\
+                              + '</p>' + email['Html-part']
         email['To'] = 'passculture-dev@beta.gouv.fr'
     else:
         email['To'] = ", ".join(recipients)
@@ -44,7 +44,7 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
         raise Exception("Email send failed: "+pformat(vars(mailjet_result)))
 
     if booking is None:
-        offer.bookingRecapSent = datetime.now()
+        offer.bookingRecapSent = datetime.utcnow()
         app.model.PcObject.check_and_save(offer)
 
 
@@ -73,7 +73,7 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
         email_subject += 'Récapitulatif pour ' + description
 
     if offer.bookingLimitDatetime is not None:
-        if offer.bookingLimitDatetime < datetime.now():
+        if offer.bookingLimitDatetime < datetime.utcnow():
             email_html += '<p>Voici le récapitulatif final des réservations (total '
         else:
             email_html += '<p>Voici le récapitulatif des réservations à ce jour (total '

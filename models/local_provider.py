@@ -107,7 +107,7 @@ class LocalProvider(Iterator):
                   .query\
                   .filter((LocalProviderEvent.provider == self.dbObject) &
                           (LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd) &
-                          (LocalProviderEvent.date > datetime.now() - timedelta(days=25)))\
+                          (LocalProviderEvent.date > datetime.utcnow() - timedelta(days=25)))\
                   .order_by(LocalProviderEvent.date.desc())\
                   .first()
 

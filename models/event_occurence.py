@@ -1,5 +1,6 @@
 """ event occurence """
 from flask import current_app as app
+from sqlalchemy.ext.hybrid import hybrid_property
 
 db = app.db
 
@@ -38,5 +39,8 @@ class EventOccurence(app.model.PcObject,
                               nullable=False,
                               default=bytes([0]))
 
+    @property
+    def offer(self):
+        return self.offers
 
 app.model.EventOccurence = EventOccurence

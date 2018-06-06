@@ -22,9 +22,6 @@ class Offer(app.model.PcObject,
                              nullable=False,
                              default=datetime.now)
 
-    recommendationOffers = db.relationship(lambda: app.model.RecommendationOffer,
-                                           back_populates="offer")
-
     eventOccurenceId = db.Column(db.BigInteger,
                                  db.ForeignKey("event_occurence.id"),
                                  db.CheckConstraint('"eventOccurenceId" IS NOT NULL OR "thingId" IS NOT NULL',
@@ -33,14 +30,15 @@ class Offer(app.model.PcObject,
 
     eventOccurence = db.relationship(lambda: app.model.EventOccurence,
                                      foreign_keys=[eventOccurenceId],
-                                     backref='offer')
+                                     backref='offers')
 
     thingId = db.Column(db.BigInteger,
                         db.ForeignKey("thing.id"),
                         nullable=True)
 
     thing = db.relationship(lambda: app.model.Thing,
-                            foreign_keys=[thingId])
+                            foreign_keys=[thingId],
+                            backref='offers')
 
     venueId = db.Column(db.BigInteger,
                         db.ForeignKey("venue.id"),

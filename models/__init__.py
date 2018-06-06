@@ -35,8 +35,6 @@ import models.local_provider_event
 import models.local_provider
 import models.provider
 import models.recommendation
-import models.recommendation_booking
-import models.recommendation_offer
 import models.thing
 import models.user_offerer
 import models.user

@@ -44,7 +44,7 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
     def __next__(self):
         self.line = self.lines.__next__()[1]
 
-        for field in ['Date MAJ', 'Email contact', 'Latitude', 'Longitude', 'Nom', 'Adresse', 'Ref Lieu']:
+        for field in ['Date MAJ', 'Email contact', 'Latitude', 'Longitude', 'Nom', 'Adresse', 'Ref Lieu', 'Département']:
             while not is_filled(self.line[field]):
                 print(field+' is empty, skipping line')
                 self.__next__()
@@ -75,8 +75,7 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
             obj.latitude = self.line['Latitude']
             obj.longitude = self.line['Longitude']
             obj.managingOfferer = self.providables[0]
-
-        # IMPLICITLY IT IS THE MANAGING OFFERER
+            obj.departementCode = str(int(self.line['Département']))
         else:
             obj.bookingEmail = self.line['Email contact'].replace('mailto:', '')
 
@@ -93,6 +92,8 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
                              + obj.__class__.__name__)
 
     def getObjectThumbDates(self, obj):
+        if self.mock:
+            return []
         if is_filled(self.line['Lien Image']) != '':
             return [read_date(self.line['Date MAJ'])]
 

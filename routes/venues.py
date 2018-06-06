@@ -4,16 +4,8 @@ from flask import current_app as app, jsonify, request
 from utils.human_ids import dehumanize, humanize
 from utils.rest import expect_json_data,\
                        feed,\
-                       handle_rest_get_list
-
-VENUE_KEYS = [
-    'siret',
-    'name',
-    'address',
-    'latitude',
-    'longitude',
-    'managingOffererId'
-]
+                       handle_rest_get_list,\
+                       update
 
 @app.route('/venues', methods=['GET'])
 def list_venues():
@@ -30,8 +22,7 @@ def get_venue(venueId):
 @app.route('/venues', methods=['POST'])
 @expect_json_data
 def create_venue():
-    new_venue = app.model.Venue()
-    feed(new_venue, request.json, VENUE_KEYS)
+    new_venue = app.model.Venue(from_dict=request.json)
     app.model.PcObject.check_and_save(new_venue)
     return jsonify(new_venue._asdict()), 201
 
@@ -42,6 +33,6 @@ def edit_venue(venueId):
     venue = app.model.Venue\
                     .query.filter_by(id=dehumanize(venueId))\
                     .first_or_404()
-    feed(venue, request.json, VENUE_KEYS)
+    update(venue, request.json)
     app.model.PcObject.check_and_save(venue)
     return jsonify(venue._asdict()), 200

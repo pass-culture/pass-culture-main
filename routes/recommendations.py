@@ -1,17 +1,62 @@
 """ user mediations routes """
+from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
+from random import shuffle
+from sqlalchemy import update
+from sqlalchemy.sql.expression import func
 
-from datascience import create_recommendations
-from utils.config import BEFORE_AFTER_LIMIT, BLOB_SIZE
+from datascience import create_recommendation, create_recommendations
+from models.api_errors import ApiErrors
 from utils.geoip import get_geolocation
+from utils.rest import expect_json_data
+from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
+                         BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize, humanize
-from utils.includes import RECOMMENDATIONS_INCLUDES
+from utils.includes import RECOMMENDATIONS_INCLUDES,\
+                           RECOMMENDATION_OFFER_INCLUDES
 from utils.rest import expect_json_data,\
                        update
 
+Event = app.model.Event
+Mediation = app.model.Mediation
+Offer = app.model.Offer
 Recommendation = app.model.Recommendation
-RecommendationOffer = app.model.RecommendationOffer
+Thing = app.model.Thing
+
+
+def find_or_make_recommendation(user, occasion_type, occasion_id,
+                                mediation_id, from_user_id=None):
+    query = Recommendation.query
+    print('(special) offer_id', occasion_id, 'mediation_id', mediation_id)
+    if not mediation_id and not (occasion_id and occasion_type):
+        return None
+    if mediation_id:
+        filter = (Recommendation.mediationId == mediation_id)
+    elif occasion_id and occasion_type:
+        if occasion_type == 'thing':
+            filter = (Recommendation.thingId == mediation_id)
+        elif occasion_type == 'event':
+            filter = (Recommendation.eventId == mediation_id)
+        else:
+            ae = ApiErrors()
+            ae.addError('occasion_type',
+                        "Invalid occasion type : "+occasion_type)
+            raise ae
+    requested_recommendation = query.filter(filter & (Recommendation.userId==user.id))\
+                                    .first()
+    if requested_recommendation is None:
+        if mediation_id:
+            return None
+        elif occasion_type == 'thing':
+            occasion = Thing.query.get(occasion_id)
+        elif occasion_type == 'event':
+            occasion = Event.query.get(occasion_id)
+        mediation = Mediation.query.get(mediation_id)
+        requested_recommendation = create_recommendation(user, occasion, mediation=mediation)
+
+    return requested_recommendation
+
 
 @app.route('/recommendations/<recommendationId>', methods=['PATCH'])
 @login_required
@@ -21,140 +66,138 @@ def patch_recommendation(recommendationId):
     recommendation = query.first_or_404()
     update(recommendation, request.json)
     app.model.PcObject.check_and_save(recommendation)
-    return jsonify(recommendation._asdict()), 200
+    return jsonify(recommendation._asdict(venueTz=True)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
 def put_recommendations():
-    # USER
-    user_id = current_user.get_id()
-    # POSITION
-    latitude = request.args.get('latitude')
-    longitude = request.args.get('longitude')
-    if not latitude or not longitude:
-        geolocation = get_geolocation(request.remote_addr)
-        if geolocation:
-            latitude = geolocation.latitude
-            longitude = geolocation.longitude
-    print('(position) latitude', latitude, 'longitude', longitude)
-    # DETERMINE AROUND
-    around = request.args.get('around')
-    around_recommendation = None
-    if around is not None:
-        around_recommendation = Recommendation.query.filter_by(
-            id=dehumanize(around)
-        ).first()
-        print('(found) around_recommendation', around_recommendation)
-    else:
-        # MAYBE WE PRECISED THE MEDIATION OR OFFER ID IN THE REQUEST
-        # IN ORDER TO FIND THE MATCHING USER MEDIATION
-        offer_id = request.args.get('offerId')
-        mediation_id = request.args.get('mediationId')
-        print('(special) offer_id', offer_id, 'mediation_id', mediation_id)
-        if mediation_id is not None:
-            around_recommendation = Recommendation.query\
-                            .filter_by(mediationId=dehumanize(mediation_id),
-                                       userId=user_id).first()
-            around = humanize(around_recommendation.id)
-        elif offer_id is not None and offer_id != 'empty':
-            around_recommendation = Recommendation.query\
-                .filter(Recommendation.recommendationOffers\
-                        .any(RecommendationOffer.offerId == dehumanize(offer_id)))\
-                .first()
-            if around_recommendation is not None:
-                around = humanize(around_recommendation.id)
-        if around is not None:
-            print('(special) around_recommendation', around_recommendation)
-    print('(query) around', around)
-    # GET AROUND THE CURSOR ID PLUS SOME NOT READ YET
-    query = Recommendation.query.filter_by(userId=user_id)
-    unread_recommendations = query.filter_by(dateRead=None)
-    # CHECK AROUND
-    before_around_after_ids = []
-    before_recommendations = None
-    recommendations = []
-    if around_recommendation is not None:
-        # BEFORE AND AFTER QUERIES
-        before_recommendations = query.filter(Recommendation.id < dehumanize(around))\
-                          .order_by(Recommendation.id.desc())\
-                          .limit(BEFORE_AFTER_LIMIT)\
-                          .from_self()\
-                          .order_by(Recommendation.id)
-        print('(before) count', before_recommendations.count())
-        after_recommendations = query.filter(Recommendation.id > dehumanize(around))\
-                         .order_by(Recommendation.id)\
-                         .limit(BEFORE_AFTER_LIMIT)
-        print('(after) count', after_recommendations.count())
-        # BEFORE AND AROUND AND AFTER IDS
-        before_around_after_ids += [before_recommendation.id for before_recommendation in before_recommendations]
-        print('(before) ids', list(map(humanize, before_around_after_ids)))
-        if around_recommendation:
-            before_around_after_ids += [around_recommendation.id]
-            print('(around) id', humanize(around_recommendation.id))
-        after_ids = [after_recommendation.id for after_recommendation in after_recommendations]
-        print('(after) ids', list(map(humanize, after_ids)))
-        before_around_after_ids += after_ids
-        # CONCAT
-        recommendations += list(before_recommendations)
-        if around_recommendation:
-            around_index = len(recommendations)
-            recommendations += [around_recommendation]
-        recommendations += list(after_recommendations)
-    # DETERMINE IF WE NEED TO CREATE NEW RECO
-    print('(before around after) count', len(before_around_after_ids))
-    unread_complementary_length = BLOB_SIZE - len(before_around_after_ids)
-    print('(unread) count need', unread_complementary_length)
-    #unread_recommendations = unread_recommendations.filter(~Recommendation.id.in_(before_around_after_ids))\
-    if before_around_after_ids:
-        unread_recommendations = unread_recommendations.filter(Recommendation.id > before_around_after_ids[-1])
-    unread_recommendations = unread_recommendations.order_by(Recommendation.id)
-    print('(unread) count', unread_recommendations.count())
-    if unread_recommendations.count() < unread_complementary_length:
-        print('(check) need ' + str(unread_complementary_length) + ' unread recommendations')
-        create_recommendations(
-            unread_complementary_length,
-            user=current_user,
-            coords=latitude and longitude and { 'latitude': latitude, 'longitude': longitude }
-        )
-    # LIMIT UN READ
-    unread_recommendations = unread_recommendations.order_by(Recommendation.dateUpdated.desc())\
-                           .limit(unread_complementary_length)
-    print('(unread) ids', [humanize(unread_recommendation.id) for unread_recommendation in unread_recommendations])
-    recommendations += list(unread_recommendations)
-    # AS DICT
-    recommendations = [
-        recommendation._asdict(
-            include=RECOMMENDATIONS_INCLUDES,
-            has_dehumanized_id=True
-        )
-        for recommendation in recommendations
-    ]
-    # ADD SOME PREVIOUS BEFORE IF recommendations has not the BLOB_SIZE
-    if len(recommendations) < BLOB_SIZE:
-        if len(recommendations):
-            recommendations[-1]['isLast'] = True
-            recommendations[-1]['blobSize'] = BLOB_SIZE
-        if before_recommendations and before_recommendations.count() > 0:
-            comp_size = BLOB_SIZE - len(recommendations)
-            comp_before_recommendations = query.filter(Recommendation.id < before_recommendations[0].id)\
-                              .order_by(Recommendation.id.desc())\
-                              .limit(comp_size)\
-                              .from_self()\
-                              .order_by(Recommendation.id)
-            recommendations = [
-                recommendation._asdict(
-                    has_dehumanized_id=True,
-                    include=RECOMMENDATIONS_INCLUDES
-                )
-                for recommendation in comp_before_recommendations
-            ] + recommendations
-            around_index += comp_before_recommendations.count()
-            print('(before comp) count', comp_before_recommendations.count())
-    if around_recommendation:
-        recommendations[around_index]['isAround'] = True
-    # PRINT
-    print('(end) ', [(recommendation['id'], recommendation['dateRead']) for recommendation in recommendations], len(recommendations))
+    requested_recommendation = find_or_make_recommendation(current_user,
+                                                           request.args.get('occasionType'),
+                                                           dehumanize(request.args.get('occasionId')),
+                                                           dehumanize(request.args.get('mediationId')))
+    print('(special) requested_recommendation', requested_recommendation)
+
+    # we get more read+unread recos than needed in case we can't make enough new recos
+    query = Recommendation.query.outerjoin(Mediation)\
+                                .filter((Recommendation.user == current_user)
+                                        & (Mediation.tutoIndex == None)
+                                        & ((Recommendation.validUntilDate == None)
+                                           | (Recommendation.validUntilDate > datetime.now())))
+
+    unread_recos = query.filter(Recommendation.dateRead == None)\
+                                  .order_by(func.random())\
+                                  .limit(BLOB_SIZE)\
+                                  .all()
+    #print('(unread recos)', unread_recos)
+    print('(unread reco) count', len(unread_recos))
+
+    read_recos = query.filter(Recommendation.dateRead != None)\
+                      .order_by(func.random())\
+                      .limit(BLOB_SIZE)\
+                      .all()
+    #print('(read recos)', read_recos)
+    print('(read reco) count', len(read_recos))
+
+    needed_new_recos = BLOB_SIZE\
+                       - min(len(unread_recos), BLOB_UNREAD_NUMBER)\
+                       - min(len(read_recos), BLOB_READ_NUMBER)
+
+    print('(needed new recos) count', needed_new_recos)
+
+    new_recos = create_recommendations(needed_new_recos,
+                                       user=current_user)
+
+    print('(new recos)', [(reco, reco.mediation, reco.dateRead) for reco in new_recos])
+    print('(new reco) count', len(new_recos))
+
+    recos = new_recos
+
+    while len(recos) < BLOB_SIZE\
+          and (len(unread_recos) > 0
+               or len(read_recos) > 0):
+
+        nb_new_unread = min(BLOB_UNREAD_NUMBER,
+                            len(unread_recos),
+                            BLOB_SIZE-len(recos))
+        recos += unread_recos[0:nb_new_unread]
+        unread_recos = unread_recos[nb_new_unread:]
+
+        nb_new_read = min(BLOB_READ_NUMBER,
+                          len(read_recos),
+                          BLOB_SIZE-len(recos))
+        recos += read_recos[0:nb_new_read]
+        read_recos = read_recos[nb_new_read:]
+
+    shuffle(recos)
+
+    all_read_recos_count = Recommendation.query.filter((Recommendation.user == current_user)
+                                                       & (Recommendation.dateRead != None))\
+                                               .count()
+
+    print('(all read recos) count', all_read_recos_count)
+
+    tuto_recos = Recommendation.query.join(Mediation)\
+                               .filter((Mediation.tutoIndex != None)
+                                       & (Recommendation.user == current_user))\
+                               .order_by(Mediation.tutoIndex)\
+                               .all()
+    print('(tuto recos) count', len(tuto_recos))
+
+    tutos_read = 0
+    for tuto_reco in tuto_recos:
+        if tuto_reco.dateRead is not None:
+            tutos_read += 1
+        elif len(recos) >= tuto_reco.mediation.tutoIndex-tutos_read:
+            recos = recos[:tuto_reco.mediation.tutoIndex-tutos_read]\
+                    + [tuto_reco]\
+                    + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
+
+    if requested_recommendation:
+        for i, reco in enumerate(recos):
+            if reco.id == requested_recommendation.id:
+                recos = recos[:i]+recos[i+1:]
+                break
+        recos = [requested_recommendation] + recos
+
+    print('(recap reco) ',
+          [(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos],
+          len(recos))
+
+    # FIXME: This is to support legacy code in the webapp
+    # it should be removed once all requests from the webapp
+    # have an app version header, which will mean that all
+    # clients (or at least those who do use the app) have
+    # a recent version of the app
+
+    dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATIONS_INCLUDES, venueTz=True),
+                          recos))
+
+    for index, reco in enumerate(dict_recos):
+        rbs = []
+        for b in recos[index].bookings:
+            rb = {}
+            rb['booking'] = b
+            rbs.append(rb)
+        reco['recommendationBookings'] = rbs
+
+        if recos[index].event is not None or\
+           (recos[index].mediation is not None and
+            recos[index].mediation.event is not None):
+            if recos[index].event is not None:
+                occurences = recos[index].event.occurences
+            else:
+                occurences = recos[index].mediation.event.occurences
+            ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES, venueTz=True),
+                           filter(lambda eo: len(eo.offers) > 0,
+                                  occurences)))
+            reco['recommendationOffers'] = sorted(ros,
+                                                  key=lambda ro: ro['bookingLimitDatetime'],
+                                                  reverse=True)
+        elif recos[index].mediation and\
+             recos[index].mediation.tutoIndex is not None:
+            reco['recommendationOffers'] = []
+
     # RETURN
-    return jsonify(recommendations),200
+    return jsonify(dict_recos), 200

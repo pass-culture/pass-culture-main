@@ -82,7 +82,7 @@ class SpreadsheetOffers(app.model.LocalProvider):
             zip(*map(lambda key: list(self.df[key].values), thumb_target_keys))
         )))
         # date
-        self.dateNow = datetime.now()
+        self.dateNow = datetime.utcnow()
         self.dateModified = self.dateNow.strftime(DATE_FORMAT)
 
     def __next__(self):

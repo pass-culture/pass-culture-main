@@ -57,6 +57,7 @@ def signup():
         e.addError('contact_ok', 'Vous devez obligatoirement cocher cette case')
         return jsonify(e.errors), 400
 
+    departement_code = None
     if 'email' in request.json:
         scope = ['https://spreadsheets.google.com/feeds',
                 'https://www.googleapis.com/auth/drive']
@@ -70,23 +71,41 @@ def signup():
 
         labels = worksheet.row_values(1)
         email_index = None
+        departement_index = None
         for index, label in enumerate(labels):
             if label == 'Email':
                 email_index = index
-                break
+            elif label == 'Département':
+                departement_index = index
         if email_index is None:
             raise ValueError("Can't find 'Email' column in users spreadsheet")
+        if departement_index is None:
+            raise ValueError("Can't find 'Département' column in users spreadsheet")
 
+        values = worksheet.get_all_values()[1:]
+        
         authorized_emails = list(map(lambda v: v[email_index],
-                                     worksheet.get_all_values()[1:]))
+                                     values))
 
-        if request.json['email'] not in authorized_emails:
+        try:
+            email_index = authorized_emails.index(request.json['email'])
+        except ValueError:
+            e = ApiErrors()
+            e.addError('email', "Addresse non autorisée pour l'expérimentation")
+            return jsonify(e.errors), 400
+
+        departement_code = values[email_index][departement_index]
+        if departement_code.strip() == '':
+            print("[ERROR] Missing departement code in users spreadsheet for "
+                  + request.json['email'])
+
             e = ApiErrors()
             e.addError('email', "Addresse non autorisée pour l'expérimentation")
             return jsonify(e.errors), 400
 
     new_user = app.model.User(from_dict=request.json)
     new_user.id = None
+    new_user.departementCode = departement_code
     app.model.PcObject.check_and_save(new_user)
     login_user(new_user)
     return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201

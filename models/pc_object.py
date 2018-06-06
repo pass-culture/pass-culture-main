@@ -1,6 +1,7 @@
 """ pc_object """
 from collections import OrderedDict
 from datetime import datetime
+from dateutil import tz
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 from pprint import pprint
@@ -14,11 +15,19 @@ from utils.string_processing import inflect_engine
 db = app.db
 
 
-def serialize(value):
+def serialize(value, **options):
     if isinstance(value, Enum):
         return value.name
     elif isinstance(value, datetime):
-        return value.isoformat()
+        if 'timezone' in options\
+           and options['timezone']:
+            from_zone = tz.gettz('UTC')
+            to_zone = tz.gettz(options['timezone'])
+            utc = value.replace(tzinfo=from_zone)
+            in_tz = utc.astimezone(to_zone)
+            return in_tz.isoformat()
+        else:
+            return value.isoformat()
     elif isinstance(value, DateTimeRange):
         return {
             'start': value.lower,
@@ -46,7 +55,9 @@ class PcObject():
     def _asdict(self, **options):
         result = OrderedDict()
         for key in self.__mapper__.c.keys():
-            if options and options.get('include')\
+            if options\
+               and 'include' in options\
+               and options.get('include')\
                and "-"+key in options['include']:
                 continue
             value = getattr(self, key)
@@ -61,7 +72,7 @@ class PcObject():
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
             else:
-                result[key] = serialize(value)
+                result[key] = serialize(value, **options)
         if issubclass(self.__class__, app.model.HasThumbMixin) and self.thumbCount > 0:
             # If multiple thumbs, make this an array of paths, mapped over the index
             result['thumbPath'] = (
@@ -70,7 +81,9 @@ class PcObject():
                 '/' +
                 str(result['id'])
             )
-        if options and options['include']:
+        if options\
+           and 'include' in options\
+           and options['include']:
             for join in options['include']:
                 if isinstance(join, str) and\
                    join.startswith('-'):
@@ -220,6 +233,7 @@ class PcObject():
         db.session.add(self)
 
     def __repr__(self):
-        return '<%s #%r>' % (self.__class__.__name__, self.id)
+        return '<%s #%s>' % (self.__class__.__name__,
+                             str(self.id) + "/" + humanize(self.id))
 
 app.model.PcObject = PcObject

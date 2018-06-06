@@ -21,9 +21,9 @@ def send_final_booking_recaps():
 
 def do_send_final_booking_recaps():
     for offer in Offer.query.outerjoin(EventOccurence)\
-                            .filter((datetime.now() > Offer.bookingLimitDatetime) &
+                            .filter((datetime.utcnow() > Offer.bookingLimitDatetime) &
                                     ((Offer.eventOccurenceId == None) |
-                                     (EventOccurence.beginningDatetime > datetime.now())) &
+                                     (EventOccurence.beginningDatetime > datetime.utcnow())) &
                                     (Offer.bookingRecapSent == None)):
         print('Sending booking recap for ' + str(offer))
         send_booking_recap_emails(offer)

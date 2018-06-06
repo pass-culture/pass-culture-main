@@ -61,29 +61,6 @@ RECOMMENDATIONS_INCLUDES = [
     {
         "key": "mediatedOccurences",
         "sub_joins": [
-            "offer"
-        ]
-    },
-    {
-        "key": "mediation",
-        "sub_joins": [
-            "event",
-            "thing"
-        ]
-    },
-    {
-        "key": "recommendationBookings",
-        "resolve": (lambda element, filters: element['booking']),
-        "sub_joins": [
-            {
-                "key": "booking"
-            }
-        ]
-    },
-    {
-        "key": "recommendationOffers",
-        "resolve": (lambda element, filters: element['offer']),
-        "sub_joins": [
             {
                 "key": "offer",
                 "sub_joins": [
@@ -96,6 +73,30 @@ RECOMMENDATIONS_INCLUDES = [
                 ]
             }
         ]
+    },
+    {
+        "key": "mediation",
+        "sub_joins": [
+            "event",
+            "thing"
+        ]
+    },
+    "bookings",
+    {
+        "key": "recommendationBookings",
+        "resolve": (lambda element, filters: element['booking']),
+        "sub_joins": [
+            {
+                "key": "booking"
+            }
+        ]
+    }
+]
+
+RECOMMENDATION_OFFER_INCLUDES =  [
+    {
+        "key": "eventOccurence",
+        "sub_joins": ["event", "venue"]
     }
 ]
 

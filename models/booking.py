@@ -23,7 +23,8 @@ class Booking(app.model.PcObject,
                                 db.ForeignKey("recommendation.id"))
 
     recommendation = db.relationship(lambda: app.model.Recommendation,
-                                     foreign_keys=[recommendationId])
+                                     foreign_keys=[recommendationId],
+                                     backref='bookings')
 
     offerId = db.Column(db.BigInteger,
                         db.ForeignKey("offer.id"),

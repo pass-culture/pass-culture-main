@@ -129,7 +129,10 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
             obj.durationMinutes = format_duration(self.line['Durée'])
             self.eos = {}
         elif isinstance(obj, EventOccurence):
-            obj.beginningDatetime = dateparser.parse(obj.idAtProviders.split('_')[1])
+            obj.beginningDatetime = dateparser.parse(obj.idAtProviders.split('_')[1],
+                                                     settings={'TIMEZONE': 'UTC-3' if self.venue.departementCode=='97'
+                                                                                 else 'Europe/Paris',
+                                                               'TO_TIMEZONE': 'UTC'})
             obj.venue = self.venue
             obj.event = self.providables[0]
             self.eos[obj.idAtProviders] = obj
