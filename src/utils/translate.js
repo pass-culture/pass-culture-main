@@ -34,17 +34,22 @@ export function pathToCollection (path) {
 
 export function pathToModel (path) {
   switch(path) {
-    case 'accroches':
-      return 'mediation'
     case 'evenements':
-      return 'event'
-    case 'lieux':
-      return 'venue'
+      return 'Event'
     case 'objets':
-      return 'thing';
-    case 'structures':
-      return 'offerer'
+      return 'Thing';
     default:
       return path;
+  }
+}
+
+export function modelToPath (model) {
+  switch(model) {
+    case 'Evenement':
+      return 'evenements'
+    case 'Thing':
+      return 'lieux';
+    default:
+      return model;
   }
 }
