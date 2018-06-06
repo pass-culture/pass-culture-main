@@ -66,12 +66,15 @@ class UploadThumb extends Component {
       requestData,
       storeKey
     } = this.props
-    const { image } = this.state
+    const {
+      image,
+      isUploadDisabled,
+    } = this.state
     this.setState({
       isEdited: false,
     })
     if (typeof image === 'string') return;
-    if (this.state.isUploadDisabled) return;
+    if (isUploadDisabled) return;
     e.preventDefault()
     const type = image.type.includes('image/') && image.type.split('image/')[1]
     const formData = new FormData();
@@ -85,7 +88,7 @@ class UploadThumb extends Component {
         key: storeKey
       }
     )
-    window && window.URL.revokeObjectURL(this.state.image.preview)
+    window && window.URL.revokeObjectURL(image.preview)
   }
 
   onZoomChange = e => {
@@ -100,6 +103,7 @@ class UploadThumb extends Component {
       maxSize,
       width,
       onImageChange,
+      className
     } = this.props
     const {
       image,
@@ -111,94 +115,73 @@ class UploadThumb extends Component {
     } = this.state
 
     return (
-      <div className='upload-thumb'>
-        <div className='field'>
-          <div className={this.props.className}>
-          {image && (
-            <ul className='actions'>
-              {readOnly ? (
-                <li>
-                  <button
-                    onClick={ e => this.setState({isEdited: true})}>
-                    <Icon svg='ico-pen' alt="Modifier l'image" />
-                  </button>
-                </li>
-              ) : (
-                <li>
-                  <button
-                    onClick={ e => this.setState({image: null})}>
-                    <Icon svg='ico-close-b' alt="Enlever l'image" />
-                  </button>
-                </li>
-              )}
-            </ul>
-          )}
-          { readOnly ? (
-            <img style={{borderRadius, width, height, borderWidth: border}} src={this.props.image} className='read-only' />
-            ) : (
-              <Dropzone
-                className={`dropzone ${image && 'has-image'}`}
-                onDragEnter={this.handleDragStart}
-                onDragLeave={this.handleDragStop}
-                onDrop={this.handleDrop}
-                disableClick={Boolean(image)}
-              >
-                {
-                  !image && (
-                    <div className={`drag-n-drop ${dragging ? 'dragged' : ''}`} style={{ borderRadius, width, height }}>
-                      Cliquez ou glissez-déposez pour charger une image
-                    </div>
-                  )
-                }
-                <AvatarEditor
-                  width={width}
-                  height={height}
-                  scale={zoom}
-                  border={border}
-                  borderRadius={borderRadius}
-                  color={[255, 255, 255, image ? 0.6 : 1]}
-                  image={image}
-                  onImageChange={ctx => onImageChange && onImageChange(this.state.image, ctx)}
+      <div className='field'>
+        <div className={classnames('upload-thumb', className)}>
+          <Dropzone
+            className={classnames('dropzone', { 'has-image': Boolean(image), 'no-drag': readOnly})}
+            onDragEnter={this.handleDragStart}
+            onDragLeave={this.handleDragStop}
+            onDrop={this.handleDrop}
+            disableClick={Boolean(image || readOnly)}
+          >
+            {
+              !image && (
+                <div className={`drag-n-drop ${dragging ? 'dragged' : ''}`} style={{ borderRadius, width, height }}>
+                  Cliquez ou glissez-déposez pour charger une image
+                </div>
+              )
+            }
+            <AvatarEditor
+              width={width}
+              height={height}
+              scale={zoom}
+              border={border}
+              borderRadius={borderRadius}
+              color={[255, 255, 255, readOnly || !image ? 1 : 0.6]}
+              image={image}
+              onImageChange={ctx => onImageChange && onImageChange(this.state.image, ctx)}
+            />
+          </Dropzone>
+          <nav className="field ">
+            {
+              !readOnly && (
+                <input
+                  className="zoom level-left"
+                  key={0}
+                  type="range"
+                  min="1"
+                  max="3"
+                  step="0.01"
+                  value={zoom}
+                  onChange={this.onZoomChange}
                 />
-                {
-                  image && (
-                    <input
-                      className="zoom level-left"
-                      key={0}
-                      type="range"
-                      min="1"
-                      max="3"
-                      step="0.01"
-                      value={zoom}
-                      onChange={this.onZoomChange}
-                    />
-                  )
-                }
-              </Dropzone>
-            )
-          }
-        </div>
-        </div>
-        <nav className="field ">
-          {
-            isUploadDisabled && (
-              <p>
-                {`(Image trop grosse ${size.toFixed(2)} < ${maxSize}MB)`}
-              </p>
-            )
-          }
-          {!this.state.readOnly && (
-
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+              )
+            }
+            {
+              isUploadDisabled && (
+                <p className='has-text-danger'>
+                  {`Votre image trop volumineuse : ${size.toFixed(2)} < ${maxSize}Mo`}
+                </p>
+              )
+            }
+            <div className="field is-grouped is-grouped-centered" >
               <div className="control">
-                <button onClick={this.onUploadClick} className='button is-primary'>Enregistrer</button>
+                {readOnly && <button onClick={ e => this.setState({isEdited: true})} className='button is-primary'>Modifier l'image</button>}
+                {!readOnly && <button onClick={this.onUploadClick} className='button is-primary' disabled={isUploadDisabled}>Enregistrer</button>}
               </div>
-              <div className="control">
-                <button onClick={e => this.setState({isEdited: false})} className='button is-primary is-outlined'>Annuler</button>
-              </div>
+              {!readOnly && (
+                <div className="control">
+                  <button onClick={e => this.setState({image: null})} className='button is-primary is-outlined'>Changer d'image</button>
+                </div>
+              )}
+              {!readOnly && (
+                <div className="control">
+                  <button onClick={e => this.setState({isEdited: false})} className='button is-primary is-outlined'>Annuler la modification</button>
+                </div>
+              )}
             </div>
-          )}
-        </nav>
+          </nav>
+        </div>
       </div>
     )
   }
