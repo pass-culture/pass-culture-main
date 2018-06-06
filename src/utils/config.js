@@ -30,6 +30,11 @@ export const THUMBS_URL = IS_DEV
   ? `${API_URL}/storage/thumbs`
   : `${API_URL}/storage/thumbs`
 
+export function apiUrl(path) {
+  if (!path) return
+  return `${API_URL}${path}`
+}
+
 function getMobileOperatingSystem() {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera
 

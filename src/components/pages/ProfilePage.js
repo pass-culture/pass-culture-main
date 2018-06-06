@@ -14,11 +14,14 @@ import Label from '../layout/Label'
 import FormField from '../layout/FormField'
 import SubmitButton from '../layout/SubmitButton'
 
+import { apiUrl } from '../../utils/config'
+
 class ProfilePage extends Component {
 
   constructor() {
     super()
     this.state = {
+      success: false,
       image: null,
       zoom: 1,
     }
@@ -38,6 +41,9 @@ class ProfilePage extends Component {
 
 
   onSubmitClick = () => {
+    this.setState({
+      success: true
+    })
     // const {
     //   history,
     //   resetForm,
@@ -64,7 +70,7 @@ class ProfilePage extends Component {
       id,
       publicName,
       email,
-      address,
+      thumbUrl,
     } = this.props.user || {}
 
     return (
@@ -72,8 +78,12 @@ class ProfilePage extends Component {
         <h1 className='title has-text-centered'>Profil</h1>
         <div className='columns'>
           <div className='column is-half is-offset-one-quarter'>
-
-            <form>
+            {this.state.success && (
+              <p className='notification is-success'>
+                <button class="delete" onClick={e => this.setState({success: false})}></button>
+                Enregistré
+              </p>
+            )}
               <FormField
                 collectionName='users'
                 defaultValue={publicName}
@@ -90,45 +100,46 @@ class ProfilePage extends Component {
                 label={<Label title="Email" />}
                 name="email"
                 required
+                readOnly
               />
-              <div className='field'>
-                <label className='label'>Photo de profil</label>
-                <UploadThumb
-                  className='input'
-                  image={this.state.thumbUrl}
-                  borderRadius={250}
-                  collectionName='users'
-                  entityId={id}
-                  index={0}
-                  width={250}
-                  height={250}
-                  storeKey='thumbedUser'
-                  type='thumb'
-                 />
-              </div>
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
-                <SubmitButton
-                  getBody={form => (get(form, `usersById.${id}`))}
-                  getIsDisabled={form => {
-                    return !get(form, `usersById.${id}.publicName`) &&
-                      !get(form, `usersById.${id}.email`)
-                  }}
-                  className="button is-primary is-medium"
-                  method='PATCH'
-                  onClick={this.onSubmitClick}
-                  path='users/me'
-                  storeKey="occasions"
-                  text="Enregistrer"
-                />
+                  <SubmitButton
+                    getBody={form => (get(form, `usersById.${id}`))}
+                    getIsDisabled={form => {
+                      return !get(form, `usersById.${id}.publicName`) &&
+                        !get(form, `usersById.${id}.email`)
+                    }}
+                    className="button is-primary is-medium"
+                    method='PATCH'
+                    onClick={this.onSubmitClick}
+                    path='users/me'
+                    storeKey="occasions"
+                    text="Enregistrer"
+                  />
                 </div>
                 <div className="control">
-                  <NavLink to='/structures' className="button is-primary is-outlined is-medium">
+                  <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
                     Retour
                   </NavLink>
                 </div>
               </div>
-            </form>
+              <hr />
+              <h1 className='title has-text-centered'>Avatar</h1>
+              <div className='field'>
+                <UploadThumb
+                  className='input'
+                  image={apiUrl(thumbUrl)}
+                  collectionName='users'
+                  storeKey='thumbedUser'
+                  type='thumb'
+                  entityId={id}
+                  index={0}
+                  width={250}
+                  height={250}
+                  borderRadius={250}
+                 />
+              </div>
           </div>
         </div>
       </PageWrapper>

@@ -1,10 +1,44 @@
 .upload-thumb {
   position: relative;
   display: block;
-  height: auto;
-  cursor: pointer;
   text-align: center;
-  overflow: hidden;
+
+
+  .input {
+    height: auto;
+  }
+
+  ul.actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+    z-index: 1;
+
+    li {
+      display: inline-block;
+      &:not(:last-child) {
+        margin-right: 0.5rem;
+      }
+      button {
+        border: none;
+        cursor: pointer;
+        background: transparent;
+
+        img {
+          max-width: 1rem;
+        }
+      }
+    }
+  }
+
+  img.read-only {
+    box-sizing: content-box;
+    object-fit: cover;
+    border-style: solid;
+    border-color: transparent;
+    margin: auto;
+  }
 
   .drag-n-drop {
     position: absolute;
@@ -18,6 +52,7 @@
     justify-content: center;
     padding: 2rem;
     margin: auto;
+    cursor: pointer;
 
     &:before {
       content: '';
@@ -41,22 +76,15 @@
     }
   }
 
-  &.has-image {
+  .dropzone {
     background: transparent;
-    .drag-n-drop {
+    margin: auto;
+    &.has-image .drag-n-drop {
       display: none;
     }
   }
 
-  .remove-image {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 1rem;
-    border: none;
-    cursor: pointer;
-    background: transparent;
-  }
+
 
   canvas {
     display: block;
