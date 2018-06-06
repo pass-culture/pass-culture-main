@@ -45,7 +45,14 @@ class OffersPage extends Component {
           </NavLink>
         </nav>
         <nav className="level is-mobile">
-          <SearchInput collectionNames={["events", "things"]} isLoading />
+          <SearchInput
+            collectionNames={["events", "things"]}
+            config={{
+              isMergingArray: false,
+              key: 'searchedOccasions'
+            }}
+            isLoading
+          />
         </nav>
         {occasions.length && <OccasionsList />}
       </PageWrapper>

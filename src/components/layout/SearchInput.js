@@ -1,10 +1,12 @@
+import get from 'lodash.get'
+import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
-// import { Portal } from 'react-portal'
 import { connect } from 'react-redux'
 
-import { requestData } from '../../reducers/data'
+import { assignData, requestData } from '../../reducers/data'
 import { closeLoading, showLoading } from '../../reducers/loading'
+import { AND } from '../../utils/config'
 
 class SearchInput extends Component {
   constructor(props) {
@@ -16,7 +18,10 @@ class SearchInput extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { closeLoading, offers } = nextProps
+    const {
+      closeLoading,
+      offers
+    } = nextProps
     if (offers !== this.props.offers) {
       closeLoading()
     }
@@ -26,10 +31,32 @@ class SearchInput extends Component {
     const {
       target: { value },
     } = event
-    const { collectionName, hook, requestData, showLoading } = this.props
-    showLoading('search')
-    requestData('GET', `${collectionName}?search=${value}`, { hook, value })
+    const {
+      assignData,
+      collectionNames,
+      config,
+      hook,
+      onChange,
+      requestData,
+      showLoading
+    } = this.props
+    if (value.trim()) {
+      // SEND A REQUEST WITH THIS QUERY
+      showLoading('search')
+      const path = `search?collectionNames=${collectionNames.join(AND)}&q=${value}`
+      requestData('GET', path, config)
+    } else {
+      // THE QUERY IS NULL
+      // SO IT MEANS WE RESET THE SEARCH INPUT WITH AN EMPTY STRING
+      // WE NEED THEN TO NULLIFY THE 'searched<Key>' in the state
+      // to go back to the previous state without search 
+      const key = get(config, 'key')
+      key && assignData({ [key]: null })
+    }
+
+
     this._isDebouncing = false
+    onChange && onChange(event)
   }
 
   onChange = event => {
@@ -54,9 +81,16 @@ SearchInput.defaultProps = {
   debounceTimeout: 1000,
 }
 
+SearchInput.propTypes = {
+  collectionNames: PropTypes.array.isRequired
+}
+
 export default connect(
-  (state, ownProps) => ({
-    [ownProps.collectionName]: state.data[ownProps.collectionName],
-  }),
-  { closeLoading, requestData, showLoading }
+  null,
+  {
+    assignData,
+    closeLoading,
+    showLoading,
+    requestData
+  }
 )(SearchInput)

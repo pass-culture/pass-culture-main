@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { requestData } from '../../reducers/data'
-import { removeErrors } from '../../reducers/errors'
 import {
   getFormCollection,
   mergeForm,
@@ -142,5 +141,5 @@ export default connect(
     founds: state.data.founds,
     found: (getFormCollection(state, ownProps) || {})[SEARCH]
   }),
-  { mergeForm, removeErrors, removeForm, requestData }
+  { mergeForm, removeForm, requestData }
 )(FormSearch)
