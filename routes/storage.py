@@ -10,7 +10,8 @@ from utils.string_processing import inflect_engine
 print('LOCAL DEV MODE: Using disk based object storage')
 
 GENERIC_STORAGE_MODEL_NAMES = [
-    'Mediation'
+    'Mediation',
+    'User',
 ]
 
 @app.route('/storage/<bucketId>/<path:objectId>')

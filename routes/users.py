@@ -3,6 +3,9 @@ from os import path
 from pathlib import Path
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
+from utils.rest import update,\
+                       expect_json_data,\
+                       login_or_api_key_required
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -14,12 +17,19 @@ def make_user_query():
     query = app.model.User.query
     return query
 
-
 @app.route("/users/me", methods=["GET"])
 @login_required
 def get_profile():
     user = current_user._asdict(include=USERS_INCLUDES)
     return jsonify(user)
+
+@app.route('/users/me', methods=['PATCH'])
+@login_or_api_key_required
+@expect_json_data
+def patch_profile():
+    update(current_user, request.json)
+    app.model.PcObject.check_and_save(current_user)
+    return jsonify(current_user._asdict(include=USERS_INCLUDES)), 200
 
 
 @app.route("/users/signin", methods=["POST"])
