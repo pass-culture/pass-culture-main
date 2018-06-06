@@ -27,6 +27,9 @@
     text-decoration: none;
     padding-left: 0;
     padding-right: 0;
+    &.is-inversed {
+      color: $white;
+    }
   }
 }
 

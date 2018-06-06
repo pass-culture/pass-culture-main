@@ -17,7 +17,7 @@ class BetaPage extends Component {
 
   render() {
     return (
-      <PageWrapper name="beta" noHeader redBg>
+      <PageWrapper name="beta" noHeader noContainer redBg>
         <h1>
           <strong>Bienvenue dans la version beta</strong>{ ' ' }
           <span>du Pass Culture pour les Professionels</span>
@@ -26,7 +26,7 @@ class BetaPage extends Component {
         <footer>
           <Link
             to="/inscription"
-            className="button is-secondary has-text-weight-light is-italic"
+            className="button is-secondary is-inversed has-text-weight-light is-italic"
           >
             C'est par là
             <Icon svg="ico-next" />
