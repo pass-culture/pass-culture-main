@@ -61,6 +61,13 @@ class PcObject():
                 result[key] = list(value)
             else:
                 result[key] = serialize(value)
+        if issubclass(self.__class__, app.model.HasThumbMixin):
+            result['thumbPath'] = (
+                '/storage/thumbs/' +
+                self.__table__.name +
+                's/' + # Would be cleaner to have a pluralize method for table name
+                str(result['id'])
+            )
         if options and options['include']:
             for join in options['include']:
                 if isinstance(join, str) and\
