@@ -1,4 +1,5 @@
 import debounce from 'lodash.debounce'
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -27,91 +28,116 @@ class FormSirene extends Component {
       assignErrors,
       collectionName,
       entityId,
-      mergeForm
+      mergeForm,
+      sireType,
     } = this.props
 
     if (!this.state.localValue) {
       return
     }
-    const siretWithoutSpaces = this.state.localValue.replace(/ /g, '')
+
+    if (sireType === 'siret') {
+      const siretWithoutSpaces = this.state.localValue.replace(/\s/g, '')
 
       fetch(`https://sirene.entreprise.api.gouv.fr/v1/siret/${siretWithoutSpaces}`).then(response => {
         if (response.status === 404)  {
-          assignErrors('siret', ['Siret invalide'])
+          assignErrors({siret: ['Siret invalide']})
           this.setState({localValue: ''})
           mergeForm(collectionName, entityId, 'siret', null)
 
+        } else {
+          response.json().then(body => {
+            const name = body.etablissement.l1_declaree
+            const address = body.etablissement.geo_adresse
+            const latitude = body.etablissement.latitude
+            const longitude = body.etablissement.longitude
+            const siret = body.etablissement.siret
+            mergeForm('venues', entityId, { address, latitude, longitude, name, siret })
+          }
+        )
+      }
+    }).catch((e) => { console.log('erreur', e)})
+  } else if ((sireType === 'siren')) {
+    const sirenWithoutSpaces = this.state.localValue.replace(/\s/g, '')
+
+    fetch(`https://sirene.entreprise.api.gouv.fr/v1/siren/${sirenWithoutSpaces}`).then(response => {
+      if (response.status === 404)  {
+        assignErrors({siren: ['Siren invalide']})
+        this.setState({localValue: ''})
+        mergeForm(collectionName, entityId, 'siren', null)
+
       } else {
         response.json().then(body => {
-          const name = body.structure.l1_declaree
-          const address = body.structure.geo_adresse
-          const latitude = body.structure.latitude
-          const longitude = body.structure.longitude
-          mergeForm('venues', entityId, { address, latitude, longitude, name })
+          const name = body.siege_social[0].l1_declaree
+          const address = body.siege_social[0].geo_adresse
+          const latitude = body.siege_social[0].latitude
+          const longitude = body.siege_social[0].longitude
+          const siren = body.siege_social[0].siren
+          mergeForm('offerers', entityId, { address, latitude, longitude, name, siren })
         }
       )
-      }
-    }).catch((e) => {
-      console.log('erreur', e);
     }
+  }).catch((e) => { console.log('erreur', e)})
+}
+}
 
-    )
+onMergeForm = event => {
+  const {
+    target: { value },
+  } = event
+  const {
+    collectionName,
+    entityId,
+    mergeForm,
+    name,
+    removeErrors,
+  } = this.props
+  removeErrors(name)
+  mergeForm(collectionName, entityId, name, value)
+}
 
-  }
+componentWillMount() {
+  // fill automatically the form when it is a NEW POST action
+  const { defaultValue, entityId } = this.props
+  defaultValue &&
+  entityId === NEW &&
+  this.onMergeForm({ target: { value: defaultValue } })
+}
 
-  onMergeForm = event => {
-    const {
-      target: { value },
-    } = event
-    const {
-      collectionName,
-      entityId,
-      mergeForm,
-      name,
-      removeErrors,
-    } = this.props
-    removeErrors(name)
-    mergeForm(collectionName, entityId, name, value)
-  }
-
-  componentWillMount() {
-    // fill automatically the form when it is a NEW POST action
-    const { defaultValue, entityId } = this.props
-    defaultValue &&
-      entityId === NEW &&
-      this.onMergeForm({ target: { value: defaultValue } })
-  }
-
-  render() {
-    const {
-      className,
-      defaultValue,
-      id,
-      placeholder,
-      autoComplete,
-      type,
-      value,
-    } = this.props
-    const { localValue } = this.state
-    return [
-      <input
-        key='0'
-        autoComplete={autoComplete}
-        className={className || 'input'}
-        id={id}
-        onChange={this.onChange}
-        placeholder={placeholder}
-        type={type}
-        value={localValue !== null ? localValue : value || defaultValue || ''}
-      />,
-      <button key='1' className='button' onClick={this.onConfirmClick}/>
-    ]
-  }
+render() {
+  const {
+    className,
+    defaultValue,
+    id,
+    placeholder,
+    autoComplete,
+    type,
+    value,
+  } = this.props
+  const { localValue } = this.state
+  return [
+    <input
+      key='0'
+      autoComplete={autoComplete}
+      className={className || 'input'}
+      id={id}
+      onChange={this.onChange}
+      placeholder={placeholder}
+      type={type}
+      value={localValue !== null ? localValue : value || defaultValue || ''}
+    />,
+    <button key='1' className='button' onClick={this.onConfirmClick}/>
+  ]
+}
 }
 
 FormSirene.defaultProps = {
   debounceTimeout: 500,
   entityId: NEW,
+}
+
+FormSirene.propTypes = {
+  sireType: PropTypes.string.isRequired,
 }
 
 export default connect(

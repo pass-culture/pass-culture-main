@@ -14,6 +14,8 @@ import ProfilePage from '../components/pages/ProfilePage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
+import VenuePage from '../components/pages/VenuePage'
+import VenuesPage from '../components/pages/VenuesPage'
 
 const routes = [
   {
@@ -62,6 +64,18 @@ const routes = [
     path: '/structures/:offererId',
     title: 'structures',
     render: () => <OffererPage />,
+  },
+  {
+    exact: true,
+    path: '/lieux',
+    title: 'Lieux',
+    render: () => <VenuesPage />,
+  },
+  {
+    exact: true,
+    path: '/lieux/:venueId',
+    title: 'Lieux',
+    render: () => <VenuePage />,
   },
   {
     exact: true,

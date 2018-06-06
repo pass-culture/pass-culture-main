@@ -9,4 +9,8 @@ header.navbar {
     }
   }
 
+  .navbar-menu {
+    z-index: 30;
+    position: relative;
+  }
 }
