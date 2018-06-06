@@ -14,6 +14,7 @@ class UploadThumb extends Component {
   constructor() {
     super()
     this.state = {
+      hasExistingImage: false,
       isEdited: false,
       readOnly: false,
       image: null,
@@ -24,11 +25,13 @@ class UploadThumb extends Component {
   }
 
   static getDerivedStateFromProps(props, prevState) {
+    const hasExistingImage = typeof props.image === 'string'
+    const readOnly = hasExistingImage && !prevState.isEdited
     return {
-      readOnly: prevState.isEdited ? prevState.readOnly : Boolean(props.image),
-      image: prevState.isEdited ? prevState.image : props.image,
+      hasExistingImage,
+      readOnly,
+      image: readOnly ? props.image : prevState.image,
     }
-    return prevState;
   }
 
   handleDragStart = e => {
@@ -60,15 +63,15 @@ class UploadThumb extends Component {
       collectionName,
       entityId,
       index,
-      onUploadClick,
       requestData,
       storeKey
     } = this.props
     const { image } = this.state
     this.setState({
-      readOnly: true,
+      isEdited: false,
     })
     if (typeof image === 'string') return;
+    if (this.state.isUploadDisabled) return;
     e.preventDefault()
     const type = image.type.includes('image/') && image.type.split('image/')[1]
     const formData = new FormData();
@@ -88,7 +91,6 @@ class UploadThumb extends Component {
   onZoomChange = e => {
     this.setState({ zoom: parseFloat(e.target.value) })
   }
-
 
   render () {
     const {
@@ -117,14 +119,14 @@ class UploadThumb extends Component {
               {readOnly ? (
                 <li>
                   <button
-                    onClick={ e => this.setState({readOnly: false, isEdited: true})}>
+                    onClick={ e => this.setState({isEdited: true})}>
                     <Icon svg='ico-pen' alt="Modifier l'image" />
                   </button>
                 </li>
               ) : (
                 <li>
                   <button
-                    onClick={ e => this.setState({image: null, readOnly: false})}>
+                    onClick={ e => this.setState({image: null})}>
                     <Icon svg='ico-close-b' alt="Enlever l'image" />
                   </button>
                 </li>
@@ -192,7 +194,7 @@ class UploadThumb extends Component {
                 <button onClick={this.onUploadClick} className='button is-primary'>Enregistrer</button>
               </div>
               <div className="control">
-                <button onClick={e => this.setState({readOnly: true})} className='button is-primary is-outlined'>Annuler</button>
+                <button onClick={e => this.setState({isEdited: false})} className='button is-primary is-outlined'>Annuler</button>
               </div>
             </div>
           )}

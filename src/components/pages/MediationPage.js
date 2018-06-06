@@ -17,6 +17,7 @@ import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { pathToModel } from '../../utils/translate'
 
 import { THUMBS_URL } from '../../utils/config'
+import { apiUrl } from '../../utils/config'
 
 class MediationPage extends Component {
 
@@ -132,6 +133,7 @@ class MediationPage extends Component {
       occasionModel,
       routePath
     } = this.state
+
     return (
       <PageWrapper name='mediation' loading={isLoading}>
         <div className='columns'>
@@ -171,7 +173,7 @@ class MediationPage extends Component {
                       <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
                     </section>,
                     <UploadThumb
-                      image={isNew ? this.state.thumbUrl : null}
+                      image={apiUrl(get(this.props, 'mediation.thumbPath'))}
                       borderRadius={0}
                       collectionName='mediations'
                       entityId={id}
@@ -205,7 +207,6 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state,ownProps) => ({
-      thumbedMediation: state.data.thumbedMediation,
       mediation: selectCurrentMediation(state, ownProps),
       offerer: selectCurrentOfferer(state, ownProps)
     }),

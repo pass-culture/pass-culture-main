@@ -70,9 +70,8 @@ class ProfilePage extends Component {
       id,
       publicName,
       email,
-      thumbUrl,
+      thumbPath,
     } = this.props.user || {}
-
     return (
       <PageWrapper name="profile" loading={!this.props.user}>
         <h1 className='title has-text-centered'>Profil</h1>
@@ -100,7 +99,7 @@ class ProfilePage extends Component {
                 label={<Label title="Email" />}
                 name="email"
                 required
-                readOnly
+                readOnly // For now there is no check on whether the email already exists so it cannot be modified
               />
               <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
                 <div className="control">
@@ -129,7 +128,7 @@ class ProfilePage extends Component {
               <div className='field'>
                 <UploadThumb
                   className='input'
-                  image={apiUrl(thumbUrl)}
+                  image={apiUrl(thumbPath)}
                   collectionName='users'
                   storeKey='thumbedUser'
                   type='thumb'
