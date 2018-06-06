@@ -4,7 +4,13 @@ const emptyOccasions = []
 
 export default createSelector(
   state => state.data.occasions,
-  occasions => {
+  state => state.data.searchedOccasions,
+  (occasions, searchedOccasions) => {
+    // RETURN FIRST OCCASIONS FROM SEARCH INPUT
+    // IF WE HAVE SOME OF THEM
+    if (searchedOccasions) {
+      return searchedOccasions
+    }
     if (!occasions) {
       return emptyOccasions
     }

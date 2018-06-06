@@ -71,7 +71,7 @@ class OffererPage extends Component {
               </NavLink>
             </div>
 
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un structure</h1>
+            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} une structure</h1>
             <FormField
               autoComplete="siren"
               collectionName="offerers"

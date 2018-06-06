@@ -25,7 +25,7 @@ class OfferersPage extends Component {
             collectionNames={["offerers"]}
             config={{
               isMergingArray: false,
-              key: 'offerers'
+              key: 'searchedOfferers'
             }}
             isLoading
           />

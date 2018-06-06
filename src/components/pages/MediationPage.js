@@ -44,7 +44,7 @@ class MediationPage extends Component {
     return {
       apiPath: `mediations${isNew ? '' : `/${id}`}`,
       method: isNew ? 'POST' : 'PATCH',
-      occasionModel: pathToModel(occasionPath),
+      occasionModel: pathToModel(occasionPath).toLowerCase(),
       isLoading: !(name || offerer || (id && !isNew) ),
       isNew,
       routePath: `/offres/${occasionPath}/${occasionId}/accroches`
@@ -92,8 +92,6 @@ class MediationPage extends Component {
       occasionModel,
       routePath
     } = this.state
-
-    console.log('id', id)
     return (
       <PageWrapper name='mediation' loading={isLoading}>
         <div className='columns'>

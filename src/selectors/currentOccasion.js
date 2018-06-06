@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { collectionToPath } from '../utils/translate'
+import { modelToPath } from '../utils/translate'
 
 export default createSelector(
   state => state.data.occasions,
@@ -9,7 +9,7 @@ export default createSelector(
   (occasions, occasionPath, occasionId) => {
     if (!occasions) { return }
     const currentOccasion = occasions.find(o =>
-        occasionPath === collectionToPath(o.occasionType) &&
+        occasionPath === modelToPath(o.modelName) &&
         o.id === occasionId
     )
     return currentOccasion
