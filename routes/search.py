@@ -13,7 +13,6 @@ def get_founds():
     query = request.args.get('q')
     for collection_name in request.args['collectionNames'].split(AND):
         s = search(collection_name, query)
-        print('query', query)
         if s:
             entities = s.all()
             founds += [
