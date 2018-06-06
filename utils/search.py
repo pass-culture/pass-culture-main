@@ -11,7 +11,9 @@ LANGUAGE = 'french'
 SPACE = ' '
 
 GENERIC_SEARCH_MODEL_NAMES = [
+    'Events'
     'Offerer',
+    'Things',
     'Venue'
 ]
 
@@ -55,7 +57,7 @@ def search(collection_name, query):
 
     # GENERIC METHOD
     if model_name not in GENERIC_SEARCH_MODEL_NAMES:
-        return []
+        return None
 
     # CREATE GENERIC FILTER
     search_filter = get_search_filter([model], query)
@@ -66,6 +68,11 @@ def search(collection_name, query):
             search_filter,
             model.id.in_([o.id for o in current_user.offerers])
         )
+    elif model in [app.model.Event, app.model.Things]:
+        ## TODO:
+        # check that the searched entities are associated with
+        # an offerer of the current_user
+        pass
 
     # FILTER
     return model.query\

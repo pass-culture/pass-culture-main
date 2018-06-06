@@ -12,13 +12,19 @@ def get_founds():
     founds = []
     query = request.args.get('q')
     for collection_name in request.args['collectionNames'].split(AND):
-        entities = search(collection_name, query).all()
-        founds += [
-            dict(
-                entity._asdict(include=includes.get(collection_name)),
-                **{'collectionName': collection_name}
-            )
-            for entity in entities
-        ]
+        s = search(collection_name, query)
+        print('query', query)
+        if s:
+            entities = s.all()
+            founds += [
+                dict(
+                    entity._asdict(
+                        include=includes.get(collection_name),
+                        has_model_name=True
+                    ),
+                    **{'collectionName': collection_name}
+                )
+                for entity in entities
+            ]
     # RETURN
     return jsonify(founds), 200
