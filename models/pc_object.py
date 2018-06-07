@@ -73,6 +73,10 @@ class PcObject():
                 result[key] = list(value)
             else:
                 result[key] = serialize(value, **options)
+
+        if options and options.get('has_model_name'):
+            result['modelName'] = self.__class__.__name__
+
         if options\
            and 'include' in options\
            and options['include']:

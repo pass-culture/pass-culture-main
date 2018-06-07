@@ -33,7 +33,8 @@ class Offerer(app.model.PcObject,
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
-    cast(coalesce(Offerer.address, ''), TEXT)
+    cast(coalesce(Offerer.address, ''), TEXT),
+    cast(coalesce(Offerer.siren, ''), TEXT)
 )
 
 Offerer.__table_args__ = (
