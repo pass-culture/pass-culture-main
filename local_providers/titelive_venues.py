@@ -73,7 +73,7 @@ class TiteLiveVenues(app.model.LocalProvider):
         p_info_offererProvider.idAtProviders = str(row[0])
         p_info_offererProvider.dateModifiedAtProvider = self.dateModified
 
-        return p_info_venue, p_info_offerer, p_info_offererProvider
+        return p_info_offerer, p_info_venue, p_info_offererProvider
 
     def updateObject(self, obj):
         row = self.row
@@ -87,6 +87,7 @@ class TiteLiveVenues(app.model.LocalProvider):
             obj.latitude = row[7]
             obj.longitude = row[8]
             obj.departementCode = str(row[4]).strip()[:2]
+            obj.managingOfferer = self.providables[0]
         elif isinstance(obj, app.model.Offerer):
             obj.venue = self.providables[0]
             obj.bookingEmail = 'passculture-dev@beta.gouv.fr'
