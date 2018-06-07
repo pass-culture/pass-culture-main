@@ -50,6 +50,18 @@ class Booking(app.model.PcObject,
                            foreign_keys=[userId],
                            backref='userBookings')
 
+    def _asdict(self, **options):
+        if 'venueTz' in options\
+           and options['venueTz']:
+            venue = None
+            if self.offer.eventOccurence is not None:
+                venue = self.offer.eventOccurence.venue
+            elif self.offer.venue is not None:
+                venue = self.offer.venue
+            options['timezone'] = 'UTC-3' if venue.departementCode == '97'\
+                                          else 'Europe/Paris'
+        return super()._asdict(**options)
+
 
 app.model.Booking = Booking
 

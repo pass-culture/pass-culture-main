@@ -19,13 +19,14 @@ Offer = app.model.Offer
 def get_bookings():
     bookings = Booking.query.filter_by(userId=current_user.id).all()
     print(bookings)
-    return jsonify([booking._asdict(include=BOOKINGS_INCLUDES) for booking in bookings]), 200
+    return jsonify([booking._asdict(include=BOOKINGS_INCLUDES, venueTz=True)
+                    for booking in bookings]), 200
 
 @app.route('/bookings/<booking_id>', methods=['GET'])
 @login_required
 def get_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
-    return jsonify(booking._asdict(include=BOOKINGS_INCLUDES)), 200
+    return jsonify(booking._asdict(include=BOOKINGS_INCLUDES, venueTz=True)), 200
 
 @app.route('/bookings', methods=['POST'])
 @login_required
@@ -72,4 +73,4 @@ def post_booking():
 
     send_booking_recap_emails(app.model.Offer.query.get(new_booking.offerId),
                               new_booking)
-    return jsonify(new_booking._asdict(include=BOOKINGS_INCLUDES)), 201
+    return jsonify(new_booking._asdict(include=BOOKINGS_INCLUDES, venueTz=True)), 201
