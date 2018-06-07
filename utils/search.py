@@ -1,10 +1,21 @@
 """ search """
+from flask import current_app as app
+from flask_login import current_user
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
+
+from utils.string_processing import inflect_engine
 
 AND = '_and_'
 LANGUAGE = 'french'
 SPACE = ' '
+
+GENERIC_SEARCH_MODEL_NAMES = [
+    'Event',
+    'Offerer',
+    'Thing',
+    'Venue'
+]
 
 def create_tsvector(*args):
     exp = args[0]
@@ -36,7 +47,34 @@ def create_get_search_queries(*models):
     return get_search_queries
 
 def get_search_filter(models, search):
-    print('search', search)
     ts_queries = get_ts_queries(search)
-    print('ts_queries', ts_queries)
     return and_(*map(create_get_search_queries(*models), ts_queries))
+
+def search(collection_name, query):
+    # MODEL
+    model_name = inflect_engine.singular_noun(collection_name.title(), 1)
+    model = app.model[model_name]
+
+    # GENERIC METHOD
+    print('model_name', model_name, GENERIC_SEARCH_MODEL_NAMES)
+    if model_name not in GENERIC_SEARCH_MODEL_NAMES:
+        return None
+
+    # CREATE GENERIC FILTER
+    search_filter = get_search_filter([model], query)
+
+    # SPECIAL FILTER
+    if model == app.model.Offerer:
+        search_filter = and_(
+            search_filter,
+            model.id.in_([o.id for o in current_user.offerers])
+        )
+    elif model in [app.model.Event, app.model.Thing]:
+        ## TODO:
+        # check that the searched entities are associated with
+        # an offerer of the current_user
+        pass
+
+    # FILTER
+    return model.query\
+                .filter(search_filter)

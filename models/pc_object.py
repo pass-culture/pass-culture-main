@@ -9,6 +9,7 @@ from flask import current_app as app, request
 from psycopg2.extras import DateTimeRange
 from sqlalchemy.orm.collections import InstrumentedList
 
+
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import inflect_engine
 
@@ -81,6 +82,8 @@ class PcObject():
                 '/' +
                 str(result['id'])
             )
+        if options and options.get('has_model_name'):
+            result['modelName'] = self.__class__.__name__
         if options\
            and 'include' in options\
            and options['include']:
@@ -116,7 +119,8 @@ class PcObject():
                             map(
                                 lambda attr: attr._asdict(
                                     include=sub_joins,
-                                    cut=options and options.get('cut')
+                                    cut=options and options.get('cut'),
+                                    timezone=options and options.get('timezone')
                                 ),
                                 final_value
                             )
@@ -127,7 +131,8 @@ class PcObject():
                     else:
                         result[key] = value._asdict(
                             include=sub_joins,
-                            cut=options and options.get('cut')
+                            cut=options and options.get('cut'),
+                            timezone=options and options.get('timezone')
                         )
                         if resolve != None:
                             result[key] = resolve(result[key], options.get('filters', {}))

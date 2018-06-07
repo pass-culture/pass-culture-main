@@ -40,6 +40,12 @@ OFFER_KEYS = [
     'price'
 ]
 
+def get_occasion_dict(occasion):
+    return occasion._asdict(
+        include=OCCASION_INCLUDES,
+        has_dehumanized_id=True,
+        has_model_name=True
+    )
 
 def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = app.model.EventOccurence()
@@ -65,11 +71,7 @@ def list_occasions():
                 occasion = None
                 if eventOccurence.event.id not in event_ids:
                     event_ids.append(eventOccurence.event.id)
-                    occasion = eventOccurence.event._asdict(
-                        include=OCCASION_INCLUDES,
-                        has_dehumanized_id=True
-                    )
-                    occasion['occasionType'] = 'events'
+                    occasion = get_occasion_dict(eventOccurence.event)
                     occasions.append(occasion)
             # TODO: find a similar method for things
     return jsonify(occasions)
@@ -81,11 +83,7 @@ def get_occasion(occasionType, occasionId):
     occasion = app.model[model_name]\
                   .query.filter_by(id=dehumanize(occasionId))\
                   .first_or_404()
-    occasion_dict = occasion._asdict(
-        include=OCCASION_INCLUDES,
-        has_dehumanized_id=True
-    )
-    occasion_dict['occasionType'] = occasionType
+    occasion_dict = get_occasion_dict(occasion)
     return jsonify(occasion_dict)
 
 
@@ -121,7 +119,7 @@ def post_occasion(occasionType):
                 venue
             )
 
-    return jsonify(occasion._asdict(include=OCCASION_INCLUDES)), 201
+    return jsonify(get_occasion_dict(occasion)), 201
 
 @app.route('/occasions/<occasionType>/<occasionId>', methods=['PATCH'])
 @login_or_api_key_required
@@ -164,4 +162,4 @@ def patch_occasion(occasionType, occasionId):
                     offerer,
                     venue
                 )
-    return jsonify(occasion._asdict(include=OCCASION_INCLUDES, has_dehumanized_id=True)), 200
+    return jsonify(get_occasion_dict(occasion)), 200
