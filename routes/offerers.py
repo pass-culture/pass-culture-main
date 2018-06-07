@@ -5,19 +5,9 @@ from flask_login import current_user, login_required
 from utils.human_ids import dehumanize
 from utils.includes import OFFERERS_INCLUDES
 from utils.rest import expect_json_data,\
-                       feed,\
+                       update,\
                        handle_rest_get_list,\
                        login_or_api_key_required
-
-
-OFFERER_KEYS = [
-    'siret',
-    'name',
-    'address',
-    'latitude',
-    'longitude',
-    'managingOffererId'
-]
 
 def check_offerer_user(query):
     return query.filter(
@@ -48,7 +38,7 @@ def get_offerer(offererId):
 @expect_json_data
 def create_offerer():
     offerer = app.model.Offerer()
-    feed(offerer, request.json, OFFERER_KEYS)
+    update(offerer, request.json)
     if current_user:
         user_offerer = app.model.UserOfferer()
         user_offerer.offerer = offerer
@@ -67,6 +57,6 @@ def create_offerer():
 def patch_offerer(offererId):
     offerer = app.model.Offerer\
                        .query.filter_by(id=dehumanize(offererId))
-    feed(offerer, request.json, OFFERER_KEYS)
+    update(offerer, request.json)
     app.model.PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 200
