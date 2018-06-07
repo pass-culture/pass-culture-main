@@ -19,7 +19,12 @@ const withSign = WrappedComponent => {
     componentDidUpdate() {
       const { errors, history, user } = this.props
       if (user && !errors) {
-        history.push(DEFAULT_TO)
+        // TODO: kind of dirty, find a better check
+        if (window.location.pathname === '/inscription') {
+          history.push('/structures')
+        } else {
+          history.push(DEFAULT_TO)
+        }
       }
     }
 

@@ -20,13 +20,14 @@ class FormInput extends Component {
   }
 
   onChange = event => {
-    const { type } = this.props
+    const { type, onChange } = this.props
     event.persist()
     this.onDebouncedMergeForm(event)
     if (type === 'checkbox' || type === 'radio' || 'type' === 'switch') {
       return
     }
     this.setState({ localValue: event.target.value })
+    onChange && onChange(event)
   }
 
   onMergeForm = event => {
@@ -76,6 +77,7 @@ class FormInput extends Component {
       required,
       type,
       value,
+      formatValue,
     } = this.props
     const { localValue } = this.state
     return (
@@ -90,7 +92,7 @@ class FormInput extends Component {
           onChange={this.onChange}
           placeholder={placeholder}
           type={type}
-          value={localValue !== null ? localValue : value || defaultValue || ''}
+          value={formatValue(localValue !== null ? localValue : value || defaultValue || '')}
         />
       )
       : (
@@ -106,6 +108,7 @@ class FormInput extends Component {
 FormInput.defaultProps = {
   debounceTimeout: 500,
   entityId: NEW,
+  formatValue: v => v,
 }
 
 export default connect(

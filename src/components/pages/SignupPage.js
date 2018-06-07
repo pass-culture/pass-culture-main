@@ -29,23 +29,6 @@ const SignupPage = ({ errors }) => {
               <h1 className='title is-spaced is-1'>Créez votre compte</h1>
               <p className='subtitle'>Merci de renseigner tous les champs suivants pour créer votre compte.</p>
               <form>
-                {false && (
-                  <FormField
-                    className="input is-rounded"
-                    label={
-                      <Label
-                        title="SIREN"
-                        subtitle="... qui rend mon compte unique :"
-                      />
-                    }
-                    required
-                    collectionName="users"
-                    name="siren"
-                    autoComplete="siren"
-                    placeholder="SIREN"
-                    type="text"
-                  />
-                )}
                 <FormField
                   className="input is-rounded"
                   label={
@@ -92,6 +75,22 @@ const SignupPage = ({ errors }) => {
                   type="password"
                 />
                 <FormField
+                  className="input is-rounded"
+                  autoComplete="siren"
+                  collectionName="users"
+                  required
+                  label={
+                    <Label
+                      title="Siren"
+                      subtitle="... de la structure à rattacher :"
+                    />
+                  }
+                  name="siren"
+                  type="sirene"
+                  sireType="siren"
+                  placeholder="123 456 789"
+                />
+                <FormField
                   label={
                     <span>
                       J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
@@ -116,6 +115,10 @@ const SignupPage = ({ errors }) => {
                       !(get(form, 'usersById._new_.publicName') &&
                         get(form, 'usersById._new_.email') &&
                         get(form, 'usersById._new_.contact_ok') &&
+                        get(form, 'usersById._new_.siren') &&
+                        get(form, 'usersById._new_.name') &&
+                        get(form, 'usersById._new_.latitude') &&
+                        get(form, 'usersById._new_.longitude') &&
                         get(form, 'usersById._new_.password'))
                     }
                     path="users"
