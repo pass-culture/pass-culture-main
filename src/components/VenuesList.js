@@ -5,13 +5,14 @@ import { List } from 'react-virtualized'
 import { withRouter } from 'react-router'
 
 import { requestData } from '../reducers/data'
-import selectCurrentOfferer from '../selectors/currentOfferer'
 import VenueItem from './VenueItem'
 
 class VenuesList extends Component {
+
   componentDidMount() {
     this.handleRequestData()
   }
+
   componentDidUpdate(prevProps) {
     if (prevProps.user !== this.props.user) {
       this.handleRequestData()
@@ -19,26 +20,37 @@ class VenuesList extends Component {
   }
 
   handleRequestData =() => {
-    if (this.props.user && this.props.id) {
-      this.props.requestData('GET', `offerers/${this.props.id}/venues`, { key: 'venues' })
+    const {
+      match: { params: { offererId } },
+      requestData,
+      user
+    } = this.props
+    if (user) {
+      requestData(
+        'GET',
+        `offerers/${offererId}/venues`,
+        {
+          key: 'venues',
+          isMergingArray: false
+        }
+      )
     }
   }
-  render() {
-    const {
-      managedVenues
-    } = this.props
-    return (
-      <div className="managedVenues-list">
 
+  render() {
+    const { venues } = this.props
+    console.log('venues', venues)
+    return (
+      <div className="venues-list">
         {
-         managedVenues && managedVenues.length
+         venues && venues.length
             ? <List
               height={400}
-              rowCount={managedVenues.length}
+              rowCount={venues.length}
               rowHeight={190}
               rowRenderer={({ index, key, style }) => (
                 <div key={index} style={style}>
-                  <VenueItem {...managedVenues[index]} />
+                  <VenueItem {...venues[index]} />
                 </div>
               )}
               width={400}
@@ -53,11 +65,10 @@ class VenuesList extends Component {
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => Object.assign(
-      { user: state.user,
-       venues: state => state.data.venues },
-      selectCurrentOfferer(state, ownProps)
-    ),
+    (state, ownProps) => ({
+      user: state.user,
+      venues: state.data.venues
+    }),
     { requestData }
   )
 )(VenuesList)

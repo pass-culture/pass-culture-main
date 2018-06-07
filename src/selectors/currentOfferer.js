@@ -11,7 +11,6 @@ export default createSelector(
   (state, ownProps) => ownProps.match.params.occasionPath,
   (occasion, offerers, offererId, occasionPath) => {
     if (offererId) {
-      console.log('---------- selectCurrentOfferer ------------', offerers)
       return offerers && offerers.find(o => o.id === offererId)
     }
     if (!occasion) { return }

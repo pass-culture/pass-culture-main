@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import ProviderManager from '../ProviderManager'
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
@@ -22,6 +23,16 @@ class OffererPage extends Component {
     this.state = {
       isLoading: false,
       isNew: false
+    }
+  }
+
+  componentDidMount () {
+    this.handleRequestData()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
     }
   }
 
@@ -46,20 +57,35 @@ class OffererPage extends Component {
     }
   }
 
+  handleRequestData () {
+    const {
+      match: { params: { offererId } },
+      requestData
+    } = this.props
+    requestData('GET', `offerers/${offererId}`, { key: 'offerers' })
+  }
+
+  onAddProviderClick = () => {
+    console.log('OUAI')
+    this.setState({ isNewProvider: true })
+  }
+
   render () {
     const {
       address,
       bookingEmail,
       name,
+      providers,
       siren,
-      managedVenues
+      venues
     } = this.props
     const {
       apiPath,
       isLoading,
       isNew,
       method,
-      offererId
+      offererId,
+      offererProviders
     } = this.state
 
     return (
@@ -73,7 +99,10 @@ class OffererPage extends Component {
               </NavLink>
             </div>
 
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} une structure</h1>
+            <br/>
+            <h1 className='title has-text-centered'>
+              {isNew ? 'Créer' : 'Modifier'} une structure
+            </h1>
             <FormField
               autoComplete="siren"
               collectionName="offerers"
@@ -137,28 +166,31 @@ class OffererPage extends Component {
                 </NavLink>
               </div>
             </div>
+
+            <br/>
+            <h2 className='subtitle is-2' key={0}>
+              Mes lieux
+            </h2>
+            <NavLink to={`/structures/${offererId}/lieux/nouveau`}
+              className="button is-primary is-outlined">
+              Nouveau lieu
+            </NavLink>
+            <VenuesList />
+
         </div>
       </div>
-      <div className='column is-half is-offset-one-quarter'>
-        <h1 className='title has-text-centered'>Vos lieux</h1>
-        <div className='has-text-right'>
-          <VenuesList managedVenues={managedVenues} />
-          <NavLink to={`/structures/${offererId}/lieux/nouveau`}
-          className="button is-primary is-outlined">
-          Nouveau lieu
-          </NavLink>
-        </div>
-  </div>
-  </PageWrapper>
-)
-}
+    </PageWrapper>
+    )
+  }
 }
 
 export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => Object.assign(
-      { user: state.user },
+      {
+        venues: state.data.venues
+      },
       selectCurrentOfferer(state, ownProps)
     ),
     { resetForm }
