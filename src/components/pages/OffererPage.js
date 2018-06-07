@@ -7,6 +7,7 @@ import { compose } from 'redux'
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
+import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
@@ -50,7 +51,8 @@ class OffererPage extends Component {
       address,
       bookingEmail,
       name,
-      siren
+      siren,
+      managedVenues
     } = this.props
     const {
       apiPath,
@@ -111,12 +113,14 @@ class OffererPage extends Component {
               <div className="control">
                 <SubmitButton
                   getBody={form => form.offerersById[offererId]}
-                  getIsDisabled={form =>
-                    isNew
-                      ? !get(form, `offerersById.${offererId}.name`) &&
-                        !get(form, `offerersById.${offererId}.adress`)
-                      : !get(form, `offerersById.${offererId}.name`) ||
-                        !get(form, `offerersById.${offererId}.adress`)
+                  getIsDisabled={form => {
+                    return isNew
+                      ? !get(form, `offerersById.${offererId}.name`) ||
+                        !get(form, `offerersById.${offererId}.address`)
+                      : !get(form, `offerersById.${offererId}.name`) &&
+                        !get(form, `offerersById.${offererId}.address`)
+                  }
+
                   }
                   className="button is-primary is-medium"
                   method={method}
@@ -135,8 +139,18 @@ class OffererPage extends Component {
             </div>
         </div>
       </div>
-    </PageWrapper>
-  )
+      <div className='column is-half is-offset-one-quarter'>
+        <h1 className='title has-text-centered'>Vos lieux</h1>
+        <div className='has-text-right'>
+          <VenuesList managedVenues={managedVenues} />
+          <NavLink to={`/structures/${offererId}/lieux/nouveau`}
+          className="button is-primary is-outlined">
+          Nouveau lieu
+          </NavLink>
+        </div>
+  </div>
+  </PageWrapper>
+)
 }
 }
 
