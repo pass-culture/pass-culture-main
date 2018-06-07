@@ -41,6 +41,7 @@ class FormInput extends Component {
       mergeForm,
       name,
       parentValue,
+      storeValue,
       removeErrors,
       type
     } = this.props
@@ -52,7 +53,7 @@ class FormInput extends Component {
     } else if (type === 'number') {
       mergedValue = Number(value)
     } else {
-      mergedValue = value
+      mergedValue = storeValue(value)
     }
     removeErrors(name)
     mergeForm(collectionName, entityId, name, mergedValue, parentValue)
@@ -109,6 +110,7 @@ FormInput.defaultProps = {
   debounceTimeout: 500,
   entityId: NEW,
   formatValue: v => v,
+  storeValue: v => v,
 }
 
 export default connect(

@@ -44,6 +44,10 @@ class FormSirene extends Component {
   }
 
   fetchEntrepriseInfos = inputValue => {
+    if (!inputValue) {
+      return
+    }
+    inputValue = removeWhitespaces(inputValue)
     const {
       assignErrors,
       collectionName,
@@ -55,9 +59,6 @@ class FormSirene extends Component {
 
     const isSiren = sireType === SIREN
 
-    if (!inputValue) {
-      return
-    }
     this.setState({
       localValue: inputValue,
       searching: true,
@@ -130,7 +131,7 @@ class FormSirene extends Component {
       <div>
         <div className="field has-addons">
           <div className="control is-expanded">
-            <FormInput onChange={this.onChange} formatValue={this.formatValue} {...this.props} type='text' />
+            <FormInput onChange={this.onChange} formatValue={this.formatValue} storeValue={removeWhitespaces} {...this.props} type='text' />
           </div>
           <div className="control">
             <button className="button is-rounded is-medium" onClick={e => this.fetchEntrepriseInfos(e.target.value)}>
