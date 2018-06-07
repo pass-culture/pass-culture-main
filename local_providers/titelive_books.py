@@ -45,8 +45,8 @@ class TiteLiveThings(app.model.LocalProvider):
     objectType = Thing
     canCreate = True
 
-    def __init__(self, offerer, **options):
-        super().__init__(offerer, **options)
+    def __init__(self, venueProvider, **options):
+        super().__init__(venueProvider, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'mock' / 'providers' / 'titelive_works'

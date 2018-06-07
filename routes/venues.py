@@ -6,6 +6,7 @@ from utils.rest import expect_json_data,\
                        handle_rest_get_list,\
                        update
 
+
 @app.route('/venues', methods=['GET'])
 def list_venues():
     return handle_rest_get_list(app.model.Venue)

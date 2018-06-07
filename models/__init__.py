@@ -30,7 +30,7 @@ import models.event_occurence
 import models.mediation
 import models.offer
 import models.offerer
-import models.offerer_provider
+import models.venue_provider
 import models.local_provider_event
 import models.local_provider
 import models.provider

@@ -1,6 +1,7 @@
 from datetime import datetime
 import email.utils as eut
 from flask import current_app as app
+import json
 from psycopg2.extras import DateTimeRange
 import requests
 
@@ -24,18 +25,17 @@ EventType = app.model.EventType
 
 
 class OpenAgendaEvents(app.model.LocalProvider):
-
-    help = "Si l'agenda utilisé ne contient pas que vos propres "\
-           + "evenements, il est possible d'ajouter dans l'adresse "\
-           + "de l'agenda des parametres de filtrage. "\
-           + "Voir https://openagenda.zendesk.com/hc/fr/articles/210127965-Les-diff%C3%A9rentes-URLs-de-votre-agenda-int%C3%A9gr%C3%A9"
-    identifierDescription = "Identifiant de l'agenda (ex: 80942872)"
+    help = ""
+    identifierDescription = "Identifiant de l'agenda (ex: 80942872). Il se trouve à la fin de l'adresse web de votre agenda."
     identifierRegexp = "^\d+$"
     name = "Open Agenda"
     objectType = Event
+    canCreate = True
+    isActive = True
 
-    def __init__(self, venue):
-        super().__init__(venue)
+    def __init__(self, venueProvider, **options):
+        super().__init__(venueProvider, **options)
+        self.is_mock = 'mock' in options and options['mock']
         self.seen_uids = []
         self.page = 0
         self.index = -1
@@ -53,9 +53,15 @@ class OpenAgendaEvents(app.model.LocalProvider):
             self.page = self.page+1
             self.index = 0
 
-            page_url = make_url(self.page, self.venue.idAtOfferProvider)
-            req_result = requests.get(page_url)
-            self.data = req_result.json()
+            if self.is_mock:
+                with open(Path(os.path.dirname(os.path.realpath(__file__)))
+                          / '..' / 'mock' / 'providers'
+                          / ('openagenda' + self.page + '.json')) as f:
+                    self.data = json.load(f)
+            else:
+                page_url = make_url(self.page, self.venue.idAtOfferProvider)
+                req_result = requests.get(page_url)
+                self.data = req_result.json()
 
             total_objects = self.data['offset']+self.data['limit']
             self.more_pages = total_objects < self.data['total']

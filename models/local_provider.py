@@ -37,8 +37,8 @@ LocalProviderEventType = app.model.LocalProviderEventType
 
 
 class LocalProvider(Iterator):
-    def __init__(self, offererProvider=None, **options):
-        self.offererProvider = offererProvider
+    def __init__(self, venueProvider=None, **options):
+        self.venueProvider = venueProvider
         self.updatedObjects = 0
         self.createdObjects = 0
         self.checkedObjects = 0
@@ -179,8 +179,8 @@ class LocalProvider(Iterator):
             self.updateObject(obj)
             obj.dateModifiedAtLastProvider = providable_info.dateModifiedAtProvider
             obj.lastProvider = self.dbObject
-            if self.offererProvider is not None:
-                obj.offerer = self.offererProvider.offerer
+            if self.venueProvider is not None:
+                obj.venue = self.venueProvider.venue
             app.model.PcObject.check_and_save(obj)
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
@@ -199,9 +199,12 @@ class LocalProvider(Iterator):
         app.db.session.commit()
 
     def updateObjects(self, limit=None):
-        """Update offerer's objects with this provider."""
-        if self.offererProvider is not None:
-            app.db.session.add(self.offererProvider)  # FIXME: we should not need this
+        """Update venue's objects with this provider."""
+        if self.venueProvider is not None:
+            if not self.venueProvider.isActive:
+                print("VenueProvider is not active. Stopping")
+                return
+            app.db.session.add(self.venueProvider)  # FIXME: we should not need this
         providerName = self.__class__.__name__
         if not self.isActive:
             print("Provider "+providerName+" is inactive")
@@ -210,12 +213,12 @@ class LocalProvider(Iterator):
                          + inflect_engine.plural(self.objectType.__name__)
                          + " from provider " + self.name)
         self.logEvent(LocalProviderEventType.SyncStart)
-        if self.offererProvider is not None:
-            print(" for offerer " + self.offererProvider.offerer.name
-                  + " (#" + str(self.offererProvider.offererId) + " / "
-                  + humanize(self.offererProvider.offererId) + ") "
-                  + " offererIdAtOfferProvider="
-                  + self.offererProvider.offererIdAtOfferProvider)
+        if self.venueProvider is not None:
+            print(" for venue " + self.venueProvider.venue.name
+                  + " (#" + str(self.venueProvider.venueId) + " / "
+                  + humanize(self.venueProvider.venueId) + ") "
+                  + " venueIdAtOfferProvider="
+                  + self.venueProvider.venueIdAtOfferProvider)
         else:
             print("")
         for providable_infos in self:
@@ -254,8 +257,8 @@ class LocalProvider(Iterator):
                 self.checkedObjects += 1
 
             app.db.session.close()
-            if self.offererProvider is not None:
-                app.db.session.add(self.offererProvider)
+            if self.venueProvider is not None:
+                app.db.session.add(self.venueProvider)
             app.db.session.add(self.dbObject)
 
             if limit is not None and\

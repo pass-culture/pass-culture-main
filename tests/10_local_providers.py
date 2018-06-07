@@ -46,9 +46,9 @@ with app.app_context():
                     assert app.model[modelName].query.count() == 0
         assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
-    def provider_test(provider, offererProvider, **counts):
+    def provider_test(provider, venueProvider, **counts):
         with app.app_context():
-            providerObj = provider(offererProvider, mock=True)
+            providerObj = provider(venueProvider, mock=True)
             saveCounts()
             providerObj.updateObjects()
             for countName in ['updatedObjects',
@@ -77,6 +77,14 @@ with app.app_context():
                       erroredThumbs=0,
                       Venue=2,
                       Offerer=2)
+        with app.app_context():
+            provider = app.model.Provider.getByClassName('TiteLiveOffers')
+            for vp in app.model.VenueProvider.query\
+                               .filter_by(provider=provider)\
+                               .all():
+                assert vp.isActive == False
+                vp.isActive = True
+                app.model.PcObject.check_and_save(vp)
 
     def test_11_titelive_things_provider():
         provider_test(app.local_providers.TiteLiveThings,
@@ -122,12 +130,12 @@ with app.app_context():
 
     def test_14_titelive_offer_provider():
         with app.app_context():
-            offererProvider = app.model.OffererProvider.query\
-                                 .filter_by(offererIdAtOfferProvider='2949')\
+            venueProvider = app.model.VenueProvider.query\
+                                 .filter_by(venueIdAtOfferProvider='2949')\
                                  .one_or_none()
-        assert offererProvider is not None
+        assert venueProvider is not None
         provider_test(app.local_providers.TiteLiveOffers,
-                      offererProvider,
+                      venueProvider,
                       checkedObjects=203,
                       createdObjects=185,
                       updatedObjects=0,
@@ -140,12 +148,12 @@ with app.app_context():
                       )
 
         with app.app_context():
-            offererProvider = app.model.OffererProvider.query\
-                                 .filter_by(offererIdAtOfferProvider='2921')\
+            venueProvider = app.model.VenueProvider.query\
+                                 .filter_by(venueIdAtOfferProvider='2921')\
                                  .one_or_none()
-        assert offererProvider is not None
+        assert venueProvider is not None
         provider_test(app.local_providers.TiteLiveOffers,
-                      offererProvider,
+                      venueProvider,
                       checkedObjects=204,
                       createdObjects=166,
                       updatedObjects=0,
@@ -173,6 +181,20 @@ with app.app_context():
 
     def test_15_spreadsheet_exp_offers_provider():
         provider_test(app.local_providers.SpreadsheetExpOffers,
+                      None,
+                      checkedObjects=482,
+                      createdObjects=482,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      Venue=0,
+                      Offerer=0)
+
+    def test_16_openagenda_events_provider():
+        provider_test(app.local_providers.OpenAgendaEvents,
                       None,
                       checkedObjects=482,
                       createdObjects=482,

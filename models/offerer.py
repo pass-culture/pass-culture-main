@@ -24,10 +24,6 @@ class Offerer(app.model.PcObject,
     users = db.relationship(lambda: app.model.User,
                             secondary='user_offerer')
 
-    offererProviders = db.relationship(lambda: app.model.OffererProvider,
-                                       back_populates="offerer")
-
-
     bookingEmail = db.Column(db.String(120), nullable=False)
 
     siren = db.Column(db.String(9))

@@ -20,18 +20,18 @@ def do_update(provider, limit):
                     action="store_true",
                     help='Update from mock data or APIs'
                          + ' if this flag is present')
-@app.manager.option('-o',
-                    '--offerer',
-                    help='Limit update to this offerer id')
+@app.manager.option('-v',
+                    '--venue',
+                    help='Limit update to this venue id')
 @app.manager.option('-l',
                     '--limit',
-                    help='Limit update to n items per provider/offerer'
+                    help='Limit update to n items per provider/venue'
                          + ' (for test purposes)', type=int)
 @app.manager.option('-t',
                     '--type',
                     help='Sync only this type of object'
-                         + ' (offer, thing or offerer)')
-def update_providables(provider, offerer, limit, type, mock=False):
+                         + ' (offer, thing or venue)')
+def update_providables(provider, venue, limit, type, mock=False):
 
     # order matters ! An item appears later in this list
     # if it requires items named before it
@@ -41,7 +41,7 @@ def update_providables(provider, offerer, limit, type, mock=False):
                         app.model.Event,
                         app.model.Thing,
                         app.model.Offer]
-    if not offerer:
+    if not venue:
         for providable_type in [app.model[type.capitalize()]]\
                                if type else PROVIDABLE_TYPES:
             for provider_name in app.local_providers:
@@ -55,23 +55,23 @@ def update_providables(provider, offerer, limit, type, mock=False):
                     providerObj = provider_type(None, mock=mock)
                     do_update(providerObj, limit)
 
-    offererProviderQuery = app.model.OffererProvider.query
-    offererProviderObjs = offererProviderQuery.filter_by(id=int(offerer))\
-                  if offerer\
-                  else offererProviderQuery.all()
+    venueProviderQuery = app.model.VenueProvider.query
+    venueProviderObjs = venueProviderQuery.filter_by(id=int(venue))\
+                  if venue\
+                  else venueProviderQuery.all()
     for providable_type in [app.model[type.capitalize()]]\
                            if type else PROVIDABLE_TYPES:
-        for offererProviderObj in offererProviderObjs:
-            app.db.session.add(offererProviderObj)
-            provider_name = offererProviderObj.provider.localClass
+        for venueProviderObj in venueProviderObjs:
+            app.db.session.add(venueProviderObj)
+            provider_name = venueProviderObj.provider.localClass
             if provider_name is None:
                 continue
             provider_type = app.local_providers[provider_name]
             if provider and provider_name != provider:
-                print("  Provider " + provider_name + " for offerer does not match provider name"
+                print("  Provider " + provider_name + " for venue does not match provider name"
                       + " supplied in command line. Not updating.")
                 continue
             if provider_type.objectType != providable_type:
                 continue
-            offererProvider = provider_type(offererProviderObj, mock=mock)
-            do_update(offererProvider, limit)
+            venueProvider = provider_type(venueProviderObj, mock=mock)
+            do_update(venueProvider, limit)

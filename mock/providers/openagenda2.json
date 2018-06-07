@@ -1,0 +1,5543 @@
+{
+  "readme": "Results are paginated. See: https://openagenda.zendesk.com/hc/fr/articles/203034982-L-export-JSON-d-un-agenda",
+  "total": 33,
+  "offset": 20,
+  "limit": 20,
+  "events": [
+    {
+      "uid": 81453978,
+      "slug": "ateliers-numeriques-e-migres-des-seniors-connectes_176",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/ateliers-numeriques-e-migres-des-seniors-connectes_176",
+      "title": {
+        "fr": "Ateliers numériques: E-migrés, des séniors connectés "
+      },
+      "description": {
+        "fr": "Formation numérique à destination des personnes âgées immigrées. "
+      },
+      "longDescription": {
+        "fr": "Le Grdr propose un **parcours d’ateliers numériques** dans le 19ème arrondissement, à la **Cité des Sciences et de l’Industrie**, au sein de la Bibliothèque des Sciences et de l’Industrie. Cette formation comprend **4 ateliers** qui se dérouleront **les mercredis matins 6, 13, 20, 27 juin de 10h à 13h**.\n\nCes ateliers sont à **destination des personnes âgées immigrées**, intéressées par la découverte de l’outil numérique. L’objectif de ces sessions étant d’offrir les premières clefs d’utilisation de l’ordinateur, de favoriser leurs démarches en ligne et ainsi stimuler chez les stagiaires l’envie de poursuivre l’apprentissage, tout en alliant loisirs et convivialité."
+      },
+      "keywords": {
+        "fr": [
+          "séniors",
+          "connectés",
+          "immigrés"
+        ]
+      },
+      "html": {
+        "fr": "<p>Le Grdr propose un <strong>parcours d’ateliers numériques</strong> dans le 19ème arrondissement, à la <strong>Cité des Sciences et de l’Industrie</strong>, au sein de la Bibliothèque des Sciences et de l’Industrie. Cette formation comprend <strong>4 ateliers</strong> qui se dérouleront <strong>les mercredis matins 6, 13, 20, 27 juin de 10h à 13h</strong>.</p>\n<p>Ces ateliers sont à <strong>destination des personnes âgées immigrées</strong>, intéressées par la découverte de l’outil numérique. L’objectif de ces sessions étant d’offrir les premières clefs d’utilisation de l’ordinateur, de favoriser leurs démarches en ligne et ainsi stimuler chez les stagiaires l’envie de poursuivre l’apprentissage, tout en alliant loisirs et convivialité.</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_ateliers-numeriques-e-migres-des-seniors-connectes_176_781241.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_ateliers-numeriques-e-migres-des-seniors-connectes_176_781241.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_ateliers-numeriques-e-migres-des-seniors-connectes_176_781241.jpg",
+      "age": {
+        "min": 55,
+        "max": 99
+      },
+      "accessibility": [],
+      "updatedAt": "2018-05-25T13:14:42.000Z",
+      "range": {
+        "fr": "6 - 27 juin, les mercredis",
+        "en": "6 - 27 June, on wednesdays"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 29336960,
+        "title": "Grdr Migration - Citoyenneté - Développement",
+        "url": "http://grdr.org",
+        "slug": "grdr",
+        "oaUrl": "https://openagenda.com/agendas/29336960"
+      },
+      "conditions": {
+        "fr": "Sur inscription "
+      },
+      "registrationUrl": "maya.piquion@grdr.org, 0148576591",
+      "locationName": "Bibliothèque des Sciences et de l'Industrie",
+      "locationUid": 6407283,
+      "address": "30 avenue Corentin Cariou, 75019 Paris",
+      "postalCode": "75019",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.89568,
+      "longitude": 2.387654,
+      "timings": [
+        {
+          "start": "2018-06-06T08:00:00.000Z",
+          "end": "2018-06-06T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T08:00:00.000Z",
+          "end": "2018-06-13T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T08:00:00.000Z",
+          "end": "2018-06-20T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T08:00:00.000Z",
+          "end": "2018-06-27T11:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 6407283,
+        "name": "Bibliothèque des Sciences et de l'Industrie",
+        "slug": "bibliotheque-des-sciences-et-de-lindustrie",
+        "address": "30 avenue Corentin Cariou, 75019 Paris",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75019",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.89568,
+        "longitude": 2.387654,
+        "description": {},
+        "access": {},
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": "75056",
+        "phone": null,
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-05-25T13:13:37.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [
+        {
+          "value": "maya.piquion@grdr.org",
+          "type": "email",
+          "prefix": "mailto:"
+        },
+        {
+          "value": "0148576591",
+          "type": "phone",
+          "prefix": "tel:"
+        }
+      ],
+      "firstDate": "2018-06-06",
+      "firstTimeStart": "10:00",
+      "firstTimeEnd": "13:00",
+      "lastDate": "2018-06-27",
+      "lastTimeStart": "10:00",
+      "lastTimeEnd": "13:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 12948745,
+      "slug": "exposition-isotopo",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/exposition-isotopo",
+      "title": {
+        "fr": "Exposition Isótopo"
+      },
+      "description": {
+        "fr": "Première exposition personnelle en France du peintre portugais José Loureiro."
+      },
+      "longDescription": {
+        "fr": "Vernissage le  jeudi 26 avril de 18h à 22h.\n\nJosé Loureiro est actuellement exposé au Musée Berardo, dans le cadre de l'exposition _Line, Form and Colour_. Né en 1961, José Loureiro vit et travaille à Lisbonne. Il a exposé dans de prestigieuses institutions comme le Centre Pompidou, la Fondation Gulbenkian, le Musée National d'Art Contemporain Chiado à Lisbonne, au Musée Serralves de Porto… Ses œuvres font partie de collections importantes notamment le Centre Pompidou, la Fondation Daniel et Florence Guerlain, le Musée  Berardo, le Musée Serralves …\n\n**Cette exposition est présentée dans le cadre de Lusoscopie - artistes portugais à Paris**\n\nExposition du 26 avril au 16 juin 2018.\n\n**Heures d’ouverture**\n\ndu mardi au samedi de 13h00 à 19h00 ou sur rendez-vous\n\nPlus d'information [ICI](https://galeriemaubert.com/wp-content/uploads/2018/03/DP-Jose-Loureiro.pdf)"
+      },
+      "keywords": null,
+      "html": {
+        "fr": "<p>Vernissage le  jeudi 26 avril de 18h à 22h.</p>\n<p>José Loureiro est actuellement exposé au Musée Berardo, dans le cadre de l&#39;exposition <em>Line, Form and Colour</em>. Né en 1961, José Loureiro vit et travaille à Lisbonne. Il a exposé dans de prestigieuses institutions comme le Centre Pompidou, la Fondation Gulbenkian, le Musée National d&#39;Art Contemporain Chiado à Lisbonne, au Musée Serralves de Porto… Ses œuvres font partie de collections importantes notamment le Centre Pompidou, la Fondation Daniel et Florence Guerlain, le Musée  Berardo, le Musée Serralves …</p>\n<p><strong>Cette exposition est présentée dans le cadre de Lusoscopie - artistes portugais à Paris</strong></p>\n<p>Exposition du 26 avril au 16 juin 2018.</p>\n<p><strong>Heures d’ouverture</strong></p>\n<p>du mardi au samedi de 13h00 à 19h00 ou sur rendez-vous</p>\n<p>Plus d&#39;information <a href=\"https://galeriemaubert.com/wp-content/uploads/2018/03/DP-Jose-Loureiro.pdf\">ICI</a></p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_exposition-isotopo_355417.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_exposition-isotopo_355417.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_exposition-isotopo_355417.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-24T10:38:35.000Z",
+      "range": {
+        "fr": "26 avril - 16 juin",
+        "en": "26 April - 16 June"
+      },
+      "imageCredits": " Vue de détails,  Bosão de L , peinture sur toiles, 2011",
+      "origin": {
+        "uid": 37870335,
+        "title": "Camões - Centre culturel portugais à Paris",
+        "url": "http://www.instituto-camoes.pt/en/",
+        "slug": "camoes-centre-culturel-portugais-paris",
+        "oaUrl": "https://openagenda.com/agendas/37870335"
+      },
+      "conditions": {
+        "fr": "Entrée libre"
+      },
+      "registrationUrl": null,
+      "locationName": "GALERIE MAUBERT",
+      "locationUid": 32456540,
+      "address": "20 rue Saint-Gilles 75003 Paris",
+      "postalCode": "75003",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.85798,
+      "longitude": 2.366154,
+      "timings": [
+        {
+          "start": "2018-04-26T11:00:00.000Z",
+          "end": "2018-04-26T17:00:00.000Z"
+        },
+        {
+          "start": "2018-04-27T11:00:00.000Z",
+          "end": "2018-04-27T17:00:00.000Z"
+        },
+        {
+          "start": "2018-04-28T11:00:00.000Z",
+          "end": "2018-04-28T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-01T11:00:00.000Z",
+          "end": "2018-05-01T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T11:00:00.000Z",
+          "end": "2018-05-02T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T11:00:00.000Z",
+          "end": "2018-05-03T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-04T11:00:00.000Z",
+          "end": "2018-05-04T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-05T11:00:00.000Z",
+          "end": "2018-05-05T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-08T11:00:00.000Z",
+          "end": "2018-05-08T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T11:00:00.000Z",
+          "end": "2018-05-09T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-10T11:00:00.000Z",
+          "end": "2018-05-10T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-11T11:00:00.000Z",
+          "end": "2018-05-11T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-12T11:00:00.000Z",
+          "end": "2018-05-12T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-15T11:00:00.000Z",
+          "end": "2018-05-15T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T11:00:00.000Z",
+          "end": "2018-05-16T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T11:00:00.000Z",
+          "end": "2018-05-17T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-18T11:00:00.000Z",
+          "end": "2018-05-18T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-19T11:00:00.000Z",
+          "end": "2018-05-19T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-22T11:00:00.000Z",
+          "end": "2018-05-22T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T11:00:00.000Z",
+          "end": "2018-05-23T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T11:00:00.000Z",
+          "end": "2018-05-24T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-25T11:00:00.000Z",
+          "end": "2018-05-25T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-26T11:00:00.000Z",
+          "end": "2018-05-26T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-29T11:00:00.000Z",
+          "end": "2018-05-29T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T11:00:00.000Z",
+          "end": "2018-05-30T17:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T11:00:00.000Z",
+          "end": "2018-05-31T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-01T11:00:00.000Z",
+          "end": "2018-06-01T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-02T11:00:00.000Z",
+          "end": "2018-06-02T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-05T11:00:00.000Z",
+          "end": "2018-06-05T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T11:00:00.000Z",
+          "end": "2018-06-06T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T11:00:00.000Z",
+          "end": "2018-06-07T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-08T11:00:00.000Z",
+          "end": "2018-06-08T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T11:00:00.000Z",
+          "end": "2018-06-12T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T11:00:00.000Z",
+          "end": "2018-06-13T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T11:00:00.000Z",
+          "end": "2018-06-14T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-15T11:00:00.000Z",
+          "end": "2018-06-15T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-16T11:00:00.000Z",
+          "end": "2018-06-16T17:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 32456540,
+        "name": "GALERIE MAUBERT",
+        "slug": "galerie-maubert",
+        "address": "20 rue Saint-Gilles 75003 Paris",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75003",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.85798,
+        "longitude": 2.366154,
+        "description": {},
+        "access": {},
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": null,
+        "phone": null,
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-04-24T10:21:12.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [],
+      "firstDate": "2018-04-26",
+      "firstTimeStart": "13:00",
+      "firstTimeEnd": "19:00",
+      "lastDate": "2018-06-16",
+      "lastTimeStart": "13:00",
+      "lastTimeEnd": "19:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 90985975,
+      "slug": "tableur_627",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/tableur_627",
+      "title": {
+        "fr": "Cours de tableur avec Calc niveau 1"
+      },
+      "description": {
+        "fr": "Le tableur et la découverte du logiciel de calcul Calc."
+      },
+      "longDescription": {
+        "fr": "Public : adultes\n\nDurée : 14h de cours\n\nOutils : 1 ordinateur par participant sous Linux. Internet. logiciels libres. Calc.\n\nDescription : Apprentissage et acquisition des bases de la bureautique avec un tableur.\n\nObjectifs : l’initiation mettra l’accent sur la création de fichiers et la découverte du logiciel de calcul Calc."
+      },
+      "keywords": {
+        "fr": [
+          "Tableur",
+          "bureautique",
+          "initiation",
+          "formation",
+          "Découverte",
+          "débutant",
+          "cours",
+          "informatique",
+          "Calc",
+          "lociel",
+          "libre"
+        ]
+      },
+      "html": {
+        "fr": "<p>Public : adultes</p>\n<p>Durée : 14h de cours</p>\n<p>Outils : 1 ordinateur par participant sous Linux. Internet. logiciels libres. Calc.</p>\n<p>Description : Apprentissage et acquisition des bases de la bureautique avec un tableur.</p>\n<p>Objectifs : l’initiation mettra l’accent sur la création de fichiers et la découverte du logiciel de calcul Calc.</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_tableur_627_1696.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_tableur_627_1696.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_tableur_627_1696.jpg",
+      "age": {
+        "min": 0,
+        "max": 99
+      },
+      "accessibility": [
+        "mi",
+        "hi",
+        "vi"
+      ],
+      "updatedAt": "2018-03-29T12:38:40.000Z",
+      "range": {
+        "fr": "16 mai - 27 juin, les mercredis",
+        "en": "16 May - 27 June, on wednesdays"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 26283036,
+        "title": "L'@nnexe - Espace Public Numérique du Relais 59 (Paris 12e)",
+        "url": "http://www.csrelais59.org/epn",
+        "slug": "annexe",
+        "oaUrl": "https://openagenda.com/agendas/26283036"
+      },
+      "conditions": {
+        "fr": "Sur inscription 20€ + 1 à 5€ de l'heure selon les revenus"
+      },
+      "registrationUrl": "09 53 21 27 82",
+      "locationName": "L'@nnexe - Espace Public Numérique du Relais 59 (Paris 12ème)",
+      "locationUid": 94038092,
+      "address": "8 place Henri Frenay 75012 PARIS",
+      "postalCode": "75012",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.844888,
+      "longitude": 2.377184,
+      "timings": [
+        {
+          "start": "2018-05-16T12:00:00.000Z",
+          "end": "2018-05-16T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T12:00:00.000Z",
+          "end": "2018-05-23T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T12:00:00.000Z",
+          "end": "2018-05-30T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T12:00:00.000Z",
+          "end": "2018-06-06T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T12:00:00.000Z",
+          "end": "2018-06-13T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T12:00:00.000Z",
+          "end": "2018-06-20T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T12:00:00.000Z",
+          "end": "2018-06-27T14:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 94038092,
+        "name": "L'@nnexe - Espace Public Numérique du Relais 59 (Paris 12ème)",
+        "slug": "lnnexe-espace-public-numerique-du-relais-59-paris-12eme",
+        "address": "8 place Henri Frenay 75012 PARIS",
+        "image": "//cibul.s3.amazonaws.com/location94038092.jpg",
+        "imageCredits": null,
+        "postalCode": "75012",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.844888,
+        "longitude": 2.377184,
+        "description": {
+          "fr": "L’@nnexe est l’Espace Numérique et le FabLab du Relais 59. Notre espace s’étend sur 150m², répartis en 3 salles : deux salles informatiques (formations / ateliers et accès libres) et une salle polyvalente. Notre capacité d’accueil est de 19 postes connectés à Internet. Accès Wi-Fi. Une imprimante est disponible pour les impressions de types administratifs (gros dossiers exclus).\nNous sommes accessibles aux personnes en situation de handicap."
+        },
+        "access": {
+          "fr": "Les formations et les ateliers sont facturés de 1 à 5€ de l'heure selon les revenus + 20€ de frais d'inscription. Nous sommes accessibles aux personnes en situation de handicap."
+        },
+        "countryCode": "fr",
+        "website": "http://www.csrelais59.org/epn/",
+        "links": [],
+        "insee": null,
+        "phone": "09 53 21 27 82",
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-03-28T12:14:53.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [
+        {
+          "value": "09 53 21 27 82",
+          "type": "phone",
+          "prefix": "tel:"
+        }
+      ],
+      "firstDate": "2018-05-16",
+      "firstTimeStart": "14:00",
+      "firstTimeEnd": "16:00",
+      "lastDate": "2018-06-27",
+      "lastTimeStart": "14:00",
+      "lastTimeEnd": "16:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 94686172,
+      "slug": "theatre-phil-hayes-these-are-my-principles",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/theatre-phil-hayes-these-are-my-principles",
+      "title": {
+        "fr": "Théâtre : Phil Hayes \"These Are My Principles\" "
+      },
+      "description": {
+        "fr": "Dans These Are My Principles. If you don’t like them I have others (Groucho Marx), Phil Hayes et Nada Gambier se livrent à une joute oratoire décalée et malicieuse au sujet des principes."
+      },
+      "longDescription": {
+        "fr": "Phil Hayes\n\n_These Are My Principles_ (2016, 75’)\n\nen anglais simple\n\nDans _These Are My Principles. If you don’t like them I have others_ (Groucho Marx), Phil Hayes et Nada Gambier se livrent à une joute oratoire décalée et malicieuse au sujet des principes.\n\nQue signifient-ils dans un monde de compromis ? Pourquoi ce que l’on a cru avec tant de conviction, cesse un jour de revêtir la même importance ?\n\nPhil et Nada interrogent avec une dérision bienveillante les frontières troubles et mouvantes de nos certitudes."
+      },
+      "keywords": null,
+      "html": {
+        "fr": "<p>Phil Hayes</p>\n<p><em>These Are My Principles</em> (2016, 75’)</p>\n<p>en anglais simple</p>\n<p>Dans <em>These Are My Principles. If you don’t like them I have others</em> (Groucho Marx), Phil Hayes et Nada Gambier se livrent à une joute oratoire décalée et malicieuse au sujet des principes.</p>\n<p>Que signifient-ils dans un monde de compromis ? Pourquoi ce que l’on a cru avec tant de conviction, cesse un jour de revêtir la même importance ?</p>\n<p>Phil et Nada interrogent avec une dérision bienveillante les frontières troubles et mouvantes de nos certitudes.</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_theatre-phil-hayes-these-are-my-principles_920990.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_theatre-phil-hayes-these-are-my-principles_920990.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_theatre-phil-hayes-these-are-my-principles_920990.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-23T10:07:18.000Z",
+      "range": {
+        "fr": "5 - 8 juin",
+        "en": "5 - 8 June"
+      },
+      "imageCredits": "Phil Hayes, These Are My Principles / © Niklaus Spoerri",
+      "origin": {
+        "uid": 42072137,
+        "title": "Centre culturel suisse",
+        "url": null,
+        "slug": "centre-culturel-suisse",
+        "oaUrl": "https://openagenda.com/agendas/42072137"
+      },
+      "conditions": {
+        "fr": "Tarif : 8 et 12 euros"
+      },
+      "registrationUrl": "http://ccsparis.com/billetterie",
+      "locationName": "Centre culturel suisse",
+      "locationUid": 45795108,
+      "address": "32-38 rue des Francs-Bourgeois",
+      "postalCode": "75003",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.858398,
+      "longitude": 2.359854,
+      "timings": [
+        {
+          "start": "2018-06-05T18:00:00.000Z",
+          "end": "2018-06-05T19:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T18:00:00.000Z",
+          "end": "2018-06-06T19:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T18:00:00.000Z",
+          "end": "2018-06-07T19:00:00.000Z"
+        },
+        {
+          "start": "2018-06-08T18:00:00.000Z",
+          "end": "2018-06-08T19:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 45795108,
+        "name": "Centre culturel suisse",
+        "slug": "centre-culturel-suisse583",
+        "address": "32-38 rue des Francs-Bourgeois",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75003",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.858398,
+        "longitude": 2.359854,
+        "description": {
+          "fr": "Situé au coeur du Marais, le Centre culturel suisse (CCS) a pour vocation de faire connaître en France une création contemporaine helvétique ouverte sur le monde, d’y favoriser le rayonnement des artistes suisses, et de promouvoir les échanges entre les scènes artistiques suisses et françaises. Le Centre culturel suisse est une antenne de Pro Helvetia, Fondation suisse pour la culture.\nLe CCS comprend : deux espaces d’exposition (une galerie de 270 m2 et une \"pièce sur cour\" de 40 m2), une salle de spectacle pouvant accueillir une centaine de spectateurs ainsi qu’une librairie. Cette dernière, conçue par le bureau d’architectes Jakob+MacFarlane, propose une riche sélection d’ouvrages, de DVD et de CD d’auteurs, d’artistes ou d’éditeurs suisses. L’accent est mis sur l’art contemporain, l’architecture, le graphisme et la littérature.\nLa programmation est résolument axée sur la création contemporaine suisse et en reflète la diversité. Parallèlement à des expositions d’arts visuels, le Centre propose des manifestations consacrées à la danse, la musique, le théâtre, la littérature, le graphisme ou encore l’architecture."
+        },
+        "access": {},
+        "countryCode": "fr",
+        "website": "http://www.ccsparis.com",
+        "links": [
+          "https://www.facebook.com/ccsparis",
+          "https://www.youtube.com/user/CCSPvideo"
+        ],
+        "insee": null,
+        "phone": "+33142714450",
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-01-18T13:25:40.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [
+        {
+          "value": "http://ccsparis.com/billetterie",
+          "type": "link",
+          "prefix": ""
+        }
+      ],
+      "firstDate": "2018-06-05",
+      "firstTimeStart": "20:00",
+      "firstTimeEnd": "21:00",
+      "lastDate": "2018-06-08",
+      "lastTimeStart": "20:00",
+      "lastTimeEnd": "21:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 29747954,
+      "slug": "exposition-multimedia-2-0-issu-e-s-de-femmes",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/exposition-multimedia-2-0-issu-e-s-de-femmes",
+      "title": {
+        "en": "Issu-e-s de femmes"
+      },
+      "description": {
+        "en": "Exposition multimédia 2.0 d'interviews filmées, des photos et des textes de femmes issues de l'immigration"
+      },
+      "longDescription": {
+        "en": "**L'association les Jardins numériques a le plaisir de vous présenter sa nouvelle exposition multimédia 2.0 : \"Issu-e-s de femmes\".**\n\nSix femmes (3 italiennes, 1 espagnole, 1 tunisienne, 1 chinoise), leurs filles et leurs petites filles nous racontent leur immigration, leur installation et ce que leurs origines représentent pour elles.\n\nA travers ces paroles, que disent-elles de l'intégration et de la citoyenneté ?\n\nSingulières et diverses, leurs histoires sont aussi vivantes et universelles.Elles racontent non seulement des parcours de femmes, des histoires de familles, mais aussi l'histoire des femmes et de leurs droits !\n\n**L'accès à l'exposition se fait à partir du lien [ICI](https://www.museocube.org/femmes/VR/#)**\n\n**Nous souhaitons poursuivre ce projet avec des femmes de toutes origines, et désormais, aussi avec leurs fils !**\n\nCette exposition nécessite un navigateur récent mis à jour et un ordinateur pas trop ancien !\n\nPour la technologie Museocube : voir le site de présentation : > [http://www.museocube.org/museocube](http://www.museocube.org/museocube)"
+      },
+      "keywords": {
+        "en": [
+          "musoecube",
+          "exposition 2.0",
+          "femmes",
+          "immigration",
+          "interviews",
+          "multimédia"
+        ]
+      },
+      "html": {
+        "en": "<p><strong>L&#39;association les Jardins numériques a le plaisir de vous présenter sa nouvelle exposition multimédia 2.0 : &quot;Issu-e-s de femmes&quot;.</strong></p>\n<p>Six femmes (3 italiennes, 1 espagnole, 1 tunisienne, 1 chinoise), leurs filles et leurs petites filles nous racontent leur immigration, leur installation et ce que leurs origines représentent pour elles.</p>\n<p>A travers ces paroles, que disent-elles de l&#39;intégration et de la citoyenneté ?</p>\n<p>Singulières et diverses, leurs histoires sont aussi vivantes et universelles.Elles racontent non seulement des parcours de femmes, des histoires de familles, mais aussi l&#39;histoire des femmes et de leurs droits !</p>\n<p><strong>L&#39;accès à l&#39;exposition se fait à partir du lien <a href=\"https://www.museocube.org/femmes/VR/#\">ICI</a></strong></p>\n<p><strong>Nous souhaitons poursuivre ce projet avec des femmes de toutes origines, et désormais, aussi avec leurs fils !</strong></p>\n<p>Cette exposition nécessite un navigateur récent mis à jour et un ordinateur pas trop ancien !</p>\n<p>Pour la technologie Museocube : voir le site de présentation : &gt; <a href=\"http://www.museocube.org/museocube\">http://www.museocube.org/museocube</a></p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_exposition-multimedia-2-0-issu-e-s-de-femmes_481188.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_exposition-multimedia-2-0-issu-e-s-de-femmes_481188.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_exposition-multimedia-2-0-issu-e-s-de-femmes_481188.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-21T21:24:18.000Z",
+      "range": {
+        "fr": "16 avril - 30 juin",
+        "en": "16 April - 30 June"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 88826050,
+        "title": "Les Jardins Numériques - association loi 1901",
+        "url": "",
+        "slug": "jardins-numeriques",
+        "oaUrl": "https://openagenda.com/agendas/88826050"
+      },
+      "conditions": {
+        "en": "Visite gratuite 7J/7 - 24H/24"
+      },
+      "registrationUrl": "https://openagenda.com/jardins-numeriques",
+      "locationName": "Hors mur hors sol uniquement sur le Web - Les Jardins numériques",
+      "locationUid": 8861592,
+      "address": "2 rue Wilfrid Laurier 75014",
+      "postalCode": "75014",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.827158,
+      "longitude": 2.306644,
+      "timings": [
+        {
+          "start": "2018-04-16T05:00:00.000Z",
+          "end": "2018-04-16T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-17T05:00:00.000Z",
+          "end": "2018-04-17T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-18T05:00:00.000Z",
+          "end": "2018-04-18T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-19T05:00:00.000Z",
+          "end": "2018-04-19T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-20T05:00:00.000Z",
+          "end": "2018-04-20T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-21T05:00:00.000Z",
+          "end": "2018-04-21T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-22T05:00:00.000Z",
+          "end": "2018-04-22T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-23T05:00:00.000Z",
+          "end": "2018-04-23T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-24T05:00:00.000Z",
+          "end": "2018-04-24T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-25T05:00:00.000Z",
+          "end": "2018-04-25T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-26T05:00:00.000Z",
+          "end": "2018-04-26T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-27T05:00:00.000Z",
+          "end": "2018-04-27T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-28T05:00:00.000Z",
+          "end": "2018-04-28T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-29T05:00:00.000Z",
+          "end": "2018-04-29T06:00:00.000Z"
+        },
+        {
+          "start": "2018-04-30T05:00:00.000Z",
+          "end": "2018-04-30T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-01T05:00:00.000Z",
+          "end": "2018-05-01T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T05:00:00.000Z",
+          "end": "2018-05-02T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T05:00:00.000Z",
+          "end": "2018-05-03T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-04T05:00:00.000Z",
+          "end": "2018-05-04T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-05T05:00:00.000Z",
+          "end": "2018-05-05T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-06T05:00:00.000Z",
+          "end": "2018-05-06T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-07T05:00:00.000Z",
+          "end": "2018-05-07T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-08T05:00:00.000Z",
+          "end": "2018-05-08T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T05:00:00.000Z",
+          "end": "2018-05-09T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-10T05:00:00.000Z",
+          "end": "2018-05-10T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-11T05:00:00.000Z",
+          "end": "2018-05-11T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-12T05:00:00.000Z",
+          "end": "2018-05-12T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-13T05:00:00.000Z",
+          "end": "2018-05-13T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-14T05:00:00.000Z",
+          "end": "2018-05-14T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-15T05:00:00.000Z",
+          "end": "2018-05-15T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T05:00:00.000Z",
+          "end": "2018-05-16T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T05:00:00.000Z",
+          "end": "2018-05-17T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-18T05:00:00.000Z",
+          "end": "2018-05-18T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-19T05:00:00.000Z",
+          "end": "2018-05-19T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-20T05:00:00.000Z",
+          "end": "2018-05-20T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-21T05:00:00.000Z",
+          "end": "2018-05-21T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-22T05:00:00.000Z",
+          "end": "2018-05-22T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T05:00:00.000Z",
+          "end": "2018-05-23T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T05:00:00.000Z",
+          "end": "2018-05-24T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-25T05:00:00.000Z",
+          "end": "2018-05-25T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-26T05:00:00.000Z",
+          "end": "2018-05-26T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-27T05:00:00.000Z",
+          "end": "2018-05-27T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-28T05:00:00.000Z",
+          "end": "2018-05-28T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-29T05:00:00.000Z",
+          "end": "2018-05-29T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T05:00:00.000Z",
+          "end": "2018-05-30T06:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T05:00:00.000Z",
+          "end": "2018-05-31T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-01T05:00:00.000Z",
+          "end": "2018-06-01T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-02T05:00:00.000Z",
+          "end": "2018-06-02T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-03T05:00:00.000Z",
+          "end": "2018-06-03T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-04T05:00:00.000Z",
+          "end": "2018-06-04T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-05T05:00:00.000Z",
+          "end": "2018-06-05T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T05:00:00.000Z",
+          "end": "2018-06-06T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T05:00:00.000Z",
+          "end": "2018-06-07T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-08T05:00:00.000Z",
+          "end": "2018-06-08T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-09T05:00:00.000Z",
+          "end": "2018-06-09T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-10T05:00:00.000Z",
+          "end": "2018-06-10T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T05:00:00.000Z",
+          "end": "2018-06-11T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T05:00:00.000Z",
+          "end": "2018-06-12T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T05:00:00.000Z",
+          "end": "2018-06-13T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T05:00:00.000Z",
+          "end": "2018-06-14T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-15T05:00:00.000Z",
+          "end": "2018-06-15T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-16T05:00:00.000Z",
+          "end": "2018-06-16T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-17T05:00:00.000Z",
+          "end": "2018-06-17T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T05:00:00.000Z",
+          "end": "2018-06-18T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-19T05:00:00.000Z",
+          "end": "2018-06-19T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T05:00:00.000Z",
+          "end": "2018-06-20T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T05:00:00.000Z",
+          "end": "2018-06-21T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-22T05:00:00.000Z",
+          "end": "2018-06-22T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-23T05:00:00.000Z",
+          "end": "2018-06-23T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-24T05:00:00.000Z",
+          "end": "2018-06-24T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T05:00:00.000Z",
+          "end": "2018-06-25T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-26T05:00:00.000Z",
+          "end": "2018-06-26T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T05:00:00.000Z",
+          "end": "2018-06-27T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T05:00:00.000Z",
+          "end": "2018-06-28T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-29T05:00:00.000Z",
+          "end": "2018-06-29T06:00:00.000Z"
+        },
+        {
+          "start": "2018-06-30T05:00:00.000Z",
+          "end": "2018-06-30T06:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 8861592,
+        "name": "Hors mur hors sol uniquement sur le Web - Les Jardins numériques",
+        "slug": "hors-mur-hors-sol-uniquement-sur-le-web-les-jardins-numeriques",
+        "address": "2 rue Wilfrid Laurier 75014",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75014",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.827158,
+        "longitude": 2.306644,
+        "description": {},
+        "access": {},
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": null,
+        "phone": null,
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-04-21T21:24:18.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [
+        {
+          "value": "https://openagenda.com/jardins-numeriques",
+          "type": "link",
+          "prefix": ""
+        }
+      ],
+      "firstDate": "2018-04-16",
+      "firstTimeStart": "07:00",
+      "firstTimeEnd": "08:00",
+      "lastDate": "2018-06-30",
+      "lastTimeStart": "07:00",
+      "lastTimeEnd": "08:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 76383548,
+      "slug": "laudes_432",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/laudes_432",
+      "title": {
+        "fr": "Laudes"
+      },
+      "description": {
+        "fr": "Groupe des Laudes"
+      },
+      "longDescription": {
+        "fr": "https://www.sjsc.fr/groupe-des-laudes/"
+      },
+      "keywords": null,
+      "html": {
+        "fr": "<p><a href=\"https://www.sjsc.fr/groupe-des-laudes/\">https://www.sjsc.fr/groupe-des-laudes/</a></p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_laudes_432_951298.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_laudes_432_951298.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_laudes_432_951298.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-02-26T12:16:01.000Z",
+      "range": {
+        "fr": "26 février - 29 juin",
+        "en": "26 February - 29 June"
+      },
+      "imageCredits": "JF Bues",
+      "origin": {
+        "uid": 82841944,
+        "title": "Saint-Jacques – Saint-Christophe de la Villette",
+        "url": "https://www.sjsc.fr",
+        "slug": "sjsc",
+        "oaUrl": "https://openagenda.com/agendas/82841944"
+      },
+      "conditions": null,
+      "registrationUrl": "https://www.sjsc.fr/groupe-des-laudes/",
+      "locationName": "6 place de Bitche 75019 Paris",
+      "locationUid": 33861841,
+      "address": "6 place de Bitche 75019 Paris",
+      "postalCode": "75019",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.889801,
+      "longitude": 2.379494,
+      "timings": [
+        {
+          "start": "2018-02-26T07:30:00.000Z",
+          "end": "2018-02-26T08:30:00.000Z"
+        },
+        {
+          "start": "2018-02-27T07:30:00.000Z",
+          "end": "2018-02-27T08:30:00.000Z"
+        },
+        {
+          "start": "2018-02-28T07:30:00.000Z",
+          "end": "2018-02-28T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-01T07:30:00.000Z",
+          "end": "2018-03-01T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-02T07:30:00.000Z",
+          "end": "2018-03-02T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-05T07:30:00.000Z",
+          "end": "2018-03-05T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-06T07:30:00.000Z",
+          "end": "2018-03-06T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-07T07:30:00.000Z",
+          "end": "2018-03-07T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-08T07:30:00.000Z",
+          "end": "2018-03-08T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-09T07:30:00.000Z",
+          "end": "2018-03-09T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-12T07:30:00.000Z",
+          "end": "2018-03-12T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-13T07:30:00.000Z",
+          "end": "2018-03-13T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-14T07:30:00.000Z",
+          "end": "2018-03-14T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-15T07:30:00.000Z",
+          "end": "2018-03-15T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-16T07:30:00.000Z",
+          "end": "2018-03-16T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-19T07:30:00.000Z",
+          "end": "2018-03-19T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-20T07:30:00.000Z",
+          "end": "2018-03-20T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-21T07:30:00.000Z",
+          "end": "2018-03-21T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-22T07:30:00.000Z",
+          "end": "2018-03-22T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-23T07:30:00.000Z",
+          "end": "2018-03-23T08:30:00.000Z"
+        },
+        {
+          "start": "2018-03-26T06:30:00.000Z",
+          "end": "2018-03-26T07:30:00.000Z"
+        },
+        {
+          "start": "2018-03-27T06:30:00.000Z",
+          "end": "2018-03-27T07:30:00.000Z"
+        },
+        {
+          "start": "2018-03-28T06:30:00.000Z",
+          "end": "2018-03-28T07:30:00.000Z"
+        },
+        {
+          "start": "2018-03-29T06:30:00.000Z",
+          "end": "2018-03-29T07:30:00.000Z"
+        },
+        {
+          "start": "2018-03-30T06:30:00.000Z",
+          "end": "2018-03-30T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-02T06:30:00.000Z",
+          "end": "2018-04-02T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-03T06:30:00.000Z",
+          "end": "2018-04-03T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-04T06:30:00.000Z",
+          "end": "2018-04-04T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-05T06:30:00.000Z",
+          "end": "2018-04-05T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-06T06:30:00.000Z",
+          "end": "2018-04-06T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-09T06:30:00.000Z",
+          "end": "2018-04-09T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-10T06:30:00.000Z",
+          "end": "2018-04-10T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-11T06:30:00.000Z",
+          "end": "2018-04-11T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-12T06:30:00.000Z",
+          "end": "2018-04-12T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-13T06:30:00.000Z",
+          "end": "2018-04-13T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-16T06:30:00.000Z",
+          "end": "2018-04-16T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-17T06:30:00.000Z",
+          "end": "2018-04-17T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-18T06:30:00.000Z",
+          "end": "2018-04-18T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-19T06:30:00.000Z",
+          "end": "2018-04-19T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-20T06:30:00.000Z",
+          "end": "2018-04-20T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-23T06:30:00.000Z",
+          "end": "2018-04-23T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-24T06:30:00.000Z",
+          "end": "2018-04-24T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-25T06:30:00.000Z",
+          "end": "2018-04-25T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-26T06:30:00.000Z",
+          "end": "2018-04-26T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-27T06:30:00.000Z",
+          "end": "2018-04-27T07:30:00.000Z"
+        },
+        {
+          "start": "2018-04-30T06:30:00.000Z",
+          "end": "2018-04-30T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-01T06:30:00.000Z",
+          "end": "2018-05-01T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-02T06:30:00.000Z",
+          "end": "2018-05-02T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-03T06:30:00.000Z",
+          "end": "2018-05-03T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-04T06:30:00.000Z",
+          "end": "2018-05-04T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-07T06:30:00.000Z",
+          "end": "2018-05-07T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-08T06:30:00.000Z",
+          "end": "2018-05-08T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-09T06:30:00.000Z",
+          "end": "2018-05-09T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-10T06:30:00.000Z",
+          "end": "2018-05-10T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-11T06:30:00.000Z",
+          "end": "2018-05-11T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-14T06:30:00.000Z",
+          "end": "2018-05-14T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-15T06:30:00.000Z",
+          "end": "2018-05-15T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-16T06:30:00.000Z",
+          "end": "2018-05-16T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-17T06:30:00.000Z",
+          "end": "2018-05-17T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-18T06:30:00.000Z",
+          "end": "2018-05-18T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-21T06:30:00.000Z",
+          "end": "2018-05-21T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-22T06:30:00.000Z",
+          "end": "2018-05-22T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-23T06:30:00.000Z",
+          "end": "2018-05-23T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-24T06:30:00.000Z",
+          "end": "2018-05-24T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-25T06:30:00.000Z",
+          "end": "2018-05-25T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-28T06:30:00.000Z",
+          "end": "2018-05-28T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-29T06:30:00.000Z",
+          "end": "2018-05-29T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-30T06:30:00.000Z",
+          "end": "2018-05-30T07:30:00.000Z"
+        },
+        {
+          "start": "2018-05-31T06:30:00.000Z",
+          "end": "2018-05-31T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-01T06:30:00.000Z",
+          "end": "2018-06-01T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-04T06:30:00.000Z",
+          "end": "2018-06-04T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-05T06:30:00.000Z",
+          "end": "2018-06-05T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-06T06:30:00.000Z",
+          "end": "2018-06-06T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-07T06:30:00.000Z",
+          "end": "2018-06-07T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-08T06:30:00.000Z",
+          "end": "2018-06-08T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-11T06:30:00.000Z",
+          "end": "2018-06-11T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-12T06:30:00.000Z",
+          "end": "2018-06-12T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-13T06:30:00.000Z",
+          "end": "2018-06-13T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-14T06:30:00.000Z",
+          "end": "2018-06-14T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-15T06:30:00.000Z",
+          "end": "2018-06-15T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-18T06:30:00.000Z",
+          "end": "2018-06-18T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-19T06:30:00.000Z",
+          "end": "2018-06-19T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-20T06:30:00.000Z",
+          "end": "2018-06-20T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-21T06:30:00.000Z",
+          "end": "2018-06-21T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-22T06:30:00.000Z",
+          "end": "2018-06-22T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-25T06:30:00.000Z",
+          "end": "2018-06-25T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-26T06:30:00.000Z",
+          "end": "2018-06-26T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-27T06:30:00.000Z",
+          "end": "2018-06-27T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-28T06:30:00.000Z",
+          "end": "2018-06-28T07:30:00.000Z"
+        },
+        {
+          "start": "2018-06-29T06:30:00.000Z",
+          "end": "2018-06-29T07:30:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 33861841,
+        "name": "6 place de Bitche 75019 Paris",
+        "slug": "eglise846",
+        "address": "6 place de Bitche 75019 Paris",
+        "image": "//cibul.s3.amazonaws.com/location33861841.jpg",
+        "imageCredits": null,
+        "postalCode": "75019",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.889801,
+        "longitude": 2.379494,
+        "description": {
+          "fr": "Eglise Saint-Jacques Saint-Christophe de la Villette"
+        },
+        "access": {},
+        "countryCode": "fr",
+        "website": "https://www.sjsc.fr",
+        "links": [
+          "https://www.facebook.com/ParoisseSJSC",
+          "https://plus.google.com/u/0/102439520194006072240/",
+          "https://itunes.apple.com/fr/podcast/homelies-st-jacques-st-christophe-sjsc/id1267754789",
+          "https://tunein.com/radio/Homelies-St-Jacques-St-Christophe-SJSC-p1023938/"
+        ],
+        "insee": null,
+        "phone": "+33 01 40 36 57 89",
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-01-31T19:53:52.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [
+        {
+          "value": "https://www.sjsc.fr/groupe-des-laudes/",
+          "type": "link",
+          "prefix": ""
+        }
+      ],
+      "firstDate": "2018-02-26",
+      "firstTimeStart": "08:30",
+      "firstTimeEnd": "09:30",
+      "lastDate": "2018-06-29",
+      "lastTimeStart": "08:30",
+      "lastTimeEnd": "09:30",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 81473869,
+      "slug": "accompagnement-administratif-des-allocataires-du-rsa",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/accompagnement-administratif-des-allocataires-du-rsa",
+      "title": {
+        "fr": "Aide aux démarches en ligne des allocataires du rsa"
+      },
+      "description": {
+        "fr": "Aide aux démarches en ligne des allocataires du rsa"
+      },
+      "longDescription": {
+        "fr": "l'EPI 11/12 propose sans rendez-vous un accès à internet avec un médiateur numérique aux allocataires du rsa parisiens pour effectuer les démarches suivantes :\n\n-consultation dossier caf\n\n-consultation dossier Pôle Emploi\n\n-démarches cpam, demande de logement social, etc...\n\n-prise de rendez-vous en ligne pour demande de rsa"
+      },
+      "keywords": {
+        "fr": [
+          "aide",
+          "accompagnement administratif",
+          "rsa"
+        ]
+      },
+      "html": {
+        "fr": "<p>l&#39;EPI 11/12 propose sans rendez-vous un accès à internet avec un médiateur numérique aux allocataires du rsa parisiens pour effectuer les démarches suivantes :</p>\n<p>-consultation dossier caf</p>\n<p>-consultation dossier Pôle Emploi</p>\n<p>-démarches cpam, demande de logement social, etc...</p>\n<p>-prise de rendez-vous en ligne pour demande de rsa</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_accompagnement-administratif-des-allocataires-du-rsa_338339.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_accompagnement-administratif-des-allocataires-du-rsa_338339.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_accompagnement-administratif-des-allocataires-du-rsa_338339.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-03-16T13:12:35.000Z",
+      "range": {
+        "fr": "12 mars - 28 juin",
+        "en": "12 March - 28 June"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 55897655,
+        "title": "EPN Espace Parisien pour l'Insertion 11/12",
+        "url": null,
+        "slug": "epn-espace-parisien-pour-linsertion-1112",
+        "oaUrl": "https://openagenda.com/agendas/55897655"
+      },
+      "conditions": {
+        "fr": "entrée libre, s'adresser à l'accueil de la structure, possibilité de prise de rendez-vous"
+      },
+      "registrationUrl": "01 71 28 09 79",
+      "locationName": "Espace Parisien pour l'Insertion 11/12",
+      "locationUid": 63877175,
+      "address": "125 Bis Rue de Reuilly 75012 PARIS",
+      "postalCode": "75012",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.840508,
+      "longitude": 2.395124,
+      "timings": [
+        {
+          "start": "2018-03-12T08:00:00.000Z",
+          "end": "2018-03-12T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-12T13:00:00.000Z",
+          "end": "2018-03-12T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-13T08:00:00.000Z",
+          "end": "2018-03-13T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-13T13:00:00.000Z",
+          "end": "2018-03-13T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-14T08:00:00.000Z",
+          "end": "2018-03-14T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-14T13:00:00.000Z",
+          "end": "2018-03-14T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-15T08:00:00.000Z",
+          "end": "2018-03-15T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-15T13:00:00.000Z",
+          "end": "2018-03-15T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-19T08:00:00.000Z",
+          "end": "2018-03-19T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-19T13:00:00.000Z",
+          "end": "2018-03-19T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-20T08:00:00.000Z",
+          "end": "2018-03-20T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-20T13:00:00.000Z",
+          "end": "2018-03-20T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-21T08:00:00.000Z",
+          "end": "2018-03-21T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-21T13:00:00.000Z",
+          "end": "2018-03-21T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-22T08:00:00.000Z",
+          "end": "2018-03-22T11:00:00.000Z"
+        },
+        {
+          "start": "2018-03-22T13:00:00.000Z",
+          "end": "2018-03-22T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-26T07:00:00.000Z",
+          "end": "2018-03-26T10:00:00.000Z"
+        },
+        {
+          "start": "2018-03-26T12:00:00.000Z",
+          "end": "2018-03-26T14:00:00.000Z"
+        },
+        {
+          "start": "2018-03-27T07:00:00.000Z",
+          "end": "2018-03-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-03-27T12:00:00.000Z",
+          "end": "2018-03-27T14:00:00.000Z"
+        },
+        {
+          "start": "2018-03-28T07:00:00.000Z",
+          "end": "2018-03-28T10:00:00.000Z"
+        },
+        {
+          "start": "2018-03-28T12:00:00.000Z",
+          "end": "2018-03-28T14:00:00.000Z"
+        },
+        {
+          "start": "2018-03-29T07:00:00.000Z",
+          "end": "2018-03-29T10:00:00.000Z"
+        },
+        {
+          "start": "2018-03-29T12:00:00.000Z",
+          "end": "2018-03-29T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-02T07:00:00.000Z",
+          "end": "2018-04-02T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-02T12:00:00.000Z",
+          "end": "2018-04-02T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-03T07:00:00.000Z",
+          "end": "2018-04-03T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-03T12:00:00.000Z",
+          "end": "2018-04-03T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-04T07:00:00.000Z",
+          "end": "2018-04-04T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-04T12:00:00.000Z",
+          "end": "2018-04-04T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-05T07:00:00.000Z",
+          "end": "2018-04-05T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-05T12:00:00.000Z",
+          "end": "2018-04-05T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-09T07:00:00.000Z",
+          "end": "2018-04-09T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-09T12:00:00.000Z",
+          "end": "2018-04-09T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-10T07:00:00.000Z",
+          "end": "2018-04-10T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-10T12:00:00.000Z",
+          "end": "2018-04-10T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-11T07:00:00.000Z",
+          "end": "2018-04-11T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-11T12:00:00.000Z",
+          "end": "2018-04-11T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-12T07:00:00.000Z",
+          "end": "2018-04-12T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-12T12:00:00.000Z",
+          "end": "2018-04-12T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-16T07:00:00.000Z",
+          "end": "2018-04-16T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-16T12:00:00.000Z",
+          "end": "2018-04-16T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-17T07:00:00.000Z",
+          "end": "2018-04-17T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-17T12:00:00.000Z",
+          "end": "2018-04-17T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-18T07:00:00.000Z",
+          "end": "2018-04-18T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-18T12:00:00.000Z",
+          "end": "2018-04-18T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-19T07:00:00.000Z",
+          "end": "2018-04-19T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-19T12:00:00.000Z",
+          "end": "2018-04-19T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-23T07:00:00.000Z",
+          "end": "2018-04-23T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-23T12:00:00.000Z",
+          "end": "2018-04-23T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-24T07:00:00.000Z",
+          "end": "2018-04-24T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-24T12:00:00.000Z",
+          "end": "2018-04-24T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-25T07:00:00.000Z",
+          "end": "2018-04-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-25T12:00:00.000Z",
+          "end": "2018-04-25T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-26T07:00:00.000Z",
+          "end": "2018-04-26T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-26T12:00:00.000Z",
+          "end": "2018-04-26T14:00:00.000Z"
+        },
+        {
+          "start": "2018-04-30T07:00:00.000Z",
+          "end": "2018-04-30T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-30T12:00:00.000Z",
+          "end": "2018-04-30T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-01T07:00:00.000Z",
+          "end": "2018-05-01T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-01T12:00:00.000Z",
+          "end": "2018-05-01T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T07:00:00.000Z",
+          "end": "2018-05-02T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T12:00:00.000Z",
+          "end": "2018-05-02T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T07:00:00.000Z",
+          "end": "2018-05-03T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T12:00:00.000Z",
+          "end": "2018-05-03T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-07T07:00:00.000Z",
+          "end": "2018-05-07T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-07T12:00:00.000Z",
+          "end": "2018-05-07T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-08T07:00:00.000Z",
+          "end": "2018-05-08T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-08T12:00:00.000Z",
+          "end": "2018-05-08T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T07:00:00.000Z",
+          "end": "2018-05-09T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T12:00:00.000Z",
+          "end": "2018-05-09T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-10T07:00:00.000Z",
+          "end": "2018-05-10T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-10T12:00:00.000Z",
+          "end": "2018-05-10T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-14T07:00:00.000Z",
+          "end": "2018-05-14T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-14T12:00:00.000Z",
+          "end": "2018-05-14T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-15T07:00:00.000Z",
+          "end": "2018-05-15T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-15T12:00:00.000Z",
+          "end": "2018-05-15T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T07:00:00.000Z",
+          "end": "2018-05-16T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T12:00:00.000Z",
+          "end": "2018-05-16T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T07:00:00.000Z",
+          "end": "2018-05-17T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T12:00:00.000Z",
+          "end": "2018-05-17T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-21T07:00:00.000Z",
+          "end": "2018-05-21T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-21T12:00:00.000Z",
+          "end": "2018-05-21T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-22T07:00:00.000Z",
+          "end": "2018-05-22T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-22T12:00:00.000Z",
+          "end": "2018-05-22T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T07:00:00.000Z",
+          "end": "2018-05-23T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T12:00:00.000Z",
+          "end": "2018-05-23T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T07:00:00.000Z",
+          "end": "2018-05-24T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T12:00:00.000Z",
+          "end": "2018-05-24T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-28T07:00:00.000Z",
+          "end": "2018-05-28T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-28T12:00:00.000Z",
+          "end": "2018-05-28T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-29T07:00:00.000Z",
+          "end": "2018-05-29T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-29T12:00:00.000Z",
+          "end": "2018-05-29T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T07:00:00.000Z",
+          "end": "2018-05-30T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T12:00:00.000Z",
+          "end": "2018-05-30T14:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T07:00:00.000Z",
+          "end": "2018-05-31T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T12:00:00.000Z",
+          "end": "2018-05-31T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-04T07:00:00.000Z",
+          "end": "2018-06-04T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-04T12:00:00.000Z",
+          "end": "2018-06-04T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-05T07:00:00.000Z",
+          "end": "2018-06-05T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-05T12:00:00.000Z",
+          "end": "2018-06-05T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T07:00:00.000Z",
+          "end": "2018-06-06T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T12:00:00.000Z",
+          "end": "2018-06-06T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T07:00:00.000Z",
+          "end": "2018-06-07T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T12:00:00.000Z",
+          "end": "2018-06-07T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T07:00:00.000Z",
+          "end": "2018-06-11T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T12:00:00.000Z",
+          "end": "2018-06-11T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T07:00:00.000Z",
+          "end": "2018-06-12T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T12:00:00.000Z",
+          "end": "2018-06-12T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T07:00:00.000Z",
+          "end": "2018-06-13T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T12:00:00.000Z",
+          "end": "2018-06-13T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T07:00:00.000Z",
+          "end": "2018-06-14T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T12:00:00.000Z",
+          "end": "2018-06-14T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T07:00:00.000Z",
+          "end": "2018-06-18T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T12:00:00.000Z",
+          "end": "2018-06-18T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-19T07:00:00.000Z",
+          "end": "2018-06-19T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-19T12:00:00.000Z",
+          "end": "2018-06-19T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T07:00:00.000Z",
+          "end": "2018-06-20T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T12:00:00.000Z",
+          "end": "2018-06-20T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T07:00:00.000Z",
+          "end": "2018-06-21T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T12:00:00.000Z",
+          "end": "2018-06-21T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T07:00:00.000Z",
+          "end": "2018-06-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T12:00:00.000Z",
+          "end": "2018-06-25T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-26T07:00:00.000Z",
+          "end": "2018-06-26T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-26T12:00:00.000Z",
+          "end": "2018-06-26T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T07:00:00.000Z",
+          "end": "2018-06-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T12:00:00.000Z",
+          "end": "2018-06-27T14:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T07:00:00.000Z",
+          "end": "2018-06-28T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T12:00:00.000Z",
+          "end": "2018-06-28T14:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 63877175,
+        "name": "Espace Parisien pour l'Insertion 11/12",
+        "slug": "espace-parisien-pour-linsertion-1112",
+        "address": "125 Bis Rue de Reuilly 75012 PARIS",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75012",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.840508,
+        "longitude": 2.395124,
+        "description": {
+          "fr": "Bâtiment en deuxième position"
+        },
+        "access": {
+          "fr": "Métro Daumesnil  Lignes 6 et 8"
+        },
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": null,
+        "phone": "01 71 28 09 81",
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-03-13T10:54:20.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [
+        {
+          "value": "01 71 28 09 79",
+          "type": "phone",
+          "prefix": "tel:"
+        }
+      ],
+      "firstDate": "2018-03-12",
+      "firstTimeStart": "09:00",
+      "firstTimeEnd": "12:00",
+      "lastDate": "2018-06-28",
+      "lastTimeStart": "14:00",
+      "lastTimeEnd": "16:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 78745508,
+      "slug": "acces-accompagne-au-site-pole-emploi-fr",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/acces-accompagne-au-site-pole-emploi-fr",
+      "title": {
+        "fr": "Accès accompagné au site Pôle-Emploi.fr"
+      },
+      "description": {
+        "fr": "Aide aux démarches sur le site de Pôle Emploi."
+      },
+      "longDescription": {
+        "fr": "Accès au site de Pôle-Emploi.fr pour effectuer des démarches en ligne (inscription, actualisation, consultation messages, recherche d'offres d'emploi)."
+      },
+      "keywords": {
+        "fr": [
+          "Pôle-emploi"
+        ]
+      },
+      "html": {
+        "fr": "<p>Accès au site de Pôle-Emploi.fr pour effectuer des démarches en ligne (inscription, actualisation, consultation messages, recherche d&#39;offres d&#39;emploi).</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_acces-accompagne-au-site-pole-emploi-fr_408605.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_acces-accompagne-au-site-pole-emploi-fr_408605.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_acces-accompagne-au-site-pole-emploi-fr_408605.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-10T08:22:44.000Z",
+      "range": {
+        "fr": "9 avril - 29 juin",
+        "en": "9 April - 29 June"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 77941292,
+        "title": "Pôle Emploi Piat",
+        "url": "http://www.pole-emploi.fr",
+        "slug": "pole-emploi-piat",
+        "oaUrl": "https://openagenda.com/agendas/77941292"
+      },
+      "conditions": {
+        "fr": "Accès libre le matin et sur rendez-vous l'après-midi."
+      },
+      "registrationUrl": null,
+      "locationName": "Pôle Emploi Piat",
+      "locationUid": 51676460,
+      "address": "51 rue Piat - 75020 - Paris",
+      "postalCode": "75020",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.872858,
+      "longitude": 2.383494,
+      "timings": [
+        {
+          "start": "2018-04-09T07:00:00.000Z",
+          "end": "2018-04-09T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-09T11:30:00.000Z",
+          "end": "2018-04-09T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-10T07:00:00.000Z",
+          "end": "2018-04-10T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-10T11:30:00.000Z",
+          "end": "2018-04-10T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-11T07:00:00.000Z",
+          "end": "2018-04-11T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-11T11:30:00.000Z",
+          "end": "2018-04-11T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-12T07:00:00.000Z",
+          "end": "2018-04-12T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-12T11:30:00.000Z",
+          "end": "2018-04-12T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-13T07:00:00.000Z",
+          "end": "2018-04-13T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-16T07:00:00.000Z",
+          "end": "2018-04-16T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-16T11:30:00.000Z",
+          "end": "2018-04-16T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-17T07:00:00.000Z",
+          "end": "2018-04-17T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-17T11:30:00.000Z",
+          "end": "2018-04-17T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-18T07:00:00.000Z",
+          "end": "2018-04-18T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-18T11:30:00.000Z",
+          "end": "2018-04-18T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-19T07:00:00.000Z",
+          "end": "2018-04-19T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-19T11:30:00.000Z",
+          "end": "2018-04-19T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-20T07:00:00.000Z",
+          "end": "2018-04-20T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-23T07:00:00.000Z",
+          "end": "2018-04-23T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-23T11:30:00.000Z",
+          "end": "2018-04-23T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-24T07:00:00.000Z",
+          "end": "2018-04-24T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-24T11:30:00.000Z",
+          "end": "2018-04-24T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-25T07:00:00.000Z",
+          "end": "2018-04-25T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-25T11:30:00.000Z",
+          "end": "2018-04-25T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-26T07:00:00.000Z",
+          "end": "2018-04-26T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-26T11:30:00.000Z",
+          "end": "2018-04-26T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-27T07:00:00.000Z",
+          "end": "2018-04-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-30T07:00:00.000Z",
+          "end": "2018-04-30T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-30T11:30:00.000Z",
+          "end": "2018-04-30T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-01T07:00:00.000Z",
+          "end": "2018-05-01T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-01T11:30:00.000Z",
+          "end": "2018-05-01T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-02T07:00:00.000Z",
+          "end": "2018-05-02T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T11:30:00.000Z",
+          "end": "2018-05-02T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-03T07:00:00.000Z",
+          "end": "2018-05-03T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T11:30:00.000Z",
+          "end": "2018-05-03T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-04T07:00:00.000Z",
+          "end": "2018-05-04T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-07T07:00:00.000Z",
+          "end": "2018-05-07T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-07T11:30:00.000Z",
+          "end": "2018-05-07T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-08T07:00:00.000Z",
+          "end": "2018-05-08T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-08T11:30:00.000Z",
+          "end": "2018-05-08T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-09T07:00:00.000Z",
+          "end": "2018-05-09T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T11:30:00.000Z",
+          "end": "2018-05-09T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-10T07:00:00.000Z",
+          "end": "2018-05-10T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-10T11:30:00.000Z",
+          "end": "2018-05-10T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-11T07:00:00.000Z",
+          "end": "2018-05-11T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-14T07:00:00.000Z",
+          "end": "2018-05-14T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-14T11:30:00.000Z",
+          "end": "2018-05-14T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-15T07:00:00.000Z",
+          "end": "2018-05-15T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-15T11:30:00.000Z",
+          "end": "2018-05-15T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-16T07:00:00.000Z",
+          "end": "2018-05-16T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T11:30:00.000Z",
+          "end": "2018-05-16T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-17T07:00:00.000Z",
+          "end": "2018-05-17T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T11:30:00.000Z",
+          "end": "2018-05-17T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-18T07:00:00.000Z",
+          "end": "2018-05-18T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-21T07:00:00.000Z",
+          "end": "2018-05-21T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-21T11:30:00.000Z",
+          "end": "2018-05-21T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-22T07:00:00.000Z",
+          "end": "2018-05-22T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-22T11:30:00.000Z",
+          "end": "2018-05-22T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-23T07:00:00.000Z",
+          "end": "2018-05-23T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T11:30:00.000Z",
+          "end": "2018-05-23T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-24T07:00:00.000Z",
+          "end": "2018-05-24T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T11:30:00.000Z",
+          "end": "2018-05-24T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-25T07:00:00.000Z",
+          "end": "2018-05-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-28T07:00:00.000Z",
+          "end": "2018-05-28T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-28T11:30:00.000Z",
+          "end": "2018-05-28T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-29T07:00:00.000Z",
+          "end": "2018-05-29T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-29T11:30:00.000Z",
+          "end": "2018-05-29T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-30T07:00:00.000Z",
+          "end": "2018-05-30T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T11:30:00.000Z",
+          "end": "2018-05-30T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-31T07:00:00.000Z",
+          "end": "2018-05-31T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T11:30:00.000Z",
+          "end": "2018-05-31T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-01T07:00:00.000Z",
+          "end": "2018-06-01T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-04T07:00:00.000Z",
+          "end": "2018-06-04T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-04T11:30:00.000Z",
+          "end": "2018-06-04T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-05T07:00:00.000Z",
+          "end": "2018-06-05T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-05T11:30:00.000Z",
+          "end": "2018-06-05T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-06T07:00:00.000Z",
+          "end": "2018-06-06T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T11:30:00.000Z",
+          "end": "2018-06-06T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-07T07:00:00.000Z",
+          "end": "2018-06-07T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T11:30:00.000Z",
+          "end": "2018-06-07T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-08T07:00:00.000Z",
+          "end": "2018-06-08T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T07:00:00.000Z",
+          "end": "2018-06-11T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T11:30:00.000Z",
+          "end": "2018-06-11T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-12T07:00:00.000Z",
+          "end": "2018-06-12T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T11:30:00.000Z",
+          "end": "2018-06-12T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-13T07:00:00.000Z",
+          "end": "2018-06-13T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T11:30:00.000Z",
+          "end": "2018-06-13T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-14T07:00:00.000Z",
+          "end": "2018-06-14T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T11:30:00.000Z",
+          "end": "2018-06-14T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-15T07:00:00.000Z",
+          "end": "2018-06-15T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T07:00:00.000Z",
+          "end": "2018-06-18T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T11:30:00.000Z",
+          "end": "2018-06-18T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-19T07:00:00.000Z",
+          "end": "2018-06-19T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-19T11:30:00.000Z",
+          "end": "2018-06-19T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-20T07:00:00.000Z",
+          "end": "2018-06-20T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T11:30:00.000Z",
+          "end": "2018-06-20T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-21T07:00:00.000Z",
+          "end": "2018-06-21T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T11:30:00.000Z",
+          "end": "2018-06-21T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-22T07:00:00.000Z",
+          "end": "2018-06-22T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T07:00:00.000Z",
+          "end": "2018-06-25T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T11:30:00.000Z",
+          "end": "2018-06-25T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-26T07:00:00.000Z",
+          "end": "2018-06-26T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-26T11:30:00.000Z",
+          "end": "2018-06-26T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-27T07:00:00.000Z",
+          "end": "2018-06-27T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T11:30:00.000Z",
+          "end": "2018-06-27T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-28T07:00:00.000Z",
+          "end": "2018-06-28T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T11:30:00.000Z",
+          "end": "2018-06-28T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-29T07:00:00.000Z",
+          "end": "2018-06-29T10:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 51676460,
+        "name": "Pôle Emploi Piat",
+        "slug": "pole-emploi-piat",
+        "address": "51 rue Piat - 75020 - Paris",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75020",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.872858,
+        "longitude": 2.383494,
+        "description": {},
+        "access": {},
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": null,
+        "phone": null,
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-04-10T07:22:59.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [],
+      "firstDate": "2018-04-09",
+      "firstTimeStart": "09:00",
+      "firstTimeEnd": "13:00",
+      "lastDate": "2018-06-29",
+      "lastTimeStart": "09:00",
+      "lastTimeEnd": "12:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 21511544,
+      "slug": "hors-jeu-exposition-de-l-association-des-jeunes-artistes-coreens",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/hors-jeu-exposition-de-l-association-des-jeunes-artistes-coreens",
+      "title": {
+        "fr": "« HORS-JEU » Exposition de l’Association des Jeunes Artistes Coréens"
+      },
+      "description": {
+        "fr": "Dans le cadre de sa 35e exposition annuelle,  AJAC  réunit ses artistes basés dans l’Hexagone, travaillant chacun sur des sujets et avec des médias différents."
+      },
+      "longDescription": {
+        "fr": "**Du 7 juin au 11 juillet**\n\n_HA Yoomi, HONG Bora, Hong Bora, HONG Sungyeon, JEOUNG Insoo, JEONG Eul, JO Joowon, KIM Bomi, JUNG Jina, KIM Heeyun, KIM Gihoon, KWON Hyeoki, LEE Sung-A, PARK Hyejung, EOM Dohyeon, YOUN Guideog_\n\nDans le domaine de l’art contemporain, le processus de création tend à se complexifier de nos jours. Alors que se greffent à lui la technologie et la science, et que l’interactivité avec les visiteurs se fait de plus en plus présente, les artistes laissent peu à peu leurs œuvres développer leur propre identité en offrant à tous un résultat inattendu. C’est donc à travers le prisme de la créativité émancipée que cette exposition tient à montrer la relation particulière qu’entretiennent les artistes avec leur propre production.\n\nDans le cadre de sa 35e exposition annuelle, l’Association des Jeunes Artistes Coréens (AJAC ) réunit ses artistes basés dans l’Hexagone, travaillant chacun sur des sujets et avec des médias différents. Cette fois, l’exposition « HORS-JEU » invite à sortir des sentiers battus à travers un regroupement d’œuvres individuelles, telle l’expression de talents à l’unisson invitant le public à la découverte et à l’interaction.\n\nCette exposition permettra au public français de mieux appréhender la vitalité et la diversité de la jeune création coréenne contemporaine en France.\n\n_L’AJAC est une association fondée à Paris en 1983, qui regroupe de jeunes artistes plasticiens d’origine coréenne résidant en France. Elle organise chaque année une grande exposition annuelle de ses membres actifs à Paris. Mais elle présente également, des expositions collectives en France et à l'étranger, où souvent, elle tente d’entrer en relation avec des artistes venus de différents horizons dans un esprit d'échange et de partage. Cette année, l’association compte 16 membres actifs et 8 nouveaux membres admis en fin d’année précédente._"
+      },
+      "keywords": {
+        "fr": [
+          "AJAC",
+          "jeunes artistes Coréens",
+          "art contemporain",
+          "exposition annuelle",
+          "Hors-jeu"
+        ]
+      },
+      "html": {
+        "fr": "<p><strong>Du 7 juin au 11 juillet</strong></p>\n<p><em>HA Yoomi, HONG Bora, Hong Bora, HONG Sungyeon, JEOUNG Insoo, JEONG Eul, JO Joowon, KIM Bomi, JUNG Jina, KIM Heeyun, KIM Gihoon, KWON Hyeoki, LEE Sung-A, PARK Hyejung, EOM Dohyeon, YOUN Guideog</em></p>\n<p>Dans le domaine de l’art contemporain, le processus de création tend à se complexifier de nos jours. Alors que se greffent à lui la technologie et la science, et que l’interactivité avec les visiteurs se fait de plus en plus présente, les artistes laissent peu à peu leurs œuvres développer leur propre identité en offrant à tous un résultat inattendu. C’est donc à travers le prisme de la créativité émancipée que cette exposition tient à montrer la relation particulière qu’entretiennent les artistes avec leur propre production.</p>\n<p>Dans le cadre de sa 35e exposition annuelle, l’Association des Jeunes Artistes Coréens (AJAC ) réunit ses artistes basés dans l’Hexagone, travaillant chacun sur des sujets et avec des médias différents. Cette fois, l’exposition « HORS-JEU » invite à sortir des sentiers battus à travers un regroupement d’œuvres individuelles, telle l’expression de talents à l’unisson invitant le public à la découverte et à l’interaction.</p>\n<p>Cette exposition permettra au public français de mieux appréhender la vitalité et la diversité de la jeune création coréenne contemporaine en France.</p>\n<p><em>L’AJAC est une association fondée à Paris en 1983, qui regroupe de jeunes artistes plasticiens d’origine coréenne résidant en France. Elle organise chaque année une grande exposition annuelle de ses membres actifs à Paris. Mais elle présente également, des expositions collectives en France et à l&#39;étranger, où souvent, elle tente d’entrer en relation avec des artistes venus de différents horizons dans un esprit d&#39;échange et de partage. Cette année, l’association compte 16 membres actifs et 8 nouveaux membres admis en fin d’année précédente.</em></p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_hors-jeu-exposition-de-l-association-des-jeunes-artistes-coreens_215297.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_hors-jeu-exposition-de-l-association-des-jeunes-artistes-coreens_215297.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_hors-jeu-exposition-de-l-association-des-jeunes-artistes-coreens_215297.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-05-17T15:20:26.000Z",
+      "range": {
+        "fr": "7 juin - 11 juillet",
+        "en": "7 June - 11 July"
+      },
+      "imageCredits": "JUNG Jina, 8 nuits 9 jours, carnet de voyage ",
+      "origin": {
+        "uid": 18084807,
+        "title": "Centre culturel coréen",
+        "url": null,
+        "slug": "centre-culturel-coreen",
+        "oaUrl": "https://openagenda.com/agendas/18084807"
+      },
+      "conditions": {
+        "fr": "Entrée libre"
+      },
+      "registrationUrl": null,
+      "locationName": "Centre culturel coréen",
+      "locationUid": 21075024,
+      "address": "2 avenue de Iéna",
+      "postalCode": null,
+      "city": null,
+      "district": null,
+      "department": null,
+      "region": null,
+      "latitude": 48.863148,
+      "longitude": 2.291984,
+      "timings": [
+        {
+          "start": "2018-06-07T07:30:00.000Z",
+          "end": "2018-06-07T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-08T07:30:00.000Z",
+          "end": "2018-06-08T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-09T12:00:00.000Z",
+          "end": "2018-06-09T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T07:30:00.000Z",
+          "end": "2018-06-11T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T07:30:00.000Z",
+          "end": "2018-06-12T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T07:30:00.000Z",
+          "end": "2018-06-13T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T07:30:00.000Z",
+          "end": "2018-06-14T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-15T07:30:00.000Z",
+          "end": "2018-06-15T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-16T12:00:00.000Z",
+          "end": "2018-06-16T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T07:30:00.000Z",
+          "end": "2018-06-18T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-19T07:30:00.000Z",
+          "end": "2018-06-19T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T07:30:00.000Z",
+          "end": "2018-06-20T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T07:30:00.000Z",
+          "end": "2018-06-21T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-22T07:30:00.000Z",
+          "end": "2018-06-22T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-23T12:00:00.000Z",
+          "end": "2018-06-23T17:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T07:30:00.000Z",
+          "end": "2018-06-25T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-26T07:30:00.000Z",
+          "end": "2018-06-26T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T07:30:00.000Z",
+          "end": "2018-06-27T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T07:30:00.000Z",
+          "end": "2018-06-28T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-29T07:30:00.000Z",
+          "end": "2018-06-29T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-30T12:00:00.000Z",
+          "end": "2018-06-30T17:00:00.000Z"
+        },
+        {
+          "start": "2018-07-02T07:30:00.000Z",
+          "end": "2018-07-02T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-03T07:30:00.000Z",
+          "end": "2018-07-03T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-04T07:30:00.000Z",
+          "end": "2018-07-04T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-05T07:30:00.000Z",
+          "end": "2018-07-05T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-06T07:30:00.000Z",
+          "end": "2018-07-06T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-07T12:00:00.000Z",
+          "end": "2018-07-07T17:00:00.000Z"
+        },
+        {
+          "start": "2018-07-09T07:30:00.000Z",
+          "end": "2018-07-09T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-10T07:30:00.000Z",
+          "end": "2018-07-10T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-11T07:30:00.000Z",
+          "end": "2018-07-11T16:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 21075024,
+        "name": "Centre culturel coréen",
+        "slug": "centre-culturel-coreen573",
+        "address": "2 avenue de Iéna",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": null,
+        "city": null,
+        "district": null,
+        "department": null,
+        "region": null,
+        "latitude": 48.863148,
+        "longitude": 2.291984,
+        "description": {},
+        "access": {},
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": null,
+        "phone": null,
+        "tags": null,
+        "timezone": null,
+        "updatedAt": "2017-09-12T09:42:30.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [],
+      "firstDate": "2018-06-07",
+      "firstTimeStart": "09:30",
+      "firstTimeEnd": "18:00",
+      "lastDate": "2018-07-11",
+      "lastTimeStart": "09:30",
+      "lastTimeEnd": "18:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 90315078,
+      "slug": "pour-une-poignee-de-meeples-le-western-a-l-honneur-au-centre-national-du-jeu",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/pour-une-poignee-de-meeples-le-western-a-l-honneur-au-centre-national-du-jeu",
+      "title": {
+        "fr": "Pour une poignée de Meeples : le Western à l'honneur au Centre national du Jeu"
+      },
+      "description": {
+        "fr": "Jusqu'en décembre, le conservatoire du jeu du CNJ vous convie à un western version ludique"
+      },
+      "longDescription": {
+        "fr": "La nouvelle exposition du CNJ, \"Pour une Poignée de Meeples\", a été lancée le samedi 10 mars. Elle vous entraîne dans la fabuleuse aventure des jeux ayant pour thème le western. Avec cette expo, c'est plus de 70 jeux qui sont exposés en salle d'Exploration de mars à décembre 2018\\. Lucky Luke, Billy the Kid, les trains, les gangsters et les indiens : tous les thèmes chers aux westerns sont bien là."
+      },
+      "keywords": null,
+      "html": {
+        "fr": "<p>La nouvelle exposition du CNJ, &quot;Pour une Poignée de Meeples&quot;, a été lancée le samedi 10 mars. Elle vous entraîne dans la fabuleuse aventure des jeux ayant pour thème le western. Avec cette expo, c&#39;est plus de 70 jeux qui sont exposés en salle d&#39;Exploration de mars à décembre 2018. Lucky Luke, Billy the Kid, les trains, les gangsters et les indiens : tous les thèmes chers aux westerns sont bien là.</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_pour-une-poignee-de-meeples-le-western-a-l-honneur-au-centre-national-du-jeu_923493.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_pour-une-poignee-de-meeples-le-western-a-l-honneur-au-centre-national-du-jeu_923493.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_pour-une-poignee-de-meeples-le-western-a-l-honneur-au-centre-national-du-jeu_923493.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-25T09:06:55.000Z",
+      "range": {
+        "fr": "25 avril - 16 décembre",
+        "en": "25 April - 16 December"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 49692513,
+        "title": "Sortir à Boulogne-Billancourt",
+        "url": "http://www.e-bb.fr/",
+        "slug": "sortir-a-boulogne-billancourt",
+        "oaUrl": "https://openagenda.com/agendas/49692513"
+      },
+      "conditions": {
+        "fr": "Entrée libre"
+      },
+      "registrationUrl": "http://cnjeu.fr",
+      "locationName": "Centre national du Jeu",
+      "locationUid": 43979991,
+      "address": "17, allée Robert Doisneau, 92100 Boulogne-Billancourt",
+      "postalCode": "92100",
+      "city": "Boulogne-Billancourt",
+      "district": null,
+      "department": "Hauts-de-Seine",
+      "region": "Île-de-France",
+      "latitude": 48.827778,
+      "longitude": 2.237134,
+      "timings": [
+        {
+          "start": "2018-04-25T07:30:00.000Z",
+          "end": "2018-04-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-25T12:00:00.000Z",
+          "end": "2018-04-25T16:00:00.000Z"
+        },
+        {
+          "start": "2018-04-26T07:30:00.000Z",
+          "end": "2018-04-26T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-26T14:00:00.000Z",
+          "end": "2018-04-26T16:00:00.000Z"
+        },
+        {
+          "start": "2018-04-27T07:30:00.000Z",
+          "end": "2018-04-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-27T14:00:00.000Z",
+          "end": "2018-04-27T16:00:00.000Z"
+        },
+        {
+          "start": "2018-04-28T12:00:00.000Z",
+          "end": "2018-04-28T16:00:00.000Z"
+        },
+        {
+          "start": "2018-04-29T12:00:00.000Z",
+          "end": "2018-04-29T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T07:30:00.000Z",
+          "end": "2018-05-02T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T12:00:00.000Z",
+          "end": "2018-05-02T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T07:30:00.000Z",
+          "end": "2018-05-03T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T14:00:00.000Z",
+          "end": "2018-05-03T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-04T07:30:00.000Z",
+          "end": "2018-05-04T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-04T14:00:00.000Z",
+          "end": "2018-05-04T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-05T12:00:00.000Z",
+          "end": "2018-05-05T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-06T12:00:00.000Z",
+          "end": "2018-05-06T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T07:30:00.000Z",
+          "end": "2018-05-09T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T12:00:00.000Z",
+          "end": "2018-05-09T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-10T14:00:00.000Z",
+          "end": "2018-05-10T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-11T07:30:00.000Z",
+          "end": "2018-05-11T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-11T14:00:00.000Z",
+          "end": "2018-05-11T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-12T12:00:00.000Z",
+          "end": "2018-05-12T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-13T12:00:00.000Z",
+          "end": "2018-05-13T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T07:30:00.000Z",
+          "end": "2018-05-16T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T12:00:00.000Z",
+          "end": "2018-05-16T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T07:30:00.000Z",
+          "end": "2018-05-17T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T14:00:00.000Z",
+          "end": "2018-05-17T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-18T07:30:00.000Z",
+          "end": "2018-05-18T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-18T14:00:00.000Z",
+          "end": "2018-05-18T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-19T12:00:00.000Z",
+          "end": "2018-05-19T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-20T12:00:00.000Z",
+          "end": "2018-05-20T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T07:30:00.000Z",
+          "end": "2018-05-23T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T12:00:00.000Z",
+          "end": "2018-05-23T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T07:30:00.000Z",
+          "end": "2018-05-24T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T14:00:00.000Z",
+          "end": "2018-05-24T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-25T07:30:00.000Z",
+          "end": "2018-05-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-25T14:00:00.000Z",
+          "end": "2018-05-25T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-26T12:00:00.000Z",
+          "end": "2018-05-26T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-27T12:00:00.000Z",
+          "end": "2018-05-27T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T07:30:00.000Z",
+          "end": "2018-05-30T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T12:00:00.000Z",
+          "end": "2018-05-30T16:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T07:30:00.000Z",
+          "end": "2018-05-31T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T14:00:00.000Z",
+          "end": "2018-05-31T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-01T07:30:00.000Z",
+          "end": "2018-06-01T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-01T14:00:00.000Z",
+          "end": "2018-06-01T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-02T12:00:00.000Z",
+          "end": "2018-06-02T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-03T12:00:00.000Z",
+          "end": "2018-06-03T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T07:30:00.000Z",
+          "end": "2018-06-06T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T12:00:00.000Z",
+          "end": "2018-06-06T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T07:30:00.000Z",
+          "end": "2018-06-07T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T14:00:00.000Z",
+          "end": "2018-06-07T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-08T07:30:00.000Z",
+          "end": "2018-06-08T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-08T14:00:00.000Z",
+          "end": "2018-06-08T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-09T12:00:00.000Z",
+          "end": "2018-06-09T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-10T12:00:00.000Z",
+          "end": "2018-06-10T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T07:30:00.000Z",
+          "end": "2018-06-13T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T12:00:00.000Z",
+          "end": "2018-06-13T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T07:30:00.000Z",
+          "end": "2018-06-14T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T14:00:00.000Z",
+          "end": "2018-06-14T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-15T07:30:00.000Z",
+          "end": "2018-06-15T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-15T14:00:00.000Z",
+          "end": "2018-06-15T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-16T12:00:00.000Z",
+          "end": "2018-06-16T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-17T12:00:00.000Z",
+          "end": "2018-06-17T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T07:30:00.000Z",
+          "end": "2018-06-20T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T12:00:00.000Z",
+          "end": "2018-06-20T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T07:30:00.000Z",
+          "end": "2018-06-21T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T14:00:00.000Z",
+          "end": "2018-06-21T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-22T07:30:00.000Z",
+          "end": "2018-06-22T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-22T14:00:00.000Z",
+          "end": "2018-06-22T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-23T12:00:00.000Z",
+          "end": "2018-06-23T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-24T12:00:00.000Z",
+          "end": "2018-06-24T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T07:30:00.000Z",
+          "end": "2018-06-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T12:00:00.000Z",
+          "end": "2018-06-27T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T07:30:00.000Z",
+          "end": "2018-06-28T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T14:00:00.000Z",
+          "end": "2018-06-28T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-29T07:30:00.000Z",
+          "end": "2018-06-29T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-29T14:00:00.000Z",
+          "end": "2018-06-29T16:00:00.000Z"
+        },
+        {
+          "start": "2018-06-30T12:00:00.000Z",
+          "end": "2018-06-30T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-01T12:00:00.000Z",
+          "end": "2018-07-01T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-04T07:30:00.000Z",
+          "end": "2018-07-04T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-04T12:00:00.000Z",
+          "end": "2018-07-04T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-05T07:30:00.000Z",
+          "end": "2018-07-05T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-05T14:00:00.000Z",
+          "end": "2018-07-05T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-06T07:30:00.000Z",
+          "end": "2018-07-06T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-06T14:00:00.000Z",
+          "end": "2018-07-06T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-07T12:00:00.000Z",
+          "end": "2018-07-07T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-08T12:00:00.000Z",
+          "end": "2018-07-08T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-11T07:30:00.000Z",
+          "end": "2018-07-11T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-11T12:00:00.000Z",
+          "end": "2018-07-11T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-12T07:30:00.000Z",
+          "end": "2018-07-12T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-12T14:00:00.000Z",
+          "end": "2018-07-12T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-13T07:30:00.000Z",
+          "end": "2018-07-13T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-13T14:00:00.000Z",
+          "end": "2018-07-13T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-15T12:00:00.000Z",
+          "end": "2018-07-15T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-18T07:30:00.000Z",
+          "end": "2018-07-18T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-18T12:00:00.000Z",
+          "end": "2018-07-18T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-19T07:30:00.000Z",
+          "end": "2018-07-19T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-19T14:00:00.000Z",
+          "end": "2018-07-19T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-20T07:30:00.000Z",
+          "end": "2018-07-20T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-20T14:00:00.000Z",
+          "end": "2018-07-20T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-21T12:00:00.000Z",
+          "end": "2018-07-21T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-22T12:00:00.000Z",
+          "end": "2018-07-22T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-25T07:30:00.000Z",
+          "end": "2018-07-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-25T12:00:00.000Z",
+          "end": "2018-07-25T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-26T07:30:00.000Z",
+          "end": "2018-07-26T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-26T14:00:00.000Z",
+          "end": "2018-07-26T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-27T07:30:00.000Z",
+          "end": "2018-07-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-07-27T14:00:00.000Z",
+          "end": "2018-07-27T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-28T12:00:00.000Z",
+          "end": "2018-07-28T16:00:00.000Z"
+        },
+        {
+          "start": "2018-07-29T12:00:00.000Z",
+          "end": "2018-07-29T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-02T14:00:00.000Z",
+          "end": "2018-08-02T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-03T14:00:00.000Z",
+          "end": "2018-08-03T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-09T14:00:00.000Z",
+          "end": "2018-08-09T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-10T14:00:00.000Z",
+          "end": "2018-08-10T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-16T14:00:00.000Z",
+          "end": "2018-08-16T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-17T14:00:00.000Z",
+          "end": "2018-08-17T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-23T14:00:00.000Z",
+          "end": "2018-08-23T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-24T14:00:00.000Z",
+          "end": "2018-08-24T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-29T07:30:00.000Z",
+          "end": "2018-08-29T10:00:00.000Z"
+        },
+        {
+          "start": "2018-08-29T12:00:00.000Z",
+          "end": "2018-08-29T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-30T07:30:00.000Z",
+          "end": "2018-08-30T10:00:00.000Z"
+        },
+        {
+          "start": "2018-08-30T14:00:00.000Z",
+          "end": "2018-08-30T16:00:00.000Z"
+        },
+        {
+          "start": "2018-08-31T07:30:00.000Z",
+          "end": "2018-08-31T10:00:00.000Z"
+        },
+        {
+          "start": "2018-08-31T14:00:00.000Z",
+          "end": "2018-08-31T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-01T12:00:00.000Z",
+          "end": "2018-09-01T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-02T12:00:00.000Z",
+          "end": "2018-09-02T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-05T07:30:00.000Z",
+          "end": "2018-09-05T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-05T12:00:00.000Z",
+          "end": "2018-09-05T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-06T07:30:00.000Z",
+          "end": "2018-09-06T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-06T14:00:00.000Z",
+          "end": "2018-09-06T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-07T07:30:00.000Z",
+          "end": "2018-09-07T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-07T14:00:00.000Z",
+          "end": "2018-09-07T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-08T12:00:00.000Z",
+          "end": "2018-09-08T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-09T12:00:00.000Z",
+          "end": "2018-09-09T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-12T07:30:00.000Z",
+          "end": "2018-09-12T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-12T12:00:00.000Z",
+          "end": "2018-09-12T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-13T07:30:00.000Z",
+          "end": "2018-09-13T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-13T14:00:00.000Z",
+          "end": "2018-09-13T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-14T07:30:00.000Z",
+          "end": "2018-09-14T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-14T14:00:00.000Z",
+          "end": "2018-09-14T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-15T12:00:00.000Z",
+          "end": "2018-09-15T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-16T12:00:00.000Z",
+          "end": "2018-09-16T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-19T07:30:00.000Z",
+          "end": "2018-09-19T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-19T12:00:00.000Z",
+          "end": "2018-09-19T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-20T07:30:00.000Z",
+          "end": "2018-09-20T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-20T14:00:00.000Z",
+          "end": "2018-09-20T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-21T07:30:00.000Z",
+          "end": "2018-09-21T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-21T14:00:00.000Z",
+          "end": "2018-09-21T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-22T12:00:00.000Z",
+          "end": "2018-09-22T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-23T12:00:00.000Z",
+          "end": "2018-09-23T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-26T07:30:00.000Z",
+          "end": "2018-09-26T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-26T12:00:00.000Z",
+          "end": "2018-09-26T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-27T07:30:00.000Z",
+          "end": "2018-09-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-27T14:00:00.000Z",
+          "end": "2018-09-27T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-28T07:30:00.000Z",
+          "end": "2018-09-28T10:00:00.000Z"
+        },
+        {
+          "start": "2018-09-28T14:00:00.000Z",
+          "end": "2018-09-28T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-29T12:00:00.000Z",
+          "end": "2018-09-29T16:00:00.000Z"
+        },
+        {
+          "start": "2018-09-30T12:00:00.000Z",
+          "end": "2018-09-30T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-03T07:30:00.000Z",
+          "end": "2018-10-03T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-03T12:00:00.000Z",
+          "end": "2018-10-03T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-04T07:30:00.000Z",
+          "end": "2018-10-04T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-04T14:00:00.000Z",
+          "end": "2018-10-04T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-05T07:30:00.000Z",
+          "end": "2018-10-05T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-05T14:00:00.000Z",
+          "end": "2018-10-05T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-06T12:00:00.000Z",
+          "end": "2018-10-06T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-07T12:00:00.000Z",
+          "end": "2018-10-07T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-10T07:30:00.000Z",
+          "end": "2018-10-10T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-10T12:00:00.000Z",
+          "end": "2018-10-10T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-11T07:30:00.000Z",
+          "end": "2018-10-11T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-11T14:00:00.000Z",
+          "end": "2018-10-11T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-12T07:30:00.000Z",
+          "end": "2018-10-12T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-12T14:00:00.000Z",
+          "end": "2018-10-12T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-13T12:00:00.000Z",
+          "end": "2018-10-13T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-14T12:00:00.000Z",
+          "end": "2018-10-14T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-17T07:30:00.000Z",
+          "end": "2018-10-17T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-17T12:00:00.000Z",
+          "end": "2018-10-17T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-18T07:30:00.000Z",
+          "end": "2018-10-18T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-18T14:00:00.000Z",
+          "end": "2018-10-18T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-19T07:30:00.000Z",
+          "end": "2018-10-19T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-19T14:00:00.000Z",
+          "end": "2018-10-19T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-20T12:00:00.000Z",
+          "end": "2018-10-20T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-21T12:00:00.000Z",
+          "end": "2018-10-21T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-24T07:30:00.000Z",
+          "end": "2018-10-24T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-24T12:00:00.000Z",
+          "end": "2018-10-24T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-25T07:30:00.000Z",
+          "end": "2018-10-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-25T14:00:00.000Z",
+          "end": "2018-10-25T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-26T07:30:00.000Z",
+          "end": "2018-10-26T10:00:00.000Z"
+        },
+        {
+          "start": "2018-10-26T14:00:00.000Z",
+          "end": "2018-10-26T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-27T12:00:00.000Z",
+          "end": "2018-10-27T16:00:00.000Z"
+        },
+        {
+          "start": "2018-10-28T13:00:00.000Z",
+          "end": "2018-10-28T17:00:00.000Z"
+        },
+        {
+          "start": "2018-10-31T08:30:00.000Z",
+          "end": "2018-10-31T11:00:00.000Z"
+        },
+        {
+          "start": "2018-10-31T13:00:00.000Z",
+          "end": "2018-10-31T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-01T08:30:00.000Z",
+          "end": "2018-11-01T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-01T15:00:00.000Z",
+          "end": "2018-11-01T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-02T08:30:00.000Z",
+          "end": "2018-11-02T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-02T15:00:00.000Z",
+          "end": "2018-11-02T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-03T13:00:00.000Z",
+          "end": "2018-11-03T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-04T13:00:00.000Z",
+          "end": "2018-11-04T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-07T08:30:00.000Z",
+          "end": "2018-11-07T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-07T13:00:00.000Z",
+          "end": "2018-11-07T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-08T08:30:00.000Z",
+          "end": "2018-11-08T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-08T15:00:00.000Z",
+          "end": "2018-11-08T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-09T08:30:00.000Z",
+          "end": "2018-11-09T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-09T15:00:00.000Z",
+          "end": "2018-11-09T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-10T13:00:00.000Z",
+          "end": "2018-11-10T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-11T13:00:00.000Z",
+          "end": "2018-11-11T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-14T08:30:00.000Z",
+          "end": "2018-11-14T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-14T13:00:00.000Z",
+          "end": "2018-11-14T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-15T08:30:00.000Z",
+          "end": "2018-11-15T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-15T15:00:00.000Z",
+          "end": "2018-11-15T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-16T08:30:00.000Z",
+          "end": "2018-11-16T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-16T15:00:00.000Z",
+          "end": "2018-11-16T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-17T13:00:00.000Z",
+          "end": "2018-11-17T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-18T13:00:00.000Z",
+          "end": "2018-11-18T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-21T08:30:00.000Z",
+          "end": "2018-11-21T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-21T13:00:00.000Z",
+          "end": "2018-11-21T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-22T08:30:00.000Z",
+          "end": "2018-11-22T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-22T15:00:00.000Z",
+          "end": "2018-11-22T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-23T08:30:00.000Z",
+          "end": "2018-11-23T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-23T15:00:00.000Z",
+          "end": "2018-11-23T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-24T13:00:00.000Z",
+          "end": "2018-11-24T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-25T13:00:00.000Z",
+          "end": "2018-11-25T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-28T08:30:00.000Z",
+          "end": "2018-11-28T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-28T13:00:00.000Z",
+          "end": "2018-11-28T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-29T08:30:00.000Z",
+          "end": "2018-11-29T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-29T15:00:00.000Z",
+          "end": "2018-11-29T17:00:00.000Z"
+        },
+        {
+          "start": "2018-11-30T08:30:00.000Z",
+          "end": "2018-11-30T11:00:00.000Z"
+        },
+        {
+          "start": "2018-11-30T15:00:00.000Z",
+          "end": "2018-11-30T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-01T13:00:00.000Z",
+          "end": "2018-12-01T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-02T13:00:00.000Z",
+          "end": "2018-12-02T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-05T08:30:00.000Z",
+          "end": "2018-12-05T11:00:00.000Z"
+        },
+        {
+          "start": "2018-12-05T13:00:00.000Z",
+          "end": "2018-12-05T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-06T08:30:00.000Z",
+          "end": "2018-12-06T11:00:00.000Z"
+        },
+        {
+          "start": "2018-12-06T15:00:00.000Z",
+          "end": "2018-12-06T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-07T08:30:00.000Z",
+          "end": "2018-12-07T11:00:00.000Z"
+        },
+        {
+          "start": "2018-12-07T15:00:00.000Z",
+          "end": "2018-12-07T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-08T13:00:00.000Z",
+          "end": "2018-12-08T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-09T13:00:00.000Z",
+          "end": "2018-12-09T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-12T08:30:00.000Z",
+          "end": "2018-12-12T11:00:00.000Z"
+        },
+        {
+          "start": "2018-12-12T13:00:00.000Z",
+          "end": "2018-12-12T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-13T08:30:00.000Z",
+          "end": "2018-12-13T11:00:00.000Z"
+        },
+        {
+          "start": "2018-12-13T15:00:00.000Z",
+          "end": "2018-12-13T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-14T08:30:00.000Z",
+          "end": "2018-12-14T11:00:00.000Z"
+        },
+        {
+          "start": "2018-12-14T15:00:00.000Z",
+          "end": "2018-12-14T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-15T13:00:00.000Z",
+          "end": "2018-12-15T17:00:00.000Z"
+        },
+        {
+          "start": "2018-12-16T13:00:00.000Z",
+          "end": "2018-12-16T17:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 43979991,
+        "name": "Centre national du Jeu",
+        "slug": "centre-national-du-jeu501",
+        "address": "17, allée Robert Doisneau, 92100 Boulogne-Billancourt",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "92100",
+        "city": "Boulogne-Billancourt",
+        "district": null,
+        "department": "Hauts-de-Seine",
+        "region": "Île-de-France",
+        "latitude": 48.827778,
+        "longitude": 2.237134,
+        "description": null,
+        "access": null,
+        "countryCode": "fr",
+        "website": null,
+        "links": null,
+        "insee": null,
+        "phone": null,
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2016-04-02T07:30:10.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [
+        {
+          "value": "http://cnjeu.fr",
+          "type": "link",
+          "prefix": ""
+        }
+      ],
+      "firstDate": "2018-04-25",
+      "firstTimeStart": "09:30",
+      "firstTimeEnd": "12:00",
+      "lastDate": "2018-12-16",
+      "lastTimeStart": "14:00",
+      "lastTimeEnd": "18:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 83203653,
+      "slug": "permanence-point-numerique",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/permanence-point-numerique",
+      "title": {
+        "fr": "Permanence point numérique"
+      },
+      "description": {
+        "fr": "Permanence point numérique"
+      },
+      "longDescription": null,
+      "keywords": null,
+      "html": {
+        "fr": null
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_permanence-point-numerique_660749.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_permanence-point-numerique_660749.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_permanence-point-numerique_660749.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-26T08:02:29.000Z",
+      "range": {
+        "fr": "27 mars - 5 octobre",
+        "en": "27 March - 5 October"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 31105189,
+        "title": "L'agenda du Centre Social Annam",
+        "url": "https://fr-fr.facebook.com/centresocialannam/",
+        "slug": "centre-social-annam",
+        "oaUrl": "https://openagenda.com/agendas/31105189"
+      },
+      "conditions": null,
+      "registrationUrl": null,
+      "locationName": "Centre Social Annam",
+      "locationUid": 78035661,
+      "address": "Paris 75020",
+      "postalCode": "75020",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.859988,
+      "longitude": 2.406644,
+      "timings": [
+        {
+          "start": "2018-03-27T07:30:00.000Z",
+          "end": "2018-03-27T10:30:00.000Z"
+        },
+        {
+          "start": "2018-03-27T11:30:00.000Z",
+          "end": "2018-03-27T15:30:00.000Z"
+        },
+        {
+          "start": "2018-03-28T11:30:00.000Z",
+          "end": "2018-03-28T15:30:00.000Z"
+        },
+        {
+          "start": "2018-03-29T07:30:00.000Z",
+          "end": "2018-03-29T10:30:00.000Z"
+        },
+        {
+          "start": "2018-03-29T11:30:00.000Z",
+          "end": "2018-03-29T15:00:00.000Z"
+        },
+        {
+          "start": "2018-03-30T07:30:00.000Z",
+          "end": "2018-03-30T10:30:00.000Z"
+        },
+        {
+          "start": "2018-03-30T11:30:00.000Z",
+          "end": "2018-03-30T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-03T07:30:00.000Z",
+          "end": "2018-04-03T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-03T11:30:00.000Z",
+          "end": "2018-04-03T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-04T11:30:00.000Z",
+          "end": "2018-04-04T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-05T07:30:00.000Z",
+          "end": "2018-04-05T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-05T11:30:00.000Z",
+          "end": "2018-04-05T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-06T07:30:00.000Z",
+          "end": "2018-04-06T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-06T11:30:00.000Z",
+          "end": "2018-04-06T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-10T07:30:00.000Z",
+          "end": "2018-04-10T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-10T11:30:00.000Z",
+          "end": "2018-04-10T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-11T11:30:00.000Z",
+          "end": "2018-04-11T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-12T07:30:00.000Z",
+          "end": "2018-04-12T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-12T11:30:00.000Z",
+          "end": "2018-04-12T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-13T07:30:00.000Z",
+          "end": "2018-04-13T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-13T11:30:00.000Z",
+          "end": "2018-04-13T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-17T07:30:00.000Z",
+          "end": "2018-04-17T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-17T11:30:00.000Z",
+          "end": "2018-04-17T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-18T11:30:00.000Z",
+          "end": "2018-04-18T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-19T07:30:00.000Z",
+          "end": "2018-04-19T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-19T11:30:00.000Z",
+          "end": "2018-04-19T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-20T07:30:00.000Z",
+          "end": "2018-04-20T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-20T11:30:00.000Z",
+          "end": "2018-04-20T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-24T07:30:00.000Z",
+          "end": "2018-04-24T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-24T11:30:00.000Z",
+          "end": "2018-04-24T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-25T11:30:00.000Z",
+          "end": "2018-04-25T15:30:00.000Z"
+        },
+        {
+          "start": "2018-04-26T07:30:00.000Z",
+          "end": "2018-04-26T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-26T11:30:00.000Z",
+          "end": "2018-04-26T15:00:00.000Z"
+        },
+        {
+          "start": "2018-04-27T07:30:00.000Z",
+          "end": "2018-04-27T10:30:00.000Z"
+        },
+        {
+          "start": "2018-04-27T11:30:00.000Z",
+          "end": "2018-04-27T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-01T07:30:00.000Z",
+          "end": "2018-05-01T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-01T11:30:00.000Z",
+          "end": "2018-05-01T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-02T11:30:00.000Z",
+          "end": "2018-05-02T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-03T07:30:00.000Z",
+          "end": "2018-05-03T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-03T11:30:00.000Z",
+          "end": "2018-05-03T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-04T07:30:00.000Z",
+          "end": "2018-05-04T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-04T11:30:00.000Z",
+          "end": "2018-05-04T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-08T07:30:00.000Z",
+          "end": "2018-05-08T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-08T11:30:00.000Z",
+          "end": "2018-05-08T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-09T11:30:00.000Z",
+          "end": "2018-05-09T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-10T07:30:00.000Z",
+          "end": "2018-05-10T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-10T11:30:00.000Z",
+          "end": "2018-05-10T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-11T07:30:00.000Z",
+          "end": "2018-05-11T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-11T11:30:00.000Z",
+          "end": "2018-05-11T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-15T07:30:00.000Z",
+          "end": "2018-05-15T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-15T11:30:00.000Z",
+          "end": "2018-05-15T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-16T11:30:00.000Z",
+          "end": "2018-05-16T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-17T07:30:00.000Z",
+          "end": "2018-05-17T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-17T11:30:00.000Z",
+          "end": "2018-05-17T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-18T07:30:00.000Z",
+          "end": "2018-05-18T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-18T11:30:00.000Z",
+          "end": "2018-05-18T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-22T07:30:00.000Z",
+          "end": "2018-05-22T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-22T11:30:00.000Z",
+          "end": "2018-05-22T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-23T11:30:00.000Z",
+          "end": "2018-05-23T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-24T07:30:00.000Z",
+          "end": "2018-05-24T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-24T11:30:00.000Z",
+          "end": "2018-05-24T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-25T07:30:00.000Z",
+          "end": "2018-05-25T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-25T11:30:00.000Z",
+          "end": "2018-05-25T15:00:00.000Z"
+        },
+        {
+          "start": "2018-05-29T07:30:00.000Z",
+          "end": "2018-05-29T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-29T11:30:00.000Z",
+          "end": "2018-05-29T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-30T11:30:00.000Z",
+          "end": "2018-05-30T15:30:00.000Z"
+        },
+        {
+          "start": "2018-05-31T07:30:00.000Z",
+          "end": "2018-05-31T10:30:00.000Z"
+        },
+        {
+          "start": "2018-05-31T11:30:00.000Z",
+          "end": "2018-05-31T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-01T07:30:00.000Z",
+          "end": "2018-06-01T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-01T11:30:00.000Z",
+          "end": "2018-06-01T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-05T07:30:00.000Z",
+          "end": "2018-06-05T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-05T11:30:00.000Z",
+          "end": "2018-06-05T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-06T11:30:00.000Z",
+          "end": "2018-06-06T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-07T07:30:00.000Z",
+          "end": "2018-06-07T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-07T11:30:00.000Z",
+          "end": "2018-06-07T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-08T07:30:00.000Z",
+          "end": "2018-06-08T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-08T11:30:00.000Z",
+          "end": "2018-06-08T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T07:30:00.000Z",
+          "end": "2018-06-12T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-12T11:30:00.000Z",
+          "end": "2018-06-12T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-13T11:30:00.000Z",
+          "end": "2018-06-13T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-14T07:30:00.000Z",
+          "end": "2018-06-14T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-14T11:30:00.000Z",
+          "end": "2018-06-14T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-15T07:30:00.000Z",
+          "end": "2018-06-15T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-15T11:30:00.000Z",
+          "end": "2018-06-15T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-19T07:30:00.000Z",
+          "end": "2018-06-19T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-19T11:30:00.000Z",
+          "end": "2018-06-19T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-20T11:30:00.000Z",
+          "end": "2018-06-20T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-21T07:30:00.000Z",
+          "end": "2018-06-21T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-21T11:30:00.000Z",
+          "end": "2018-06-21T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-22T07:30:00.000Z",
+          "end": "2018-06-22T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-22T11:30:00.000Z",
+          "end": "2018-06-22T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-26T07:30:00.000Z",
+          "end": "2018-06-26T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-26T11:30:00.000Z",
+          "end": "2018-06-26T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-27T11:30:00.000Z",
+          "end": "2018-06-27T15:30:00.000Z"
+        },
+        {
+          "start": "2018-06-28T07:30:00.000Z",
+          "end": "2018-06-28T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-28T11:30:00.000Z",
+          "end": "2018-06-28T15:00:00.000Z"
+        },
+        {
+          "start": "2018-06-29T07:30:00.000Z",
+          "end": "2018-06-29T10:30:00.000Z"
+        },
+        {
+          "start": "2018-06-29T11:30:00.000Z",
+          "end": "2018-06-29T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-03T07:30:00.000Z",
+          "end": "2018-07-03T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-03T11:30:00.000Z",
+          "end": "2018-07-03T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-04T11:30:00.000Z",
+          "end": "2018-07-04T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-05T07:30:00.000Z",
+          "end": "2018-07-05T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-05T11:30:00.000Z",
+          "end": "2018-07-05T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-06T07:30:00.000Z",
+          "end": "2018-07-06T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-06T11:30:00.000Z",
+          "end": "2018-07-06T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-10T07:30:00.000Z",
+          "end": "2018-07-10T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-10T11:30:00.000Z",
+          "end": "2018-07-10T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-11T11:30:00.000Z",
+          "end": "2018-07-11T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-12T07:30:00.000Z",
+          "end": "2018-07-12T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-12T11:30:00.000Z",
+          "end": "2018-07-12T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-13T07:30:00.000Z",
+          "end": "2018-07-13T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-13T11:30:00.000Z",
+          "end": "2018-07-13T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-17T07:30:00.000Z",
+          "end": "2018-07-17T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-17T11:30:00.000Z",
+          "end": "2018-07-17T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-18T11:30:00.000Z",
+          "end": "2018-07-18T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-19T07:30:00.000Z",
+          "end": "2018-07-19T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-19T11:30:00.000Z",
+          "end": "2018-07-19T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-20T07:30:00.000Z",
+          "end": "2018-07-20T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-20T11:30:00.000Z",
+          "end": "2018-07-20T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-24T07:30:00.000Z",
+          "end": "2018-07-24T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-24T11:30:00.000Z",
+          "end": "2018-07-24T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-25T11:30:00.000Z",
+          "end": "2018-07-25T15:30:00.000Z"
+        },
+        {
+          "start": "2018-07-26T07:30:00.000Z",
+          "end": "2018-07-26T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-26T11:30:00.000Z",
+          "end": "2018-07-26T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-27T07:30:00.000Z",
+          "end": "2018-07-27T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-27T11:30:00.000Z",
+          "end": "2018-07-27T15:00:00.000Z"
+        },
+        {
+          "start": "2018-07-31T07:30:00.000Z",
+          "end": "2018-07-31T10:30:00.000Z"
+        },
+        {
+          "start": "2018-07-31T11:30:00.000Z",
+          "end": "2018-07-31T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-01T11:30:00.000Z",
+          "end": "2018-08-01T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-02T07:30:00.000Z",
+          "end": "2018-08-02T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-02T11:30:00.000Z",
+          "end": "2018-08-02T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-03T07:30:00.000Z",
+          "end": "2018-08-03T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-03T11:30:00.000Z",
+          "end": "2018-08-03T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-07T07:30:00.000Z",
+          "end": "2018-08-07T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-07T11:30:00.000Z",
+          "end": "2018-08-07T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-08T11:30:00.000Z",
+          "end": "2018-08-08T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-09T07:30:00.000Z",
+          "end": "2018-08-09T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-09T11:30:00.000Z",
+          "end": "2018-08-09T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-10T07:30:00.000Z",
+          "end": "2018-08-10T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-10T11:30:00.000Z",
+          "end": "2018-08-10T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-14T07:30:00.000Z",
+          "end": "2018-08-14T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-14T11:30:00.000Z",
+          "end": "2018-08-14T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-15T11:30:00.000Z",
+          "end": "2018-08-15T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-16T07:30:00.000Z",
+          "end": "2018-08-16T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-16T11:30:00.000Z",
+          "end": "2018-08-16T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-17T07:30:00.000Z",
+          "end": "2018-08-17T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-17T11:30:00.000Z",
+          "end": "2018-08-17T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-21T07:30:00.000Z",
+          "end": "2018-08-21T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-21T11:30:00.000Z",
+          "end": "2018-08-21T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-22T11:30:00.000Z",
+          "end": "2018-08-22T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-23T07:30:00.000Z",
+          "end": "2018-08-23T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-23T11:30:00.000Z",
+          "end": "2018-08-23T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-24T07:30:00.000Z",
+          "end": "2018-08-24T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-24T11:30:00.000Z",
+          "end": "2018-08-24T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-28T07:30:00.000Z",
+          "end": "2018-08-28T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-28T11:30:00.000Z",
+          "end": "2018-08-28T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-29T11:30:00.000Z",
+          "end": "2018-08-29T15:30:00.000Z"
+        },
+        {
+          "start": "2018-08-30T07:30:00.000Z",
+          "end": "2018-08-30T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-30T11:30:00.000Z",
+          "end": "2018-08-30T15:00:00.000Z"
+        },
+        {
+          "start": "2018-08-31T07:30:00.000Z",
+          "end": "2018-08-31T10:30:00.000Z"
+        },
+        {
+          "start": "2018-08-31T11:30:00.000Z",
+          "end": "2018-08-31T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-04T07:30:00.000Z",
+          "end": "2018-09-04T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-04T11:30:00.000Z",
+          "end": "2018-09-04T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-05T11:30:00.000Z",
+          "end": "2018-09-05T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-06T07:30:00.000Z",
+          "end": "2018-09-06T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-06T11:30:00.000Z",
+          "end": "2018-09-06T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-07T07:30:00.000Z",
+          "end": "2018-09-07T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-07T11:30:00.000Z",
+          "end": "2018-09-07T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-11T07:30:00.000Z",
+          "end": "2018-09-11T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-11T11:30:00.000Z",
+          "end": "2018-09-11T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-12T11:30:00.000Z",
+          "end": "2018-09-12T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-13T07:30:00.000Z",
+          "end": "2018-09-13T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-13T11:30:00.000Z",
+          "end": "2018-09-13T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-14T07:30:00.000Z",
+          "end": "2018-09-14T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-14T11:30:00.000Z",
+          "end": "2018-09-14T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-18T07:30:00.000Z",
+          "end": "2018-09-18T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-18T11:30:00.000Z",
+          "end": "2018-09-18T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-19T11:30:00.000Z",
+          "end": "2018-09-19T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-20T07:30:00.000Z",
+          "end": "2018-09-20T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-20T11:30:00.000Z",
+          "end": "2018-09-20T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-21T07:30:00.000Z",
+          "end": "2018-09-21T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-21T11:30:00.000Z",
+          "end": "2018-09-21T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-25T07:30:00.000Z",
+          "end": "2018-09-25T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-25T11:30:00.000Z",
+          "end": "2018-09-25T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-26T11:30:00.000Z",
+          "end": "2018-09-26T15:30:00.000Z"
+        },
+        {
+          "start": "2018-09-27T07:30:00.000Z",
+          "end": "2018-09-27T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-27T11:30:00.000Z",
+          "end": "2018-09-27T15:00:00.000Z"
+        },
+        {
+          "start": "2018-09-28T07:30:00.000Z",
+          "end": "2018-09-28T10:30:00.000Z"
+        },
+        {
+          "start": "2018-09-28T11:30:00.000Z",
+          "end": "2018-09-28T15:00:00.000Z"
+        },
+        {
+          "start": "2018-10-02T07:30:00.000Z",
+          "end": "2018-10-02T10:30:00.000Z"
+        },
+        {
+          "start": "2018-10-02T11:30:00.000Z",
+          "end": "2018-10-02T15:30:00.000Z"
+        },
+        {
+          "start": "2018-10-03T11:30:00.000Z",
+          "end": "2018-10-03T15:30:00.000Z"
+        },
+        {
+          "start": "2018-10-04T07:30:00.000Z",
+          "end": "2018-10-04T10:30:00.000Z"
+        },
+        {
+          "start": "2018-10-04T11:30:00.000Z",
+          "end": "2018-10-04T15:00:00.000Z"
+        },
+        {
+          "start": "2018-10-05T07:30:00.000Z",
+          "end": "2018-10-05T10:30:00.000Z"
+        },
+        {
+          "start": "2018-10-05T11:30:00.000Z",
+          "end": "2018-10-05T15:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 78035661,
+        "name": "Centre Social Annam",
+        "slug": "centre-social-annam",
+        "address": "Paris 75020",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75020",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.859988,
+        "longitude": 2.406644,
+        "description": {},
+        "access": {},
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": null,
+        "phone": null,
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-03-28T13:24:42.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [],
+      "firstDate": "2018-03-27",
+      "firstTimeStart": "09:30",
+      "firstTimeEnd": "12:30",
+      "lastDate": "2018-10-05",
+      "lastTimeStart": "13:30",
+      "lastTimeEnd": "17:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 80028406,
+      "slug": "utilisation-libre-d-internet",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/utilisation-libre-d-internet",
+      "title": {
+        "fr": "Utilisation libre d'Internet"
+      },
+      "description": {
+        "fr": "02 Ordinateurs en libre-accès pour les demandeurs d'emploi"
+      },
+      "longDescription": {
+        "fr": "Nous proposons deux ordinateurs connectés aux demandeurs d'emploi pour un accès libre à Internet (limité dans le temps)."
+      },
+      "keywords": null,
+      "html": {
+        "fr": "<p>Nous proposons deux ordinateurs connectés aux demandeurs d&#39;emploi pour un accès libre à Internet (limité dans le temps).</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_utilisation-libre-d-internet_350598.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_utilisation-libre-d-internet_350598.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_utilisation-libre-d-internet_350598.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-10T08:32:09.000Z",
+      "range": {
+        "fr": "9 avril - 29 juin",
+        "en": "9 April - 29 June"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 77941292,
+        "title": "Pôle Emploi Piat",
+        "url": "http://www.pole-emploi.fr",
+        "slug": "pole-emploi-piat",
+        "oaUrl": "https://openagenda.com/agendas/77941292"
+      },
+      "conditions": {
+        "fr": "Accès libre le matin de 09h00 à 13h00 et sur rendez-vous les après-midi (à prendre sur place)."
+      },
+      "registrationUrl": null,
+      "locationName": "Pôle Emploi Piat",
+      "locationUid": 51676460,
+      "address": "51 rue Piat - 75020 - Paris",
+      "postalCode": "75020",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.872858,
+      "longitude": 2.383494,
+      "timings": [
+        {
+          "start": "2018-04-09T07:30:00.000Z",
+          "end": "2018-04-09T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-09T11:30:00.000Z",
+          "end": "2018-04-09T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-10T07:30:00.000Z",
+          "end": "2018-04-10T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-10T11:30:00.000Z",
+          "end": "2018-04-10T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-11T07:30:00.000Z",
+          "end": "2018-04-11T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-11T11:30:00.000Z",
+          "end": "2018-04-11T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-12T07:30:00.000Z",
+          "end": "2018-04-12T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-12T11:30:00.000Z",
+          "end": "2018-04-12T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-13T07:30:00.000Z",
+          "end": "2018-04-13T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-16T07:30:00.000Z",
+          "end": "2018-04-16T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-16T11:30:00.000Z",
+          "end": "2018-04-16T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-17T07:30:00.000Z",
+          "end": "2018-04-17T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-17T11:30:00.000Z",
+          "end": "2018-04-17T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-18T07:30:00.000Z",
+          "end": "2018-04-18T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-18T11:30:00.000Z",
+          "end": "2018-04-18T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-19T07:30:00.000Z",
+          "end": "2018-04-19T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-19T11:30:00.000Z",
+          "end": "2018-04-19T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-20T07:30:00.000Z",
+          "end": "2018-04-20T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-23T07:30:00.000Z",
+          "end": "2018-04-23T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-23T11:30:00.000Z",
+          "end": "2018-04-23T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-24T07:30:00.000Z",
+          "end": "2018-04-24T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-24T11:30:00.000Z",
+          "end": "2018-04-24T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-25T07:30:00.000Z",
+          "end": "2018-04-25T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-25T11:30:00.000Z",
+          "end": "2018-04-25T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-26T07:30:00.000Z",
+          "end": "2018-04-26T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-26T11:30:00.000Z",
+          "end": "2018-04-26T14:30:00.000Z"
+        },
+        {
+          "start": "2018-04-27T07:30:00.000Z",
+          "end": "2018-04-27T10:00:00.000Z"
+        },
+        {
+          "start": "2018-04-30T07:30:00.000Z",
+          "end": "2018-04-30T11:00:00.000Z"
+        },
+        {
+          "start": "2018-04-30T11:30:00.000Z",
+          "end": "2018-04-30T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-01T07:30:00.000Z",
+          "end": "2018-05-01T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-01T11:30:00.000Z",
+          "end": "2018-05-01T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-02T07:30:00.000Z",
+          "end": "2018-05-02T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-02T11:30:00.000Z",
+          "end": "2018-05-02T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-03T07:30:00.000Z",
+          "end": "2018-05-03T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-03T11:30:00.000Z",
+          "end": "2018-05-03T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-04T07:30:00.000Z",
+          "end": "2018-05-04T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-07T07:30:00.000Z",
+          "end": "2018-05-07T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-07T11:30:00.000Z",
+          "end": "2018-05-07T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-08T07:30:00.000Z",
+          "end": "2018-05-08T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-08T11:30:00.000Z",
+          "end": "2018-05-08T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-09T07:30:00.000Z",
+          "end": "2018-05-09T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-09T11:30:00.000Z",
+          "end": "2018-05-09T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-10T07:30:00.000Z",
+          "end": "2018-05-10T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-10T11:30:00.000Z",
+          "end": "2018-05-10T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-11T07:30:00.000Z",
+          "end": "2018-05-11T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-14T07:30:00.000Z",
+          "end": "2018-05-14T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-14T11:30:00.000Z",
+          "end": "2018-05-14T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-15T07:30:00.000Z",
+          "end": "2018-05-15T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-15T11:30:00.000Z",
+          "end": "2018-05-15T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-16T07:30:00.000Z",
+          "end": "2018-05-16T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-16T11:30:00.000Z",
+          "end": "2018-05-16T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-17T07:30:00.000Z",
+          "end": "2018-05-17T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-17T11:30:00.000Z",
+          "end": "2018-05-17T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-18T07:30:00.000Z",
+          "end": "2018-05-18T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-21T07:30:00.000Z",
+          "end": "2018-05-21T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-21T11:30:00.000Z",
+          "end": "2018-05-21T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-22T07:30:00.000Z",
+          "end": "2018-05-22T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-22T11:30:00.000Z",
+          "end": "2018-05-22T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-23T07:30:00.000Z",
+          "end": "2018-05-23T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-23T11:30:00.000Z",
+          "end": "2018-05-23T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-24T07:30:00.000Z",
+          "end": "2018-05-24T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-24T11:30:00.000Z",
+          "end": "2018-05-24T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-25T07:30:00.000Z",
+          "end": "2018-05-25T10:00:00.000Z"
+        },
+        {
+          "start": "2018-05-28T07:30:00.000Z",
+          "end": "2018-05-28T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-28T11:30:00.000Z",
+          "end": "2018-05-28T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-29T07:30:00.000Z",
+          "end": "2018-05-29T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-29T11:30:00.000Z",
+          "end": "2018-05-29T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-30T07:30:00.000Z",
+          "end": "2018-05-30T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-30T11:30:00.000Z",
+          "end": "2018-05-30T14:30:00.000Z"
+        },
+        {
+          "start": "2018-05-31T07:30:00.000Z",
+          "end": "2018-05-31T11:00:00.000Z"
+        },
+        {
+          "start": "2018-05-31T11:30:00.000Z",
+          "end": "2018-05-31T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-01T07:30:00.000Z",
+          "end": "2018-06-01T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-04T07:30:00.000Z",
+          "end": "2018-06-04T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-04T11:30:00.000Z",
+          "end": "2018-06-04T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-05T07:30:00.000Z",
+          "end": "2018-06-05T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-05T11:30:00.000Z",
+          "end": "2018-06-05T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-06T07:30:00.000Z",
+          "end": "2018-06-06T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-06T11:30:00.000Z",
+          "end": "2018-06-06T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-07T07:30:00.000Z",
+          "end": "2018-06-07T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-07T11:30:00.000Z",
+          "end": "2018-06-07T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-08T07:30:00.000Z",
+          "end": "2018-06-08T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T07:30:00.000Z",
+          "end": "2018-06-11T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-11T11:30:00.000Z",
+          "end": "2018-06-11T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-12T07:30:00.000Z",
+          "end": "2018-06-12T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-12T11:30:00.000Z",
+          "end": "2018-06-12T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-13T07:30:00.000Z",
+          "end": "2018-06-13T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-13T11:30:00.000Z",
+          "end": "2018-06-13T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-14T07:30:00.000Z",
+          "end": "2018-06-14T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-14T11:30:00.000Z",
+          "end": "2018-06-14T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-15T07:30:00.000Z",
+          "end": "2018-06-15T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T07:30:00.000Z",
+          "end": "2018-06-18T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-18T11:30:00.000Z",
+          "end": "2018-06-18T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-19T07:30:00.000Z",
+          "end": "2018-06-19T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-19T11:30:00.000Z",
+          "end": "2018-06-19T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-20T07:30:00.000Z",
+          "end": "2018-06-20T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-20T11:30:00.000Z",
+          "end": "2018-06-20T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-21T07:30:00.000Z",
+          "end": "2018-06-21T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-21T11:30:00.000Z",
+          "end": "2018-06-21T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-22T07:30:00.000Z",
+          "end": "2018-06-22T10:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T07:30:00.000Z",
+          "end": "2018-06-25T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-25T11:30:00.000Z",
+          "end": "2018-06-25T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-26T07:30:00.000Z",
+          "end": "2018-06-26T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-26T11:30:00.000Z",
+          "end": "2018-06-26T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-27T07:30:00.000Z",
+          "end": "2018-06-27T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-27T11:30:00.000Z",
+          "end": "2018-06-27T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-28T07:30:00.000Z",
+          "end": "2018-06-28T11:00:00.000Z"
+        },
+        {
+          "start": "2018-06-28T11:30:00.000Z",
+          "end": "2018-06-28T14:30:00.000Z"
+        },
+        {
+          "start": "2018-06-29T07:30:00.000Z",
+          "end": "2018-06-29T10:00:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 51676460,
+        "name": "Pôle Emploi Piat",
+        "slug": "pole-emploi-piat",
+        "address": "51 rue Piat - 75020 - Paris",
+        "image": null,
+        "imageCredits": null,
+        "postalCode": "75020",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.872858,
+        "longitude": 2.383494,
+        "description": {},
+        "access": {},
+        "countryCode": "fr",
+        "website": null,
+        "links": [],
+        "insee": null,
+        "phone": null,
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-04-10T07:22:59.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [],
+      "firstDate": "2018-04-09",
+      "firstTimeStart": "09:30",
+      "firstTimeEnd": "13:00",
+      "lastDate": "2018-06-29",
+      "lastTimeStart": "09:30",
+      "lastTimeEnd": "12:00",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    },
+    {
+      "uid": 49809545,
+      "slug": "initaition-a-excel",
+      "canonicalUrl": "https://openagenda.com/fluctuat/events/initaition-a-excel",
+      "title": {
+        "fr": "Initiation à Excel"
+      },
+      "description": {
+        "fr": "Initiation aux tableurs à travers le logiciel Excel"
+      },
+      "longDescription": {
+        "fr": "ce cours s'adresse à ceux qui veulent s'initier aux tableurs en découvrant les bases du logiciel Excel."
+      },
+      "keywords": {
+        "fr": [
+          "Excel",
+          "Tableur"
+        ]
+      },
+      "html": {
+        "fr": "<p>ce cours s&#39;adresse à ceux qui veulent s&#39;initier aux tableurs en découvrant les bases du logiciel Excel.</p>"
+      },
+      "image": "https://cibul.s3.amazonaws.com/event_initaition-a-excel_804424.jpg",
+      "thumbnail": "https://cibul.s3.amazonaws.com/evtbevent_initaition-a-excel_804424.jpg",
+      "originalImage": "https://cibul.s3.amazonaws.com/evfevent_initaition-a-excel_804424.jpg",
+      "age": null,
+      "accessibility": [],
+      "updatedAt": "2018-04-24T10:01:48.000Z",
+      "range": {
+        "fr": "7 juin - 12 juillet, les jeudis",
+        "en": "7 June - 12 July, on thursdays"
+      },
+      "imageCredits": null,
+      "origin": {
+        "uid": 18523632,
+        "title": "EPN Centre Social Picoulet",
+        "url": "http://epnlepicoulet.com/",
+        "slug": "epn-centre-social-picoulet",
+        "oaUrl": "https://openagenda.com/agendas/18523632"
+      },
+      "conditions": {
+        "fr": "sur inscription, maîtrise de la souris et du clavier"
+      },
+      "registrationUrl": null,
+      "locationName": "EPN du Picoulet",
+      "locationUid": 19289111,
+      "address": "59 rue de la fontaine au roi",
+      "postalCode": "75011",
+      "city": "Paris",
+      "district": null,
+      "department": "Paris",
+      "region": "Île-de-France",
+      "latitude": 48.868801,
+      "longitude": 2.374234,
+      "timings": [
+        {
+          "start": "2018-06-07T08:00:00.000Z",
+          "end": "2018-06-07T09:30:00.000Z"
+        },
+        {
+          "start": "2018-06-14T08:00:00.000Z",
+          "end": "2018-06-14T09:30:00.000Z"
+        },
+        {
+          "start": "2018-06-21T08:00:00.000Z",
+          "end": "2018-06-21T09:30:00.000Z"
+        },
+        {
+          "start": "2018-06-28T08:00:00.000Z",
+          "end": "2018-06-28T09:30:00.000Z"
+        },
+        {
+          "start": "2018-07-05T08:00:00.000Z",
+          "end": "2018-07-05T09:30:00.000Z"
+        },
+        {
+          "start": "2018-07-12T08:00:00.000Z",
+          "end": "2018-07-12T09:30:00.000Z"
+        }
+      ],
+      "location": {
+        "uid": 19289111,
+        "name": "EPN du Picoulet",
+        "slug": "epn-du-picoulet",
+        "address": "59 rue de la fontaine au roi",
+        "image": "//cibul.s3.amazonaws.com/location19289111.jpg",
+        "imageCredits": null,
+        "postalCode": "75011",
+        "city": "Paris",
+        "district": null,
+        "department": "Paris",
+        "region": "Île-de-France",
+        "latitude": 48.868801,
+        "longitude": 2.374234,
+        "description": {
+          "fr": "L’Espace Public Numérique le Picoulet est un lieu de médiation numérique crée et géré par le Centre social le Picoulet."
+        },
+        "access": {
+          "fr": "Accueil inconditionel"
+        },
+        "countryCode": "fr",
+        "website": "http://epnlepicoulet.com/",
+        "links": [],
+        "insee": null,
+        "phone": "01 48 06 87 20",
+        "tags": null,
+        "timezone": "Europe/Paris",
+        "updatedAt": "2018-02-03T08:52:33.000Z",
+        "country": {
+          "en": "France (Metropolitan)",
+          "fr": "France (Métropole)",
+          "code": "FR"
+        }
+      },
+      "registration": [],
+      "firstDate": "2018-06-07",
+      "firstTimeStart": "10:00",
+      "firstTimeEnd": "11:30",
+      "lastDate": "2018-07-12",
+      "lastTimeStart": "10:00",
+      "lastTimeEnd": "11:30",
+      "featured": 0,
+      "hasPrivateCustomFields": false,
+      "custom": {},
+      "contributor": {},
+      "category": null,
+      "tags": [],
+      "tagGroups": []
+    }
+  ]
+}

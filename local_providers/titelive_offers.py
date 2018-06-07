@@ -32,8 +32,8 @@ class TiteLiveOffers(app.model.LocalProvider):
     objectType = Offer
     canCreate = True
 
-    def __init__(self, offererProvider, **options):
-        super().__init__(offererProvider, **options)
+    def __init__(self, venueProvider, **options):
+        super().__init__(venueProvider, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'mock' / 'providers' / 'titelive_offers'
@@ -71,14 +71,14 @@ class TiteLiveOffers(app.model.LocalProvider):
         if self.data_lines is None:
             self.open_next_file()
 
-        isRightOfferer = False
-        while not isRightOfferer:
+        isRightVenue = False
+        while not isRightVenue:
             try:
                 line = self.data_lines.__next__()
             except StopIteration:
                 self.open_next_file()
                 line = self.data_lines.__next__()
-            isRightOfferer = str(line[1]) == self.offererProvider.offererIdAtOfferProvider
+            isRightVenue = str(line[1]) == self.venueProvider.venueIdAtOfferProvider
 
         thing = Thing.query.filter((Thing.type == "Book") &
                                    (Thing.idAtProviders == str(line[2])))\
@@ -92,10 +92,6 @@ class TiteLiveOffers(app.model.LocalProvider):
         self.venue = app.model.Venue.query\
                                     .filter_by(idAtProviders=str(line[1]))\
                                     .one_or_none()
-
-        self.offerer = app.model.Offerer.query\
-                                        .filter_by(idAtProviders=str(line[1]))\
-                                        .one_or_none()
 
         if self.venue is None:
             print("   No such venue : "+str(line[1]))
@@ -127,7 +123,7 @@ class TiteLiveOffers(app.model.LocalProvider):
         assert offer.idAtProviders == self.idAtProviders
         offer.thing = self.thing
         offer.venue = self.venue
-        offer.offerer = self.offerer
+        offer.offererId = self.venue.managingOffererId
         offer.price = self.price
 
     def getDeactivatedObjectIds(self):

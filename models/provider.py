@@ -19,9 +19,9 @@ class Provider(app.model.PcObject,
                            nullable=True,
                            unique=True)
 
-    offererProviders = db.relationship(app.model.OffererProvider,
-                                       back_populates="provider",
-                                       foreign_keys=[app.model.OffererProvider.providerId])
+    venueProviders = db.relationship(app.model.VenueProvider,
+                                     back_populates="provider",
+                                     foreign_keys=[app.model.VenueProvider.providerId])
 
     isActive = db.Column(db.Boolean,
                          nullable=False,

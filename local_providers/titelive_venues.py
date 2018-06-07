@@ -20,8 +20,8 @@ class TiteLiveVenues(app.model.LocalProvider):
     objectType = Venue
     canCreate = True
 
-    def __init__(self, offerer, **options):
-        super().__init__(offerer, **options)
+    def __init__(self, venueProvider, **options):
+        super().__init__(venueProvider, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'mock' / 'providers' / 'titelive_offers'
@@ -68,12 +68,13 @@ class TiteLiveVenues(app.model.LocalProvider):
         p_info_offerer.idAtProviders = str(row[0])
         p_info_offerer.dateModifiedAtProvider = self.dateModified
 
-        p_info_offererProvider = app.model.ProvidableInfo()
-        p_info_offererProvider.type = app.model.OffererProvider
-        p_info_offererProvider.idAtProviders = str(row[0])
-        p_info_offererProvider.dateModifiedAtProvider = self.dateModified
+        p_info_venueProvider = app.model.ProvidableInfo()
+        p_info_venueProvider.type = app.model.VenueProvider
+        p_info_venueProvider.idAtProviders = str(row[0])
+        p_info_venueProvider.dateModifiedAtProvider = self.dateModified
 
-        return p_info_offerer, p_info_venue, p_info_offererProvider
+        return p_info_offerer, p_info_venue, p_info_venueProvider
+
 
     def updateObject(self, obj):
         row = self.row
@@ -89,12 +90,12 @@ class TiteLiveVenues(app.model.LocalProvider):
             obj.departementCode = str(row[4]).strip()[:2]
             obj.managingOfferer = self.providables[0]
         elif isinstance(obj, app.model.Offerer):
-            obj.venue = self.providables[0]
             obj.bookingEmail = 'passculture-dev@beta.gouv.fr'
-        elif isinstance(obj, app.model.OffererProvider):
+        elif isinstance(obj, app.model.VenueProvider):
             obj.provider = self.titelive_offer_provider
-            obj.offerer = self.providables[1]
-            obj.offererIdAtOfferProvider = str(row[0])
+            obj.venue = self.providables[1]
+            obj.venueIdAtOfferProvider = str(row[0])
+            obj.isActive = False
         else:
             raise ValueError('Unexpected object class in updateObj '
                              + obj.__class__.__name__)

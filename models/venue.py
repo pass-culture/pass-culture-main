@@ -33,6 +33,9 @@ class Venue(app.model.PcObject,
 
     longitude = db.Column(db.Numeric(8, 5), nullable=True)
 
+    venueProviders = db.relationship(lambda: app.model.VenueProvider,
+                                     back_populates="venue")
+
     managingOffererId = db.Column(db.BigInteger,
                                   db.ForeignKey("offerer.id"),
                                   nullable=True)

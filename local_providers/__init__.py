@@ -4,7 +4,7 @@ from utils.attr_dict import AttrDict
 
 app.local_providers = AttrDict()
 import local_providers.openagenda_events
-import local_providers.openagenda_offers  # FIXME: FOR DEMO PURPOSES ONLY
+#import local_providers.openagenda_offers  FOR DEMO PURPOSES ONLY
 import local_providers.spreadsheet_offers
 import local_providers.spreadsheet_exp_offers
 import local_providers.spreadsheet_exp_thing_offers
