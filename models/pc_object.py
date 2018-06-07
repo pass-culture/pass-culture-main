@@ -9,6 +9,7 @@ from flask import current_app as app, request
 from psycopg2.extras import DateTimeRange
 from sqlalchemy.orm.collections import InstrumentedList
 
+
 from utils.human_ids import dehumanize, humanize
 
 db = app.db
@@ -107,7 +108,8 @@ class PcObject():
                             map(
                                 lambda attr: attr._asdict(
                                     include=sub_joins,
-                                    cut=options and options.get('cut')
+                                    cut=options and options.get('cut'),
+                                    timezone=options and options.get('timezone')
                                 ),
                                 final_value
                             )
@@ -118,7 +120,8 @@ class PcObject():
                     else:
                         result[key] = value._asdict(
                             include=sub_joins,
-                            cut=options and options.get('cut')
+                            cut=options and options.get('cut'),
+                            timezone=options and options.get('timezone')
                         )
                         if resolve != None:
                             result[key] = resolve(result[key], options.get('filters', {}))
