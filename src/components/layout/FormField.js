@@ -35,8 +35,10 @@ class FormField extends Component {
       label,
       name,
       type,
+      readOnly,
       required,
     } = this.props
+
     const inputId = id || `input_${collectionName}_${name}`
     const isCheckbox = type === 'checkbox';
     const InputComponent = FormComponentsByName[`Form${capitalize(type)}`] || FormInput
@@ -50,6 +52,7 @@ class FormField extends Component {
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
+      readOnly={readOnly}
     />
     const labelMarkup = (
       <label className={classnames({

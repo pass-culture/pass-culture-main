@@ -1,10 +1,20 @@
 .upload-thumb {
   position: relative;
   display: block;
-  height: auto;
-  cursor: pointer;
   text-align: center;
-  overflow: hidden;
+  height: auto;
+
+  .input {
+    height: auto;
+  }
+
+  img.read-only {
+    box-sizing: content-box;
+    object-fit: cover;
+    border-style: solid;
+    border-color: transparent;
+    margin: auto;
+  }
 
   .drag-n-drop {
     position: absolute;
@@ -12,41 +22,71 @@
     bottom: 0;
     left: 0;
     right: 0;
+    background: $grey-lighter;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
     margin: auto;
-    width: 255px;
-    height: 255px;
-    background: #eee;
-    padding-top: 22%;
-  }
+    cursor: pointer;
 
-  &.has-image {
-    background: transparent;
-    .drag-n-drop {
-      display: none;
+    &:before {
+      content: '';
+      position: absolute;
+      border-radius: inherit;
+      margin: 1rem;
+      border: thin dashed $grey-light;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    &.dragged {
+      font-weight: $weight-bold;
+      outline-color: $text;
+      &:before {
+        border-color: $text;
+      }
     }
   }
 
-  .remove-image {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 1rem;
-    border: none;
-    cursor: pointer;
+  .dropzone {
     background: transparent;
+    position: relative;
+    margin-bottom: 3rem;
+    &.no-drag {
+      &:before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        content: '';
+      }
+    }
+    &.has-image {
+      .drag-n-drop {
+        display: none;
+      }
+    }
   }
 
   canvas {
     display: block;
     margin: auto;
   }
+
   .zoom {
     // margin-top: 1rem;
     position: absolute;
-    bottom: 1rem;
+    bottom: 3.5rem;
     left: 0;
     right: 0;
     width: 50%;
     margin: auto;
+    z-index: 10;
+    cursor: pointer;
   }
 }

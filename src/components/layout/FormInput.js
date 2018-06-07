@@ -72,6 +72,7 @@ class FormInput extends Component {
       id,
       placeholder,
       autoComplete,
+      readOnly,
       required,
       type,
       value,
@@ -81,6 +82,7 @@ class FormInput extends Component {
       type !== 'switch'
       ? (
         <input
+          readOnly={readOnly}
           required={required}
           autoComplete={autoComplete}
           className={className || 'input'}

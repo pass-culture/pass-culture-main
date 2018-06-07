@@ -37,6 +37,12 @@
   opacity: $button-disabled-opacity;
 }
 
+.input, .textarea {
+  &[readonly] {
+    background-color: $grey-lighter;
+  }
+}
+
 input[type="checkbox"], input[type="radio"] {
   vertical-align: middle;
 }

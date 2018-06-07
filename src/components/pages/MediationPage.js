@@ -16,6 +16,8 @@ import selectCurrentMediation from '../../selectors/currentMediation'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { pathToModel } from '../../utils/translate'
 
+import { THUMBS_URL } from '../../utils/config'
+import { apiUrl } from '../../utils/config'
 
 class MediationPage extends Component {
 
@@ -47,8 +49,14 @@ class MediationPage extends Component {
       occasionModel: pathToModel(occasionPath).toLowerCase(),
       isLoading: !(name || offerer || (id && !isNew) ),
       isNew,
-      routePath: `/offres/${occasionPath}/${occasionId}/accroches`
+      routePath: `/offres/${occasionPath}/${occasionId}/accroches`,
+      thumbUrl: `${THUMBS_URL}/mediations/${id}`,
     }
+  }
+
+  static defaultProps = {
+    imageUploadSize: 500,
+    imageUploadBorder: 25,
   }
 
   componentDidUpdate (prevProps) {
@@ -75,10 +83,43 @@ class MediationPage extends Component {
     })
   }
 
+  drawRectangles = (image, ctx) => {
+    if (!image) return
+    const size = this.props.imageUploadSize + 2 * this.props.imageUploadBorder
+    const firstDimensions = [
+      this.props.imageUploadBorder + size / 7.5,
+      this.props.imageUploadBorder + size / 32,
+      size - 2 * (this.props.imageUploadBorder + size / 7.5),
+      size - 2 * (this.props.imageUploadBorder + size / 32),
+    ]
+
+    const secondDimensions = [
+      this.props.imageUploadBorder + size / 6,
+      this.props.imageUploadBorder + size / 4.5,
+      size - 2 * (this.props.imageUploadBorder + size / 6),
+      size / 2.7 - 2 * (this.props.imageUploadBorder),
+    ]
+
+    // First rectangle
+    ctx.beginPath();
+    ctx.lineWidth='2';
+    ctx.strokeStyle='#b921d7';
+    ctx.rect(...firstDimensions);
+    ctx.stroke();
+
+    // Second rectangle
+    ctx.beginPath();
+    ctx.strokeStyle='#54c7fc';
+    ctx.rect(...secondDimensions);
+    ctx.stroke();
+  }
+
   render () {
     const {
       offerer,
       name,
+      imageUploadSize,
+      imageUploadBorder,
     } = this.props
     const occasionId = this.props.id
     const {
@@ -95,7 +136,7 @@ class MediationPage extends Component {
     return (
       <PageWrapper name='mediation' loading={isLoading}>
         <div className='columns'>
-          <div className='column is-half is-offset-one-quarter'>
+          <div className='column'>
             <div className='has-text-right'>
               <NavLink
                 to={routePath}
@@ -123,23 +164,36 @@ class MediationPage extends Component {
             />
             <br/>
             <br/>
-            {
-              !isNew && [
-                <section className='section' key={0}>
-                  <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
-                </section>,
-                <UploadThumb
-                  borderRadius={0}
-                  collectionName='mediations'
-                  entityId={id}
-                  key={1}
-                  index={0}
-                  storeKey='thumbedMediation'
-                  type='thumb'
-                  required
-                />
-              ]
-            }
+            <div className='columns'>
+              <div className='column is-three-quarters'>
+                {
+                  !isNew && [
+                    <section className='section' key={0}>
+                      <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
+                    </section>,
+                    <UploadThumb
+                      image={apiUrl(get(this.props, 'mediation.thumbPath'))}
+                      borderRadius={0}
+                      collectionName='mediations'
+                      entityId={id}
+                      key={1}
+                      index={0}
+                      border={imageUploadBorder}
+                      width={imageUploadSize}
+                      height={imageUploadSize}
+                      storeKey='thumbedMediation'
+                      type='thumb'
+                      onImageChange={this.drawRectangles}
+                      required
+                    />
+                  ]
+                }
+
+              </div>
+              <div className='column is-one-quarter'>
+                <h6>Exemple :</h6>
+              </div>
+            </div>
           </div>
         </div>
       </PageWrapper>
@@ -152,7 +206,6 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state,ownProps) => ({
-      thumbedMediation: state.data.thumbedMediation,
       mediation: selectCurrentMediation(state, ownProps),
       offerer: selectCurrentOfferer(state, ownProps)
     }),

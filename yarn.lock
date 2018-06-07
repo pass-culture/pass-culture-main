@@ -6764,9 +6764,9 @@ react-addons-shallow-compare@^15.6.2:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-react-avatar-editor@^11.0.2:
+react-avatar-editor@augnustin/react-avatar-editor#pass-culture:
   version "11.0.2"
-  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-11.0.2.tgz#d28fe7a79088676ee71bd0ee5a6d215d06c611dd"
+  resolved "https://codeload.github.com/augnustin/react-avatar-editor/tar.gz/e12b0e86cd2cad71bfe3bb1e0b4e2cece1a2eae9"
   dependencies:
     prop-types "^15.5.8"
 
