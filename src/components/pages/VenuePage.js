@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import ProviderManager from '../ProviderManager'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
@@ -171,7 +172,10 @@ class VenuePage extends Component {
                 </NavLink>
               </div>
             </div>
+            <br/>
+            <ProviderManager />
         </div>
+
       </div>
     </PageWrapper>
   )

@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import ProviderManager from '../ProviderManager'
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'

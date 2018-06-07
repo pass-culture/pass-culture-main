@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import FormField from './layout/FormField'
 import Label from './layout/Label'
 import ProviderItem from './ProviderItem'
 import { requestData } from '../reducers/data'
 import selectProviderOptions from '../selectors/providerOptions'
+import selectCurrentVenue from '../selectors/currentVenue'
 
 class ProviderManager extends Component {
 
@@ -26,13 +29,13 @@ class ProviderManager extends Component {
 
   render () {
     const {
-      offererProviders,
+      venueProviders,
       providers
     } = this.props
     const {
       isNew
     } = this.state
-    console.log('providers', providers)
+    console.log('providers', providers, venueProviders)
     return [
       <h2 className='subtitle is-2' key={0}>
         Mes fournisseurs
@@ -52,14 +55,22 @@ class ProviderManager extends Component {
           />
         </div>
       ),
-      offererProviders && offererProviders.map((op, index) => (
+      venueProviders && venueProviders.map((op, index) => (
         <ProviderItem {...op} key={index} />
       ))
     ]
   }
 }
 
-export default connect(
-  state => ({ providers: selectProviderOptions(state) }),
-  { requestData }
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => Object.assign(
+      {
+        providers: selectProviderOptions(state)
+      },
+      selectCurrentVenue(state, ownProps)
+    ),
+    { requestData }
+  )
 )(ProviderManager)
