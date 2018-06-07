@@ -1,9 +1,8 @@
 """ venues """
 from flask import current_app as app, jsonify, request
 
-from utils.human_ids import dehumanize, humanize
+from utils.human_ids import dehumanize
 from utils.rest import expect_json_data,\
-                       feed,\
                        handle_rest_get_list,\
                        update
 
