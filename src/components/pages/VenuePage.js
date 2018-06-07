@@ -4,13 +4,14 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
+import SubmitButton from '../layout/SubmitButton'
+import selectCurrentVenue from '../../selectors/currentVenue'
+import withLogin from '../hocs/withLogin'
+
 import { NEW } from '../../utils/config'
 
 
@@ -41,7 +42,7 @@ class VenuePage extends Component {
       isLoading,
       isNew,
       method,
-      venueId: isNew ? NEW : id
+      offererId: isNew ? NEW : id
     }
   }
 
@@ -50,15 +51,18 @@ class VenuePage extends Component {
       address,
       name,
       siret,
-      user,
-      managingOffererId
+      match: { params: {
+        offererId,
+        venueId
+      } },
+      departementCode,
+      city
     } = this.props
     const {
       apiPath,
       isLoading,
       isNew,
       method,
-      venueId
     } = this.state
 
     return (
@@ -68,20 +72,8 @@ class VenuePage extends Component {
             <div className='has-text-right'>
             </div>
 
+            <h1 className='title has-text-centered'>STRUCTURE : A FAIRE !!!!!!! </h1>
             <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
-            { user && user.offerers &&
-                <FormField
-                  collectionName="venues"
-                  defaultValue={managingOffererId || ''}
-                  entityId={venueId}
-                  label={<Label title="Choisissez la structure" />}
-                  name="managingOffererId"
-                  type="select"
-                  options={(get(user, 'offerers') || []).map(o =>
-                ({ label: o.name, value: o.id }))}
-              />
-            }
-
             <FormField
               autoComplete="siret"
               collectionName="venues"
@@ -91,7 +83,6 @@ class VenuePage extends Component {
               name="siret"
               type="sirene"
               sireType="siret"
-
             />
             <FormField
               autoComplete="name"
@@ -106,20 +97,36 @@ class VenuePage extends Component {
               collectionName="venues"
               defaultValue={address || ''}
               entityId={venueId}
-              label={<Label title="Adresse" />}
+              label={<Label title="Numéro et voie :*" />}
               name="address"
-              type="adress"
+              type="address"
+            />
+            <FormField
+              autoComplete="departementCode"
+              collectionName="venues"
+              defaultValue={departementCode || ''}
+              entityId={venueId}
+              label={<Label title="Code Postal" />}
+              name="departementCode"
+            />
+            <FormField
+              autoComplete="city"
+              collectionName="venues"
+              defaultValue={city || ''}
+              entityId={venueId}
+              label={<Label title="Ville" />}
+              name="city"
             />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
-                  getBody={form => form.venuesById[venueId]}
+                  getBody={form => Object.assign({ managingOffererId: offererId }, form.venuesById[venueId])}
                   getIsDisabled={form =>
                     isNew
                       ? !get(form, `venuesById.${venueId}.name`) &&
-                        !get(form, `venuesById.${venueId}.adress`)
+                        !get(form, `venuesById.${venueId}.address`)
                       : !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.adress`)
+                        !get(form, `venuesById.${venueId}.address`)
                   }
                   className="button is-primary is-medium"
                   method={method}
@@ -131,7 +138,7 @@ class VenuePage extends Component {
               <div className="control">
                 <NavLink
                   className="button is-primary is-outlined is-medium"
-                  to={`/structures/${managingOffererId}`}>
+                  to={`/structures/${offererId}`}>
                   Retour
                 </NavLink>
               </div>
@@ -148,8 +155,7 @@ export default compose(
   connect(
     (state, ownProps) => Object.assign(
       { user: state.user },
-      selectCurrentOfferer(state, ownProps)
+      selectCurrentVenue(state, ownProps)
     ),
-    { resetForm }
-  )
+    { resetForm })
 )(VenuePage)
