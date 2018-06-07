@@ -1,3 +1,4 @@
+""" offers """
 from flask import current_app as app, jsonify, request
 from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_

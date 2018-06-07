@@ -112,10 +112,6 @@ BOOKINGS_INCLUDES = [
 ]
 
 USERS_INCLUDES = [
-    {
-        "key": 'offerers',
-        "sub_joins": OFFERERS_INCLUDES
-    },
     '-password'
 ]
 
