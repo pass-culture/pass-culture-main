@@ -11,6 +11,7 @@ from sqlalchemy.orm.collections import InstrumentedList
 
 
 from utils.human_ids import dehumanize, humanize
+from utils.string_processing import inflect_engine
 
 db = app.db
 
@@ -73,10 +74,16 @@ class PcObject():
                 result[key] = list(value)
             else:
                 result[key] = serialize(value, **options)
-
+        if issubclass(self.__class__, app.model.HasThumbMixin) and self.thumbCount > 0:
+            # If multiple thumbs, make this an array of paths, mapped over the index
+            result['thumbPath'] = (
+                '/storage/thumbs/' +
+                inflect_engine.plural_noun(self.__table__.name) +
+                '/' +
+                str(result['id'])
+            )
         if options and options.get('has_model_name'):
             result['modelName'] = self.__class__.__name__
-
         if options\
            and 'include' in options\
            and options['include']:
