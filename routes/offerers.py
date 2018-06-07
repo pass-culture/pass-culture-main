@@ -15,12 +15,14 @@ def check_offerer_user(query):
     )\
     .first_or_404()
 
-
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
-    return handle_rest_get_list(app.model.Offerer,
-                                include=OFFERERS_INCLUDES)
+    offerers = [
+        o._asdict(include=OFFERERS_INCLUDES)
+        for o in current_user.offerers
+    ]
+    return jsonify(offerers), 200
 
 
 @app.route('/offerers/<offererId>', methods=['GET'])
