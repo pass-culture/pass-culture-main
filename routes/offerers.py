@@ -57,12 +57,7 @@ def get_offerer(id):
 def create_offerer():
     offerer = app.model.Offerer()
     update(offerer, request.json)
-    if current_user:
-        user_offerer = app.model.UserOfferer()
-        user_offerer.offerer = offerer
-        user_offerer.user = current_user
-        user_offerer.rights = app.model.RightsType.admin
-        app.db.session.add(user_offerer)
+    offerer.make_admin(current_user)
     app.model.PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 201
 
