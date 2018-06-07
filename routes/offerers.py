@@ -6,7 +6,6 @@ from utils.human_ids import dehumanize
 from utils.includes import OFFERERS_INCLUDES
 from utils.rest import expect_json_data,\
                        update,\
-                       handle_rest_get_list,\
                        login_or_api_key_required
 
 def check_offerer_user(query):
@@ -15,20 +14,36 @@ def check_offerer_user(query):
     )\
     .first_or_404()
 
-
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
-    return handle_rest_get_list(app.model.Offerer,
-                                include=OFFERERS_INCLUDES)
+    offerers = [
+        o._asdict(include=OFFERERS_INCLUDES)
+        for o in current_user.offerers
+    ]
+    return jsonify(offerers), 200
+
+@app.route('/offerers/<id>/venues', methods=['GET'])
+@login_required
+def list_offerers_venues(id):
+    for offerer in current_user.offerers:
+        if offerer.id == dehumanize(id):
+            venues = [
+                o._asdict()
+                for o in offerer.managedVenues
+            ]
+            return jsonify(venues), 200
+    return jsonify({
+        "text": "This offerer id does not belong to the current user "
+    }), 200
 
 
 @app.route('/offerers/<offererId>', methods=['GET'])
 @login_required
 def get_offerer(offererId):
     query = app.model.Offerer.query.filter_by(id=dehumanize(offererId))\
-                         .first_or_404()\
-                         .query
+                                   .first_or_404()\
+                                   .query
     check_offerer_user(query)
     return jsonify(query._asdict(include=OFFERERS_INCLUDES))
 
@@ -45,9 +60,6 @@ def create_offerer():
         user_offerer.user = current_user
         user_offerer.rights = app.model.RightsType.admin
         app.db.session.add(user_offerer)
-
-
-
     app.model.PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 201
 
