@@ -26,26 +26,29 @@ def list_offerers():
 @app.route('/offerers/<id>/venues', methods=['GET'])
 @login_required
 def list_offerers_venues(id):
+    dehumanize_id = dehumanize(id)
     for offerer in current_user.offerers:
-        if offerer.id == dehumanize(id):
+        if offerer.id == dehumanize_id:
             venues = [
                 o._asdict()
                 for o in offerer.managedVenues
             ]
             return jsonify(venues), 200
     return jsonify({
-        "text": "This offerer id does not belong to the current user "
+        "text": "This offerer id does not belong to the current user."
     }), 200
 
 
-@app.route('/offerers/<offererId>', methods=['GET'])
+@app.route('/offerers/<id>', methods=['GET'])
 @login_required
-def get_offerer(offererId):
-    query = app.model.Offerer.query.filter_by(id=dehumanize(offererId))\
-                                   .first_or_404()\
-                                   .query
-    check_offerer_user(query)
-    return jsonify(query._asdict(include=OFFERERS_INCLUDES))
+def get_offerer(id):
+    dehumanize_id = dehumanize(id)
+    for offerer in current_user.offerers:
+        if offerer.id == dehumanize_id:
+            return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 200
+    return jsonify({
+        "text": "This offerer id does not belong to the current user."
+    }), 200
 
 
 @app.route('/offerers', methods=['POST'])
