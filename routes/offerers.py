@@ -26,14 +26,17 @@ def list_offerers():
 @app.route('/offerers/<id>/venues', methods=['GET'])
 @login_required
 def list_offerers_venues(id):
-    offerer = current_user.offerers\
-                .query.filter_by(id=id)\
-                .first_or_404()
-    venues = [
-        o._asdict()
-        for o in offerer.managedVenues
-    ]
-    return jsonify(venues), 200
+    for offerer in current_user.offerers:
+        if offerer.id == dehumanize(id):
+            venues = [
+                o._asdict()
+                for o in offerer.managedVenues
+            ]
+            return jsonify(venues), 200
+    return jsonify({
+        "text": "This offerer id does not belong to the current user "
+    }), 200
+
 
 @app.route('/offerers/<offererId>', methods=['GET'])
 @login_required
