@@ -109,6 +109,7 @@ class UploadThumb extends Component {
       image,
       dragging,
       isUploadDisabled,
+      hasExistingImage,
       readOnly,
       size,
       zoom
@@ -144,7 +145,7 @@ class UploadThumb extends Component {
           </Dropzone>
           <nav className="field ">
             {
-              !readOnly && (
+              !readOnly && image && (
                 <input
                   className="zoom level-left"
                   key={0}
@@ -167,14 +168,14 @@ class UploadThumb extends Component {
             <div className="field is-grouped is-grouped-centered" >
               <div className="control">
                 {readOnly && <button onClick={ e => this.setState({isEdited: true})} className='button is-primary'>Modifier l'image</button>}
-                {!readOnly && <button onClick={this.onUploadClick} className='button is-primary' disabled={isUploadDisabled}>Enregistrer</button>}
+                {!readOnly && image && <button onClick={this.onUploadClick} className='button is-primary' disabled={isUploadDisabled}>Enregistrer</button>}
               </div>
-              {!readOnly && (
+              {!readOnly && image && (
                 <div className="control">
                   <button onClick={e => this.setState({image: null})} className='button is-primary is-outlined'>Changer d'image</button>
                 </div>
               )}
-              {!readOnly && (
+              {!readOnly && hasExistingImage && (
                 <div className="control">
                   <button onClick={e => this.setState({isEdited: false})} className='button is-primary is-outlined'>Annuler la modification</button>
                 </div>

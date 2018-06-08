@@ -11,19 +11,16 @@ const RESET_FORM = 'RESET_FORM'
 
 // REDUCER
 const form = (state = initialState, action) => {
-  let collectionKey, collection
+  const collectionKey = `${action.collectionName}ById`
+  const collection = Object.assign({}, state[collectionKey])
   switch (action.type) {
     case REMOVE_FORM:
-      collectionKey = `${action.collectionName}ById`
-      collection = Object.assign({}, state[collectionKey])
       delete collection[action.id]
       return Object.assign({}, state, { [collectionKey]: collection })
     case MERGE_FORM:
-      collectionKey = `${action.collectionName}ById`
-      collection = Object.assign({}, state[collectionKey])
       const entity = Object.assign({}, collection[action.id])
       if (typeof action.nameOrObject === 'object' && !action.value) {
-        collection[action.id] = action.nameOrObject
+        collection[action.id] = Object.assign(collection[action.id], action.nameOrObject)
       } else if (action.nameOrObject === DELETE) {
         collection[action.id] = DELETE
       } else {
