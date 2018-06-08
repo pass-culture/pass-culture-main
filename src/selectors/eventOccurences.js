@@ -15,7 +15,7 @@ export default createSelector(
     let filteredOccurences = occurences
 
     if (formEventOccurencesById) {
-      filteredProviders = getElementsWithoutDeletedFormValues(
+      filteredOccurences = getElementsWithoutDeletedFormValues(
         occurences,
         Object.values(formEventOccurencesById)
       )
