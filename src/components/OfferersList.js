@@ -30,7 +30,7 @@ class OfferersList extends Component {
 
     return (
       <div className="offerers-list section">
-        {offerers.map(o => <OffererItem offerer={o} />)}
+        {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
       </div>
     )
 

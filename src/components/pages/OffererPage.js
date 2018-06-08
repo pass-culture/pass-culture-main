@@ -41,18 +41,18 @@ class OffererPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      id,
+      offerer,
       match: { params },
     } = nextProps
     const isNew = params.offererId === 'nouveau'
-    const isLoading = !(id || isNew)
+    const isLoading = !(get(offerer, 'id') || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `offerers/` : `offerers/${id}`,
+      apiPath: isNew ? `offerers/` : `offerers/${get(offerer, 'id')}`,
       isLoading,
       isNew,
       method,
-      offererId: isNew ? NEW : id
+      offererId: isNew ? NEW : get(offerer, 'id')
     }
   }
 
@@ -70,13 +70,19 @@ class OffererPage extends Component {
 
   render () {
     const {
+      offerer,
+      venues
+    } = this.props
+
+    const {
+      id,
       address,
       bookingEmail,
       name,
       providers,
       siren,
-      venues
-    } = this.props
+    } = offerer || {}
+
     const {
       apiPath,
       isLoading,
@@ -188,12 +194,10 @@ class OffererPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => Object.assign(
-      {
-        venues: state.data.venues
-      },
-      selectCurrentOfferer(state, ownProps)
-    ),
+    (state, ownProps) => (      {
+      venues: state.data.venues,
+      offerer: selectCurrentOfferer(state, ownProps),
+    }),
     { resetForm }
   )
 )(OffererPage)

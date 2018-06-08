@@ -39,8 +39,8 @@ const PageWrapper = props => {
     >
       <div className={classnames('page-content')}>
         {notification && (
-          <div class={`notification is-${notification.type || 'info'}`}>
-            <button class="delete">Ok</button>
+          <div className={`notification is-${notification.type || 'info'}`}>
+            <button className="delete">Ok</button>
             {notification.text}
           </div>
         )}
