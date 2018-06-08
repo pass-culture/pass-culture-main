@@ -1,10 +1,11 @@
-from flask import jsonify, request, current_app as app
-from flask_login import current_user
 from functools import wraps
 import re
+from flask import jsonify, request, current_app as app
+from flask_login import current_user
 from sqlalchemy.exc import ProgrammingError
 
 from models.api_errors import ApiErrors
+from utils.human_ids import dehumanize
 from utils.string_processing import dashify
 
 
@@ -51,7 +52,10 @@ def update(obj, new_properties):
     for (key, value) in new_properties.items():
         if key == 'id':
             continue
-        setattr(obj, key, value)
+        elif key.endswith('Id'):
+            setattr(obj, key, dehumanize(value))
+        else:
+            setattr(obj, key, value)
 
 
 def add_table_if_missing(sql_identifier, modelClass):
