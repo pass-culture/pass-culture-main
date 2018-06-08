@@ -38,7 +38,6 @@ class ProviderManager extends Component {
 
     // build the datetime based on the date plus the time
     // given in the horaire form field
-    console.log('NEW PROVIDER', newProvider)
     if (!newProvider || !newProvider.type || !newProvider.identifier) {
       return this.setState({ withError: true })
     }
@@ -62,9 +61,18 @@ class ProviderManager extends Component {
     )
   }
 
-
   componentDidMount () {
     this.props.requestData('GET', 'providerTypes')
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    const {
+      match: { params: { providerId } }
+    } = nextProps
+    const isNew = providerId === 'nouveau'
+    return {
+      isNew
+    }
   }
 
   render () {
@@ -78,8 +86,6 @@ class ProviderManager extends Component {
       withError
     } = this.state
     // https://openagenda.com/agendas/49050769/events.json
-    console.log('providerTypeOptions', providerTypeOptions, venueProviders)
-
     return [
       <h2 className='subtitle is-2' key={0}>
         Mes fournisseurs
@@ -117,7 +123,7 @@ class ProviderManager extends Component {
           </button>
         </div>
       ),
-      venueProviders && venueProviders.map((op, index) => (
+      providers && providers.map((op, index) => (
         <ProviderItem {...op} key={index} />
       ))
     ]

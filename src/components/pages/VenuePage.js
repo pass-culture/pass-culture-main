@@ -62,9 +62,9 @@ class VenuePage extends Component {
   static getDerivedStateFromProps (nextProps) {
     const {
       id,
-      match: { params },
+      match: { params: { venueId } },
     } = nextProps
-    const isNew = params.venueId === 'nouveau'
+    const isNew = venueId === 'nouveau'
     const isLoading = !(id || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
@@ -176,13 +176,25 @@ class VenuePage extends Component {
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
-                  getBody={form => Object.assign({ managingOffererId: offererId }, form.venuesById[venueId])}
+                  getBody={form => Object.assign(
+                      {
+                        managingOffererId: offererId,
+                        providers: get(form, `providersById`)
+                          && Object.values(get(form, `providersById`))
+                      },
+                      get(form, `venuesById.${venueId}`)
+                    )
+                  }
                   getIsDisabled={form =>
                     isNew
-                      ? !get(form, `venuesById.${venueId}.name`) &&
+                      ? !get(form, `venuesById.${venueId}.name`) ||
                         !get(form, `venuesById.${venueId}.address`)
-                      : !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.address`)
+                      : !get(form, `venuesById.${venueId}.name`) &&
+                        !get(form, `venuesById.${venueId}.address`) &
+                        (
+                          !get(form, `providersById`) ||
+                          Object.keys(get(form, `providersById`)) === 0
+                        )
                   }
                   className="button is-primary is-medium"
                   method={method}
