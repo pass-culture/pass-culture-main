@@ -12,5 +12,9 @@ header.navbar {
   .navbar-menu {
     z-index: 30;
     position: relative;
+    .navbar-item {
+      font-weight: $weight-bold;
+      font-size: $size-small;
+    }
   }
 }

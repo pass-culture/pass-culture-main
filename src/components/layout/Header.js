@@ -7,7 +7,6 @@ import get from 'lodash.get'
 import Icon from './Icon'
 import SignoutButton from './SignoutButton'
 import Logo from './Logo'
-import menu from '../../utils/menu'
 
 class Header extends Component {
   constructor() {
@@ -35,29 +34,38 @@ class Header extends Component {
             'is-active': this.state.showMobileMenu
           })}>
             <div className="navbar-end">
-              {
-                menu.links.map(({ path, title, icon }, index) => (
-                  <NavLink className="navbar-item"
-                    key={index}
-                    to={path}
-                  >
-                    <span className='icon'><Icon svg={icon} /></span>
-                    <span>{` ${title}`}</span>
-                  </NavLink>
-                ))
-              }
+              <NavLink className="navbar-item" to={'/guichet'}>
+                <span className='icon'><Icon svg={'ico-guichet-w'} /></span>
+                <span>Guichet</span>
+              </NavLink>
+              <NavLink className="navbar-item" to={'/offres'}>
+                <span className='icon'><Icon svg={'ico-offres-w'} /></span>
+                <span>Vos offres</span>
+              </NavLink>
               <div className="navbar-item has-dropdown is-hoverable">
-                <a className="navbar-link" href="/profil">
+                <a className="navbar-link" href="#">
                   <span className='icon'>
                     <Icon svg='ico-user-w' />
                   </span>
                   <span>
-                    Profil
+                    {this.props.name}
                   </span>
                 </a>
                 <div className="navbar-dropdown is-right">
+                  <NavLink to={'/profil'} className='navbar-item'>
+                    {false && <span className='icon'><Icon svg={'ico-user-w'} /></span>}
+                    <span>Profil</span>
+                  </NavLink>
+                  <NavLink to={'/structures'} className='navbar-item'>
+                    {false && <span className='icon'><Icon svg={'ico-guichet-w'} /></span>}
+                    <span>Structures</span>
+                  </NavLink>
+                  <NavLink to={'/comptabilite'} className='navbar-item'>
+                    {false && <span className='icon'><Icon svg={'ico-guichet-w'} /></span>}
+                    <span>Comptabilité</span>
+                  </NavLink>
                   <SignoutButton tagName='a' className='navbar-item'>
-                    Déconnexion
+                    <span>Déconnexion</span>
                   </SignoutButton>
                 </div>
               </div>
