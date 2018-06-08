@@ -115,11 +115,16 @@ USERS_INCLUDES = [
     '-password'
 ]
 
+VENUES_INCLUDES = [
+    'venueProviders'
+]
+
 includes = {
     'bookings': BOOKINGS_INCLUDES,
     'occasions': OCCASION_INCLUDES,
     'offerers': OFFERERS_INCLUDES,
     'offers': OFFERS_INCLUDES,
     'recommendations': RECOMMENDATIONS_INCLUDES,
-    'users': USERS_INCLUDES
+    'users': USERS_INCLUDES,
+    'venues': VENUES_INCLUDES
 }

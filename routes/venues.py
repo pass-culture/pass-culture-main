@@ -24,6 +24,8 @@ def get_venue(venueId):
 def create_venue():
     new_venue = app.model.Venue(from_dict=request.json)
     app.model.PcObject.check_and_save(new_venue)
+    if 'providers' in request.json:
+        print('prov', request.json)
     return jsonify(new_venue._asdict()), 201
 
 

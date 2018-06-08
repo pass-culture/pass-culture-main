@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from utils.human_ids import dehumanize
-from utils.includes import OFFERERS_INCLUDES
+from utils.includes import OFFERERS_INCLUDES, VENUES_INCLUDES
 from utils.rest import expect_json_data,\
                        update,\
                        login_or_api_key_required
@@ -30,7 +30,7 @@ def list_offerers_venues(id):
     for offerer in current_user.offerers:
         if offerer.id == dehumanize_id:
             venues = [
-                o._asdict()
+                o._asdict(include=VENUES_INCLUDES)
                 for o in offerer.managedVenues
             ]
             return jsonify(venues), 200
