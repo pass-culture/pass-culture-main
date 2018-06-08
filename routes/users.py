@@ -107,13 +107,15 @@ def signup():
     new_user = app.model.User(from_dict=request.json)
     new_user.id = None
     new_user.departementCode = departement_code
+
     if 'siren' in request.json:
         offerer = app.model.Offerer()
         update(offerer, request.json)
-        offerer.make_admin(new_user)
+        user_offerer = offerer.make_admin(new_user)
         offerer.bookingEmail = new_user.email
-        app.db.session.add(offerer)
+        offerer.isActive = False
 
-    app.model.PcObject.check_and_save(new_user)
+    app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
+
     login_user(new_user)
     return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201

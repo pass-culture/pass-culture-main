@@ -13,6 +13,7 @@ db = app.db
 class Offerer(app.model.PcObject,
               app.model.HasThumbMixin,
               app.model.ProvidableMixin,
+              app.model.DeactivableMixin,
               db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
 
@@ -38,7 +39,6 @@ class Offerer(app.model.PcObject,
             user_offerer.offerer = self
             user_offerer.user = admin
             user_offerer.rights = app.model.RightsType.admin
-            db.session.add(user_offerer)
             return user_offerer
 
 
