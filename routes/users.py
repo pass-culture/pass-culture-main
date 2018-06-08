@@ -83,7 +83,7 @@ def signup():
             raise ValueError("Can't find 'Département' column in users spreadsheet")
 
         values = worksheet.get_all_values()[1:]
-        
+
         authorized_emails = list(map(lambda v: v[email_index],
                                      values))
 
@@ -103,9 +103,17 @@ def signup():
             e.addError('email', "Addresse non autorisée pour l'expérimentation")
             return jsonify(e.errors), 400
 
+
     new_user = app.model.User(from_dict=request.json)
     new_user.id = None
     new_user.departementCode = departement_code
+    if 'siren' in request.json:
+        offerer = app.model.Offerer()
+        update(offerer, request.json)
+        offerer.make_admin(new_user)
+        offerer.bookingEmail = new_user.email
+        app.db.session.add(offerer)
+
     app.model.PcObject.check_and_save(new_user)
     login_user(new_user)
     return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201

@@ -31,6 +31,17 @@ class Offerer(app.model.PcObject,
 
     siren = db.Column(db.String(9))
 
+
+    def make_admin(self, admin):
+        if admin:
+            user_offerer = app.model.UserOfferer()
+            user_offerer.offerer = self
+            user_offerer.user = admin
+            user_offerer.rights = app.model.RightsType.admin
+            db.session.add(user_offerer)
+            return user_offerer
+
+
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
     cast(coalesce(Offerer.address, ''), TEXT),
