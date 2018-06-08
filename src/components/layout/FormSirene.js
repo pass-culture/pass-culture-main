@@ -43,6 +43,11 @@ class FormSirene extends Component {
     return `${formattedSiren} ${nic}`
   }
 
+  searchEntrepriseInfos = e => {
+    e.preventDefault()
+    this.fetchEntrepriseInfos(e.target.value)
+  }
+
   fetchEntrepriseInfos = inputValue => {
     if (!inputValue) {
       return
@@ -134,7 +139,7 @@ class FormSirene extends Component {
             <FormInput onChange={this.onChange} formatValue={this.formatValue} storeValue={removeWhitespaces} {...this.props} type='text' />
           </div>
           <div className="control">
-            <button className="button is-rounded is-medium" onClick={e => this.fetchEntrepriseInfos(e.target.value)}>
+            <button className="button is-rounded is-medium" onClick={this.searchEntrepriseInfos}>
               <Icon svg={searching ? 'loader-r' : 'magnify-r'} />
               &nbsp;
             </button>
