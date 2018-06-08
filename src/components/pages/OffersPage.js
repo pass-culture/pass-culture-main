@@ -64,8 +64,8 @@ export default compose(
   withRouter,
   withLogin({ isRequired: true }),
   connect(
-    state => ({
-      occasions: selectOccasions(state),
+    (state, ownProps) => ({
+      occasions: selectOccasions(state, ownProps),
       user: state.user
     })
   )
