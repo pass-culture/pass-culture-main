@@ -25,8 +25,36 @@ class VenuePage extends Component {
     }
   }
 
+  componentDidMount () {
+    this.handleRequestData()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
+    }
+  }
+
   componentWillUnmount() {
     this.props.resetForm()
+  }
+
+  handleRequestData =() => {
+    const {
+      match: { params: { offererId } },
+      requestData,
+      user
+    } = this.props
+    if (user) {
+      requestData(
+        'GET',
+        `offerers/${offererId}/venues`,
+        {
+          key: 'venues',
+          isMergingArray: false
+        }
+      )
+    }
   }
 
   static getDerivedStateFromProps (nextProps) {
