@@ -111,16 +111,15 @@ const SignupPage = ({ errors }) => {
                     text="Valider"
                     className="button is-primary is-outlined"
                     getBody={form => form.usersById[NEW]}
-                    getIsDisabled={form =>
-                      !(get(form, 'usersById._new_.publicName') &&
-                        get(form, 'usersById._new_.email') &&
-                        get(form, 'usersById._new_.contact_ok') &&
-                        get(form, 'usersById._new_.siren') &&
-                        get(form, 'usersById._new_.name') &&
-                        get(form, 'usersById._new_.latitude') &&
-                        get(form, 'usersById._new_.longitude') &&
-                        get(form, 'usersById._new_.password'))
-                    }
+                    getIsDisabled={form => {
+                      const invalidValues = [
+                        'publicName', 'email', 'contact_ok',
+                        'siren', 'name', 'latitude',
+                        'longitude', 'address', 'departementCode',
+                        'password',
+                      ].filter(k => !get(form, `usersById._new_.${k}`))
+                      return invalidValues.length > 0;
+                    }}
                     path="users"
                     storeKey="users"
                   />

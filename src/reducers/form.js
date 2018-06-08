@@ -20,7 +20,7 @@ const form = (state = initialState, action) => {
     case MERGE_FORM:
       const entity = Object.assign({}, collection[action.id])
       if (typeof action.nameOrObject === 'object' && !action.value) {
-        collection[action.id] = Object.assign(collection[action.id], action.nameOrObject)
+        collection[action.id] = Object.assign({}, collection[action.id], action.nameOrObject)
       } else if (action.nameOrObject === DELETE) {
         collection[action.id] = DELETE
       } else {
