@@ -89,7 +89,7 @@ class OffererPage extends Component {
     return (
       <PageWrapper name='offerer' loading={isLoading}>
         <div className='columns'>
-          <div className='column is-half is-offset-one-quarter'>
+          <div className='column'>
             <div className='has-text-right'>
               <NavLink to='/structures'
                 className="button is-primary is-outlined">

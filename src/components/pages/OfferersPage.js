@@ -17,13 +17,6 @@ const OfferersPage = ({ user, offerers }) => {
     }}>
       <h1 className="title is-size-1 has-text-grey is-italic">Vos structures</h1>
       <p className="subtitle">Retrouvez ici la ou les structures dont vous gérez les offres Pass Culture.</p>
-      <nav className="level is-mobile">
-        <NavLink to={`/structures/nouveau`}>
-          <button className="button is-primary level-item">
-            Nouvelle structure
-          </button>
-        </NavLink>
-      </nav>
       {false && (
         <nav className="level is-mobile">
           <SearchInput
@@ -37,6 +30,13 @@ const OfferersPage = ({ user, offerers }) => {
         </nav>
       )}
       <OfferersList />
+      <nav className="level is-mobile">
+        <NavLink to={`/structures/nouveau`}>
+          <button className="button is-primary is-small is-outlined level-item">
+            Rattacher une structure
+          </button>
+        </NavLink>
+      </nav>
     </PageWrapper>
   )
 }
