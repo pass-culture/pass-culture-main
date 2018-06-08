@@ -4,6 +4,7 @@ from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
+from sqlalchemy.event import listens_for
 
 from utils.search import create_tsvector
 
@@ -26,6 +27,8 @@ class Venue(app.model.PcObject,
 
     departementCode = db.Column(db.String(3), nullable=False, index=True)
 
+    zipCode = db.Column(db.String(6), nullable=False)
+
     latitude = db.Column(db.Numeric(8, 5), nullable=True)
 
     longitude = db.Column(db.Numeric(8, 5), nullable=True)
@@ -42,6 +45,17 @@ class Venue(app.model.PcObject,
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
     # means open monday 9 to 18 and tuesday 9 to 19, closed wednesday,
     # open thursday 9 to 18, closed the rest of the week
+
+    def store_department_code(self):
+        self.departementCode = self.zipCode[:-3]
+
+@listens_for(Venue, 'before_insert')
+def before_insert(mapper, connect, self):
+    self.store_department_code()
+
+@listens_for(Venue, 'before_update')
+def before_update(mapper, connect, self):
+    self.store_department_code()
 
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT),
