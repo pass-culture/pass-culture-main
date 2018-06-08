@@ -146,6 +146,10 @@ class VenuePage extends Component {
               label={<Label title="Ville" />}
               name="city"
             />
+
+            <br/>
+            <ProviderManager />
+            
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
@@ -172,8 +176,6 @@ class VenuePage extends Component {
                 </NavLink>
               </div>
             </div>
-            <br/>
-            <ProviderManager />
         </div>
 
       </div>

@@ -5,6 +5,7 @@ import { compose } from 'redux'
 
 import FormField from './layout/FormField'
 import Label from './layout/Label'
+import SubmitButton from './layout/SubmitButton'
 import ProviderItem from './ProviderItem'
 import { requestData } from '../reducers/data'
 import selectProviderOptions from '../selectors/providerOptions'
@@ -21,6 +22,12 @@ class ProviderManager extends Component {
 
   onAddClick = () => {
     this.setState({ isNew: true })
+  }
+
+  onConfirmClick = e => {
+    const { onProviderConfirmClick } = this.props
+    this.setState({})
+    onProviderConfirmClick && onProviderConfirmClick(e)
   }
 
   componentDidMount () {
@@ -47,12 +54,22 @@ class ProviderManager extends Component {
       isNew && (
         <div className='box' key={2}>
           <FormField
-            collectionName="offerer_providers"
+            collectionName="venue_providers"
             label={<Label title="La source" />}
-            name="bookingEmail"
+            name="providerId"
             options={providers}
             type="select"
           />
+          <FormField
+            collectionName="venue_providers"
+            label={<Label title="Mon identifiant" />}
+            name="identifiant"
+          />
+          <button
+            className="button"
+            onClick={this.onConfirmClick}>
+            Ajouter
+          </button>
         </div>
       ),
       venueProviders && venueProviders.map((op, index) => (
