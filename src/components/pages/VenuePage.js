@@ -78,14 +78,15 @@ class VenuePage extends Component {
   render () {
     const {
       address,
+      city,
+      departementCode,
       name,
-      siret,
       match: { params: {
         offererId,
         venueId
       } },
-      departementCode,
-      city
+      siret,
+      venueProviders
     } = this.props
     const {
       apiPath,
@@ -147,9 +148,10 @@ class VenuePage extends Component {
               name="city"
             />
 
-            <br/>
-            <ProviderManager />
-            
+            <br />
+            <ProviderManager venueProviders={venueProviders} />
+
+            <br />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton

@@ -6,6 +6,31 @@ import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
 
 class FormSelect extends Component {
+
+  handleMergeForm () {
+    const {
+      collectionName,
+      defaultValue,
+      entityId,
+      mergeForm,
+      name,
+      options
+    } = this.props
+    if (defaultValue && entityId === NEW) {
+      mergeForm(collectionName, entityId, name, defaultValue)
+    }
+  }
+
+  componentDidMount () {
+    this.handleMergeForm()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.defaultValue !== prevProps.defaultValue) {
+      this.handleMergeForm()
+    }
+  }
+
   componentWillMount() {
     // fill automatically the form when it is a NEW POST action
     const { defaultValue, method } = this.props

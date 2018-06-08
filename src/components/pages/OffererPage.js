@@ -65,7 +65,6 @@ class OffererPage extends Component {
   }
 
   onAddProviderClick = () => {
-    console.log('OUAI')
     this.setState({ isNewProvider: true })
   }
 
