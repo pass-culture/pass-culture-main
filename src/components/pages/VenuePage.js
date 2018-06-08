@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import ProviderManager from '../ProviderManager'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
@@ -77,14 +78,15 @@ class VenuePage extends Component {
   render () {
     const {
       address,
+      city,
+      departementCode,
       name,
-      siret,
       match: { params: {
         offererId,
         venueId
       } },
-      departementCode,
-      city
+      siret,
+      venueProviders
     } = this.props
     const {
       apiPath,
@@ -145,6 +147,11 @@ class VenuePage extends Component {
               label={<Label title="Ville" />}
               name="city"
             />
+
+            <br />
+            <ProviderManager venueProviders={venueProviders} />
+
+            <br />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
@@ -172,6 +179,7 @@ class VenuePage extends Component {
               </div>
             </div>
         </div>
+
       </div>
     </PageWrapper>
   )
