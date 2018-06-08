@@ -74,6 +74,10 @@ $header-height: 3.25rem;
 $header-display-height: 10rem;
 $footer-height: 3.5rem;
 
+// Header
+$navbar-dropdown-border-top: 1px dotted $red;
+$navbar-dropdown-radius: 0;
+
 // Misc
 $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 $box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
