@@ -1,14 +1,8 @@
 import { createSelector } from 'reselect'
 
-import selectCurrentOfferer from './currentOfferer'
-
 export default createSelector(
-  selectCurrentOfferer,
+  state => state.data.venues,
   (state, ownProps) => ownProps.match.params.venueId,
-  (currentOfferer, venueId) => {
-    if (currentOfferer) {
-      return currentOfferer && currentOfferer.managedVenues
-.find(o => o.id === venueId)
-    }
-  }
+  (venues, venueId) =>
+    venues && venues.find(v => v.id === venueId)
 )
