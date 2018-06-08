@@ -43,11 +43,6 @@ class FormSirene extends Component {
     return `${formattedSiren} ${nic}`
   }
 
-  searchEntrepriseInfos = e => {
-    e.preventDefault()
-    this.fetchEntrepriseInfos(e.target.value)
-  }
-
   fetchEntrepriseInfos = inputValue => {
     if (!inputValue) {
       return
@@ -134,17 +129,7 @@ class FormSirene extends Component {
 
     return (
       <div>
-        <div className="field has-addons">
-          <div className="control is-expanded">
-            <FormInput onChange={this.onChange} formatValue={this.formatValue} storeValue={removeWhitespaces} {...this.props} type='text' />
-          </div>
-          <div className="control">
-            <button className="button is-rounded is-medium" onClick={this.searchEntrepriseInfos}>
-              <Icon svg={searching ? 'loader-r' : 'magnify-r'} />
-              &nbsp;
-            </button>
-          </div>
-        </div>
+        <FormInput onChange={this.onChange} formatValue={this.formatValue} storeValue={removeWhitespaces} {...this.props} type='text' />
         {name && <p className="has-text-weight-bold">{name}</p>}
       </div>
     )
