@@ -38,7 +38,7 @@ class OfferersList extends Component {
               rowHeight={190}
               rowRenderer={({ index, key, style }) => (
                 <div key={index} style={style}>
-                  <OffererItem {...offerers[index]} />
+                  <OffererItem offerer={offerers[index]} />
                 </div>
               )}
               width={width}

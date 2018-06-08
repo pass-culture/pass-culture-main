@@ -43,13 +43,20 @@
     position: relative;
     .page-content {
       min-height: 100vh;
-      padding: $page-padding 1rem;
+      padding: $page-padding;
       position: relative;
       top: $header-height - $header-display-height;
       margin: 0 5rem;
       z-index: 10;
       background: white;
       box-shadow: 0 1rem 3rem $grey;
+
+      .notification {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+      }
     }
   }
 
