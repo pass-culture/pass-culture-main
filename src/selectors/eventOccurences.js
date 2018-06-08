@@ -1,9 +1,8 @@
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
+import { getElementsWithoutDeletedFormValues } from '../utils/form'
 import { DELETE } from '../utils/config'
-
-
 
 
 export default createSelector(
