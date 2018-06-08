@@ -72,6 +72,7 @@ class ProfilePage extends Component {
       email,
       thumbPath,
     } = this.props.user || {}
+
     return (
       <PageWrapper name="profile" loading={!this.props.user}>
         <h1 className='title has-text-centered'>Profil</h1>
