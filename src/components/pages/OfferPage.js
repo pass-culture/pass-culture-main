@@ -14,6 +14,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
+import selectOfferers from '../../selectors/offerers'
 import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
 import { pathToCollection } from '../../utils/translate'
@@ -98,6 +99,7 @@ class OfferPage extends Component {
       occasionId,
       occurences,
       offererOptions,
+      offerers,
       performer,
       stageDirector,
       type,
@@ -150,7 +152,7 @@ class OfferPage extends Component {
             />
             <FormField
               collectionName={occasionCollection}
-              defaultValue={defaultOfferer}
+              defaultValue={defaultOfferer || get(offerers, '0.id')}
               entityId={occasionId}
               label={<Label title="Structure" />}
               name='offererId'
@@ -337,6 +339,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       eventTypes: state.data.eventTypes,
+      offerers: selectOfferers(state),
       offererOptions: selectOffererOptions(state),
       formOfferer: selectFormOfferer(state, ownProps),
     }),
