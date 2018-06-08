@@ -27,25 +27,14 @@ class OfferPage extends Component {
     }
   }
 
-  componentDidMount() {
-    this.props.requestData('GET', 'eventTypes')
+  componentDidMount () {
+    this.handleRequestData()
   }
 
-  onSubmitClick = () => {
-    const {
-      history,
-      resetForm,
-      showModal
-    } = this.props
-    resetForm()
-    showModal(
-      <div>
-        C'est soumis!
-      </div>,
-      {
-        onCloseClick: () => history.push('/offres')
-      }
-    )
+  componentDidUpdate (prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
+    }
   }
 
   static getDerivedStateFromProps (nextProps) {
@@ -65,6 +54,29 @@ class OfferPage extends Component {
       defaultOfferer,
       venueOptions
     }
+  }
+
+  handleRequestData () {
+    const { requestData } = this.props
+    requestData('GET', 'offerers')
+    requestData('GET', 'eventTypes')
+  }
+
+  onSubmitClick = () => {
+    const {
+      history,
+      resetForm,
+      showModal
+    } = this.props
+    resetForm()
+    showModal(
+      <div>
+        C'est soumis!
+      </div>,
+      {
+        onCloseClick: () => history.push('/offres')
+      }
+    )
   }
 
   render () {
