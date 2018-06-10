@@ -41,18 +41,18 @@ class OffererPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      id,
+      offerer,
       match: { params },
     } = nextProps
     const isNew = params.offererId === 'nouveau'
-    const isLoading = !(id || isNew)
+    const isLoading = !(get(offerer, 'id') || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `offerers/` : `offerers/${id}`,
+      apiPath: isNew ? `offerers/` : `offerers/${get(offerer, 'id')}`,
       isLoading,
       isNew,
       method,
-      offererId: isNew ? NEW : id
+      offererId: isNew ? NEW : get(offerer, 'id')
     }
   }
 
@@ -70,13 +70,19 @@ class OffererPage extends Component {
 
   render () {
     const {
+      offerer,
+      venues
+    } = this.props
+
+    const {
+      id,
       address,
       bookingEmail,
       name,
       providers,
       siren,
-      venues
-    } = this.props
+    } = offerer || {}
+
     const {
       apiPath,
       isLoading,
@@ -89,92 +95,95 @@ class OffererPage extends Component {
     return (
       <PageWrapper name='offerer' loading={isLoading}>
         <div className='columns'>
-          <div className='column is-half is-offset-one-quarter'>
-            <div className='has-text-right'>
-              <NavLink to='/structures'
-                className="button is-primary is-outlined">
-                Retour
-              </NavLink>
+          <div className='column'>
+            <div className='section'>
+              <h1 className="title is-size-1 is-h1 has-text-grey is-italic">Structure</h1>
+              <p className="subtitle">Retrouvez ici la ou les structures dont vous gérez les offres Pass Culture.</p>
+              <FormField
+                autoComplete="siren"
+                collectionName="offerers"
+                defaultValue={siren}
+                entityId={offererId}
+                label={<Label title="Siren" />}
+                name="siren"
+                type="sirene"
+                sireType="siren"
+                readOnly={!isNew}
+                className='input is-rounded'
+              />
+              <FormField
+                autoComplete="name"
+                collectionName="offerers"
+                defaultValue={name}
+                entityId={offererId}
+                label={<Label title="Nom" />}
+                name="name"
+                className='input is-rounded'
+              />
+              <FormField
+                autoComplete="address"
+                collectionName="offerers"
+                defaultValue={address || ''}
+                entityId={offererId}
+                label={<Label title="Adresse" />}
+                name="address"
+                type="adress"
+                className='input is-rounded'
+              />
+              <FormField
+                autoComplete="email"
+                collectionName="offerers"
+                defaultValue={bookingEmail || ''}
+                entityId={offererId}
+                label={<Label title="Email de réservation" />}
+                name="bookingEmail"
+                className='input is-rounded'
+              />
             </div>
-
-            <br/>
-            <h1 className='title has-text-centered'>
-              {isNew ? 'Créer' : 'Modifier'} une structure
-            </h1>
-            <FormField
-              autoComplete="siren"
-              collectionName="offerers"
-              defaultValue={siren}
-              entityId={offererId}
-              label={<Label title="Siren" />}
-              name="siren"
-              type="sirene"
-              sireType="siren"
-            />
-            <FormField
-              autoComplete="name"
-              collectionName="offerers"
-              defaultValue={name}
-              entityId={offererId}
-              label={<Label title="Nom" />}
-              name="name"
-            />
-            <FormField
-              autoComplete="address"
-              collectionName="offerers"
-              defaultValue={address || ''}
-              entityId={offererId}
-              label={<Label title="Adresse" />}
-              name="address"
-              type="adress"
-            />
-            <FormField
-              autoComplete="email"
-              collectionName="offerers"
-              defaultValue={bookingEmail || ''}
-              entityId={offererId}
-              label={<Label title="Email de réservation" />}
-              name="bookingEmail"
-            />
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-              <div className="control">
-                <SubmitButton
-                  getBody={form => form.offerersById[offererId]}
-                  getIsDisabled={form => {
-                    return isNew
-                      ? !get(form, `offerersById.${offererId}.name`) ||
-                        !get(form, `offerersById.${offererId}.address`)
-                      : !get(form, `offerersById.${offererId}.name`) &&
-                        !get(form, `offerersById.${offererId}.address`)
-                  }
-
-                  }
-                  className="button is-primary is-medium"
-                  method={method}
-                  path={apiPath}
-                  storeKey="offerers"
-                  text="Enregistrer"
-                />
-              </div>
-              <div className="control">
-                <NavLink
-                  className="button is-primary is-outlined is-medium"
-                  to='/structures' >
-                  Retour
+            <hr />
+            <div className='section'>
+              <h2 className='subtitle is-2' key={0}>
+                Lieux
+              </h2>
+              <VenuesList />
+              <div className='has-text-right'>
+                <NavLink to={`/structures/${offererId}/lieux/nouveau`}
+                  className="button is-primary is-outlined">
+                  Nouveau lieu
                 </NavLink>
               </div>
             </div>
+            <hr />
+            <div className='section'>
+              <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+                <div className="control">
+                  <NavLink
+                    className="button is-primary is-outlined is-medium"
+                    to='/structures' >
+                    Retour
+                  </NavLink>
+                </div>
+                <div className="control">
+                  <SubmitButton
+                    getBody={form => form.offerersById[offererId]}
+                    getIsDisabled={form => {
+                      return isNew
+                        ? !get(form, `offerersById.${offererId}.name`) ||
+                          !get(form, `offerersById.${offererId}.address`)
+                        : !get(form, `offerersById.${offererId}.name`) &&
+                          !get(form, `offerersById.${offererId}.address`)
+                    }
 
-            <br/>
-            <h2 className='subtitle is-2' key={0}>
-              Mes lieux
-            </h2>
-            <NavLink to={`/structures/${offererId}/lieux/nouveau`}
-              className="button is-primary is-outlined">
-              Nouveau lieu
-            </NavLink>
-            <VenuesList />
-
+                    }
+                    className="button is-primary is-medium"
+                    method={method}
+                    path={apiPath}
+                    storeKey="offerers"
+                    text="Enregistrer"
+                  />
+                </div>
+              </div>
+            </div>
         </div>
       </div>
     </PageWrapper>
@@ -185,12 +194,10 @@ class OffererPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => Object.assign(
-      {
-        venues: state.data.venues
-      },
-      selectCurrentOfferer(state, ownProps)
-    ),
+    (state, ownProps) => (      {
+      venues: state.data.venues,
+      offerer: selectCurrentOfferer(state, ownProps),
+    }),
     { resetForm }
   )
 )(OffererPage)

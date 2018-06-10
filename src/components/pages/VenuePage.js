@@ -11,6 +11,7 @@ import PageWrapper from '../layout/PageWrapper'
 import { resetForm } from '../../reducers/form'
 import SubmitButton from '../layout/SubmitButton'
 import selectCurrentVenue from '../../selectors/currentVenue'
+import selectCurrentOfferer from '../../selectors/currentOfferer'
 import withLogin from '../hocs/withLogin'
 
 import { NEW } from '../../utils/config'
@@ -77,17 +78,24 @@ class VenuePage extends Component {
 
   render () {
     const {
-      address,
-      city,
-      departementCode,
-      name,
-      match: { params: {
-        offererId,
-        venueId
-      } },
-      siret,
-      venueProviders
+      match: {
+        params: {
+          offererId,
+          venueId
+        }
+      },
+      offerer,
+      venue,
     } = this.props
+
+    const {
+      address,
+      name,
+      siret,
+      departementCode,
+      city
+    } = venue || {}
+
     const {
       apiPath,
       isLoading,
@@ -97,55 +105,68 @@ class VenuePage extends Component {
 
     return (
       <PageWrapper name='offerer' loading={isLoading}>
-        <div className='columns'>
-          <div className='column is-half is-offset-one-quarter'>
-            <div className='has-text-right'>
-            </div>
 
-            <h1 className='title has-text-centered'>STRUCTURE : A FAIRE !!!!!!! </h1>
-            <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
-            <FormField
-              autoComplete="siret"
-              collectionName="venues"
-              defaultValue={siret}
-              entityId={venueId}
-              label={<Label title="Siret" />}
-              name="siret"
-              type="sirene"
-              sireType="siret"
-            />
-            <FormField
-              autoComplete="name"
-              collectionName="venues"
-              defaultValue={name}
-              entityId={venueId}
-              label={<Label title="Nom" />}
-              name="name"
-            />
-            <FormField
-              autoComplete="address"
-              collectionName="venues"
-              defaultValue={address || ''}
-              entityId={venueId}
-              label={<Label title="Numéro et voie :*" />}
-              name="address"
-              type="address"
-            />
-            <FormField
-              autoComplete="departementCode"
-              collectionName="venues"
-              defaultValue={departementCode || ''}
-              entityId={venueId}
-              label={<Label title="Code Postal" />}
-              name="departementCode"
-            />
-            <FormField
-              autoComplete="city"
-              collectionName="venues"
-              defaultValue={city || ''}
-              entityId={venueId}
-              label={<Label title="Ville" />}
-              name="city"
+        <h1 className='title has-text-centered'>{get(offerer, 'name')}</h1>
+        <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
+        <FormField
+          autoComplete="siret"
+          collectionName="venues"
+          defaultValue={siret}
+          entityId={venueId}
+          label={<Label title="Siret" />}
+          name="siret"
+          type="sirene"
+          sireType="siret"
+        />
+        <FormField
+          autoComplete="name"
+          collectionName="venues"
+          defaultValue={name}
+          entityId={venueId}
+          label={<Label title="Nom" />}
+          name="name"
+        />
+        <FormField
+          autoComplete="address"
+          collectionName="venues"
+          defaultValue={address || ''}
+          entityId={venueId}
+          label={<Label title="Numéro et voie :*" />}
+          name="address"
+          type="address"
+        />
+        <FormField
+          autoComplete="departementCode"
+          collectionName="venues"
+          defaultValue={departementCode || ''}
+          entityId={venueId}
+          label={<Label title="Code Postal" />}
+          name="departementCode"
+        />
+        <FormField
+          autoComplete="city"
+          collectionName="venues"
+          defaultValue={city || ''}
+          entityId={venueId}
+          label={<Label title="Ville" />}
+          name="city"
+        />
+        <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+          <div className="control">
+            <SubmitButton
+              getBody={form => Object.assign({ managingOffererId: offererId }, form.venuesById[venueId])}
+              getIsDisabled={form =>
+                isNew
+                  ? !get(form, `venuesById.${venueId}.name`) &&
+                    !get(form, `venuesById.${venueId}.address`)
+                  : !get(form, `venuesById.${venueId}.name`) ||
+                    !get(form, `venuesById.${venueId}.address`)
+              }
+              className="button is-primary is-medium"
+              method={method}
+              path={apiPath}
+              storeKey="venues"
+              text="Enregistrer"
             />
 
             <br />
@@ -189,9 +210,10 @@ class VenuePage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => Object.assign(
-      { user: state.user },
-      selectCurrentVenue(state, ownProps)
-    ),
+    (state, ownProps) => ({
+      user: state.user,
+      venue: selectCurrentVenue(state, ownProps),
+      offerer: selectCurrentOfferer(state, ownProps),
+    }),
     { resetForm })
 )(VenuePage)

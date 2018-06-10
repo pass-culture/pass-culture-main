@@ -1,7 +1,6 @@
 .offerer-item {
-  border-bottom: 2px solid whitesmoke;
   margin-left: auto;
   margin-right: auto;
   padding-bottom: 1rem;
-  width: 75%;
+  @include dotted($red, bottom)
 }

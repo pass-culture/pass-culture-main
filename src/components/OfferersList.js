@@ -27,6 +27,14 @@ class OfferersList extends Component {
     const {
       offerers
     } = this.props
+
+    return (
+      <div className="offerers-list section">
+        {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
+      </div>
+    )
+
+    // TODO: decide if we keep the autosizer
     return (
       <div className="offerers-list">
         <AutoSizer>
@@ -38,7 +46,7 @@ class OfferersList extends Component {
               rowHeight={190}
               rowRenderer={({ index, key, style }) => (
                 <div key={index} style={style}>
-                  <OffererItem {...offerers[index]} />
+                  <OffererItem offerer={offerers[index]} />
                 </div>
               )}
               width={width}
@@ -53,7 +61,7 @@ class OfferersList extends Component {
 
 export default connect(
   state => ({
-    offerers: selectOfferers(state),
+    offerers: selectOfferers(state) || [],
     user: state.user
   }),
   { requestData }

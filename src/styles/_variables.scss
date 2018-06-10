@@ -10,6 +10,7 @@ $fullhd: 1344px + (2 * $gap); // 1472px
 // Colors
 $red: #e60039;
 $violet: #bd10e0;
+$green: #b8e986;
 
 $primary: $red;
 
@@ -18,6 +19,7 @@ $link: $text;
 $title-color: inherit;
 $subtitle-color: inherit;
 $text-strong: inherit;
+$success: $green;
 
 // Typography
 $family-sans-serif: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
@@ -60,14 +62,14 @@ $button-border-color: $grey-light;
 $button-padding-vertical: 0.1em;
 $button-padding-horizontal: 0.75em;
 $radius: 0;
-$radius-small: 4px;
+$radius-small: 0;
 $radius-medium: 1rem;
 
 $button-disabled-opacity: 0.3;
 
 // Spacing
 $section-padding: 0 0 1rem 0;
-$page-padding: 1.5rem;
+$page-padding: 5rem;
 $footer-height-padding: 1rem;
 
 $header-height: 3.25rem;
@@ -82,3 +84,5 @@ $navbar-dropdown-radius: 0;
 $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 $box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
 
+// Notifications
+$notification-padding: 1rem

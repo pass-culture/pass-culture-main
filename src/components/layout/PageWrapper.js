@@ -16,6 +16,7 @@ const PageWrapper = props => {
     backButton,
     children,
     loading,
+    notification,
   } = props
   const footer = [].concat(children).find(e => e && e.type === 'footer')
   const content = []
@@ -36,8 +37,15 @@ const PageWrapper = props => {
       })}
       key='page-wrapper'
     >
-      {backButton && <BackButton {...backButton} />}
-      <div className={classnames('page-content')}>{content}</div>
+      <div className={classnames('page-content')}>
+        {notification && (
+          <div className={`notification is-${notification.type || 'info'}`}>
+            <button className="delete">Ok</button>
+            {notification.text}
+          </div>
+        )}
+        {content}
+      </div>
       {footer}
     </Tag>
   ]
