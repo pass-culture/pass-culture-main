@@ -22,6 +22,8 @@ class VenueProvider(app.model.PcObject,
                                back_populates="venueProviders",
                                foreign_keys=[providerId])
 
+    identifier = db.Column(db.String(70))
+
     venueIdAtOfferProvider = db.Column(db.String(70),
                                        primary_key=True)
 

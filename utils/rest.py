@@ -47,10 +47,12 @@ def expect_json_data(f):
     return wrapper
 
 
-def update(obj, new_properties):
-    # print("update", new_properties)
+def update(obj, new_properties, **kwargs):
+    skipped_keys = kwargs.get('skipped_keys', [])
     for (key, value) in new_properties.items():
-        if key == 'id':
+        if key in skipped_keys:
+            continue
+        elif key == 'id':
             continue
         elif key.endswith('Id'):
             setattr(obj, key, dehumanize(value))

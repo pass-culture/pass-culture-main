@@ -1,23 +1,14 @@
 """ venues """
-from flask import current_app as app, jsonify, request
 from os import path
-from pathlib import Path
-import subprocess
+
+from flask import current_app as app, jsonify, request
 
 from utils.human_ids import dehumanize
 from utils.rest import expect_json_data,\
-                       handle_rest_get_list,\
                        update
 
 
 VenueProvider = app.model.VenueProvider
-
-
-@app.route('/venue_providers/<venueId>', methods=['GET'])
-def list_venue_providers(venueId):
-    return handle_rest_get_list(VenueProvider,
-                                query=VenueProvider.query
-                                                   .filter_by(venueId=venueId))
 
 
 @app.route('/venue_providers/<venueId>', methods=['POST'])

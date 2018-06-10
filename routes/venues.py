@@ -1,26 +1,29 @@
 """ venues """
 from flask import current_app as app, jsonify, request
 
+from utils.config import DELETE
 from utils.human_ids import dehumanize
 from utils.includes import VENUES_INCLUDES
+from utils.provider import create_venue_provider
 from utils.rest import expect_json_data,\
                        handle_rest_get_list,\
                        update
 
 def update_venue(venue):
-    update(venue, request.json)
-    if 'providers' in request.json:
-        for provider_dict in request.json['providers']:
-            provider = app.model.Provider()
-            update(provider, provider_dict)
-            app.model.PcObject.check_and_save(provider)
-            venue_provider = app.model.VenueProvider()
-            venue_provider.isActive = True
-            venue_provider.venue = venue
-            venue_provider.provider = provider
-            app.model.PcObject.check_and_save(venue_provider)
+    if 'venueProviders' in request.json:
+        for venue_provider_dict in request.json['venueProviders']:
+            if venue_provider_dict.get('DELETE') == DELETE:
+                app.model.VenueProvider.query.filter_by(
+                    venueId=venue.id,
+                    providerId=dehumanize(venue_provider_dict['providerId'])
+                ).delete()
+            else:
+                create_venue_provider(
+                    venue,
+                    venue_provider_dict
+                )
+    update(venue, request.json, **{'skipped_keys': ['venueProviders']})
     app.model.PcObject.check_and_save(venue)
-
 
 @app.route('/venues', methods=['GET'])
 def list_venues():
@@ -39,7 +42,7 @@ def get_venue(venueId):
 def create_venue():
     venue = app.model.Venue()
     update_venue(venue)
-    return jsonify(new_venue._asdict(include=VENUES_INCLUDES)), 201
+    return jsonify(venue._asdict(include=VENUES_INCLUDES)), 201
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
