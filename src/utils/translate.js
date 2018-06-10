@@ -45,7 +45,7 @@ export function pathToModel (path) {
 
 export function modelToPath (model) {
   switch(model) {
-    case 'Evenement':
+    case 'Event':
       return 'evenements'
     case 'Thing':
       return 'lieux';

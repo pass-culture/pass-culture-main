@@ -7,9 +7,17 @@ import { NavLink } from 'react-router-dom'
 import SwitchButton from './layout/SwitchButton'
 import { requestData } from '../reducers/data'
 import selectOccasionThumbUrl from '../selectors/occasionThumbUrl'
-import { collectionToPath } from '../utils/translate'
+import { modelToPath } from '../utils/translate'
 
 class OccasionItem extends Component {
+
+  constructor () {
+    super()
+    this.state = {
+      path: null
+    }
+  }
+
   onDeactivateClick = event => {
     const {
       id,
@@ -33,15 +41,23 @@ class OccasionItem extends Component {
       )
   }
 
+  static getDerivedStateFromProps (nextProps) {
+    return {
+      path: `/offres/${modelToPath(nextProps.modelName)}`
+    }
+  }
+
   render() {
     const {
       description,
       id,
       isActive,
       name,
-      occasionType,
       thumbUrl
     } = this.props
+    const {
+      path
+    } = this.state
     return (
       <article className="occasion-item media">
         <figure className="media-left">
@@ -51,7 +67,7 @@ class OccasionItem extends Component {
         </figure>
         <div className="media-content">
           <div className="content">
-            <NavLink className='title is-block' to={`/offres/${collectionToPath(occasionType)}/${id}`}>
+            <NavLink className='title is-block' to={`${path}/${id}`}>
               {name}
             </NavLink>
             <Dotdotdot className='is-small' clamp={3}>
@@ -60,32 +76,16 @@ class OccasionItem extends Component {
           </div>
           <nav className="level is-mobile">
             <div className="level-left">
-              <NavLink  to={`/offres/${collectionToPath(occasionType)}/${id}`}>
+              <NavLink  to={`${path}/${id}`}>
                 <button className="button is-primary level-item">
                   Modifier
                 </button>
               </NavLink>
-              <NavLink  to={`/offres/${collectionToPath(occasionType)}/${id}/accroches`}>
+              <NavLink  to={`${path}/${id}/accroches`}>
                 <button className="button is-primary level-item">
                   Accroches
                 </button>
               </NavLink>
-              {/*
-              <button className="button is-primary level-item"
-                onClick={this.onDeactivateClick}>
-                Désactiver
-              </button>
-              */}
-              {/*
-              <FormInput
-                collectionName={occasionType}
-                defaultValue={isActive}
-                entityId={id}
-                name='isActive'
-
-                type='switch'
-              />
-              */}
               <SwitchButton
                 isInitialActive={isActive}
                 OffElement={<p> Désactivé </p>}
