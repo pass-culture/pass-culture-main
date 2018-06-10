@@ -33,6 +33,16 @@ const VenueItem = ({
               Configurer
             </button>
           </NavLink>
+          <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres`}>
+            <button className="button is-primary level-item">
+              Créer des offres
+            </button>
+          </NavLink>
+          <NavLink to={`/structures/${managingOffererId}/lieux/${id}/fournisseurs/nouveau`}>
+            <button className="button is-primary level-item">
+              Importer des offres
+            </button>
+          </NavLink>
         </nav>
       </div>
     </article>

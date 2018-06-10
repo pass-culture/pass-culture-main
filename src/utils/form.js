@@ -6,9 +6,12 @@ export function getElementsWithoutDeletedFormValues (dataElements, formElements)
 
   // remove the dataElements that was deleted inside the form
   // and add the new created ones
+  console.log('dataElement', dataElements, formElements)
   for (let dataElement of dataElements) {
     const index = formElements.findIndex(formElement =>
       (formElement && formElement.id) === dataElement.id)
+    console.log('formElements', formElements)
+    console.log('index', index)
     if (index > -1) {
       const formElement = formElements[index]
       if (formElement.DELETE === DELETE) {
@@ -25,6 +28,7 @@ export function getElementsWithoutDeletedFormValues (dataElements, formElements)
   formElements.forEach(formElement =>
     elements.push(formElement))
 
+  console.log('elements', elements)
   // return
   return elements
 }

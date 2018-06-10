@@ -55,20 +55,32 @@ const routes = [
   {
     exact: true,
     path: '/structures',
-    title: 'structures',
+    title: 'Structures',
     render: () => <OfferersPage />,
   },
   {
     exact: true,
     path: '/structures/:offererId',
-    title: 'structures',
+    title: 'Structure',
     render: () => <OffererPage />,
   },
   {
     exact: true,
     path: '/structures/:offererId/lieux/:venueId',
-    title: 'Lieux',
+    title: 'Lieu',
     render: () => <VenuePage />,
+  },
+  {
+    exact: true,
+    path: '/structures/:offererId/lieux/:venueId/fournisseurs/:providerId',
+    title: 'Lieu',
+    render: () => <VenuePage />,
+  },
+  {
+    exact: true,
+    path: '/structures/:offererId/lieux/:venueId/offres',
+    title: 'Offres',
+    render: () => <OffersPage />,
   },
   {
     exact: true,

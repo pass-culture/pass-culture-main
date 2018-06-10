@@ -61,18 +61,17 @@ class VenuePage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      id,
-      match: { params },
+      match: { params: { offererId, venueId } },
+      venue
     } = nextProps
-    const isNew = params.venueId === 'nouveau'
-    const isLoading = !(id || isNew)
+    const isNew = venueId === 'nouveau'
+    const isLoading = !(get(venue, 'id') || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `venues/` : `venues/${id}`,
+      apiPath: isNew ? `venues/` : `venues/${venueId}`,
       isLoading,
       isNew,
-      method,
-      offererId: isNew ? NEW : id
+      method
     }
   }
 
@@ -90,10 +89,11 @@ class VenuePage extends Component {
 
     const {
       address,
+      city,
       name,
       siret,
       departementCode,
-      city
+      venueProviders
     } = venue || {}
 
     const {
@@ -151,38 +151,38 @@ class VenuePage extends Component {
           label={<Label title="Ville" />}
           name="city"
         />
-        <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+
+        <br />
+        <ProviderManager venueProviders={venueProviders} />
+
+        <br />
+        <div className="field is-grouped is-grouped-centered"
+          style={{justifyContent: 'space-between'}}>
           <div className="control">
-            <SubmitButton
-              getBody={form => Object.assign({ managingOffererId: offererId }, form.venuesById[venueId])}
-              getIsDisabled={form =>
-                isNew
-                  ? !get(form, `venuesById.${venueId}.name`) &&
-                    !get(form, `venuesById.${venueId}.address`)
-                  : !get(form, `venuesById.${venueId}.name`) ||
-                    !get(form, `venuesById.${venueId}.address`)
-              }
-              className="button is-primary is-medium"
-              method={method}
-              path={apiPath}
-              storeKey="venues"
-              text="Enregistrer"
-            />
 
-            <br />
-            <ProviderManager venueProviders={venueProviders} />
-
-            <br />
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+            <div className="field is-grouped is-grouped-centered"
+              style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
-                  getBody={form => Object.assign({ managingOffererId: offererId }, form.venuesById[venueId])}
+                  getBody={form => Object.assign(
+                      {
+                        managingOffererId: offererId,
+                        venueProviders: get(form, `venueProvidersById`)
+                          && Object.values(get(form, `venueProvidersById`))
+                      },
+                      get(form, `venuesById.${venueId}`)
+                    )
+                  }
                   getIsDisabled={form =>
                     isNew
-                      ? !get(form, `venuesById.${venueId}.name`) &&
+                      ? !get(form, `venuesById.${venueId}.name`) ||
                         !get(form, `venuesById.${venueId}.address`)
-                      : !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.address`)
+                      : !get(form, `venuesById.${venueId}.name`) &&
+                        !get(form, `venuesById.${venueId}.address`) &
+                        (
+                          !get(form, `venueProvidersById`) ||
+                          Object.keys(get(form, `venueProvidersById`)) === 0
+                        )
                   }
                   className="button is-primary is-medium"
                   method={method}

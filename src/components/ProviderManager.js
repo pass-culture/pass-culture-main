@@ -7,12 +7,12 @@ import { compose } from 'redux'
 import FormField from './layout/FormField'
 import Label from './layout/Label'
 import SubmitButton from './layout/SubmitButton'
-import ProviderItem from './ProviderItem'
+import VenueProviderItem from './VenueProviderItem'
 import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
-import selectProviderOptions from '../selectors/providerTypeOptions'
-import selectProviders from '../selectors/providers'
 import selectCurrentVenue from '../selectors/currentVenue'
+import selectProviderOptions from '../selectors/providerOptions'
+import selectVenueProviders from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
 
 class ProviderManager extends Component {
@@ -32,54 +32,64 @@ class ProviderManager extends Component {
   onConfirmClick = e => {
     const {
       mergeForm,
-      newProvider,
-      providers
+      newVenueProvider,
+      providers,
+      venueProviders
     } = this.props
 
     // build the datetime based on the date plus the time
     // given in the horaire form field
-    console.log('NEW PROVIDER', newProvider)
-    if (!newProvider || !newProvider.type || !newProvider.identifier) {
+    if (!newVenueProvider || !newVenueProvider.providerId || !newVenueProvider.identifier) {
       return this.setState({ withError: true })
     }
 
     // check that it does not match already an occurence
-    const alreadySelectedProvider = providers.find(p =>
-      p.identifier === newProvider.identifier)
-    console.log('alreadySelectedProvider', alreadySelectedProvider)
+    const alreadySelectedProvider = venueProviders.find(p =>
+      p.identifier === newVenueProvider.identifier)
     if (alreadySelectedProvider) {
       return this.setState({ withError: true })
     }
 
-    // add in the providers form
-    const providerId = !providers
+    // find the providers
+    const provider = providers.find(p => p.id === newVenueProvider.providerId)
+
+    // add in the venueProviders form
+    const venueProviderId = !venueProviders
       ? `NEW_0`
-      : `${NEW}_${providers.length}`
+      : `${NEW}_${venueProviders.length}`
     mergeForm(
-      'providers',
-      providerId,
-      Object.assign({ id: providerId }, newProvider)
+      'venueProviders',
+      venueProviderId,
+      Object.assign({
+        provider
+      }, newVenueProvider)
     )
   }
 
-
   componentDidMount () {
-    this.props.requestData('GET', 'providerTypes')
+    this.props.requestData('GET', 'providers', { key: 'providers' })
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    const {
+      match: { params: { providerId } }
+    } = nextProps
+    const isNew = providerId === 'nouveau'
+    return {
+      isNew
+    }
   }
 
   render () {
     const {
-      providers,
-      providerTypeOptions,
+      providerOptions,
       venueProviders
     } = this.props
     const {
       isNew,
       withError
     } = this.state
-    // https://openagenda.com/agendas/49050769/events.json
-    console.log('providerTypeOptions', providerTypeOptions, venueProviders)
-
+    //OA: 9050769
     return [
       <h2 className='subtitle is-2' key={0}>
         Mes fournisseurs
@@ -98,15 +108,15 @@ class ProviderManager extends Component {
             Il faut un identifiant ou celui-ci existe déjà
           </p>
           <FormField
-            collectionName="newProviders"
-            defaultValue={get(providerTypeOptions, '0.value')}
+            collectionName="newVenueProviders"
+            defaultValue={get(providerOptions, '0.value')}
             label={<Label title="La source" />}
-            name="type"
-            options={providerTypeOptions}
+            name="providerId"
+            options={providerOptions}
             type="select"
           />
           <FormField
-            collectionName="newProviders"
+            collectionName="newVenueProviders"
             label={<Label title="Mon identifiant" />}
             name="identifier"
           />
@@ -117,8 +127,8 @@ class ProviderManager extends Component {
           </button>
         </div>
       ),
-      venueProviders && venueProviders.map((op, index) => (
-        <ProviderItem {...op} key={index} />
+      venueProviders && venueProviders.map((vp, index) => (
+        <VenueProviderItem {...vp} key={index} />
       ))
     ]
   }
@@ -127,14 +137,14 @@ class ProviderManager extends Component {
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => Object.assign(
-      {
-        newProvider: state.form.newProvidersById && state.form.newProvidersById[NEW],
-        providerTypeOptions: selectProviderOptions(state),
-        providers: selectProviders(state, ownProps)
-      },
-      selectCurrentVenue(state, ownProps)
-    ),
+    (state, ownProps) => ({
+      newVenueProvider: state.form.newVenueProvidersById &&
+          state.form.newVenueProvidersById[NEW],
+      providerOptions: selectProviderOptions(state),
+      providers: state.data.providers,
+      venueProviders: selectVenueProviders(state, ownProps),
+      venue: selectCurrentVenue(state, ownProps)
+    }),
     { mergeForm, requestData }
   )
 )(ProviderManager)
