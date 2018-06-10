@@ -90,10 +90,11 @@ class VenuePage extends Component {
 
     const {
       address,
+      city,
       name,
       siret,
       departementCode,
-      city
+      venueProviders
     } = venue || {}
 
     const {
@@ -151,28 +152,14 @@ class VenuePage extends Component {
           label={<Label title="Ville" />}
           name="city"
         />
+
+        <br />
+        <ProviderManager venueProviders={venueProviders} />
+
+        <br />
         <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
           <div className="control">
-            <SubmitButton
-              getBody={form => Object.assign({ managingOffererId: offererId }, form.venuesById[venueId])}
-              getIsDisabled={form =>
-                isNew
-                  ? !get(form, `venuesById.${venueId}.name`) &&
-                    !get(form, `venuesById.${venueId}.address`)
-                  : !get(form, `venuesById.${venueId}.name`) ||
-                    !get(form, `venuesById.${venueId}.address`)
-              }
-              className="button is-primary is-medium"
-              method={method}
-              path={apiPath}
-              storeKey="venues"
-              text="Enregistrer"
-            />
 
-            <br />
-            <ProviderManager venueProviders={venueProviders} />
-
-            <br />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
