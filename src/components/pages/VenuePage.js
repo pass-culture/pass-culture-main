@@ -61,18 +61,17 @@ class VenuePage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      id,
-      match: { params: { venueId } },
+      match: { params: { offererId, venueId } },
+      venue
     } = nextProps
     const isNew = venueId === 'nouveau'
-    const isLoading = !(id || isNew)
+    const isLoading = !(get(venue, 'id') || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `venues/` : `venues/${id}`,
+      apiPath: isNew ? `venues/` : `venues/${venueId}`,
       isLoading,
       isNew,
-      method,
-      offererId: isNew ? NEW : id
+      method
     }
   }
 
@@ -157,17 +156,19 @@ class VenuePage extends Component {
         <ProviderManager venueProviders={venueProviders} />
 
         <br />
-        <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+        <div className="field is-grouped is-grouped-centered"
+          style={{justifyContent: 'space-between'}}>
           <div className="control">
 
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+            <div className="field is-grouped is-grouped-centered"
+              style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
                   getBody={form => Object.assign(
                       {
                         managingOffererId: offererId,
-                        providers: get(form, `providersById`)
-                          && Object.values(get(form, `providersById`))
+                        venueProviders: get(form, `venueProvidersById`)
+                          && Object.values(get(form, `venueProvidersById`))
                       },
                       get(form, `venuesById.${venueId}`)
                     )
@@ -179,8 +180,8 @@ class VenuePage extends Component {
                       : !get(form, `venuesById.${venueId}.name`) &&
                         !get(form, `venuesById.${venueId}.address`) &
                         (
-                          !get(form, `providersById`) ||
-                          Object.keys(get(form, `providersById`)) === 0
+                          !get(form, `venueProvidersById`) ||
+                          Object.keys(get(form, `venueProvidersById`)) === 0
                         )
                   }
                   className="button is-primary is-medium"

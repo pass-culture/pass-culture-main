@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { requestData } from '../reducers/data'
 
-class ProviderItem extends Component {
+class VenueProviderItem extends Component {
 
   onDeactivateClick = () => {
     const {
@@ -18,11 +18,11 @@ class ProviderItem extends Component {
     const {
       identifier,
       isActive,
-      type
+      provider
     } = this.props
     return (
       <div className="box offerer-provider-item">
-        <h2 className="subtitle"> {type} </h2>
+        <h2 className="subtitle"> {provider.name} </h2>
         <i> {identifier} </i>
         <button onClick={this.onDeactivateClick}>
           {isActive ? 'Désactiver': 'Activer'}
@@ -35,4 +35,4 @@ class ProviderItem extends Component {
 export default connect(
   null,
   { requestData }
-)(ProviderItem)
+)(VenueProviderItem)
