@@ -13,7 +13,7 @@ def test_11_modify_venue():
     r_before = req_with_auth().get(API_URL + '/venues/AE')
     assert r_before.status_code == 200
     r_mod = req_with_auth().patch(API_URL + '/venues/AE',
-                                json={'name': 'Ma librairie'})
+                                  json={'name': 'Ma librairie'})
     assert r_mod.status_code == 200
     r_after = req_with_auth().get(API_URL + '/venues/AE')
     assert r_after.status_code == 200
@@ -26,7 +26,7 @@ def test_12_create_venue():
     venue_data = {'name': 'Ma venue',
                   'siret': '50290276000045',
                   'address': '75 Rue Charles Fourier, 75013 Paris',
-                  'departementCode': '75',
+                  'postalCode': '75200',
                   'city': 'Paris',
                   'latitude': 48.82387,
                   'longitude': 2.35284

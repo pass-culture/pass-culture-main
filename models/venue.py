@@ -23,11 +23,11 @@ class Venue(app.model.PcObject,
 
     address = db.Column(db.String(200), nullable=True)
 
-    city = db.Column(db.String(200), nullable=True)
+    postalCode = db.Column(db.String(6), nullable=False)
+
+    city = db.Column(db.String(50), nullable=True)
 
     departementCode = db.Column(db.String(3), nullable=False, index=True)
-
-    zipCode = db.Column(db.String(6), nullable=False)
 
     latitude = db.Column(db.Numeric(8, 5), nullable=True)
 
@@ -35,7 +35,6 @@ class Venue(app.model.PcObject,
 
     managingOffererId = db.Column(db.BigInteger,
                                   db.ForeignKey("offerer.id"),
-                                  unique=True,
                                   nullable=True)
     managingOfferer = db.relationship(lambda: app.model.Offerer,
                                       foreign_keys=[managingOffererId],
@@ -47,20 +46,24 @@ class Venue(app.model.PcObject,
     # open thursday 9 to 18, closed the rest of the week
 
     def store_department_code(self):
-        self.departementCode = self.zipCode[:-3]
+        self.departementCode = self.postalCode[:-3]
+
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
     self.store_department_code()
 
+
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
     self.store_department_code()
+
 
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT),
     cast(coalesce(Venue.address, ''), TEXT)
 )
+
 
 Venue.__table_args__ = (
     Index(
@@ -69,5 +72,6 @@ Venue.__table_args__ = (
         postgresql_using='gin'
     ),
 )
+
 
 app.model.Venue = Venue
