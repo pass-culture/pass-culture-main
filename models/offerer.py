@@ -12,6 +12,7 @@ db = app.db
 
 class Offerer(app.model.PcObject,
               app.model.HasThumbMixin,
+              app.model.HasAddressMixin,
               app.model.ProvidableMixin,
               app.model.DeactivableMixin,
               db.Model):
@@ -27,7 +28,6 @@ class Offerer(app.model.PcObject,
     bookingEmail = db.Column(db.String(120), nullable=False)
 
     siren = db.Column(db.String(9))
-
 
     def make_admin(self, admin):
         if admin:

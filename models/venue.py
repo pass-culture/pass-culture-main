@@ -13,6 +13,7 @@ db = app.db
 
 class Venue(app.model.PcObject,
             app.model.HasThumbMixin,
+            app.model.HasAddressMixin,
             app.model.ProvidableMixin,
             db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
@@ -21,11 +22,7 @@ class Venue(app.model.PcObject,
 
     siret = db.Column(db.String(14))
 
-    address = db.Column(db.String(200), nullable=True)
-
     postalCode = db.Column(db.String(6), nullable=False)
-
-    city = db.Column(db.String(50), nullable=True)
 
     departementCode = db.Column(db.String(3), nullable=False, index=True)
 
