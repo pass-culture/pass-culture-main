@@ -4,6 +4,7 @@ from pathlib import Path
 from os import path
 from flask import current_app as app
 from pandas import read_csv
+import re
 
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
@@ -68,7 +69,16 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
         assert obj.idAtProviders == str(self.line['Ref Lieu'])
 
         obj.name = self.line['Nom']
-        obj.address = self.line['Adresse']
+
+        address_search = re.search('^(.*)(,|\s)\s*(\d+)\s+(.*)((,|\s)\s*France|)$',
+                                   self.line['Adresse'],
+                                   re.IGNORECASE)
+        if address_search:
+            obj.address = address_search.group(1)
+            obj.postalCode = address_search.group(3)
+            obj.city = address_search.group(4)
+        else:
+            raise ValueError("Format d'adresse incorrect : "+self.line['Adresse'])
 
         if isinstance(obj, Venue):
             obj.latitude = self.line['Latitude']

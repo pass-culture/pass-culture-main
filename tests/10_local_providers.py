@@ -80,7 +80,7 @@ with app.app_context():
                       Venue=2,
                       Offerer=2)
         with app.app_context():
-            provider = app.model.Provider.getByClassName('TiteLiveVenues')
+            provider = app.model.Provider.getByClassName('TiteLiveOffers')
             for vp in app.model.VenueProvider.query\
                                .filter_by(provider=provider)\
                                .all():
