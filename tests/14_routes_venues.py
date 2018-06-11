@@ -27,6 +27,7 @@ def test_12_create_venue():
                   'siret': '50290276000045',
                   'address': '75 Rue Charles Fourier, 75013 Paris',
                   'departementCode': '75',
+                  'city': 'Paris',
                   'latitude': 48.82387,
                   'longitude': 2.35284
                  }
