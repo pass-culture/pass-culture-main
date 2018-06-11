@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 
 import OccasionsList from '../OccasionsList'
 import withLogin from '../hocs/withLogin'
+import Icon from '../layout/Icon'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import selectOccasions from '../../selectors/occasions'
@@ -30,20 +31,29 @@ class OffersPage extends Component {
   render() {
     const { occasions } = this.props
     return (
-      <PageWrapper name="offerer" loading={!occasions.length}>
-        <h1 className='title has-text-centered'>Vos offres</h1>
-        <nav className="level is-mobile">
-          <NavLink to={`/offres/evenements/nouveau`}>
-            <button className="button is-primary level-item">
-              Nouvel événement
-            </button>
-          </NavLink>
-          <NavLink to={`/offres/objets/nouveau`}>
-            <button className="button is-primary level-item">
-              Nouvel objet
-            </button>
-          </NavLink>
-        </nav>
+      <PageWrapper name="offers" loading={!occasions.length}>
+        <div className="level is-vcentered">
+          <h1 className='is-size-1 has-text-grey is-italic level-left'>
+            Vos offres
+          </h1>
+          <div className="level-right">
+            <NavLink to={`/offres/evenements/nouveau`}>
+              <button className="button is-primary level-item">
+                Ajouter une offre
+              </button>
+            </NavLink>
+          </div>
+        </div>
+
+        <br />
+        <p className="subtitle">
+          Voici toutes vos offres apparaissant dans le Pass Culture.
+        </p>
+
+        <br />
+        <p className="search level-left">
+          Rechercher une offre:
+        </p>
         <nav className="level is-mobile">
           <SearchInput
             collectionNames={["events", "things"]}
@@ -53,6 +63,9 @@ class OffersPage extends Component {
             }}
             isLoading
           />
+          <button>
+            <Icon svg={'ico-guichet-w'} />
+          </button>
         </nav>
         {occasions.length && <OccasionsList />}
       </PageWrapper>

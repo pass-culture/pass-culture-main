@@ -14,6 +14,7 @@ import selectCurrentVenue from '../../selectors/currentVenue'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import withLogin from '../hocs/withLogin'
 
+
 class VenuePage extends Component {
 
   constructor () {
@@ -45,6 +46,13 @@ class VenuePage extends Component {
       user
     } = this.props
     if (user) {
+      requestData(
+        'GET',
+        `offerers/${offererId}`,
+        {
+          key: 'offerers'
+        }
+      )
       requestData(
         'GET',
         `offerers/${offererId}/venues`,
@@ -103,49 +111,89 @@ class VenuePage extends Component {
     return (
       <PageWrapper name='offerer' loading={isLoading}>
 
-        <h1 className='title has-text-centered'>{get(offerer, 'name')}</h1>
-        <h1 className='title has-text-centered'>{isNew ? 'Créer' : 'Modifier'} un lieu</h1>
+        <h1 className='title has-text-centered level-left'>
+          {get(offerer, 'name')}
+        </h1>
+
+        <h1 className='is-size-1 has-text-grey is-italic level-left'>
+          {isNew ? 'Créer un' : 'Modifier le'} lieu
+        </h1>
+
+        <p className='subtitle'>
+          Ajoutez un lieu où trouver vos offres
+        </p>
+        <p className='small has-text-grey'>
+          Les champs marqués d'un <span> * </span> sont obligatoires
+        </p>
+
+        <br />
+        <br />
         <FormField
           autoComplete="siret"
+          className='is-rounded'
+          controlClassName='columns'
           collectionName="venues"
           defaultValue={siret}
           entityId={venueId}
-          label={<Label title="Siret" />}
+          inputClassName='column is-3 aligned'
+          label={<Label title="SIRET:" />}
+          labelClassName='column is-3'
           name="siret"
           type="sirene"
           sireType="siret"
         />
         <FormField
           autoComplete="name"
+          className='is-rounded'
           collectionName="venues"
+          controlClassName='columns'
           defaultValue={name}
           entityId={venueId}
-          label={<Label title="Nom" />}
+          inputClassName='column aligned'
+          label={<Label title="Nom du lieu:" />}
+          labelClassName='column is-3'
           name="name"
         />
+
+        <br />
+        <div className="columns">
+          <p className="column"> <b> ADRESSE </b> </p>
+        </div>
         <FormField
           autoComplete="address"
+          className='input is-rounded'
           collectionName="venues"
+          controlClassName='columns'
           defaultValue={address || ''}
           entityId={venueId}
+          inputClassName='column aligned'
           label={<Label title="Numéro et voie :*" />}
+          labelClassName='column is-3'
           name="address"
           type="address"
         />
         <FormField
           autoComplete="departementCode"
+          className='input is-rounded'
           collectionName="venues"
+          controlClassName='columns'
           defaultValue={departementCode || ''}
           entityId={venueId}
-          label={<Label title="Code Postal" />}
+          inputClassName='column is-2 mt1'
+          label={<Label title="Code Postal:*" />}
+          labelClassName='column is-3'
           name="departementCode"
         />
         <FormField
           autoComplete="city"
+          className='input is-rounded'
           collectionName="venues"
+          controlClassName='columns'
           defaultValue={city || ''}
           entityId={venueId}
-          label={<Label title="Ville" />}
+          inputClassName='column is-5 mt1'
+          label={<Label title="Ville:*" />}
+          labelClassName='column is-3'
           name="city"
         />
 

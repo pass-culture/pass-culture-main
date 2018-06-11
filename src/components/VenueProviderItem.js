@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -22,7 +23,7 @@ class VenueProviderItem extends Component {
     } = this.props
     return (
       <div className="box offerer-provider-item">
-        <h2 className="subtitle"> {provider.name} </h2>
+        <h2 className="subtitle"> {get(provider, 'name')} </h2>
         <i> {identifier} </i>
         <button onClick={this.onDeactivateClick}>
           {isActive ? 'Désactiver': 'Activer'}
