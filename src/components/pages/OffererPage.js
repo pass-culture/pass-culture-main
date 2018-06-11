@@ -61,7 +61,9 @@ class OffererPage extends Component {
       match: { params: { offererId } },
       requestData
     } = this.props
-    requestData('GET', `offerers/${offererId}`, { key: 'offerers' })
+    if (offererId !== 'nouveau') {
+      requestData('GET', `offerers/${offererId}`, { key: 'offerers' })
+    }
   }
 
   onAddProviderClick = () => {
@@ -70,16 +72,13 @@ class OffererPage extends Component {
 
   render () {
     const {
-      offerer,
-      venues
+      offerer
     } = this.props
 
     const {
-      id,
       address,
       bookingEmail,
       name,
-      providers,
       siren,
     } = offerer || {}
 
@@ -89,7 +88,6 @@ class OffererPage extends Component {
       isNew,
       method,
       offererId,
-      offererProviders
     } = this.state
 
     return (
@@ -194,8 +192,7 @@ class OffererPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => (      {
-      venues: state.data.venues,
+    (state, ownProps) => ({
       offerer: selectCurrentOfferer(state, ownProps),
     }),
     { resetForm }

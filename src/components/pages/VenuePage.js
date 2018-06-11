@@ -14,9 +14,6 @@ import selectCurrentVenue from '../../selectors/currentVenue'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import withLogin from '../hocs/withLogin'
 
-import { NEW } from '../../utils/config'
-
-
 class VenuePage extends Component {
 
   constructor () {
@@ -61,7 +58,7 @@ class VenuePage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      match: { params: { offererId, venueId } },
+      match: { params: { venueId } },
       venue
     } = nextProps
     const isNew = venueId === 'nouveau'
