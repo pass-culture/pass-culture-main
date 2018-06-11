@@ -123,6 +123,10 @@ VENUES_INCLUDES = [
     }
 ]
 
+VENUE_PROVIDER_INCLUDES = [
+    "provider"
+]
+
 includes = {
     'bookings': BOOKINGS_INCLUDES,
     'occasions': OCCASION_INCLUDES,
@@ -130,5 +134,6 @@ includes = {
     'offers': OFFERS_INCLUDES,
     'recommendations': RECOMMENDATIONS_INCLUDES,
     'users': USERS_INCLUDES,
-    'venues': VENUES_INCLUDES
+    'venues': VENUES_INCLUDES,
+    'venueProviders': VENUE_PROVIDER_INCLUDES
 }
