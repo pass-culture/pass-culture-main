@@ -36,4 +36,5 @@ def edit_venue(venueId):
                      .query.filter_by(id=dehumanize(venueId))\
                      .first_or_404()
     update(venue, request.json)
+    app.model.PcObject.check_and_save(venue)
     return jsonify(venue._asdict(include=VENUES_INCLUDES)), 200
