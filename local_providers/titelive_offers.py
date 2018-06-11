@@ -27,7 +27,6 @@ class TiteLiveOffers(app.model.LocalProvider):
     help = ""
     identifierDescription = "Code Titelive de la librairie"
     identifierRegexp = "^\d+$"
-    isActive = True
     name = "TiteLive Offers (Epagine / Place des libraires.com)"
     objectType = Offer
     canCreate = True

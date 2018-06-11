@@ -108,14 +108,18 @@ def signup():
     new_user.id = None
     new_user.departementCode = departement_code
 
+    offerer = None
+    user_offerer = None
     if 'siren' in request.json:
+        #TODO: handle case of already existing Offerer
         offerer = app.model.Offerer()
         update(offerer, request.json)
         user_offerer = offerer.make_admin(new_user)
         offerer.bookingEmail = new_user.email
         offerer.isActive = False
-
-    app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
+        app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
+    else:
+        app.model.PcObject.check_and_save(new_user)
 
     login_user(new_user)
     return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201

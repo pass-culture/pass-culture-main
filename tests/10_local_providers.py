@@ -49,6 +49,8 @@ with app.app_context():
     def provider_test(provider, venueProvider, **counts):
         with app.app_context():
             providerObj = provider(venueProvider, mock=True)
+            providerObj.dbObject.isActive = True
+            app.model.PcObject.check_and_save(providerObj.dbObject)
             saveCounts()
             providerObj.updateObjects()
             for countName in ['updatedObjects',
@@ -78,7 +80,6 @@ with app.app_context():
                       Venue=2,
                       Offerer=2)
         with app.app_context():
-            provider = app.model.Provider.getByClassName('TiteLiveOffers')
             for vp in app.model.VenueProvider.query\
                                .filter_by(provider=provider)\
                                .all():
@@ -193,19 +194,23 @@ with app.app_context():
                       Venue=0,
                       Offerer=0)
 
-    def test_16_openagenda_events_provider():
-        provider_test(app.local_providers.OpenAgendaEvents,
-                      None,
-                      checkedObjects=482,
-                      createdObjects=482,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Venue=0,
-                      Offerer=0)
+#    def test_16_openagenda_events_provider():
+#        with app.app_context():
+#            venueProvider = app.model.VenueProvider.query\
+#                                 .filter_by(venueIdAtOfferProvider='2949')\
+#                                 .one_or_none()
+#        provider_test(app.local_providers.OpenAgendaEvents,
+#                      venueProvider,
+#                      checkedObjects=482,
+#                      createdObjects=482,
+#                      updatedObjects=0,
+#                      erroredObjects=0,
+#                      checkedThumbs=0,
+#                      createdThumbs=0,
+#                      updatedThumbs=0,
+#                      erroredThumbs=0,
+#                      Venue=0,
+#                      Offerer=0)
 
     def test_99_init():
         with app.app_context():

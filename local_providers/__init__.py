@@ -26,5 +26,6 @@ for name in app.local_providers.keys():
         p = app.model.Provider()
         p.name = provider.name
         p.localClass = name
+        p.isActive = False
         app.db.session.add(p)
         app.db.session.commit()

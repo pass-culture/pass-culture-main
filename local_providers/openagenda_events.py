@@ -31,7 +31,6 @@ class OpenAgendaEvents(app.model.LocalProvider):
     name = "Open Agenda"
     objectType = Event
     canCreate = True
-    isActive = True
 
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)

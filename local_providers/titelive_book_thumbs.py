@@ -30,7 +30,6 @@ class TiteLiveBookThumbs(app.model.LocalProvider):
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
     identifierRegexp = None
-    isActive = True
     name = "TiteLive (Epagine / Place des libraires.com) Thumbs"
     objectType = Thing
     canCreate = False

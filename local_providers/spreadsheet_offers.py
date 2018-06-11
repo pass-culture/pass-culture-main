@@ -22,7 +22,6 @@ class SpreadsheetOffers(app.model.LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Nom de la librairie"
     identifierRegexp = "^\w+$"
-    isActive = True
     name = "Spreadsheet Offers"
     objectType = Offer
     canCreate = True
@@ -36,7 +35,6 @@ class SpreadsheetOffers(app.model.LocalProvider):
         self.spreadsheet_dir = local_path('spreadsheets', 'offerers/' + self.human_id)
         if not path.isfile(self.spreadsheet_dir):
             print('did not find ' + str(self.spreadsheet_dir))
-            self.isActive = False
             return
         self.df = read_excel(self.spreadsheet_dir)
         # self.iterations_count = self.df.shape[0]
@@ -58,7 +56,6 @@ class SpreadsheetOffers(app.model.LocalProvider):
         self.zip_dir = local_path('zips', 'offerers/' + self.human_id)
         if not path.isfile(self.zip_dir):
             print('did not find ' + str(self.zip_dir))
-            self.isActive = False
             return
         self.zip = ZipFile(str(self.zip_dir))
         self.zip_names = self.zip.namelist()

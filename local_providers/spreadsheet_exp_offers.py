@@ -34,7 +34,6 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
     identifierRegexp = None
-    isActive = True
     name = "Experimentation Spreadsheet (Offres)"
     objectType = Offer
     canCreate = True

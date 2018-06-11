@@ -35,7 +35,6 @@ class TiteLiveBookDescriptions(app.model.LocalProvider):
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
     identifierRegexp = None
-    isActive = True
     name = "TiteLive (Epagine / Place des libraires.com) Descriptions"
     objectType = Thing
     canCreate = False

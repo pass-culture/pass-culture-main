@@ -6,6 +6,7 @@ db = app.db
 
 
 class Provider(app.model.PcObject,
+               app.model.DeactivableMixin,
                db.Model):
     id = db.Column(db.BigInteger,
                    primary_key=True)
@@ -23,10 +24,6 @@ class Provider(app.model.PcObject,
     venueProviders = db.relationship(app.model.VenueProvider,
                                      back_populates="provider",
                                      foreign_keys=[app.model.VenueProvider.providerId])
-
-    isActive = db.Column(db.Boolean,
-                         nullable=False,
-                         default=True)
 
     apiKey = db.Column(CHAR(32),
                        nullable=True)

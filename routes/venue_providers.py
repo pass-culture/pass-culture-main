@@ -16,6 +16,7 @@ VenueProvider = app.model.VenueProvider
 def create_venue_provider(venueId):
     new_vp = VenueProvider(from_dict=request.json)
     new_vp.venueId = venueId
+    #TODO: check that provider is active 
     app.model.PcObject.check_and_save(new_vp)
     subprocess.Popen(['pc', 'update_providables', '-p', new_vp.provider.name,
                                                   '-v', new_vp.venueId],

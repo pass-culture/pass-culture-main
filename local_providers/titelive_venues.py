@@ -15,7 +15,6 @@ class TiteLiveVenues(app.model.LocalProvider):
     help = ""
     identifierDescription = ""
     identifierRegexp = None
-    isActive = True
     name = "TiteLive Venues (Epagine / Place des libraires.com)"
     objectType = Venue
     canCreate = True

@@ -206,7 +206,7 @@ class LocalProvider(Iterator):
                 return
             app.db.session.add(self.venueProvider)  # FIXME: we should not need this
         providerName = self.__class__.__name__
-        if not self.isActive:
+        if not self.dbObject.isActive:
             print("Provider "+providerName+" is inactive")
             return
         sys.stdout.write("Updating "
