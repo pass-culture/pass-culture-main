@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import get from 'lodash.get'
 import { NavLink } from 'react-router-dom'
 
 import withLogin from '../hocs/withLogin'
@@ -49,4 +48,3 @@ export default compose(
       offerers: state.data.offerers
     }))
 )(OfferersPage)
-

@@ -5,6 +5,7 @@ import { List } from 'react-virtualized'
 import { withRouter } from 'react-router'
 
 import { requestData } from '../reducers/data'
+import selectCurrentVenues from '../selectors/currentVenues'
 import VenueItem from './VenueItem'
 
 class VenuesList extends Component {
@@ -25,7 +26,7 @@ class VenuesList extends Component {
       requestData,
       user
     } = this.props
-    if (user) {
+    if (user && offererId !== 'nouveau') {
       requestData(
         'GET',
         `offerers/${offererId}/venues`,
@@ -39,7 +40,6 @@ class VenuesList extends Component {
 
   render() {
     const { venues } = this.props
-    console.log('venues', venues)
     return (
       <div className="venues-list">
         {
@@ -67,7 +67,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venues: state.data.venues
+      venues: selectCurrentVenues(state, ownProps)
     }),
     { requestData }
   )
