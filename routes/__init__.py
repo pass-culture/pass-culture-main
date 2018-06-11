@@ -13,6 +13,7 @@ import routes.search
 import routes.things
 import routes.user_offerers
 import routes.users
+import routes.venue_providers
 import routes.venues
 
 #TODO

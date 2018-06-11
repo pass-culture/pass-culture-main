@@ -25,6 +25,7 @@ def get_venue(venueId):
 @expect_json_data
 def create_venue():
     venue = app.model.Venue(from_dict=request.json)
+    venue.departementCode='XX' # avoid tiggerring check on this
     app.model.PcObject.check_and_save(venue)
     return jsonify(venue._asdict(include=VENUES_INCLUDES)), 201
 
@@ -36,4 +37,5 @@ def edit_venue(venueId):
                      .query.filter_by(id=dehumanize(venueId))\
                      .first_or_404()
     update(venue, request.json)
+    app.model.PcObject.check_and_save(venue)
     return jsonify(venue._asdict(include=VENUES_INCLUDES)), 200

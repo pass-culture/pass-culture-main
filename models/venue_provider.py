@@ -9,23 +9,18 @@ class VenueProvider(app.model.PcObject,
                     db.Model):
 
     venueId = db.Column(db.BigInteger,
-                        db.ForeignKey('venue.id'),
-                        primary_key=True)
+                        db.ForeignKey('venue.id'))
     venue = db.relationship(lambda: app.model.Venue,
                             back_populates="venueProviders",
                             foreign_keys=[venueId])
 
     providerId = db.Column(db.BigInteger,
-                           db.ForeignKey('provider.id'),
-                           primary_key=True)
+                           db.ForeignKey('provider.id'))
     provider = db.relationship(lambda: app.model.Provider,
                                back_populates="venueProviders",
                                foreign_keys=[providerId])
 
-    identifier = db.Column(db.String(70))
-
-    venueIdAtOfferProvider = db.Column(db.String(70),
-                                       primary_key=True)
+    venueIdAtOfferProvider = db.Column(db.String(70))
 
     lastSyncDate = db.Column(db.DateTime,
                              nullable=True)
