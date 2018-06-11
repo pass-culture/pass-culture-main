@@ -49,7 +49,7 @@ class SearchInput extends Component {
       // THE QUERY IS NULL
       // SO IT MEANS WE RESET THE SEARCH INPUT WITH AN EMPTY STRING
       // WE NEED THEN TO NULLIFY THE 'searched<Key>' in the state
-      // to go back to the previous state without search 
+      // to go back to the previous state without search
       const key = get(config, 'key')
       key && assignData({ [key]: null })
     }
@@ -68,7 +68,7 @@ class SearchInput extends Component {
 
   render() {
     return <input
-      className="input"
+      className="input search-input"
       onChange={this.onChange}
       placeholder="Saisissez une recherche"
       ref={_element => (this._element = _element)}

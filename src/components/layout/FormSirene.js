@@ -127,13 +127,21 @@ class FormSirene extends Component {
     const {name} = this.props.entity || {}
     const { localValue, searching } = this.state
 
-    return (
-      <div>
-        <FormInput onChange={this.onChange} formatValue={this.formatValue} storeValue={removeWhitespaces} {...this.props} type='text' />
-        {name && <p className="has-text-weight-bold">{name}</p>}
-      </div>
-    )
-
+    return [
+        <FormInput
+          onChange={this.onChange}
+          formatValue={this.formatValue}
+          key={0}
+          storeValue={removeWhitespaces}
+          {...this.props}
+          type='text'
+        />,
+        name && (
+          <p className="has-text-weight-bold" key={1}>
+            {name}
+          </p>
+        )
+      ]
   }
 }
 

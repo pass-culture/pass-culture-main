@@ -30,9 +30,12 @@ class FormField extends Component {
     const {
       className,
       collectionName,
+      controlClassName,
       errors,
       id,
+      inputClassName,
       label,
+      labelClassName,
       name,
       type,
       readOnly,
@@ -44,11 +47,11 @@ class FormField extends Component {
     const InputComponent = FormComponentsByName[`Form${capitalize(type)}`] || FormInput
     const inputMarkup = <InputComponent
       {...this.props}
-      className={classnames(className, {
+      className={classnames({
         checkbox: type === 'checkbox',
         input: type !== 'textarea' && type !== 'select',
         textarea: type === 'textarea',
-      })}
+      }, className, inputClassName)}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
@@ -58,25 +61,28 @@ class FormField extends Component {
       <label className={classnames({
         checkbox: isCheckbox,
         label: !isCheckbox,
-        required: required,
-      })} htmlFor={inputId} key={'label_' + inputId}>
+        required,
+      }, labelClassName)} htmlFor={inputId} key={'label_' + inputId}>
         { isCheckbox && inputMarkup }
         {label}
       </label>
     )
     return [
       <div
-        className={classnames({
-          field: true,
+        className={classnames('form-field field', {
           checkbox: isCheckbox,
         })}
         key={0}
       >
-        <div className='control'>
+        <div className={classnames('control', controlClassName)}>
           { isCheckbox && labelMarkup }
           { !isCheckbox && [labelMarkup, inputMarkup]}
         </div>
-        <ul role='alert' id={`${inputId}-error`} className={classnames('errors', { pop: errors })} key={1}>
+        <ul role='alert'
+          id={`${inputId}-error`}
+          className={classnames('errors', { pop: errors })}
+          key={1}
+        >
           {errors &&
             errors.map((e, index) => (
               <li key={index}>

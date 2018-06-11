@@ -26,58 +26,49 @@ class ProviderManager extends Component {
   }
 
   onAddClick = () => {
-    this.setState({ isNew: true })
-  }
-
-  onConfirmClick = e => {
     const {
-      mergeForm,
-      newVenueProvider,
-      providers,
-      venueProviders
+      match: { params: { venueId } },
+      mergeForm
     } = this.props
-
-    // build the datetime based on the date plus the time
-    // given in the horaire form field
-    if (!newVenueProvider || !newVenueProvider.providerId || !newVenueProvider.identifier) {
-      return this.setState({ withError: true })
-    }
-
-    // check that it does not match already an occurence
-    const alreadySelectedProvider = venueProviders.find(p =>
-      p.identifier === newVenueProvider.identifier)
-    if (alreadySelectedProvider) {
-      return this.setState({ withError: true })
-    }
-
-    // find the providers
-    const provider = providers.find(p => p.id === newVenueProvider.providerId)
-
-    // add in the venueProviders form
-    const venueProviderId = !venueProviders
-      ? `NEW_0`
-      : `${NEW}_${venueProviders.length}`
-    mergeForm(
-      'venueProviders',
-      venueProviderId,
-      Object.assign({
-        provider
-      }, newVenueProvider)
-    )
+    this.setState({ isNew: true })
+    mergeForm('venueProviders', NEW, { venueId })
   }
 
   componentDidMount () {
-    this.props.requestData('GET', 'providers', { key: 'providers' })
+    this.props.user && this.handleRequestData()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
+    }
+  }
+
+  handleRequestData = () => {
+    const {
+      match: { params : { venueId } },
+      requestData
+    } = this.props
+    requestData('GET', 'providers')
+    requestData(
+      'GET',
+      `venueProviders/${venueId}`,
+      {
+        key: 'venueProviders',
+        isMergingArray: false
+      }
+    )
   }
 
   static getDerivedStateFromProps(nextProps) {
     const {
       match: { params: { providerId } }
     } = nextProps
-    const isNew = providerId === 'nouveau'
-    return {
-      isNew
+    const newState = {}
+    if (providerId === 'nouveau') {
+      newState.isNew = true
     }
+    return newState
   }
 
   render () {
@@ -89,7 +80,6 @@ class ProviderManager extends Component {
       isNew,
       withError
     } = this.state
-    //OA: 9050769
     return [
       <h2 className='subtitle is-2' key={0}>
         Mes fournisseurs
@@ -108,7 +98,7 @@ class ProviderManager extends Component {
             Il faut un identifiant ou celui-ci existe déjà
           </p>
           <FormField
-            collectionName="newVenueProviders"
+            collectionName="venueProviders"
             defaultValue={get(providerOptions, '0.value')}
             label={<Label title="La source" />}
             name="providerId"
@@ -116,15 +106,20 @@ class ProviderManager extends Component {
             type="select"
           />
           <FormField
-            collectionName="newVenueProviders"
+            collectionName="venueProviders"
             label={<Label title="Mon identifiant" />}
-            name="identifier"
+            name="venueIdAtOfferProvider"
           />
-          <button
-            className="button"
-            onClick={this.onConfirmClick}>
-            Ajouter
-          </button>
+          <SubmitButton
+            className="button is-primary is-medium"
+            getBody={form => get(form, `venueProvidersById.${NEW}`)}
+            getIsDisabled={form =>
+              !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
+            method="POST"
+            path="venueProviders"
+            storeKey="venueProviders"
+            text="Enregistrer"
+          />
         </div>
       ),
       venueProviders && venueProviders.map((vp, index) => (
@@ -138,12 +133,11 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => ({
-      newVenueProvider: state.form.newVenueProvidersById &&
-          state.form.newVenueProvidersById[NEW],
       providerOptions: selectProviderOptions(state),
       providers: state.data.providers,
       venueProviders: selectVenueProviders(state, ownProps),
-      venue: selectCurrentVenue(state, ownProps)
+      venue: selectCurrentVenue(state, ownProps),
+      user: state.user
     }),
     { mergeForm, requestData }
   )

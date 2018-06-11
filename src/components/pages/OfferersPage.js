@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
+import Icon from '../layout/Icon'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import OfferersList from '../OfferersList'
@@ -14,8 +15,28 @@ const OfferersPage = ({ user, offerers }) => {
       type: 'success',
       text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.'
     }}>
-      <h1 className="title is-size-1 has-text-grey is-italic">Vos structures</h1>
-      <p className="subtitle">Retrouvez ici la ou les structures dont vous gérez les offres Pass Culture.</p>
+      <div className="level is-vcentered">
+        <h1 className="is-size-1 has-text-grey is-italic level-left">
+          Vos structures
+        </h1>
+        <div className="level-right">
+          <NavLink to={`/structures/nouveau`}>
+            <span className='icon'>
+              <Icon svg={'ico-guichet-w'} />
+            </span>
+            <button className="button is-primary">
+              Rattacher une structure
+            </button>
+          </NavLink>
+        </div>
+      </div>
+
+      <br />
+      <p className="subtitle">
+        Retrouvez ici la ou les structures dont vous gérez les offres Pass Culture.
+      </p>
+
+      <br />
       {false && (
         <nav className="level is-mobile">
           <SearchInput
@@ -29,13 +50,6 @@ const OfferersPage = ({ user, offerers }) => {
         </nav>
       )}
       <OfferersList />
-      <nav className="level is-mobile">
-        <NavLink to={`/structures/nouveau`}>
-          <button className="button is-primary is-small is-outlined level-item">
-            Rattacher une structure
-          </button>
-        </NavLink>
-      </nav>
     </PageWrapper>
   )
 }
