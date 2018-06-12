@@ -1,4 +1,4 @@
-export function getResolvedData(previousData, nextData, config = {}) {
+export function getResolvedData(method, path, previousData, nextData, config = {}) {
 
   // unpack the config
   const {
@@ -17,6 +17,22 @@ export function getResolvedData(previousData, nextData, config = {}) {
   if (!previousData) {
     return nextData
   }
+
+  // DELETE CASE
+  if (method === 'DELETE') {
+    const resolvedData = [...previousData]
+    nextData.forEach(nextDatum => {
+      const resolvedIndex = resolvedData.findIndex(resolvedDatum =>
+          resolvedDatum.id === nextDatum.id)
+      if (typeof resolvedIndex !== 'undefined') {
+        delete resolvedData[resolvedIndex]
+      }
+    })
+    return resolvedData
+  }
+
+  // GET POST PATCH
+
 
   // add
   if (add === 'append') {

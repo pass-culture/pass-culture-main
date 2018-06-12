@@ -108,7 +108,6 @@ class VenuePage extends Component {
       method,
       venueId
     } = this.state
-
     return (
       <PageWrapper name='offerer' loading={isLoading}>
 
@@ -131,12 +130,11 @@ class VenuePage extends Component {
         <br />
         <FormField
           autoComplete="siret"
-          className='is-rounded'
+          className='column is-4 aligned is-rounded'
           controlClassName='columns'
           collectionName="venues"
           defaultValue={siret}
           entityId={venueId}
-          inputClassName='column is-3 aligned'
           label={<Label title="SIRET:" />}
           labelClassName='column is-3'
           name="siret"
@@ -162,12 +160,11 @@ class VenuePage extends Component {
         </div>
         <FormField
           autoComplete="address"
-          className='input is-rounded'
+          className='column aligned is-rounded'
           collectionName="venues"
           controlClassName='columns'
           defaultValue={address || ''}
           entityId={venueId}
-          inputClassName='column aligned'
           label={<Label title="Numéro et voie :*" />}
           labelClassName='column is-3'
           name="address"
@@ -175,46 +172,38 @@ class VenuePage extends Component {
         />
         <FormField
           autoComplete="postalCode"
-          className='input is-rounded'
+          className='column is-2 mt1 is-rounded'
           collectionName="venues"
           controlClassName='columns'
           defaultValue={postalCode || ''}
           entityId={venueId}
-          inputClassName='column is-2 mt1'
           label={<Label title="Code Postal:*" />}
           labelClassName='column is-3'
           name="postalCode"
         />
         <FormField
           autoComplete="city"
-          className='input is-rounded'
+          className='column is-5 mt1 is-rounded'
           collectionName="venues"
           controlClassName='columns'
           defaultValue={city || ''}
           entityId={venueId}
-          inputClassName='column is-5 mt1'
           label={<Label title="Ville:*" />}
           labelClassName='column is-3'
           name="city"
         />
 
         <br />
-        <ProviderManager venueProviders={venueProviders} />
-
-        <br />
         <div className="field is-grouped is-grouped-centered"
           style={{justifyContent: 'space-between'}}>
           <div className="control">
-
             <div className="field is-grouped is-grouped-centered"
               style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
                   getBody={form => Object.assign(
                       {
-                        managingOffererId: offererId,
-                        venueProviders: get(form, `venueProvidersById`)
-                          && Object.values(get(form, `venueProvidersById`))
+                        managingOffererId: offererId
                       },
                       get(form, `venuesById.${venueId}`)
                     )
@@ -222,13 +211,11 @@ class VenuePage extends Component {
                   getIsDisabled={form =>
                     isNew
                       ? !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.address`)
+                        !get(form, `venuesById.${venueId}.address`) ||
+                        !get(form, `venuesById.${venueId}.postalCode`)
                       : !get(form, `venuesById.${venueId}.name`) &&
-                        !get(form, `venuesById.${venueId}.address`) &
-                        (
-                          !get(form, `venueProvidersById`) ||
-                          Object.keys(get(form, `venueProvidersById`)) === 0
-                        )
+                        !get(form, `venuesById.${venueId}.address`) &&
+                        !get(form, `venuesById.${venueId}.postalCode`)
                   }
                   className="button is-primary is-medium"
                   method={method}
@@ -246,8 +233,15 @@ class VenuePage extends Component {
               </div>
             </div>
         </div>
-
       </div>
+
+      {
+        !isNew && [
+          <br key={0}/>,
+          <ProviderManager key={1} venueProviders={venueProviders} />
+        ]
+      }
+
     </PageWrapper>
   )
 }

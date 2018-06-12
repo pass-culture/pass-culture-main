@@ -33,7 +33,6 @@ class FormField extends Component {
       controlClassName,
       errors,
       id,
-      inputClassName,
       label,
       labelClassName,
       name,
@@ -51,7 +50,7 @@ class FormField extends Component {
         checkbox: type === 'checkbox',
         input: type !== 'textarea' && type !== 'select',
         textarea: type === 'textarea',
-      }, className, inputClassName)}
+      }, className)}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
