@@ -12,6 +12,11 @@
     "password": "pctestjeune"
   },
   {
-    "email": "admin@test.com"
+    "publicName": "Utilisateur test admin",
+    "email": "pctest.admin@btmx.fr",
+    "departementCode": "93",
+    "isAdmin": true,
+    "canBook": false,
+    "password": "pctestadmin"
   }
 ]

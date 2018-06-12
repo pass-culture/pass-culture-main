@@ -227,5 +227,4 @@ with app.app_context():
             import scripts
             from scripts.sandbox import sandbox
             sandbox()
-            assertCreatedCounts(User=2)
-            
+            assertCreatedCounts(User=3)

@@ -30,6 +30,8 @@ class HasThumbMixin(object):
         return get_public_object_date("thumbs", self.thumb_storage_id(index))
 
     def thumb_storage_id(self, index):
+        if self.id is None:
+            raise ValueError("Trying to get thumb_storage_id for an unsaved object")
         return inflect_engine.plural(self.__class__.__name__.lower()) + "/"\
                                      + humanize(self.id)\
                                      + (('_' + str(index)) if index > 0 else '')
