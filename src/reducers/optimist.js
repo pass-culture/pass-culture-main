@@ -38,7 +38,7 @@ const optimist = (state = initialState, action) => {
     }
 
     // resolve
-    nextState[key] = getResolvedData(previousData, nextData, action.config)
+    nextState[key] = getResolvedData(action.method, action.path ,previousData, nextData, action.config)
 
     // get optimist keep
     if (action.method === 'GET' && state.isOptimist) {

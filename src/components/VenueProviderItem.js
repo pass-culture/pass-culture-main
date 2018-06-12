@@ -23,7 +23,7 @@ class VenueProviderItem extends Component {
       provider,
       requestData
     } = this.props
-    requestData('DELETE', `venueProviders/${id}`)
+    requestData('DELETE', `venueProviders/${id}`, { key: 'venueProviders' })
   }
 
   render () {

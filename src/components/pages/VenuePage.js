@@ -108,9 +108,6 @@ class VenuePage extends Component {
       method,
       venueId
     } = this.state
-
-    console.log('isNew', isNew)
-
     return (
       <PageWrapper name='offerer' loading={isLoading}>
 
