@@ -113,7 +113,7 @@ class ProviderManager extends Component {
         <ul className='pc-list'>
           { get(this.props, 'venueProviders', []).map(vp => (
             <li>
-              <div className='picto'><Icon svg='ico-calendar' /></div>
+              <div className='picto'><Icon svg='picto-db-default' /></div>
               <div className='has-text-weight-bold is-size-3'>{vp.name}</div>
               <div> ?? offres</div>
               <div>Compte : <strong className='has-text-weight-bold'>[identifiant]</strong></div>
@@ -128,7 +128,7 @@ class ProviderManager extends Component {
                 }>Il faut un identifiant ou celui-ci existe déjà</p>
               )}
 
-              <div className='picto'><Icon svg='ico-calendar' /></div>
+              <div className='picto'><Icon svg='picto-db-default' /></div>
               <FormField
                 collectionName="venueProviders"
                 defaultValue={get(providerOptionsWithPlaceholder, '0.value')}

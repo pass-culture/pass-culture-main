@@ -14,7 +14,7 @@ const VenueItem = ({
   return (
     <li className="venue-item">
       <div className='picto'>
-        <Icon svg='ico-geoloc-solid2' />
+        <Icon svg='picto-structure' />
       </div>
       <div className="list-content">
         <p className="name">

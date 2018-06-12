@@ -41,7 +41,7 @@ const OfferersPage = ({ user, offerers }) => {
         {false && <span className='icon'>
                   <Icon svg={'ico-guichet-w'} />
                 </span>}
-        Rattacher une structure
+        + Rattacher une structure
       </NavLink>
     </PageWrapper>
   )

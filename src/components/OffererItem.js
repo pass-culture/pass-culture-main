@@ -31,7 +31,7 @@ const OffererItem = ({
           </li>
           <li>
             <NavLink to={showPath}>
-              <Icon svg='ico-geoloc-solid2' /> ?? lieux
+              <Icon svg='picto-structure' /> ?? lieux
             </NavLink>
           </li>
           <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>

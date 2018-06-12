@@ -109,7 +109,7 @@ class VenuePage extends Component {
       venueId
     } = this.state
     return (
-      <PageWrapper name='offerer' loading={isLoading}>
+      <PageWrapper name='offerer' loading={isLoading} backTo={{label: 'Structure', path: `/structures/${get(offerer, 'id')}`}}>
         <div className='section'>
           <h2 className='subtitle has-text-weight-bold'>
             {get(offerer, 'name')}

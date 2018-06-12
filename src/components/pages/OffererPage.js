@@ -6,6 +6,7 @@ import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
+import Icon from '../layout/Icon'
 import Label from '../layout/Label'
 import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'
@@ -91,7 +92,7 @@ class OffererPage extends Component {
     } = this.state
 
     return (
-      <PageWrapper name='offerer' loading={isLoading}>
+      <PageWrapper name='offerer' loading={isLoading} backTo={{label: 'Vos structures', path: '/structures'}}>
         <div className='section'>
           <h1 className="pc-title">Structure</h1>
           <p className="subtitle">Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.</p>
@@ -144,7 +145,39 @@ class OffererPage extends Component {
             </div>
           )}
         </div>
-        {!isNew && (
+        {isNew ? (
+          <div>
+            <hr />
+            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+              <div className="control">
+                <NavLink
+                  className="button is-secondary is-medium"
+                  to='/structures' >
+                  Retour
+                </NavLink>
+              </div>
+              <div className="control">
+                <SubmitButton
+                  getBody={form => form.offerersById[offererId]}
+                  getIsDisabled={form => {
+                    return isNew
+                      ? !get(form, `offerersById.${offererId}.name`) ||
+                        !get(form, `offerersById.${offererId}.address`)
+                      : !get(form, `offerersById.${offererId}.name`) &&
+                        !get(form, `offerersById.${offererId}.address`)
+                  }
+
+                  }
+                  className="button is-primary is-medium"
+                  method={method}
+                  path={apiPath}
+                  storeKey="offerers"
+                  text="Valider"
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
           <div className='section'>
             <h2 className='pc-list-title'>
               Lieux
@@ -158,35 +191,6 @@ class OffererPage extends Component {
             </div>
           </div>
         )}
-      <hr />
-      <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-        <div className="control">
-          <NavLink
-            className="button is-secondary is-medium"
-            to='/structures' >
-            Retour
-          </NavLink>
-        </div>
-        <div className="control">
-          <SubmitButton
-            getBody={form => form.offerersById[offererId]}
-            getIsDisabled={form => {
-              return isNew
-                ? !get(form, `offerersById.${offererId}.name`) ||
-                  !get(form, `offerersById.${offererId}.address`)
-                : !get(form, `offerersById.${offererId}.name`) &&
-                  !get(form, `offerersById.${offererId}.address`)
-            }
-
-            }
-            className="button is-primary is-medium"
-            method={method}
-            path={apiPath}
-            storeKey="offerers"
-            text="Valider"
-          />
-        </div>
-      </div>
     </PageWrapper>
     )
   }

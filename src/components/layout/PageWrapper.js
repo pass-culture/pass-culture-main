@@ -1,11 +1,14 @@
 import classnames from 'classnames'
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 
 import BackButton from './BackButton'
 import Header from './Header'
+import Icon from './Icon'
 
 const PageWrapper = props => {
   const {
+    backTo,
     header,
     Tag,
     name,
@@ -43,6 +46,11 @@ const PageWrapper = props => {
             <button className="delete">Ok</button>
             {notification.text}
           </div>
+        )}
+        {backTo && (
+          <NavLink to={backTo.path} className='back-button has-text-primary'>
+            <Icon svg='ico-back' />{` ${backTo.label}`}
+          </NavLink>
         )}
         {content}
       </div>
