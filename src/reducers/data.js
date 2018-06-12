@@ -14,7 +14,7 @@ const data = (state = initialState, action) => {
 
   } else if (action.type === RESET_DATA) {
     return initialState
-    
+
   } else if (/SUCCESS_DATA_(DELETE|GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
     // unpack config
     const key = action.config.key ||
@@ -23,6 +23,8 @@ const data = (state = initialState, action) => {
 
     // resolve
     nextState[key] = getResolvedData(
+      action.method,
+      action.path,
       // previousData
       state[key],
       // nextData: force to cast into array

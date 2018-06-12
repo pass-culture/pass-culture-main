@@ -83,6 +83,17 @@ class OfferPage extends Component {
   render () {
     const {
       apiPath,
+      eventTypes,
+      isLoading,
+      isNew,
+      occasionCollection,
+      occasion,
+      occasionId,
+      offererOptions,
+      offerers,
+      user
+    } = this.props
+    const {
       author,
       bookingLimitDatetime,
       contactName,
@@ -90,21 +101,14 @@ class OfferPage extends Component {
       contactPhone,
       description,
       durationMinutes,
-      eventTypes,
-      isLoading,
-      isNew,
       mediaUrls,
       name,
-      occasionCollection,
-      occasionId,
-      occurences,
-      offererOptions,
-      offerers,
       performer,
       stageDirector,
+      occurences,
       type,
-      user
-    } = this.props
+    } = (occasion || {})
+    console.log('occurences', occurences)
     const {
       defaultOfferer,
       venueOptions

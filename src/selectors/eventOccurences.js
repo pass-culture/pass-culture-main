@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
@@ -6,7 +7,7 @@ import { DELETE } from '../utils/config'
 
 
 export default createSelector(
-  (state, ownProps) => ownProps.occurences,
+  (state, ownProps) => get(ownProps, 'occasion.occurences'),
   state => state.form.eventOccurencesById,
   (occurences, formEventOccurencesById) => {
 
@@ -15,7 +16,7 @@ export default createSelector(
 
     if (formEventOccurencesById) {
       filteredOccurences = getElementsWithoutDeletedFormValues(
-        occurences,
+        occurences || [],
         Object.values(formEventOccurencesById)
       )
     }

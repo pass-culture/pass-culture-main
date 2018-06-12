@@ -108,10 +108,8 @@ class VenuePage extends Component {
       method,
       venueId
     } = this.state
-
     return (
       <PageWrapper name='offerer' loading={isLoading}>
-
         <div className='section'>
           <h2 className='subtitle has-text-weight-bold'>
             {get(offerer, 'name')}
@@ -204,9 +202,7 @@ class VenuePage extends Component {
                 <SubmitButton
                   getBody={form => Object.assign(
                       {
-                        managingOffererId: offererId,
-                        venueProviders: get(form, `venueProvidersById`)
-                          && Object.values(get(form, `venueProvidersById`))
+                        managingOffererId: offererId
                       },
                       get(form, `venuesById.${venueId}`)
                     )
@@ -214,13 +210,11 @@ class VenuePage extends Component {
                   getIsDisabled={form =>
                     isNew
                       ? !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.address`)
+                        !get(form, `venuesById.${venueId}.address`) ||
+                        !get(form, `venuesById.${venueId}.postalCode`)
                       : !get(form, `venuesById.${venueId}.name`) &&
-                        !get(form, `venuesById.${venueId}.address`) &
-                        (
-                          !get(form, `venueProvidersById`) ||
-                          Object.keys(get(form, `venueProvidersById`)) === 0
-                        )
+                        !get(form, `venuesById.${venueId}.address`) &&
+                        !get(form, `venuesById.${venueId}.postalCode`)
                   }
                   className="button is-primary is-medium"
                   method={method}
@@ -231,10 +225,8 @@ class VenuePage extends Component {
               </div>
             </div>
         </div>
-
       </div>
       {!isNew && <ProviderManager venueProviders={venueProviders} />}
-
     </PageWrapper>
   )
 }

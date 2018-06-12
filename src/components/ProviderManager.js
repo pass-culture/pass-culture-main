@@ -35,13 +35,32 @@ class ProviderManager extends Component {
   }
 
   componentDidMount () {
-    this.props.user && this.handleRequestData()
+    const {
+      match: { params: { venueProviderId } },
+      user
+    } = this.props
+    user && this.handleRequestData()
+    venueProviderId === 'nouveau' && this.handleMergeForm()
   }
 
   componentDidUpdate (prevProps) {
     if (prevProps.user !== this.props.user) {
       this.handleRequestData()
     }
+    if (
+      prevProps.match.params.venueProviderId === 'nouveau'
+      || this.props.match.params.venueProviderId !== 'nouveau'
+    ) {
+      this.handleMergeForm()
+    }
+  }
+
+  handleMergeForm = () => {
+    const {
+      match: { params: { venueId } },
+      mergeForm
+    } = this.props
+    mergeForm('venueProviders', NEW, { venueId })
   }
 
   handleRequestData = () => {
@@ -62,10 +81,10 @@ class ProviderManager extends Component {
 
   static getDerivedStateFromProps(nextProps) {
     const {
-      match: { params: { providerId } }
+      match: { params: { venueProviderId } }
     } = nextProps
     const newState = {}
-    if (providerId === 'nouveau') {
+    if (venueProviderId === 'nouveau') {
       newState.isNew = true
     }
     return newState

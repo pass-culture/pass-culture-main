@@ -35,7 +35,7 @@ class OccurenceManager extends Component {
     const datetime = date.clone().hour(hours).minute(minutes)
 
     // check that it does not match already an occurence
-    const alreadySelectedOccurence = occurences.find(o =>
+    const alreadySelectedOccurence = occurences && occurences.find(o =>
       o.beginningDatetimeMoment.isSame(datetime))
     if (alreadySelectedOccurence) {
       return

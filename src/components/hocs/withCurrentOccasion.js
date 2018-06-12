@@ -79,11 +79,10 @@ const withCurrentOccasion = WrappedComponent => {
   return compose(
     withRouter,
     connect(
-      (state, ownProps) =>
-        Object.assign(
-          { user: state.user },
-          selectCurrentOccasion(state, ownProps)
-        ),
+      (state, ownProps) => ({
+        occasion: selectCurrentOccasion(state, ownProps),
+        user: state.user
+      }),
       { requestData }
     )
   )(_withCurrentOccasion)

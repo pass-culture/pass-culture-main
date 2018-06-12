@@ -2,6 +2,19 @@ import { API_URL } from './config'
 import uuid from 'uuid'
 import {version} from '../../package.json'
 
+const success_status_codes = [
+  200,
+  201,
+  202,
+  203,
+  205,
+  206,
+  207,
+  208,
+  210,
+  226
+]
+
 export async function fetchData(method, path, config = {}) {
   // unpack
   const {
@@ -21,7 +34,7 @@ export async function fetchData(method, path, config = {}) {
     'X-Request-ID': uuid()
   }
 
-  if (method && method !== 'GET') {
+  if (method && method !== 'GET' && method !== 'DELETE') {
 
     // encode
     if (encode !== 'multipart/form-data') {
@@ -51,8 +64,9 @@ export async function fetchData(method, path, config = {}) {
   // fetch
   const result = await fetch(`${API_URL}/${path}`, init)
 
+
   // check
-  if (result.status === 200 || result.status === 201) {
+  if (success_status_codes.includes(result.status)) {
     if (window.cordova) {
       window.cordova.plugins.CookieManagementPlugin.flush()
     }
