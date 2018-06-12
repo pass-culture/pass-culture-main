@@ -43,7 +43,7 @@ class VenuesList extends Component {
 
     return (
       <ul className='pc-list venues-list'>
-        {get(this.props, 'venues', []).map(v => <VenueItem {...v} />)}
+        {get(this.props, 'venues', []).map(v => <VenueItem key={v.id} {...v} />)}
       </ul>
     )
 

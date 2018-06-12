@@ -39,6 +39,10 @@ body {
   z-index: 100000;
 }
 
+hr {
+  @include dotted($red);
+}
+
 .pc-title {
   color: $grey;
   font-style: italic;
@@ -59,6 +63,9 @@ ul.pc-list {
     display: flex;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
     @include dotted($red, bottom)
     .list-content {
       flex-grow: 1;

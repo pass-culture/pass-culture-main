@@ -105,7 +105,7 @@ class OffererPage extends Component {
             type="sirene"
             sireType="siren"
             readOnly={!isNew}
-            className='input is-rounded'
+            isHorizontal
           />
           <FormField
             autoComplete="name"
@@ -115,7 +115,8 @@ class OffererPage extends Component {
             label={<Label title="Dénomination :" />}
             name="name"
             readOnly={!isNew}
-            className='input is-rounded'
+            isHorizontal
+            isExpanded
           />
           <FormField
             autoComplete="address"
@@ -126,7 +127,8 @@ class OffererPage extends Component {
             name="address"
             type="adress"
             readOnly={!isNew}
-            className='input is-rounded'
+            isHorizontal
+            isExpanded
           />
           {isNew && (
             <div>
@@ -135,9 +137,9 @@ class OffererPage extends Component {
                 collectionName="offerers"
                 defaultValue={bookingEmail || ''}
                 entityId={offererId}
-                label={<Label title="Email de réservation" />}
+                label={<Label title="Email de réservation :" />}
                 name="bookingEmail"
-                className='input is-rounded'
+                isHorizontal
               />
             </div>
           )}
@@ -147,9 +149,7 @@ class OffererPage extends Component {
             <h2 className='pc-second-title' key={0}>
               Lieux
             </h2>
-            <div className='section'>
-              <VenuesList />
-            </div>
+            <VenuesList />
             <div className='has-text-right'>
               <NavLink to={`/structures/${offererId}/lieux/nouveau`}
                 className="button is-secondary is-outlined">
@@ -158,6 +158,7 @@ class OffererPage extends Component {
             </div>
           </div>
         )}
+      <hr />
       <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
         <div className="control">
           <NavLink

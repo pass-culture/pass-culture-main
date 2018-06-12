@@ -112,100 +112,92 @@ class VenuePage extends Component {
     return (
       <PageWrapper name='offerer' loading={isLoading}>
 
-        <h1 className='title has-text-centered level-left'>
-          {get(offerer, 'name')}
-        </h1>
+        <div className='section'>
+          <h2 className='subtitle has-text-weight-bold'>
+            {get(offerer, 'name')}
+          </h2>
 
-        <h1 className='is-size-1 has-text-grey is-italic level-left'>
-          {isNew ? 'Créer un' : 'Modifier le'} lieu
-        </h1>
+          <h1 className='pc-title'>
+            {isNew ? 'Créer un' : 'Modifier le'} lieu
+          </h1>
 
-        <p className='subtitle'>
-          Ajoutez un lieu où trouver vos offres
-        </p>
-        <p className='small has-text-grey'>
-          Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
-        </p>
-
-        <br />
-        <br />
-        <FormField
-          autoComplete="siret"
-          className='is-rounded'
-          controlClassName='columns'
-          collectionName="venues"
-          defaultValue={siret}
-          entityId={venueId}
-          inputClassName='column is-3 aligned'
-          label={<Label title="SIRET :" />}
-          labelClassName='column is-3'
-          name="siret"
-          type="sirene"
-          sireType="siret"
-        />
-        <FormField
-          autoComplete="name"
-          className='is-rounded'
-          collectionName="venues"
-          controlClassName='columns'
-          defaultValue={name}
-          entityId={venueId}
-          inputClassName='column aligned'
-          label={<Label title="Nom du lieu :" />}
-          labelClassName='column is-3'
-          name="name"
-        />
-
-        <br />
-        <div className="columns">
-          <p className="column"> <b> ADRESSE </b> </p>
+          <p className='subtitle'>
+            Ajoutez un lieu où trouver vos offres
+            <br />
+            <span className='is-size-7 has-text-grey'>
+              Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
+            </span>
+          </p>
         </div>
-        <FormField
-          autoComplete="address"
-          className='input is-rounded'
-          collectionName="venues"
-          controlClassName='columns'
-          defaultValue={address || ''}
-          entityId={venueId}
-          inputClassName='column aligned'
-          label={<Label title="Numéro et voie :" />}
-          labelClassName='column is-3'
-          name="address"
-          type="address"
-          required
-        />
-        <FormField
-          autoComplete="postalCode"
-          className='input is-rounded'
-          collectionName="venues"
-          controlClassName='columns'
-          defaultValue={postalCode || ''}
-          entityId={venueId}
-          inputClassName='column is-2 mt1'
-          label={<Label title="Code Postal :" />}
-          labelClassName='column is-3'
-          name="postalCode"
-          required
-        />
-        <FormField
-          autoComplete="city"
-          className='input is-rounded'
-          collectionName="venues"
-          controlClassName='columns'
-          defaultValue={city || ''}
-          entityId={venueId}
-          inputClassName='column is-5 mt1'
-          label={<Label title="Ville :" />}
-          labelClassName='column is-3'
-          name="city"
-          required
-        />
+        <div className='section'>
+          <FormField
+            collectionName="venues"
+            defaultValue={siret}
+            entityId={venueId}
+            label={<Label title="SIRET :" />}
+            name="siret"
+            type="sirene"
+            sireType="siret"
+            isHorizontal
+          />
+          <FormField
+            collectionName="venues"
+            defaultValue={name}
+            entityId={venueId}
+            label={<Label title="Nom du lieu :" />}
+            name="name"
+            isHorizontal
+            isExpanded
+          />
+        </div>
+        <div className='section'>
+          <h4 className='is-4 is-uppercase has-text-weight-bold '>Adresse</h4>
 
-        <br />
+          <FormField
+            autoComplete="address"
+            collectionName="venues"
+            defaultValue={address || ''}
+            entityId={venueId}
+            label={<Label title="Numéro et voie :" />}
+            name="address"
+            type="address"
+            isHorizontal
+            isExpanded
+            required
+          />
+          <FormField
+            autoComplete="postalCode"
+            collectionName="venues"
+            defaultValue={postalCode || ''}
+            entityId={venueId}
+            label={<Label title="Code Postal :" />}
+            name="postalCode"
+            isHorizontal
+            required
+          />
+          <FormField
+            autoComplete="city"
+            collectionName="venues"
+            defaultValue={city || ''}
+            entityId={venueId}
+            label={<Label title="Ville :" />}
+            name="city"
+            isHorizontal
+            required
+          />
+        </div>
+
+        <hr />
         <div className="field is-grouped is-grouped-centered"
           style={{justifyContent: 'space-between'}}>
           <div className="control">
-
+            <NavLink
+              className="button is-secondary is-medium"
+              to={`/structures/${offererId}`}>
+              Retour
+            </NavLink>
+          </div>
+          <div className="control">
             <div className="field is-grouped is-grouped-centered"
               style={{justifyContent: 'space-between'}}>
               <div className="control">
@@ -234,15 +226,8 @@ class VenuePage extends Component {
                   method={method}
                   path={apiPath}
                   storeKey="venues"
-                  text="Enregistrer"
+                  text="Valider"
                 />
-              </div>
-              <div className="control">
-                <NavLink
-                  className="button is-primary is-outlined is-medium"
-                  to={`/structures/${offererId}`}>
-                  Retour
-                </NavLink>
               </div>
             </div>
         </div>

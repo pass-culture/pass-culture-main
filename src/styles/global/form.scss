@@ -16,3 +16,13 @@ input.input[readonly] {
   border: none;
   background-color: transparent;
 }
+
+@media (min-width: $tablet) {
+  .field-label {
+    text-align: left;
+  }
+
+  .field-body {
+    flex-grow: 4;
+  }
+}

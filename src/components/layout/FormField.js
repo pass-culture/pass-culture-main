@@ -34,9 +34,12 @@ class FormField extends Component {
       errors,
       id,
       inputClassName,
+      isExpanded,
+      isHorizontal,
       label,
       labelClassName,
       name,
+      size,
       type,
       readOnly,
       required,
@@ -45,40 +48,58 @@ class FormField extends Component {
     const inputId = id || `input_${collectionName}_${name}`
     const isCheckbox = type === 'checkbox';
     const InputComponent = FormComponentsByName[`Form${capitalize(type)}`] || FormInput
-    const inputMarkup = <InputComponent
+    let inputMarkup = <InputComponent
       {...this.props}
       className={classnames({
         checkbox: type === 'checkbox',
         input: type !== 'textarea' && type !== 'select',
         textarea: type === 'textarea',
+        'is-rounded': !isCheckbox,
       }, className, inputClassName)}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
       readOnly={readOnly}
     />
-    const labelMarkup = (
+
+    if (!isCheckbox) {
+      inputMarkup = <div className='control is-expanded' key={`control_${inputId}`}>{inputMarkup}</div>
+    }
+
+    let labelMarkup = (
       <label className={classnames({
         checkbox: isCheckbox,
         label: !isCheckbox,
         required,
-      }, labelClassName)} htmlFor={inputId} key={'label_' + inputId}>
+      }, labelClassName)} htmlFor={inputId} key={`label_${inputId}`}>
         { isCheckbox && inputMarkup }
         {label}
       </label>
     )
+    if (isHorizontal) {
+      labelMarkup = (
+        <div className={`field-label is-${size}`} key={`field_label_${inputId}`}>
+          {labelMarkup}
+        </div>
+      )
+      inputMarkup = (
+        <div className='field-body' key={`field_body_${inputId}`}>
+          <div className={`field ${isExpanded ? 'is-expanded' : 'is-narrow'}`}>
+            {inputMarkup}
+          </div>
+        </div>
+      )
+    }
     return [
       <div
         className={classnames('form-field field', {
           checkbox: isCheckbox,
+          'is-horizontal': isHorizontal,
         })}
         key={0}
       >
-        <div className={classnames('control', controlClassName)}>
-          { isCheckbox && labelMarkup }
-          { !isCheckbox && [labelMarkup, inputMarkup]}
-        </div>
-        <ul role='alert'
+        { isCheckbox ? labelMarkup : [labelMarkup, inputMarkup] }
+        <ul role='help is-danger'
           id={`${inputId}-error`}
           className={classnames('errors', { pop: errors })}
           key={1}
@@ -96,7 +117,8 @@ class FormField extends Component {
 }
 
 FormField.defaultProps = {
-  type: 'input'
+  type: 'input',
+  size: 'normal',
 }
 
 FormField.propTypes = {
