@@ -1,11 +1,13 @@
 """ venues """
 from flask import current_app as app, jsonify, request
+from flask_login import login_required
 
-from utils.human_ids import dehumanize
+from utils.human_ids import dehumanize, humanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
 from utils.rest import expect_json_data
 
 @app.route('/venueProviders/<venueId>', methods=['GET'])
+@login_required
 def list_venue_providers(venueId):
     venue_providers = app.model.VenueProvider\
                          .query.filter_by(
@@ -16,6 +18,7 @@ def list_venue_providers(venueId):
     ])
 
 @app.route('/venueProviders', methods=['POST'])
+@login_required
 @expect_json_data
 def create_venue_provider():
     new_vp = app.model.VenueProvider(from_dict=request.json)
@@ -42,9 +45,9 @@ def edit_venue_provider(venueId, providerId, venueIdAtOfferProvider):
 
 
 @app.route('/venueProviders/<id>', methods=['DELETE'])
-@expect_json_data
+@login_required
 def delete_venue_provider(id):
-    app.model.VenueProvider.query.filter_by(
-        id=dehumanize(id)
-    ).delete()
-    return jsonify({'text': "Deletion was successful!"}), 200
+    app.model.VenueProvider\
+        .query.filter_by(id=dehumanize(id))\
+        .delete()
+    return jsonify({"id": id}), 200
