@@ -27,7 +27,7 @@ class Offerer(app.model.PcObject,
 
     bookingEmail = db.Column(db.String(120), nullable=False)
 
-    siren = db.Column(db.String(9))
+    siren = db.Column(db.String(9), nullable=False)
 
     def make_admin(self, admin):
         if admin:

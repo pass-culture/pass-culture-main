@@ -1,5 +1,5 @@
 """ spreadsheet exp offers"""
-from datetime import datetime
+from datetime import datetime, timedelta
 import dateparser
 from flask import current_app as app
 from os import path
@@ -132,6 +132,8 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
                                                      settings={'TIMEZONE': 'UTC-3' if self.venue.departementCode=='97'
                                                                                  else 'Europe/Paris',
                                                                'TO_TIMEZONE': 'UTC'})
+            obj.endDatetime = obj.beginningDatetime\
+                              + timedelta(minutes=self.providables[0].durationMinutes)
             obj.venue = self.venue
             obj.event = self.providables[0]
             self.eos[obj.idAtProviders] = obj
@@ -163,7 +165,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
         elif isinstance(obj, Event):
             thumb_url = self.line['Lien Image']
         else:
-            raise ValueError('Unexpected object class in updateObj '
+            raise ValueError('Unexpected object class in updateObject: '
                              + obj.__class__.__name__)
         return thumb_url
 

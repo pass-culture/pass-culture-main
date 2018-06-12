@@ -24,11 +24,12 @@ def create_venue_provider(venueId):
     return jsonify(new_vp._asdict()), 201
 
 
-@app.route('/venue_providers/<venueId>/<providerId>', methods=['DELETE'])
+@app.route('/venue_providers/<venueId>/<providerId>/<venueIdAtOfferProvider>', methods=['DELETE'])
 @expect_json_data
-def edit_venue_provider(venueId, providerId):
+def edit_venue_provider(venueId, providerId, venueIdAtOfferProvider):
     vp = VenueProvider.query.filter_by(venueId=dehumanize(venueId),
-                                       providerId=dehumanize(providerId))\
+                                       providerId=dehumanize(providerId),
+                                       venueIdAtOfferProvider=dehumanize(venueIdAtOfferProvider))\
                       .first_or_404()
     update(vp, request.json)
     #TODO: remove things from this provider ?

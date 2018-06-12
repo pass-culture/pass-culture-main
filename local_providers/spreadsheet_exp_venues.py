@@ -85,8 +85,10 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
             obj.longitude = self.line['Longitude']
             obj.managingOfferer = self.providables[0]
             obj.departementCode = str(int(self.line['Département']))
+            obj.siret = str(self.line['Siret'])
         else:
             obj.bookingEmail = self.line['Email contact'].replace('mailto:', '')
+            obj.siren = str(self.line['Siret'])[:9]
 
 
     def getDeactivatedObjectIds(self):

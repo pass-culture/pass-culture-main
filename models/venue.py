@@ -20,7 +20,7 @@ class Venue(app.model.PcObject,
 
     name = db.Column(db.String(140), nullable=False)
 
-    siret = db.Column(db.String(14))
+    siret = db.Column(db.String(14), nullable=True, unique=True)
 
     postalCode = db.Column(db.String(6), nullable=False)
 
@@ -35,7 +35,7 @@ class Venue(app.model.PcObject,
 
     managingOffererId = db.Column(db.BigInteger,
                                   db.ForeignKey("offerer.id"),
-                                  nullable=True)
+                                  nullable=False)
     managingOfferer = db.relationship(lambda: app.model.Offerer,
                                       foreign_keys=[managingOffererId],
                                       backref='managedVenues')

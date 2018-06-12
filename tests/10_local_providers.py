@@ -3,6 +3,7 @@ from flask_script import Manager
 from glob import glob
 from inspect import isclass
 
+from utils.human_ids import dehumanize
 from utils.object_storage import STORAGE_DIR
 
 
@@ -197,8 +198,15 @@ with app.app_context():
 
 #    def test_16_openagenda_events_provider():
 #        with app.app_context():
+#            oa_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
+#            venueProvider = app.model.VenueProvider()
+#            venueProvider.venueId = dehumanize('AE')
+#            venueProvider.provider = oa_provider
+#            venueProvider.isActive = True
+#            venueProvider.venueIdAtOfferProvider = '49050769'
+#            app.model.PcObject.check_and_save(venueProvider)
 #            venueProvider = app.model.VenueProvider.query\
-#                                 .filter_by(venueIdAtOfferProvider='2949')\
+#                                 .filter_by(venueIdAtOfferProvider='49050769')\
 #                                 .one_or_none()
 #        provider_test(app.local_providers.OpenAgendaEvents,
 #                      venueProvider,
@@ -220,3 +228,4 @@ with app.app_context():
             from scripts.sandbox import sandbox
             sandbox()
             assertCreatedCounts(User=2)
+            

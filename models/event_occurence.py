@@ -35,6 +35,9 @@ class EventOccurence(app.model.PcObject,
     beginningDatetime = db.Column(db.DateTime,
                                   nullable=False)
 
+    endDatetime = db.Column(db.DateTime,
+                            nullable=False)
+
     accessibility = db.Column(db.Binary(1),
                               nullable=False,
                               default=bytes([0]))
