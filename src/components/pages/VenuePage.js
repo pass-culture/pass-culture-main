@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import ProviderManager from '../ProviderManager'
+import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
@@ -12,7 +13,7 @@ import { resetForm } from '../../reducers/form'
 import SubmitButton from '../layout/SubmitButton'
 import selectCurrentVenue from '../../selectors/currentVenue'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
-import withLogin from '../hocs/withLogin'
+import { NEW } from '../../utils/config'
 
 
 class VenuePage extends Component {
@@ -66,17 +67,17 @@ class VenuePage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      match: { params: { venueId } },
+      match: { params },
       venue
     } = nextProps
-    const isNew = venueId === 'nouveau'
-    const isLoading = !(get(venue, 'id') || isNew)
-    const method = isNew ? 'POST' : 'PATCH'
+    const isNew = params.venueId === 'nouveau'
+    const venueId = isNew ? NEW : venueId
     return {
-      apiPath: isNew ? `venues/` : `venues/${venueId}`,
-      isLoading,
+      apiPath: isNew ? `venues` : `venues/${venueId}`,
+      isLoading: !(get(venue, 'id') || isNew),
       isNew,
-      method
+      method: isNew ? 'POST' : 'PATCH',
+      venueId
     }
   }
 
@@ -84,8 +85,7 @@ class VenuePage extends Component {
     const {
       match: {
         params: {
-          offererId,
-          venueId
+          offererId
         }
       },
       offerer,
@@ -106,6 +106,7 @@ class VenuePage extends Component {
       isLoading,
       isNew,
       method,
+      venueId
     } = this.state
 
     return (
