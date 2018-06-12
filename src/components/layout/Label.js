@@ -2,7 +2,7 @@ import React from 'react'
 
 const Label = ({ title }) => {
   return (
-    <div className="subtitle">
+    <div className="subtitle can-be-required">
       {title}
     </div>
   )

@@ -45,7 +45,7 @@ class Header extends Component {
               <div className="navbar-item has-dropdown is-hoverable">
                 <a className="navbar-link" href="#">
                   <span className='icon'>
-                    <Icon svg='ico-user-w' />
+                    <Icon svg='ico-user-circled-w' />
                   </span>
                   <span>
                     {this.props.name}
@@ -53,18 +53,23 @@ class Header extends Component {
                 </a>
                 <div className="navbar-dropdown is-right">
                   <NavLink to={'/profil'} className='navbar-item'>
-                    {false && <span className='icon'><Icon svg={'ico-user-w'} /></span>}
+                    <span className='icon'><Icon svg={'ico-user'} /></span>
                     <span>Profil</span>
                   </NavLink>
                   <NavLink to={'/structures'} className='navbar-item'>
-                    {false && <span className='icon'><Icon svg={'ico-guichet-w'} /></span>}
+                    <span className='icon'><Icon svg={'ico-structure'} /></span>
                     <span>Structures</span>
                   </NavLink>
+                  <NavLink to={'/delegations'} className='navbar-item'>
+                    <span className='icon'><Icon svg={'ico-delegation'} /></span>
+                    <span>Délégations</span>
+                  </NavLink>
                   <NavLink to={'/comptabilite'} className='navbar-item'>
-                    {false && <span className='icon'><Icon svg={'ico-guichet-w'} /></span>}
+                    <span className='icon'><Icon svg={'ico-compta'} /></span>
                     <span>Comptabilité</span>
                   </NavLink>
                   <SignoutButton tagName='a' className='navbar-item'>
+                    <span className='icon'><Icon svg={'ico-deconnect'} /></span>
                     <span>Déconnexion</span>
                   </SignoutButton>
                 </div>

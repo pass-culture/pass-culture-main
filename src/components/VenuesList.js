@@ -3,6 +3,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { List } from 'react-virtualized'
 import { withRouter } from 'react-router'
+import get from 'lodash.get'
 
 import { requestData } from '../reducers/data'
 import selectCurrentVenues from '../selectors/currentVenues'
@@ -39,6 +40,13 @@ class VenuesList extends Component {
   }
 
   render() {
+
+    return (
+      <ul className='pc-list venues-list'>
+        {get(this.props, 'venues', []).map(v => <VenueItem key={v.id} {...v} />)}
+      </ul>
+    )
+
     const { venues } = this.props
     return (
       <div className="venues-list">

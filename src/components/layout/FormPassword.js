@@ -18,11 +18,20 @@ class FormPassword extends Component {
     })
   }
 
+  static defaultProps = {
+    showPassword: true,
+  }
+
   render() {
+    const input = <FormInput {...this.props} type={this.state.isHidden ? 'password' : 'text'} />;
+    if (!this.props.showPassword) {
+      return input
+    }
+
     return (
       <div className="field has-addons">
         <div className="control is-expanded">
-          <FormInput {...this.props} type={this.state.isHidden ? 'password' : 'text'} />
+          {input}
         </div>
         <div className="control">
           <button className="button is-rounded is-medium" onClick={this.toggleHidden}>

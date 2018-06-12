@@ -32,16 +32,14 @@ class OffersPage extends Component {
     const { occasions } = this.props
     return (
       <PageWrapper name="offers" loading={!occasions.length}>
-        <div className="level is-vcentered">
-          <h1 className='is-size-1 has-text-grey is-italic level-left'>
+        <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-pulled-right'>
+          + Ajouter une offre
+        </NavLink>
+        <div className="level">
+          <h1 className='pc-title'>
             Vos offres
           </h1>
           <div className="level-right">
-            <NavLink to={`/offres/evenements/nouveau`}>
-              <button className="button is-primary level-item">
-                Ajouter une offre
-              </button>
-            </NavLink>
           </div>
         </div>
 
@@ -49,24 +47,25 @@ class OffersPage extends Component {
         <p className="subtitle">
           Voici toutes vos offres apparaissant dans le Pass Culture.
         </p>
-
-        <br />
-        <p className="search level-left">
-          Rechercher une offre:
-        </p>
-        <nav className="level is-mobile">
-          <SearchInput
-            collectionNames={["events", "things"]}
-            config={{
-              isMergingArray: false,
-              key: 'searchedOccasions'
-            }}
-            isLoading
-          />
-          <button>
-            <Icon svg={'ico-guichet-w'} />
-          </button>
-        </nav>
+        {false && <div>
+                  <br />
+                  <p className="search level-left">
+                    Rechercher une offre:
+                  </p>
+                  <nav className="level is-mobile">
+                    <SearchInput
+                      collectionNames={["events", "things"]}
+                      config={{
+                        isMergingArray: false,
+                        key: 'searchedOccasions'
+                      }}
+                      isLoading
+                    />
+                    <button>
+                      <Icon svg={'ico-guichet-w'} />
+                    </button>
+                  </nav>
+                </div>}
         {occasions.length && <OccasionsList />}
       </PageWrapper>
     )

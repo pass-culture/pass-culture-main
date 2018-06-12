@@ -75,71 +75,70 @@ class ProfilePage extends Component {
 
     return (
       <PageWrapper name="profile" loading={!this.props.user}>
-        <h1 className='title has-text-centered'>Profil</h1>
-        <div className='columns'>
-          <div className='column is-half is-offset-one-quarter'>
-            {this.state.success && (
-              <p className='notification is-success'>
-                <button class="delete" onClick={e => this.setState({success: false})}></button>
-                Enregistré
-              </p>
-            )}
-              <FormField
-                collectionName='users'
-                defaultValue={publicName}
-                entityId={id}
-                label={<Label title="Nom" />}
-                name="publicName"
-                className='title'
-                required
-              />
-              <FormField
-                collectionName='users'
-                defaultValue={email}
-                entityId={id}
-                label={<Label title="Email" />}
-                name="email"
-                required
-                readOnly // For now there is no check on whether the email already exists so it cannot be modified
-              />
-              <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-                <div className="control">
-                  <SubmitButton
-                    getBody={form => (get(form, `usersById.${id}`))}
-                    getIsDisabled={form => {
-                      return !get(form, `usersById.${id}.publicName`) &&
-                        !get(form, `usersById.${id}.email`)
-                    }}
-                    className="button is-primary is-medium"
-                    method='PATCH'
-                    onClick={this.onSubmitClick}
-                    path='users/me'
-                    storeKey="occasions"
-                    text="Enregistrer"
-                  />
-                </div>
-                <div className="control">
-                  <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
-                    Retour
-                  </NavLink>
-                </div>
+        <h1 className='pc-title'>Profil</h1>
+        <div className='section'>
+          {this.state.success && (
+            <p className='notification is-success'>
+              <button class="delete" onClick={e => this.setState({success: false})}></button>
+              Enregistré
+            </p>
+          )}
+            <FormField
+              collectionName='users'
+              defaultValue={publicName}
+              entityId={id}
+              label={<Label title="Nom" />}
+              name="publicName"
+              required
+              isHorizontal
+            />
+            <FormField
+              collectionName='users'
+              defaultValue={email}
+              entityId={id}
+              label={<Label title="Email" />}
+              name="email"
+              required
+              readOnly // For now there is no check on whether the email already exists so it cannot be modified
+              isHorizontal
+            />
+            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+              <div className="control">
+                <SubmitButton
+                  getBody={form => (get(form, `usersById.${id}`))}
+                  getIsDisabled={form => {
+                    return !get(form, `usersById.${id}.publicName`) &&
+                      !get(form, `usersById.${id}.email`)
+                  }}
+                  className="button is-primary is-medium"
+                  method='PATCH'
+                  onClick={this.onSubmitClick}
+                  path='users/me'
+                  storeKey="occasions"
+                  text="Enregistrer"
+                />
               </div>
-              <hr />
-              <h1 className='title has-text-centered'>Avatar</h1>
-              <div className='field'>
-                <UploadThumb
-                  className='input'
-                  image={apiUrl(thumbPath)}
-                  collectionName='users'
-                  storeKey='thumbedUser'
-                  type='thumb'
-                  entityId={id}
-                  index={0}
-                  width={250}
-                  height={250}
-                  borderRadius={250}
-                 />
+              <div className="control">
+                <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
+                  Retour
+                </NavLink>
               </div>
+            </div>
+            <hr />
+            <h1 className='title has-text-centered'>Avatar</h1>
+            <div className='field'>
+              <UploadThumb
+                className='input'
+                image={apiUrl(thumbPath)}
+                collectionName='users'
+                storeKey='thumbedUser'
+                type='thumb'
+                entityId={id}
+                index={0}
+                width={250}
+                height={250}
+                borderRadius={250}
+               />
           </div>
         </div>
       </PageWrapper>
