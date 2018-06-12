@@ -196,30 +196,33 @@ with app.app_context():
                       Venue=0,
                       Offerer=0)
 
-#    def test_16_openagenda_events_provider():
-#        with app.app_context():
-#            oa_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
-#            venueProvider = app.model.VenueProvider()
-#            venueProvider.venueId = dehumanize('AE')
-#            venueProvider.provider = oa_provider
-#            venueProvider.isActive = True
-#            venueProvider.venueIdAtOfferProvider = '49050769'
-#            app.model.PcObject.check_and_save(venueProvider)
-#            venueProvider = app.model.VenueProvider.query\
-#                                 .filter_by(venueIdAtOfferProvider='49050769')\
-#                                 .one_or_none()
-#        provider_test(app.local_providers.OpenAgendaEvents,
-#                      venueProvider,
-#                      checkedObjects=482,
-#                      createdObjects=482,
-#                      updatedObjects=0,
-#                      erroredObjects=0,
-#                      checkedThumbs=0,
-#                      createdThumbs=0,
-#                      updatedThumbs=0,
-#                      erroredThumbs=0,
-#                      Venue=0,
-#                      Offerer=0)
+    def test_16_openagenda_events_provider():
+        with app.app_context():
+            oa_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
+            venueProvider = app.model.VenueProvider()
+            venueProvider.venueId = dehumanize('AE')
+            venueProvider.provider = oa_provider
+            venueProvider.isActive = True
+            venueProvider.venueIdAtOfferProvider = '49050769'
+            app.model.PcObject.check_and_save(venueProvider)
+            venueProvider = app.model.VenueProvider.query\
+                                 .filter_by(venueIdAtOfferProvider='49050769')\
+                                 .one_or_none()
+        provider_test(app.local_providers.OpenAgendaEvents,
+                      venueProvider,
+                      checkedObjects=2047,
+                      createdObjects=2047,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=32,
+                      createdThumbs=32,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      Event=33,
+                      EventOccurence=2014,
+                      Venue=0,
+                      Offerer=0)
+ 
 
     def test_99_init():
         with app.app_context():

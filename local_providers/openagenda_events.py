@@ -115,9 +115,11 @@ class OpenAgendaEvents(app.model.LocalProvider):
         if isinstance(obj, Event):
             assert obj.idAtProviders == str(self.oa_event['uid'])
             obj.name = self.oa_event['title']['fr']\
-                       or self.oa_event['title']['en']
+                         if 'fr' in self.oa_event['title']\
+                         else self.oa_event['title']['en']
             obj.description = self.oa_event['description']['fr']\
-                              or self.oa_event['description']['en']
+                                if 'fr' in self.oa_event['description']\
+                                else self.oa_event['description']['en']
             obj.durationMinutes = self.duration
             # obj.extraData['tags'] = list(map(lambda t: t['slug'], self.oa_event['tags']))
         elif isinstance(obj, EventOccurence):
