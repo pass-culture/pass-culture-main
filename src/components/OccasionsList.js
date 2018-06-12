@@ -8,6 +8,13 @@ import OccasionItem from './OccasionItem'
 import selectOccasions from '../selectors/occasions'
 
 const OccasionsList = ({ occasions }) => {
+
+  return (
+    <div className='occasions-list'>
+      {occasions.map(o => <OccasionItem key={o.id} {...o} />)}
+    </div>
+  )
+
   return (
     <div className="occasions-list">
       <AutoSizer>
