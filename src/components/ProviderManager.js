@@ -6,6 +6,7 @@ import { compose } from 'redux'
 
 import FormField from './layout/FormField'
 import Label from './layout/Label'
+import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
 import VenueProviderItem from './VenueProviderItem'
 import { requestData } from '../reducers/data'
@@ -99,52 +100,81 @@ class ProviderManager extends Component {
       isNew,
       withError
     } = this.state
-    return [
-      <h2 className='subtitle is-2' key={0}>
-        Mes fournisseurs
-      </h2>,
-      <button className="button is-primary level-item"
-        onClick={this.onAddClick} key={1}>
-        Ajouter un fournisseur
-      </button>,
-      isNew && (
-        <div className='box content' key={2}>
-          <p className={
-            withError
-              ? 'has-text-weight-bold has-text-danger'
-              : ''
-          }>
-            Il faut un identifiant ou celui-ci existe déjà
-          </p>
-          <FormField
-            collectionName="venueProviders"
-            defaultValue={get(providerOptions, '0.value')}
-            label={<Label title="La source" />}
-            name="providerId"
-            options={providerOptions}
-            type="select"
-          />
-          <FormField
-            collectionName="venueProviders"
-            label={<Label title="Mon identifiant" />}
-            name="venueIdAtOfferProvider"
-          />
-          <SubmitButton
-            className="button is-primary is-medium"
-            getBody={form => get(form, `venueProvidersById.${NEW}`)}
-            getIsDisabled={form =>
-              !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-            method="POST"
-            path="venueProviders"
-            storeKey="venueProviders"
-            text="Enregistrer"
-          />
+
+    const providerOptionsWithPlaceholder = [{
+      label: 'Sélectionnez un fournisseur',
+    }].concat(providerOptions)
+
+    return (
+      <div className='section'>
+        <h2 className='pc-list-title'>
+          Mes fournisseurs
+        </h2>
+        <ul className='pc-list'>
+          { get(this.props, 'venueProviders', []).map(vp => (
+            <li>
+              <div className='picto'><Icon svg='ico-calendar' /></div>
+              <div className='has-text-weight-bold is-size-3'>{vp.name}</div>
+              <div> ?? offres</div>
+              <div>Compte : <strong className='has-text-weight-bold'>[identifiant]</strong></div>
+              <div><button className='button is-secondary'>x Désactiver</button></div>
+            </li>
+          ))}
+          {isNew && (
+            <li>
+              {withError && (
+                <p className={
+                  withError ? 'has-text-weight-bold has-text-danger' : ''
+                }>Il faut un identifiant ou celui-ci existe déjà</p>
+              )}
+
+              <div className='picto'><Icon svg='ico-calendar' /></div>
+              <FormField
+                collectionName="venueProviders"
+                defaultValue={get(providerOptionsWithPlaceholder, '0.value')}
+                name="providerId"
+                options={providerOptionsWithPlaceholder}
+                type="select"
+                size="small"
+              />
+              <FormField
+                collectionName="venueProviders"
+                name="venueIdAtOfferProvider"
+                placeholder='Mon identifiant'
+                size="small"
+              />
+              <FormField
+                collectionName="venueProviders"
+                name="venueIdAtOfferProvider"
+                placeholder='Mot de passe'
+                type='password'
+                size="small"
+                showPassword={false}
+              />
+              <SubmitButton
+                className="button is-secondary"
+                getBody={form => get(form, `venueProvidersById.${NEW}`)}
+                getIsDisabled={form =>
+                  !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
+                method="POST"
+                path="venueProviders"
+                storeKey="venueProviders"
+                text="Enregistrer"
+              />
+            </li>
+          )}
+        </ul>
+        <div className='has-text-right'>
+          <button className="button is-secondary"
+            onClick={this.onAddClick}>
+            + Ajouter un compte fournisseur
+          </button>
         </div>
-      ),
-      venueProviders && venueProviders.map((vp, index) => (
-        <VenueProviderItem {...vp} key={index} />
-      ))
-    ]
+        {venueProviders && venueProviders.map((vp, index) => (
+                  <VenueProviderItem {...vp} key={index} />
+                ))}
+      </div>
+      )
   }
 }
 

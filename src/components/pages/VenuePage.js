@@ -185,48 +185,48 @@ class VenuePage extends Component {
           />
         </div>
 
-        <hr />
-        <div className="field is-grouped is-grouped-centered"
-          style={{justifyContent: 'space-between'}}>
-          <div className="control">
-            <NavLink
-              className="button is-secondary is-medium"
-              to={`/structures/${offererId}`}>
-              Retour
-            </NavLink>
-          </div>
-          <div className="control">
-            <div className="field is-grouped is-grouped-centered"
-              style={{justifyContent: 'space-between'}}>
-              <div className="control">
-                <SubmitButton
-                  getBody={form => Object.assign(
-                      {
-                        managingOffererId: offererId
-                      },
-                      get(form, `venuesById.${venueId}`)
-                    )
-                  }
-                  getIsDisabled={form =>
-                    isNew
-                      ? !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.address`) ||
-                        !get(form, `venuesById.${venueId}.postalCode`)
-                      : !get(form, `venuesById.${venueId}.name`) &&
-                        !get(form, `venuesById.${venueId}.address`) &&
-                        !get(form, `venuesById.${venueId}.postalCode`)
-                  }
-                  className="button is-primary is-medium"
-                  method={method}
-                  path={apiPath}
-                  storeKey="venues"
-                  text="Valider"
-                />
-              </div>
+      {!isNew && <ProviderManager venueProviders={venueProviders} />}
+      <hr />
+      <div className="field is-grouped is-grouped-centered"
+        style={{justifyContent: 'space-between'}}>
+        <div className="control">
+          <NavLink
+            className="button is-secondary is-medium"
+            to={`/structures/${offererId}`}>
+            Retour
+          </NavLink>
+        </div>
+        <div className="control">
+          <div className="field is-grouped is-grouped-centered"
+            style={{justifyContent: 'space-between'}}>
+            <div className="control">
+              <SubmitButton
+                getBody={form => Object.assign(
+                    {
+                      managingOffererId: offererId
+                    },
+                    get(form, `venuesById.${venueId}`)
+                  )
+                }
+                getIsDisabled={form =>
+                  isNew
+                    ? !get(form, `venuesById.${venueId}.name`) ||
+                      !get(form, `venuesById.${venueId}.address`) ||
+                      !get(form, `venuesById.${venueId}.postalCode`)
+                    : !get(form, `venuesById.${venueId}.name`) &&
+                      !get(form, `venuesById.${venueId}.address`) &&
+                      !get(form, `venuesById.${venueId}.postalCode`)
+                }
+                className="button is-primary is-medium"
+                method={method}
+                path={apiPath}
+                storeKey="venues"
+                text="Valider"
+              />
             </div>
+          </div>
         </div>
       </div>
-      {!isNew && <ProviderManager venueProviders={venueProviders} />}
     </PageWrapper>
   )
 }

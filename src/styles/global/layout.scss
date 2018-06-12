@@ -50,7 +50,7 @@ hr {
   font-size: 2rem;
 }
 
-.pc-second-title {
+.pc-list-title {
   border-bottom: thin solid;
   display: block;
   margin: 1rem 0;
@@ -63,18 +63,37 @@ ul.pc-list {
     display: flex;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
+    @include dotted($red, bottom)
     &:last-child {
       margin-bottom: 0;
     }
-    @include dotted($red, bottom)
+
+    > * {
+      padding: 0 0.5rem;
+      align-items: center;
+      display: flex;
+      &.field {
+        margin: 0;
+      }
+      &:first-child {
+        padding-left: 0;
+      }
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
     .list-content {
       flex-grow: 1;
+      display: block;
     }
 
     .caret, .picto {
-      align-items: center;
-      display: flex;
-      padding: 0 1rem;
+
+      img {
+        height: 2rem;
+        vertical-align: middle;
+      }
     }
 
 

@@ -146,7 +146,7 @@ class OffererPage extends Component {
         </div>
         {!isNew && (
           <div className='section'>
-            <h2 className='pc-second-title'>
+            <h2 className='pc-list-title'>
               Lieux
             </h2>
             <VenuesList />

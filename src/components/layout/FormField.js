@@ -47,12 +47,14 @@ class FormField extends Component {
 
     const inputId = id || `input_${collectionName}_${name}`
     const isCheckbox = type === 'checkbox';
+    const isSelect = type === 'select';
     const InputComponent = FormComponentsByName[`Form${capitalize(type)}`] || FormInput
     let inputMarkup = <InputComponent
       {...this.props}
       className={classnames({
-        checkbox: type === 'checkbox',
-        input: type !== 'textarea' && type !== 'select',
+        checkbox: isCheckbox,
+        select: isSelect,
+        input: type !== 'textarea' && !isSelect,
         textarea: type === 'textarea',
         'is-rounded': !isCheckbox,
       }, className, inputClassName)}
