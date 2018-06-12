@@ -4,41 +4,11 @@ from flask_login import current_user
 
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES
-from utils.rest import feed,\
-                       expect_json_data,\
-                       login_or_api_key_required
+from utils.rest import expect_json_data,\
+                       login_or_api_key_required,\
+                       update
 from utils.string_processing import inflect_engine
 
-OCCASION_KEYS = [
-    'author',
-    'description',
-    'durationMinutes',
-    'isActive',
-    'mediaUrls',
-    'name',
-    'performer',
-    'stageDirector',
-    'type'
-]
-
-def feed_occasion(mapper, json):
-    for key in OCCASION_KEYS:
-        if key in json:
-            if key == 'type' and json[key] == '':
-                mapper.type = None
-            else:
-                mapper.__setattr__(key, json[key])
-
-EVENT_OCCURENCE_KEYS = [
-    'beginningDatetime'
-]
-
-
-OFFER_KEYS = [
-    'groupSize',
-    #'pmrGroupSize',
-    'price'
-]
 
 def get_occasion_dict(occasion):
     return occasion._asdict(
@@ -51,13 +21,13 @@ def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = app.model.EventOccurence()
     event_occurence.event = occasion
     event_occurence.venue = venue
-    feed(event_occurence, json)
+    update(event_occurence, json, **{ "skipped_keys": ['offer']})
     app.model.PcObject.check_and_save(event_occurence)
 
     offer = app.model.Offer()
     offer.eventOccurence = event_occurence
     offer.offerer = offerer
-    feed(offer, json['offer'][0])
+    update(offer, json['offer'][0])
     app.model.PcObject.check_and_save(offer)
 
 @app.route('/occasions', methods=['GET'])
@@ -95,17 +65,18 @@ def post_occasion(occasionType):
 
     # CREATE THE OCCASION (EVENT OR THING)
     occasion = app.model[model_name]()
-    feed_occasion(occasion, request.json['occasion'])
+    occasion_dict = request.json['occasion']
+    update(occasion, occasion_dict)
     app.model.PcObject.check_and_save(occasion)
 
     # DETERMINE OFFERER
     offerer = app.model.Offerer.query\
-                       .filter_by(id=dehumanize(request.json['offererId']))\
+                       .filter_by(id=dehumanize(occasion_dict['offererId']))\
                        .first_or_404()
 
     # DETERMINE VENUE
     venue = app.model.Venue.query\
-                           .filter_by(id=dehumanize(request.json['venueId']))\
+                           .filter_by(id=dehumanize(occasion_dict['venueId']))\
                            .first_or_404()
 
     # CREATE CORRESPONDING EVENT OCCURENCES
@@ -133,7 +104,7 @@ def patch_occasion(occasionType, occasionId):
                                     .first_or_404()
     occasion_dict = request.json.get('occasion')
     if occasion_dict:
-        feed_occasion(occasion, occasion_dict)
+        update(occasion, occasion_dict)
         app.model.PcObject.check_and_save(occasion)
     first_occurence = occasion.occurences[0]
     first_offer = first_occurence.offer[0]
