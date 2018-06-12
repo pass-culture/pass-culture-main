@@ -1,0 +1,17 @@
+[
+  {
+    "publicName": "Utilisateur test jeune",
+    "email": "pctest.jeune.93@btmx.fr",
+    "departementCode": "93",
+    "password": "pctestjeune"
+  },
+  {
+    "publicName": "Utilisateur test jeune",
+    "email": "pctest.jeune.34@btmx.fr",
+    "departementCode": "34",
+    "password": "pctestjeune"
+  },
+  {
+    "hasAllOfferers": true
+  }
+]

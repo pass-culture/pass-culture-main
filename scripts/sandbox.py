@@ -4,7 +4,9 @@
 from pprint import pprint
 import traceback
 from flask import current_app as app
-
+import json
+from os import path
+from pathlib import Path
 from utils.mock import set_from_mock
 
 @app.manager.command
@@ -20,35 +22,33 @@ def do_sandbox():
     check_and_save = app.model.PcObject.check_and_save
     model = app.model
 
-    # un jeune qui veut profiter du pass-culture
-    client_query = model.User.query.filter_by(email="pctest.jeune@btmx.fr")
-    if client_query.count() == 1:
-        client_user = client_query.one()
-    else:
-        client_user = model.User()
-    client_user.publicName = "Utilisateur test jeune"
-    client_user.account = 100
-    client_user.email = "pctest.jeune@btmx.fr"
-    client_user.departementCode = "93"
-    client_user.setPassword("pctestjeune")
-    check_and_save(client_user)
-    set_from_mock("thumbs", client_user, 1)
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'users.json'
 
-    # un acteur culturel qui peut jouer a rajouter des offres partout
-    admin_query = model.User.query.filter_by(email="pctest.admin@btmx.fr")
-    if admin_query.count() == 1:
-        admin_user = admin_query.one()
-    else:
-        admin_user = model.User()
-    admin_user.publicName = "Utilisateur test admin"
-    admin_user.email = "pctest.admin@btmx.fr"
-    admin_user.departementCode = "93"
-    admin_user.setPassword("pctestadmin")
-    check_and_save(admin_user)
-    set_from_mock("thumbs", admin_user, 2)
-    for offerer in model.Offerer.query.all():
-        userOfferer = model.UserOfferer()
-        userOfferer.rights = "admin"
-        userOfferer.user = admin_user
-        userOfferer.offerer = offerer
-        check_and_save(userOfferer)
+    with open(json_path) as json_file:
+        for user in json.load(json_file):
+            if 'hasAllOfferers' in user and user['hasAllOfferers'] == True:
+            # un acteur culturel qui peut jouer à rajouter des offres partout
+                admin_query = model.User.query.filter_by(email="pctest.admin@btmx.fr")
+                if admin_query.count() == 1:
+                    admin_user = admin_query.one()
+                else:
+                    admin_user = model.User()
+                    admin_user.publicName = "Utilisateur test admin"
+                    admin_user.email = "pctest.admin@btmx.fr"
+                    admin_user.departementCode = "93"
+                    admin_user.isAdmin = True
+                    admin_user.canBook = False
+                    admin_user.setPassword("pctestadmin")
+                    check_and_save(admin_user)
+                    set_from_mock("thumbs", admin_user, 2)
+                    for offerer in model.Offerer.query.all():
+                        userOfferer = model.UserOfferer()
+                        userOfferer.rights = "admin"
+                        userOfferer.user = admin_user
+                        userOfferer.offerer = offerer
+                        check_and_save(userOfferer)
+            else:
+                # des jeunes qui veulent profiter du pass-culture
+                user = model.User(from_dict=user)
+                check_and_save(user)
+                set_from_mock("thumbs", user, 1)
