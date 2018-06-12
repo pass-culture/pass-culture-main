@@ -1,6 +1,8 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
+import createSelectOffers from '../selectors/offers'
 import { THUMBS_URL } from '../utils/config'
 import Icon from './layout/Icon'
 
@@ -8,7 +10,8 @@ const VenueItem = ({
   address,
   id,
   managingOffererId,
-  name
+  name,
+  offers
 }) => {
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
@@ -57,4 +60,9 @@ const VenueItem = ({
   )
 }
 
-export default VenueItem
+export default connect(
+  () => {
+    const selectOffers = createSelectOffers()
+    return (state, ownProps) => ({ offers: selectOffers(state, ownProps) })
+  }
+)(VenueItem)

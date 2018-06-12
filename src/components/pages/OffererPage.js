@@ -27,7 +27,7 @@ class OffererPage extends Component {
   }
 
   componentDidMount () {
-    this.handleRequestData()
+    this.props.user && this.handleRequestData()
   }
 
   componentDidUpdate (prevProps) {

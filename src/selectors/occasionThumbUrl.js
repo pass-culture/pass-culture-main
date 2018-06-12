@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 
 import { THUMBS_URL } from '../utils/config'
 
-export default createSelector(
+export default () => createSelector(
   (state, ownProps) => ownProps.id,
   (state, ownProps) => ownProps.occasionType,
   (state, ownProps) => ownProps.mediations,

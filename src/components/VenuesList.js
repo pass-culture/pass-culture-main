@@ -33,6 +33,10 @@ class VenuesList extends Component {
         `offerers/${offererId}/venues`,
         {
           key: 'venues',
+          normalizer: {
+            // KEY IN THE OBJECY : //KEY IN THE STATE.DATA
+            offers: 'offers'
+          },
           isMergingArray: false
         }
       )
