@@ -28,6 +28,7 @@ def test_12_create_venue():
                   'address': '75 Rue Charles Fourier, 75013 Paris',
                   'postalCode': '75200',
                   'city': 'Paris',
+                  'managingOffererId': 'AE',
                   'latitude': 48.82387,
                   'longitude': 2.35284
                  }
