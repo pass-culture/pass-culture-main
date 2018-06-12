@@ -12,11 +12,13 @@ import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import { resetForm } from '../../reducers/form'
+import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import selectOfferers from '../../selectors/offerers'
 import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
+import selectSuccessOccasionQuery from '../../selectors/occasionQuery'
+import selectUniqueVenue from '../../selectors/uniqueVenue'
 import { pathToCollection } from '../../utils/translate'
 
 
@@ -30,12 +32,49 @@ class OfferPage extends Component {
 
   componentDidMount () {
     this.handleRequestData()
+    if (this.props.uniqueVenue) {
+      this.handleMergeForm()
+    }
   }
 
   componentDidUpdate (prevProps) {
     if (prevProps.user !== this.props.user) {
       this.handleRequestData()
     }
+    if (!prevProps.uniqueVenue && this.props.uniqueVenue) {
+      this.handleMergeForm()
+    }
+  }
+
+  handleMergeForm = () => {
+    const {
+      mergeForm,
+      occasionId,
+      uniqueVenue
+    } = this.props
+    mergeForm('occasions', occasionId, 'venueId', uniqueVenue.id)
+  }
+
+  handleRequestData = () => {
+    const { requestData } = this.props
+    requestData('GET', 'offerers')
+    requestData('GET', 'eventTypes')
+  }
+
+  handleSuccessData = () => {
+    const {
+      history,
+      resetForm,
+      showModal
+    } = this.props
+    showModal(
+      <div>
+        C'est soumis!
+      </div>,
+      {
+        onCloseClick: () => history.push('/offres')
+      }
+    )
   }
 
   static getDerivedStateFromProps (nextProps) {
@@ -57,29 +96,6 @@ class OfferPage extends Component {
     }
   }
 
-  handleRequestData () {
-    const { requestData } = this.props
-    requestData('GET', 'offerers')
-    requestData('GET', 'eventTypes')
-  }
-
-  onSubmitClick = () => {
-    const {
-      history,
-      resetForm,
-      showModal
-    } = this.props
-    resetForm()
-    showModal(
-      <div>
-        C'est soumis!
-      </div>,
-      {
-        onCloseClick: () => history.push('/offres')
-      }
-    )
-  }
-
   render () {
     const {
       apiPath,
@@ -91,6 +107,7 @@ class OfferPage extends Component {
       occasionId,
       offererOptions,
       offerers,
+      uniqueVenue,
       user
     } = this.props
     const {
@@ -108,11 +125,12 @@ class OfferPage extends Component {
       occurences,
       type,
     } = (occasion || {})
-    console.log('occurences', occurences)
     const {
       defaultOfferer,
       venueOptions
     } = this.state
+
+    console.log('uniqueVenue', uniqueVenue)
     return (
       <PageWrapper name='offer' loading={isLoading}>
         <div className='columns'>
@@ -134,10 +152,10 @@ class OfferPage extends Component {
                 }
             </h1>
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={name}
               entityId={occasionId}
-              label={<Label title="Titre" />}
+              label={<Label title="Titre : *" />}
               name="name"
               required
             />
@@ -146,31 +164,37 @@ class OfferPage extends Component {
               Infos pratiques
             </h2>
             <FormField
-              collectionName={occasionCollection}
-              defaultValue={type || ''}
+              collectionName='occasions'
+              defaultValue={type || get(eventTypes, '0.value')}
               entityId={occasionId}
-              label={<Label title="Type" />}
+              label={<Label title="Type : *" />}
               name="type"
+              required
               type="select"
               options={eventTypes}
             />
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={defaultOfferer || get(offerers, '0.id')}
               entityId={occasionId}
-              label={<Label title="Structure" />}
+              label={<Label title="Structure : *" />}
+              required
               name='offererId'
               options={offererOptions}
               type="select"
             />
             {
-              venueOptions && venueOptions.length > 1 && (
+              !uniqueVenue && (
                 <FormField
                   collectionName='events'
-                  defaultValue={get(occurences, '0.venue')}
+                  defaultValue={
+                    get(occurences, '0.venue') ||
+                    get(venueOptions, '0')
+                  }
                   entityId={occasionId}
                   label={<Label title="Lieu" />}
                   name='venueId'
+                  required
                   options={venueOptions}
                   type="select"
                 />
@@ -178,34 +202,22 @@ class OfferPage extends Component {
             }
             {
               occasionCollection === 'events' && [
-                null && <FormField
-                  collectionName='venues'
-                  defaultValue={get(occurences, '0.venue')}
-                  ItemComponent={({ address, name, onItemClick }) => (
-                    <div className='venue-item' onClick={onItemClick}>
-                      <b> {name} </b> {address}
-                    </div>
-                  )}
-                  key={0}
-                  label={<Label title="Lieu" />}
-                  type="select"
-                />,
                 <div className='field' key={1}>
-                  <Label title='Horaires' />
+                  <Label title='Horaires : *' />
                   <OccurenceManager occurences={occurences} />
                 </div>,
                 <FormField
-                  collectionName={occasionCollection}
+                  collectionName='occasions'
                   defaultValue={durationMinutes}
                   entityId={occasionId}
                   key={2}
-                  label={<Label title="Durée (en minutes)" />}
+                  label={<Label title="Durée (en minutes) : *" />}
                   name="durationMinutes"
                   required
                   type="number"
                 />,
                 <FormField
-                  collectionName={occasionCollection}
+                  collectionName='occasions'
                   defaultValue={bookingLimitDatetime}
                   entityId={occasionId}
                   key={3}
@@ -218,37 +230,37 @@ class OfferPage extends Component {
             <hr />
             <h2 className='subtitle is-2'>Infos artistiques</h2>
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={description}
               entityId={occasionId}
-              label={<Label title="Description" />}
+              label={<Label title="Description : *" />}
               name="description"
               required
               type="textarea"
             />
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={author}
               entityId={occasionId}
-              label={<Label title="Auteur" />}
+              label={<Label title="Auteur :" />}
               name="author"
             />
             {
               occasionCollection === 'events' && [
                 <FormField
-                  collectionName={occasionCollection}
+                  collectionName='occasions'
                   defaultValue={stageDirector}
                   entityId={occasionId}
                   key={0}
-                  label={<Label title="Metteur en scène" />}
+                  label={<Label title="Metteur en scène:" />}
                   name="stageDirector"
                 />,
                 <FormField
-                  collectionName={occasionCollection}
+                  collectionName='occasions'
                   defaultValue={performer}
                   entityId={occasionId}
                   key={1}
-                  label={<Label title="Interprète" />}
+                  label={<Label title="Interprète:" />}
                   name="performer"
                 />
               ]
@@ -256,30 +268,30 @@ class OfferPage extends Component {
             <hr />
             <h2 className='subtitle is-2'>Infos de contact</h2>
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={contactName}
               entityId={occasionId}
-              label={<Label title="Nom du contact" />}
+              label={<Label title="Nom du contact :" />}
               name="contactName"
             />
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={contactEmail}
               entityId={occasionId}
-              label={<Label title="Email de contact" />}
+              label={<Label title="Email de contact :*" />}
               name="contactEmail"
               required
               type="email"
             />
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={contactPhone}
               entityId={occasionId}
-              label={<Label title="Tel de contact" />}
+              label={<Label title="Tel de contact :" />}
               name="contactPhone"
             />
             <FormField
-              collectionName={occasionCollection}
+              collectionName='occasions'
               defaultValue={mediaUrls}
               entityId={occasionId}
               label={<Label title="Media URLs" />}
@@ -291,33 +303,29 @@ class OfferPage extends Component {
               <div className="control">
                 <SubmitButton
                   getBody={form => ({
-                    occasion: get(form, `${occasionCollection}ById.${occasionId}`),
+                    occasion: get(form, `occasionsById.${occasionId}`),
                     eventOccurences: form.eventOccurencesById &&
-                      Object.values(form.eventOccurencesById),
-                    //offererId: get(form, `offerersById.${SEARCH}.id`),
-                    //venueId: get(form, `venuesById.${SEARCH}.id`)
+                      Object.values(form.eventOccurencesById)
                   })}
                   getIsDisabled={form => {
-                    //const offererId = get(form, `offerersById.${SEARCH}.id`)
-                    //const venueId = get(form, `venuesById.${SEARCH}.id`)
-                    //if (!offererId || !venueId) {
-                    //  return true
-                    //}
                     return isNew
-                    ? !get(form, `${occasionCollection}ById.${occasionId}.description`) ||
-                      !get(form, `${occasionCollection}ById.${occasionId}.name`) ||
-                      !get(form, `${occasionCollection}ById.${occasionId}.mediaUrls`) ||
-                      typeof get(form, `${occasionCollection}ById.${occasionId}.type`) !== 'string' ||
+                    ? !get(form, `occasionsById.${occasionId}.contactEmail`) ||
+                      !get(form, `occasionsById.${occasionId}.description`) ||
+                      !get(form, `occasionsById.${occasionId}.durationMinutes`) ||
+                      !get(form, `occasionsById.${occasionId}.name`) ||
+                      !get(form, `occasionsById.${occasionId}.offererId`) ||
+                      typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' ||
                       (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
-                    : !get(form, `${occasionCollection}ById.${occasionId}.description`) &&
-                      !get(form, `${occasionCollection}ById.${occasionId}.name`) &&
-                      !get(form, `${occasionCollection}ById.${occasionId}.mediaUrls`) &&
-                      typeof get(form, `${occasionCollection}ById.${occasionId}.type`) !== 'string' &&
+                    : !get(form, `occasionsById.${occasionId}.contactEmail`) &&
+                      !get(form, `occasionsById.${occasionId}.description`) &&
+                      !get(form, `occasionsById.${occasionId}.durationMinutes`) &&
+                      !get(form, `occasionsById.${occasionId}.name`) &&
+                      !get(form, `occasionsById.${occasionId}.offererId`) &&
+                      typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
                       (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                   }}
                   className="button is-primary is-medium"
                   method={isNew ? 'POST' : 'PATCH'}
-                  onClick={this.onSubmitClick}
                   path={apiPath}
                   storeKey="occasions"
                   text="Enregistrer"
@@ -343,10 +351,12 @@ export default compose(
   connect(
     (state, ownProps) => ({
       eventTypes: state.data.eventTypes,
+      formOfferer: selectFormOfferer(state, ownProps),
       offerers: selectOfferers(state),
       offererOptions: selectOffererOptions(state),
-      formOfferer: selectFormOfferer(state, ownProps),
+      successQuery: selectSuccessOccasionQuery(state),
+      uniqueVenue: selectUniqueVenue(state, ownProps),
     }),
-    { resetForm, showModal }
+    { mergeForm, resetForm, showModal }
   )
 )(OfferPage)

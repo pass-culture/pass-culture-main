@@ -43,7 +43,7 @@ class OccurenceManager extends Component {
 
     // add in the occurences form
     const eventOccurenceId = !occurences
-      ? `NEW_0`
+      ? `${NEW}_0`
       : `${NEW}_${occurences.length}`
     mergeForm('eventOccurences', eventOccurenceId, {
       beginningDatetime: datetime,
@@ -104,7 +104,7 @@ class OccurenceManager extends Component {
               <div className="field is-horizontal">
                 <FormField
                   collectionName="dates"
-                  label={<Label title="Heure" />}
+                  label={<Label title="Heure : *" />}
                   name="time"
                   required
                   type="time"
@@ -113,7 +113,8 @@ class OccurenceManager extends Component {
               <div className="field is-horizontal">
                 <FormField
                   collectionName="offers"
-                  label={<Label title="Prix (€)" />}
+                  defaultValue={0}
+                  label={<Label title="Prix (€) : *" />}
                   min={0}
                   name="price"
                   required

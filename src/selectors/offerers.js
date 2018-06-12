@@ -4,6 +4,6 @@ import { createSelector } from 'reselect'
 export default createSelector(
   state => get(state, 'data.offerers'),
   state => state.data.searchedOfferers,
-  (userOfferers, searchedOfferers) =>
-    searchedOfferers || userOfferers
+  (offerers, searchedOfferers) =>
+    searchedOfferers || offerers
 )

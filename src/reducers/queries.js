@@ -1,14 +1,15 @@
 import get from 'lodash.get'
 
-const PENDING = 'PENDING'
-const SUCCESS = 'SUCCESS'
-const FAIL = 'FAIL'
+export const PENDING = 'PENDING'
+export const SUCCESS = 'SUCCESS'
+export const FAIL = 'FAIL'
 
 export default (state = [], action) => {
   const id = get(action, 'config.requestId')
   if (/REQUEST_DATA_(GET|PATCH|POST|PUT|DELETE)_(.*)/.test(action.type)) {
     return state.concat({
       id,
+      key: get(action, 'config.key'),
       path: action.path,
       status: PENDING,
     })
