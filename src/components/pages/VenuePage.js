@@ -130,12 +130,11 @@ class VenuePage extends Component {
         <br />
         <FormField
           autoComplete="siret"
-          className='is-rounded'
+          className='column is-4 aligned is-rounded'
           controlClassName='columns'
           collectionName="venues"
           defaultValue={siret}
           entityId={venueId}
-          inputClassName='column is-3 aligned'
           label={<Label title="SIRET:" />}
           labelClassName='column is-3'
           name="siret"
@@ -161,12 +160,11 @@ class VenuePage extends Component {
         </div>
         <FormField
           autoComplete="address"
-          className='input is-rounded'
+          className='column aligned is-rounded'
           collectionName="venues"
           controlClassName='columns'
           defaultValue={address || ''}
           entityId={venueId}
-          inputClassName='column aligned'
           label={<Label title="Numéro et voie :*" />}
           labelClassName='column is-3'
           name="address"
@@ -174,24 +172,22 @@ class VenuePage extends Component {
         />
         <FormField
           autoComplete="postalCode"
-          className='input is-rounded'
+          className='column is-2 mt1 is-rounded'
           collectionName="venues"
           controlClassName='columns'
           defaultValue={postalCode || ''}
           entityId={venueId}
-          inputClassName='column is-2 mt1'
           label={<Label title="Code Postal:*" />}
           labelClassName='column is-3'
           name="postalCode"
         />
         <FormField
           autoComplete="city"
-          className='input is-rounded'
+          className='column is-5 mt1 is-rounded'
           collectionName="venues"
           controlClassName='columns'
           defaultValue={city || ''}
           entityId={venueId}
-          inputClassName='column is-5 mt1'
           label={<Label title="Ville:*" />}
           labelClassName='column is-3'
           name="city"
