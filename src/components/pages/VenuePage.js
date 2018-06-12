@@ -109,6 +109,8 @@ class VenuePage extends Component {
       venueId
     } = this.state
 
+    console.log('isNew', isNew)
+
     return (
       <PageWrapper name='offerer' loading={isLoading}>
 
@@ -199,22 +201,16 @@ class VenuePage extends Component {
         />
 
         <br />
-        <ProviderManager venueProviders={venueProviders} />
-
-        <br />
         <div className="field is-grouped is-grouped-centered"
           style={{justifyContent: 'space-between'}}>
           <div className="control">
-
             <div className="field is-grouped is-grouped-centered"
               style={{justifyContent: 'space-between'}}>
               <div className="control">
                 <SubmitButton
                   getBody={form => Object.assign(
                       {
-                        managingOffererId: offererId,
-                        venueProviders: get(form, `venueProvidersById`)
-                          && Object.values(get(form, `venueProvidersById`))
+                        managingOffererId: offererId
                       },
                       get(form, `venuesById.${venueId}`)
                     )
@@ -222,13 +218,11 @@ class VenuePage extends Component {
                   getIsDisabled={form =>
                     isNew
                       ? !get(form, `venuesById.${venueId}.name`) ||
-                        !get(form, `venuesById.${venueId}.address`)
+                        !get(form, `venuesById.${venueId}.address`) ||
+                        !get(form, `venuesById.${venueId}.postalCode`)
                       : !get(form, `venuesById.${venueId}.name`) &&
-                        !get(form, `venuesById.${venueId}.address`) &
-                        (
-                          !get(form, `venueProvidersById`) ||
-                          Object.keys(get(form, `venueProvidersById`)) === 0
-                        )
+                        !get(form, `venuesById.${venueId}.address`) &&
+                        !get(form, `venuesById.${venueId}.postalCode`)
                   }
                   className="button is-primary is-medium"
                   method={method}
@@ -246,8 +240,15 @@ class VenuePage extends Component {
               </div>
             </div>
         </div>
-
       </div>
+
+      {
+        !isNew && [
+          <br key={0}/>,
+          <ProviderManager key={1} venueProviders={venueProviders} />
+        ]
+      }
+
     </PageWrapper>
   )
 }

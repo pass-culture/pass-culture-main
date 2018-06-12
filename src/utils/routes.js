@@ -72,7 +72,7 @@ const routes = [
   },
   {
     exact: true,
-    path: '/structures/:offererId/lieux/:venueId/fournisseurs/:providerId',
+    path: '/structures/:offererId/lieux/:venueId/fournisseurs/:venueProviderId',
     title: 'Lieu',
     render: () => <VenuePage />,
   },
