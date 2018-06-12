@@ -26,7 +26,7 @@ def test_10_create_booking():
         'offerId': humanize(3),
         'recommendationId': humanize(1)
     }
-    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 201
     id = r_create.json()['id']
     r_check = req_with_auth().get(API_URL + '/bookings/'+id)
@@ -52,7 +52,7 @@ def test_11_create_booking_should_not_work_past_limit_date():
             'recommendationId': humanize(1)
         }
 
-    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
     assert 'global' in r_create.json()
     assert 'date limite' in r_create.json()['global'][0]
@@ -74,7 +74,7 @@ def test_12_create_booking_should_work_before_limit_date():
             'recommendationId': humanize(1)
         }
 
-    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 201
     id = r_create.json()['id']
     r_check = req_with_auth().get(API_URL + '/bookings/'+id)
@@ -100,7 +100,24 @@ def test_13_create_booking_should_not_work_if_too_many_bookings():
             'recommendationId': humanize(1)
         }
 
-    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
     assert 'global' in r_create.json()
     assert 'quantité disponible' in r_create.json()['global'][0]
+
+def test_14_create_booking_should_work_if_user_can_book():
+    booking_json = {
+        'offerId': humanize(3),
+        'recommendationId': humanize(1)
+    }
+    r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
+    assert r_create.status_code == 201
+
+def test_15_create_booking_should_not_work_if_user_can_not_book():
+    # with default admin user
+    booking_json = {
+        'offerId': humanize(3),
+        'recommendationId': humanize(1)
+    }
+    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    assert r_create.status_code == 400

@@ -26,7 +26,7 @@ def do_sandbox():
 
     with open(json_path) as json_file:
         for user in json.load(json_file):
-            if 'hasAllOfferers' in user and user['hasAllOfferers'] == True:
+            if 'email' in user and user['email'] == 'admin@test.com':
             # un acteur culturel qui peut jouer à rajouter des offres partout
                 admin_query = model.User.query.filter_by(email="pctest.admin@btmx.fr")
                 if admin_query.count() == 1:

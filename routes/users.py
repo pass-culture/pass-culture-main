@@ -103,7 +103,6 @@ def signup():
             e.addError('email', "Addresse non autorisée pour l'expérimentation")
             return jsonify(e.errors), 400
 
-
     new_user = app.model.User(from_dict=request.json)
     new_user.id = None
     new_user.departementCode = departement_code
@@ -112,6 +111,7 @@ def signup():
     user_offerer = None
     if 'siren' in request.json:
         #TODO: handle case of already existing Offerer
+        new_user.canBook = False
         offerer = app.model.Offerer()
         update(offerer, request.json)
         user_offerer = offerer.make_admin(new_user)
@@ -120,6 +120,5 @@ def signup():
         app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
     else:
         app.model.PcObject.check_and_save(new_user)
-
     login_user(new_user)
     return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201
