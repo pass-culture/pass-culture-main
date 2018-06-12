@@ -81,7 +81,7 @@ class FormSirene extends Component {
               latitude: get(body, `${dataPath}.latitude`),
               longitude: get(body, `${dataPath}.longitude`),
               name: get(body, `${dataPath}.l1_declaree`),
-              departementCode: get(body, `${dataPath}.code_postal`),
+              postalCode: get(body, `${dataPath}.code_postal`),
               city: get(body, `${dataPath}.libelle_commune`),
               [sireType]: get(body, `${dataPath}${sireType}`),
             })

@@ -96,8 +96,8 @@ class VenuePage extends Component {
       address,
       city,
       name,
+      postalCode,
       siret,
-      departementCode,
       venueProviders
     } = venue || {}
 
@@ -174,16 +174,16 @@ class VenuePage extends Component {
           type="address"
         />
         <FormField
-          autoComplete="departementCode"
+          autoComplete="postalCode"
           className='input is-rounded'
           collectionName="venues"
           controlClassName='columns'
-          defaultValue={departementCode || ''}
+          defaultValue={postalCode || ''}
           entityId={venueId}
           inputClassName='column is-2 mt1'
           label={<Label title="Code Postal:*" />}
           labelClassName='column is-3'
-          name="departementCode"
+          name="postalCode"
         />
         <FormField
           autoComplete="city"
