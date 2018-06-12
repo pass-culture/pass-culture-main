@@ -1,6 +1,6 @@
-export function getResolvedData(method, path, previousData, nextData, config = {}) {
+export function getNextState(state, method, key, nextData, config = {}) {
 
-  // unpack the config
+  // UNPACK
   const {
     add,
     isMergingDatum,
@@ -12,10 +12,43 @@ export function getResolvedData(method, path, previousData, nextData, config = {
   const isMutatingArray = typeof config.isMutatingArray === 'undefined'
     ? true
     : config.isMutatingArray
+  const nextState = config.nextState || {}
+  const previousData = state[key]
+
+  // NORMALIZER
+  if (config.normalizer) {
+    Object.keys(config.normalizer)
+          .forEach(key => {
+
+            let nextNormalizedData = []
+            nextData.forEach(nextDatum => {
+              if (Array.isArray(nextDatum[key])) {
+                nextNormalizedData = nextNormalizedData.concat(nextDatum[key])
+                delete nextDatum[key]
+              } else if (nextDatum[key]) {
+                nextNormalizedData.push(nextDatum[key])
+                delete nextDatum[key]
+              }
+            })
+
+            if (nextNormalizedData.length) {
+              const nextNormalizedState = getNextState(
+                state,
+                null,
+                config.normalizer[key],
+                nextNormalizedData,
+                Object.assign({ nextState })
+              )
+              Object.assign(nextState, nextNormalizedState)
+            }
+
+          })
+  }
 
   // no need to go further if no previous data
   if (!previousData) {
-    return nextData
+    nextState[key] = nextData
+    return nextState
   }
 
   // DELETE CASE
@@ -28,31 +61,34 @@ export function getResolvedData(method, path, previousData, nextData, config = {
         delete resolvedData[resolvedIndex]
       }
     })
-    return resolvedData
+    nextState[key] = nextData
+    return nextState
   }
 
   // GET POST PATCH
 
-
   // add
   if (add === 'append') {
     if (isMutatingArray) {
-      return previousData.concat(nextData)
-    } else {
-      nextData.forEach(nextDatum => previousData.push(nextDatum))
+      nextState[key] = previousData.concat(nextData)
+      return nextState
     }
+    nextData.forEach(nextDatum => previousData.push(nextDatum))
   } else if (add === 'prepend') {
     if (isMutatingArray) {
-      return nextData.concat(previousData)
-    } else {
-      return nextData.forEach(nextDatum => previousData.unshift(nextDatum))
+      nextState[key] = nextData.concat(previousData)
+      return nextState
     }
+    nextState[key] = nextData.forEach(nextDatum =>
+      previousData.unshift(nextDatum))
+    return nextState
   }
 
   // no need to go further when we want just to trigger
   // a new fresh assign with nextData
   if (!isMergingArray) {
-    return nextData
+    nextState[key] = nextData
+    return nextState
   }
 
   // Determine first if we are going to trigger a mutation of the array
@@ -78,6 +114,9 @@ export function getResolvedData(method, path, previousData, nextData, config = {
     resolvedData[resolvedIndex] = datum
   })
 
+  // set
+  nextState[key] = nextData
+
   // return
-  return resolvedData
+  return nextState
 }
