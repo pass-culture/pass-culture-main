@@ -146,7 +146,7 @@ class OffererPage extends Component {
         </div>
         {!isNew && (
           <div className='section'>
-            <h2 className='pc-second-title' key={0}>
+            <h2 className='pc-second-title'>
               Lieux
             </h2>
             <VenuesList />
@@ -162,7 +162,7 @@ class OffererPage extends Component {
       <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
         <div className="control">
           <NavLink
-            className="button is-primary is-outlined is-medium"
+            className="button is-secondary is-medium"
             to='/structures' >
             Retour
           </NavLink>
