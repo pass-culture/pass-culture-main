@@ -124,7 +124,7 @@ class VenuePage extends Component {
           Ajoutez un lieu où trouver vos offres
         </p>
         <p className='small has-text-grey'>
-          Les champs marqués d'un <span> * </span> sont obligatoires
+          Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
         </p>
 
         <br />
@@ -137,7 +137,7 @@ class VenuePage extends Component {
           defaultValue={siret}
           entityId={venueId}
           inputClassName='column is-3 aligned'
-          label={<Label title="SIRET:" />}
+          label={<Label title="SIRET :" />}
           labelClassName='column is-3'
           name="siret"
           type="sirene"
@@ -151,7 +151,7 @@ class VenuePage extends Component {
           defaultValue={name}
           entityId={venueId}
           inputClassName='column aligned'
-          label={<Label title="Nom du lieu:" />}
+          label={<Label title="Nom du lieu :" />}
           labelClassName='column is-3'
           name="name"
         />
@@ -168,10 +168,11 @@ class VenuePage extends Component {
           defaultValue={address || ''}
           entityId={venueId}
           inputClassName='column aligned'
-          label={<Label title="Numéro et voie :*" />}
+          label={<Label title="Numéro et voie :" />}
           labelClassName='column is-3'
           name="address"
           type="address"
+          required
         />
         <FormField
           autoComplete="postalCode"
@@ -181,9 +182,10 @@ class VenuePage extends Component {
           defaultValue={postalCode || ''}
           entityId={venueId}
           inputClassName='column is-2 mt1'
-          label={<Label title="Code Postal:*" />}
+          label={<Label title="Code Postal :" />}
           labelClassName='column is-3'
           name="postalCode"
+          required
         />
         <FormField
           autoComplete="city"
@@ -193,13 +195,11 @@ class VenuePage extends Component {
           defaultValue={city || ''}
           entityId={venueId}
           inputClassName='column is-5 mt1'
-          label={<Label title="Ville:*" />}
+          label={<Label title="Ville :" />}
           labelClassName='column is-3'
           name="city"
+          required
         />
-
-        <br />
-        <ProviderManager venueProviders={venueProviders} />
 
         <br />
         <div className="field is-grouped is-grouped-centered"
@@ -248,6 +248,8 @@ class VenuePage extends Component {
         </div>
 
       </div>
+      {!isNew && <ProviderManager venueProviders={venueProviders} />}
+
     </PageWrapper>
   )
 }

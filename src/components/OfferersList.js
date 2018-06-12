@@ -29,9 +29,9 @@ class OfferersList extends Component {
     } = this.props
 
     return (
-      <div className="offerers-list section">
+      <ul className="pc-list offerers-list">
         {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
-      </div>
+      </ul>
     )
 
     // TODO: decide if we keep the autosizer

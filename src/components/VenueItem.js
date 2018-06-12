@@ -2,6 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 import { THUMBS_URL } from '../utils/config'
+import Icon from './layout/Icon'
 
 const VenueItem = ({
   address,
@@ -9,43 +10,50 @@ const VenueItem = ({
   managingOffererId,
   name
 }) => {
-  const src = `${THUMBS_URL}/structures//lieux/${id}`
+  const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
-    <article className="venue-item media">
-      <figure className="media-left">
-        <div className="image is-64x64" style={{
-          backgroundImage: `url('${src}')`,
-          backgroundSize: 'cover'
-        }} />
-      </figure>
-      <div className="media-content">
-        <div className="content">
-          <p className="title">
-            <strong>{name}</strong>
-          </p>
-          <p className="subtitle">
-            {address}
-          </p>
-        </div>
-        <nav className="level">
-          <NavLink to={`/structures/${managingOffererId}/lieux/${id}`}>
-            <button className="button is-primary level-item">
-              Configurer
-            </button>
-          </NavLink>
-          <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres`}>
-            <button className="button is-primary level-item">
-              Créer des offres
-            </button>
-          </NavLink>
-          <NavLink to={`/structures/${managingOffererId}/lieux/${id}/fournisseurs/nouveau`}>
-            <button className="button is-primary level-item">
-              Importer des offres
-            </button>
-          </NavLink>
-        </nav>
+    <li className="venue-item">
+      <div className='picto'>
+        <Icon svg='ico-geoloc-solid2' />
       </div>
-    </article>
+      <div className="list-content">
+        <p className="name">
+          <NavLink to={showPath}>{name}</NavLink>
+        </p>
+        <ul className='actions'>
+          <li>
+            <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
+              <Icon svg='ico-offres-r' /> ?? offres
+            </NavLink>
+          </li>
+          <li>
+            <p className="has-text-grey">{address}</p>
+          </li>
+        </ul>
+        {false && <nav className="level">
+                  <NavLink to={`/structures/${managingOffererId}/lieux/${id}`}>
+                    <button className="button is-primary level-item">
+                      Configurer
+                    </button>
+                  </NavLink>
+                  <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres`}>
+                    <button className="button is-primary level-item">
+                      Créer des offres
+                    </button>
+                  </NavLink>
+                  <NavLink to={`/structures/${managingOffererId}/lieux/${id}/fournisseurs/nouveau`}>
+                    <button className="button is-primary level-item">
+                      Importer des offres
+                    </button>
+                  </NavLink>
+                </nav>}
+      </div>
+      <div className='caret'>
+        <NavLink to={showPath}>
+          <Icon svg='ico-next-S' />
+        </NavLink>
+      </div>
+    </li>
   )
 }
 

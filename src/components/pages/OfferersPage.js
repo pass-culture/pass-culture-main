@@ -15,23 +15,10 @@ const OfferersPage = ({ user, offerers }) => {
       type: 'success',
       text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.'
     }}>
-      <div className="level is-vcentered">
-        <h1 className="is-size-1 has-text-grey is-italic level-left">
-          Vos structures
-        </h1>
-        <div className="level-right">
-          <NavLink to={`/structures/nouveau`}>
-            <span className='icon'>
-              <Icon svg={'ico-guichet-w'} />
-            </span>
-            <button className="button is-primary">
-              Rattacher une structure
-            </button>
-          </NavLink>
-        </div>
-      </div>
+      <h1 className="pc-title">
+        Vos structures
+      </h1>
 
-      <br />
       <p className="subtitle">
         Retrouvez ici la ou les structures dont vous gérez les offres Pass Culture.
       </p>
@@ -50,6 +37,12 @@ const OfferersPage = ({ user, offerers }) => {
         </nav>
       )}
       <OfferersList />
+      <NavLink to={`/structures/nouveau`} className="button is-primary is-outlined">
+        {false && <span className='icon'>
+                  <Icon svg={'ico-guichet-w'} />
+                </span>}
+        Rattacher une structure
+      </NavLink>
     </PageWrapper>
   )
 }

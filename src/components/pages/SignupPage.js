@@ -11,7 +11,7 @@ import { NEW } from '../../utils/config'
 
 const Label = ({ subtitle, title, inline }) => (
   <div className={inline && 'inline'}>
-    <h3>{title}</h3>
+    <h3 className='can-be-required'>{title}</h3>
     <p>{subtitle}</p>
   </div>
 )

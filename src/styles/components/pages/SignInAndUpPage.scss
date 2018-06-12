@@ -58,20 +58,6 @@
     a {
       text-decoration: underline;
     }
-
-    &.required {
-      h3:after {
-        content: '';
-        width: 4px;
-        height: 4px;
-        border-radius: 3px;
-        background-color: $violet;
-        top: 4px;
-        right: -5px;
-        display: block;
-        position: absolute;
-      }
-    }
   }
 
   .buttons-field {

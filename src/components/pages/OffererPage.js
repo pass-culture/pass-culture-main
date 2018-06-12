@@ -92,42 +92,44 @@ class OffererPage extends Component {
 
     return (
       <PageWrapper name='offerer' loading={isLoading}>
-        <div className='columns'>
-          <div className='column'>
-            <div className='section'>
-              <h1 className="title is-size-1 is-h1 has-text-grey is-italic">Structure</h1>
-              <p className="subtitle">Retrouvez ici la ou les structures dont vous gérez les offres Pass Culture.</p>
-              <FormField
-                autoComplete="siren"
-                collectionName="offerers"
-                defaultValue={siren}
-                entityId={offererId}
-                label={<Label title="Siren" />}
-                name="siren"
-                type="sirene"
-                sireType="siren"
-                readOnly={!isNew}
-                className='input is-rounded'
-              />
-              <FormField
-                autoComplete="name"
-                collectionName="offerers"
-                defaultValue={name}
-                entityId={offererId}
-                label={<Label title="Nom" />}
-                name="name"
-                className='input is-rounded'
-              />
-              <FormField
-                autoComplete="address"
-                collectionName="offerers"
-                defaultValue={address || ''}
-                entityId={offererId}
-                label={<Label title="Adresse" />}
-                name="address"
-                type="adress"
-                className='input is-rounded'
-              />
+        <div className='section'>
+          <h1 className="pc-title">Structure</h1>
+          <p className="subtitle">Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.</p>
+          <FormField
+            autoComplete="siren"
+            collectionName="offerers"
+            defaultValue={siren}
+            entityId={offererId}
+            label={<Label title="Siren :" />}
+            name="siren"
+            type="sirene"
+            sireType="siren"
+            readOnly={!isNew}
+            className='input is-rounded'
+          />
+          <FormField
+            autoComplete="name"
+            collectionName="offerers"
+            defaultValue={name}
+            entityId={offererId}
+            label={<Label title="Dénomination :" />}
+            name="name"
+            readOnly={!isNew}
+            className='input is-rounded'
+          />
+          <FormField
+            autoComplete="address"
+            collectionName="offerers"
+            defaultValue={address || ''}
+            entityId={offererId}
+            label={<Label title="Siège social :" />}
+            name="address"
+            type="adress"
+            readOnly={!isNew}
+            className='input is-rounded'
+          />
+          {isNew && (
+            <div>
               <FormField
                 autoComplete="email"
                 collectionName="offerers"
@@ -138,50 +140,50 @@ class OffererPage extends Component {
                 className='input is-rounded'
               />
             </div>
-            <hr />
+          )}
+        </div>
+        {!isNew && (
+          <div className='section'>
+            <h2 className='pc-second-title' key={0}>
+              Lieux
+            </h2>
             <div className='section'>
-              <h2 className='subtitle is-2' key={0}>
-                Lieux
-              </h2>
               <VenuesList />
-              <div className='has-text-right'>
-                <NavLink to={`/structures/${offererId}/lieux/nouveau`}
-                  className="button is-primary is-outlined">
-                  Nouveau lieu
-                </NavLink>
-              </div>
             </div>
-            <hr />
-            <div className='section'>
-              <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-                <div className="control">
-                  <NavLink
-                    className="button is-primary is-outlined is-medium"
-                    to='/structures' >
-                    Retour
-                  </NavLink>
-                </div>
-                <div className="control">
-                  <SubmitButton
-                    getBody={form => form.offerersById[offererId]}
-                    getIsDisabled={form => {
-                      return isNew
-                        ? !get(form, `offerersById.${offererId}.name`) ||
-                          !get(form, `offerersById.${offererId}.address`)
-                        : !get(form, `offerersById.${offererId}.name`) &&
-                          !get(form, `offerersById.${offererId}.address`)
-                    }
+            <div className='has-text-right'>
+              <NavLink to={`/structures/${offererId}/lieux/nouveau`}
+                className="button is-secondary is-outlined">
+                + Ajouter un lieu
+              </NavLink>
+            </div>
+          </div>
+        )}
+      <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+        <div className="control">
+          <NavLink
+            className="button is-primary is-outlined is-medium"
+            to='/structures' >
+            Retour
+          </NavLink>
+        </div>
+        <div className="control">
+          <SubmitButton
+            getBody={form => form.offerersById[offererId]}
+            getIsDisabled={form => {
+              return isNew
+                ? !get(form, `offerersById.${offererId}.name`) ||
+                  !get(form, `offerersById.${offererId}.address`)
+                : !get(form, `offerersById.${offererId}.name`) &&
+                  !get(form, `offerersById.${offererId}.address`)
+            }
 
-                    }
-                    className="button is-primary is-medium"
-                    method={method}
-                    path={apiPath}
-                    storeKey="offerers"
-                    text="Enregistrer"
-                  />
-                </div>
-              </div>
-            </div>
+            }
+            className="button is-primary is-medium"
+            method={method}
+            path={apiPath}
+            storeKey="offerers"
+            text="Valider"
+          />
         </div>
       </div>
     </PageWrapper>

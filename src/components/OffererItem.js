@@ -14,23 +14,35 @@ const OffererItem = ({
     isActive,
   }
 }) => {
+  const showPath = `/structures/${id}`
   return (
-    <article className="offerer-item media">
-      <div className="media-content">
-        <div className="content">
-          <NavLink to={`/structures/${id}`}>
-            <p className="title is-size-2 has-text-weight-bold">{name}</p>
+    <li className="offerer-item">
+      <div className='list-content'>
+        <p className="name">
+          <NavLink to={showPath}>
+            {name}
           </NavLink>
-          <p className="subtitle">{address}</p>
-          <p className="is-size-small has-text-grey is-italic">{isActive ? 'Activée' : 'En attente de validation'}</p>
-        </div>
+        </p>
+        <ul className='actions'>
+          <li>
+            <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
+              <Icon svg='ico-offres-r' /> ?? offres
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to={showPath}>
+              <Icon svg='ico-geoloc-solid2' /> ?? lieux
+            </NavLink>
+          </li>
+          <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>
+        </ul>
       </div>
-      <div className="media-right next-button">
-        <NavLink to={`/structures/${id}`}>
+      <div className='caret'>
+        <NavLink to={showPath}>
           <Icon svg='ico-next-S' />
         </NavLink>
       </div>
-    </article>
+    </li>
   )
 }
 

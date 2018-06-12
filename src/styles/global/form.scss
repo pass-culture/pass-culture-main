@@ -1,0 +1,18 @@
+label {
+  &.required {
+    *.can-be-required:after {
+      content: ' *';
+      color: $violet;
+      display: inline;
+    }
+  }
+}
+
+.required-legend {
+  color: $violet;
+}
+
+input.input[readonly] {
+  border: none;
+  background-color: transparent;
+}
