@@ -20,8 +20,6 @@ class Offerer(app.model.PcObject,
 
     name = db.Column(db.String(140), nullable=False)
 
-    address = db.Column(db.String(200), nullable=True)
-
     users = db.relationship(lambda: app.model.User,
                             secondary='user_offerer')
 
