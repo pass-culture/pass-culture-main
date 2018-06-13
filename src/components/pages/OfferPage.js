@@ -14,11 +14,12 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
+import { SUCCESS } from '../../reducers/queries'
 import selectOfferers from '../../selectors/offerers'
 import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
-import selectSuccessOccasionQuery from '../../selectors/occasionQuery'
 import selectUniqueVenue from '../../selectors/uniqueVenue'
+import selectVenueOptions from '../../selectors/venueOptions'
 import { pathToCollection } from '../../utils/translate'
 
 
@@ -31,8 +32,12 @@ class OfferPage extends Component {
   }
 
   componentDidMount () {
-    this.handleRequestData()
-    if (this.props.uniqueVenue) {
+    const {
+      uniqueVenue,
+      user
+    } = this.props
+    user && this.handleRequestData()
+    if (uniqueVenue) {
       this.handleMergeForm()
     }
   }
@@ -57,24 +62,24 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const { requestData } = this.props
-    requestData('GET', 'offerers')
+    requestData(
+      'GET',
+      'offerers',
+      {
+        normalizer: { managedVenues: 'venues' }
+      }
+    )
     requestData('GET', 'eventTypes')
   }
 
-  handleSuccessData = () => {
+  handleStatusData = status => {
     const {
       history,
-      resetForm,
-      showModal
+      resetForm
     } = this.props
-    showModal(
-      <div>
-        C'est soumis!
-      </div>,
-      {
-        onCloseClick: () => history.push('/offres')
-      }
-    )
+    if (status === SUCCESS) {
+      history.push('/offres?success=true')
+    }
   }
 
   static getDerivedStateFromProps (nextProps) {
@@ -84,15 +89,8 @@ class OfferPage extends Component {
     } = nextProps
     const defaultOfferer = get(occurences, '0.offer.0.offerer')
     const offerer = formOfferer || defaultOfferer
-    const venueOptions = offerer &&
-      offerer.managedVenues &&
-      offerer.managedVenues.map(v => ({
-        label: v.name,
-        value: v.id
-      }))
     return {
-      defaultOfferer,
-      venueOptions
+      defaultOfferer
     }
   }
 
@@ -108,7 +106,8 @@ class OfferPage extends Component {
       offererOptions,
       offerers,
       uniqueVenue,
-      user
+      user,
+      venueOptions
     } = this.props
     const {
       author,
@@ -126,11 +125,9 @@ class OfferPage extends Component {
       type,
     } = (occasion || {})
     const {
-      defaultOfferer,
-      venueOptions
+      defaultOfferer
     } = this.state
 
-    console.log('uniqueVenue', uniqueVenue)
     return (
       <PageWrapper name='offer' loading={isLoading}>
         <div className='columns'>
@@ -155,7 +152,7 @@ class OfferPage extends Component {
               collectionName='occasions'
               defaultValue={name}
               entityId={occasionId}
-              label={<Label title="Titre : *" />}
+              label={<Label title="Titre :" />}
               name="name"
               required
             />
@@ -167,7 +164,7 @@ class OfferPage extends Component {
               collectionName='occasions'
               defaultValue={type || get(eventTypes, '0.value')}
               entityId={occasionId}
-              label={<Label title="Type : *" />}
+              label={<Label title="Type :" />}
               name="type"
               required
               type="select"
@@ -177,7 +174,8 @@ class OfferPage extends Component {
               collectionName='occasions'
               defaultValue={defaultOfferer || get(offerers, '0.id')}
               entityId={occasionId}
-              label={<Label title="Structure : *" />}
+              label={<Label title="Structure :" />}
+              readOnly={!isNew}
               required
               name='offererId'
               options={offererOptions}
@@ -188,12 +186,13 @@ class OfferPage extends Component {
                 <FormField
                   collectionName='events'
                   defaultValue={
-                    get(occurences, '0.venue') ||
-                    get(venueOptions, '0')
+                    get(occurences, '0.venue.id') ||
+                    get(venueOptions, '0.value')
                   }
                   entityId={occasionId}
                   label={<Label title="Lieu" />}
                   name='venueId'
+                  readOnly={!isNew}
                   required
                   options={venueOptions}
                   type="select"
@@ -203,7 +202,7 @@ class OfferPage extends Component {
             {
               occasionCollection === 'events' && [
                 <div className='field' key={1}>
-                  <Label title='Horaires : *' />
+                  <Label title='Horaires :' />
                   <OccurenceManager occurences={occurences} />
                 </div>,
                 <FormField
@@ -211,7 +210,7 @@ class OfferPage extends Component {
                   defaultValue={durationMinutes}
                   entityId={occasionId}
                   key={2}
-                  label={<Label title="Durée (en minutes) : *" />}
+                  label={<Label title="Durée (en minutes) :" />}
                   name="durationMinutes"
                   required
                   type="number"
@@ -233,7 +232,7 @@ class OfferPage extends Component {
               collectionName='occasions'
               defaultValue={description}
               entityId={occasionId}
-              label={<Label title="Description : *" />}
+              label={<Label title="Description :" />}
               name="description"
               required
               type="textarea"
@@ -278,7 +277,7 @@ class OfferPage extends Component {
               collectionName='occasions'
               defaultValue={contactEmail}
               entityId={occasionId}
-              label={<Label title="Email de contact :*" />}
+              label={<Label title="Email de contact :" />}
               name="contactEmail"
               required
               type="email"
@@ -326,6 +325,7 @@ class OfferPage extends Component {
                   }}
                   className="button is-primary is-medium"
                   method={isNew ? 'POST' : 'PATCH'}
+                  handleStatusChange={status => this.handleStatusData(status)}
                   path={apiPath}
                   storeKey="occasions"
                   text="Enregistrer"
@@ -354,9 +354,9 @@ export default compose(
       formOfferer: selectFormOfferer(state, ownProps),
       offerers: selectOfferers(state),
       offererOptions: selectOffererOptions(state),
-      successQuery: selectSuccessOccasionQuery(state),
       uniqueVenue: selectUniqueVenue(state, ownProps),
+      venueOptions: selectVenueOptions(state, ownProps)
     }),
-    { mergeForm, resetForm, showModal }
+    { mergeForm, resetForm }
   )
 )(OfferPage)

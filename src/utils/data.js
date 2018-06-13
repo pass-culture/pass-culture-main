@@ -1,8 +1,9 @@
-export function getNextState(state, method, key, nextData, config = {}) {
+export function getNextState(state, method, key, data, config = {}) {
 
   // UNPACK
   const {
     add,
+    normalizer,
     isMergingDatum,
     isMutatingDatum
   } = config
@@ -14,10 +15,11 @@ export function getNextState(state, method, key, nextData, config = {}) {
     : config.isMutatingArray
   const nextState = config.nextState || {}
   const previousData = state[key]
+  const nextData = data && data.map(datum => Object.assign({}, datum))
 
   // NORMALIZER
-  if (config.normalizer) {
-    Object.keys(config.normalizer)
+  if (normalizer) {
+    Object.keys(normalizer)
           .forEach(key => {
 
             let nextNormalizedData = []
@@ -32,13 +34,31 @@ export function getNextState(state, method, key, nextData, config = {}) {
             })
 
             if (nextNormalizedData.length) {
+
+              // ADAPT BECAUSE NORMALIZER VALUES
+              // CAN BE DIRECTLY THE STORE KEYS IN THE STATE
+              // OR AN OTHER CHILD NORMALIZER CONFIG
+              // IN ORDER TO BE RECURSIVELY EXECUTED
+              let nextNormalizer
+              let storeKey
+              if (typeof normalizer[key] === 'string') {
+                storeKey = normalizer[key]
+              } else {
+                storeKey = normalizer[key].key
+                nextNormalizer = normalizer[key].normalizer
+              }
+
+              // RECURSIVE CALL TO MERGE THE DEEPER NORMALIZED VALUE
               const nextNormalizedState = getNextState(
                 state,
                 null,
-                config.normalizer[key],
+                storeKey,
                 nextNormalizedData,
-                Object.assign({ nextState })
+                { nextState, normalizer: nextNormalizer }
               )
+
+              // MERGE THE CHILD NORMALIZED DATA INTO THE
+              // CURRENT NEXT STATE
               Object.assign(nextState, nextNormalizedState)
             }
 

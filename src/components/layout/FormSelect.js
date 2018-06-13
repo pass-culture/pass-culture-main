@@ -46,14 +46,16 @@ class FormSelect extends Component {
     const { className,
       defaultValue,
       options,
+      readOnly,
       value
     } = this.props
     return (
       <div className={className || 'select'}>
         <select
           className=''
-          value={typeof value === 'string' ? value : defaultValue}
+          disabled={readOnly}
           onChange={this.onChange}
+          value={typeof value === 'string' ? value : defaultValue}
         >
           {
             options && options.map(({ label, value }, index) => (
