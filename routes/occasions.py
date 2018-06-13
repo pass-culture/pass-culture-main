@@ -107,10 +107,8 @@ def patch_occasion(occasionType, occasionId):
         update(occasion, occasion_dict)
         app.model.PcObject.check_and_save(occasion)
     first_occurence = occasion.occurences[0]
-    first_offer = first_occurence.offer[0]
-    offerer = first_offer.offerer
     venue = first_occurence.venue
-
+    offerer = venue.managingOfferer
 
     # UPDATE CORRESPONDING EVENT OCCURENCES
     event_occurences = request.json.get('eventOccurences')
