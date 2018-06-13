@@ -1,6 +1,7 @@
 """User model"""
 from datetime import datetime
 from flask import current_app as app
+from sqlalchemy.sql import expression
 import bcrypt
 db = app.db
 
@@ -27,10 +28,12 @@ class User(app.model.PcObject,
 
     canBook =  db.Column(db.Boolean,
                          nullable=False,
+                         server_default=expression.true(),
                          default=True)
 
     isAdmin =  db.Column(db.Boolean,
                          nullable=False,
+                         server_default=expression.false(),
                          default=False)
 
     def checkPassword(self, passwordToCheck):

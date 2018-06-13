@@ -1,6 +1,7 @@
 """ recommendation model """
 from datetime import datetime
 from flask import current_app as app
+from sqlalchemy.sql import expression
 
 db = app.db
 
@@ -77,14 +78,17 @@ class Recommendation(app.model.PcObject, db.Model):
 
     isClicked = db.Column(db.Boolean,
                           nullable=False,
+                          server_default=expression.false(),
                           default=False)
 
     isFavorite = db.Column(db.Boolean,
                            nullable=False,
+                           server_default=expression.false(),
                            default=False)
 
     isFirst = db.Column(db.Boolean,
                         nullable=False,
+                        server_default=expression.false(),
                         default=False)
 
     def _asdict(self, **options):
