@@ -27,11 +27,24 @@ def do_update(provider, limit):
                     '--limit',
                     help='Limit update to n items per provider/venue'
                          + ' (for test purposes)', type=int)
+@app.manager.option('-w',
+                    '--venueProvider',
+                    help='Limit update to this venueProvider')
+                    
 @app.manager.option('-t',
                     '--type',
                     help='Sync only this type of object'
                          + ' (offer, thing or venue)')
-def update_providables(provider, venue, limit, type, mock=False):
+
+def update_providables(provider, venue, venueProvider, limit, type, mock=False):
+
+    if venueProvider is not None:
+        venueProviderObj = app.model.VenueProvider.query\
+                                                  .filter_by(id=venueProvider)\
+                                                  .first()
+        provider_class = app.local_providers[venueProviderObj.provider.localClass]
+        venueProviderProvider = provider_class(venueProviderObj, mock=mock)
+        return do_update(venueProviderProvider, limit)
 
     # order matters ! An item appears later in this list
     # if it requires items named before it
@@ -73,5 +86,5 @@ def update_providables(provider, venue, limit, type, mock=False):
                 continue
             if provider_type.objectType != providable_type:
                 continue
-            venueProvider = provider_type(venueProviderObj, mock=mock)
-            do_update(venueProvider, limit)
+            venueProviderProvider = provider_type(venueProviderObj, mock=mock)
+            do_update(venueProviderProvider, limit)

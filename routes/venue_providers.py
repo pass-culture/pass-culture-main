@@ -1,45 +1,69 @@
 """ venues """
 from flask import current_app as app, jsonify, request
 from flask_login import login_required
+from os import path, environ
+from pathlib import Path
+import subprocess
 
-from utils.human_ids import dehumanize, humanize
+from models.api_errors import ApiErrors
+from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
-from utils.rest import expect_json_data
+from utils.rest import expect_json_data, update
 
-@app.route('/venueProviders/<venueId>', methods=['GET'])
+VenueProvider = app.model.VenueProvider
+
+
+@app.route('/venueProviders', methods=['GET'])
 @login_required
-def list_venue_providers(venueId):
-    venue_providers = app.model.VenueProvider\
-                         .query.filter_by(
-                             venueId=dehumanize(venueId))
+def list_venue_providers():
+    venueId = request.args.get('venueId')
+    if venueId is None:
+        e = ApiErrors()
+        e.addError('venueId', 'Vous devez obligatoirement fournir le paramètre venueId')
+        return jsonify(e.errors), 400
+        
+    vp_query = VenueProvider.query\
+                            .filter_by(venueId=dehumanize(venueId))
     return jsonify([
         vp._asdict(include=VENUE_PROVIDER_INCLUDES)
-        for vp in venue_providers
+        for vp in vp_query.all()
     ])
+
+
+@app.route('/venueProviders/<id>', methods=['GET'])
+@login_required
+def get_venue_providers(id):
+    vp = VenueProvider.query.filter_by(id=dehumanize(id))\
+                            .first_or_404()
+    return jsonify(vp._asdict(include=VENUE_PROVIDER_INCLUDES))
+
 
 @app.route('/venueProviders', methods=['POST'])
 @login_required
 @expect_json_data
 def create_venue_provider():
-    new_vp = app.model.VenueProvider(from_dict=request.json)
+    new_vp = VenueProvider(from_dict=request.json)
     #TODO: check that provider is active
     app.model.PcObject.check_and_save(new_vp)
-#    subprocess.Popen(['pc', 'update_providables', '-p', new_vp.provider.name,
-#                                                  '-v', new_vp.venueId],
-#                     cwd=Path(path.dirname(path.realpath(__file__))) / '..')
+    api_root = Path(path.dirname(path.realpath(__file__))) / '..'
+    p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
+                         + ' --venueProvider ' + str(new_vp.id),
+                         #stdout=subprocess.PIPE,
+                         #stderr=subprocess.PIPE,
+                         shell=True,
+                         cwd=api_root)
+    #out, err = p.communicate()
+    #print("STDOUT:", out)
+    #print("STDERR:", err)
     return jsonify(new_vp._asdict(include=VENUE_PROVIDER_INCLUDES)), 201
 
 
-@app.route('/venue_providers/<venueId>/<providerId>/<venueIdAtOfferProvider>', methods=['PATCH'])
+@app.route('/venueProviders/<id>', methods=['PATCH'])
 @expect_json_data
-def edit_venue_provider(venueId, providerId, venueIdAtOfferProvider):
-    vp = VenueProvider.query.filter_by(venueId=dehumanize(venueId),
-                                       providerId=dehumanize(providerId),
-                                       venueIdAtOfferProvider=dehumanize(venueIdAtOfferProvider))\
+def edit_venue_provider(id):
+    vp = VenueProvider.query.filter_by(id=dehumanize(id))\
                       .first_or_404()
     update(vp, request.json)
-    #TODO: remove things from this provider ?
-    vp.venueId = dehumanize(venueId)
     app.model.PcObject.check_and_save(vp)
     return jsonify(vp._asdict()), 200
 
@@ -47,7 +71,7 @@ def edit_venue_provider(venueId, providerId, venueIdAtOfferProvider):
 @app.route('/venueProviders/<id>', methods=['DELETE'])
 @login_required
 def delete_venue_provider(id):
-    app.model.VenueProvider\
+    VenueProvider\
         .query.filter_by(id=dehumanize(id))\
         .delete()
     return jsonify({"id": id}), 200

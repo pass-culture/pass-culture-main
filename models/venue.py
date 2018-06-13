@@ -61,7 +61,8 @@ def before_update(mapper, connect, self):
 
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT),
-    cast(coalesce(Venue.address, ''), TEXT)
+    cast(coalesce(Venue.address, ''), TEXT),
+    cast(coalesce(Venue.siret, ''), TEXT)
 )
 
 
