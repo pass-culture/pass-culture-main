@@ -33,6 +33,12 @@ class OffersPage extends Component {
       location: { search },
       occasions
     } = this.props
+
+    const notification = search === '?success=true' && {
+      text: "L' ajout de l'offre a bien été prise en compte",
+      type: 'success'
+    }
+
     return (
       <PageWrapper name="offers" loading={!occasions.length} notification={
           search === '?success=true' && {

@@ -73,6 +73,7 @@ class OffererPage extends Component {
 
   render () {
     const {
+      location: { search },
       offerer
     } = this.props
 
@@ -91,11 +92,23 @@ class OffererPage extends Component {
       offererId,
     } = this.state
 
+    const notification = search === '?success=true' && {
+      text: "L' ajout du lieu a bien été prise en compte",
+      type: 'success'
+    }
+
     return (
-      <PageWrapper name='offerer' loading={isLoading} backTo={{label: 'Vos structures', path: '/structures'}}>
+      <PageWrapper
+        backTo={{label: 'Vos structures', path: '/structures'}}
+        loading={isLoading}
+        name='offerer'
+        notification={notification}
+      >
         <div className='section'>
           <h1 className="pc-title">Structure</h1>
-          <p className="subtitle">Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.</p>
+          <p className="subtitle">
+            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+          </p>
           <FormField
             autoComplete="siren"
             collectionName="offerers"

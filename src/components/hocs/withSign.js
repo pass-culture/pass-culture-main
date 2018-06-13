@@ -21,7 +21,7 @@ const withSign = WrappedComponent => {
       if (user && !errors) {
         // TODO: kind of dirty, find a better check
         if (window.location.pathname === '/inscription') {
-          history.push('/structures')
+          history.push('/structures?success=true')
         } else {
           history.push(DEFAULT_TO)
         }

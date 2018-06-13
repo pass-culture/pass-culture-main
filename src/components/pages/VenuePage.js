@@ -10,6 +10,7 @@ import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import { resetForm } from '../../reducers/form'
+import { SUCCESS } from '../../reducers/queries'
 import SubmitButton from '../layout/SubmitButton'
 import selectCurrentVenue from '../../selectors/currentVenue'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
@@ -40,7 +41,7 @@ class VenuePage extends Component {
     this.props.resetForm()
   }
 
-  handleRequestData =() => {
+  handleRequestData = () => {
     const {
       match: { params: { offererId } },
       requestData,
@@ -62,6 +63,16 @@ class VenuePage extends Component {
           isMergingArray: false
         }
       )
+    }
+  }
+
+  handleSubmitStatusChange = status => {
+    const {
+      history,
+      offerer
+    } = this.props
+    if (status === SUCCESS) {
+      history.push(`/structures/${offerer.id}?success=true`)
     }
   }
 
@@ -218,6 +229,7 @@ class VenuePage extends Component {
                       !get(form, `venuesById.${venueId}.postalCode`)
                 }
                 className="button is-primary is-medium"
+                handleStatusChange={this.handleSubmitStatusChange}
                 method={method}
                 path={apiPath}
                 storeKey="venues"

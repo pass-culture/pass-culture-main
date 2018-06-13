@@ -10,7 +10,11 @@ const initialState = {}
 const errors = (state = initialState, action) => {
   switch (action.type) {
     case ASSIGN_ERRORS:
-      return Object.assign({}, state, action.errors)
+      const nextState = {}
+      action.errors.forEach(error => {
+        Object.assign(nextState, error)
+      })
+      return Object.assign({}, state, nextState)
     case REMOVE_ERRORS:
       return Object.assign({}, state, {
           [action.name]: null,

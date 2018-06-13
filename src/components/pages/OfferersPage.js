@@ -9,12 +9,22 @@ import PageWrapper from '../layout/PageWrapper'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
 
-const OfferersPage = ({ user, offerers }) => {
+const OfferersPage = ({
+  location: { search },
+  user,
+  offerers
+}) => {
+
+  const notification = search === '?success=true' && {
+    text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
+    type: 'success'
+  }
+
   return (
-    <PageWrapper name="profile" loading={!offerers} notification={offerers && offerers.length === 1 && !offerers[0].isActive && {
-      type: 'success',
-      text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.'
-    }}>
+    <PageWrapper name="profile"
+      loading={!offerers}
+      notification={notification}
+    >
       <h1 className="pc-title">
         Vos structures
       </h1>

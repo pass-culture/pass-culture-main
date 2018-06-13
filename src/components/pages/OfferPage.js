@@ -72,7 +72,7 @@ class OfferPage extends Component {
     requestData('GET', 'eventTypes')
   }
 
-  handleStatusData = status => {
+  handleSubmitStatusChanges = status => {
     const {
       history,
       resetForm
@@ -129,7 +129,11 @@ class OfferPage extends Component {
     } = this.state
 
     return (
-      <PageWrapper name='offer' loading={isLoading} backTo={{path: '/offres', label: 'Vos offres'}}>
+      <PageWrapper
+        backTo={{path: '/offres', label: 'Vos offres'}}
+        name='offer'
+        loading={isLoading}
+      >
         <div className='section'>
           <div className='has-text-right'>
             <NavLink to='/offres' className="button is-primary is-outlined">
@@ -330,7 +334,7 @@ class OfferPage extends Component {
                 }}
                 className="button is-primary is-medium"
                 method={isNew ? 'POST' : 'PATCH'}
-                handleStatusChange={status => this.handleStatusData(status)}
+                handleStatusChange={this.handleSubmitStatusChange}
                 path={apiPath}
                 storeKey="occasions"
                 text="Enregistrer"

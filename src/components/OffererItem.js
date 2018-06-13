@@ -11,6 +11,7 @@ import { collectionToPath } from '../utils/translate'
 
 
 const OffererItem = ({
+  managedOccasions,
   managedVenues,
   offerer: {
     id,
@@ -31,7 +32,7 @@ const OffererItem = ({
         <ul className='actions'>
           <li>
             <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-              <Icon svg='ico-offres-r' /> ?? offres
+              <Icon svg='ico-offres-r' /> {managedOccasions ? managedOccasions.length : 0} offres
             </NavLink>
           </li>
           <li>

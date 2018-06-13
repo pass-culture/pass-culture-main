@@ -31,7 +31,7 @@ class FormField extends Component {
       className,
       collectionName,
       controlClassName,
-      errors,
+      error,
       id,
       inputClassName,
       isExpanded,
@@ -103,15 +103,16 @@ class FormField extends Component {
         { isCheckbox ? labelMarkup : [labelMarkup, inputMarkup] }
         <ul role='help is-danger'
           id={`${inputId}-error`}
-          className={classnames('errors', { pop: errors })}
+          className={classnames('error', { pop: error })}
           key={1}
         >
-          {errors &&
-            errors.map((e, index) => (
-              <li key={index}>
-                <Icon svg="picto-warning" alt="Warning" /> {e}
-              </li>
-            ))}
+          {
+            error && (
+              <p>
+                <Icon svg="picto-warning" alt="Warning" /> {error}
+              </p>
+            )
+          }
         </ul>
       </div>
     ]
@@ -129,6 +130,6 @@ FormField.propTypes = {
 
 export default compose(
   connect((state, ownProps) => ({
-    errors: state.errors[ownProps['name']],
+    error: state.errors[ownProps['name']],
   }))
 )(FormField)

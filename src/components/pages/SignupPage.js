@@ -27,7 +27,9 @@ const SignupPage = ({ errors }) => {
           <section className='hero'>
             <div className='hero-body has-text-grey'>
               <h1 className='title is-spaced is-1'>Créez votre compte</h1>
-              <p className='subtitle'>Merci de renseigner tous les champs suivants pour créer votre compte.</p>
+              <p className='subtitle'>
+                Merci de renseigner tous les champs suivants pour créer votre compte.
+              </p>
               <form>
                 <FormField
                   className="input is-rounded"
@@ -115,7 +117,7 @@ const SignupPage = ({ errors }) => {
                       const invalidValues = [
                         'publicName', 'email', 'contact_ok',
                         'siren', 'name', 'latitude',
-                        'longitude', 'address', 'departementCode',
+                        'longitude', 'address', 'postalCode',
                         'password',
                       ].filter(k => !get(form, `usersById._new_.${k}`))
                       return invalidValues.length > 0;
