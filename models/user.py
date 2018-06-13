@@ -26,12 +26,12 @@ class User(app.model.PcObject,
     departementCode = db.Column(db.String(3), nullable=False)
 
     canBook =  db.Column(db.Boolean,
-                        nullable=False,
-                        default=True)
+                         nullable=False,
+                         default=True)
 
     isAdmin =  db.Column(db.Boolean,
-                        nullable=False,
-                        default=False)
+                         nullable=False,
+                         default=False)
 
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
