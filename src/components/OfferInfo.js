@@ -37,7 +37,8 @@ class OfferInfo extends Component {
       ),
       where: {
         name: get(venue, 'name'),
-        address: get(venue, 'address'),
+        address: get(venue, 'address') + ',' + (get(venue, 'postalCode') || '')
+                                       + ',' + (get(venue, 'city') || ''),
       },
     }
 
