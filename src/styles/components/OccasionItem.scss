@@ -1,7 +1,22 @@
 .occasion-item {
-  border-bottom: 2px solid whitesmoke;
-  margin-left: auto;
-  margin-right: auto;
-  padding-bottom: 1rem;
-  width: 75%;
+  .name, .infos, .occasion-thumb {
+    opacity: 0.5;
+  }
+  &.active {
+    .name, .infos, .occasion-thumb {
+    opacity: 1;
+    }
+  }
+
+  .infos {
+    margin-bottom: 1rem;
+  }
+
+  .recently-added {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50px;
+    background-color: $blue;
+  }
 }

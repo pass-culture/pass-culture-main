@@ -32,41 +32,39 @@ class OffersPage extends Component {
     const { occasions } = this.props
     return (
       <PageWrapper name="offers" loading={!occasions.length}>
-        <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-pulled-right'>
-          + Ajouter une offre
-        </NavLink>
-        <div className="level">
+        <div className="section">
+          <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-medium is-pulled-right'>
+            + Ajouter une offre
+          </NavLink>
           <h1 className='pc-title'>
             Vos offres
           </h1>
-          <div className="level-right">
+          <p className="subtitle">
+            Voici toutes vos offres apparaissant dans le Pass Culture.
+          </p>
+        </div>
+        <div className='section'>
+
+          <label className="label">Rechercher une offre :</label>
+          <div className="field is-grouped">
+            <p className="control is-expanded">
+              <SearchInput
+                collectionNames={["events", "things"]}
+                config={{
+                  isMergingArray: false,
+                  key: 'searchedOccasions'
+                }}
+                isLoading
+              />
+            </p>
+            <p className="control">
+              <button className='button is-primary is-outlined is-medium'>OK</button>
+              {' '}
+              <button className='button is-secondary is-medium'>&nbsp;<Icon svg='ico-filter' />&nbsp;</button>
+            </p>
           </div>
         </div>
-
-        <br />
-        <p className="subtitle">
-          Voici toutes vos offres apparaissant dans le Pass Culture.
-        </p>
-        {false && <div>
-                  <br />
-                  <p className="search level-left">
-                    Rechercher une offre:
-                  </p>
-                  <nav className="level is-mobile">
-                    <SearchInput
-                      collectionNames={["events", "things"]}
-                      config={{
-                        isMergingArray: false,
-                        key: 'searchedOccasions'
-                      }}
-                      isLoading
-                    />
-                    <button>
-                      <Icon svg={'ico-guichet-w'} />
-                    </button>
-                  </nav>
-                </div>}
-        {occasions.length && <OccasionsList />}
+        {occasions.length && <div className='section'><OccasionsList /></div>}
       </PageWrapper>
     )
   }
