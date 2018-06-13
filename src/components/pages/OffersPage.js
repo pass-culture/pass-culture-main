@@ -29,9 +29,21 @@ class OffersPage extends Component {
   }
 
   render() {
-    const { occasions } = this.props
+    const {
+      location: { search },
+      occasions
+    } = this.props
     return (
-      <PageWrapper name="offers" loading={!occasions.length}>
+      <PageWrapper
+        loading={!occasions.length}
+        name="offers"
+        notification={
+          search === '?success=true' && {
+            text: 'Ca a fonctionné cest genial de la balle de francois miterrand',
+            type: 'success'
+          }
+        }
+      >
         <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-pulled-right'>
           + Ajouter une offre
         </NavLink>

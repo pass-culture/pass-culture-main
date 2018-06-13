@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { requestData } from '../../reducers/data'
+import { FAIL, PENDING, SUCCESS } from '../../reducers/queries'
 import { randomHash } from '../../utils/random'
 
 class SubmitButton extends Component {
@@ -12,6 +13,7 @@ class SubmitButton extends Component {
     super()
     this.state = {
       submitRequestId: null,
+      submitRequestStatus: null
     }
   }
 
@@ -45,19 +47,28 @@ class SubmitButton extends Component {
     onClick && onClick()
   }
 
-  static getDerivedStateFromProps(newProps, prevState) {
+  static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.submitRequestId) {
-      const returnedQuery = newProps.queries.find(
+      const returnedQuery = nextProps.queries.find(
         q => q.id === prevState.submitRequestId
       )
+      const submitRequestId = get(returnedQuery, 'status', '') === 'PENDING'
+        ? returnedQuery.id
+        : null
       return {
-        submitRequestId:
-          get(returnedQuery, 'status', '') === 'PENDING'
-            ? returnedQuery.id
-            : null,
+        submitRequestStatus: get(returnedQuery, 'status'),
+        submitRequestId
       }
     }
     return null
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    const { handleStatusChange } = this.props
+    const { submitRequestStatus } = this.state
+    if (prevState.submitRequestStatus !== submitRequestStatus) {
+      handleStatusChange && handleStatusChange(submitRequestStatus)
+    }
   }
 
   render() {

@@ -14,10 +14,10 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
+import { SUCCESS } from '../../reducers/queries'
 import selectOfferers from '../../selectors/offerers'
 import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
-import selectSuccessOccasionQuery from '../../selectors/occasionQuery'
 import selectUniqueVenue from '../../selectors/uniqueVenue'
 import selectVenueOptions from '../../selectors/venueOptions'
 import { pathToCollection } from '../../utils/translate'
@@ -72,20 +72,14 @@ class OfferPage extends Component {
     requestData('GET', 'eventTypes')
   }
 
-  handleSuccessData = () => {
+  handleStatusData = status => {
     const {
       history,
-      resetForm,
-      showModal
+      resetForm
     } = this.props
-    showModal(
-      <div>
-        C'est soumis!
-      </div>,
-      {
-        onCloseClick: () => history.push('/offres')
-      }
-    )
+    if (status === SUCCESS) {
+      history.push('/offres?success=true')
+    }
   }
 
   static getDerivedStateFromProps (nextProps) {
@@ -332,6 +326,7 @@ class OfferPage extends Component {
                   }}
                   className="button is-primary is-medium"
                   method={isNew ? 'POST' : 'PATCH'}
+                  handleStatusChange={status => this.handleStatusData(status)}
                   path={apiPath}
                   storeKey="occasions"
                   text="Enregistrer"
@@ -360,10 +355,9 @@ export default compose(
       formOfferer: selectFormOfferer(state, ownProps),
       offerers: selectOfferers(state),
       offererOptions: selectOffererOptions(state),
-      successQuery: selectSuccessOccasionQuery(state),
       uniqueVenue: selectUniqueVenue(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)
     }),
-    { mergeForm, resetForm, showModal }
+    { mergeForm, resetForm }
   )
 )(OfferPage)
