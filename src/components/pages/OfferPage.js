@@ -14,11 +14,12 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
+import { SUCCESS } from '../../reducers/queries'
 import selectOfferers from '../../selectors/offerers'
 import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
-import selectSuccessOccasionQuery from '../../selectors/occasionQuery'
 import selectUniqueVenue from '../../selectors/uniqueVenue'
+import selectVenueOptions from '../../selectors/venueOptions'
 import { pathToCollection } from '../../utils/translate'
 
 
@@ -31,8 +32,12 @@ class OfferPage extends Component {
   }
 
   componentDidMount () {
-    this.handleRequestData()
-    if (this.props.uniqueVenue) {
+    const {
+      uniqueVenue,
+      user
+    } = this.props
+    user && this.handleRequestData()
+    if (uniqueVenue) {
       this.handleMergeForm()
     }
   }
@@ -57,24 +62,24 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const { requestData } = this.props
-    requestData('GET', 'offerers')
+    requestData(
+      'GET',
+      'offerers',
+      {
+        normalizer: { managedVenues: 'venues' }
+      }
+    )
     requestData('GET', 'eventTypes')
   }
 
-  handleSuccessData = () => {
+  handleStatusData = status => {
     const {
       history,
-      resetForm,
-      showModal
+      resetForm
     } = this.props
-    showModal(
-      <div>
-        C'est soumis!
-      </div>,
-      {
-        onCloseClick: () => history.push('/offres')
-      }
-    )
+    if (status === SUCCESS) {
+      history.push('/offres?success=true')
+    }
   }
 
   static getDerivedStateFromProps (nextProps) {
@@ -84,15 +89,8 @@ class OfferPage extends Component {
     } = nextProps
     const defaultOfferer = get(occurences, '0.offer.0.offerer')
     const offerer = formOfferer || defaultOfferer
-    const venueOptions = offerer &&
-      offerer.managedVenues &&
-      offerer.managedVenues.map(v => ({
-        label: v.name,
-        value: v.id
-      }))
     return {
-      defaultOfferer,
-      venueOptions
+      defaultOfferer
     }
   }
 
@@ -108,7 +106,8 @@ class OfferPage extends Component {
       offererOptions,
       offerers,
       uniqueVenue,
-      user
+      user,
+      venueOptions
     } = this.props
     const {
       author,
@@ -126,14 +125,17 @@ class OfferPage extends Component {
       type,
     } = (occasion || {})
     const {
-      defaultOfferer,
-      venueOptions
+      defaultOfferer
     } = this.state
 
-    console.log('uniqueVenue', uniqueVenue)
     return (
       <PageWrapper name='offer' loading={isLoading} backTo={{path: '/offres', label: 'Vos offres'}}>
         <div className='section'>
+          <div className='has-text-right'>
+            <NavLink to='/offres' className="button is-primary is-outlined">
+              Retour
+            </NavLink>
+          </div>
           <h1 className='title has-text-centered'>
             {
               isNew
@@ -172,6 +174,7 @@ class OfferPage extends Component {
             defaultValue={defaultOfferer || get(offerers, '0.id')}
             entityId={occasionId}
             label={<Label title="Structure :" />}
+            readOnly={!isNew}
             required
             name='offererId'
             options={offererOptions}
@@ -182,12 +185,13 @@ class OfferPage extends Component {
               <FormField
                 collectionName='events'
                 defaultValue={
-                  get(occurences, '0.venue') ||
-                  get(venueOptions, '0')
+                  get(occurences, '0.venue.id') ||
+                  get(venueOptions, '0.value')
                 }
                 entityId={occasionId}
                 label={<Label title="Lieu" />}
                 name='venueId'
+                readOnly={!isNew}
                 required
                 options={venueOptions}
                 type="select"
@@ -326,6 +330,7 @@ class OfferPage extends Component {
                 }}
                 className="button is-primary is-medium"
                 method={isNew ? 'POST' : 'PATCH'}
+                handleStatusChange={status => this.handleStatusData(status)}
                 path={apiPath}
                 storeKey="occasions"
                 text="Enregistrer"
@@ -347,9 +352,9 @@ export default compose(
       formOfferer: selectFormOfferer(state, ownProps),
       offerers: selectOfferers(state),
       offererOptions: selectOffererOptions(state),
-      successQuery: selectSuccessOccasionQuery(state),
       uniqueVenue: selectUniqueVenue(state, ownProps),
+      venueOptions: selectVenueOptions(state, ownProps)
     }),
-    { mergeForm, resetForm, showModal }
+    { mergeForm, resetForm }
   )
 )(OfferPage)

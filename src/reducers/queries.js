@@ -16,8 +16,10 @@ export default (state = [], action) => {
   } else if (
     /(SUCCESS|FAIL)_DATA_(GET|PATCH|POST|PUT)_(.*)/.test(action.type)
   ) {
+    console.log(action.path, 'state.filter(s => s.status === PENDING)', state, state
+      .filter(s => s.status === PENDING))
     return state
-      .filter(s => s.status !== PENDING) // Delete the finished ones (SUCCESS/FAIL) in the next cycle
+      .filter(s => s.status === PENDING) // Delete the finished ones (SUCCESS/FAIL) in the next cycle
       .map(
         s =>
           s.id === id
