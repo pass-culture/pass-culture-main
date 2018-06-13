@@ -64,7 +64,7 @@ class OffersPage extends Component {
             </p>
           </div>
         </div>
-        {occasions.length && <div className='section'><OccasionsList /></div>}
+        {<div className='section load-wrapper'><OccasionsList /></div>}
       </PageWrapper>
     )
   }
