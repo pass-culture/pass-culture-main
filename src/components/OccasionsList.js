@@ -10,9 +10,9 @@ import selectOccasions from '../selectors/occasions'
 const OccasionsList = ({ occasions }) => {
 
   return (
-    <div className='occasions-list'>
+    <ul className='occasions-list pc-list'>
       {occasions.map(o => <OccasionItem key={o.id} {...o} />)}
-    </div>
+    </ul>
   )
 
   return (
