@@ -22,8 +22,6 @@ class Venue(app.model.PcObject,
 
     siret = db.Column(db.String(14), nullable=True, unique=True)
 
-    postalCode = db.Column(db.String(6), nullable=False)
-
     departementCode = db.Column(db.String(3), nullable=False, index=True)
 
     latitude = db.Column(db.Numeric(8, 5), nullable=True)
