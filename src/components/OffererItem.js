@@ -1,12 +1,16 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
+import Icon from './layout/Icon'
+import createSelectManagedVenues from '../selectors/managedVenues'
 import { THUMBS_URL } from '../utils/config'
 import { collectionToPath } from '../utils/translate'
-import Icon from './layout/Icon'
+
 
 
 const OffererItem = ({
+  managedVenues,
   offerer: {
     id,
     address,
@@ -31,7 +35,7 @@ const OffererItem = ({
           </li>
           <li>
             <NavLink to={showPath}>
-              <Icon svg='picto-structure' /> ?? lieux
+              <Icon svg='picto-structure' /> {managedVenues ? managedVenues.length : 0} lieux
             </NavLink>
           </li>
           <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>
@@ -46,4 +50,11 @@ const OffererItem = ({
   )
 }
 
-export default OffererItem
+export default connect(
+  () => {
+    const selectManagedVenues = createSelectManagedVenues()
+    return (state, ownProps) => ({
+      managedVenues: selectManagedVenues(state, ownProps)
+    })
+  }
+) (OffererItem)

@@ -19,7 +19,15 @@ class OfferersList extends Component {
 
   handleRequestData = () => {
     if (this.props.user) {
-      this.props.requestData('GET', 'offerers')
+      this.props.requestData(
+        'GET',
+        'offerers',
+        {
+          normalizer: {
+            'managedVenues': 'venues'
+          }
+        }
+      )
     }
   }
 
