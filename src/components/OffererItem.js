@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
+import createSelectManagedOccasions from '../selectors/managedOccasions'
 import createSelectManagedVenues from '../selectors/managedVenues'
 import { THUMBS_URL } from '../utils/config'
 import { collectionToPath } from '../utils/translate'
@@ -53,8 +54,10 @@ const OffererItem = ({
 export default connect(
   () => {
     const selectManagedVenues = createSelectManagedVenues()
+    const selectManagedOccasions = createSelectManagedOccasions(selectManagedVenues)
     return (state, ownProps) => ({
-      managedVenues: selectManagedVenues(state, ownProps)
+      managedOccasions: selectManagedOccasions(state, ownProps),
+      managedVenues: selectManagedVenues(state, ownProps),
     })
   }
 ) (OffererItem)

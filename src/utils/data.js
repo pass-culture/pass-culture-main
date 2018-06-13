@@ -1,4 +1,4 @@
-export function getNextState(state, method, key, nextData, config = {}) {
+export function getNextState(state, method, key, data, config = {}) {
 
   // UNPACK
   const {
@@ -15,9 +15,9 @@ export function getNextState(state, method, key, nextData, config = {}) {
     : config.isMutatingArray
   const nextState = config.nextState || {}
   const previousData = state[key]
+  const nextData = data && data.map(datum => Object.assign({}, datum))
 
   // NORMALIZER
-  console.log('normalizer', normalizer, 'nextData', nextData)
   if (normalizer) {
     Object.keys(normalizer)
           .forEach(key => {
@@ -33,8 +33,6 @@ export function getNextState(state, method, key, nextData, config = {}) {
               }
             })
 
-            console.log('key', key, 'nextNormalizedData', nextNormalizedData)
-
             if (nextNormalizedData.length) {
 
               // ADAPT BECAUSE NORMALIZER VALUES
@@ -49,7 +47,6 @@ export function getNextState(state, method, key, nextData, config = {}) {
                 storeKey = normalizer[key].key
                 nextNormalizer = normalizer[key].normalizer
               }
-              console.log('storeKey', storeKey, nextNormalizer)
 
               // RECURSIVE CALL TO MERGE THE DEEPER NORMALIZED VALUE
               const nextNormalizedState = getNextState(
