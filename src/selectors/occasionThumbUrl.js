@@ -1,14 +1,13 @@
 import { createSelector } from 'reselect'
 
-import { THUMBS_URL } from '../utils/config'
+import { API_URL, THUMBS_URL } from '../utils/config'
 
 export default () => createSelector(
-  (state, ownProps) => ownProps.id,
-  (state, ownProps) => ownProps.occasionType,
+  (state, ownProps) => ownProps.thumbPath,
   (state, ownProps) => ownProps.mediations,
-  (id, occasionType, mediations) => (
+  (thumbPath, mediations) => (
     mediations && mediations[0]
       ? `${THUMBS_URL}/mediations/${mediations[0].id}`
-      : `${THUMBS_URL}/${occasionType}/${id}`
+      : `${API_URL}${thumbPath}`
   )
 )

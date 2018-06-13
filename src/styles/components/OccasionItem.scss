@@ -1,4 +1,9 @@
-.occasion-item {
+li.occasion-item {
+
+  img {
+    max-height: 100px;
+  }
+
   .name, .infos, .occasion-thumb {
     opacity: 0.5;
   }
@@ -18,5 +23,12 @@
     height: 0.5rem;
     border-radius: 50px;
     background-color: $blue;
+  }
+
+  ul.pc-list & .list-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
   }
 }

@@ -4,14 +4,17 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import moment from 'moment'
 import classnames from 'classnames'
+import get from 'lodash.get'
 
 // import FormInput from './layout/FormInput'
 import Icon from './layout/Icon'
+import Price from './Price'
 import { requestData } from '../reducers/data'
 import createSelectOccasionThumbUrl from '../selectors/occasionThumbUrl'
 import { modelToPath } from '../utils/translate'
 
 import {API_URL} from '../utils/config'
+import {pluralize} from '../utils/string'
 
 class OccasionItem extends Component {
 
@@ -34,7 +37,7 @@ class OccasionItem extends Component {
         {
           body: {
             occasion: {
-              isActive: event.target.value
+              isActive: !this.props.isActive
             }
           },
           key: 'occasions',
@@ -57,50 +60,85 @@ class OccasionItem extends Component {
       description,
       id,
       isActive,
+      occurences,
+      mediations,
       name,
-      thumbPath,
+      thumbUrl,
     } = this.props
+
     const {
       path
     } = this.state
 
     console.log(this.props)
+    const maxDate = occurences.map(o => moment(o.beginningDatetime)).reduce((max, d) => {
+      return max && max.isAfter(d) ? max : d
+    }, null)
+    const {
+      available,
+      groupSizeMin,
+      groupSizeMax,
+      priceMin,
+      priceMax,
+    } = occurences.reduce((aggreged, o) => {
+      return o.offer.reduce((subaggreged, offer) => {
+        return {
+          available: subaggreged.available + offer.available,
+          groupSizeMin: subaggreged.groupSizeMin ? Math.min(subaggreged.groupSizeMin, offer.groupSize) : offer.groupSize,
+          groupSizeMax: subaggreged.groupSizeMax ? Math.max(subaggreged.groupSizeMax, offer.groupSize) : offer.groupSize,
+          priceMin: subaggreged.priceMin ? Math.min(subaggreged.priceMin, offer.price) : offer.price,
+          priceMax: subaggreged.priceMax ? Math.max(subaggreged.priceMax, offer.price) : offer.price,
+        }
+      }, aggreged)
+    }, {
+      available: 0,
+      groupSizeMin: null,
+      groupSizeMax: null,
+      priceMin: null,
+      priceMax: null,
+    })
+    console.log({
+      available,
+      groupSizeMin,
+      groupSizeMax,
+      priceMin,
+      priceMax,
+    })
     return (
       <li className={classnames('occasion-item', {active: isActive})}>
-        <figure className='image is-96x96'>
-          <img alt='thumbnail' src={`${API_URL}${thumbPath}`} className=""/>
-        </figure>
+        <img alt='thumbnail' src={thumbUrl} className="occasion-thumb"/>
         <div className="list-content">
-          <NavLink className='name' to={`${path}/${id}`}>
-            {name}
+          <NavLink className='name' to={`${path}/${id}`} title={name}>
+            <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>Théâtre</li>
-            <li className='has-text-primary'>3 dates</li>
-            <li>jusqu'au 31/12/2018</li>
-            <li>5</li>
-            <li>5 écoulées</li>
-            <li>restent 10</li>
-            <li>5€</li>
+            <li className='has-text-primary'>{pluralize(occurences.length, 'date')}</li>
+            <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
+            {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
+            {available > 0 && <li>restent {available}</li>}
+            <li>{priceMin === priceMax ? <Price value={priceMin} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`${path}/${id}/accroches`} className="button is-primary is-small is-outlined">
-                + Ajouter une Accroche
-              </NavLink>
-              <button className='button is-secondary' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
+              { mediations.length ? (
+                <NavLink  to={`${path}/${id}/accroches`} className="button is-secondary is-small">
+                  Accroches
+                </NavLink>
+              ) : (
+                <NavLink  to={`${path}/${id}/accroches/nouveau`} className="button is-primary is-small is-outlined">
+                  + Ajouter une Accroche
+                </NavLink>
+              ) }
             </li>
             <li>
-              <NavLink  to={`${path}/${id}`} className="button is-secondary">
+              <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
+              <NavLink  to={`${path}/${id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
               </NavLink>
             </li>
           </ul>
-          <nav className="level is-mobile">
-            <div className="level-left">
-            </div>
-          </nav>
         </div>
       </li>
     )
@@ -117,7 +155,7 @@ export default connect(
   () => {
     const selectOccasionThumbUrl = createSelectOccasionThumbUrl()
     return (state, ownProps) => ({
-      // thumbUrl: selectOccasionThumbUrl(state, ownProps)
+      thumbUrl: selectOccasionThumbUrl(state, ownProps)
     })
   },
   { requestData }

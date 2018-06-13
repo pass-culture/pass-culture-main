@@ -107,10 +107,9 @@ ul.pc-list {
       list-style: none;
       font-size: $size-normal;
       margin: 0;
-      li {
-        display: inline-block;
-        margin-right: 2rem;
-      }
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
 
       img {
         height: 1rem;
