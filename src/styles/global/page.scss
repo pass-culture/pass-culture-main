@@ -7,9 +7,15 @@
     height: 100%;
   }
 
+
   &.red-bg {
     background-color: $primary;
     color: $white;
+
+    white-bg {
+      background-color: $white;
+      color: $primary;
+    }
 
     header {
       @include dotted($white, bottom);

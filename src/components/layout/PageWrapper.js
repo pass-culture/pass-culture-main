@@ -2,7 +2,6 @@ import classnames from 'classnames'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import BackButton from './BackButton'
 import Header from './Header'
 import Icon from './Icon'
 
@@ -16,10 +15,10 @@ const PageWrapper = props => {
     noContainer,
     noHeader,
     noPadding,
-    backButton,
     children,
     loading,
     notification,
+    whiteBg
   } = props
   const footer = [].concat(children).find(e => e && e.type === 'footer')
   const content = []
@@ -34,6 +33,7 @@ const PageWrapper = props => {
         'with-header': Boolean(header),
         'with-footer': Boolean(footer),
         'red-bg': redBg,
+        'white-bg': whiteBg,
         'no-padding': noPadding,
         container: !noContainer,
         loading,

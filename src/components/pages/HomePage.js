@@ -1,20 +1,15 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
+import HomeCard from '../HomeCard'
 
 const HomePage = ({ user }) => {
   return (
-    <PageWrapper key={0} name="home">
-      <h1 className='title has-text-centered'>Bienvenue sur l'espace Pro du Pass Culture</h1>
-
+    <PageWrapper name='home' whiteBg>
       <div className='content'>
-        <p>Ici vous pouvez gérer :</p>
-        <ul>
-          <li><NavLink to='/structures' className='is-primary'>Vos structures</NavLink></li>
-          <li><NavLink to='/offres' className='is-primary'>Vos offres</NavLink></li>
-        </ul>
+        <HomeCard svg='ico-guichet-w' title='Guichet' text='Enregistrez les codes de réservation des porteurs du Pass.' navLink='/guichet' />
+        <HomeCard svg='ico-offres-w' title='Vos offres' text='Créez et mettez en avant vos offres présentes sur le Pass.' navLink='/offres' />
       </div>
     </PageWrapper>
   )
