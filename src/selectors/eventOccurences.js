@@ -7,7 +7,7 @@ import { DELETE } from '../utils/config'
 
 
 export default createSelector(
-  (state, ownProps) => get(ownProps, 'occasion.occurences'),
+  (state, ownProps) => get(ownProps, 'occurences'),
   state => state.form.eventOccurencesById,
   (occurences, formEventOccurencesById) => {
 
