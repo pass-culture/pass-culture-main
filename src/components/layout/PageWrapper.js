@@ -3,7 +3,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import BackButton from './BackButton'
 import Header from './Header'
 import Icon from './Icon'
 import { closeNotification } from '../../reducers/notification'
@@ -19,10 +18,10 @@ const PageWrapper = props => {
     noContainer,
     noHeader,
     noPadding,
-    backButton,
     children,
     loading,
     notification,
+    whiteBg
   } = props
   const footer = [].concat(children).find(e => e && e.type === 'footer')
   const content = []
@@ -37,6 +36,7 @@ const PageWrapper = props => {
         'with-header': Boolean(header),
         'with-footer': Boolean(footer),
         'red-bg': redBg,
+        'white-bg': whiteBg,
         'no-padding': noPadding,
         container: !noContainer,
         loading,
