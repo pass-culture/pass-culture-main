@@ -120,7 +120,8 @@ VENUES_INCLUDES = [
         "key": 'venueProviders',
         "resolve": (lambda element, filters: element['provider']),
         "sub_joins": ["provider"]
-    }
+    },
+    "offers"
 ]
 
 VENUE_PROVIDER_INCLUDES = [
