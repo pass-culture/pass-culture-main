@@ -128,7 +128,6 @@ class OfferPage extends Component {
       defaultOfferer
     } = this.state
 
-    console.log('uniqueVenue', uniqueVenue, 'venueOptions', venueOptions, 'occasion', occasion)
     return (
       <PageWrapper name='offer' loading={isLoading}>
         <div className='columns'>

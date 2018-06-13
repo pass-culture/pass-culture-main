@@ -13,7 +13,6 @@ const VenueItem = ({
   name,
   offers
 }) => {
-  console.log('offers', offers)
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
     <li className="venue-item">
