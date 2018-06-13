@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 // import FormInput from './layout/FormInput'
 import SwitchButton from './layout/SwitchButton'
 import { requestData } from '../reducers/data'
-import selectOccasionThumbUrl from '../selectors/occasionThumbUrl'
+import createSelectOccasionThumbUrl from '../selectors/occasionThumbUrl'
 import { modelToPath } from '../utils/translate'
 
 class OccasionItem extends Component {
@@ -108,6 +108,7 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
+    const selectOccasionThumbUrl = createSelectOccasionThumbUrl()
     return (state, ownProps) => ({
       thumbUrl: selectOccasionThumbUrl(state, ownProps)
     })

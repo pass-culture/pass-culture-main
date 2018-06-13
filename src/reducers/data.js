@@ -1,4 +1,4 @@
-import { getResolvedData } from '../utils/data'
+import { getNextState } from '../utils/data'
 
 // ACTION
 const ASSIGN_DATA = 'ASSIGN_DATA'
@@ -19,15 +19,12 @@ const data = (state = initialState, action) => {
     // unpack config
     const key = action.config.key ||
       action.path.replace(/\/$/, '').replace(/\?.*$/, '')
-    const nextState = {}
 
     // resolve
-    nextState[key] = getResolvedData(
+    const nextState = getNextState(
+      state,
       action.method,
-      action.path,
-      // previousData
-      state[key],
-      // nextData: force to cast into array
+      key,
       !Array.isArray(action.data)
         ? [action.data]
         : action.data,
