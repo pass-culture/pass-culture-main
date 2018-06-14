@@ -128,6 +128,17 @@ class OfferPage extends Component {
       defaultOfferer
     } = this.state
 
+    const requiredFields = [
+      'name',
+      'type',
+      'offererId',
+      'venueId',
+      'durationMinutes',
+      'description',
+      'contactName',
+      'contactEmail',
+    ]
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -189,7 +200,7 @@ class OfferPage extends Component {
             isHorizontal
           />
           <FormField
-            collectionName='events'
+            collectionName='occasions'
             defaultValue={
               get(occurences, '0.venue.id') ||
               get(venueOptions, '0.value')
@@ -263,7 +274,7 @@ class OfferPage extends Component {
           <h2 className='pc-list-title'>Contact</h2>
           <FormField
             collectionName='occasions'
-            defaultValue={contactName}
+            defaultValue={contactName || get(user, 'publicName')}
             entityId={occasionId}
             label={<Label title="Nom du contact :" />}
             name="contactName"
@@ -273,7 +284,7 @@ class OfferPage extends Component {
           />
           <FormField
             collectionName='occasions'
-            defaultValue={contactEmail}
+            defaultValue={contactEmail || get(user, 'email')}
             entityId={occasionId}
             label={<Label title="Email de contact :" />}
             name="contactEmail"
@@ -314,21 +325,22 @@ class OfferPage extends Component {
                     Object.values(form.eventOccurencesById)
                 })}
                 getIsDisabled={form => {
-                  return isNew
-                  ? !get(form, `occasionsById.${occasionId}.contactEmail`) ||
-                    !get(form, `occasionsById.${occasionId}.description`) ||
-                    !get(form, `occasionsById.${occasionId}.durationMinutes`) ||
-                    !get(form, `occasionsById.${occasionId}.name`) ||
-                    !get(form, `occasionsById.${occasionId}.offererId`) ||
-                    typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' ||
-                    (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
-                  : !get(form, `occasionsById.${occasionId}.contactEmail`) &&
-                    !get(form, `occasionsById.${occasionId}.description`) &&
-                    !get(form, `occasionsById.${occasionId}.durationMinutes`) &&
-                    !get(form, `occasionsById.${occasionId}.name`) &&
-                    !get(form, `occasionsById.${occasionId}.offererId`) &&
-                    typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
-                    (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
+                  const missingFields = requiredFields.filter(r => !get(form, `occasionsById.${occasionId}.${r}`));
+                  console.log(missingFields)
+                  return missingFields.length > 0
+                  // return isNew
+                  // ? !get(form, `occasionsById.${occasionId}.contactEmail`) ||
+                  //   !get(form, `occasionsById.${occasionId}.description`) ||
+                  //   !get(form, `occasionsById.${occasionId}.durationMinutes`) ||
+                  //   !get(form, `occasionsById.${occasionId}.name`) ||
+                  //   !get(form, `occasionsById.${occasionId}.offererId`)
+                  // : !get(form, `occasionsById.${occasionId}.contactEmail`) &&
+                  //   !get(form, `occasionsById.${occasionId}.description`) &&
+                  //   !get(form, `occasionsById.${occasionId}.durationMinutes`) &&
+                  //   !get(form, `occasionsById.${occasionId}.name`) &&
+                  //   !get(form, `occasionsById.${occasionId}.offererId`) &&
+                  //   typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
+                  //   (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                 }}
                 className="button is-primary is-medium"
                 method={isNew ? 'POST' : 'PATCH'}

@@ -1,5 +1,7 @@
 import { createSelector } from 'reselect'
 
+// TODO: check if used
+
 const emptyOffers = []
 
 export default () => createSelector(

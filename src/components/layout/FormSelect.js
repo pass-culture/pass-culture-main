@@ -9,10 +9,9 @@ import { NEW } from '../../utils/config'
 
 class FormSelect extends Component {
 
-  handleMergeForm () {
+  handleMergeForm (defaultValue) {
     const {
       collectionName,
-      defaultValue,
       entityId,
       mergeForm,
       name,
@@ -24,12 +23,12 @@ class FormSelect extends Component {
   }
 
   componentDidMount () {
-    this.handleMergeForm()
+    this.handleMergeForm(this.props.defaultValue)
   }
 
   componentDidUpdate (prevProps) {
     if (this.props.defaultValue !== prevProps.defaultValue) {
-      this.handleMergeForm()
+      this.handleMergeForm(this.props.defaultValue)
     }
   }
 
@@ -57,7 +56,7 @@ class FormSelect extends Component {
         <select
           readOnly={defaultReadOnly}
           onChange={this.onChange}
-          value={typeof value === 'string' ? value : defaultValue}
+          value={value}
         >
           {
             options && options.map(({ label, value }, index) => (
