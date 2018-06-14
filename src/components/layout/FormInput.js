@@ -22,7 +22,7 @@ class FormInput extends Component {
   onChange = event => {
     const { type, onChange } = this.props
     event.persist()
-    this.onDebouncedMergeForm(event.target.value)
+    this.onDebouncedMergeForm((type === 'checkbox' || type === 'radio') ? event.target.checked : event.target.value)
     this.setState({ localValue: event.target.value })
     onChange && onChange(event)
   }
@@ -40,7 +40,11 @@ class FormInput extends Component {
       type
     } = this.props
     let mergedValue
-    if (type === 'number') {
+    if (type === 'checkbox' || type === 'radio') {
+      mergedValue = value ? (defaultValue || true) : false
+    } else if (type === 'switch') {
+      mergedValue = value
+    } else if (type === 'number') {
       mergedValue = Number(value)
     } else {
       mergedValue = storeValue(value)
