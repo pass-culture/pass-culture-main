@@ -19,9 +19,9 @@ import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import { SUCCESS } from '../../reducers/queries'
 import selectEventOccurences from '../../selectors/eventOccurences'
-import selectOfferers from '../../selectors/offerers'
 import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
+import selectSelectedOffererId from '../../selectors/selectedOffererId'
 import selectUniqueVenue from '../../selectors/uniqueVenue'
 import selectVenueOptions from '../../selectors/venueOptions'
 import { pathToCollection, collectionToPath } from '../../utils/translate'
@@ -167,7 +167,7 @@ class OfferPage extends Component {
       occasion,
       occasionIdOrNew,
       offererOptions,
-      offerers,
+      selectedOffererId,
       uniqueVenue,
       user,
       venueOptions
@@ -255,15 +255,15 @@ class OfferPage extends Component {
           />
           <FormField
             collectionName='occasions'
-            defaultValue={get(eventOccurences, '0.venue.managingOffererId')}
+            defaultValue={selectedOffererId}
             entityId={occasionIdOrNew}
+            isHorizontal
             label={<Label title="Structure :" />}
             readOnly={!isNew}
             required
             name='offererId'
             options={offererOptions}
             type="select"
-            isHorizontal
           />
           {
             !uniqueVenue && (
@@ -420,8 +420,8 @@ export default compose(
       eventOccurences: selectEventOccurences(state, ownProps),
       eventTypes: state.data.eventTypes,
       formOfferer: selectFormOfferer(state, ownProps),
-      offerers: selectOfferers(state),
       offererOptions: selectOffererOptions(state),
+      selectedOffererId: selectSelectedOffererId(state, ownProps),
       uniqueVenue: selectUniqueVenue(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)
     }),

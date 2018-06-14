@@ -69,7 +69,6 @@ class FormSirene extends Component {
           searching: false,
         })
         if (response.status === 404)  {
-          console.log('BEN OUAI')
           assignErrors([{[sireType]: [`${capitalize(sireType)} invalide`]}])
           this.setState({localValue: ''})
           mergeForm(collectionName, entityId,

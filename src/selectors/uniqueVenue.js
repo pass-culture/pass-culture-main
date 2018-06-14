@@ -1,10 +1,9 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import selectCurrentVenues from './currentVenues'
+import selectSelectedVenues from './currentVenues'
 
 export default createSelector(
-  selectCurrentVenues,
-  venues => venues &&
-      venues.length === 1 &&
-      venues[0]
+  selectSelectedVenues,
+  venues => get(venues, '0')
 )
