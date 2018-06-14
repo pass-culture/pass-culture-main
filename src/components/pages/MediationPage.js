@@ -7,17 +7,12 @@ import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
-import FormField from '../layout/FormField'
-import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
 import selectCurrentMediation from '../../selectors/currentMediation'
-import { pathToModel } from '../../utils/translate'
 
-import { NEW, THUMBS_URL } from '../../utils/config'
-import { apiUrl } from '../../utils/config'
 
 const uploadExplanation = `
 **Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
@@ -113,8 +108,6 @@ class MediationPage extends Component {
   render () {
     const {
       occasion,
-      offerer,
-      name,
       imageUploadSize,
       imageUploadBorder,
       match: {

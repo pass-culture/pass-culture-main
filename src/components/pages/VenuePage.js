@@ -11,7 +11,6 @@ import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import { resetForm } from '../../reducers/form'
 import { showNotification } from '../../reducers/notification'
-import { SUCCESS } from '../../reducers/queries'
 import SubmitButton from '../layout/SubmitButton'
 import selectCurrentVenue from '../../selectors/currentVenue'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
@@ -82,17 +81,17 @@ class VenuePage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      match: { params },
+      match: { params: { venueId } },
       venue
     } = nextProps
-    const isNew = params.venueId === 'nouveau'
-    const venueId = isNew ? NEW : venueId
+    const isNew = venueId === 'nouveau'
+    const venueIdOrNew = isNew ? NEW : venueId
     return {
       apiPath: isNew ? `venues` : `venues/${venueId}`,
       isLoading: !(get(venue, 'id') || isNew),
       isNew,
       method: isNew ? 'POST' : 'PATCH',
-      venueId
+      venueIdOrNew
     }
   }
 
@@ -121,7 +120,7 @@ class VenuePage extends Component {
       isLoading,
       isNew,
       method,
-      venueId
+      venueIdOrNew
     } = this.state
     return (
       <PageWrapper name='offerer' loading={isLoading} backTo={{label: 'Structure', path: `/structures/${get(offerer, 'id')}`}}>
@@ -146,7 +145,7 @@ class VenuePage extends Component {
           <FormField
             collectionName="venues"
             defaultValue={siret}
-            entityId={venueId}
+            entityId={venueIdOrNew}
             label={<Label title="SIRET :" />}
             name="siret"
             type="sirene"
@@ -156,7 +155,7 @@ class VenuePage extends Component {
           <FormField
             collectionName="venues"
             defaultValue={name}
-            entityId={venueId}
+            entityId={venueIdOrNew}
             label={<Label title="Nom du lieu :" />}
             name="name"
             isHorizontal
@@ -170,7 +169,7 @@ class VenuePage extends Component {
             autoComplete="address"
             collectionName="venues"
             defaultValue={address || ''}
-            entityId={venueId}
+            entityId={venueIdOrNew}
             label={<Label title="Numéro et voie :" />}
             name="address"
             type="address"
@@ -182,7 +181,7 @@ class VenuePage extends Component {
             autoComplete="postalCode"
             collectionName="venues"
             defaultValue={postalCode || ''}
-            entityId={venueId}
+            entityId={venueIdOrNew}
             label={<Label title="Code Postal :" />}
             name="postalCode"
             isHorizontal
@@ -192,7 +191,7 @@ class VenuePage extends Component {
             autoComplete="city"
             collectionName="venues"
             defaultValue={city || ''}
-            entityId={venueId}
+            entityId={venueIdOrNew}
             label={<Label title="Ville :" />}
             name="city"
             isHorizontal
@@ -220,17 +219,17 @@ class VenuePage extends Component {
                     {
                       managingOffererId: offererId
                     },
-                    get(form, `venuesById.${venueId}`)
+                    get(form, `venuesById.${venueIdOrNew}`)
                   )
                 }
                 getIsDisabled={form =>
                   isNew
-                    ? !get(form, `venuesById.${venueId}.name`) ||
-                      !get(form, `venuesById.${venueId}.address`) ||
-                      !get(form, `venuesById.${venueId}.postalCode`)
-                    : !get(form, `venuesById.${venueId}.name`) &&
-                      !get(form, `venuesById.${venueId}.address`) &&
-                      !get(form, `venuesById.${venueId}.postalCode`)
+                    ? !get(form, `venuesById.${venueIdOrNew}.name`) ||
+                      !get(form, `venuesById.${venueIdOrNew}.address`) ||
+                      !get(form, `venuesById.${venueIdOrNew}.postalCode`)
+                    : !get(form, `venuesById.${venueIdOrNew}.name`) &&
+                      !get(form, `venuesById.${venueIdOrNew}.address`) &&
+                      !get(form, `venuesById.${venueIdOrNew}.postalCode`)
                 }
                 className="button is-primary is-medium"
                 handleSuccessData={this.handleSuccessData}

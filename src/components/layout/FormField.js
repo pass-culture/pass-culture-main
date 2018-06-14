@@ -38,7 +38,6 @@ class FormField extends Component {
     const {
       className,
       collectionName,
-      controlClassName,
       error,
       id,
       inputClassName,

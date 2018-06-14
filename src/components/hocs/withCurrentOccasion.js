@@ -25,7 +25,6 @@ const withCurrentOccasion = WrappedComponent => {
       const {
         match: {
           params: {
-            occasionType,
             occasionId
           }
         },

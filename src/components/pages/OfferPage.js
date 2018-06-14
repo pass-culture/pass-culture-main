@@ -19,13 +19,12 @@ import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import { SUCCESS } from '../../reducers/queries'
 import selectEventOccurences from '../../selectors/eventOccurences'
-import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
 import selectSelectedOffererId from '../../selectors/selectedOffererId'
-import selectUniqueVenue from '../../selectors/uniqueVenue'
+import selectSelectedVenueId from '../../selectors/selectedVenueId'
+import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
-import { pathToCollection, collectionToPath } from '../../utils/translate'
-import { API_URL, NEW } from '../../utils/config'
+import { API_URL } from '../../utils/config'
 
 const mediationExplanation = `
   **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
@@ -46,7 +45,6 @@ class OfferPage extends Component {
   constructor () {
     super()
     this.state = {
-      formOfferer: null,
       hasNoVenue: false
     }
   }
@@ -112,7 +110,6 @@ class OfferPage extends Component {
 
   handleSuccessData = (state, action) => {
     const {
-      config,
       method
     } = action
     const {
@@ -159,7 +156,6 @@ class OfferPage extends Component {
       apiPath,
       eventOccurences,
       eventTypes,
-      formOfferer,
       isLoading,
       isNew,
       newMediationRoutePath,
@@ -168,13 +164,13 @@ class OfferPage extends Component {
       occasionIdOrNew,
       offererOptions,
       selectedOffererId,
-      uniqueVenue,
+      selectedVenueId,
+      selectedVenues,
       user,
       venueOptions
     } = this.props
     const {
       author,
-      bookingLimitDatetime,
       contactName,
       contactEmail,
       contactPhone,
@@ -227,7 +223,11 @@ class OfferPage extends Component {
                 <ReactMarkdown source={mediationExplanation} className='section' />
                 <ul className='mediations-list'>
                   {get(occasion, 'mediations', []).map(m => (
-                    <li><img src={`${API_URL}${m.thumbPath}`} /></li>
+                    <li>
+                      <img
+                        alt={`accroche-${m.thumbPath}`}
+                        src={`${API_URL}${m.thumbPath}`} />
+                    </li>
                   ))}
                 </ul>
                 <p>
@@ -266,10 +266,10 @@ class OfferPage extends Component {
             type="select"
           />
           {
-            !uniqueVenue && (
+            selectedVenues && selectedVenues.length > 1 && (
               <FormField
                 collectionName='occasions'
-                defaultValue={get(eventOccurences, '0.venue.id')}
+                defaultValue={selectedVenueId}
                 entityId={occasionIdOrNew}
                 label={<Label title="Lieu :" />}
                 name='venueId'
@@ -419,10 +419,10 @@ export default compose(
     (state, ownProps) => ({
       eventOccurences: selectEventOccurences(state, ownProps),
       eventTypes: state.data.eventTypes,
-      formOfferer: selectFormOfferer(state, ownProps),
       offererOptions: selectOffererOptions(state),
       selectedOffererId: selectSelectedOffererId(state, ownProps),
-      uniqueVenue: selectUniqueVenue(state, ownProps),
+      selectedVenueId: selectSelectedVenueId(state, ownProps),
+      selectedVenues: selectSelectedVenues(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)
     }),
     {

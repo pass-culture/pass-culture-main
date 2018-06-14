@@ -14,8 +14,7 @@ class FormSelect extends Component {
       collectionName,
       entityId,
       mergeForm,
-      name,
-      options
+      name
     } = this.props
     if (defaultValue && entityId === NEW) {
       mergeForm(collectionName, entityId, name, defaultValue)
@@ -44,7 +43,8 @@ class FormSelect extends Component {
   }
 
   render() {
-    const { className,
+    const {
+      className,
       defaultValue,
       options,
       readOnly,

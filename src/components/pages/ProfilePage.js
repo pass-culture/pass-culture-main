@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import AvatarEditor from 'react-avatar-editor'
-import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
