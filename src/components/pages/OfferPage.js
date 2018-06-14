@@ -135,22 +135,14 @@ class OfferPage extends Component {
         loading={isLoading}
       >
         <div className='section'>
-          <div className='has-text-right'>
-            <NavLink to='/offres' className="button is-primary is-outlined">
-              Retour
-            </NavLink>
-          </div>
-          <h1 className='title has-text-centered'>
+          <h1 className='pc-title'>
             {
               isNew
-                ? 'Créer'
+                ? 'Ajouter'
                 : 'Modifier'
-            } {
-              occasionCollection === 'events'
-                ? 'un événement'
-                : 'un objet'
-              }
+            } une offre
           </h1>
+          <p className='subtitle'>Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.</p>
           <FormField
             collectionName='occasions'
             defaultValue={name}
@@ -158,11 +150,21 @@ class OfferPage extends Component {
             label={<Label title="Titre :" />}
             name="name"
             required
+            isHorizontal
+            isExpanded
           />
-          <hr />
-          <h2 className='subtitle is-2'>
-            Infos pratiques
-          </h2>
+          { !isNew && (
+            <div>
+              { occasionCollection === 'events' && (
+                  <div className='field'>
+                    <Label title='Dates :' />
+                    <OccurenceManager occurences={occurences} />
+                </div>
+              )}
+
+            </div>
+          )}
+          <h2 className='pc-list-title'>Infos pratiques</h2>
           <FormField
             collectionName='occasions'
             defaultValue={type || get(eventTypes, '0.value')}
@@ -172,6 +174,7 @@ class OfferPage extends Component {
             required
             type="select"
             options={eventTypes}
+            isHorizontal
           />
           <FormField
             collectionName='occasions'
@@ -183,54 +186,36 @@ class OfferPage extends Component {
             name='offererId'
             options={offererOptions}
             type="select"
+            isHorizontal
           />
-          {
-            !uniqueVenue && (
-              <FormField
-                collectionName='events'
-                defaultValue={
-                  get(occurences, '0.venue.id') ||
-                  get(venueOptions, '0.value')
-                }
-                entityId={occasionId}
-                label={<Label title="Lieu" />}
-                name='venueId'
-                readOnly={!isNew}
-                required
-                options={venueOptions}
-                type="select"
-              />
-            )
-          }
-          {
-            occasionCollection === 'events' && [
-              <div className='field' key={1}>
-                <Label title='Horaires :' />
-                <OccurenceManager occurences={occurences} />
-              </div>,
-              <FormField
-                collectionName='occasions'
-                defaultValue={durationMinutes}
-                entityId={occasionId}
-                key={2}
-                label={<Label title="Durée (en minutes) :" />}
-                name="durationMinutes"
-                required
-                type="number"
-              />,
-              <FormField
-                collectionName='occasions'
-                defaultValue={bookingLimitDatetime}
-                entityId={occasionId}
-                key={3}
-                label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
-                name="bookingLimitDatetime"
-                type="date"
-              />
-            ]
-          }
-          <hr />
-          <h2 className='subtitle is-2'>Infos artistiques</h2>
+          <FormField
+            collectionName='events'
+            defaultValue={
+              get(occurences, '0.venue.id') ||
+              get(venueOptions, '0.value')
+            }
+            entityId={occasionId}
+            label={<Label title="Lieu :" />}
+            name='venueId'
+            readOnly={!isNew}
+            required
+            options={venueOptions}
+            type="select"
+            isHorizontal
+          />
+          {occasionCollection === 'events' && (
+            <FormField
+              collectionName='occasions'
+              defaultValue={durationMinutes}
+              entityId={occasionId}
+              label={<Label title="Durée (en minutes) :" />}
+              name="durationMinutes"
+              required
+              type="number"
+              isHorizontal
+            />
+          )}
+          <h2 className='pc-list-title'>Infos artistiques</h2>
           <FormField
             collectionName='occasions'
             defaultValue={description}
@@ -239,6 +224,8 @@ class OfferPage extends Component {
             name="description"
             required
             type="textarea"
+            isHorizontal
+            isExpanded
           />
           <FormField
             collectionName='occasions'
@@ -246,6 +233,8 @@ class OfferPage extends Component {
             entityId={occasionId}
             label={<Label title="Auteur :" />}
             name="author"
+            isHorizontal
+            isExpanded
           />
           {
             occasionCollection === 'events' && [
@@ -256,6 +245,8 @@ class OfferPage extends Component {
                 key={0}
                 label={<Label title="Metteur en scène:" />}
                 name="stageDirector"
+                isHorizontal
+                isExpanded
               />,
               <FormField
                 collectionName='occasions'
@@ -264,17 +255,21 @@ class OfferPage extends Component {
                 key={1}
                 label={<Label title="Interprète:" />}
                 name="performer"
+                isHorizontal
+                isExpanded
               />
             ]
           }
-          <hr />
-          <h2 className='subtitle is-2'>Infos de contact</h2>
+          <h2 className='pc-list-title'>Contact</h2>
           <FormField
             collectionName='occasions'
             defaultValue={contactName}
             entityId={occasionId}
             label={<Label title="Nom du contact :" />}
             name="contactName"
+            required
+            isHorizontal
+            isExpanded
           />
           <FormField
             collectionName='occasions'
@@ -284,6 +279,8 @@ class OfferPage extends Component {
             name="contactEmail"
             required
             type="email"
+            isHorizontal
+            isExpanded
           />
           <FormField
             collectionName='occasions'
@@ -291,15 +288,16 @@ class OfferPage extends Component {
             entityId={occasionId}
             label={<Label title="Tel de contact :" />}
             name="contactPhone"
+            isHorizontal
           />
-          <FormField
-            collectionName='occasions'
-            defaultValue={mediaUrls}
-            entityId={occasionId}
-            label={<Label title="Media URLs" />}
-            name="mediaUrls"
-            type="list"
-          />
+          {false && <FormField
+                      collectionName='occasions'
+                      defaultValue={mediaUrls}
+                      entityId={occasionId}
+                      label={<Label title="Media URLs" />}
+                      name="mediaUrls"
+                      type="list"
+                    />}
           <hr />
           <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
             <div className="control">

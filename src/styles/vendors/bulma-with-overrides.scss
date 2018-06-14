@@ -47,6 +47,12 @@
   }
 }
 
+textarea.textarea {
+  &.is-rounded {
+    border-radius: 1em;
+  }
+}
+
 input[type="checkbox"], input[type="radio"] {
   vertical-align: middle;
 }

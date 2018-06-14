@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import classnames from 'classnames'
+import get from 'lodash.get'
 
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
@@ -49,11 +51,11 @@ class FormSelect extends Component {
       readOnly,
       value
     } = this.props
+    const defaultReadOnly = readOnly || get(this.props, 'options', []).length === 1
     return (
-      <div className={className || 'select'}>
+      <div className={classnames('select', {readonly: defaultReadOnly}, className)}>
         <select
-          className=''
-          disabled={readOnly}
+          readOnly={defaultReadOnly}
           onChange={this.onChange}
           value={typeof value === 'string' ? value : defaultValue}
         >
