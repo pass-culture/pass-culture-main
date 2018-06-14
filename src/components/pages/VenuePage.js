@@ -10,6 +10,7 @@ import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import { resetForm } from '../../reducers/form'
+import { showNotification } from '../../reducers/notification'
 import { SUCCESS } from '../../reducers/queries'
 import SubmitButton from '../layout/SubmitButton'
 import selectCurrentVenue from '../../selectors/currentVenue'
@@ -66,14 +67,17 @@ class VenuePage extends Component {
     }
   }
 
-  handleSubmitStatusChange = status => {
+  handleSuccessData = (state, action) => {
     const {
       history,
-      offerer
+      offerer,
+      showNotification
     } = this.props
-    if (status === SUCCESS) {
-      history.push(`/structures/${offerer.id}?success=true`)
-    }
+    history.push(`/structures/${offerer.id}`)
+    showNotification({
+      text: "Lieu ajouté avec succès !",
+      type: 'success'
+    })
   }
 
   static getDerivedStateFromProps (nextProps) {
@@ -229,25 +233,19 @@ class VenuePage extends Component {
                       !get(form, `venuesById.${venueId}.postalCode`)
                 }
                 className="button is-primary is-medium"
-                handleStatusChange={this.handleSubmitStatusChange}
+                handleSuccessData={this.handleSuccessData}
                 method={method}
                 path={apiPath}
                 storeKey="venues"
                 text="Valider"
-                isNotification
-                getNotification={status =>
-                  status === SUCCESS
-                  ? { text: "Lieu ajouté avec succès !" }
-                  : { text: "Oops, il y a eu un problème avec l'ajout de ce lieu" }
-                }
               />
             </div>
           </div>
         </div>
       </div>
     </PageWrapper>
-  )
-}
+    )
+  }
 }
 
 export default compose(
@@ -258,5 +256,5 @@ export default compose(
       venue: selectCurrentVenue(state, ownProps),
       offerer: selectCurrentOfferer(state, ownProps),
     }),
-    { resetForm })
+    { resetForm, showNotification })
 )(VenuePage)

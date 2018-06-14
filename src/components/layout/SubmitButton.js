@@ -28,6 +28,8 @@ class SubmitButton extends Component {
       getNotification,
       getOptimistState,
       getSuccessState,
+      handleFail,
+      handleSuccess,
       history,
       isNotification,
       method,
@@ -47,13 +49,10 @@ class SubmitButton extends Component {
       body: (getBody && getBody(form)) || form,
       getOptimistState,
       getSuccessState,
+      handleFail,
+      handleSuccess,
       key: storeKey,
-      redirect: (status, action) =>
-        action.config.requestId === submitRequestId && redirect(status, action),
-      requestId: submitRequestId,
-      isNotification,
-      getNotification: (status, action) =>
-        action.config.requestId === submitRequestId && getNotification(status, action)
+      requestId: submitRequestId
     })
     onClick && onClick()
   }

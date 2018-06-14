@@ -17,7 +17,6 @@ function* fromWatchRequestDataActions(action) {
   const {
     body,
     encode,
-    hook,
     type
   } = (config || {})
 
@@ -34,11 +33,6 @@ function* fromWatchRequestDataActions(action) {
       path,
       { body, encode, token }
     )
-
-    // HOOK
-    if (hook) {
-      yield call(hook, method, path, result, config)
-    }
 
     // SUCCESS OR FAIL
     if (result.data) {
@@ -57,33 +51,17 @@ function* fromWatchRequestDataActions(action) {
 
 function* fromWatchFailDataActions(action) {
   yield put(assignErrors(action.errors))
+  if (action.config.handleFail) {
+    const state = yield select(state => state)
+    yield call(action.config.handleFail, state, action)
+  }
 }
 
 function* fromWatchSuccessDataActions(action) {
-  const {
-    config,
-    method
-  } = action
-  const {
-    getNotification,
-    redirect
-  } = (config || {})
-
-  // HOOK FOR A REDIRECT
-  const isRedirect = config.isRedirect === false
-                          ? false
-                          : true
-  if (isRedirect && redirect) {
-    yield call(redirect, SUCCESS, action)
+  if (action.config.handleSuccess) {
+    const state = yield select(state => state)
+    yield call(action.config.handleSuccess, state, action)
   }
-
-  // HOOK FOR SOME NOTIFICATION
-  const notification = getNotification && getNotification(SUCCESS, action)
-  if (notification) {
-    notification.type = 'success'
-    yield put(showNotification(notification))
-  }
-
 }
 
 export function* watchDataActions() {

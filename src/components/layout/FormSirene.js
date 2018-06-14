@@ -69,20 +69,31 @@ class FormSirene extends Component {
           searching: false,
         })
         if (response.status === 404)  {
-          assignErrors({[sireType]: [`${capitalize(sireType)} invalide`]})
+          console.log('BEN OUAI')
+          assignErrors([{[sireType]: [`${capitalize(sireType)} invalide`]}])
           this.setState({localValue: ''})
-          mergeForm(collectionName, entityId, sireType, null)
+          mergeForm(collectionName, entityId,
+            {
+              address: null,
+              city: null,
+              latitude: null,
+              longitude: null,
+              name: null,
+              postalCode: null,
+              [sireType]: null
+            }
+          )
 
         } else {
           response.json().then(body => {
             const dataPath = isSiren ? 'siege_social.0' : 'etablissement'
             mergeForm(collectionName, entityId, {
               address: get(body, `${dataPath}.geo_adresse`),
+              city: get(body, `${dataPath}.libelle_commune`),
               latitude: get(body, `${dataPath}.latitude`),
               longitude: get(body, `${dataPath}.longitude`),
               name: get(body, `${dataPath}.l1_declaree`),
               postalCode: get(body, `${dataPath}.code_postal`),
-              city: get(body, `${dataPath}.libelle_commune`),
               [sireType]: get(body, `${dataPath}${sireType}`),
             })
           })

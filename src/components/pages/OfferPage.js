@@ -16,6 +16,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
+import { showNotification } from '../../reducers/notification'
 import { SUCCESS } from '../../reducers/queries'
 import selectEventOccurences from '../../selectors/eventOccurences'
 import selectOfferers from '../../selectors/offerers'
@@ -45,7 +46,8 @@ class OfferPage extends Component {
   constructor () {
     super()
     this.state = {
-      formOfferer: null
+      formOfferer: null,
+      hasNoVenue: false
     }
   }
 
@@ -83,26 +85,74 @@ class OfferPage extends Component {
   }
 
   handleRequestData = () => {
-    const { requestData } = this.props
+    const {
+      history,
+      requestData,
+      showModal
+    } = this.props
     requestData(
       'GET',
       'offerers',
       {
+        handleSuccess: (state, action) => !get(state, 'data.venues.length')
+          && showModal(
+            <div>
+              Vous devez avoir déjà enregistré un lieu
+              dans une de vos structures pour ajouter des offres
+            </div>,
+            {
+              onCloseClick: () => history.push('/structures')
+            }
+          ),
         normalizer: { managedVenues: 'venues' }
       }
     )
     requestData('GET', 'eventTypes')
   }
 
-  // handleSubmitStatusChanges = status => {
-  //   const {
-  //     history,
-  //     resetForm
-  //   } = this.props
-  //   if (status === SUCCESS) {
-  //     history.push('/offres?success=true')
-  //   }
-  // }
+  handleSuccessData = (state, action) => {
+    const {
+      config,
+      method
+    } = action
+    const {
+      eventOccurences,
+      history,
+      showModal,
+      showNotification
+    } = this.props
+
+    if (method === 'PATCH') {
+      history.push('/offres')
+      showNotification({
+        text: 'Votre offre a bien été enregistrée',
+        type: 'success'
+      })
+      return
+    }
+
+    if (method === 'POST') {
+        showModal(
+          <div>
+            Cette offre est-elle soumise à des dates ou des horaires particuliers ?
+            <button
+              className='button'
+              onClick={() => showModal(
+                <OccurenceManager occurences={eventOccurences} />
+              )}
+            >
+              Oui
+            </button>
+            <button
+              className='button'
+              onClick={() => history.push('/offres')}
+            >
+              Non
+            </button>
+          </div>
+        )
+    }
+  }
 
   render () {
     const {
@@ -110,7 +160,6 @@ class OfferPage extends Component {
       eventOccurences,
       eventTypes,
       formOfferer,
-      history,
       isLoading,
       isNew,
       newMediationRoutePath,
@@ -119,7 +168,6 @@ class OfferPage extends Component {
       occasionIdOrNew,
       offererOptions,
       offerers,
-      showModal,
       uniqueVenue,
       user,
       venueOptions
@@ -153,7 +201,9 @@ class OfferPage extends Component {
                 : 'Modifier'
             } une offre
           </h1>
-          <p className='subtitle'>Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.</p>
+          <p className='subtitle'>
+            Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
+          </p>
           <FormField
             collectionName='occasions'
             defaultValue={name}
@@ -203,6 +253,34 @@ class OfferPage extends Component {
             options={eventTypes}
             isHorizontal
           />
+          <FormField
+            collectionName='occasions'
+            defaultValue={get(eventOccurences, '0.venue.managingOffererId')}
+            entityId={occasionIdOrNew}
+            label={<Label title="Structure :" />}
+            readOnly={!isNew}
+            required
+            name='offererId'
+            options={offererOptions}
+            type="select"
+            isHorizontal
+          />
+          {
+            !uniqueVenue && (
+              <FormField
+                collectionName='occasions'
+                defaultValue={get(eventOccurences, '0.venue.id')}
+                entityId={occasionIdOrNew}
+                label={<Label title="Lieu :" />}
+                name='venueId'
+                readOnly={!isNew}
+                required
+                options={venueOptions}
+                type="select"
+                isHorizontal
+              />
+            )
+          }
           {occasionCollection === 'events' && (
             <FormField
               collectionName='occasions'
@@ -320,32 +398,9 @@ class OfferPage extends Component {
                   (action.method === 'PATCH' || action.method === 'POST') &&
                   { text: 'Votre offre a bien été enregistrée' }
                 }
+                handleSuccess={this.handleSuccessData}
                 method={isNew ? 'POST' : 'PATCH'}
                 path={apiPath}
-                redirect={(status, action) =>
-                  status === SUCCESS &&
-                  action.method === 'PATCH'
-                    ? history.push('/offres')
-                    : action.method === 'POST' && showModal(
-                      <div>
-                        Cette offre est-elle soumise à des dates ou des horaires particuliers ?
-                        <button
-                          className='button'
-                          onClick={() => showModal(
-                            <OccurenceManager occurences={eventOccurences} />
-                          )}
-                        >
-                          Oui
-                        </button>
-                        <button
-                          className='button'
-                          onClick={() => history.push('/offres')}
-                        >
-                          Non
-                        </button>
-                      </div>
-                    )
-                }
                 storeKey="occasions"
                 text="Enregistrer"
               />
@@ -370,6 +425,11 @@ export default compose(
       uniqueVenue: selectUniqueVenue(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)
     }),
-    { mergeForm, resetForm, showModal }
+    {
+      mergeForm,
+      resetForm,
+      showModal,
+      showNotification
+    }
   )
 )(OfferPage)

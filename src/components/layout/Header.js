@@ -1,8 +1,8 @@
+import classnames from 'classnames'
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import classnames from 'classnames'
-import get from 'lodash.get'
 
 import Icon from './Icon'
 import SignoutButton from './SignoutButton'
@@ -17,13 +17,20 @@ class Header extends Component {
   }
 
   render() {
+    const {
+      venuesCount,
+      name
+    } = this.props
+    const {
+      showMobileMenu
+    } = this.state
     return (
       <header className="navbar is-primary">
         <div className="container">
           <div className="navbar-brand">
             <Logo className="navbar-item" />
             <span className="navbar-burger" onClick={e => this.setState({
-              showMobileMenu: !this.state.showMobileMenu
+              showMobileMenu: !showMobileMenu
             })}>
               <span></span>
               <span></span>
@@ -38,17 +45,21 @@ class Header extends Component {
                 <span className='icon'><Icon svg={'ico-guichet-w'} /></span>
                 <span>Guichet</span>
               </NavLink>
-              <NavLink className="navbar-item" to={'/offres'}>
-                <span className='icon'><Icon svg={'ico-offres-w'} /></span>
-                <span>Vos offres</span>
-              </NavLink>
+              {
+                venuesCount > 0 && (
+                  <NavLink className="navbar-item" to={'/offres'}>
+                    <span className='icon'><Icon svg={'ico-offres-w'} /></span>
+                    <span>Vos offres</span>
+                  </NavLink>
+                )
+              }
               <div className="navbar-item has-dropdown is-hoverable">
                 <a className="navbar-link" href="#">
                   <span className='icon'>
                     <Icon svg='ico-user-circled-w' />
                   </span>
                   <span>
-                    {this.props.name}
+                    {name}
                   </span>
                 </a>
                 <div className="navbar-dropdown is-right">
@@ -84,5 +95,6 @@ class Header extends Component {
 }
 
 export default connect(state => ({
+  venuesCount: get(state, 'data.venues.length'),
   name: get(state, 'user.publicName')
 }), {})(Header)

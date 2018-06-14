@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
@@ -9,12 +10,39 @@ import withLogin from '../hocs/withLogin'
 import Icon from '../layout/Icon'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
+import { showModal } from '../../reducers/modal'
 import selectOccasions from '../../selectors/occasions'
 
 
 class OffersPage extends Component {
   handleRequestData = () => {
-    this.props.requestData('GET', 'occasions')
+    const {
+      history,
+      requestData,
+      showModal
+    } = this.props
+    requestData(
+      'GET',
+      'occasions',
+      {
+        handleSuccess: (state, action) => {
+          console.log('WOOOOOOO')
+          !get(state, 'data.venues.length')
+          && showModal(
+            <div>
+              Vous devez avoir déjà enregistré un lieu
+              dans une de vos structures pour ajouter des offres
+            </div>,
+            {
+              onCloseClick: () => history.push('/structures')
+            }
+          )
+        },
+        normalizer: {
+
+        }
+      }
+    )
   }
 
   componentDidMount() {
@@ -30,26 +58,20 @@ class OffersPage extends Component {
 
   render() {
     const {
-      location: { search },
+      hasAtLeastOneVenue,
       occasions
     } = this.props
 
-    const notification = search === '?success=true' && {
-      text: "L' ajout de l'offre a bien été prise en compte",
-      type: 'success'
-    }
-
     return (
-      <PageWrapper name="offers" loading={!occasions} notification={
-          search === '?success=true' && {
-            text: 'Ca a fonctionné cest genial de la balle de francois miterrand',
-            type: 'success'
-          }
-        }>
+      <PageWrapper name="offers" loading={!occasions}>
         <div className="section">
-          <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-medium is-outlined is-pulled-right'>
-            + Ajouter une offre
-          </NavLink>
+          {
+            hasAtLeastOneVenue && (
+              <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-medium is-outlined is-pulled-right'>
+                + Ajouter une offre
+              </NavLink>
+            )
+          }
           <h1 className='pc-title'>
             Vos offres
           </h1>
@@ -89,8 +111,10 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
+      hasAtLeastOneVenue: get(state, 'data.venues.length'),
       occasions: selectOccasions(state, ownProps),
       user: state.user
-    })
+    }),
+    { showModal }
   )
 )(OffersPage)
