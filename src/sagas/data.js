@@ -60,33 +60,30 @@ function* fromWatchFailDataActions(action) {
 }
 
 function* fromWatchSuccessDataActions(action) {
-  console.log('action ---- ', action);
   const {
     config,
     method
   } = action
   const {
-    getNotification
+    getNotification,
+    redirect
   } = (config || {})
 
-  // HOOK FOR SOME NOTIFICATION
-  const isNotification = config.isNotification === false
+  // HOOK FOR A REDIRECT
+  const isRedirect = config.isRedirect === false
                           ? false
                           : true
-  const notification = getNotification && getNotification(SUCCESS)
-  if (
-    isNotification &&
-    notification
-    && (method === 'POST' || method === 'PATCH')
-  ) {
+  if (isRedirect && redirect) {
+    yield call(redirect, SUCCESS, action)
+  }
+
+  // HOOK FOR SOME NOTIFICATION
+  const notification = getNotification && getNotification(SUCCESS, action)
+  if (notification) {
     notification.type = 'success'
     yield put(showNotification(notification))
   }
 
-  // HOOK FOR A REDIRECT
-  //   if (isRedirect  && redirectPathname) {
-  //     yield call(history.push, redirectPathname) }
-  //    }
 }
 
 export function* watchDataActions() {

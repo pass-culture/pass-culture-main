@@ -3,6 +3,8 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
 import { randomHash } from '../../utils/random'
@@ -23,15 +25,18 @@ class SubmitButton extends Component {
       add,
       form,
       getBody,
+      getNotification,
       getOptimistState,
       getSuccessState,
+      history,
+      isNotification,
       method,
       onClick,
       path,
       storeKey,
+      redirect,
+      redirectPathname,
       requestData,
-      isNotification,
-      getNotification
     } = this.props
     const submitRequestId = randomHash()
     this.setState({
@@ -43,6 +48,7 @@ class SubmitButton extends Component {
       getOptimistState,
       getSuccessState,
       key: storeKey,
+      redirect,
       requestId: submitRequestId,
       isNotification,
       getNotification
@@ -64,7 +70,13 @@ class SubmitButton extends Component {
   }
 
   render() {
-    const { className, getIsDisabled, form, text, submittingText } = this.props
+    const {
+      className,
+      form,
+      getIsDisabled,
+      submittingText,
+      text,
+    } = this.props
     const { submitRequestId } = this.state
     const isDisabled = getIsDisabled(form)
     return (
@@ -94,10 +106,13 @@ SubmitButton.propTypes = {
   path: PropTypes.string.isRequired,
 }
 
-export default connect(
-  ({ form, queries }) => ({
-    form,
-    queries,
-  }),
-  { requestData }
+export default compose(
+  withRouter,
+  connect(
+    ({ form, queries }) => ({
+      form,
+      queries,
+    }),
+    { requestData }
+  )
 )(SubmitButton)

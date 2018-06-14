@@ -110,6 +110,7 @@ class OfferPage extends Component {
       eventOccurences,
       eventTypes,
       formOfferer,
+      history,
       isLoading,
       isNew,
       newMediationRoutePath,
@@ -362,11 +363,18 @@ class OfferPage extends Component {
                   //   typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
                   //   (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                 }}
-                getNotification={status => status === SUCCESS && {
-                  text: 'Votre offre a bien été enregistrée'
-                }}
+                getNotification={(status, action) =>
+                  status === SUCCESS &&
+                  (action.method === 'PATCH' || action.method === 'POST') &&
+                  { text: 'Votre offre a bien été enregistrée' }
+                }
                 method={isNew ? 'POST' : 'PATCH'}
                 path={apiPath}
+                redirect={(status, action) =>
+                  status === SUCCESS &&
+                  (action.method === 'PATCH' || action.method === 'POST') &&
+                  history.push('/offres')
+                }
                 storeKey="occasions"
                 text="Enregistrer"
               />
