@@ -45,7 +45,7 @@
   &.container {
     position: relative;
     .page-content {
-      min-height: 100vh;
+      // min-height: 100vh;
       padding: $page-padding;
       position: relative;
       top: $header-height - $header-display-height;

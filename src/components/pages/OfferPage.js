@@ -24,7 +24,7 @@ import selectOffererOptions from '../../selectors/offererOptions'
 import selectUniqueVenue from '../../selectors/uniqueVenue'
 import selectVenueOptions from '../../selectors/venueOptions'
 import { pathToCollection, collectionToPath } from '../../utils/translate'
-import { NEW } from '../../utils/config'
+import { API_URL, NEW } from '../../utils/config'
 
 const mediationExplanation = `
   **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
@@ -174,13 +174,17 @@ class OfferPage extends Component {
                 </div>
               )}
               <div className='box content has-text-centered'>
-                <ReactMarkdown source={mediationExplanation} />
+                <ReactMarkdown source={mediationExplanation} className='section' />
+                <ul className='mediations-list'>
+                  {get(occasion, 'mediations', []).map(m => (
+                    <li><img src={`${API_URL}${m.thumbPath}`} /></li>
+                  ))}
+                </ul>
                 <p>
                   <NavLink
-                    className='button is-primary'
-                    to={newMediationRoutePath}
-                  >
-                    <Icon svg='ico-stars' />
+                    className={`button is-primary ${get(occasion, 'mediations', []).length > 0 ? 'is-outlined' : ''}`}
+                    to={newMediationRoutePath}>
+                    {false && <Icon svg='ico-stars' />}
                     Ajouter une accroche
                   </NavLink>
                 </p>
