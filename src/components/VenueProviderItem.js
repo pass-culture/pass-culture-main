@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
 
 class VenueProviderItem extends Component {
@@ -28,27 +29,39 @@ class VenueProviderItem extends Component {
 
   render () {
     const {
-      identifier,
       isActive,
-      provider
+      provider,
+      venueIdAtOfferProvider
     } = this.props
     return (
-      <div className="box offerer-provider-item">
-        <h2 className="subtitle"> {get(provider, 'name')} </h2>
-        <i> {identifier} </i>
-        <button onClick={this.onDeactivateClick}>
-          {isActive ? 'Désactiver': 'Activer'}
-        </button>
-        <button onClick={this.onDeleteClick}>
-          Enlever
-        </button>
-      </div>
+      <li>
+        <div className='picto'>
+          <Icon svg='picto-db-default' />
+        </div>
+        <div className='has-text-weight-bold is-size-3'>
+          {provider && provider.localClass}
+        </div>
+        <div>
+          ?? offres
+        </div>
+        <div>
+          Compte : <strong className='has-text-weight-bold'>[{venueIdAtOfferProvider}]</strong>
+        </div>
+        <div>
+          <button className='button is-secondary'
+            onClick={this.onDeactivateClick}>
+            {isActive ? 'Désactiver': 'Activer'}
+          </button>
+          <button onClick={this.onDeleteClick}>
+            x
+          </button>
+        </div>
+      </li>
     )
   }
 }
 
 export default compose(
-  withRouter,
   connect(
     null,
     { requestData }

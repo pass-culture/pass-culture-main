@@ -101,9 +101,7 @@ class ProviderManager extends Component {
       withError
     } = this.state
 
-    const providerOptionsWithPlaceholder = [{
-      label: 'Sélectionnez un fournisseur',
-    }].concat(providerOptions)
+    console.log('providerOptions', providerOptions)
 
     return (
       <div className='section'>
@@ -111,15 +109,11 @@ class ProviderManager extends Component {
           Mes fournisseurs
         </h2>
         <ul className='pc-list'>
-          { get(this.props, 'venueProviders', []).map(vp => (
-            <li>
-              <div className='picto'><Icon svg='picto-db-default' /></div>
-              <div className='has-text-weight-bold is-size-3'>{vp.name}</div>
-              <div> ?? offres</div>
-              <div>Compte : <strong className='has-text-weight-bold'>[identifiant]</strong></div>
-              <div><button className='button is-secondary'>x Désactiver</button></div>
-            </li>
-          ))}
+          {
+            venueProviders && venueProviders.map((vp, index) => (
+                <VenueProviderItem {...vp} key={index} />
+            ))
+          }
           {isNew && (
             <li>
               {withError && (
@@ -131,9 +125,9 @@ class ProviderManager extends Component {
               <div className='picto'><Icon svg='picto-db-default' /></div>
               <FormField
                 collectionName="venueProviders"
-                defaultValue={get(providerOptionsWithPlaceholder, '0.value')}
+                defaultValue={get(providerOptions, '0.value')}
                 name="providerId"
-                options={providerOptionsWithPlaceholder}
+                options={providerOptions}
                 type="select"
                 size="small"
               />
@@ -142,14 +136,6 @@ class ProviderManager extends Component {
                 name="venueIdAtOfferProvider"
                 placeholder='Mon identifiant'
                 size="small"
-              />
-              <FormField
-                collectionName="venueProviders"
-                name="venueIdAtOfferProvider"
-                placeholder='Mot de passe'
-                type='password'
-                size="small"
-                showPassword={false}
               />
               <SubmitButton
                 className="button is-secondary"
@@ -170,9 +156,6 @@ class ProviderManager extends Component {
             + Ajouter un compte fournisseur
           </button>
         </div>
-        {venueProviders && venueProviders.map((vp, index) => (
-                  <VenueProviderItem {...vp} key={index} />
-                ))}
       </div>
       )
   }
