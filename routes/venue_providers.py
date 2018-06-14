@@ -1,6 +1,6 @@
 """ venues """
 from flask import current_app as app, jsonify, request
-from flask_login import login_required
+from flask_login import current_user, login_required
 from os import path, environ
 from pathlib import Path
 import subprocess
@@ -8,7 +8,9 @@ import subprocess
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
-from utils.rest import expect_json_data, update
+from utils.rest import delete, expect_json_data,\
+                       ensure_current_user_has_rights,\
+                       load_or_404, update
 
 VenueProvider = app.model.VenueProvider
 
@@ -32,9 +34,8 @@ def list_venue_providers():
 
 @app.route('/venueProviders/<id>', methods=['GET'])
 @login_required
-def get_venue_providers(id):
-    vp = VenueProvider.query.filter_by(id=dehumanize(id))\
-                            .first_or_404()
+def get_venue_provider(id):
+    vp = load_or_404(VenueProvider, id)
     return jsonify(vp._asdict(include=VENUE_PROVIDER_INCLUDES))
 
 
@@ -61,8 +62,7 @@ def create_venue_provider():
 @app.route('/venueProviders/<id>', methods=['PATCH'])
 @expect_json_data
 def edit_venue_provider(id):
-    vp = VenueProvider.query.filter_by(id=dehumanize(id))\
-                      .first_or_404()
+    vp = load_or_404(VenueProvider, id)
     update(vp, request.json)
     app.model.PcObject.check_and_save(vp)
     return jsonify(vp._asdict()), 200
@@ -71,7 +71,7 @@ def edit_venue_provider(id):
 @app.route('/venueProviders/<id>', methods=['DELETE'])
 @login_required
 def delete_venue_provider(id):
-    VenueProvider\
-        .query.filter_by(id=dehumanize(id))\
-        .delete()
-    return jsonify({"id": id}), 200
+    vp = load_or_404(VenueProvider, id)
+    ensure_current_user_has_rights(app.model.RightsType.editor,
+                                   vp.venue.managingOffererId)
+    return delete(vp)

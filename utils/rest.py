@@ -1,6 +1,6 @@
 from functools import wraps
 import re
-from flask import jsonify, request, current_app as app
+from flask import abort, jsonify, request, current_app as app
 from flask_login import current_user
 from sqlalchemy.exc import ProgrammingError
 
@@ -123,7 +123,24 @@ def ensure_provider_can_update(obj):
        and obj.lastProvider != request.provider:
         return "API key or login required", 403
 
+
+def ensure_current_user_has_rights(rights, offererId):
+    if not current_user.hasRights(rights, offererId):
+        abort(403)
+
+
 def feed(entity, json, keys):
     for key in keys:
         if key in json:
             entity.__setattr__(key, json[key])
+
+
+def delete(entity):
+    app.db.session.delete(entity)
+    app.db.session.commit()
+    return jsonify({"id": entity.id}), 200
+
+
+def load_or_404(obj_class, human_id):
+    return obj_class.query.filter_by(id=dehumanize(human_id))\
+                    .first_or_404()
