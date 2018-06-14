@@ -56,7 +56,7 @@ class OccurenceManager extends Component {
   }
 
   onAddClick = () => {
-    this.setState({ isAdd: true })
+    this.setState({ isAdding: true })
   }
 
   render() {
@@ -81,13 +81,13 @@ class OccurenceManager extends Component {
                 <OccurenceItem key={o.id} {...o} />
               )
             }
+            {
+              isAdding && <OccurenceForm isNew />
+            }
           </tbody>
         </table>
-        <OccurenceForm />
         {
-          isAdding
-          ? <OccurenceForm isNew />
-          : (
+          !isAdding && (
             <button className='button' onClick={this.onAddClick}>
               Ajouter un horaire
             </button>

@@ -46,6 +46,7 @@ class FormDate extends Component {
   render () {
     const { availableDates, value } = this.props
     const { focused } = this.state
+    console.log('value', value)
     return (
       <div className="input-field date-picker">
         <SingleDatePicker
@@ -54,9 +55,9 @@ class FormDate extends Component {
           date={value}
           displayFormat="LL"
           focused={focused}
-          initialVisibleMonth={() => moment.min(availableDates)}
+          initialVisibleMonth={() => availableDates && moment.min(availableDates)}
           inputIconPosition="after"
-          isDayBlocked={date =>
+          isDayBlocked={date => availableDates &&
             !availableDates.find(d => d.isSame(date, 'day'))
           }
           noBorder={true}

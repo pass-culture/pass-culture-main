@@ -1,6 +1,7 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 import FormField from './layout/FormField'
 import Label from './layout/Label'
@@ -10,6 +11,7 @@ import { NEW } from '../utils/config'
 class OccurenceForm extends Component {
   render () {
     const {
+      match: { params: { occasionId } },
       id,
       isNew,
       offer
@@ -73,7 +75,17 @@ class OccurenceForm extends Component {
         <td>
           <SubmitButton
             className="button is-primary is-medium"
-            getBody={form => get(form, `eventOccurencesById.${isNew ? NEW : id}`)}
+            getBody={form => {
+              const eo = get(form, `eventOccurencesById.${isNew ? NEW : id}`)
+
+              const [hours, minutes] = eo.time.split(':')
+              const beginningDatetime = eo.date.clone().hour(hours).minute(minutes)
+
+              return Object.assign({
+                beginningDatetime,
+                eventId: occasionId
+              }, eo)
+            }}
             method={isNew ? 'POST' : 'PATCH'}
             path={isNew ? 'eventOccurences' : `eventOccurences/${id}`}
             storeKey="eventOccurences"
@@ -87,4 +99,4 @@ class OccurenceForm extends Component {
   }
 }
 
-export default OccurenceForm
+export default withRouter(OccurenceForm)
