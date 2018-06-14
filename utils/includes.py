@@ -4,6 +4,29 @@ OFFERERS_INCLUDES = [
     "managedVenues"
 ]
 
+EVENT_INCLUDES = [
+    {
+        "key": "occurences",
+        "sub_joins": [
+            {
+                "key": "offer",
+                "sub_joins": [
+                    {
+                        "key": "offerer",
+                        "sub_joins": OFFERERS_INCLUDES
+                    }
+                ]
+            },
+            'venue'
+        ]
+    },
+    "mediations"
+]
+
+THING_INCLUDES = [
+    "mediations"
+]
+
 OCCASION_INCLUDES = [
     {
         "key": "occurences",
@@ -130,10 +153,12 @@ VENUE_PROVIDER_INCLUDES = [
 
 includes = {
     'bookings': BOOKINGS_INCLUDES,
+    'events': EVENT_INCLUDES,
     'occasions': OCCASION_INCLUDES,
     'offerers': OFFERERS_INCLUDES,
     'offers': OFFERS_INCLUDES,
     'recommendations': RECOMMENDATIONS_INCLUDES,
+    'things': THING_INCLUDES,
     'users': USERS_INCLUDES,
     'venues': VENUES_INCLUDES,
     'venueProviders': VENUE_PROVIDER_INCLUDES
