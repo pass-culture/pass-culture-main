@@ -78,4 +78,18 @@ class User(app.model.PcObject,
         self.password = bcrypt.hashpw(newpass.encode('utf-8'),
                                       bcrypt.gensalt())
 
+    def hasRights(self, rights, offererId):
+        if self.isAdmin:
+            return True
+        RightsType = app.model.RightsType
+        if rights == RightsType.editor:
+            compatible_rights = [RightsType.editor, RightsType.admin]
+        else:
+            compatible_rights = [rights]
+        return app.model.UserOfferer.query\
+                  .filter(app.model.UserOfferer.offererId == offererId,
+                          app.model.UserOfferer.rights.in_(compatible_rights))\
+                  .exists()
+
+
 app.model.User = User
