@@ -102,6 +102,7 @@ class FormInput extends Component {
 
 FormInput.defaultProps = {
   debounceTimeout: 500,
+  type: 'text',
   entityId: NEW,
   formatValue: v => v,
   storeValue: v => v,

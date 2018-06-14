@@ -1,5 +1,6 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
@@ -10,6 +11,7 @@ import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
+import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
@@ -20,8 +22,14 @@ import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
 import selectUniqueVenue from '../../selectors/uniqueVenue'
 import selectVenueOptions from '../../selectors/venueOptions'
-import { pathToCollection } from '../../utils/translate'
+import { pathToCollection, collectionToPath } from '../../utils/translate'
+import { NEW } from '../../utils/config'
 
+const mediationExplanation = `
+  **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
+
+  Les accroches font la **spécificité du Pass Culture**. Prenz le temps de les choisir avec soin !
+`
 
 class OfferPage extends Component {
   constructor () {
@@ -72,15 +80,15 @@ class OfferPage extends Component {
     requestData('GET', 'eventTypes')
   }
 
-  handleSubmitStatusChanges = status => {
-    const {
-      history,
-      resetForm
-    } = this.props
-    if (status === SUCCESS) {
-      history.push('/offres?success=true')
-    }
-  }
+  // handleSubmitStatusChanges = status => {
+  //   const {
+  //     history,
+  //     resetForm
+  //   } = this.props
+  //   if (status === SUCCESS) {
+  //     history.push('/offres?success=true')
+  //   }
+  // }
 
   static getDerivedStateFromProps (nextProps) {
     const {
@@ -102,9 +110,14 @@ class OfferPage extends Component {
       isNew,
       occasionCollection,
       occasion,
-      occasionId,
       offererOptions,
       offerers,
+      match: {
+        params: {
+          occasionId,
+          occasionPath
+        }
+      },
       uniqueVenue,
       user,
       venueOptions
@@ -139,6 +152,8 @@ class OfferPage extends Component {
       'contactEmail',
     ]
 
+    const occasionIdOrNew = occasionId === 'nouveau' ? NEW : occasionId
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -157,7 +172,7 @@ class OfferPage extends Component {
           <FormField
             collectionName='occasions'
             defaultValue={name}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Titre :" />}
             name="name"
             required
@@ -172,14 +187,22 @@ class OfferPage extends Component {
                     <OccurenceManager occurences={occurences} />
                 </div>
               )}
-
+              <div className='box content has-text-centered'>
+                <ReactMarkdown source={mediationExplanation} />
+                <p>
+                  <NavLink className='button is-primary' to={`/offres/${occasionPath}/${occasionId}/accroches/nouveau`}>
+                    <Icon svg='ico-stars' />
+                    Ajouter une accroche
+                  </NavLink>
+                </p>
+              </div>
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
           <FormField
             collectionName='occasions'
             defaultValue={type || get(eventTypes, '0.value')}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Type :" />}
             name="type"
             required
@@ -190,7 +213,7 @@ class OfferPage extends Component {
           <FormField
             collectionName='occasions'
             defaultValue={defaultOfferer || get(offerers, '0.id')}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Structure :" />}
             readOnly={!isNew}
             required
@@ -205,7 +228,7 @@ class OfferPage extends Component {
               get(occurences, '0.venue.id') ||
               get(venueOptions, '0.value')
             }
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Lieu :" />}
             name='venueId'
             readOnly={!isNew}
@@ -218,7 +241,7 @@ class OfferPage extends Component {
             <FormField
               collectionName='occasions'
               defaultValue={durationMinutes}
-              entityId={occasionId}
+              entityId={occasionIdOrNew}
               label={<Label title="Durée (en minutes) :" />}
               name="durationMinutes"
               required
@@ -230,7 +253,7 @@ class OfferPage extends Component {
           <FormField
             collectionName='occasions'
             defaultValue={description}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Description :" />}
             name="description"
             required
@@ -241,7 +264,7 @@ class OfferPage extends Component {
           <FormField
             collectionName='occasions'
             defaultValue={author}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Auteur :" />}
             name="author"
             isHorizontal
@@ -252,7 +275,7 @@ class OfferPage extends Component {
               <FormField
                 collectionName='occasions'
                 defaultValue={stageDirector}
-                entityId={occasionId}
+                entityId={occasionIdOrNew}
                 key={0}
                 label={<Label title="Metteur en scène:" />}
                 name="stageDirector"
@@ -262,7 +285,7 @@ class OfferPage extends Component {
               <FormField
                 collectionName='occasions'
                 defaultValue={performer}
-                entityId={occasionId}
+                entityId={occasionIdOrNew}
                 key={1}
                 label={<Label title="Interprète:" />}
                 name="performer"
@@ -275,7 +298,7 @@ class OfferPage extends Component {
           <FormField
             collectionName='occasions'
             defaultValue={contactName || get(user, 'publicName')}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Nom du contact :" />}
             name="contactName"
             required
@@ -285,7 +308,7 @@ class OfferPage extends Component {
           <FormField
             collectionName='occasions'
             defaultValue={contactEmail || get(user, 'email')}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Email de contact :" />}
             name="contactEmail"
             required
@@ -296,7 +319,7 @@ class OfferPage extends Component {
           <FormField
             collectionName='occasions'
             defaultValue={contactPhone}
-            entityId={occasionId}
+            entityId={occasionIdOrNew}
             label={<Label title="Tel de contact :" />}
             name="contactPhone"
             isHorizontal
@@ -304,7 +327,7 @@ class OfferPage extends Component {
           {false && <FormField
                       collectionName='occasions'
                       defaultValue={mediaUrls}
-                      entityId={occasionId}
+                      entityId={occasionIdOrNew}
                       label={<Label title="Media URLs" />}
                       name="mediaUrls"
                       type="list"
@@ -320,12 +343,12 @@ class OfferPage extends Component {
             <div className="control">
               <SubmitButton
                 getBody={form => ({
-                  occasion: get(form, `occasionsById.${occasionId}`),
+                  occasion: get(form, `occasionsById.${occasionIdOrNew}`),
                   eventOccurences: form.eventOccurencesById &&
                     Object.values(form.eventOccurencesById)
                 })}
                 getIsDisabled={form => {
-                  const missingFields = requiredFields.filter(r => !get(form, `occasionsById.${occasionId}.${r}`));
+                  const missingFields = requiredFields.filter(r => !get(form, `occasionsById.${occasionIdOrNew}.${r}`));
                   console.log(missingFields)
                   return missingFields.length > 0
                   // return isNew

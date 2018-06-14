@@ -25,12 +25,14 @@ const withCurrentOccasion = WrappedComponent => {
       const {
         match: {
           params: {
+            occasionType,
             occasionId
           }
         },
         requestData,
       } = this.props
       const { apiPath } = this.state
+
       occasionId !== 'nouveau' && requestData(
         'GET',
         apiPath,
@@ -83,7 +85,7 @@ const withCurrentOccasion = WrappedComponent => {
     connect(
       (state, ownProps) => ({
         occasion: selectCurrentOccasion(state, ownProps),
-        user: state.user
+        user: state.user,
       }),
       { requestData }
     )

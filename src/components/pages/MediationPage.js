@@ -16,43 +16,43 @@ import selectCurrentMediation from '../../selectors/currentMediation'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { pathToModel } from '../../utils/translate'
 
-import { THUMBS_URL } from '../../utils/config'
+import { NEW, THUMBS_URL } from '../../utils/config'
 import { apiUrl } from '../../utils/config'
 
 class MediationPage extends Component {
 
   constructor () {
-    super ()
+    super()
     this.state = {
       isLoading: false,
       isNew: false
     }
   }
 
-  static getDerivedStateFromProps (nextProps) {
-    const {
-      mediationId,
-      occasionId,
-      occasionPath
-    } = nextProps.match.params
-    const {
-      offerer,
-      name,
-    } = nextProps
-    const {
-      id
-    } = (nextProps.mediation || {})
-    const isNew = mediationId === 'nouveau'
-    return {
-      apiPath: `mediations${isNew ? '' : `/${id}`}`,
-      method: isNew ? 'POST' : 'PATCH',
-      occasionModel: pathToModel(occasionPath).toLowerCase(),
-      isLoading: !(name || offerer || (id && !isNew) ),
-      isNew,
-      routePath: `/offres/${occasionPath}/${occasionId}/accroches`,
-      thumbUrl: `${THUMBS_URL}/mediations/${id}`,
-    }
-  }
+  // static getDerivedStateFromProps (nextProps) {
+  //   const {
+  //     mediationId,
+  //     occasionId,
+  //     occasionPath
+  //   } = nextProps.match.params
+  //   const {
+  //     offerer,
+  //     name,
+  //   } = nextProps
+  //   const {
+  //     id
+  //   } = (nextProps.mediation || {})
+  //   const isNew = mediationId === 'nouveau'
+  //   return {
+  //     apiPath: `mediations${isNew ? '' : `/${id}`}`,
+  //     method: isNew ? 'POST' : 'PATCH',
+  //     occasionModel: pathToModel(occasionPath).toLowerCase(),
+  //     isLoading: !(name || offerer || (id && !isNew) ),
+  //     isNew,
+  //     routePath: `/offres/${occasionPath}/${occasionId}/accroches`,
+  //     thumbUrl: `${THUMBS_URL}/mediations/${id}`,
+  //   }
+  // }
 
   static defaultProps = {
     imageUploadSize: 500,
@@ -116,12 +116,18 @@ class MediationPage extends Component {
 
   render () {
     const {
+      occasion,
       offerer,
       name,
       imageUploadSize,
       imageUploadBorder,
+      match: {
+        params: {
+          occasionId,
+          occasionPath
+        }
+      },
     } = this.props
-    const occasionId = this.props.id
     const {
       id
     } = (this.props.mediation || {})
@@ -133,67 +139,54 @@ class MediationPage extends Component {
       occasionModel,
       routePath
     } = this.state
-    return (
-      <PageWrapper name='mediation' loading={isLoading}>
-        <div className='columns'>
-          <div className='column'>
-            <div className='has-text-right'>
-              <NavLink
-                to={routePath}
-                className="button is-primary is-outlined">
-                Retour
-              </NavLink>
-            </div>
-            <br/>
-            <section className='section' key={0}>
-              <h1 className='title has-text-centered'>
-                {isNew ? 'Créez' : 'Modifiez'} une accroche pour {name}
-              </h1>
-            </section>
-            <SubmitButton
-              getBody={form => ({
-                [`${occasionModel}Id`]: occasionId,
-                offererId: offerer && offerer.id
-              })}
-              className="button is-primary is-medium"
-              getIsDisabled={form => !offerer || !occasionId}
-              method={method}
-              path={apiPath}
-              storeKey="mediations"
-              text={isNew ? 'Créer' : 'Modifier'}
-            />
-            <br/>
-            <br/>
-            <div className='columns'>
-              <div className='column is-three-quarters'>
-                {
-                  !isNew && [
-                    <section className='section' key={0}>
-                      <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
-                    </section>,
-                    <UploadThumb
-                      image={apiUrl(get(this.props, 'mediation.thumbPath'))}
-                      borderRadius={0}
-                      collectionName='mediations'
-                      entityId={id}
-                      key={1}
-                      index={0}
-                      border={imageUploadBorder}
-                      width={imageUploadSize}
-                      height={imageUploadSize}
-                      storeKey='thumbedMediation'
-                      type='thumb'
-                      onImageChange={this.drawRectangles}
-                      required
-                    />
-                  ]
-                }
 
-              </div>
-              <div className='column is-one-quarter'>
-                <h6>Exemple :</h6>
-              </div>
-            </div>
+    return (
+      <PageWrapper name='mediation' backTo={{path: `/offres/${occasionPath}/${occasionId}`, label: `Revenir à l'offre ${get(occasion, 'name')}`}}>
+        <section className='section' key={0}>
+          <h1 className='title has-text-centered'>
+            {isNew ? 'Créez' : 'Modifiez'} une accroche pour {name}
+          </h1>
+        </section>
+        <SubmitButton
+          getBody={form => ({
+            [`${occasionModel}Id`]: occasionId,
+            offererId: offerer && offerer.id
+          })}
+          className="button is-primary is-medium"
+          getIsDisabled={form => !offerer || !occasionId}
+          method={method}
+          path={apiPath}
+          storeKey="mediations"
+          text={isNew ? 'Créer' : 'Modifier'}
+        />
+        <div className='section columns'>
+          <div className='column is-three-quarters'>
+            {
+              !isNew && [
+                <section className='section' key={0}>
+                  <p>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
+                </section>,
+                <UploadThumb
+                  image={apiUrl(get(this.props, 'mediation.thumbPath'))}
+                  borderRadius={0}
+                  collectionName='mediations'
+                  entityId={id}
+                  key={1}
+                  index={0}
+                  border={imageUploadBorder}
+                  width={imageUploadSize}
+                  height={imageUploadSize}
+                  storeKey='thumbedMediation'
+                  type='thumb'
+                  onImageChange={this.drawRectangles}
+                  required
+                />
+              ]
+            }
+
+          </div>
+          <div className='column is-one-quarter'>
+            <h6>Exemple :</h6>
           </div>
         </div>
       </PageWrapper>
@@ -207,7 +200,7 @@ export default compose(
   connect(
     (state,ownProps) => ({
       mediation: selectCurrentMediation(state, ownProps),
-      offerer: selectCurrentOfferer(state, ownProps)
+      offerer: selectCurrentOfferer(state, ownProps),
     }),
     { assignData }
   )
