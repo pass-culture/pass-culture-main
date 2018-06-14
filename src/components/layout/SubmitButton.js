@@ -5,7 +5,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { requestData } from '../../reducers/data'
-import { FAIL, PENDING, SUCCESS } from '../../reducers/queries'
+// import { FAIL, PENDING, SUCCESS } from '../../reducers/queries'
 import { randomHash } from '../../utils/random'
 
 class SubmitButton extends Component {
@@ -31,6 +31,8 @@ class SubmitButton extends Component {
       path,
       storeKey,
       requestData,
+      isNotification,
+      getNotification
     } = this.props
     const submitRequestId = randomHash()
     this.setState({
@@ -43,6 +45,8 @@ class SubmitButton extends Component {
       getSuccessState,
       key: storeKey,
       requestId: submitRequestId,
+      isNotification,
+      getNotification
     })
     onClick && onClick()
   }

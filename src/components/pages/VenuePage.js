@@ -234,6 +234,12 @@ class VenuePage extends Component {
                 path={apiPath}
                 storeKey="venues"
                 text="Valider"
+                isNotification
+                getNotification={status =>
+                  status === SUCCESS
+                  ? { text: "Lieu ajouté avec succès !" }
+                  : { text: "Oops, il y a eu un problème avec l'ajout de ce lieu" }
+                }
               />
             </div>
           </div>

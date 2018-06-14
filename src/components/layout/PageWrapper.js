@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import React from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import BackButton from './BackButton'
@@ -65,4 +66,8 @@ PageWrapper.defaultProps = {
   Tag: 'main',
 }
 
-export default PageWrapper
+export default connect(
+  (state) => ({
+    notification: state.notification
+  })
+)(PageWrapper)
