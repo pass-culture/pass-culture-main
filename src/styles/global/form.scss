@@ -12,9 +12,18 @@ label {
   color: $violet;
 }
 
-input.input[readonly] {
-  border: none;
-  background-color: transparent;
+input.input, .select select {
+
+  &[readonly] {
+    border: none;
+    background-color: transparent;
+  }
+}
+
+.select.readonly {
+  &:after {
+    display: none !important;
+  }
 }
 
 @media (min-width: $tablet) {

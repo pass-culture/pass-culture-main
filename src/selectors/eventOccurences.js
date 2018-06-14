@@ -2,24 +2,18 @@ import get from 'lodash.get'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-import { getElementsWithoutDeletedFormValues } from '../utils/form'
-import { DELETE } from '../utils/config'
-
 
 export default createSelector(
-  (state, ownProps) => get(ownProps, 'occurences'),
-  state => state.form.eventOccurencesById,
-  (occurences, formEventOccurencesById) => {
-
-    // by default it is directly the props occurences
-    let filteredOccurences = occurences
-
-    if (formEventOccurencesById) {
-      filteredOccurences = getElementsWithoutDeletedFormValues(
-        occurences || [],
-        Object.values(formEventOccurencesById)
-      )
+  state => state.data.eventOccurences,
+  (state, ownProps) => get(ownProps, 'occasion.id'),
+  (eventOccurences, eventId) => {
+    if (!eventOccurences || !eventId) {
+      return
     }
+
+    // filter
+    const filteredOccurences = eventOccurences.filter(eo =>
+      eo.eventId === eventId)
 
     // sort by dates
     if (filteredOccurences) {

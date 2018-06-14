@@ -26,6 +26,14 @@ const FormComponentsByName = {
 
 class FormField extends Component {
 
+  static propTypes = {
+    collectionName: PropTypes.string.isRequired
+  }
+
+  static defaultProps = {
+    size: 'normal',
+  }
+
   render() {
     const {
       className,
@@ -53,7 +61,6 @@ class FormField extends Component {
       {...this.props}
       className={classnames({
         checkbox: isCheckbox,
-        select: isSelect,
         input: type !== 'textarea' && !isSelect,
         textarea: type === 'textarea',
         'is-rounded': !isCheckbox,
@@ -117,15 +124,6 @@ class FormField extends Component {
       </div>
     ]
   }
-}
-
-FormField.defaultProps = {
-  type: 'input',
-  size: 'normal',
-}
-
-FormField.propTypes = {
-  collectionName: PropTypes.string.isRequired
 }
 
 export default compose(

@@ -9,6 +9,6 @@ export default createSelector(
   (venues, offererId) => {
     console.log('venues', venues, 'offererId', offererId)
     return venues &&
-    venues.filter(v => v.managingOffererId === offererId)
+      venues.filter(v => v.managingOffererId === offererId)
   }
 )

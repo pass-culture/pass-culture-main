@@ -66,9 +66,7 @@ class SubmitButton extends Component {
   componentDidUpdate (prevProps, prevState) {
     const { handleStatusChange } = this.props
     const { submitRequestStatus } = this.state
-    console.log('submitRequestStatus', submitRequestStatus)
     if (prevState.submitRequestStatus !== submitRequestStatus) {
-      console.log('handleStatusChange', handleStatusChange)
       handleStatusChange && handleStatusChange(submitRequestStatus)
     }
   }

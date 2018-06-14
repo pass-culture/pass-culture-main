@@ -8,7 +8,7 @@ import OccasionItem from './OccasionItem'
 import selectOccasions from '../selectors/occasions'
 
 const OccasionsList = ({ occasions }) => {
-
+  if (!occasions) return null;
   return (
     <ul className='occasions-list pc-list'>
       {occasions.map(o => <OccasionItem key={o.id} {...o} />)}

@@ -160,7 +160,7 @@ class VenuePage extends Component {
           />
         </div>
         <div className='section'>
-          <h4 className='is-4 is-uppercase has-text-weight-bold '>Adresse</h4>
+          <h4 className='pc-form-section'>Adresse</h4>
 
           <FormField
             autoComplete="address"
