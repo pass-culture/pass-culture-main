@@ -35,6 +35,12 @@ class Offerer(app.model.PcObject,
             user_offerer.rights = app.model.RightsType.admin
             return user_offerer
 
+    def errors(self):
+        errors = super(Offerer, self).errors()
+        if self.siren is not None\
+           and not len(self.siren) == 9:
+            errors.addError('siren', 'Ce code SIREN est invalide')
+        return errors
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),

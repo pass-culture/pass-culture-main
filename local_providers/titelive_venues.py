@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import current_app as app
+import luhn
 import os
 import pandas as pd
 from pathlib import Path
@@ -88,7 +89,7 @@ class TiteLiveVenues(app.model.LocalProvider):
             obj.postalCode = str(row[4]).strip()
             obj.city = row[5]
             obj.managingOfferer = self.providables[0]
-            obj.siret = str(row[1])
+            obj.siret = luhn.append(str(row[1]))
         elif isinstance(obj, app.model.Offerer):
             obj.bookingEmail = 'passculture-dev@beta.gouv.fr'
             obj.name = row[2]

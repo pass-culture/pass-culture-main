@@ -46,6 +46,22 @@ class Venue(app.model.PcObject,
     def store_department_code(self):
         self.departementCode = self.postalCode[:-3]
 
+    def errors(self):
+        errors = super(Venue, self).errors()
+        if self.siret is not None\
+           and not len(self.siret) == 14:
+            errors.addError('siret', 'Ce code SIRET est invalide : '+self.siret)
+        if self.managingOffererId is not None:
+            if self.managingOfferer is None:
+                managingOfferer = app.model.Offerer.query\
+                                      .filter_by(id=self.managingOffererId).first()
+            else:
+                managingOfferer = self.managingOfferer
+            if self.siret is not None\
+               and managingOfferer is not None\
+               and not self.siret.startswith(managingOfferer.siren):
+                errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
+        return errors
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):

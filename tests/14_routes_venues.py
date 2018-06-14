@@ -14,6 +14,7 @@ def test_11_modify_venue():
     assert r_before.status_code == 200
     r_mod = req_with_auth().patch(API_URL + '/venues/AE',
                                   json={'name': 'Ma librairie'})
+    print("ERROR", r_mod.json())
     assert r_mod.status_code == 200
     r_after = req_with_auth().get(API_URL + '/venues/AE')
     assert r_after.status_code == 200
@@ -21,10 +22,20 @@ def test_11_modify_venue():
 
 #TODO: check venue modification with missing items
 
+def test_12_modify_venue_bad_siret():
+    r_mod = req_with_auth().patch(API_URL + '/venues/AE',
+                                  json={'siret': '999'})
+    assert r_mod.status_code == 400
+    assert 'siret' in r_mod.json()
+    r_mod = req_with_auth().patch(API_URL + '/venues/AE',
+                                  json={'siret': '12345678901234'})
+    assert r_mod.status_code == 400
+    assert 'siret' in r_mod.json()
 
-def test_12_create_venue():
+
+def test_13_create_venue():
     venue_data = {'name': 'Ma venue',
-                  'siret': '50290276000045',
+                  'siret': '30255917810045',
                   'address': '75 Rue Charles Fourier, 75013 Paris',
                   'postalCode': '75200',
                   'city': 'Paris',
@@ -33,7 +44,7 @@ def test_12_create_venue():
                   'longitude': 2.35284
                  }
     r_create = req_with_auth().post(API_URL + '/venues/',
-                                  json=venue_data)
+                                    json=venue_data)
     assert r_create.status_code == 201
     id = r_create.json()['id']
     r_check = req_with_auth().get(API_URL + '/venues/'+id)
