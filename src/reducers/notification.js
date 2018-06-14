@@ -1,9 +1,15 @@
-export const SET_NOTIFICATION = 'SET_NOTIFICATION'
+export const CLOSE_NOTIFICATION = 'CLOSE_NOTIFICATION'
+export const SHOW_NOTIFICATION = 'SHOW_NOTIFICATION'
+
+// INITIAL STATE
+const initialState = null
 
 // REDUCER
-function notification(state, action) {
+function notification(state = initialState, action) {
   switch (action.type) {
-    case SET_NOTIFICATION:
+    case CLOSE_NOTIFICATION:
+      return initialState
+    case SHOW_NOTIFICATION:
       return action.notification
     default:
       return state
@@ -11,10 +17,15 @@ function notification(state, action) {
 }
 
 // ACTION CREATORS
-export function setNotification(notification) {
-  console.log(' action setNotification ', notification);
+export function closeNotification(notification) {
   return {
-    type: SET_NOTIFICATION,
+    type: CLOSE_NOTIFICATION
+  }
+}
+
+export function showNotification(notification) {
+  return {
+    type: SHOW_NOTIFICATION,
     notification,
   }
 }

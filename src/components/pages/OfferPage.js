@@ -342,6 +342,7 @@ class OfferPage extends Component {
             </div>
             <div className="control">
               <SubmitButton
+                className="button is-primary is-medium"
                 getBody={form => get(form, `occasionsById.${occasionIdOrNew}`)}
                 getIsDisabled={form => {
                   const missingFields = requiredFields.filter(r =>
@@ -361,9 +362,10 @@ class OfferPage extends Component {
                   //   typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
                   //   (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                 }}
-                className="button is-primary is-medium"
+                getNotification={status => status === SUCCESS && {
+                  text: 'Votre offre a bien été enregistrée'
+                }}
                 method={isNew ? 'POST' : 'PATCH'}
-                handleStatusChange={this.handleSubmitStatusChange}
                 path={apiPath}
                 storeKey="occasions"
                 text="Enregistrer"

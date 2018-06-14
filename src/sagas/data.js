@@ -2,7 +2,7 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { failData, successData } from '../reducers/data'
 import { assignErrors } from '../reducers/errors'
-import { setNotification } from '../reducers/notification'
+import { showNotification } from '../reducers/notification'
 import { SUCCESS } from '../reducers/queries'
 import { fetchData } from '../utils/request'
 
@@ -61,17 +61,32 @@ function* fromWatchFailDataActions(action) {
 
 function* fromWatchSuccessDataActions(action) {
   console.log('action ---- ', action);
-  const isNotification = action.config.isNotification === false
-  ? false : true
-  const notification = action.config.getNotification && action.config.getNotification(SUCCESS)
-  notification.type = SUCCESS
+  const {
+    config,
+    method
+  } = action
+  const {
+    getNotification
+  } = (config || {})
 
-   if  (isNotification && notification && (action.method === 'POST' || action.method === 'PATCH')) {
-     yield put(setNotification(notification))
-   }
-//   if (isRedirect  && redirectPathname) {
-//     yield call(history.push, redirectPathname) }
-//    }
+  // HOOK FOR SOME NOTIFICATION
+  const isNotification = config.isNotification === false
+                          ? false
+                          : true
+  const notification = getNotification && getNotification(SUCCESS)
+  if (
+    isNotification &&
+    notification
+    && (method === 'POST' || method === 'PATCH')
+  ) {
+    notification.type = 'success'
+    yield put(showNotification(notification))
+  }
+
+  // HOOK FOR A REDIRECT
+  //   if (isRedirect  && redirectPathname) {
+  //     yield call(history.push, redirectPathname) }
+  //    }
 }
 
 export function* watchDataActions() {
@@ -83,8 +98,8 @@ export function* watchDataActions() {
     ({ type }) => /FAIL_DATA_(.*)/.test(type),
     fromWatchFailDataActions
   )
-  // yield takeEvery(
-  //   ({ type }) => /SUCCESS_DATA_(.*)/.test(type),
-  //   fromWatchSuccessDataActions
-  // )
+  yield takeEvery(
+    ({ type }) => /SUCCESS_DATA_(.*)/.test(type),
+    fromWatchSuccessDataActions
+  )
 }
