@@ -90,6 +90,39 @@ class OccurenceManager extends Component {
             ))}
           </tbody>
         </table>
+        {/*
+          TODO: define which offerer and which venue is to be done
+          at the eventoccurence case
+        <FormField
+          collectionName='occasions'
+          defaultValue={get(eventOccurences, '0.venue.managingOffererId')}
+          entityId={occasionIdOrNew}
+          label={<Label title="Structure :" />}
+          readOnly={!isNew}
+          required
+          name='offererId'
+          options={offererOptions}
+          type="select"
+          isHorizontal
+        />
+        */}
+        {/*
+          !uniqueVenue && (
+            <FormField
+              collectionName='occasions'
+              defaultValue={get(eventOccurences, '0.venue.id')}
+              entityId={occasionIdOrNew}
+              label={<Label title="Lieu :" />}
+              name='venueId'
+              readOnly={!isNew}
+              required
+              options={venueOptions}
+              type="select"
+              isHorizontal
+            />
+          )
+        */}
+
         <SingleDatePicker
           calendarInfoPosition="top"
           renderCalendarInfo={() => (

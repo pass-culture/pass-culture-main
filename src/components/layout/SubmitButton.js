@@ -48,10 +48,12 @@ class SubmitButton extends Component {
       getOptimistState,
       getSuccessState,
       key: storeKey,
-      redirect,
+      redirect: (status, action) =>
+        action.config.requestId === submitRequestId && redirect(status, action),
       requestId: submitRequestId,
       isNotification,
-      getNotification
+      getNotification: (status, action) =>
+        action.config.requestId === submitRequestId && getNotification(status, action)
     })
     onClick && onClick()
   }

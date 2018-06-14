@@ -119,11 +119,7 @@ class OfferPage extends Component {
       occasionIdOrNew,
       offererOptions,
       offerers,
-      match: {
-        params: {
-          occasionPath
-        }
-      },
+      showModal,
       uniqueVenue,
       user,
       venueOptions
@@ -170,7 +166,8 @@ class OfferPage extends Component {
           />
           { !isNew && (
             <div>
-              { occasionCollection === 'events' && (
+              {
+                occasionCollection === 'events' && (
                   <div className='field'>
                     <Label title='Dates :' />
                     <OccurenceManager occurences={eventOccurences} />
@@ -202,42 +199,6 @@ class OfferPage extends Component {
             options={eventTypes}
             isHorizontal
           />
-
-          {/*
-            TODO: define which offerer and which venue is to be done
-            at the eventoccurence case
-          <FormField
-            collectionName='occasions'
-            defaultValue={get(eventOccurences, '0.venue.managingOffererId')}
-            entityId={occasionIdOrNew}
-            label={<Label title="Structure :" />}
-            readOnly={!isNew}
-            required
-            name='offererId'
-            options={offererOptions}
-            type="select"
-            isHorizontal
-          />
-          */}
-          {/*
-            !uniqueVenue && (
-              <FormField
-                collectionName='occasions'
-                defaultValue={get(eventOccurences, '0.venue.id')}
-                entityId={occasionIdOrNew}
-                label={<Label title="Lieu :" />}
-                name='venueId'
-                readOnly={!isNew}
-                required
-                options={venueOptions}
-                type="select"
-                isHorizontal
-              />
-            )
-          */}
-
-
-
           {occasionCollection === 'events' && (
             <FormField
               collectionName='occasions'
@@ -349,19 +310,6 @@ class OfferPage extends Component {
                   const missingFields = requiredFields.filter(r =>
                     !get(form, `occasionsById.${occasionIdOrNew}.${r}`));
                   return missingFields.length > 0
-                  // return isNew
-                  // ? !get(form, `occasionsById.${occasionId}.contactEmail`) ||
-                  //   !get(form, `occasionsById.${occasionId}.description`) ||
-                  //   !get(form, `occasionsById.${occasionId}.durationMinutes`) ||
-                  //   !get(form, `occasionsById.${occasionId}.name`) ||
-                  //   !get(form, `occasionsById.${occasionId}.offererId`)
-                  // : !get(form, `occasionsById.${occasionId}.contactEmail`) &&
-                  //   !get(form, `occasionsById.${occasionId}.description`) &&
-                  //   !get(form, `occasionsById.${occasionId}.durationMinutes`) &&
-                  //   !get(form, `occasionsById.${occasionId}.name`) &&
-                  //   !get(form, `occasionsById.${occasionId}.offererId`) &&
-                  //   typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
-                  //   (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
                 }}
                 getNotification={(status, action) =>
                   status === SUCCESS &&
@@ -372,8 +320,27 @@ class OfferPage extends Component {
                 path={apiPath}
                 redirect={(status, action) =>
                   status === SUCCESS &&
-                  (action.method === 'PATCH' || action.method === 'POST') &&
-                  history.push('/offres')
+                  action.method === 'PATCH'
+                    ? history.push('/offres')
+                    : action.method === 'POST' && showModal(
+                      <div>
+                        Cette offre est-elle soumise à des dates ou des horaires particuliers ?
+                        <button
+                          className='button'
+                          onClick={() => showModal(
+                            <OccurenceManager occurences={eventOccurences} />
+                          )}
+                        >
+                          Oui
+                        </button>
+                        <button
+                          className='button'
+                          onClick={() => history.push('/offres')}
+                        >
+                          Non
+                        </button>
+                      </div>
+                    )
                 }
                 storeKey="occasions"
                 text="Enregistrer"
@@ -399,6 +366,6 @@ export default compose(
       uniqueVenue: selectUniqueVenue(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)
     }),
-    { mergeForm, resetForm }
+    { mergeForm, resetForm, showModal }
   )
 )(OfferPage)
