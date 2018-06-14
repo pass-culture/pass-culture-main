@@ -17,6 +17,7 @@ import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { SUCCESS } from '../../reducers/queries'
+import selectEventOccurences from '../../selectors/eventOccurences'
 import selectOfferers from '../../selectors/offerers'
 import selectFormOfferer from '../../selectors/formOfferer'
 import selectOffererOptions from '../../selectors/offererOptions'
@@ -31,11 +32,20 @@ const mediationExplanation = `
   Les accroches font la **spécificité du Pass Culture**. Prenz le temps de les choisir avec soin !
 `
 
+const requiredFields = [
+  'name',
+  'type',
+  'durationMinutes',
+  'description',
+  'contactName',
+  'contactEmail',
+]
+
 class OfferPage extends Component {
   constructor () {
     super()
     this.state = {
-      defaultOfferer: null
+      formOfferer: null
     }
   }
 
@@ -51,10 +61,14 @@ class OfferPage extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
+    const {
+      uniqueVenue,
+      user
+    } = this.props
+    if (prevProps.user !== user) {
       this.handleRequestData()
     }
-    if (!prevProps.uniqueVenue && this.props.uniqueVenue) {
+    if (!prevProps.uniqueVenue && uniqueVenue) {
       this.handleMergeForm()
     }
   }
@@ -90,31 +104,22 @@ class OfferPage extends Component {
   //   }
   // }
 
-  static getDerivedStateFromProps (nextProps) {
-    const {
-      formOfferer,
-      occurences
-    } = nextProps
-    const defaultOfferer = get(occurences, '0.offer.0.offerer')
-    const offerer = formOfferer || defaultOfferer
-    return {
-      defaultOfferer
-    }
-  }
-
   render () {
     const {
       apiPath,
+      eventOccurences,
       eventTypes,
+      formOfferer,
       isLoading,
       isNew,
+      newMediationRoutePath,
       occasionCollection,
       occasion,
+      occasionIdOrNew,
       offererOptions,
       offerers,
       match: {
         params: {
-          occasionId,
           occasionPath
         }
       },
@@ -134,25 +139,8 @@ class OfferPage extends Component {
       name,
       performer,
       stageDirector,
-      occurences,
       type,
     } = (occasion || {})
-    const {
-      defaultOfferer
-    } = this.state
-
-    const requiredFields = [
-      'name',
-      'type',
-      'offererId',
-      'venueId',
-      'durationMinutes',
-      'description',
-      'contactName',
-      'contactEmail',
-    ]
-
-    const occasionIdOrNew = occasionId === 'nouveau' ? NEW : occasionId
 
     return (
       <PageWrapper
@@ -184,13 +172,16 @@ class OfferPage extends Component {
               { occasionCollection === 'events' && (
                   <div className='field'>
                     <Label title='Dates :' />
-                    <OccurenceManager occurences={occurences} />
+                    <OccurenceManager occurences={eventOccurences} />
                 </div>
               )}
               <div className='box content has-text-centered'>
                 <ReactMarkdown source={mediationExplanation} />
                 <p>
-                  <NavLink className='button is-primary' to={`/offres/${occasionPath}/${occasionId}/accroches/nouveau`}>
+                  <NavLink
+                    className='button is-primary'
+                    to={newMediationRoutePath}
+                  >
                     <Icon svg='ico-stars' />
                     Ajouter une accroche
                   </NavLink>
@@ -210,9 +201,13 @@ class OfferPage extends Component {
             options={eventTypes}
             isHorizontal
           />
+
+          {/*
+            TODO: define which offerer and which venue is to be done
+            at the eventoccurence case
           <FormField
             collectionName='occasions'
-            defaultValue={defaultOfferer || get(offerers, '0.id')}
+            defaultValue={get(eventOccurences, '0.venue.managingOffererId')}
             entityId={occasionIdOrNew}
             label={<Label title="Structure :" />}
             readOnly={!isNew}
@@ -222,21 +217,26 @@ class OfferPage extends Component {
             type="select"
             isHorizontal
           />
-          <FormField
-            collectionName='occasions'
-            defaultValue={
-              get(occurences, '0.venue.id') ||
-              get(venueOptions, '0.value')
-            }
-            entityId={occasionIdOrNew}
-            label={<Label title="Lieu :" />}
-            name='venueId'
-            readOnly={!isNew}
-            required
-            options={venueOptions}
-            type="select"
-            isHorizontal
-          />
+          */}
+          {/*
+            !uniqueVenue && (
+              <FormField
+                collectionName='occasions'
+                defaultValue={get(eventOccurences, '0.venue.id')}
+                entityId={occasionIdOrNew}
+                label={<Label title="Lieu :" />}
+                name='venueId'
+                readOnly={!isNew}
+                required
+                options={venueOptions}
+                type="select"
+                isHorizontal
+              />
+            )
+          */}
+
+
+
           {occasionCollection === 'events' && (
             <FormField
               collectionName='occasions'
@@ -342,14 +342,10 @@ class OfferPage extends Component {
             </div>
             <div className="control">
               <SubmitButton
-                getBody={form => ({
-                  occasion: get(form, `occasionsById.${occasionIdOrNew}`),
-                  eventOccurences: form.eventOccurencesById &&
-                    Object.values(form.eventOccurencesById)
-                })}
+                getBody={form => get(form, `occasionsById.${occasionIdOrNew}`)}
                 getIsDisabled={form => {
-                  const missingFields = requiredFields.filter(r => !get(form, `occasionsById.${occasionIdOrNew}.${r}`));
-                  console.log(missingFields)
+                  const missingFields = requiredFields.filter(r =>
+                    !get(form, `occasionsById.${occasionIdOrNew}.${r}`));
                   return missingFields.length > 0
                   // return isNew
                   // ? !get(form, `occasionsById.${occasionId}.contactEmail`) ||
@@ -385,6 +381,7 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
+      eventOccurences: selectEventOccurences(state, ownProps),
       eventTypes: state.data.eventTypes,
       formOfferer: selectFormOfferer(state, ownProps),
       offerers: selectOfferers(state),

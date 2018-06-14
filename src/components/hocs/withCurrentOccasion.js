@@ -62,15 +62,16 @@ const withCurrentOccasion = WrappedComponent => {
       const isNew = occasionId === 'nouveau'
       const occasionCollection = pathToCollection(occasionPath)
       const apiPath = isNew
-        ? `occasions/${occasionCollection}`
-        : `occasions/${occasionCollection}/${occasionId}`
+        ? `${occasionCollection}`
+        : `${occasionCollection}/${occasionId}`
       const routePath = `/offres/${occasionPath}${isNew ? '' : `/${occasionId}`}`
       return {
         apiPath,
         isLoading: !(id || isNew),
         isNew,
+        newMediationRoutePath: `${routePath}/accroches/nouveau`,
         occasionCollection,
-        occasionId: isNew ? NEW : occasionId,
+        occasionIdOrNew: isNew ? NEW : occasionId,
         routePath
       }
     }
