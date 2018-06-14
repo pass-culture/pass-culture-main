@@ -25,12 +25,12 @@ class UploadThumb extends Component {
   }
 
   static getDerivedStateFromProps(props, prevState) {
-    const hasExistingImage = typeof props.image === 'string'
-    const readOnly = hasExistingImage && !prevState.isEdited
+    // const hasExistingImage = typeof props.image === 'string'
+    const readOnly = props.hasExistingImage && !prevState.isEdited
     return {
-      hasExistingImage,
       readOnly,
-      image: readOnly ? props.image : prevState.image,
+      isDragging: prevState.isDragging,
+      image: prevState.image || props.image,
     }
   }
 
@@ -103,13 +103,13 @@ class UploadThumb extends Component {
       maxSize,
       width,
       onImageChange,
-      className
+      className,
+      hasExistingImage,
     } = this.props
     const {
       image,
       dragging,
       isUploadDisabled,
-      hasExistingImage,
       readOnly,
       size,
       zoom
@@ -148,7 +148,6 @@ class UploadThumb extends Component {
               !readOnly && image && (
                 <input
                   className="zoom level-left"
-                  key={0}
                   type="range"
                   min="1"
                   max="3"

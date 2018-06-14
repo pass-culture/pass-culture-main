@@ -172,6 +172,7 @@ class MediationPage extends Component {
               storeKey='thumbedMediation'
               type='thumb'
               onImageChange={this.drawRectangles}
+              hasExistingImage={!isNew}
               required
             />
             { imageUrl && (
