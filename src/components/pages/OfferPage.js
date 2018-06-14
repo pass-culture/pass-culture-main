@@ -108,17 +108,30 @@ class OfferPage extends Component {
     requestData('GET', 'eventTypes')
   }
 
+  handleShowOccurencesModal = () => {
+    const {
+      eventOccurences,
+      showModal
+    } = this.props
+    showModal(
+      <OccurenceManager occurences={eventOccurences} />
+    )
+  }
+
   handleSuccessData = (state, action) => {
     const {
+      data,
       method
     } = action
     const {
       eventOccurences,
       history,
+      match: { params: { occasionPath } },
       showModal,
       showNotification
     } = this.props
 
+    // PATCH
     if (method === 'PATCH') {
       history.push('/offres')
       showNotification({
@@ -128,26 +141,29 @@ class OfferPage extends Component {
       return
     }
 
+    // POST
     if (method === 'POST') {
-        showModal(
-          <div>
-            Cette offre est-elle soumise à des dates ou des horaires particuliers ?
-            <button
-              className='button'
-              onClick={() => showModal(
-                <OccurenceManager occurences={eventOccurences} />
-              )}
-            >
-              Oui
-            </button>
-            <button
-              className='button'
-              onClick={() => history.push('/offres')}
-            >
-              Non
-            </button>
-          </div>
-        )
+      // switch to the path with the new created id
+      history.push(`/offres/${occasionPath}/${data.id}`)
+
+      // modal
+      showModal(
+        <div>
+          Cette offre est-elle soumise à des dates ou des horaires particuliers ?
+          <button
+            className='button'
+            onClick={this.handleShowOccurencesModal}
+          >
+            Oui
+          </button>
+          <button
+            className='button'
+            onClick={() => history.push('/offres')}
+          >
+            Non
+          </button>
+        </div>
+      )
     }
   }
 
@@ -166,6 +182,7 @@ class OfferPage extends Component {
       selectedOffererId,
       selectedVenueId,
       selectedVenues,
+      showModal,
       user,
       venueOptions
     } = this.props
@@ -214,11 +231,14 @@ class OfferPage extends Component {
             <div>
               {
                 occasionCollection === 'events' && (
-                  <div className='field'>
-                    <Label title='Dates :' />
-                    <OccurenceManager occurences={eventOccurences} />
-                </div>
-              )}
+                  <button
+                    className='button'
+                    onClick={this.handleShowOccurencesModal}
+                  >
+                    Gérer les dates
+                  </button>
+                )
+              }
               <div className='box content has-text-centered'>
                 <ReactMarkdown source={mediationExplanation} className='section' />
                 <ul className='mediations-list'>
@@ -393,11 +413,6 @@ class OfferPage extends Component {
                     !get(form, `occasionsById.${occasionIdOrNew}.${r}`));
                   return missingFields.length > 0
                 }}
-                getNotification={(status, action) =>
-                  status === SUCCESS &&
-                  (action.method === 'PATCH' || action.method === 'POST') &&
-                  { text: 'Votre offre a bien été enregistrée' }
-                }
                 handleSuccess={this.handleSuccessData}
                 method={isNew ? 'POST' : 'PATCH'}
                 path={apiPath}
