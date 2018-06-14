@@ -210,16 +210,17 @@ with app.app_context():
                                  .one_or_none()
         provider_test(app.local_providers.OpenAgendaEvents,
                       venueProvider,
-                      checkedObjects=2047,
-                      createdObjects=2047,
+                      checkedObjects=15,
+                      createdObjects=15,
                       updatedObjects=0,
                       erroredObjects=0,
-                      checkedThumbs=32,
-                      createdThumbs=32,
+                      checkedThumbs=3,
+                      createdThumbs=3,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Event=33,
-                      EventOccurence=2014,
+                      Event=3,
+                      EventOccurence=12,
+                      Offer=0,
                       Venue=0,
                       Offerer=0)
  

@@ -160,7 +160,7 @@ class OpenAgendaEvents(app.model.LocalProvider):
             return thumb_request.content
 
     def updateObjects(self, limit=None):
-        #self.computeVenueLocationUid()
+        self.computeVenueLocationUid()
         super().updateObjects(limit)
 
     def computeVenueLocationUid(self):
@@ -173,17 +173,18 @@ class OpenAgendaEvents(app.model.LocalProvider):
             data = get_data(page,
                             self.venueProvider.venueIdAtOfferProvider,
                             self.is_mock)
-            for event in data:
+            for event in data['events']:
                 loc = event['location']
                 locations[loc['uid']] = loc
             total_objects = data['offset'] + data['limit']
             more_pages = total_objects < data['total']
         if len(locations) == 0:
             return
-        locations_by_distance = sorted(locations.values,
-                                       lambda l: math.sqrt((l.latitude - venue.latitude) ** 2
-                                                           + (l.longitude - venue.longitude) ** 2))
+        locations_by_distance = sorted(locations.values(),
+                                       key=lambda l: math.sqrt((l['latitude'] - float(venue.latitude)) ** 2
+                                                               + (l['longitude'] - float(venue.longitude)) ** 2))
         self.venueLocationUid = locations_by_distance[0]['uid']
+        print("OpenAgenda location UID selected for venue :", self.venueLocationUid)
 
 
 app.local_providers.OpenAgendaEvents = OpenAgendaEvents
