@@ -67,11 +67,11 @@ class FormSelect extends Component {
           value={value}
         >
           {
-            options && options.map(({ label, value }, index) => (
+            options && options.filter(o => o).map(({ label, value }, index) =>
               <option key={index} value={value}>
                 {label}
               </option>
-            ))
+            )
           }
         </select>
       </div>

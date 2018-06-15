@@ -32,22 +32,22 @@ const SignupPage = ({ errors }) => {
               </p>
               <form>
                 <FormField
-                  className="input is-rounded"
+                  autoComplete="email"
+                  collectionName="users"
+                  inputClassName="input is-rounded"
                   label={
                     <Label
                       title="Adresse e-mail"
                       subtitle="... pour se connecter et récupérer son mot de passe en cas d'oubli :"
                     />
                   }
-                  collectionName="users"
-                  required
-                  autoComplete="email"
                   name="email"
-                  type="email"
                   placeholder="nom@exemple.fr"
+                  required
+                  type="email"
                 />
                 <FormField
-                  className="input is-rounded"
+                  inputClassName="input is-rounded"
                   label={
                     <Label
                       title="Identifiant"
@@ -62,24 +62,24 @@ const SignupPage = ({ errors }) => {
                   type="text"
                 />
                 <FormField
-                  className="input is-rounded"
+                  autoComplete="new-password"
+                  collectionName="users"
+                  inputClassName="input is-rounded"
                   label={
                     <Label
                       title="Mot de passe"
                       subtitle="... pour se connecter :"
                     />
                   }
-                  collectionName="users"
-                  required
-                  autoComplete="new-password"
                   name="password"
                   placeholder="Mon mot de passe"
+                  required
                   type="password"
                 />
                 <FormField
-                  className="input is-rounded"
                   autoComplete="siren"
                   collectionName="users"
+                  inputClassName="input is-rounded"
                   required
                   label={
                     <Label
@@ -88,20 +88,20 @@ const SignupPage = ({ errors }) => {
                     />
                   }
                   name="siren"
-                  type="sirene"
-                  sireType="siren"
                   placeholder="123 456 789"
+                  sireType="siren"
+                  type="sirene"
                 />
                 <FormField
+                  collectionName="users"
                   label={
                     <span>
                       J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
                       <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.
                     </span>
                   }
-                  collectionName="users"
-                  required
                   name="contact_ok"
+                  required
                   type="checkbox"
                 />
                 <div className="errors">{errors}</div>
@@ -110,7 +110,6 @@ const SignupPage = ({ errors }) => {
                     J'ai déjà un compte
                   </NavLink>
                   <SubmitButton
-                    text="Valider"
                     className="button is-primary is-outlined"
                     getBody={form => form.usersById[NEW]}
                     getIsDisabled={form => {
@@ -124,6 +123,7 @@ const SignupPage = ({ errors }) => {
                     }}
                     path="users"
                     storeKey="users"
+                    text="Valider"
                   />
                 </div>
               </form>

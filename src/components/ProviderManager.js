@@ -13,6 +13,7 @@ import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
 import selectCurrentVenue from '../selectors/currentVenue'
 import selectProviderOptions from '../selectors/providerOptions'
+import selectSelectedProvider from '../selectors/selectedProvider'
 import selectVenueProviders from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
 
@@ -92,9 +93,14 @@ class ProviderManager extends Component {
 
   render () {
     const {
+      selectedProvider,
       providerOptions,
       venueProviders
     } = this.props
+    const {
+      identifierDescription,
+      identifierRegexp,
+    } = (selectedProvider || {})
     const {
       isNew,
       withError
@@ -102,6 +108,10 @@ class ProviderManager extends Component {
     const providerOptionsWithPlaceholder = [{
       label: 'Sélectionnez un fournisseur',
     }].concat(providerOptions)
+
+
+    console.log('selectedProvider', selectedProvider)
+
     return (
       <div className='section'>
         <h2 className='pc-list-title'>
@@ -118,14 +128,19 @@ class ProviderManager extends Component {
           }
           {isNew && (
             <li>
-              {withError && (
-                <p className={
-                  withError ? 'has-text-weight-bold has-text-danger' : ''
-                }>Il faut un identifiant ou celui-ci existe déjà</p>
-              )}
+              {
+                withError && (
+                  <p className={
+                    withError ? 'has-text-weight-bold has-text-danger' : ''
+                  }>
+                    Il faut un identifiant ou celui-ci existe déjà
+                  </p>
+                )
+              }
 
               <div className='picto'><Icon svg='picto-db-default' /></div>
               <FormField
+                className='column is-4'
                 collectionName="venueProviders"
                 defaultValue={get(providerOptionsWithPlaceholder, '0.value')}
                 name="providerId"
@@ -134,23 +149,31 @@ class ProviderManager extends Component {
                 type="select"
                 size="small"
               />
-              <FormField
-                collectionName="venueProviders"
-                name="venueIdAtOfferProvider"
-                placeholder='Mon identifiant'
-                size="small"
-              />
-              <SubmitButton
-                className="button is-secondary"
-                getBody={form => get(form, `venueProvidersById.${NEW}`)}
-                getIsDisabled={form =>
-                  !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-                handleSuccess={() => this.setState({ isNew: false })}
-                method="POST"
-                path="venueProviders"
-                storeKey="venueProviders"
-                text="Enregistrer"
-              />
+              {
+                selectedProvider && identifierRegexp && (
+                  <FormField
+                    collectionName="venueProviders"
+                    name="venueIdAtOfferProvider"
+                    placeholder={identifierDescription}
+                    size="small"
+                  />
+                )
+              }
+              {
+                selectedProvider && (
+                  <SubmitButton
+                    className="button is-secondary"
+                    getBody={form => get(form, `venueProvidersById.${NEW}`)}
+                    getIsDisabled={form =>
+                      !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
+                    handleSuccess={() => this.setState({ isNew: false })}
+                    method="POST"
+                    path="venueProviders"
+                    storeKey="venueProviders"
+                    text="Enregistrer"
+                  />
+                )
+              }
             </li>
           )}
         </ul>
@@ -171,6 +194,7 @@ export default compose(
     (state, ownProps) => ({
       providerOptions: selectProviderOptions(state),
       providers: state.data.providers,
+      selectedProvider: selectSelectedProvider(state, ownProps),
       venueProviders: selectVenueProviders(state, ownProps),
       venue: selectCurrentVenue(state, ownProps),
       user: state.user
