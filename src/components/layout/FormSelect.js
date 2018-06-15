@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import classnames from 'classnames'
 import get from 'lodash.get'
 
+import { removeErrors } from '../../reducers/errors'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
 
@@ -38,7 +39,14 @@ class FormSelect extends Component {
   }
 
   onChange = ({ target: { value } }) => {
-    const { collectionName, entityId, mergeForm, name } = this.props
+    const {
+      collectionName,
+      entityId,
+      mergeForm,
+      name,
+      removeErrors
+    } = this.props
+    removeErrors(name)
     mergeForm(collectionName, entityId, name, value)
   }
 
@@ -84,5 +92,5 @@ export default connect(
   (state, ownProps) => ({
     value: getFormValue(state, ownProps),
   }),
-  { mergeForm }
+  { mergeForm, removeErrors }
 )(FormSelect)
