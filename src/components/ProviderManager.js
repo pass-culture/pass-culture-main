@@ -127,6 +127,7 @@ class ProviderManager extends Component {
                 defaultValue={get(providerOptions, '0.value')}
                 name="providerId"
                 options={providerOptions}
+                required
                 type="select"
                 size="small"
               />
