@@ -56,7 +56,7 @@ class VenueProviderItem extends Component {
             {isActive ? 'Désactiver': 'Activer'}
           </button>
         </div>
-        <div>
+        <div className="is-pulled-right">
           <button className="delete is-small"
             onClick={this.onDeleteClick} />
         </div>
