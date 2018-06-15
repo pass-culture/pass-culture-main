@@ -72,10 +72,9 @@ class ProviderManager extends Component {
     requestData('GET', 'providers')
     requestData(
       'GET',
-      `venueProviders/${venueId}`,
+      `venueProviders?venueId=${venueId}`,
       {
-        key: 'venueProviders',
-        isMergingArray: false
+        key: 'venueProviders'
       }
     )
   }
@@ -102,7 +101,7 @@ class ProviderManager extends Component {
     } = this.state
 
     console.log('providerOptions', providerOptions)
-
+    console.log('venueProviders', venueProviders)
     return (
       <div className='section'>
         <h2 className='pc-list-title'>
@@ -142,6 +141,7 @@ class ProviderManager extends Component {
                 getBody={form => get(form, `venueProvidersById.${NEW}`)}
                 getIsDisabled={form =>
                   !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
+                handleSuccess={() => this.setState({ isNew: false })}
                 method="POST"
                 path="venueProviders"
                 storeKey="venueProviders"

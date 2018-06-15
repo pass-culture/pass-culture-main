@@ -33,6 +33,9 @@ class VenueProviderItem extends Component {
       provider,
       venueIdAtOfferProvider
     } = this.props
+
+    console.log('VENUE PROVIDER', this.props)
+
     return (
       <li>
         <div className='picto'>
@@ -52,9 +55,10 @@ class VenueProviderItem extends Component {
             onClick={this.onDeactivateClick}>
             {isActive ? 'Désactiver': 'Activer'}
           </button>
-          <button onClick={this.onDeleteClick}>
-            x
-          </button>
+        </div>
+        <div>
+          <button className="delete is-small"
+            onClick={this.onDeleteClick} />
         </div>
       </li>
     )
