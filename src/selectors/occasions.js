@@ -13,7 +13,10 @@ export default createSelector(
 
     // youngest are at the top of the list
     return occasions
-      .filter(o => venueId ? o.occurences.some(occ =>occ.venueId === venueId) : true)
-      .sort((o1, o2) => o2.dehumanizedId - o1.dehumanizedId)
+      .filter(o => venueId
+        ? o.occurences.some(occ => occ.venueId === venueId)
+        : true
+      )
+      .sort((o1, o2) => o1.dehumanizedId - o2.dehumanizedId)
   }
 )

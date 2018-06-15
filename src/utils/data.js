@@ -84,14 +84,9 @@ export function getNextState(state, method, patch, config = {}) {
 
     // DELETE CASE
     if (method === 'DELETE') {
-      const resolvedData = [...previousData]
-      nextData.forEach(nextDatum => {
-        const resolvedIndex = resolvedData.findIndex(resolvedDatum =>
-            resolvedDatum.id === nextDatum.id)
-        if (typeof resolvedIndex !== 'undefined') {
-          delete resolvedData[resolvedIndex]
-        }
-      })
+      const nextDataIds = nextData.map(nextDatum => nextDatum.id)
+      const resolvedData = previousData.filter(previousDatum =>
+        !nextDataIds.includes(previousDatum.id))
       nextState[key] = resolvedData
       continue
     }
