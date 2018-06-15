@@ -122,15 +122,10 @@ class OccasionItem extends Component {
           </ul>
           <ul className='actions'>
             <li>
-              { mediations.length ? (
-                <NavLink  to={`${path}/${id}/accroches`} className="button is-secondary is-small">
-                  Accroches
-                </NavLink>
-              ) : (
-                <NavLink  to={`${path}/${id}/accroches/nouveau`} className="button is-primary is-small is-outlined">
-                  + Ajouter une Accroche
-                </NavLink>
-              ) }
+              <NavLink  to={`${path}/${id}${mediations.length ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediations.length ? 'is-secondary' : 'is-primary is-outlined'}`}>
+                <span className='icon'><Icon svg='ico-stars' /></span>
+                <span>{mediations.length ? 'Accroches' : 'Ajouter une Accroche'}</span>
+              </NavLink>
             </li>
             <li>
               <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>

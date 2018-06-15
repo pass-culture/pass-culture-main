@@ -32,6 +32,7 @@ class SubmitButton extends Component {
       method,
       onClick,
       path,
+      isMultipart,
       storeKey,
       requestData,
     } = this.props
@@ -47,8 +48,10 @@ class SubmitButton extends Component {
       handleFail,
       handleSuccess,
       key: storeKey,
-      requestId: submitRequestId
+      requestId: submitRequestId,
+      encode: isMultipart ? 'multipart/form-data' : null,
     })
+
     onClick && onClick()
   }
 

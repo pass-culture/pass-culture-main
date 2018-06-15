@@ -64,7 +64,7 @@ class UploadThumb extends Component {
       entityId,
       index,
       requestData,
-      storeKey
+      storeKey,
     } = this.props
     const {
       image,
@@ -93,6 +93,13 @@ class UploadThumb extends Component {
 
   onZoomChange = e => {
     this.setState({ zoom: parseFloat(e.target.value) })
+  }
+
+  onImageChange = ctx => {
+    const {
+      onImageChange
+    } = this.props
+    if (onImageChange) onImageChange(this.state.image, ctx)
   }
 
   render () {
@@ -140,7 +147,7 @@ class UploadThumb extends Component {
               borderRadius={borderRadius}
               color={[255, 255, 255, readOnly || !image ? 1 : 0.6]}
               image={image}
-              onImageChange={ctx => onImageChange && onImageChange(this.state.image, ctx)}
+              onImageChange={this.onImageChange}
             />
           </Dropzone>
           <nav className="field ">
@@ -167,11 +174,16 @@ class UploadThumb extends Component {
             <div className="field is-grouped is-grouped-centered" >
               <div className="control">
                 {readOnly && <button onClick={ e => this.setState({isEdited: true})} className='button is-primary'>Modifier l'image</button>}
-                {!readOnly && image && <button onClick={this.onUploadClick} className='button is-primary' disabled={isUploadDisabled}>Enregistrer</button>}
+                {
+                  !onImageChange && // upload is managed by child component
+                  !readOnly &&
+                  image &&
+                  <button onClick={this.onUploadClick} className='button is-primary' disabled={isUploadDisabled}>Enregistrer</button>
+                }
               </div>
               {!readOnly && image && (
                 <div className="control">
-                  <button onClick={e => this.setState({image: null})} className='button is-primary is-outlined'>Changer d'image</button>
+                  <button onClick={e => this.setState({image: null})} className='button is-primary is-outlined'>Retirer l'image</button>
                 </div>
               )}
               {!readOnly && hasExistingImage && (
