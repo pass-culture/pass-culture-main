@@ -21,14 +21,15 @@ const PageWrapper = props => {
     children,
     loading,
     notification,
-    whiteBg
+    whiteHeader
   } = props
   const footer = [].concat(children).find(e => e && e.type === 'footer')
   const content = []
     .concat(children)
     .filter(e => e && e.type !== 'header' && e.type !== 'footer')
   return [
-    !noHeader && <Header key='header' {...header} />,
+    whiteHeader && <Header key='header' whiteHeader/>,
+    !noHeader && !whiteHeader && <Header key='header' {...header} />,
     <Tag
       className={classnames({
         page: true,
@@ -36,7 +37,6 @@ const PageWrapper = props => {
         'with-header': Boolean(header),
         'with-footer': Boolean(footer),
         'red-bg': redBg,
-        'white-bg': whiteBg,
         'no-padding': noPadding,
         container: !noContainer,
         loading,

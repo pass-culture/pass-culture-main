@@ -6,6 +6,7 @@ header.navbar {
   .navbar-brand {
     .navbar-item {
       font-size: $size-medium;
+
     }
   }
 
@@ -16,5 +17,14 @@ header.navbar {
       font-weight: $weight-bold;
       font-size: $size-small;
     }
+  }
+
+  .navbar-link span {
+    color: $primary;
+    margin-right: 0.5rem;
+  }
+
+  .navbar-item span {
+    margin-right: 0.5rem;
   }
 }

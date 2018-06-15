@@ -1,15 +1,45 @@
+.home-cards {
+  box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
+  display: flex;
+  // position: relative;
+  top: 9.3rem;
+  width: inherit;
+  z-index: 10;
+}
+
 .home-card {
-  img.home-card-picture {
-    float: right;
-    height: auto;
-    width: 150px;
-  }
   background-color: $red;
-  height: 100%;
-  height: 75vh;
-  width: 100%;
+  height: 20rem;
+  width: 25rem;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  // border-right: 0.4rem dotted $white;
+
+  .home-card-picture {
+    img {
+      float: right;
+      height: auto;
+      width: 14rem;
+      padding: 3rem  4rem  2rem  2rem;
+    }
+  }
+
+  .home-card-text
+    h1 {
+      font-size: 3em;
+      font-weight: $weight-semibold;
+      color: $white;
+      padding: 0 4rem 0 3rem;
+    }
+
+    p {
+      color: $white;
+      font-size: 1.2rem;
+      padding: 0 4rem 0 3rem;
+    }
 }
-h1.home-card {
-}
-p.home-card {
+
+div.home-card.dotted-card {
+    border-right: 0.4rem dotted $white;
 }
