@@ -15,7 +15,6 @@ class HomeCard extends Component {
 
     return(
       <NavLink to={navLink}>
-        {/* <div className="home-card"> */}
         <div className={classnames('home-card', { 'dotted-card': dottedCard })}>
           <div className="home-card-picture">
               <Icon svg={svg}/>

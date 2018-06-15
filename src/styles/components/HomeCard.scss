@@ -1,33 +1,34 @@
 .home-cards {
   box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
   display: flex;
-  // position: relative;
   top: 9.3rem;
-  width: inherit;
+  height: 20rem;
   z-index: 10;
+  margin: auto;
+  width: 52rem;
 }
 
 .home-card {
   background-color: $red;
   height: 20rem;
-  width: 25rem;
+  width: 100%;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  // border-right: 0.4rem dotted $white;
 
   .home-card-picture {
+    width: 26rem;
     img {
-      float: right;
+      align: right;
       height: auto;
-      width: 14rem;
+      width: 12rem;
       padding: 3rem  4rem  2rem  2rem;
     }
   }
 
-  .home-card-text
+  .home-card-text {
+    width: 26rem;
     h1 {
-      font-size: 3em;
+      width: 100%;
+      font-size: 2.6em;
       font-weight: $weight-semibold;
       color: $white;
       padding: 0 4rem 0 3rem;
@@ -38,6 +39,7 @@
       font-size: 1.2rem;
       padding: 0 4rem 0 3rem;
     }
+  }
 }
 
 div.home-card.dotted-card {
