@@ -89,7 +89,7 @@ class User(app.model.PcObject,
         return app.model.UserOfferer.query\
                   .filter(app.model.UserOfferer.offererId == offererId,
                           app.model.UserOfferer.rights.in_(compatible_rights))\
-                  .exists()
+                  .one() is not None
 
 
 app.model.User = User

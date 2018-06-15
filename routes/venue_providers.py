@@ -23,7 +23,7 @@ def list_venue_providers():
         e = ApiErrors()
         e.addError('venueId', 'Vous devez obligatoirement fournir le paramètre venueId')
         return jsonify(e.errors), 400
-        
+
     vp_query = VenueProvider.query\
                             .filter_by(venueId=dehumanize(venueId))
     return jsonify([
@@ -74,4 +74,5 @@ def delete_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     ensure_current_user_has_rights(app.model.RightsType.editor,
                                    vp.venue.managingOffererId)
+    # TODO: should we also delete all the associated events/things...?
     return delete(vp)
