@@ -79,6 +79,7 @@ class HasThumbMixin(object):
                             thumb,
                             "image/" + (image_type or "jpeg"))
         self.thumbCount = max(index+1, self.thumbCount or 0)
+        app.model.PcObject.check_and_save(self)
 
 
 app.model.HasThumbMixin = HasThumbMixin

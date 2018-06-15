@@ -40,7 +40,6 @@ def post_storage_file(collectionName, id, index):
             request.files['file'].read(),
             int(index)
         )
-        app.model.PcObject.check_and_save(entity)
         return jsonify(entity._asdict()), 200
     else:
         return jsonify({'text': "upload is not authorized for this model"}), 400
