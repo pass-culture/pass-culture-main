@@ -22,9 +22,6 @@ export default createSelector(
 
     filteredProviders.sort((p1, p2) => p1.localClass - p2.localClass)
 
-    return [{
-      label: 'Sélectionnez un fournisseur',
-    }].concat(filteredProviders.map(p =>
-        ({ label: p.name, value: p.id })))
+    return filteredProviders.map(p => ({ label: p.name, value: p.id }))
   }
 )

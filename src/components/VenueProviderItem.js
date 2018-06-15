@@ -29,13 +29,13 @@ class VenueProviderItem extends Component {
 
   render () {
     const {
+      venueProvider
+    } = this.props
+    const {
       isActive,
       provider,
       venueIdAtOfferProvider
-    } = this.props
-
-    console.log('VENUE PROVIDER', this.props)
-
+    } = (venueProvider || {})
     return (
       <li>
         <div className='picto'>

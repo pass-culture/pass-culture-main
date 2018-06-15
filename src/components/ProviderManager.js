@@ -99,18 +99,21 @@ class ProviderManager extends Component {
       isNew,
       withError
     } = this.state
-
-    console.log('providerOptions', providerOptions)
-    console.log('venueProviders', venueProviders)
+    const providerOptionsWithPlaceholder = [{
+      label: 'Sélectionnez un fournisseur',
+    }].concat(providerOptions)
     return (
       <div className='section'>
         <h2 className='pc-list-title'>
-          Mes fournisseurs
+          IMPORTATIONS D'OFFRES
+          <span className='is-pulled-right is-size-7 has-text-grey'>
+            Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
+          </span>
         </h2>
         <ul className='pc-list'>
           {
             venueProviders && venueProviders.map((vp, index) => (
-                <VenueProviderItem {...vp} key={index} />
+                <VenueProviderItem venueProvider={vp} key={vp.id} />
             ))
           }
           {isNew && (
@@ -124,9 +127,9 @@ class ProviderManager extends Component {
               <div className='picto'><Icon svg='picto-db-default' /></div>
               <FormField
                 collectionName="venueProviders"
-                defaultValue={get(providerOptions, '0.value')}
+                defaultValue={get(providerOptionsWithPlaceholder, '0.value')}
                 name="providerId"
-                options={providerOptions}
+                options={providerOptionsWithPlaceholder}
                 required
                 type="select"
                 size="small"
@@ -154,7 +157,7 @@ class ProviderManager extends Component {
         <div className='has-text-right'>
           <button className="button is-secondary"
             onClick={this.onAddClick}>
-            + Ajouter un compte fournisseur
+            + Importer des offres
           </button>
         </div>
       </div>

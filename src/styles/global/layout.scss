@@ -55,6 +55,9 @@ hr {
   display: block;
   margin: 1.5rem 0;
   font-weight: $weight-bold;
+  span {
+    margin-top: 3.5px;
+  }
 }
 
 .pc-form-section {

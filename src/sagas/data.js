@@ -50,6 +50,7 @@ function* fromWatchRequestDataActions(action) {
 }
 
 function* fromWatchFailDataActions(action) {
+  console.log('action.errors', action.errors)
   yield put(assignErrors(action.errors))
   if (action.config.handleFail) {
     const state = yield select(state => state)
