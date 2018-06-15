@@ -13,7 +13,7 @@ def list_providers():
             providerClass = app.local_providers[p.localClass]
             p_dict['identifierRegexp'] = providerClass.identifierRegexp
             p_dict['identifierDescription'] = providerClass.identifierDescription
-        del(p_dict['apiKey'])
-        del(p_dict['apiKeyGenerationDate'])
+        del p_dict['apiKey']
+        del p_dict['apiKeyGenerationDate']
         result.append(p_dict)
     return jsonify(result)

@@ -5,7 +5,7 @@ from flask_login import current_user
 from sqlalchemy.exc import ProgrammingError
 
 from models.api_errors import ApiErrors
-from utils.human_ids import dehumanize
+from utils.human_ids import dehumanize, humanize
 from utils.string_processing import dashify
 
 
@@ -138,9 +138,9 @@ def feed(entity, json, keys):
 def delete(entity):
     app.db.session.delete(entity)
     app.db.session.commit()
-    return jsonify({"id": entity.id}), 200
+    return jsonify({"id": humanize(entity.id)}), 200
 
 
 def load_or_404(obj_class, human_id):
     return obj_class.query.filter_by(id=dehumanize(human_id))\
-                    .first_or_404()
+                          .first_or_404()
