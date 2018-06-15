@@ -1,9 +1,10 @@
-""" venues """
-from flask import current_app as app, jsonify, request
-from flask_login import current_user, login_required
-from os import path, environ
+""" venue providers """
+from os import path
 from pathlib import Path
 import subprocess
+from flask import current_app as app, jsonify, request
+from flask_login import login_required
+
 
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
@@ -13,7 +14,7 @@ from utils.rest import delete, expect_json_data,\
                        load_or_404, update
 
 VenueProvider = app.model.VenueProvider
-
+Provider = app.model.Provider
 
 @app.route('/venueProviders', methods=['GET'])
 @login_required
@@ -44,8 +45,33 @@ def get_venue_provider(id):
 @expect_json_data
 def create_venue_provider():
     new_vp = VenueProvider(from_dict=request.json)
-    #TODO: check that provider is active
+
+    # CHECK THAT THIS PROVIDER IS ACTIVE
+    provider = load_or_404(Provider, request.json['providerId'])
+    if not provider.isActive:
+        errors = app.model.ApiErrors()
+        errors.status_code = 401
+        errors.addError('localClass', "Ce fournisseur n' est pas activé")
+        errors.maybeRaise()
+        return
+
+    # CHECK THAT THERE IS NOT ALREADY A VENUE PROVIDER
+    # FOR THE SAME VENUE, PROVIDER, IDENTIFIER
+    same_venue_provider = VenueProvider.query.filter_by(
+        providerId=provider.id,
+        venueId=dehumanize(request.json['venueId']),
+        venueIdAtOfferProvider=request.json['venueIdAtOfferProvider']
+    ).first()
+    if same_venue_provider:
+        errors = app.model.ApiErrors()
+        errors.status_code = 401
+        errors.addError('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
+        errors.maybeRaise()
+
+    # SAVE
     app.model.PcObject.check_and_save(new_vp)
+
+    # CALL THE PROVIDER SUB PROCESS
     api_root = Path(path.dirname(path.realpath(__file__))) / '..'
     p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
                          + ' --venueProvider ' + str(new_vp.id),
@@ -56,6 +82,8 @@ def create_venue_provider():
     #out, err = p.communicate()
     #print("STDOUT:", out)
     #print("STDERR:", err)
+
+    # RETURN
     return jsonify(new_vp._asdict(include=VENUE_PROVIDER_INCLUDES)), 201
 
 
