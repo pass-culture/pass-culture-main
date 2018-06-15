@@ -29,6 +29,7 @@ class MediationPage extends Component {
       inputUrl: '',
       imageUrl: null,
       image: null,
+      croppingRect: null,
     }
   }
 
@@ -46,39 +47,16 @@ class MediationPage extends Component {
     imageUploadBorder: 25,
   }
 
-  // componentDidUpdate (prevProps) {
-  //   const {
-  //     assignData,
-  //     history,
-  //     thumbedMediation
-  //   } = this.props
-
-  //   const id = get(this.props, 'mediation.id')
-  //   if (!get(prevProps, 'mediation.id') && id) {
-  //     history.push(`${this.state.routePath}/${id}`)
-  //   }
-
-  //   if (thumbedMediation && !prevProps.thumbedMediation) {
-  //     history.push(this.state.routePath)
-  //   }
-  // }
-
-  // componentWillUnmount () {
-  //   this.props.assignData({
-  //     thumbedMediation: null,
-  //     mediations: null
-  //   })
-  // }
-
-  onImageChange = (image, context) => {
-    if (!image) return
-    this.drawRectangles(image, context)
+  onImageChange = (image, croppingRect, context) => {
+    console.log(croppingRect)
     this.setState({
-      image
+      image,
+      croppingRect,
     })
+    this.drawRectangles(context)
   }
 
-  drawRectangles = (image, ctx) => {
+  drawRectangles = (ctx) => {
     const size = this.props.imageUploadSize + 2 * this.props.imageUploadBorder
     const firstDimensions = [
       this.props.imageUploadBorder + size / 7.5,
@@ -134,14 +112,13 @@ class MediationPage extends Component {
       id
     } = (this.props.mediation || {})
     const {
+      croppingRect,
       image,
       imageUrl,
       inputUrl,
     } = this.state
-
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionPath}/${occasionId}`
-
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
         <section className='section'>
@@ -211,19 +188,30 @@ class MediationPage extends Component {
           <div className="control">
             <SubmitButton
               getBody={form => {
+                if (typeof image === 'string') {
+                  return {
+                    thumb: this.state.image,
+                    eventId: occasionId,
+                    offererId,
+                    croppingRect,
+                  }
+                }
                 const formData = new FormData();
-                formData.append('thumb', this.state.image)
-                formData.append('eventId', occasion.id)
+                formData.append('thumb', image)
+                formData.append('eventId', occasionId)
                 formData.append('offererId', offererId)
-                return formData
+                formData.append('croppingRect[x]', croppingRect.x)
+                formData.append('croppingRect[y]', croppingRect.y)
+                formData.append('croppingRect[width]', croppingRect.width)
+                formData.append('croppingRect[height]', croppingRect.height)
+                return formData;
               }}
-              getIsDisabled={form => !this.state.image}
+              getIsDisabled={form => !image}
               className="button is-primary is-medium"
               method={isNew ? 'POST' : 'PATCH'}
               path={'mediations' + (isNew ? '' : `/${id}`)}
               text='Valider'
               storeKey="thumb"
-              isMultipart
             />
           </div>
         </div>

@@ -40,16 +40,17 @@ class SubmitButton extends Component {
     this.setState({
       submitRequestId,
     })
+    const body = getBody(form)
     requestData(method, path, {
       add,
-      body: (getBody && getBody(form)) || form,
+      body,
       getOptimistState,
       getSuccessState,
       handleFail,
       handleSuccess,
       key: storeKey,
       requestId: submitRequestId,
-      encode: isMultipart ? 'multipart/form-data' : null,
+      encode: body instanceof FormData ? 'multipart/form-data' : null,
     })
 
     onClick && onClick()

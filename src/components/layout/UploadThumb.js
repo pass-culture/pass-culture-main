@@ -13,6 +13,7 @@ class UploadThumb extends Component {
 
   constructor() {
     super()
+    this.avatarEditor = React.createRef();
     this.state = {
       hasExistingImage: false,
       isEdited: false,
@@ -96,10 +97,13 @@ class UploadThumb extends Component {
   }
 
   onImageChange = ctx => {
+    if (!this.state.image) return;
     const {
       onImageChange
     } = this.props
-    if (onImageChange) onImageChange(this.state.image, ctx)
+    if (onImageChange) {
+      onImageChange(this.state.image, this.avatarEditor.current.getCroppingRect(), ctx)
+    }
   }
 
   render () {
@@ -140,6 +144,7 @@ class UploadThumb extends Component {
               )
             }
             <AvatarEditor
+              ref={this.avatarEditor}
               width={width}
               height={height}
               scale={zoom}
@@ -148,6 +153,7 @@ class UploadThumb extends Component {
               color={[255, 255, 255, readOnly || !image ? 1 : 0.6]}
               image={image}
               onImageChange={this.onImageChange}
+              crossOrigin='anonymous'
             />
           </Dropzone>
           <nav className="field ">
