@@ -109,9 +109,6 @@ class ProviderManager extends Component {
       label: 'Sélectionnez un fournisseur',
     }].concat(providerOptions)
 
-
-    console.log('selectedProvider', selectedProvider)
-
     return (
       <div className='section'>
         <h2 className='pc-list-title'>

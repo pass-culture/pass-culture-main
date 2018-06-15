@@ -109,8 +109,6 @@ class FormField extends Component {
       )
     }
 
-    console.log('classNAme', className)
-
     return [
       <div
         className={classnames('form-field field', {

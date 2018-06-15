@@ -12,19 +12,21 @@ class VenueProviderItem extends Component {
 
   onDeactivateClick = () => {
     const {
-      id,
       isActive,
-      requestData
+      requestData,
+      venueProvider
     } = this.props
+    const { id } = (venueProvider || {})
     requestData('PATCH', `providers/${id}`, { body: { isActive: !isActive }})
   }
 
   onDeleteClick = () => {
     const {
-      id,
       provider,
-      requestData
+      requestData,
+      venueProvider
     } = this.props
+    const { id } = (venueProvider || {})
     requestData('DELETE', `venueProviders/${id}`, { key: 'venueProviders' })
   }
 
@@ -62,10 +64,6 @@ class VenueProviderItem extends Component {
                 onClick={this.onDeactivateClick}>
                 {isActive ? 'Désactiver': 'Activer'}
               </button>
-            </div>,
-            <div className="is-pulled-right" key={2}>
-              <button className="delete is-small"
-                onClick={this.onDeleteClick} />
             </div>
           ]
           : (
@@ -74,6 +72,10 @@ class VenueProviderItem extends Component {
             </div>
           )
         }
+        <div className="is-pulled-right" key={2}>
+          <button className="delete is-small"
+            onClick={this.onDeleteClick} />
+        </div>
       </li>
     )
   }
