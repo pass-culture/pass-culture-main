@@ -15,6 +15,9 @@ ALLOWED_EXTENSIONS = set(['jpg', 'png', 'jpeg', 'gif'])
 @app.route('/mediations', methods=['POST'])
 @login_required
 def create_mediation():
+    # TODO: Allow to receive a URL from request.form['thumb']
+    # save_thumb already does it so it should be easy, but I can't make it ...
+
     if 'thumb' not in request.files\
        or request.files['thumb'].filename == '':
         e = ApiErrors()
