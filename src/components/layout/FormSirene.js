@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Icon from './Icon'
 import FormInput from './FormInput'
 
 import { assignErrors, removeErrors } from '../../reducers/errors'
@@ -53,7 +52,6 @@ class FormSirene extends Component {
       collectionName,
       entityId,
       mergeForm,
-      name,
       sireType,
     } = this.props
 
@@ -126,18 +124,6 @@ class FormSirene extends Component {
   }
 
   render() {
-    const {
-      className,
-      defaultValue,
-      id,
-      placeholder,
-      autoComplete,
-      type,
-    } = this.props
-
-    const { name } = this.props.entity || {}
-    const { localValue, searching } = this.state
-
     return (
         <FormInput
           onChange={this.onChange}

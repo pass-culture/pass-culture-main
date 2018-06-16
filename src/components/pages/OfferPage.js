@@ -10,13 +10,11 @@ import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
-import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import { SUCCESS } from '../../reducers/queries'
 import selectOffererOptions from '../../selectors/offererOptions'
 import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
@@ -75,7 +73,7 @@ class OfferPage extends Component {
   handleRequestData = () => {
     const {
       apiPath,
-      match: { params: { occasionPath, occasionId } },
+      match: { params: { occasionId } },
       history,
       requestData,
       showModal
@@ -188,7 +186,6 @@ class OfferPage extends Component {
       routePath,
       selectedVenueId,
       selectedVenues,
-      showModal,
       user,
       venueOptions
     } = this.props
@@ -203,7 +200,6 @@ class OfferPage extends Component {
       mediations,
       name,
       performer,
-      occurences,
       offererId,
       stageDirector,
       type,

@@ -52,7 +52,6 @@ class MediationPage extends Component {
     } = action
     const {
       history,
-      match: { params: { occasionId, occasionPath } },
       showNotification
     } = this.props
 
@@ -63,7 +62,6 @@ class MediationPage extends Component {
         text: 'Votre accroche a bien été enregistrée',
         type: 'success'
       })
-      return
     }
   }
 

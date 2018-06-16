@@ -43,6 +43,14 @@ class OccasionItem extends Component {
             }
           },
           key: 'occasions',
+          normalizer: {
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          },
           isMergingDatum: true,
           isMutatingDatum: true,
           isMutaginArray: false
@@ -63,7 +71,6 @@ class OccasionItem extends Component {
     } = this.props
     const {
       createdAt,
-      description,
       id,
       isActive,
       mediations,

@@ -1,6 +1,5 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
 import FormField from './layout/FormField'

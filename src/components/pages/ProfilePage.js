@@ -6,7 +6,6 @@ import get from 'lodash.get'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import Icon from '../layout/Icon'
 import UploadThumb from '../layout/UploadThumb'
 import Label from '../layout/Label'
 import FormField from '../layout/FormField'
@@ -59,11 +58,6 @@ class ProfilePage extends Component {
   }
 
   render() {
-
-    const {
-      apiPath,
-    } = this.props
-
     const {
       id,
       publicName,

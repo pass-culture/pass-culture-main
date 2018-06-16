@@ -1,11 +1,9 @@
 import get from 'lodash.get'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
-import { compose } from 'redux'
 
+import withCurrentOccasion from './hocs/withCurrentOccasion'
 import Icon from './layout/Icon'
 import { API_URL } from '../utils/config'
 
@@ -16,9 +14,12 @@ const mediationExplanation = `
 `
 
 const MediationManager = ({
-  mediations,
-  newMediationRoutePath,
+  currentOccasion,
+  routePath
 }) => {
+  const {
+    mediations
+  } = (currentOccasion || {})
   const mediationsLength = get(mediations, 'length')
   return (
     <div className='box content has-text-centered'>
@@ -35,7 +36,7 @@ const MediationManager = ({
       <p>
         <NavLink
           className={`button is-primary ${mediationsLength > 0 ? 'is-outlined' : ''}`}
-          to={newMediationRoutePath}>
+          to={`${routePath}/accroches/nouveau`}>
           <span className='icon'><Icon svg={mediationsLength > 0 ? 'ico-stars' : 'ico-stars-w'} /></span>
           <span>Ajouter une accroche</span>
         </NavLink>
@@ -44,4 +45,4 @@ const MediationManager = ({
   )
 }
 
-export default MediationManager
+export default withCurrentOccasion(MediationManager)

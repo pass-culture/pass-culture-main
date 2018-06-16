@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import createSelectOffers from '../selectors/offers'
-import { THUMBS_URL } from '../utils/config'
 import Icon from './layout/Icon'
 
 const VenueItem = ({

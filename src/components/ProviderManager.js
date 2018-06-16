@@ -5,7 +5,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import FormField from './layout/FormField'
-import Label from './layout/Label'
 import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
 import VenueProviderItem from './VenueProviderItem'
@@ -39,9 +38,8 @@ class ProviderManager extends Component {
   componentDidMount () {
     const {
       match: { params: { venueProviderId } },
-      user
     } = this.props
-    user && this.handleRequestData()
+    this.handleRequestData()
     venueProviderId === 'nouveau' && this.handleMergeForm()
   }
 
@@ -68,8 +66,12 @@ class ProviderManager extends Component {
   handleRequestData = () => {
     const {
       match: { params : { venueId } },
-      requestData
+      requestData,
+      user
     } = this.props
+    if (!user) {
+      return
+    }
     requestData('GET', 'providers')
     requestData(
       'GET',
@@ -105,9 +107,14 @@ class ProviderManager extends Component {
       isNew,
       withError
     } = this.state
-    const providerOptionsWithPlaceholder = [{
-      label: 'Sélectionnez un fournisseur',
-    }].concat(providerOptions)
+
+    const providerOptionsWithPlaceholder = get(providerOptions, 'length') > 1
+      ? (
+        [{
+          label: 'Sélectionnez un fournisseur',
+        }].concat(providerOptions)
+      )
+      : providerOptions
 
     return (
       <div className='section'>
@@ -139,7 +146,6 @@ class ProviderManager extends Component {
               <FormField
                 className='column is-4'
                 collectionName="venueProviders"
-                defaultValue={get(providerOptionsWithPlaceholder, '0.value')}
                 name="providerId"
                 options={providerOptionsWithPlaceholder}
                 required

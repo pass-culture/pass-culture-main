@@ -5,9 +5,6 @@ import { NavLink } from 'react-router-dom'
 import Icon from './layout/Icon'
 import createSelectManagedOccasions from '../selectors/managedOccasions'
 import createSelectManagedVenues from '../selectors/managedVenues'
-import { THUMBS_URL } from '../utils/config'
-import { collectionToPath } from '../utils/translate'
-
 
 
 const OffererItem = ({

@@ -6,7 +6,6 @@ import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
-import Icon from '../layout/Icon'
 import Label from '../layout/Label'
 import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'

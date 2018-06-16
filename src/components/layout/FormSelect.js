@@ -53,7 +53,6 @@ class FormSelect extends Component {
   render() {
     const {
       className,
-      defaultValue,
       options,
       readOnly,
       value
