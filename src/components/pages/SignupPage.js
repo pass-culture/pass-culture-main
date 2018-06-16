@@ -16,6 +16,19 @@ const Label = ({ subtitle, title, inline }) => (
   </div>
 )
 
+const requiredFields = [
+  'address',
+  'contact_ok',
+  'email',
+  'latitude',
+  'longitude',
+  'name',
+  'password',
+  'postalCode',
+  'publicName',
+  'siren'
+]
+
 const SignupPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-up" noHeader noContainer>
@@ -112,15 +125,11 @@ const SignupPage = ({ errors }) => {
                   <SubmitButton
                     className="button is-primary is-outlined"
                     getBody={form => form.usersById[NEW]}
-                    getIsDisabled={form => {
-                      const invalidValues = [
-                        'publicName', 'email', 'contact_ok',
-                        'siren', 'name', 'latitude',
-                        'longitude', 'address', 'postalCode',
-                        'password',
-                      ].filter(k => !get(form, `usersById._new_.${k}`))
-                      return invalidValues.length > 0;
-                    }}
+                    getIsDisabled={form =>
+                      requiredFields.filter(k =>
+                        !get(form, `usersById._new_.${k}`)
+                      ).length > 0
+                    }
                     path="users"
                     storeKey="users"
                     text="Valider"
