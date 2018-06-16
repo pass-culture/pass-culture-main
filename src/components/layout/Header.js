@@ -27,12 +27,12 @@ class Header extends Component {
     } = this.state
     return (
       <header className={classnames(
-          'navbar is primary',
-          { 'white-header': whiteHeader }
+        'navbar is primary',
+        { 'white-header': whiteHeader }
       )}>
         <div className="container">
           <div className="navbar-brand">
-            <Logo className="navbar-item" whiteHeader />
+            <Logo className="navbar-item" whiteHeader={whiteHeader} />
             <span className="navbar-burger" onClick={e => this.setState({
               showMobileMenu: !showMobileMenu
             })}>
@@ -42,7 +42,7 @@ class Header extends Component {
             </span>
           </div>
           <div className={classnames("navbar-menu", {
-            'is-active': this.state.showMobileMenu
+            'is-active': showMobileMenu
           })}>
             <div className="navbar-end">
               {
@@ -68,7 +68,7 @@ class Header extends Component {
                     }
                   </span>
                   <span className={classnames('white-header': whiteHeader)}>
-                    {this.props.name}
+                    {name}
                   </span>
                 </a>
                 <div className="navbar-dropdown is-right">
