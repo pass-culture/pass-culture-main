@@ -12,6 +12,7 @@ import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
 import selectCurrentMediation from '../../selectors/currentMediation'
+import selectSelectedOffererId from '../../selectors/selectedOffererId'
 
 
 const uploadExplanation = `
@@ -27,6 +28,8 @@ class MediationPage extends Component {
     this.state = {
       inputUrl: '',
       imageUrl: null,
+      image: null,
+      croppingRect: null,
     }
   }
 
@@ -34,6 +37,7 @@ class MediationPage extends Component {
     return {
       inputUrl: prevState.inputUrl,
       imageUrl: prevState.imageUrl || get(nextProps, 'mediation.thumbPath'),
+      image: prevState.image,
     }
   }
 
@@ -43,32 +47,16 @@ class MediationPage extends Component {
     imageUploadBorder: 25,
   }
 
-  // componentDidUpdate (prevProps) {
-  //   const {
-  //     assignData,
-  //     history,
-  //     thumbedMediation
-  //   } = this.props
+  onImageChange = (image, croppingRect, context) => {
+    console.log(croppingRect)
+    this.setState({
+      image,
+      croppingRect,
+    })
+    this.drawRectangles(context)
+  }
 
-  //   const id = get(this.props, 'mediation.id')
-  //   if (!get(prevProps, 'mediation.id') && id) {
-  //     history.push(`${this.state.routePath}/${id}`)
-  //   }
-
-  //   if (thumbedMediation && !prevProps.thumbedMediation) {
-  //     history.push(this.state.routePath)
-  //   }
-  // }
-
-  // componentWillUnmount () {
-  //   this.props.assignData({
-  //     thumbedMediation: null,
-  //     mediations: null
-  //   })
-  // }
-
-  drawRectangles = (image, ctx) => {
-    if (!image) return
+  drawRectangles = (ctx) => {
     const size = this.props.imageUploadSize + 2 * this.props.imageUploadBorder
     const firstDimensions = [
       this.props.imageUploadBorder + size / 7.5,
@@ -108,8 +96,10 @@ class MediationPage extends Component {
   render () {
     const {
       occasion,
+      offererId,
       imageUploadSize,
       imageUploadBorder,
+      selectedOffererId,
       match: {
         params: {
           mediationId,
@@ -122,16 +112,16 @@ class MediationPage extends Component {
       id
     } = (this.props.mediation || {})
     const {
+      croppingRect,
+      image,
       imageUrl,
       inputUrl,
     } = this.state
-
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionPath}/${occasionId}`
-
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
-        <section className='section' key={0}>
+        <section className='section'>
           <h2 className='subtitle'>{get(occasion, 'name')}</h2>
           <h1 className='pc-title'>
             {isNew ? 'Créez' : 'Modifiez'} une accroche
@@ -143,7 +133,13 @@ class MediationPage extends Component {
           <label className="label">Depuis une adresse Internet :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
-              <input type='url' className='input is-rounded' placeholder='URL du fichier' value={inputUrl} onChange={e => this.setState({inputUrl: e.target.value})} />
+              <input
+                type='url'
+                className='input is-rounded'
+                placeholder='URL du fichier'
+                value={inputUrl}
+                onChange={e => this.setState({inputUrl: e.target.value})}
+              />
             </p>
             <p className="control">
               <button className='button is-primary is-outlined is-medium' onClick={this.onOkClick}>OK</button>
@@ -155,6 +151,7 @@ class MediationPage extends Component {
             <label className='label'>... ou depuis votre poste :</label>
             <UploadThumb
               image={imageUrl}
+              onImageChange={this.onImageChange}
               borderRadius={0}
               collectionName='mediations'
               entityId={id}
@@ -164,7 +161,6 @@ class MediationPage extends Component {
               height={imageUploadSize}
               storeKey='thumbedMediation'
               type='thumb'
-              onImageChange={this.drawRectangles}
               hasExistingImage={!isNew}
               required
             />
@@ -190,40 +186,33 @@ class MediationPage extends Component {
             </NavLink>
           </div>
           <div className="control">
-            {imageUrl && (
-              <SubmitButton
-                // getBody={form => ({
-                //   occasion: get(form, `occasionsById.${occasionIdOrNew}`),
-                //   eventOccurences: form.eventOccurencesById &&
-                //     Object.values(form.eventOccurencesById)
-                // })}
-                // getIsDisabled={form => {
-                //   const missingFields = requiredFields.filter(r => !get(form, `occasionsById.${occasionIdOrNew}.${r}`));
-                //   console.log(missingFields)
-                //   return missingFields.length > 0
-                //   // return isNew
-                //   // ? !get(form, `occasionsById.${occasionId}.contactEmail`) ||
-                //   //   !get(form, `occasionsById.${occasionId}.description`) ||
-                //   //   !get(form, `occasionsById.${occasionId}.durationMinutes`) ||
-                //   //   !get(form, `occasionsById.${occasionId}.name`) ||
-                //   //   !get(form, `occasionsById.${occasionId}.offererId`)
-                //   // : !get(form, `occasionsById.${occasionId}.contactEmail`) &&
-                //   //   !get(form, `occasionsById.${occasionId}.description`) &&
-                //   //   !get(form, `occasionsById.${occasionId}.durationMinutes`) &&
-                //   //   !get(form, `occasionsById.${occasionId}.name`) &&
-                //   //   !get(form, `occasionsById.${occasionId}.offererId`) &&
-                //   //   typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
-                //   //   (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
-                // }}
-                className="button is-primary is-medium"
-                method={isNew ? 'POST' : 'PATCH'}
-                path={'mediations' + (isNew ? '' : `/${id}`)}
-                text='Valider'
-                // handleStatusChange={this.handleSubmitStatusChange}
-                // storeKey="occasions"
-                // text="Enregistrer"
-              />
-            )}
+            <SubmitButton
+              getBody={form => {
+                if (typeof image === 'string') {
+                  return {
+                    thumb: this.state.image,
+                    eventId: occasionId,
+                    offererId,
+                    croppingRect,
+                  }
+                }
+                const formData = new FormData();
+                formData.append('thumb', image)
+                formData.append('eventId', occasionId)
+                formData.append('offererId', offererId)
+                formData.append('croppingRect[x]', croppingRect.x)
+                formData.append('croppingRect[y]', croppingRect.y)
+                formData.append('croppingRect[width]', croppingRect.width)
+                formData.append('croppingRect[height]', croppingRect.height)
+                return formData;
+              }}
+              getIsDisabled={form => !image}
+              className="button is-primary is-medium"
+              method={isNew ? 'POST' : 'PATCH'}
+              path={'mediations' + (isNew ? '' : `/${id}`)}
+              text='Valider'
+              storeKey="thumb"
+            />
           </div>
         </div>
       </PageWrapper>
@@ -235,8 +224,9 @@ export default compose(
   withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
-    (state,ownProps) => ({
+    (state, ownProps) => ({
       mediation: selectCurrentMediation(state, ownProps),
+      offererId: get(ownProps.occasion, 'occurences.0.venue.managingOffererId'), // TODO: add offererId to occasion object
     }),
     { assignData }
   )

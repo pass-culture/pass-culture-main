@@ -10,6 +10,9 @@
     list-style: none;
     li {
       display: inline-block;
+      img {
+        max-height: 200px;
+      }
     }
   }
 }

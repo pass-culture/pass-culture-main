@@ -25,6 +25,7 @@ import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
 import { API_URL } from '../../utils/config'
+import { pathToCollection } from '../../utils/translate'
 
 const mediationExplanation = `
   **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
@@ -84,10 +85,14 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const {
+      match: { params: { occasionPath, occasionId } },
       history,
       requestData,
       showModal
     } = this.props
+    if (occasionId !== 'nouveau') {
+      requestData('GET', `occasions/${pathToCollection(occasionPath)}/${occasionId}`, { key: 'occasions' })
+    }
     requestData(
       'GET',
       'offerers',
@@ -243,7 +248,7 @@ class OfferPage extends Component {
                 <ReactMarkdown source={mediationExplanation} className='section' />
                 <ul className='mediations-list'>
                   {get(occasion, 'mediations', []).map(m => (
-                    <li>
+                    <li key={m.id}>
                       <img
                         alt={`accroche-${m.thumbPath}`}
                         src={`${API_URL}${m.thumbPath}`} />
@@ -254,8 +259,8 @@ class OfferPage extends Component {
                   <NavLink
                     className={`button is-primary ${get(occasion, 'mediations', []).length > 0 ? 'is-outlined' : ''}`}
                     to={newMediationRoutePath}>
-                    {false && <Icon svg='ico-stars' />}
-                    Ajouter une accroche
+                    <span className='icon'><Icon svg={get(occasion, 'mediations', []).length > 0 ? 'ico-stars' : 'ico-stars-w'} /></span>
+                    <span>Ajouter une accroche</span>
                   </NavLink>
                 </p>
               </div>
