@@ -5,6 +5,9 @@ import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
+import createSelectCurrentMediations from '../../selectors/currentMediations'
+import createSelectCurrentOccurences from '../../selectors/currentOccurences'
+import createSelectCurrentOffererId from '../../selectors/currentOffererId'
 import { NEW } from '../../utils/config'
 import { pathToCollection } from '../../utils/translate'
 
@@ -35,7 +38,18 @@ const withCurrentOccasion = WrappedComponent => {
       occasionId !== 'nouveau' && requestData(
         'GET',
         apiPath,
-        { key: 'occasions' }
+        {
+          key: 'occasions',
+          normalizer: {
+            mediations: 'mediations',
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          }
+        }
       )
     }
 
@@ -80,11 +94,18 @@ const withCurrentOccasion = WrappedComponent => {
     }
   }
 
+  const selectCurrentMediations = createSelectCurrentMediations()
+  const selectCurrentOccurences = createSelectCurrentOccurences()
+  const selectCurrentOffererId = createSelectCurrentOffererId(selectCurrentOccurences)
+
   return compose(
     withRouter,
     connect(
       (state, ownProps) => ({
-        occasion: selectCurrentOccasion(state, ownProps),
+        currentMediations: selectCurrentMediations(state, ownProps),
+        currentOccasion: selectCurrentOccasion(state, ownProps),
+        currentOccurences: selectCurrentOccurences(state, ownProps),
+        currentOffererId: selectCurrentOffererId(state, ownProps),
         user: state.user,
       }),
       { requestData }

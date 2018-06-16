@@ -1,14 +1,14 @@
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-export default selectOccurences => createSelector(
-  selectOccurences,
-  occurences => {
-    if (!occurences) {
+export default selectCurrentOccurences => createSelector(
+  selectCurrentOccurences,
+  currentOccurences => {
+    if (!currentOccurences) {
       return
     }
 
-    const maxDate = occurences.map(o =>
+    const maxDate = currentOccurences.map(o =>
         moment(o.beginningDatetime)
       ).reduce((max, d) => max &&
         max.isAfter(d) ? max : d, null
@@ -20,7 +20,7 @@ export default selectOccurences => createSelector(
       groupSizeMax,
       priceMin,
       priceMax,
-    } = occurences.reduce((aggreged, o) => {
+    } = currentOccurences.reduce((aggreged, o) => {
       return o.offer.reduce((subaggreged, offer) => {
         return {
           available: subaggreged.available + offer.available,

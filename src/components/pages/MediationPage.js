@@ -5,15 +5,14 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
+import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
+import { showNotification } from '../../reducers/notification'
 import selectCurrentMediation from '../../selectors/currentMediation'
-import selectSelectedOffererId from '../../selectors/selectedOffererId'
-
 
 const uploadExplanation = `
 **Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
@@ -47,6 +46,27 @@ class MediationPage extends Component {
     imageUploadBorder: 25,
   }
 
+  handleSuccessData = (state, action) => {
+    const {
+      method
+    } = action
+    const {
+      history,
+      match: { params: { occasionId, occasionPath } },
+      showNotification
+    } = this.props
+
+    // PATCH
+    if (method === 'PATCH' || method === 'POST') {
+      history.push('/offres')
+      showNotification({
+        text: 'Votre accroche a bien été enregistrée',
+        type: 'success'
+      })
+      return
+    }
+  }
+
   onImageChange = (image, croppingRect, context) => {
     console.log(croppingRect)
     this.setState({
@@ -56,20 +76,30 @@ class MediationPage extends Component {
     this.drawRectangles(context)
   }
 
-  drawRectangles = (ctx) => {
-    const size = this.props.imageUploadSize + 2 * this.props.imageUploadBorder
+  drawRectangles = ctx => {
+
+    if (!ctx) {
+      return
+    }
+
+    const {
+      imageUploadBorder,
+      imageUploadSize
+    } = this.props
+
+    const size = imageUploadSize + 2 * imageUploadBorder
     const firstDimensions = [
-      this.props.imageUploadBorder + size / 7.5,
-      this.props.imageUploadBorder + size / 32,
-      size - 2 * (this.props.imageUploadBorder + size / 7.5),
-      size - 2 * (this.props.imageUploadBorder + size / 32),
+      imageUploadBorder + size / 7.5,
+      imageUploadBorder + size / 32,
+      size - 2 * (imageUploadBorder + size / 7.5),
+      size - 2 * (imageUploadBorder + size / 32),
     ]
 
     const secondDimensions = [
-      this.props.imageUploadBorder + size / 6,
-      this.props.imageUploadBorder + size / 4.5,
-      size - 2 * (this.props.imageUploadBorder + size / 6),
-      size / 2.7 - 2 * (this.props.imageUploadBorder),
+      imageUploadBorder + size / 6,
+      imageUploadBorder + size / 4.5,
+      size - 2 * (imageUploadBorder + size / 6),
+      size / 2.7 - 2 * imageUploadBorder,
     ]
 
     // First rectangle
@@ -95,11 +125,10 @@ class MediationPage extends Component {
 
   render () {
     const {
-      occasion,
-      offererId,
+      currentOccasion,
+      currentMediation,
       imageUploadSize,
       imageUploadBorder,
-      selectedOffererId,
       match: {
         params: {
           mediationId,
@@ -107,22 +136,31 @@ class MediationPage extends Component {
           occasionPath
         }
       },
+      mediation,
+      offererId
     } = this.props
     const {
+      name
+    } = (currentOccasion || {})
+    const {
       id
-    } = (this.props.mediation || {})
+    } = (currentMediation || {})
     const {
       croppingRect,
       image,
       imageUrl,
       inputUrl,
     } = this.state
+
+
+    console.log('offererId', offererId)
+
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionPath}/${occasionId}`
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
         <section className='section'>
-          <h2 className='subtitle'>{get(occasion, 'name')}</h2>
+          <h2 className='subtitle'>{name}</h2>
           <h1 className='pc-title'>
             {isNew ? 'Créez' : 'Modifiez'} une accroche
           </h1>
@@ -187,10 +225,11 @@ class MediationPage extends Component {
           </div>
           <div className="control">
             <SubmitButton
+              className="button is-primary is-medium"
               getBody={form => {
                 if (typeof image === 'string') {
                   return {
-                    thumb: this.state.image,
+                    thumb: image,
                     eventId: occasionId,
                     offererId,
                     croppingRect,
@@ -207,11 +246,11 @@ class MediationPage extends Component {
                 return formData;
               }}
               getIsDisabled={form => !image}
-              className="button is-primary is-medium"
+              handleSuccess={this.handleSuccessData}
               method={isNew ? 'POST' : 'PATCH'}
               path={'mediations' + (isNew ? '' : `/${id}`)}
-              text='Valider'
               storeKey="thumb"
+              text='Valider'
             />
           </div>
         </div>
@@ -225,9 +264,8 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      mediation: selectCurrentMediation(state, ownProps),
-      offererId: get(ownProps.occasion, 'occurences.0.venue.managingOffererId'), // TODO: add offererId to occasion object
+      currentMediation: selectCurrentMediation(state, ownProps)
     }),
-    { assignData }
+    { assignData, showNotification }
   )
 )(MediationPage)

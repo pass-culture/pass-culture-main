@@ -1,11 +1,10 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
-import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-
+import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
@@ -18,20 +17,11 @@ import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import { SUCCESS } from '../../reducers/queries'
-import selectOccurences from '../../selectors/occurences'
 import selectOffererOptions from '../../selectors/offererOptions'
-import selectSelectedOffererId from '../../selectors/selectedOffererId'
 import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
-import { API_URL } from '../../utils/config'
 import { pathToCollection } from '../../utils/translate'
-
-const mediationExplanation = `
-  **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
-
-  Les accroches font la **spécificité du Pass Culture**. Prenz le temps de les choisir avec soin !
-`
 
 const requiredFields = [
   'name',
@@ -115,11 +105,11 @@ class OfferPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      occurences,
+      currentOccurences,
       showModal
     } = this.props
     showModal(
-      <OccurenceManager occurences={occurences} />
+      <OccurenceManager currentOccurences={currentOccurences} />
     )
   }
 
@@ -129,7 +119,7 @@ class OfferPage extends Component {
       method
     } = action
     const {
-      occurences,
+      currentOccurences,
       history,
       match: { params: { occasionPath } },
       showModal,
@@ -175,16 +165,16 @@ class OfferPage extends Component {
   render () {
     const {
       apiPath,
+      currentMediations,
+      currentOccasion,
+      currentOccurences,
+      currentOffererId,
       eventTypes,
       isLoading,
       isNew,
-      newMediationRoutePath,
       occasionCollection,
-      occasion,
       occasionIdOrNew,
-      occurences,
       offererOptions,
-      selectedOffererId,
       selectedVenueId,
       selectedVenues,
       showModal,
@@ -203,7 +193,7 @@ class OfferPage extends Component {
       performer,
       stageDirector,
       type,
-    } = (occasion || {})
+    } = (currentOccasion || {})
 
     return (
       <PageWrapper
@@ -244,26 +234,7 @@ class OfferPage extends Component {
                   </button>
                 )
               }
-              <div className='box content has-text-centered'>
-                <ReactMarkdown source={mediationExplanation} className='section' />
-                <ul className='mediations-list'>
-                  {get(occasion, 'mediations', []).map(m => (
-                    <li key={m.id}>
-                      <img
-                        alt={`accroche-${m.thumbPath}`}
-                        src={`${API_URL}${m.thumbPath}`} />
-                    </li>
-                  ))}
-                </ul>
-                <p>
-                  <NavLink
-                    className={`button is-primary ${get(occasion, 'mediations', []).length > 0 ? 'is-outlined' : ''}`}
-                    to={newMediationRoutePath}>
-                    <span className='icon'><Icon svg={get(occasion, 'mediations', []).length > 0 ? 'ico-stars' : 'ico-stars-w'} /></span>
-                    <span>Ajouter une accroche</span>
-                  </NavLink>
-                </p>
-              </div>
+              <MediationManager mediations={currentMediations} />
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
@@ -280,7 +251,7 @@ class OfferPage extends Component {
           />
           <FormField
             collectionName='occasions'
-            defaultValue={selectedOffererId}
+            defaultValue={currentOffererId}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Structure :" />}
@@ -437,10 +408,8 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      occurences: selectOccurences(state, ownProps),
       eventTypes: state.data.eventTypes,
       offererOptions: selectOffererOptions(state),
-      selectedOffererId: selectSelectedOffererId(state, ownProps),
       selectedVenueId: selectSelectedVenueId(state, ownProps),
       selectedVenues: selectSelectedVenues(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)

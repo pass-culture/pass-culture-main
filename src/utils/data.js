@@ -30,7 +30,6 @@ export function getNextState(state, method, patch, config = {}) {
     const nextData = data && data.map(datum => Object.assign({}, datum))
 
     // NORMALIZER
-    console.log('normalizer', normalizer)
     if (normalizer) {
       Object.keys(normalizer)
             .forEach(key => {

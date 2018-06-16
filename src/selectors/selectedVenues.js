@@ -1,10 +1,10 @@
 import { createSelector } from 'reselect'
 
-import selectSelectedOffererId from './selectedOffererId'
+import selectCurrentOffererId from './currentOffererId'
 
 export default createSelector(
   state => state.data.venues,
-  selectSelectedOffererId,
+  selectCurrentOffererId,
   (venues, offererId) => venues &&
     venues.filter(v => v.managingOffererId === offererId)
 )

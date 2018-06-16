@@ -9,10 +9,11 @@ import { NavLink } from 'react-router-dom'
 import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
+import createSelectCurrentOccurences from '../selectors/currentOccurences'
 import createSelectMediations from '../selectors/mediations'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import createSelectOccasionThumbUrl from '../selectors/occasionThumbUrl'
-import createSelectOccurences from '../selectors/occurences'
+
 import {API_URL} from '../utils/config'
 import { modelToPath } from '../utils/translate'
 import { pluralize } from '../utils/string'
@@ -55,7 +56,7 @@ class OccasionItem extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     return {
-      path: `/offres/${modelToPath(nextProps.modelName)}`
+      path: `/offres/${modelToPath(get(nextProps, 'occasion.modelName'))}`
     }
   }
 
@@ -129,7 +130,7 @@ OccasionItem.defaultProps = {
 export default connect(
   () => {
     const selectMediations = createSelectMediations()
-    const selectOccurences = createSelectOccurences()
+    const selectOccurences = createSelectCurrentOccurences()
     const selectOccasionItem = createSelectOccasionItem(selectOccurences)
     const selectOccasionThumbUrl = createSelectOccasionThumbUrl(selectMediations)
     return (state, ownProps) => ({

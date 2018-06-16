@@ -8,6 +8,7 @@ import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
+import selectOfferers from '../selectors/offerers'
 
 const OfferersPage = ({
   location: { search },
@@ -62,6 +63,6 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      offerers: state.data.offerers
+      offerers: selectOfferers(state, ownProps)
     }))
 )(OfferersPage)

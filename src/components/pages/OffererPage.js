@@ -26,20 +26,6 @@ class OffererPage extends Component {
     }
   }
 
-  componentDidMount () {
-    this.props.user && this.handleRequestData()
-  }
-
-  componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.handleRequestData()
-    }
-  }
-
-  componentWillUnmount() {
-    this.props.resetForm()
-  }
-
   static getDerivedStateFromProps (nextProps) {
     const {
       offerer,
@@ -63,7 +49,16 @@ class OffererPage extends Component {
       requestData
     } = this.props
     if (offererId !== 'nouveau') {
-      requestData('GET', `offerers/${offererId}`, { key: 'offerers' })
+      requestData(
+        'GET',
+        `offerers/${offererId}`,
+        {
+          key: 'offerers',
+          normalizer: {
+            managedVenues: 'venues'
+          }
+        }
+      )
     }
   }
 
@@ -71,10 +66,24 @@ class OffererPage extends Component {
     this.setState({ isNewProvider: true })
   }
 
+  componentDidMount () {
+    this.props.user && this.handleRequestData()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.resetForm()
+  }
+
   render () {
     const {
+      currentOfferer,
       location: { search },
-      offerer
     } = this.props
 
     const {
@@ -82,7 +91,7 @@ class OffererPage extends Component {
       bookingEmail,
       name,
       siren,
-    } = offerer || {}
+    } = currentOfferer || {}
 
     const {
       apiPath,
@@ -213,7 +222,7 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      offerer: selectCurrentOfferer(state, ownProps),
+      currentOfferer: selectCurrentOfferer(state, ownProps),
     }),
     { resetForm }
   )
