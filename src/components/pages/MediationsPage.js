@@ -1,23 +1,15 @@
 import React from 'react'
-import { compose } from 'redux'
 
 import MediationManager from '../MediationManager'
 import PageWrapper from '../layout/PageWrapper'
-import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import withLogin from '../hocs/withLogin'
 
-const MediationsPage = ({
-  currentMediations,
-  isLoading
-}) => {
+const MediationsPage = () => {
   return (
-    <PageWrapper name='mediations' loading={isLoading}>
-      <MediationManager mediations={currentMediations} />
+    <PageWrapper name='mediations'>
+      <MediationManager />
     </PageWrapper>
   )
 }
 
-export default compose(
-  withLogin({ isRequired: true }),
-  withCurrentOccasion
-)(MediationsPage)
+export default withLogin({ isRequired: true )(MediationsPage)
