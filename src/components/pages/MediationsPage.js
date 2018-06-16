@@ -12,4 +12,4 @@ const MediationsPage = () => {
   )
 }
 
-export default withLogin({ isRequired: true )(MediationsPage)
+export default withLogin({ isRequired: true })(MediationsPage)
