@@ -32,13 +32,16 @@ def create_mediation():
         e.addError('thumb', "Ce format d'image n'est pas autorisé")
         return jsonify(e.errors), 400
 
+    print('request.form', request.json, request.form)
+
+    offererId = dehumanize(request.form['offererId'])
     ensure_current_user_has_rights(RightsType.editor,
-                                   request.form['offererId'])
+                                   offererId)
 
     new_mediation = Mediation()
     new_mediation.author = current_user
     new_mediation.eventId = dehumanize(request.form['eventId'])
-    new_mediation.offererId = dehumanize(request.form['offererId'])
+    new_mediation.offererId = offererId
     app.model.PcObject.check_and_save(new_mediation)
 
     new_mediation.save_thumb(thumb.read(), 0)
