@@ -69,7 +69,7 @@ class FormSirene extends Component {
           searching: false,
         })
         if (response.status === 404)  {
-          assignErrors([{[sireType]: [`${capitalize(sireType)} invalide`]}])
+          assignErrors({[sireType]: [`${capitalize(sireType)} invalide`]})
           this.setState({localValue: ''})
           mergeForm(collectionName, entityId,
             {

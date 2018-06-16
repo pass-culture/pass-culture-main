@@ -31,22 +31,22 @@ const SigninPage = ({ errors }) => {
               <p className='subtitle'>Et merci de votre participation pour nous aider à l'améliorer !</p>
               <form>
                 <FormField
-                  className='input is-rounded'
-                  type="email"
+                  autoComplete="email"
                   collectionName="users"
+                  inputClassName='input is-rounded'
                   label={<Label title="Adresse e-mail:" />}
                   name="identifier"
+                  type="email"
                   placeholder="Identifiant (email)"
-                  autoComplete="email"
                 />
                 <FormField
-                  className='input is-rounded'
+                  autoComplete="current-password"
                   collectionName="users"
+                  inputClassName='input is-rounded'
                   label={<Label title="Mot de passe" />}
                   name="password"
                   type="password"
                   placeholder="Mot de passe"
-                  autoComplete="current-password"
                 />
                 <div className="errors">{errors}</div>
                 <div className='field buttons-field'>
@@ -54,7 +54,6 @@ const SigninPage = ({ errors }) => {
                     Créer un compte
                   </NavLink>
                   <SubmitButton
-                    text="Se connecter"
                     className="button is-primary is-outlined"
                     getBody={form => form.usersById[NEW]}
                     getIsDisabled={form =>
@@ -63,6 +62,7 @@ const SigninPage = ({ errors }) => {
                     }
                     path="users/signin"
                     storeKey="users"
+                    text="Se connecter"
                   />
                 </div>
               </form>

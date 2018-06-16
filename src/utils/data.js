@@ -18,7 +18,6 @@ export function getNextState(state, method, patch, config = {}) {
     return state
   }
 
-  console.log('patch', patch, nextState)
 
   // LOOP OVER ALL THE KEYS
   for (let key of Object.keys(patch)) {
@@ -85,17 +84,9 @@ export function getNextState(state, method, patch, config = {}) {
 
     // DELETE CASE
     if (method === 'DELETE') {
-      const resolvedData = [...previousData]
-      console.log('nextData', nextData)
-      nextData.forEach(nextDatum => {
-        const resolvedIndex = resolvedData.findIndex(resolvedDatum =>
-            resolvedDatum.id === nextDatum.id)
-        console.log('BEN', resolvedIndex)
-        if (typeof resolvedIndex !== 'undefined') {
-          delete resolvedData[resolvedIndex]
-        }
-      })
-      console.log('DELETE', resolvedData)
+      const nextDataIds = nextData.map(nextDatum => nextDatum.id)
+      const resolvedData = previousData.filter(previousDatum =>
+        !nextDataIds.includes(previousDatum.id))
       nextState[key] = resolvedData
       continue
     }

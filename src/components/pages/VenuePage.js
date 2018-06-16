@@ -126,22 +126,23 @@ class VenuePage extends Component {
       <PageWrapper name='offerer' loading={isLoading} backTo={{label: 'Structure', path: `/structures/${get(offerer, 'id')}`}}>
         <div className='section'>
           <h2 className='subtitle has-text-weight-bold'>
-            {get(offerer, 'name')}
+            {get(venue, 'name')}
           </h2>
 
           <h1 className='pc-title'>
             {isNew ? 'Créer un' : 'Modifier le'} lieu
           </h1>
+        </div>
 
-          <p className='subtitle'>
-            Ajoutez un lieu où trouver vos offres
-            <br />
-            <span className='is-size-7 has-text-grey'>
+        {!isNew && <ProviderManager venueProviders={venueProviders} />}
+
+        <div className='section'>
+          <h2 className='pc-list-title'>
+            IDENTIFIANTS
+            <span className='is-pulled-right is-size-7 has-text-grey'>
               Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
             </span>
-          </p>
-        </div>
-        <div className='section'>
+          </h2>
           <FormField
             collectionName="venues"
             defaultValue={siret}
@@ -163,8 +164,9 @@ class VenuePage extends Component {
           />
         </div>
         <div className='section'>
-          <h4 className='pc-form-section'>Adresse</h4>
-
+          <h2 className='pc-list-title'>
+            ADRESSE
+          </h2>
           <FormField
             autoComplete="address"
             collectionName="venues"
@@ -199,7 +201,6 @@ class VenuePage extends Component {
           />
         </div>
 
-      {!isNew && <ProviderManager venueProviders={venueProviders} />}
       <hr />
       <div className="field is-grouped is-grouped-centered"
         style={{justifyContent: 'space-between'}}>

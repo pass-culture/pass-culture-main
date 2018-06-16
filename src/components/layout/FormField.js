@@ -65,7 +65,7 @@ class FormField extends Component {
         input: type !== 'textarea' && !isSelect,
         textarea: type === 'textarea',
         'is-rounded': !isCheckbox,
-      }, className, inputClassName)}
+      }, inputClassName)}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
@@ -73,15 +73,23 @@ class FormField extends Component {
     />
 
     if (!isCheckbox) {
-      inputMarkup = <div className='control is-expanded' key={`control_${inputId}`}>{inputMarkup}</div>
+      inputMarkup = (
+        <div className='control is-expanded' key={`control_${inputId}`}>
+          {inputMarkup}
+        </div>
+      )
     }
 
     let labelMarkup = (
-      <label className={classnames({
-        checkbox: isCheckbox,
-        label: !isCheckbox,
-        required,
-      }, labelClassName)} htmlFor={inputId} key={`label_${inputId}`}>
+      <label
+        className={classnames({
+          checkbox: isCheckbox,
+          label: !isCheckbox,
+          required,
+        }, labelClassName)}
+        htmlFor={inputId}
+        key={`label_${inputId}`}
+      >
         { isCheckbox && inputMarkup }
         {label}
       </label>
@@ -100,12 +108,13 @@ class FormField extends Component {
         </div>
       )
     }
+
     return [
       <div
         className={classnames('form-field field', {
           checkbox: isCheckbox,
           'is-horizontal': isHorizontal,
-        })}
+        }, className)}
         key={0}
       >
         { isCheckbox ? labelMarkup : [labelMarkup, inputMarkup] }

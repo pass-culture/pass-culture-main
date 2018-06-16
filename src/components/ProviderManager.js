@@ -13,6 +13,7 @@ import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
 import selectCurrentVenue from '../selectors/currentVenue'
 import selectProviderOptions from '../selectors/providerOptions'
+import selectSelectedProvider from '../selectors/selectedProvider'
 import selectVenueProviders from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
 
@@ -92,69 +93,91 @@ class ProviderManager extends Component {
 
   render () {
     const {
+      selectedProvider,
       providerOptions,
       venueProviders
     } = this.props
     const {
+      identifierDescription,
+      identifierRegexp,
+    } = (selectedProvider || {})
+    const {
       isNew,
       withError
     } = this.state
+    const providerOptionsWithPlaceholder = [{
+      label: 'Sélectionnez un fournisseur',
+    }].concat(providerOptions)
 
-    console.log('providerOptions', providerOptions)
-    console.log('venueProviders', venueProviders)
     return (
       <div className='section'>
         <h2 className='pc-list-title'>
-          Mes fournisseurs
+          IMPORTATIONS D'OFFRES
+          <span className='is-pulled-right is-size-7 has-text-grey'>
+            Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
+          </span>
         </h2>
         <ul className='pc-list'>
           {
             venueProviders && venueProviders.map((vp, index) => (
-                <VenueProviderItem {...vp} key={index} />
+                <VenueProviderItem venueProvider={vp} key={vp.id} />
             ))
           }
           {isNew && (
             <li>
-              {withError && (
-                <p className={
-                  withError ? 'has-text-weight-bold has-text-danger' : ''
-                }>Il faut un identifiant ou celui-ci existe déjà</p>
-              )}
+              {
+                withError && (
+                  <p className={
+                    withError ? 'has-text-weight-bold has-text-danger' : ''
+                  }>
+                    Il faut un identifiant ou celui-ci existe déjà
+                  </p>
+                )
+              }
 
               <div className='picto'><Icon svg='picto-db-default' /></div>
               <FormField
+                className='column is-4'
                 collectionName="venueProviders"
-                defaultValue={get(providerOptions, '0.value')}
+                defaultValue={get(providerOptionsWithPlaceholder, '0.value')}
                 name="providerId"
-                options={providerOptions}
+                options={providerOptionsWithPlaceholder}
                 required
                 type="select"
                 size="small"
               />
-              <FormField
-                collectionName="venueProviders"
-                name="venueIdAtOfferProvider"
-                placeholder='Mon identifiant'
-                size="small"
-              />
-              <SubmitButton
-                className="button is-secondary"
-                getBody={form => get(form, `venueProvidersById.${NEW}`)}
-                getIsDisabled={form =>
-                  !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-                handleSuccess={() => this.setState({ isNew: false })}
-                method="POST"
-                path="venueProviders"
-                storeKey="venueProviders"
-                text="Enregistrer"
-              />
+              {
+                selectedProvider && identifierRegexp && (
+                  <FormField
+                    collectionName="venueProviders"
+                    name="venueIdAtOfferProvider"
+                    placeholder={identifierDescription}
+                    size="small"
+                  />
+                )
+              }
+              {
+                selectedProvider && (
+                  <SubmitButton
+                    className="button is-secondary"
+                    getBody={form => get(form, `venueProvidersById.${NEW}`)}
+                    getIsDisabled={form =>
+                      !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
+                    handleSuccess={() => this.setState({ isNew: false })}
+                    method="POST"
+                    path="venueProviders"
+                    storeKey="venueProviders"
+                    text="Enregistrer"
+                  />
+                )
+              }
             </li>
           )}
         </ul>
         <div className='has-text-right'>
           <button className="button is-secondary"
             onClick={this.onAddClick}>
-            + Ajouter un compte fournisseur
+            + Importer des offres
           </button>
         </div>
       </div>
@@ -168,6 +191,7 @@ export default compose(
     (state, ownProps) => ({
       providerOptions: selectProviderOptions(state),
       providers: state.data.providers,
+      selectedProvider: selectSelectedProvider(state, ownProps),
       venueProviders: selectVenueProviders(state, ownProps),
       venue: selectCurrentVenue(state, ownProps),
       user: state.user

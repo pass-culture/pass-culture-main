@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -11,33 +12,36 @@ class VenueProviderItem extends Component {
 
   onDeactivateClick = () => {
     const {
-      id,
       isActive,
-      requestData
+      requestData,
+      venueProvider
     } = this.props
+    const { id } = (venueProvider || {})
     requestData('PATCH', `providers/${id}`, { body: { isActive: !isActive }})
   }
 
   onDeleteClick = () => {
     const {
-      id,
       provider,
-      requestData
+      requestData,
+      venueProvider
     } = this.props
+    const { id } = (venueProvider || {})
     requestData('DELETE', `venueProviders/${id}`, { key: 'venueProviders' })
   }
 
   render () {
     const {
+      venueProvider
+    } = this.props
+    const {
       isActive,
+      lastSyncDate,
       provider,
       venueIdAtOfferProvider
-    } = this.props
-
-    console.log('VENUE PROVIDER', this.props)
-
+    } = (venueProvider || {})
     return (
-      <li>
+      <li className={classnames('is-disabled')}>
         <div className='picto'>
           <Icon svg='picto-db-default' />
         </div>
@@ -45,18 +49,30 @@ class VenueProviderItem extends Component {
           {provider && provider.localClass}
         </div>
         <div>
-          ?? offres
+          Compte : <strong className='has-text-weight-bold'>
+            [{venueIdAtOfferProvider}]
+          </strong>
         </div>
-        <div>
-          Compte : <strong className='has-text-weight-bold'>[{venueIdAtOfferProvider}]</strong>
-        </div>
-        <div>
-          <button className='button is-secondary'
-            onClick={this.onDeactivateClick}>
-            {isActive ? 'Désactiver': 'Activer'}
-          </button>
-        </div>
-        <div>
+        {
+          lastSyncDate
+          ? [
+            <div key={0}>
+              ?? offres
+            </div>,
+            <div key={1}>
+              <button className='button is-secondary'
+                onClick={this.onDeactivateClick}>
+                {isActive ? 'Désactiver': 'Activer'}
+              </button>
+            </div>
+          ]
+          : (
+            <div className='small'>
+              En cours de validation
+            </div>
+          )
+        }
+        <div className="is-pulled-right" key={2}>
           <button className="delete is-small"
             onClick={this.onDeleteClick} />
         </div>

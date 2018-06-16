@@ -33,8 +33,6 @@ const data = (state = initialState, action) => {
       action.config
     )
 
-    console.log('state', state, 'nextState', nextState)
-
     // last
     if (action.config.getSuccessState) {
       Object.assign(nextState, action.config.getSuccessState(state, action))
