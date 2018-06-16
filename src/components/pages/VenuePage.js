@@ -233,7 +233,7 @@ class VenuePage extends Component {
                       !get(form, `venuesById.${venueIdOrNew}.postalCode`)
                 }
                 className="button is-primary is-medium"
-                handleSuccessData={this.handleSuccessData}
+                handleSuccess={this.handleSuccessData}
                 method={method}
                 path={apiPath}
                 storeKey="venues"

@@ -103,6 +103,12 @@ const routes = [
   },
   {
     exact: true,
+    path: '/structures/:offererId/lieux/:venueId/offres/nouveau',
+    title: 'Offres',
+    render: () => <OfferPage />,
+  },
+  {
+    exact: true,
     path: '/offres/:occasionPath/:occasionId/dates',
     title: 'Dates',
     render: () => <OccurencesPage />,

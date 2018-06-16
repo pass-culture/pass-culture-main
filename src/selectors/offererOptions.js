@@ -1,16 +1,20 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import selectOfferers from './offerers'
 
 export default createSelector(
   selectOfferers,
-  offerers => {
-    const offererOptions = offerers && [{
-      label: 'Sélectionnez une structure',
-    }].concat(offerers.map(o => ({ label: o.name, value: o.id })))
-    if (offererOptions && offererOptions.length === 2) {
-      return [offererOptions[1]]
+  (state, ownProps) => get(ownProps, 'match.params.offererId'),
+  (offerers, offererId) => {
+
+    let filteredOfferers = offerers
+
+    if (offererId) {
+      filteredOfferers = offerers.find(offerer => offerer.id === offererId)
     }
-    return offererOptions
+
+    return filteredOfferers && filteredOfferers.map(o =>
+      ({ label: o.name, value: o.id }))
   }
 )

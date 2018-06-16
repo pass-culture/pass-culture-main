@@ -1,10 +1,9 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
-
-import selectSelectedOffererId from './selectedOffererId'
 
 export default createSelector(
   state => state.data.venues,
-  selectSelectedOffererId,
+  (state, ownProps) => get(ownProps, 'occasion.offererId'),
   (venues, offererId) => venues &&
     venues.filter(v => v.managingOffererId === offererId)
 )

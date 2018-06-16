@@ -1,15 +1,11 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
-import { SingleDatePicker } from 'react-dates'
 import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
-import FormField from './layout/FormField'
-import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
-import selectEventOccurences from '../selectors/eventOccurences'
-import { DELETE, NEW } from '../utils/config'
+import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
   constructor () {
@@ -101,8 +97,7 @@ class OccurenceManager extends Component {
 export default connect(
   (state, ownProps) => ({
     newDate: get(state, `form.datesById.${NEW}`),
-    newOffer: get(state, `form.offersById${NEW}`),
-    occurences: selectEventOccurences(state, ownProps)
+    newOffer: get(state, `form.offersById${NEW}`)
   }),
   { mergeForm }
 )(OccurenceManager)

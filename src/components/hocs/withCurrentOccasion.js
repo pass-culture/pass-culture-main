@@ -35,7 +35,18 @@ const withCurrentOccasion = WrappedComponent => {
       occasionId !== 'nouveau' && requestData(
         'GET',
         apiPath,
-        { key: 'occasions' }
+        {
+          key: 'occasions',
+          normalizer: {
+            mediations: 'mediations',
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          }
+        }
       )
     }
 
@@ -84,7 +95,7 @@ const withCurrentOccasion = WrappedComponent => {
     withRouter,
     connect(
       (state, ownProps) => ({
-        occasion: selectCurrentOccasion(state, ownProps),
+        currentOccasion: selectCurrentOccasion(state, ownProps),
         user: state.user,
       }),
       { requestData }

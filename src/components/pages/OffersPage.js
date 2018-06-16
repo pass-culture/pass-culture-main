@@ -25,8 +25,7 @@ class OffersPage extends Component {
       'GET',
       'occasions',
       {
-        handleSuccess: (state, action) => {
-          console.log('WOOOOOOO')
+        handleSuccess: (state, action) =>
           !get(state, 'data.venues.length')
           && showModal(
             <div>
@@ -36,10 +35,15 @@ class OffersPage extends Component {
             {
               onCloseClick: () => history.push('/structures')
             }
-          )
-        },
+          ),
         normalizer: {
-
+          mediations: 'mediations',
+          occurences: {
+            key: 'eventOccurences',
+            normalizer: {
+              venue: 'venues'
+            }
+          }
         }
       }
     )
@@ -101,7 +105,11 @@ class OffersPage extends Component {
             </p>
           </div>
         </div>
-        {<div className='section load-wrapper'><OccasionsList /></div>}
+        {
+          <div className='section load-wrapper'>
+            <OccasionsList />
+          </div>
+        }
       </PageWrapper>
     )
   }

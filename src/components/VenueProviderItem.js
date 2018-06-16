@@ -1,8 +1,6 @@
 import classnames from 'classnames'
-import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import Icon from './layout/Icon'
@@ -17,12 +15,17 @@ class VenueProviderItem extends Component {
       venueProvider
     } = this.props
     const { id } = (venueProvider || {})
-    requestData('PATCH', `providers/${id}`, { body: { isActive: !isActive }})
+    requestData(
+      'PATCH',
+      `venueProviders/${id}`,
+      {
+        body: { isActive: !isActive }
+      }
+    )
   }
 
   onDeleteClick = () => {
     const {
-      provider,
       requestData,
       venueProvider
     } = this.props

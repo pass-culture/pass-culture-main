@@ -32,7 +32,6 @@ class SubmitButton extends Component {
       method,
       onClick,
       path,
-      isMultipart,
       storeKey,
       requestData,
     } = this.props

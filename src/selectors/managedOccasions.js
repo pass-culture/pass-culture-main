@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 
 const emptyManagedOccasions = []
 
-export default (selectManagedVenues) => createSelector(
+export default selectManagedVenues => createSelector(
   selectManagedVenues,
   venues => emptyManagedOccasions
 )

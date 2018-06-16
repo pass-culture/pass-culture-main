@@ -1,19 +1,16 @@
-import get from 'lodash.get'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-
 export default createSelector(
   state => state.data.eventOccurences,
-  (state, ownProps) => get(ownProps, 'occasion.id'),
-  (eventOccurences, eventId) => {
-    if (!eventOccurences || !eventId) {
+  eventOccurences => {
+    if (!eventOccurences) {
       return
     }
 
-    // filter
-    const filteredOccurences = eventOccurences.filter(eo =>
-      eo.eventId === eventId)
+    // clone
+    const filteredOccurences = [...eventOccurences].map(eo =>
+      Object.assign({}, eo))
 
     // sort by dates
     if (filteredOccurences) {

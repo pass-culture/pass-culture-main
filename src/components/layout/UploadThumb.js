@@ -1,13 +1,11 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
-import get from 'lodash.get'
+import { connect } from 'react-redux'
 
-import Icon from './Icon'
 import { requestData } from '../../reducers/data'
-import { API_URL, NEW } from '../../utils/config'
+import { NEW } from '../../utils/config'
 
 class UploadThumb extends Component {
 
@@ -77,7 +75,7 @@ class UploadThumb extends Component {
     if (typeof image === 'string') return;
     if (isUploadDisabled) return;
     e.preventDefault()
-    const type = image.type.includes('image/') && image.type.split('image/')[1]
+    // const type = image.type.includes('image/') && image.type.split('image/')[1]
     const formData = new FormData();
     formData.append('file', image);
     requestData(

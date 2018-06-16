@@ -1,20 +1,18 @@
+import classnames from 'classnames'
+import get from 'lodash.get'
+import moment from 'moment'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import moment from 'moment'
-import classnames from 'classnames'
-import get from 'lodash.get'
 
-// import FormInput from './layout/FormInput'
-import Icon from './layout/Icon'
 import Price from './Price'
+import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
-import createSelectOccasionThumbUrl from '../selectors/occasionThumbUrl'
-import { modelToPath } from '../utils/translate'
+import createSelectOccasionItem from '../selectors/occasionItem'
 
-import {API_URL} from '../utils/config'
-import {pluralize} from '../utils/string'
+import { modelToPath } from '../utils/translate'
+import { pluralize } from '../utils/string'
 
 class OccasionItem extends Component {
 
@@ -27,20 +25,32 @@ class OccasionItem extends Component {
 
   onDeactivateClick = event => {
     const {
-      id,
+      occasion,
       occasionType,
       requestData
     } = this.props
+    const {
+      id,
+      isActive
+    } = (occasion || {})
     requestData(
       'PATCH',
       `occasions/${occasionType}/${id}`,
         {
           body: {
             occasion: {
-              isActive: !this.props.isActive
+              isActive: !isActive
             }
           },
           key: 'occasions',
+          normalizer: {
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          },
           isMergingDatum: true,
           isMutatingDatum: true,
           isMutaginArray: false
@@ -50,62 +60,36 @@ class OccasionItem extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     return {
-      path: `/offres/${modelToPath(nextProps.modelName)}`
+      path: `/offres/${modelToPath(get(nextProps, 'occasion.modelName'))}`
     }
   }
 
   render() {
     const {
+      occasionItem,
+      occasion,
+    } = this.props
+    const {
       createdAt,
-      description,
       id,
       isActive,
-      occurences,
       mediations,
       name,
-      thumbUrl,
-    } = this.props
-
-    const {
-      path
-    } = this.state
-
-    console.log(this.props)
-    const maxDate = occurences.map(o => moment(o.beginningDatetime)).reduce((max, d) => {
-      return max && max.isAfter(d) ? max : d
-    }, null)
+      occurences,
+    } = (occasion || {})
     const {
       available,
+      maxDate,
       groupSizeMin,
       groupSizeMax,
       priceMin,
       priceMax,
-    } = occurences.reduce((aggreged, o) => {
-      return o.offer.reduce((subaggreged, offer) => {
-        return {
-          available: subaggreged.available + offer.available,
-          groupSizeMin: subaggreged.groupSizeMin ? Math.min(subaggreged.groupSizeMin, offer.groupSize) : offer.groupSize,
-          groupSizeMax: subaggreged.groupSizeMax ? Math.max(subaggreged.groupSizeMax, offer.groupSize) : offer.groupSize,
-          priceMin: subaggreged.priceMin ? Math.min(subaggreged.priceMin, offer.price) : offer.price,
-          priceMax: subaggreged.priceMax ? Math.max(subaggreged.priceMax, offer.price) : offer.price,
-        }
-      }, aggreged)
-    }, {
-      available: 0,
-      groupSizeMin: null,
-      groupSizeMax: null,
-      priceMin: null,
-      priceMax: null,
-    })
-    console.log({
-      available,
-      groupSizeMin,
-      groupSizeMax,
-      priceMin,
-      priceMax,
-    })
+      thumbUrl
+    } = (occasionItem || {})
+    const { path } = this.state
+    const mediationsLength = get(mediations, 'length')
     return (
-      <li className={classnames('occasion-item', {active: isActive})}>
+      <li className={classnames('occasion-item', { active: isActive })}>
         <img alt='thumbnail' src={thumbUrl} className="occasion-thumb"/>
         <div className="list-content">
           <NavLink className='name' to={`${path}/${id}`} title={name}>
@@ -114,7 +98,7 @@ class OccasionItem extends Component {
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>Théâtre</li>
-            <li className='has-text-primary'>{pluralize(occurences.length, 'date')}</li>
+            <li className='has-text-primary'>{pluralize(get(occurences, 'length'), 'date')}</li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
             {available > 0 && <li>restent {available}</li>}
@@ -122,9 +106,9 @@ class OccasionItem extends Component {
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`${path}/${id}${mediations.length ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediations.length ? 'is-secondary' : 'is-primary is-outlined'}`}>
+              <NavLink  to={`${path}/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
                 <span className='icon'><Icon svg='ico-stars' /></span>
-                <span>{mediations.length ? 'Accroches' : 'Ajouter une Accroche'}</span>
+                <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
             </li>
             <li>
@@ -148,9 +132,9 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
-    const selectOccasionThumbUrl = createSelectOccasionThumbUrl()
+    const selectOccasionItem = createSelectOccasionItem()
     return (state, ownProps) => ({
-      thumbUrl: selectOccasionThumbUrl(state, ownProps)
+      occasionItem: selectOccasionItem(state, ownProps)
     })
   },
   { requestData }

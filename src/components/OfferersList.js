@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { AutoSizer, List } from 'react-virtualized'
 
 import OffererItem from './OffererItem'
 import { requestData } from '../reducers/data'
@@ -18,58 +17,37 @@ class OfferersList extends Component {
   }
 
   handleRequestData = () => {
-    if (this.props.user) {
-      this.props.requestData(
-        'GET',
-        'offerers',
-        {
-          normalizer: {
-            'managedVenues': 'venues'
-          }
+    const {
+      requestData,
+      user
+    } = this.props
+    user && requestData(
+      'GET',
+      'offerers',
+      {
+        normalizer: {
+          'managedVenues': 'venues'
         }
-      )
-    }
+      }
+    )
   }
 
   render () {
     const {
       offerers
     } = this.props
-
     return (
       <ul className="pc-list offerers-list">
-        {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
+        {offerers && offerers.map(o =>
+          <OffererItem key={o.id} offerer={o} />)}
       </ul>
-    )
-
-    // TODO: decide if we keep the autosizer
-    return (
-      <div className="offerers-list">
-        <AutoSizer>
-          {
-            ({width, height}) => offerers && offerers.length
-            ? <List
-              height={height}
-              rowCount={offerers.length}
-              rowHeight={190}
-              rowRenderer={({ index, key, style }) => (
-                <div key={index} style={style}>
-                  <OffererItem offerer={offerers[index]} />
-                </div>
-              )}
-              width={width}
-            />
-            : ''
-          }
-        </AutoSizer>
-      </div>
     )
   }
 }
 
 export default connect(
   state => ({
-    offerers: selectOfferers(state) || [],
+    offerers: selectOfferers(state),
     user: state.user
   }),
   { requestData }

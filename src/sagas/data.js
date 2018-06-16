@@ -2,8 +2,6 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { failData, successData } from '../reducers/data'
 import { assignErrors } from '../reducers/errors'
-import { showNotification } from '../reducers/notification'
-import { SUCCESS } from '../reducers/queries'
 import { fetchData } from '../utils/request'
 
 
