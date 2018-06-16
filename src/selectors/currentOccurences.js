@@ -1,11 +1,18 @@
 import get from 'lodash.get'
-import moment from 'moment'
 import { createSelector } from 'reselect'
 
-import getOccurences from '../getters/occurences'
+import selectOccurences from './occurences'
 
 export default () => createSelector(
-  state => state.data.eventOccurences,
+  selectOccurences,
+  (state, ownProps) => get(ownProps, 'match.params.venueId'),
   (state, ownProps) => get(ownProps, 'occasion.id'),
-  getOccurences
+  (occurences, venueId, occasionId) => {
+    if (!occurences) {
+      return
+    }
+    if (venueId) {
+      return occurences.filter(o => o.venueId === venueId)
+    }
+  }
 )

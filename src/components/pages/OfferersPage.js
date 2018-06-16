@@ -8,7 +8,7 @@ import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
-import selectOfferers from '../selectors/offerers'
+import selectOfferers from '../../selectors/offerers'
 
 const OfferersPage = ({
   location: { search },

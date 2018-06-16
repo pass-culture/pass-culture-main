@@ -9,8 +9,8 @@ import { NavLink } from 'react-router-dom'
 import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
+import createSelectCurrentMediations from '../selectors/currentMediations'
 import createSelectCurrentOccurences from '../selectors/currentOccurences'
-import createSelectMediations from '../selectors/mediations'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import createSelectOccasionThumbUrl from '../selectors/occasionThumbUrl'
 
@@ -129,14 +129,14 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
-    const selectMediations = createSelectMediations()
-    const selectOccurences = createSelectCurrentOccurences()
-    const selectOccasionItem = createSelectOccasionItem(selectOccurences)
-    const selectOccasionThumbUrl = createSelectOccasionThumbUrl(selectMediations)
+    const selectCurrentMediations = createSelectCurrentMediations()
+    const selectCurrentOccurences = createSelectCurrentOccurences()
+    const selectOccasionItem = createSelectOccasionItem(selectCurrentOccurences)
+    const selectOccasionThumbUrl = createSelectOccasionThumbUrl(selectCurrentMediations)
     return (state, ownProps) => ({
-      mediations: selectMediations(state, ownProps),
+      currentMediations: selectCurrentMediations(state, ownProps),
+      currentOccurences: selectCurrentOccurences(state, ownProps),
       occasionItem: selectOccasionItem(state, ownProps),
-      occurences: selectOccurences(state, ownProps),
       thumbUrl: selectOccasionThumbUrl(state, ownProps)
     })
   },

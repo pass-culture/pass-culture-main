@@ -105,11 +105,11 @@ class OfferPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      currentOccurences,
+      occurences,
       showModal
     } = this.props
     showModal(
-      <OccurenceManager currentOccurences={currentOccurences} />
+      <OccurenceManager occurences={occurences} />
     )
   }
 
@@ -119,7 +119,6 @@ class OfferPage extends Component {
       method
     } = action
     const {
-      currentOccurences,
       history,
       match: { params: { occasionPath } },
       showModal,
@@ -165,16 +164,14 @@ class OfferPage extends Component {
   render () {
     const {
       apiPath,
-      currentMediations,
       currentOccasion,
-      currentOccurences,
-      currentOffererId,
       eventTypes,
       isLoading,
       isNew,
       occasionCollection,
       occasionIdOrNew,
       offererOptions,
+      routePath,
       selectedVenueId,
       selectedVenues,
       showModal,
@@ -189,8 +186,11 @@ class OfferPage extends Component {
       description,
       durationMinutes,
       mediaUrls,
+      mediations,
       name,
       performer,
+      occurences,
+      offererId,
       stageDirector,
       type,
     } = (currentOccasion || {})
@@ -234,7 +234,10 @@ class OfferPage extends Component {
                   </button>
                 )
               }
-              <MediationManager mediations={currentMediations} />
+              <MediationManager
+                mediations={mediations}
+                newMediationRoutePath={`${routePath}/accroches/nouveau`}
+              />
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
@@ -251,7 +254,7 @@ class OfferPage extends Component {
           />
           <FormField
             collectionName='occasions'
-            defaultValue={currentOffererId}
+            defaultValue={offererId}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Structure :" />}

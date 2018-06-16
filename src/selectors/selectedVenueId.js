@@ -3,10 +3,10 @@ import { createSelector } from 'reselect'
 
 import selectSelectedVenues from './selectedVenues'
 
-export default (selectOccurences) => createSelector(
+export default createSelector(
   selectSelectedVenues,
-  selectOccurences,
-  (venues, occurences) =>
-    (venues && venues.length === 1 && venues[0].id) ||
-    get(occurences, '0.venue.id')
+  (state, ownProps) => get(ownProps, 'occasion.venueId'),
+  (venues, venueId) =>
+    venueId ||
+    (venues && venues.length === 1 && venues[0].id)
 )
