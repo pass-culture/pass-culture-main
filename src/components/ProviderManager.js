@@ -21,38 +21,26 @@ class ProviderManager extends Component {
   constructor () {
     super()
     this.state = {
-      isNew: false,
       withError: false
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    const {
+      match: { params: { venueProviderId } }
+    } = nextProps
+    const isNew = venueProviderId === 'nouveau'
+    return {
+      isNew
     }
   }
 
   onAddClick = () => {
     const {
-      match: { params: { venueId } },
-      mergeForm
+      history,
+      match: { params: { offererId, venueId } }
     } = this.props
-    this.setState({ isNew: true })
-    mergeForm('venueProviders', NEW, { venueId })
-  }
-
-  componentDidMount () {
-    const {
-      match: { params: { venueProviderId } },
-    } = this.props
-    this.handleRequestData()
-    venueProviderId === 'nouveau' && this.handleMergeForm()
-  }
-
-  componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.handleRequestData()
-    }
-    if (
-      prevProps.match.params.venueProviderId === 'nouveau'
-      || this.props.match.params.venueProviderId !== 'nouveau'
-    ) {
-      this.handleMergeForm()
-    }
+    history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
   }
 
   handleMergeForm = () => {
@@ -60,7 +48,8 @@ class ProviderManager extends Component {
       match: { params: { venueId } },
       mergeForm
     } = this.props
-    mergeForm('venueProviders', NEW, { venueId })
+    const { isNew } = this.state
+    isNew && mergeForm('venueProviders', NEW, { venueId })
   }
 
   handleRequestData = () => {
@@ -82,15 +71,32 @@ class ProviderManager extends Component {
     )
   }
 
-  static getDerivedStateFromProps(nextProps) {
+  handleSuccessData = () => {
     const {
-      match: { params: { venueProviderId } }
-    } = nextProps
-    const newState = {}
-    if (venueProviderId === 'nouveau') {
-      newState.isNew = true
+      history,
+      match: { params: { offererId, venueId } }
+    } = this.props
+    history.push(`/structures/${offererId}/lieux/${venueId}`)
+  }
+
+  componentDidMount () {
+    const {
+      match: { params: { venueProviderId } },
+    } = this.props
+    this.handleRequestData()
+    venueProviderId === 'nouveau' && this.handleMergeForm()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
     }
-    return newState
+    if (
+      prevProps.match.params.venueProviderId === 'nouveau'
+      || this.props.match.params.venueProviderId !== 'nouveau'
+    ) {
+      this.handleMergeForm()
+    }
   }
 
   render () {
@@ -169,7 +175,7 @@ class ProviderManager extends Component {
                     getBody={form => get(form, `venueProvidersById.${NEW}`)}
                     getIsDisabled={form =>
                       !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-                    handleSuccess={() => this.setState({ isNew: false })}
+                    handleSuccess={this.handleSuccessData}
                     method="POST"
                     path="venueProviders"
                     storeKey="venueProviders"
