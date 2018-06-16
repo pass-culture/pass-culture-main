@@ -28,38 +28,39 @@ class OffererPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      offerer,
-      match: { params },
+      currentOfferer,
+      match: { params: { offererId } },
     } = nextProps
-    const isNew = params.offererId === 'nouveau'
-    const isLoading = !(get(offerer, 'id') || isNew)
+    const currentOffererId = get(currentOfferer, 'id')
+    const isNew = offererId === 'nouveau'
+    const isLoading = !(currentOffererId || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `offerers/` : `offerers/${get(offerer, 'id')}`,
+      apiPath: isNew ? `offerers/` : `offerers/${currentOffererId}`,
       isLoading,
       isNew,
       method,
-      offererId: isNew ? NEW : get(offerer, 'id')
+      offererIdOrNew: isNew ? NEW : currentOffererId
     }
   }
 
   handleRequestData () {
     const {
       match: { params: { offererId } },
-      requestData
+      requestData,
+      user
     } = this.props
-    if (offererId !== 'nouveau') {
-      requestData(
-        'GET',
-        `offerers/${offererId}`,
-        {
-          key: 'offerers',
-          normalizer: {
-            managedVenues: 'venues'
-          }
+    const { isNew } = this.state
+    user && !isNew && requestData(
+      'GET',
+      `offerers/${offererId}`,
+      {
+        key: 'offerers',
+        normalizer: {
+          managedVenues: 'venues'
         }
-      )
-    }
+      }
+    )
   }
 
   onAddProviderClick = () => {
@@ -67,7 +68,7 @@ class OffererPage extends Component {
   }
 
   componentDidMount () {
-    this.props.user && this.handleRequestData()
+    this.handleRequestData()
   }
 
   componentDidUpdate (prevProps) {
@@ -98,7 +99,7 @@ class OffererPage extends Component {
       isLoading,
       isNew,
       method,
-      offererId,
+      offererIdOrNew,
     } = this.state
 
     const notification = search === '?success=true' && {
@@ -122,7 +123,7 @@ class OffererPage extends Component {
             autoComplete="siren"
             collectionName="offerers"
             defaultValue={siren}
-            entityId={offererId}
+            entityId={offererIdOrNew}
             label={<Label title="Siren :" />}
             name="siren"
             type="sirene"
@@ -134,7 +135,7 @@ class OffererPage extends Component {
             autoComplete="name"
             collectionName="offerers"
             defaultValue={name}
-            entityId={offererId}
+            entityId={offererIdOrNew}
             label={<Label title="Dénomination :" />}
             name="name"
             readOnly={!isNew}
@@ -145,7 +146,7 @@ class OffererPage extends Component {
             autoComplete="address"
             collectionName="offerers"
             defaultValue={address || ''}
-            entityId={offererId}
+            entityId={offererIdOrNew}
             label={<Label title="Siège social :" />}
             name="address"
             type="adress"
@@ -159,7 +160,7 @@ class OffererPage extends Component {
                 autoComplete="email"
                 collectionName="offerers"
                 defaultValue={bookingEmail || ''}
-                entityId={offererId}
+                entityId={offererIdOrNew}
                 label={<Label title="Email de réservation :" />}
                 name="bookingEmail"
                 isHorizontal
@@ -180,13 +181,13 @@ class OffererPage extends Component {
               </div>
               <div className="control">
                 <SubmitButton
-                  getBody={form => form.offerersById[offererId]}
+                  getBody={form => form.offerersById[offererIdOrNew]}
                   getIsDisabled={form => {
                     return isNew
-                      ? !get(form, `offerersById.${offererId}.name`) ||
-                        !get(form, `offerersById.${offererId}.address`)
-                      : !get(form, `offerersById.${offererId}.name`) &&
-                        !get(form, `offerersById.${offererId}.address`)
+                      ? !get(form, `offerersById.${offererIdOrNew}.name`) ||
+                        !get(form, `offerersById.${offererIdOrNew}.address`)
+                      : !get(form, `offerersById.${offererIdOrNew}.name`) &&
+                        !get(form, `offerersById.${offererIdOrNew}.address`)
                   }
 
                   }
@@ -206,7 +207,7 @@ class OffererPage extends Component {
             </h2>
             <VenuesList />
             <div className='has-text-right'>
-              <NavLink to={`/structures/${offererId}/lieux/nouveau`}
+              <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}
                 className="button is-secondary is-outlined">
                 + Ajouter un lieu
               </NavLink>
