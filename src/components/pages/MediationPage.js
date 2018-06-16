@@ -136,11 +136,10 @@ class MediationPage extends Component {
           occasionPath
         }
       },
-      mediation,
-      offererId
     } = this.props
     const {
-      name
+      name,
+      offererId
     } = (currentOccasion || {})
     const {
       id
@@ -151,10 +150,6 @@ class MediationPage extends Component {
       imageUrl,
       inputUrl,
     } = this.state
-
-
-    console.log('offererId', offererId)
-
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionPath}/${occasionId}`
     return (

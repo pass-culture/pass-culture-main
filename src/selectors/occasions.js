@@ -7,7 +7,8 @@ export default createSelector(
   state => state.data.searchedOccasions,
   state => state.data.eventOccurences,
   state => state.data.mediations,
-  (occasions, searchedOccasions, eventOccurences, mediations) => {
+  state => state.data.venues,
+  (occasions, searchedOccasions, eventOccurences, mediations, venues) => {
     if (!occasions && !searchedOccasions) return
 
     // priority to searched elements
@@ -15,30 +16,34 @@ export default createSelector(
 
     // refill the objects from their join objects
     // but removed during the normalizer time
-    filteredOccasions.forEach(o => {
+    filteredOccasions.forEach(occasion => {
 
         // OCCURENCES
         const occurences = eventOccurences && eventOccurences.filter(
-          eo => eo.eventId === o.id
+          eo => eo.eventId === occasion.id
         )
         if (occurences) {
-          occurences.forEach(o => {
-            o.beginningDatetimeMoment = moment(o.beginningDatetime)
+          occurences.forEach(occasion => {
+            occasion.beginningDatetimeMoment = moment(occasion.beginningDatetime)
           })
-          occurences.sort((o1,o2) =>
-            o1.beginningDatetimeMoment - o2.beginningDatetimeMoment)
+          occurences.sort((occasion1,occasion2) =>
+            occasion1.beginningDatetimeMoment - occasion2.beginningDatetimeMoment)
         }
-        o.occurences = occurences
+        occasion.occurences = occurences
 
         // VENUE
-        o.venueId = get(occurences, '0.venueId')
+        const venueId = get(occurences, '0.venueId')
+        const venue = venueId && venues && venues.find(venue =>
+          venue.id === venueId)
+        occasion.venue = venue
+        occasion.venueId = venueId
 
         // OFFERER
-        o.offererId = get(occurences, '0.venue.managingOffererId')
+        occasion.offererId = get(venue, 'managingOffererId')
 
         // MEDIATIONS
-        o.mediations = mediations && mediations.filter(
-          eo => eo.eventId === o.id
+        occasion.mediations = mediations && mediations.filter(
+          mediation => mediation.eventId === occasion.id
         )
 
     })

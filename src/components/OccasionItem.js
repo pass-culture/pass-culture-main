@@ -9,12 +9,8 @@ import { NavLink } from 'react-router-dom'
 import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
-import createSelectCurrentMediations from '../selectors/currentMediations'
-import createSelectCurrentOccurences from '../selectors/currentOccurences'
 import createSelectOccasionItem from '../selectors/occasionItem'
-import createSelectOccasionThumbUrl from '../selectors/occasionThumbUrl'
 
-import {API_URL} from '../utils/config'
 import { modelToPath } from '../utils/translate'
 import { pluralize } from '../utils/string'
 
@@ -62,18 +58,17 @@ class OccasionItem extends Component {
 
   render() {
     const {
-      mediations,
       occasionItem,
       occasion,
-      occurences,
-      thumbUrl,
     } = this.props
     const {
       createdAt,
       description,
       id,
       isActive,
-      name
+      mediations,
+      name,
+      occurences,
     } = (occasion || {})
     const {
       available,
@@ -82,6 +77,7 @@ class OccasionItem extends Component {
       groupSizeMax,
       priceMin,
       priceMax,
+      thumbUrl
     } = (occasionItem || {})
     const { path } = this.state
     const mediationsLength = get(mediations, 'length')
@@ -129,15 +125,9 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
-    const selectCurrentMediations = createSelectCurrentMediations()
-    const selectCurrentOccurences = createSelectCurrentOccurences()
-    const selectOccasionItem = createSelectOccasionItem(selectCurrentOccurences)
-    const selectOccasionThumbUrl = createSelectOccasionThumbUrl(selectCurrentMediations)
+    const selectOccasionItem = createSelectOccasionItem()
     return (state, ownProps) => ({
-      currentMediations: selectCurrentMediations(state, ownProps),
-      currentOccurences: selectCurrentOccurences(state, ownProps),
-      occasionItem: selectOccasionItem(state, ownProps),
-      thumbUrl: selectOccasionThumbUrl(state, ownProps)
+      occasionItem: selectOccasionItem(state, ownProps)
     })
   },
   { requestData }
