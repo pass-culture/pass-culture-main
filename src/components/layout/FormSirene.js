@@ -86,7 +86,6 @@ class FormSirene extends Component {
         } else {
           response.json().then(body => {
             const dataPath = isSiren ? 'siege_social' : 'etablissement'
-            console.log('BEN ALORS', body, collectionName, entityId, dataPath)
             const sireneForm = {
               address: get(body, `${dataPath}.geo_adresse`),
               city: get(body, `${dataPath}.libelle_commune`),
@@ -96,7 +95,6 @@ class FormSirene extends Component {
               postalCode: get(body, `${dataPath}.code_postal`),
               [sireType]: get(body, `${dataPath}${sireType}`),
             }
-            console.log('sireneForm', sireneForm)
             mergeForm(collectionName, entityId, sireneForm)
           })
         }

@@ -21,7 +21,6 @@ import selectOffererOptions from '../../selectors/offererOptions'
 import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
-import { pathToCollection } from '../../utils/translate'
 
 const requiredFields = [
   'name',
@@ -75,13 +74,28 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const {
+      apiPath,
       match: { params: { occasionPath, occasionId } },
       history,
       requestData,
       showModal
     } = this.props
     if (occasionId !== 'nouveau') {
-      requestData('GET', `occasions/${pathToCollection(occasionPath)}/${occasionId}`, { key: 'occasions' })
+      requestData(
+        'GET',
+        apiPath,
+        {
+          key: 'occasions',
+          normalizer: {
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          }
+        }
+      )
     }
     requestData(
       'GET',
@@ -195,6 +209,10 @@ class OfferPage extends Component {
       type,
     } = (currentOccasion || {})
 
+    const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
+      ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
+      : offererOptions
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -261,7 +279,7 @@ class OfferPage extends Component {
             readOnly={!isNew}
             required
             name='offererId'
-            options={offererOptions}
+            options={offererOptionsWithPlaceholder}
             type="select"
           />
           {

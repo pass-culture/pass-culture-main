@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
@@ -25,31 +26,30 @@ const VenueItem = ({
         </p>
         <ul className='actions'>
           <li>
-            <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
-              <Icon svg='ico-offres-r' /> {offers ? offers.length : 0} offres
+            {
+              get(offers, 'length')
+              ? (
+                <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
+                  <Icon svg='ico-offres-r' /> {offers ? offers.length : 0} offres
+                </NavLink>
+              )
+              : (
+                <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres/nouveau`} className='has-text-primary'>
+                  <Icon svg='ico-offres-r' /> Créer une offre
+                </NavLink>
+              )
+            }
+          </li>
+          <li>
+            <NavLink to={`/structures/${managingOffererId}/lieux/${id}/fournisseurs/nouveau`}
+              className='has-text-primary'>
+              <Icon svg='ico-offres-r' /> Importer des offres
             </NavLink>
           </li>
           <li>
             <p className="has-text-grey">{address}</p>
           </li>
         </ul>
-        {false && <nav className="level">
-                  <NavLink to={`/structures/${managingOffererId}/lieux/${id}`}>
-                    <button className="button is-primary level-item">
-                      Configurer
-                    </button>
-                  </NavLink>
-                  <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres`}>
-                    <button className="button is-primary level-item">
-                      Créer des offres
-                    </button>
-                  </NavLink>
-                  <NavLink to={`/structures/${managingOffererId}/lieux/${id}/fournisseurs/nouveau`}>
-                    <button className="button is-primary level-item">
-                      Importer des offres
-                    </button>
-                  </NavLink>
-                </nav>}
       </div>
       <div className='caret'>
         <NavLink to={showPath}>
