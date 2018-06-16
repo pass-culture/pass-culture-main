@@ -3,7 +3,7 @@ import moment from 'moment'
 import { createSelector } from 'reselect'
 
 
-export default createSelector(
+export default () => createSelector(
   state => state.data.eventOccurences,
   (state, ownProps) => get(ownProps, 'occasion.id'),
   (eventOccurences, eventId) => {

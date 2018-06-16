@@ -8,7 +8,7 @@ import OccurenceItem from './OccurenceItem'
 import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
-import selectEventOccurences from '../selectors/eventOccurences'
+import createSelectOccurences from '../selectors/occurences'
 import { DELETE, NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
@@ -98,11 +98,13 @@ class OccurenceManager extends Component {
   }
 }
 
+const selectOccurences = createSelectOccurences()
+
 export default connect(
   (state, ownProps) => ({
     newDate: get(state, `form.datesById.${NEW}`),
     newOffer: get(state, `form.offersById${NEW}`),
-    occurences: selectEventOccurences(state, ownProps)
+    occurences: selectOccurences(state, ownProps)
   }),
   { mergeForm }
 )(OccurenceManager)

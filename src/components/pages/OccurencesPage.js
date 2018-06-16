@@ -6,23 +6,25 @@ import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import PageWrapper from '../layout/PageWrapper'
-import selectEventOccurences from '../../selectors/eventOccurences'
+import createSelectOccurences from '../../selectors/occurences'
 
 const OccurencesPage = ({
-  eventOccurences
+  occurences
 }) => {
   return (
     <PageWrapper key={0} name="occurences">
-      <OccurenceManager occurences={eventOccurences} />
+      <OccurenceManager occurences={occurences} />
     </PageWrapper>
   )
 }
+
+const selectOccurences = createSelectOccurences()
 
 export default compose(
   withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
     (state, ownProps) =>
-      ({ eventOccurences: selectEventOccurences(state, ownProps) })
+      ({ occurences: selectOccurences(state, ownProps) })
   )
 )(OccurencesPage)

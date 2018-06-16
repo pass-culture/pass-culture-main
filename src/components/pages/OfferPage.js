@@ -18,7 +18,7 @@ import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import { SUCCESS } from '../../reducers/queries'
-import selectEventOccurences from '../../selectors/eventOccurences'
+import selectOccurences from '../../selectors/occurences'
 import selectOffererOptions from '../../selectors/offererOptions'
 import selectSelectedOffererId from '../../selectors/selectedOffererId'
 import selectSelectedVenueId from '../../selectors/selectedVenueId'
@@ -115,11 +115,11 @@ class OfferPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      eventOccurences,
+      occurences,
       showModal
     } = this.props
     showModal(
-      <OccurenceManager occurences={eventOccurences} />
+      <OccurenceManager occurences={occurences} />
     )
   }
 
@@ -129,7 +129,7 @@ class OfferPage extends Component {
       method
     } = action
     const {
-      eventOccurences,
+      occurences,
       history,
       match: { params: { occasionPath } },
       showModal,
@@ -175,7 +175,6 @@ class OfferPage extends Component {
   render () {
     const {
       apiPath,
-      eventOccurences,
       eventTypes,
       isLoading,
       isNew,
@@ -183,6 +182,7 @@ class OfferPage extends Component {
       occasionCollection,
       occasion,
       occasionIdOrNew,
+      occurences,
       offererOptions,
       selectedOffererId,
       selectedVenueId,
@@ -437,7 +437,7 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      eventOccurences: selectEventOccurences(state, ownProps),
+      occurences: selectOccurences(state, ownProps),
       eventTypes: state.data.eventTypes,
       offererOptions: selectOffererOptions(state),
       selectedOffererId: selectSelectedOffererId(state, ownProps),

@@ -2,12 +2,11 @@ import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import selectOffererOptions from './offererOptions'
-import selectEventOccurences from './eventOccurences'
 
-export default createSelector(
+export default (selectOccurences) => createSelector(
   selectOffererOptions,
-  selectEventOccurences,
-  (offererOptions, eventOccurences) =>
+  selectOccurences,
+  (offererOptions, occurences) =>
     get(offererOptions, '0.value') ||
-    get(eventOccurences, '0.venue.managingOffererId')
+    get(occurences, '0.venue.managingOffererId')
 )
