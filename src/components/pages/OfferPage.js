@@ -218,8 +218,6 @@ class OfferPage extends Component {
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
 
-    console.log('TYPE', type, eventTypes)
-
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}

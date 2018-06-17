@@ -22,14 +22,20 @@ class FormInput extends Component {
   onChange = event => {
     const { type, onChange } = this.props
     event.persist()
-    this.onDebouncedMergeForm((type === 'checkbox' || type === 'radio') ? event.target.checked : event.target.value)
+    this.onDebouncedMergeForm({
+      target: {
+          value: (type === 'checkbox' || type === 'radio')
+            ? event.target.checked
+            : event.target.value
+      }
+    })
     this.setState({ localValue: event.target.value })
     onChange && onChange(event)
   }
 
   onMergeForm = event => {
     const {
-      target: { checked, value },
+      target: { value },
     } = event
     const {
       collectionName,
@@ -59,7 +65,7 @@ class FormInput extends Component {
   componentDidMount() {
     // fill automatically the form when it is a NEW POST action
     const { entityId, defaultValue } = this.props
-    defaultValue && entityId === 'NEW' && this.onMergeForm({ target: { value: defaultValue } })
+    defaultValue && entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
   }
 
   componentDidUpdate (prevProps) {
@@ -68,7 +74,7 @@ class FormInput extends Component {
       entityId
     } = this.props
     if (defaultValue !== prevProps.defaultValue) {
-      entityId === 'NEW' && this.onMergeForm({ target: { value: defaultValue } })
+      entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
     }
   }
 
