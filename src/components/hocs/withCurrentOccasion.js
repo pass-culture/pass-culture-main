@@ -70,6 +70,7 @@ const withCurrentOccasion = WrappedComponent => {
         id
       } = nextProps
       const isNew = occasionId === 'nouveau'
+      console.log('occasionPath', occasionPath, occasionId)
       const occasionCollection = pathToCollection(occasionPath)
       const apiPath = isNew
         ? `${occasionCollection}`

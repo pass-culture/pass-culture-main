@@ -11,7 +11,9 @@ export default createSelector(
     let filteredOfferers = offerers
 
     if (offererId) {
-      filteredOfferers = offerers.find(offerer => offerer.id === offererId)
+      filteredOfferers = offerers && [
+        offerers.find(offerer => offerer.id === offererId)
+      ]
     }
 
     return filteredOfferers && filteredOfferers.map(o =>

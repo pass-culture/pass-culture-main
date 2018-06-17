@@ -103,7 +103,7 @@ const routes = [
   },
   {
     exact: true,
-    path: '/structures/:offererId/lieux/:venueId/offres/nouveau',
+    path: '/structures/:offererId/lieux/:venueId/offres/:occasionId',
     title: 'Offres',
     render: () => <OfferPage />,
   },
