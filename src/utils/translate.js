@@ -53,3 +53,24 @@ export function modelToPath (model) {
       return model;
   }
 }
+
+export function typeToTag (type) {
+  switch (type) {
+    case 'ComedyEvent':
+      return 'Comédie'
+    case 'DanceEvent':
+      return 'Danse'
+    case 'Festival':
+      return 'Festival'
+    case 'LiteraryEvent':
+      return 'Lecture'
+    case 'MusicEvent':
+      return 'Musique'
+    case 'ScreeningEvent':
+      return 'Cinéma'
+    case 'TheaterEvent':
+      return 'Théâtre'
+    default:
+      return type
+  }
+}

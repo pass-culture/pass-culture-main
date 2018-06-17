@@ -15,19 +15,13 @@ import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
+import selectOfferForm from '../../selectors/offerForm'
 import selectOffererOptions from '../../selectors/offererOptions'
 import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
 
-const requiredFields = [
-  'name',
-  'type',
-  'durationMinutes',
-  'description',
-  'contactName',
-  'contactEmail',
-]
+
 
 class OfferPage extends Component {
   constructor () {
@@ -78,6 +72,8 @@ class OfferPage extends Component {
       requestData,
       showModal
     } = this.props
+
+    console.log('apiPath', apiPath)
     if (occasionId !== 'nouveau') {
       requestData(
         'GET',
@@ -133,9 +129,13 @@ class OfferPage extends Component {
     const {
       history,
       match: { params: { occasionPath } },
+      offerForm,
       showModal,
       showNotification
     } = this.props
+    const {
+      isEventType
+    } = (offerForm || {})
 
     // PATCH
     if (method === 'PATCH') {
@@ -153,6 +153,7 @@ class OfferPage extends Component {
       history.push(`/offres/${occasionPath}/${data.id}`)
 
       // modal
+      /*
       showModal(
         <div>
           Cette offre est-elle soumise à des dates ou des horaires particuliers ?
@@ -170,6 +171,8 @@ class OfferPage extends Component {
           </button>
         </div>
       )
+      */
+      isEventType && this.handleShowOccurencesModal()
     }
   }
 
@@ -182,6 +185,7 @@ class OfferPage extends Component {
       isNew,
       occasionCollection,
       occasionIdOrNew,
+      offerForm,
       offererOptions,
       routePath,
       selectedVenueId,
@@ -196,6 +200,7 @@ class OfferPage extends Component {
       contactPhone,
       description,
       durationMinutes,
+      id,
       mediaUrls,
       mediations,
       name,
@@ -204,6 +209,10 @@ class OfferPage extends Component {
       stageDirector,
       type,
     } = (currentOccasion || {})
+    const {
+      isEventType,
+      requiredFields
+    } = (offerForm || {})
 
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
@@ -230,11 +239,11 @@ class OfferPage extends Component {
             collectionName='occasions'
             defaultValue={name}
             entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
             label={<Label title="Titre :" />}
             name="name"
             required
-            isHorizontal
-            isExpanded
           />
           { !isNew && (
             <div>
@@ -257,17 +266,6 @@ class OfferPage extends Component {
           <h2 className='pc-list-title'>Infos pratiques</h2>
           <FormField
             collectionName='occasions'
-            defaultValue={type || get(eventTypes, '0.value')}
-            entityId={occasionIdOrNew}
-            label={<Label title="Type :" />}
-            name="type"
-            required
-            type="select"
-            options={eventTypes}
-            isHorizontal
-          />
-          <FormField
-            collectionName='occasions'
             defaultValue={offererId}
             entityId={occasionIdOrNew}
             isHorizontal
@@ -284,70 +282,83 @@ class OfferPage extends Component {
                 collectionName='occasions'
                 defaultValue={selectedVenueId}
                 entityId={occasionIdOrNew}
+                isHorizontal
                 label={<Label title="Lieu :" />}
                 name='venueId'
+                options={venueOptions}
                 readOnly={!isNew}
                 required
-                options={venueOptions}
                 type="select"
-                isHorizontal
               />
             )
           }
-          {occasionCollection === 'events' && (
-            <FormField
-              collectionName='occasions'
-              defaultValue={durationMinutes}
-              entityId={occasionIdOrNew}
-              label={<Label title="Durée (en minutes) :" />}
-              name="durationMinutes"
-              required
-              type="number"
-              isHorizontal
-            />
-          )}
+          <FormField
+            collectionName='occasions'
+            defaultValue={type || get(eventTypes, '0.value')}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Type :" />}
+            name="type"
+            options={eventTypes}
+            required
+            type="select"
+          />
+          {
+            isEventType && (
+              <FormField
+                collectionName='occasions'
+                defaultValue={durationMinutes}
+                entityId={occasionIdOrNew}
+                isHorizontal
+                label={<Label title="Durée (en minutes) :" />}
+                name="durationMinutes"
+                required
+                type="number"
+              />
+            )
+          }
           <h2 className='pc-list-title'>Infos artistiques</h2>
           <FormField
             collectionName='occasions'
             defaultValue={description}
             entityId={occasionIdOrNew}
-            label={<Label title="Description :" />}
-            name="description"
-            required
-            type="textarea"
             isHorizontal
             isExpanded
+            label={<Label title="Description :" />}
+            name="description"
+            type="textarea"
+            required
           />
           <FormField
             collectionName='occasions'
             defaultValue={author}
             entityId={occasionIdOrNew}
-            label={<Label title="Auteur :" />}
-            name="author"
             isHorizontal
             isExpanded
+            label={<Label title="Auteur :" />}
+            name="author"
           />
           {
-            occasionCollection === 'events' && [
+            isEventType && [
               <FormField
                 collectionName='occasions'
                 defaultValue={stageDirector}
                 entityId={occasionIdOrNew}
+                isHorizontal
+                isExpanded
                 key={0}
                 label={<Label title="Metteur en scène:" />}
                 name="stageDirector"
-                isHorizontal
-                isExpanded
               />,
               <FormField
                 collectionName='occasions'
                 defaultValue={performer}
                 entityId={occasionIdOrNew}
+                isHorizontal
+                isExpanded
                 key={1}
                 label={<Label title="Interprète:" />}
                 name="performer"
-                isHorizontal
-                isExpanded
               />
             ]
           }
@@ -356,30 +367,30 @@ class OfferPage extends Component {
             collectionName='occasions'
             defaultValue={contactName || get(user, 'publicName')}
             entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
             label={<Label title="Nom du contact :" />}
             name="contactName"
             required
-            isHorizontal
-            isExpanded
           />
           <FormField
             collectionName='occasions'
             defaultValue={contactEmail || get(user, 'email')}
             entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
             label={<Label title="Email de contact :" />}
             name="contactEmail"
             required
             type="email"
-            isHorizontal
-            isExpanded
           />
           <FormField
             collectionName='occasions'
             defaultValue={contactPhone}
             entityId={occasionIdOrNew}
+            isHorizontal
             label={<Label title="Tel de contact :" />}
             name="contactPhone"
-            isHorizontal
           />
           {false && <FormField
                       collectionName='occasions'
@@ -402,13 +413,21 @@ class OfferPage extends Component {
                 className="button is-primary is-medium"
                 getBody={form => get(form, `occasionsById.${occasionIdOrNew}`)}
                 getIsDisabled={form => {
+                  if (!requiredFields) {
+                    return true
+                  }
                   const missingFields = requiredFields.filter(r =>
-                    !get(form, `occasionsById.${occasionIdOrNew}.${r}`));
-                  return missingFields.length > 0
+                    !get(form, `occasionsById.${occasionIdOrNew}.${r}`))
+                  return isNew
+                    ? missingFields.length > 0
+                    : missingFields.length === requiredFields.length
                 }}
                 handleSuccess={this.handleSuccessData}
                 method={isNew ? 'POST' : 'PATCH'}
-                path={apiPath}
+                path={isEventType
+                  ? `events${id ? `/${id}` : ''}`
+                  : `things${id ? `/${id}` : ''}`
+                }
                 storeKey="occasions"
                 text="Enregistrer"
               />
@@ -426,7 +445,8 @@ export default compose(
   connect(
     (state, ownProps) => ({
       eventTypes: state.data.eventTypes,
-      offererOptions: selectOffererOptions(state),
+      offerForm: selectOfferForm(state, ownProps),
+      offererOptions: selectOffererOptions(state, ownProps),
       selectedVenueId: selectSelectedVenueId(state, ownProps),
       selectedVenues: selectSelectedVenues(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)

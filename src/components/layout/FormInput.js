@@ -22,12 +22,21 @@ class FormInput extends Component {
   onChange = event => {
     const { type, onChange } = this.props
     event.persist()
-    this.onDebouncedMergeForm((type === 'checkbox' || type === 'radio') ? event.target.checked : event.target.value)
+    this.onDebouncedMergeForm({
+      target: {
+          value: (type === 'checkbox' || type === 'radio')
+            ? event.target.checked
+            : event.target.value
+      }
+    })
     this.setState({ localValue: event.target.value })
     onChange && onChange(event)
   }
 
-  onMergeForm = value => {
+  onMergeForm = event => {
+    const {
+      target: { value },
+    } = event
     const {
       collectionName,
       defaultValue,
@@ -53,16 +62,20 @@ class FormInput extends Component {
     mergeForm(collectionName, entityId, name, mergedValue, parentValue)
   }
 
-  componentDidUpdate (prevProps) {
-    if (this.props.defaultValue !== prevProps.defaultValue) {
-      this.onMergeForm(this.props.defaultValue)
-    }
+  componentDidMount() {
+    // fill automatically the form when it is a NEW POST action
+    const { entityId, defaultValue } = this.props
+    defaultValue && entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
   }
 
-  componentWillMount() {
-    // fill automatically the form when it is a NEW POST action
-    const { defaultValue, method } = this.props
-    defaultValue && method === 'POST' && this.onMergeForm(defaultValue)
+  componentDidUpdate (prevProps) {
+    const {
+      defaultValue,
+      entityId
+    } = this.props
+    if (defaultValue !== prevProps.defaultValue) {
+      entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
+    }
   }
 
   render() {
