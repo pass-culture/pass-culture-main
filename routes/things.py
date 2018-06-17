@@ -4,6 +4,7 @@ from flask import current_app as app, jsonify, request
 
 from utils.includes import THING_INCLUDES
 from utils.rest import expect_json_data,\
+                       load_or_404,\
                        login_or_api_key_required,\
                        handle_rest_get_list,\
                        update
@@ -36,3 +37,18 @@ def post_thing():
         has_dehumanized_id=True,
         has_model_name=True
     )), 201
+
+@app.route('/things/<id>', methods=['PATCH'])
+@login_or_api_key_required
+@expect_json_data
+def patch_thing(id):
+    thing = load_or_404(Thing, id)
+    update(thing, request.json)
+    app.model.PcObject.check_and_save(thing)
+    return jsonify(
+        thing._asdict(
+            include=THING_INCLUDES,
+            has_dehumanized_id=True,
+            has_model_name=True
+        )
+    ), 200

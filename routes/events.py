@@ -75,3 +75,18 @@ def post_event():
             has_model_name=True
         )
     ), 201
+
+@app.route('/events/<id>', methods=['PATCH'])
+@login_or_api_key_required
+@expect_json_data
+def patch_event(id):
+    event = load_or_404(Event, id)
+    update(event, request.json)
+    app.model.PcObject.check_and_save(event)
+    return jsonify(
+        event._asdict(
+            include=EVENT_INCLUDES,
+            has_dehumanized_id=True,
+            has_model_name=True
+        )
+    ), 200
