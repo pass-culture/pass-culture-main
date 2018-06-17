@@ -1,12 +1,15 @@
 import get from 'lodash.get'
 import React from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import PageWrapper from '../layout/PageWrapper'
 import FormField from '../layout/FormField'
 import Logo from '../layout/Logo'
 import SubmitButton from '../layout/SubmitButton'
 import withSign from '../hocs/withSign'
+import { showNotification } from '../../reducers/notification'
 import { NEW } from '../../utils/config'
 
 const Label = ({ subtitle, title, inline }) => (
@@ -29,7 +32,10 @@ const requiredFields = [
   'siren'
 ]
 
-const SignupPage = ({ errors }) => {
+const SignupPage = ({
+  errors,
+  showNotification
+}) => {
   return (
     <PageWrapper name="sign-up" noHeader noContainer>
       <div className='columns'>
@@ -130,6 +136,10 @@ const SignupPage = ({ errors }) => {
                         !get(form, `usersById._new_.${k}`)
                       ).length > 0
                     }
+                    handleSuccess={() => showNotification({
+                      text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
+                      type: 'success'
+                    })}
                     path="users"
                     storeKey="users"
                     text="Valider"
@@ -145,4 +155,7 @@ const SignupPage = ({ errors }) => {
   )
 }
 
-export default withSign(SignupPage)
+export default compose(
+  withSign,
+  connect(null, { showNotification })
+)(SignupPage)
