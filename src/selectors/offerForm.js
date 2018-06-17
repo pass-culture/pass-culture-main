@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import selectSelectedType from './selectedType'
@@ -26,7 +27,9 @@ const requiredEventFields = [
 
 export default createSelector(
   selectSelectedType,
-  type => {
+  (state, ownProps) => get(ownProps, 'currentOccasion.type'),
+  (selectedType, propsType) => {
+    const type = selectedType || propsType
     const isEventType = type && eventTypes.includes(type)
     const requiredFields = isEventType
       ? requiredEventAndThingFields.concat(requiredEventFields)

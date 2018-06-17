@@ -129,9 +129,13 @@ class OfferPage extends Component {
     const {
       history,
       match: { params: { occasionPath } },
+      offerForm,
       showModal,
       showNotification
     } = this.props
+    const {
+      isEventType
+    } = (offerForm || {})
 
     // PATCH
     if (method === 'PATCH') {
@@ -149,6 +153,7 @@ class OfferPage extends Component {
       history.push(`/offres/${occasionPath}/${data.id}`)
 
       // modal
+      /*
       showModal(
         <div>
           Cette offre est-elle soumise à des dates ou des horaires particuliers ?
@@ -166,6 +171,8 @@ class OfferPage extends Component {
           </button>
         </div>
       )
+      */
+      isEventType && this.handleShowOccurencesModal()
     }
   }
 
@@ -210,6 +217,8 @@ class OfferPage extends Component {
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
+
+    console.log('TYPE', type, eventTypes)
 
     return (
       <PageWrapper
@@ -411,7 +420,9 @@ class OfferPage extends Component {
                   }
                   const missingFields = requiredFields.filter(r =>
                     !get(form, `occasionsById.${occasionIdOrNew}.${r}`))
-                  return missingFields.length > 0
+                  return isNew
+                    ? missingFields.length > 0
+                    : missingFields.length === requiredFields.length
                 }}
                 handleSuccess={this.handleSuccessData}
                 method={isNew ? 'POST' : 'PATCH'}
