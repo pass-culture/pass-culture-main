@@ -1,7 +1,15 @@
 """ includes """
 
 OFFERERS_INCLUDES = [
-    "managedVenues"
+    {
+        "key": "managedVenues",
+        "sub_joins": [
+            {
+                "key": "eventOccurences",
+                "sub_joins": ["event"]
+            }
+        ]
+    }
 ]
 
 EVENT_INCLUDES = [
