@@ -8,46 +8,15 @@ from utils.rest import expect_json_data,\
                        update
 
 Event = app.model.Event
+EventType = app.model.EventType
 
-#event_types = [et.name for et in list(app.model.EventType)]
-event_types = [
-    {
-        "value": "",
-        "label": "(Aucun)"
-    },
-    {
-        "value": "ComedyEvent",
-        "label": "Show"
-    },
-    {
-        "value": "DanceEvent",
-        "label": "Danse"
-    },
-    {
-        "value": "Festival",
-        "label": "Festival"
-    },
-    {
-        "value": "LiteraryEvent",
-        "label": "Litérature"
-    },
-    {
-        "value": 'MusicEvent',
-        "label": "Musique"
-    },
-    {
-        "value": 'ScreeningEvent',
-        "label": "Cinéma"
-    },
-    {
-        "value": 'TheaterEvent',
-        "label": "Théâtre"
-    }
-]
 
 @app.route('/eventTypes', methods=['GET'])
 def list_event_types():
+    event_types = [{'label': et.value, 'value': str(et)}
+                   for et in app.model.EventType]
     return jsonify(event_types), 200
+
 
 @app.route('/events/<id>', methods=['GET'])
 @login_or_api_key_required
@@ -60,6 +29,7 @@ def get_event(id):
             has_model_name=True
         )
     ), 200
+
 
 @app.route('/events', methods=['POST'])
 @login_or_api_key_required
@@ -75,6 +45,7 @@ def post_event():
             has_model_name=True
         )
     ), 201
+
 
 @app.route('/events/<id>', methods=['PATCH'])
 @login_or_api_key_required

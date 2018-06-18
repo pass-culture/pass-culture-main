@@ -19,10 +19,30 @@ class Accessibility(Enum):
     MENTALLY_IMPAIRED = 16
 
 
-db = app.db
+class EventType(Enum):
+    Workshop          = "Cours ou atelier de pratique artistique, bal..."
+    MovieScreening    = "Cinéma / Projection de film"
+    Meeting           = "Dédicace / Rencontre / Conférence"
+    Game              = "Jeu / Concours / Tournoi"
+    SchoolHelp        = "Soutien scolaire"
+    StreetPerformance = "Arts de la rue"
+    Other             = "Autres"
+    BookReading       = "Lecture"
+    CircusAndMagic    = "Cirque / Magie"
+    DancePerformance  = "Danse"
+    Comedy            = "Humour / Café-théâtre"
+    Concert           = "Concert"
+    Combo             = "Pluridisciplinaire"
+    Youth             = "Spectacle Jeunesse"
+    Musical           = "Spectacle Musical / Cabaret / Opérette"
+    Theater           = "Théâtre"
+    GuidedVisit       = "Visite guidée : Exposition, Musée, Monument..."
+    FreeVisit         = "Visite libre : Exposition, Musée, Monument..."
 
-(app.model.EventTypeHierarchy, app.model.EventType)\
-    = make_schema_org_hierarchy_and_enum('EventType', 'event_type')
+
+app.model.EventType = EventType
+
+db = app.db
 
 
 class Event(app.model.PcObject,
