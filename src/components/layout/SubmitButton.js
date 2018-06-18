@@ -3,9 +3,10 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
-import { FAIL, PENDING, SUCCESS } from '../../reducers/queries'
 import { randomHash } from '../../utils/random'
 
 class SubmitButton extends Component {
@@ -26,6 +27,8 @@ class SubmitButton extends Component {
       getBody,
       getOptimistState,
       getSuccessState,
+      handleFail,
+      handleSuccess,
       method,
       onClick,
       path,
@@ -36,14 +39,19 @@ class SubmitButton extends Component {
     this.setState({
       submitRequestId,
     })
+    const body = getBody(form)
     requestData(method, path, {
       add,
-      body: (getBody && getBody(form)) || form,
+      body,
       getOptimistState,
       getSuccessState,
+      handleFail,
+      handleSuccess,
       key: storeKey,
       requestId: submitRequestId,
+      encode: body instanceof FormData ? 'multipart/form-data' : null,
     })
+
     onClick && onClick()
   }
 
@@ -55,24 +63,19 @@ class SubmitButton extends Component {
       const submitRequestId = get(returnedQuery, 'status', '') === 'PENDING'
         ? returnedQuery.id
         : null
-      return {
-        submitRequestStatus: get(returnedQuery, 'status'),
-        submitRequestId
-      }
+      return { submitRequestId }
     }
     return null
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    const { handleStatusChange } = this.props
-    const { submitRequestStatus } = this.state
-    if (prevState.submitRequestStatus !== submitRequestStatus) {
-      handleStatusChange && handleStatusChange(submitRequestStatus)
-    }
-  }
-
   render() {
-    const { className, getIsDisabled, form, text, submittingText } = this.props
+    const {
+      className,
+      form,
+      getIsDisabled,
+      submittingText,
+      text,
+    } = this.props
     const { submitRequestId } = this.state
     const isDisabled = getIsDisabled(form)
     return (
@@ -102,10 +105,13 @@ SubmitButton.propTypes = {
   path: PropTypes.string.isRequired,
 }
 
-export default connect(
-  ({ form, queries }) => ({
-    form,
-    queries,
-  }),
-  { requestData }
+export default compose(
+  withRouter,
+  connect(
+    ({ form, queries }) => ({
+      form,
+      queries,
+    }),
+    { requestData }
+  )
 )(SubmitButton)

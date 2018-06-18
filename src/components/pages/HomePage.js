@@ -6,7 +6,7 @@ import HomeCard from '../HomeCard'
 
 const HomePage = ({ user }) => {
   return (
-    <PageWrapper name='home' whiteHeader noContainer>
+    <PageWrapper name='home' whiteHeader>
       <div className='home-cards'>
         <HomeCard svg='ico-guichet-w' title='Guichet' text='Enregistrez les codes de réservation des porteurs du Pass.' navLink='/guichet' dottedCard />
         <HomeCard svg='ico-offres-w' title='Vos offres' text='Créez et mettez en avant vos offres présentes sur le Pass.' navLink='/offres' />

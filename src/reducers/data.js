@@ -24,11 +24,12 @@ const data = (state = initialState, action) => {
     const nextState = getNextState(
       state,
       action.method,
-      key,
-      // force casting into an array
-      !Array.isArray(action.data)
-        ? [action.data]
-        : action.data,
+      {
+        // force casting into an array
+        [key]: !Array.isArray(action.data)
+                  ? [action.data]
+                  : action.data,
+      },
       action.config
     )
 

@@ -24,25 +24,28 @@
     }
   }
 
+
   &.loading {
-    &:before {
-      content: 'Chargement ...';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      background: $white;
-      z-index: 5;
-      text-align: center;
-      padding-top: 33%;
+    .load-wrapper {
+      position: relative;
+      &:before {
+        content: 'Chargement ...';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        background: $white;
+        z-index: 5;
+        text-align: center;
+        padding-top: $page-padding;
+      }
     }
   }
-
   &.container {
     position: relative;
     .page-content {
-      min-height: 100vh;
+      // min-height: 100vh;
       padding: $page-padding;
       position: relative;
       top: $header-height - $header-display-height;

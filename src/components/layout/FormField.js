@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 
+import FormDate from './FormDate'
 import FormInput from './FormInput'
 import FormList from './FormList'
 import FormPassword from './FormPassword'
@@ -15,6 +16,7 @@ import Icon from './Icon'
 import { capitalize } from '../../utils/string'
 
 const FormComponentsByName = {
+  FormDate,
   FormInput,
   FormList,
   FormSearch,
@@ -26,12 +28,19 @@ const FormComponentsByName = {
 
 class FormField extends Component {
 
+  static propTypes = {
+    collectionName: PropTypes.string.isRequired
+  }
+
+  static defaultProps = {
+    size: 'normal',
+  }
+
   render() {
     const {
       className,
       collectionName,
-      controlClassName,
-      errors,
+      error,
       id,
       inputClassName,
       isExpanded,
@@ -53,11 +62,10 @@ class FormField extends Component {
       {...this.props}
       className={classnames({
         checkbox: isCheckbox,
-        select: isSelect,
         input: type !== 'textarea' && !isSelect,
         textarea: type === 'textarea',
         'is-rounded': !isCheckbox,
-      }, className, inputClassName)}
+      }, inputClassName)}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
@@ -65,15 +73,23 @@ class FormField extends Component {
     />
 
     if (!isCheckbox) {
-      inputMarkup = <div className='control is-expanded' key={`control_${inputId}`}>{inputMarkup}</div>
+      inputMarkup = (
+        <div className='control is-expanded' key={`control_${inputId}`}>
+          {inputMarkup}
+        </div>
+      )
     }
 
     let labelMarkup = (
-      <label className={classnames({
-        checkbox: isCheckbox,
-        label: !isCheckbox,
-        required,
-      }, labelClassName)} htmlFor={inputId} key={`label_${inputId}`}>
+      <label
+        className={classnames({
+          checkbox: isCheckbox,
+          label: !isCheckbox,
+          required,
+        }, labelClassName)}
+        htmlFor={inputId}
+        key={`label_${inputId}`}
+      >
         { isCheckbox && inputMarkup }
         {label}
       </label>
@@ -92,43 +108,36 @@ class FormField extends Component {
         </div>
       )
     }
+
     return [
       <div
         className={classnames('form-field field', {
           checkbox: isCheckbox,
           'is-horizontal': isHorizontal,
-        })}
+        }, className)}
         key={0}
       >
         { isCheckbox ? labelMarkup : [labelMarkup, inputMarkup] }
         <ul role='help is-danger'
           id={`${inputId}-error`}
-          className={classnames('errors', { pop: errors })}
+          className={classnames('error', { pop: error })}
           key={1}
         >
-          {errors &&
-            errors.map((e, index) => (
-              <li key={index}>
-                <Icon svg="picto-warning" alt="Warning" /> {e}
-              </li>
-            ))}
+          {
+            error && (
+              <p>
+                <Icon svg="picto-warning" alt="Warning" /> {error}
+              </p>
+            )
+          }
         </ul>
       </div>
     ]
   }
 }
 
-FormField.defaultProps = {
-  type: 'input',
-  size: 'normal',
-}
-
-FormField.propTypes = {
-  collectionName: PropTypes.string.isRequired
-}
-
 export default compose(
   connect((state, ownProps) => ({
-    errors: state.errors[ownProps['name']],
+    error: state.errors[ownProps['name']],
   }))
 )(FormField)

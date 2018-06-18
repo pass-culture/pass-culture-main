@@ -10,7 +10,7 @@ const initialState = {}
 const errors = (state = initialState, action) => {
   switch (action.type) {
     case ASSIGN_ERRORS:
-      return Object.assign({}, state, action.errors)
+      return Object.assign({}, state, action.patch)
     case REMOVE_ERRORS:
       return Object.assign({}, state, {
           [action.name]: null,
@@ -23,8 +23,8 @@ const errors = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
-export const assignErrors = errors => ({
-  errors,
+export const assignErrors = patch => ({
+  patch,
   type: ASSIGN_ERRORS,
 })
 

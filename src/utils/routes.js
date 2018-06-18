@@ -6,6 +6,8 @@ import BetaPage from '../components/pages/BetaPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import MediationsPage from '../components/pages/MediationsPage'
+import NotFoundPage from '../components/pages/NotFoundPage'
+import OccurencesPage from '../components/pages/OccurencesPage'
 import OffersPage from '../components/pages/OffersPage'
 import OfferPage from '../components/pages/OfferPage'
 import OffererPage from '../components/pages/OffererPage'
@@ -101,15 +103,27 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionPath/:occasionId/accroches',
-    title: 'Accroches',
-    render: props => <MediationsPage />,
+    path: '/structures/:offererId/lieux/:venueId/offres/:occasionId',
+    title: 'Offres',
+    render: () => <OfferPage />,
+  },
+  {
+    exact: true,
+    path: '/offres/:occasionPath/:occasionId/dates',
+    title: 'Dates',
+    render: () => <OccurencesPage />,
   },
   {
     exact: true,
     path: '/offres/:occasionPath/:occasionId/accroches/:mediationId',
     title: 'Accroche',
-    render: props => <MediationPage />,
+    render: () => <MediationPage />,
+  },
+  {
+    exact: true,
+    path: '/offres/:occasionPath/:occasionId/accroches',
+    title: 'Accroches',
+    render: () => <MediationsPage />,
   },
   {
     exact: true,
@@ -122,6 +136,10 @@ const routes = [
     path: '/mentions-legales',
     title: 'Mentions Légales',
     render: () => <TermsPage />,
+  },
+  {
+    title: 'Page non trouvée',
+    render: () => <NotFoundPage />,
   }
 ]
 

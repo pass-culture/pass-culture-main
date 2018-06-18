@@ -31,10 +31,22 @@ const withCurrentOccasion = WrappedComponent => {
         requestData,
       } = this.props
       const { apiPath } = this.state
+
       occasionId !== 'nouveau' && requestData(
         'GET',
         apiPath,
-        { key: 'occasions' }
+        {
+          key: 'occasions',
+          normalizer: {
+            mediations: 'mediations',
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          }
+        }
       )
     }
 
@@ -60,15 +72,16 @@ const withCurrentOccasion = WrappedComponent => {
       const isNew = occasionId === 'nouveau'
       const occasionCollection = pathToCollection(occasionPath)
       const apiPath = isNew
-        ? `occasions/${occasionCollection}`
-        : `occasions/${occasionCollection}/${occasionId}`
+        ? `${occasionCollection}`
+        : `${occasionCollection}/${occasionId}`
       const routePath = `/offres/${occasionPath}${isNew ? '' : `/${occasionId}`}`
       return {
         apiPath,
         isLoading: !(id || isNew),
         isNew,
+        newMediationRoutePath: `${routePath}/accroches/nouveau`,
         occasionCollection,
-        occasionId: isNew ? NEW : occasionId,
+        occasionIdOrNew: isNew ? NEW : occasionId,
         routePath
       }
     }
@@ -82,8 +95,8 @@ const withCurrentOccasion = WrappedComponent => {
     withRouter,
     connect(
       (state, ownProps) => ({
-        occasion: selectCurrentOccasion(state, ownProps),
-        user: state.user
+        currentOccasion: selectCurrentOccasion(state, ownProps),
+        user: state.user,
       }),
       { requestData }
     )

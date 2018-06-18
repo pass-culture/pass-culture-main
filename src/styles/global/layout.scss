@@ -47,13 +47,25 @@ hr {
   color: $grey;
   font-style: italic;
   margin-bottom: 2rem;
-  font-size: 2rem;
+  font-size: $size-1;
 }
 
 .pc-list-title {
   border-bottom: thin solid;
   display: block;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
+  font-weight: $weight-bold;
+  overflow-y: hidden;
+  span {
+    margin-top: 3.5px;
+  }
+}
+
+.pc-form-section {
+  font-size: $size-4;
+  text-transform: uppercase;
+  font-weight: $weight-bold;
+  margin-bottom: 1rem;
 }
 
 
@@ -103,14 +115,13 @@ ul.pc-list {
       margin-bottom: 0.5rem;
     }
 
-    ul.actions {
+    ul.actions, ul.infos {
       list-style: none;
       font-size: $size-normal;
       margin: 0;
-      li {
-        display: inline-block;
-        margin-right: 2rem;
-      }
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
 
       img {
         height: 1rem;

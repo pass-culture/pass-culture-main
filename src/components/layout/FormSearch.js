@@ -91,7 +91,6 @@ class FormSearch extends Component {
       placeholder,
       autoComplete,
       required,
-      search,
       type,
     } = this.props
     const {

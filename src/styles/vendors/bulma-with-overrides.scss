@@ -21,7 +21,7 @@
 
   &.is-secondary {
     background: none;
-    border: none;
+    border-color: transparent;
     color: $red;
     font-weight: $weight-bold;
     text-decoration: none;
@@ -30,6 +30,10 @@
     &.is-inversed {
       color: $white;
     }
+  }
+
+  img {
+    height: 1em;
   }
 }
 
@@ -40,6 +44,12 @@
 .input, .textarea {
   &[readonly] {
     background-color: $grey-lighter;
+  }
+}
+
+textarea.textarea {
+  &.is-rounded {
+    border-radius: 1em;
   }
 }
 

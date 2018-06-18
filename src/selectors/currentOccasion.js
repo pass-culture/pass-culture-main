@@ -2,8 +2,10 @@ import { createSelector } from 'reselect'
 
 import { modelToPath } from '../utils/translate'
 
+import selectOccasions from './occasions'
+
 export default createSelector(
-  state => state.data.occasions,
+  selectOccasions,
   (state, ownProps) => ownProps.match.params.occasionPath,
   (state, ownProps) => ownProps.match.params.occasionId,
   (occasions, occasionPath, occasionId) => {

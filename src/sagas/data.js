@@ -4,6 +4,7 @@ import { failData, successData } from '../reducers/data'
 import { assignErrors } from '../reducers/errors'
 import { fetchData } from '../utils/request'
 
+
 function* fromWatchRequestDataActions(action) {
   // UNPACK
   const {
@@ -14,7 +15,6 @@ function* fromWatchRequestDataActions(action) {
   const {
     body,
     encode,
-    hook,
     type
   } = (config || {})
 
@@ -32,14 +32,10 @@ function* fromWatchRequestDataActions(action) {
       { body, encode, token }
     )
 
-    // HOOK
-    if (hook) {
-      yield call(hook, method, path, result, config)
-    }
-
     // SUCCESS OR FAIL
     if (result.data) {
       yield put(successData(method, path, result.data, config))
+
     } else {
       console.warn(result.errors)
       yield put(failData(method, path, result.errors, config))
@@ -52,7 +48,19 @@ function* fromWatchRequestDataActions(action) {
 }
 
 function* fromWatchFailDataActions(action) {
+  console.log('action.errors', action.errors)
   yield put(assignErrors(action.errors))
+  if (action.config.handleFail) {
+    const state = yield select(state => state)
+    yield call(action.config.handleFail, state, action)
+  }
+}
+
+function* fromWatchSuccessDataActions(action) {
+  if (action.config.handleSuccess) {
+    const state = yield select(state => state)
+    yield call(action.config.handleSuccess, state, action)
+  }
 }
 
 export function* watchDataActions() {
@@ -63,5 +71,9 @@ export function* watchDataActions() {
   yield takeEvery(
     ({ type }) => /FAIL_DATA_(.*)/.test(type),
     fromWatchFailDataActions
+  )
+  yield takeEvery(
+    ({ type }) => /SUCCESS_DATA_(.*)/.test(type),
+    fromWatchSuccessDataActions
   )
 }

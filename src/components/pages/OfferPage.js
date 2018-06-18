@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-
+import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
 import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
@@ -14,20 +14,20 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
-import { SUCCESS } from '../../reducers/queries'
-import selectOfferers from '../../selectors/offerers'
-import selectFormOfferer from '../../selectors/formOfferer'
+import { showNotification } from '../../reducers/notification'
+import selectOfferForm from '../../selectors/offerForm'
 import selectOffererOptions from '../../selectors/offererOptions'
-import selectUniqueVenue from '../../selectors/uniqueVenue'
+import selectSelectedVenueId from '../../selectors/selectedVenueId'
+import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
-import { pathToCollection } from '../../utils/translate'
+
 
 
 class OfferPage extends Component {
   constructor () {
     super()
     this.state = {
-      defaultOfferer: null
+      hasNoVenue: false
     }
   }
 
@@ -43,10 +43,14 @@ class OfferPage extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
+    const {
+      uniqueVenue,
+      user
+    } = this.props
+    if (prevProps.user !== user) {
       this.handleRequestData()
     }
-    if (!prevProps.uniqueVenue && this.props.uniqueVenue) {
+    if (!prevProps.uniqueVenue && uniqueVenue) {
       this.handleMergeForm()
     }
   }
@@ -61,282 +65,372 @@ class OfferPage extends Component {
   }
 
   handleRequestData = () => {
-    const { requestData } = this.props
+    const {
+      apiPath,
+      match: { params: { occasionId } },
+      history,
+      requestData,
+      showModal
+    } = this.props
+
+    console.log('apiPath', apiPath)
+    if (occasionId !== 'nouveau') {
+      requestData(
+        'GET',
+        apiPath,
+        {
+          key: 'occasions',
+          normalizer: {
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          }
+        }
+      )
+    }
     requestData(
       'GET',
       'offerers',
       {
+        handleSuccess: (state, action) => !get(state, 'data.venues.length')
+          && showModal(
+            <div>
+              Vous devez avoir déjà enregistré un lieu
+              dans une de vos structures pour ajouter des offres
+            </div>,
+            {
+              onCloseClick: () => history.push('/structures')
+            }
+          ),
         normalizer: { managedVenues: 'venues' }
       }
     )
     requestData('GET', 'eventTypes')
   }
 
-  handleStatusData = status => {
+  handleShowOccurencesModal = () => {
     const {
-      history,
-      resetForm
+      occurences,
+      showModal
     } = this.props
-    if (status === SUCCESS) {
-      history.push('/offres?success=true')
-    }
+    showModal(
+      <OccurenceManager occurences={occurences} />
+    )
   }
 
-  static getDerivedStateFromProps (nextProps) {
+  handleSuccessData = (state, action) => {
     const {
-      formOfferer,
-      occurences
-    } = nextProps
-    const defaultOfferer = get(occurences, '0.offer.0.offerer')
-    const offerer = formOfferer || defaultOfferer
-    return {
-      defaultOfferer
+      data,
+      method
+    } = action
+    const {
+      history,
+      match: { params: { occasionPath } },
+      offerForm,
+      showModal,
+      showNotification
+    } = this.props
+    const {
+      isEventType
+    } = (offerForm || {})
+
+    // PATCH
+    if (method === 'PATCH') {
+      history.push('/offres')
+      showNotification({
+        text: 'Votre offre a bien été enregistrée',
+        type: 'success'
+      })
+      return
+    }
+
+    // POST
+    if (method === 'POST') {
+      // switch to the path with the new created id
+      history.push(`/offres/${occasionPath}/${data.id}`)
+
+      // modal
+      /*
+      showModal(
+        <div>
+          Cette offre est-elle soumise à des dates ou des horaires particuliers ?
+          <button
+            className='button'
+            onClick={this.handleShowOccurencesModal}
+          >
+            Oui
+          </button>
+          <button
+            className='button'
+            onClick={() => history.push('/offres')}
+          >
+            Non
+          </button>
+        </div>
+      )
+      */
+      isEventType && this.handleShowOccurencesModal()
     }
   }
 
   render () {
     const {
       apiPath,
+      currentOccasion,
       eventTypes,
       isLoading,
       isNew,
       occasionCollection,
-      occasion,
-      occasionId,
+      occasionIdOrNew,
+      offerForm,
       offererOptions,
-      offerers,
-      uniqueVenue,
+      routePath,
+      selectedVenueId,
+      selectedVenues,
       user,
       venueOptions
     } = this.props
     const {
       author,
-      bookingLimitDatetime,
       contactName,
       contactEmail,
       contactPhone,
       description,
       durationMinutes,
+      id,
       mediaUrls,
+      mediations,
       name,
       performer,
+      offererId,
       stageDirector,
-      occurences,
       type,
-    } = (occasion || {})
+    } = (currentOccasion || {})
     const {
-      defaultOfferer
-    } = this.state
+      isEventType,
+      requiredFields
+    } = (offerForm || {})
+
+    const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
+      ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
+      : offererOptions
 
     return (
-      <PageWrapper name='offer' loading={isLoading}>
-        <div className='columns'>
-          <div className='column is-half is-offset-one-quarter'>
-            <div className='has-text-right'>
-              <NavLink to='/offres' className="button is-primary is-outlined">
+      <PageWrapper
+        backTo={{path: '/offres', label: 'Vos offres'}}
+        name='offer'
+        loading={isLoading}
+      >
+        <div className='section'>
+          <h1 className='pc-title'>
+            {
+              isNew
+                ? 'Ajouter'
+                : 'Modifier'
+            } une offre
+          </h1>
+          <p className='subtitle'>
+            Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
+          </p>
+          <FormField
+            collectionName='occasions'
+            defaultValue={name}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Titre :" />}
+            name="name"
+            required
+          />
+          { !isNew && (
+            <div>
+              {
+                occasionCollection === 'events' && (
+                  <button
+                    className='button'
+                    onClick={this.handleShowOccurencesModal}
+                  >
+                    Gérer les dates
+                  </button>
+                )
+              }
+              <MediationManager
+                mediations={mediations}
+                newMediationRoutePath={`${routePath}/accroches/nouveau`}
+              />
+            </div>
+          )}
+          <h2 className='pc-list-title'>Infos pratiques</h2>
+          <FormField
+            collectionName='occasions'
+            defaultValue={offererId}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Structure :" />}
+            readOnly={!isNew}
+            required
+            name='offererId'
+            options={offererOptionsWithPlaceholder}
+            type="select"
+          />
+          {
+            selectedVenues && selectedVenues.length > 1 && (
+              <FormField
+                collectionName='occasions'
+                defaultValue={selectedVenueId}
+                entityId={occasionIdOrNew}
+                isHorizontal
+                label={<Label title="Lieu :" />}
+                name='venueId'
+                options={venueOptions}
+                readOnly={!isNew}
+                required
+                type="select"
+              />
+            )
+          }
+          <FormField
+            collectionName='occasions'
+            defaultValue={type || get(eventTypes, '0.value')}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Type :" />}
+            name="type"
+            options={eventTypes}
+            required
+            type="select"
+          />
+          {
+            isEventType && (
+              <FormField
+                collectionName='occasions'
+                defaultValue={durationMinutes}
+                entityId={occasionIdOrNew}
+                isHorizontal
+                label={<Label title="Durée (en minutes) :" />}
+                name="durationMinutes"
+                required
+                type="number"
+              />
+            )
+          }
+          <h2 className='pc-list-title'>Infos artistiques</h2>
+          <FormField
+            collectionName='occasions'
+            defaultValue={description}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Description :" />}
+            name="description"
+            type="textarea"
+            required
+          />
+          <FormField
+            collectionName='occasions'
+            defaultValue={author}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Auteur :" />}
+            name="author"
+          />
+          {
+            isEventType && [
+              <FormField
+                collectionName='occasions'
+                defaultValue={stageDirector}
+                entityId={occasionIdOrNew}
+                isHorizontal
+                isExpanded
+                key={0}
+                label={<Label title="Metteur en scène:" />}
+                name="stageDirector"
+              />,
+              <FormField
+                collectionName='occasions'
+                defaultValue={performer}
+                entityId={occasionIdOrNew}
+                isHorizontal
+                isExpanded
+                key={1}
+                label={<Label title="Interprète:" />}
+                name="performer"
+              />
+            ]
+          }
+          <h2 className='pc-list-title'>Contact</h2>
+          <FormField
+            collectionName='occasions'
+            defaultValue={contactName || get(user, 'publicName')}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Nom du contact :" />}
+            name="contactName"
+            required
+          />
+          <FormField
+            collectionName='occasions'
+            defaultValue={contactEmail || get(user, 'email')}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Email de contact :" />}
+            name="contactEmail"
+            required
+            type="email"
+          />
+          <FormField
+            collectionName='occasions'
+            defaultValue={contactPhone}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Tel de contact :" />}
+            name="contactPhone"
+          />
+          {false && <FormField
+                      collectionName='occasions'
+                      defaultValue={mediaUrls}
+                      entityId={occasionIdOrNew}
+                      label={<Label title="Media URLs" />}
+                      name="mediaUrls"
+                      type="list"
+                    />}
+          <hr />
+          <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+            <div className="control">
+              <NavLink to='/offres'
+                className="button is-primary is-outlined is-medium">
                 Retour
               </NavLink>
             </div>
-            <h1 className='title has-text-centered'>
-              {
-                isNew
-                  ? 'Créer'
-                  : 'Modifier'
-              } {
-                occasionCollection === 'events'
-                  ? 'un événement'
-                  : 'un objet'
-                }
-            </h1>
-            <FormField
-              collectionName='occasions'
-              defaultValue={name}
-              entityId={occasionId}
-              label={<Label title="Titre :" />}
-              name="name"
-              required
-            />
-            <hr />
-            <h2 className='subtitle is-2'>
-              Infos pratiques
-            </h2>
-            <FormField
-              collectionName='occasions'
-              defaultValue={type || get(eventTypes, '0.value')}
-              entityId={occasionId}
-              label={<Label title="Type :" />}
-              name="type"
-              required
-              type="select"
-              options={eventTypes}
-            />
-            <FormField
-              collectionName='occasions'
-              defaultValue={defaultOfferer || get(offerers, '0.id')}
-              entityId={occasionId}
-              label={<Label title="Structure :" />}
-              readOnly={!isNew}
-              required
-              name='offererId'
-              options={offererOptions}
-              type="select"
-            />
-            {
-              !uniqueVenue && (
-                <FormField
-                  collectionName='events'
-                  defaultValue={
-                    get(occurences, '0.venue.id') ||
-                    get(venueOptions, '0.value')
+            <div className="control">
+              <SubmitButton
+                className="button is-primary is-medium"
+                getBody={form => get(form, `occasionsById.${occasionIdOrNew}`)}
+                getIsDisabled={form => {
+                  if (!requiredFields) {
+                    return true
                   }
-                  entityId={occasionId}
-                  label={<Label title="Lieu" />}
-                  name='venueId'
-                  readOnly={!isNew}
-                  required
-                  options={venueOptions}
-                  type="select"
-                />
-              )
-            }
-            {
-              occasionCollection === 'events' && [
-                <div className='field' key={1}>
-                  <Label title='Horaires :' />
-                  <OccurenceManager occurences={occurences} />
-                </div>,
-                <FormField
-                  collectionName='occasions'
-                  defaultValue={durationMinutes}
-                  entityId={occasionId}
-                  key={2}
-                  label={<Label title="Durée (en minutes) :" />}
-                  name="durationMinutes"
-                  required
-                  type="number"
-                />,
-                <FormField
-                  collectionName='occasions'
-                  defaultValue={bookingLimitDatetime}
-                  entityId={occasionId}
-                  key={3}
-                  label={<Label title="Date limite d'inscription (par défaut: 48h avant l'événement)" />}
-                  name="bookingLimitDatetime"
-                  type="date"
-                />
-              ]
-            }
-            <hr />
-            <h2 className='subtitle is-2'>Infos artistiques</h2>
-            <FormField
-              collectionName='occasions'
-              defaultValue={description}
-              entityId={occasionId}
-              label={<Label title="Description :" />}
-              name="description"
-              required
-              type="textarea"
-            />
-            <FormField
-              collectionName='occasions'
-              defaultValue={author}
-              entityId={occasionId}
-              label={<Label title="Auteur :" />}
-              name="author"
-            />
-            {
-              occasionCollection === 'events' && [
-                <FormField
-                  collectionName='occasions'
-                  defaultValue={stageDirector}
-                  entityId={occasionId}
-                  key={0}
-                  label={<Label title="Metteur en scène:" />}
-                  name="stageDirector"
-                />,
-                <FormField
-                  collectionName='occasions'
-                  defaultValue={performer}
-                  entityId={occasionId}
-                  key={1}
-                  label={<Label title="Interprète:" />}
-                  name="performer"
-                />
-              ]
-            }
-            <hr />
-            <h2 className='subtitle is-2'>Infos de contact</h2>
-            <FormField
-              collectionName='occasions'
-              defaultValue={contactName}
-              entityId={occasionId}
-              label={<Label title="Nom du contact :" />}
-              name="contactName"
-            />
-            <FormField
-              collectionName='occasions'
-              defaultValue={contactEmail}
-              entityId={occasionId}
-              label={<Label title="Email de contact :" />}
-              name="contactEmail"
-              required
-              type="email"
-            />
-            <FormField
-              collectionName='occasions'
-              defaultValue={contactPhone}
-              entityId={occasionId}
-              label={<Label title="Tel de contact :" />}
-              name="contactPhone"
-            />
-            <FormField
-              collectionName='occasions'
-              defaultValue={mediaUrls}
-              entityId={occasionId}
-              label={<Label title="Media URLs" />}
-              name="mediaUrls"
-              type="list"
-            />
-            <hr />
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-              <div className="control">
-                <SubmitButton
-                  getBody={form => ({
-                    occasion: get(form, `occasionsById.${occasionId}`),
-                    eventOccurences: form.eventOccurencesById &&
-                      Object.values(form.eventOccurencesById)
-                  })}
-                  getIsDisabled={form => {
-                    return isNew
-                    ? !get(form, `occasionsById.${occasionId}.contactEmail`) ||
-                      !get(form, `occasionsById.${occasionId}.description`) ||
-                      !get(form, `occasionsById.${occasionId}.durationMinutes`) ||
-                      !get(form, `occasionsById.${occasionId}.name`) ||
-                      !get(form, `occasionsById.${occasionId}.offererId`) ||
-                      typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' ||
-                      (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
-                    : !get(form, `occasionsById.${occasionId}.contactEmail`) &&
-                      !get(form, `occasionsById.${occasionId}.description`) &&
-                      !get(form, `occasionsById.${occasionId}.durationMinutes`) &&
-                      !get(form, `occasionsById.${occasionId}.name`) &&
-                      !get(form, `occasionsById.${occasionId}.offererId`) &&
-                      typeof get(form, `occasionsById.${occasionId}.type`) !== 'string' &&
-                      (!form.eventOccurencesById || !Object.keys(form.eventOccurencesById).length)
-                  }}
-                  className="button is-primary is-medium"
-                  method={isNew ? 'POST' : 'PATCH'}
-                  handleStatusChange={status => this.handleStatusData(status)}
-                  path={apiPath}
-                  storeKey="occasions"
-                  text="Enregistrer"
-                />
-              </div>
-              <div className="control">
-                <NavLink to='/offres'
-                  className="button is-primary is-outlined is-medium">
-                  Retour
-                </NavLink>
-              </div>
+                  const missingFields = requiredFields.filter(r =>
+                    !get(form, `occasionsById.${occasionIdOrNew}.${r}`))
+                  return isNew
+                    ? missingFields.length > 0
+                    : missingFields.length === requiredFields.length
+                }}
+                handleSuccess={this.handleSuccessData}
+                method={isNew ? 'POST' : 'PATCH'}
+                path={isEventType
+                  ? `events${id ? `/${id}` : ''}`
+                  : `things${id ? `/${id}` : ''}`
+                }
+                storeKey="occasions"
+                text="Enregistrer"
+              />
             </div>
           </div>
         </div>
@@ -351,12 +445,17 @@ export default compose(
   connect(
     (state, ownProps) => ({
       eventTypes: state.data.eventTypes,
-      formOfferer: selectFormOfferer(state, ownProps),
-      offerers: selectOfferers(state),
-      offererOptions: selectOffererOptions(state),
-      uniqueVenue: selectUniqueVenue(state, ownProps),
+      offerForm: selectOfferForm(state, ownProps),
+      offererOptions: selectOffererOptions(state, ownProps),
+      selectedVenueId: selectSelectedVenueId(state, ownProps),
+      selectedVenues: selectSelectedVenues(state, ownProps),
       venueOptions: selectVenueOptions(state, ownProps)
     }),
-    { mergeForm, resetForm }
+    {
+      mergeForm,
+      resetForm,
+      showModal,
+      showNotification
+    }
   )
 )(OfferPage)

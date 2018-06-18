@@ -5,7 +5,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import FormField from './layout/FormField'
-import Label from './layout/Label'
 import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
 import VenueProviderItem from './VenueProviderItem'
@@ -13,6 +12,7 @@ import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
 import selectCurrentVenue from '../selectors/currentVenue'
 import selectProviderOptions from '../selectors/providerOptions'
+import selectSelectedProvider from '../selectors/selectedProvider'
 import selectVenueProviders from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
 
@@ -21,26 +21,69 @@ class ProviderManager extends Component {
   constructor () {
     super()
     this.state = {
-      isNew: false,
       withError: false
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    const {
+      match: { params: { venueProviderId } }
+    } = nextProps
+    const isNew = venueProviderId === 'nouveau'
+    return {
+      isNew
     }
   }
 
   onAddClick = () => {
     const {
+      history,
+      match: { params: { offererId, venueId } }
+    } = this.props
+    history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
+  }
+
+  handleMergeForm = () => {
+    const {
       match: { params: { venueId } },
       mergeForm
     } = this.props
-    this.setState({ isNew: true })
-    mergeForm('venueProviders', NEW, { venueId })
+    const { isNew } = this.state
+    isNew && mergeForm('venueProviders', NEW, { venueId })
+  }
+
+  handleRequestData = () => {
+    const {
+      match: { params : { venueId } },
+      requestData,
+      user
+    } = this.props
+    if (!user) {
+      return
+    }
+    requestData('GET', 'providers')
+    requestData(
+      'GET',
+      `venueProviders?venueId=${venueId}`,
+      {
+        key: 'venueProviders'
+      }
+    )
+  }
+
+  handleSuccessData = () => {
+    const {
+      history,
+      match: { params: { offererId, venueId } }
+    } = this.props
+    history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
   componentDidMount () {
     const {
       match: { params: { venueProviderId } },
-      user
     } = this.props
-    user && this.handleRequestData()
+    this.handleRequestData()
     venueProviderId === 'nouveau' && this.handleMergeForm()
   }
 
@@ -56,123 +99,99 @@ class ProviderManager extends Component {
     }
   }
 
-  handleMergeForm = () => {
-    const {
-      match: { params: { venueId } },
-      mergeForm
-    } = this.props
-    mergeForm('venueProviders', NEW, { venueId })
-  }
-
-  handleRequestData = () => {
-    const {
-      match: { params : { venueId } },
-      requestData
-    } = this.props
-    requestData('GET', 'providers')
-    requestData(
-      'GET',
-      `venueProviders/${venueId}`,
-      {
-        key: 'venueProviders',
-        isMergingArray: false
-      }
-    )
-  }
-
-  static getDerivedStateFromProps(nextProps) {
-    const {
-      match: { params: { venueProviderId } }
-    } = nextProps
-    const newState = {}
-    if (venueProviderId === 'nouveau') {
-      newState.isNew = true
-    }
-    return newState
-  }
-
   render () {
     const {
+      selectedProvider,
       providerOptions,
       venueProviders
     } = this.props
+    const {
+      identifierDescription,
+      identifierRegexp,
+    } = (selectedProvider || {})
     const {
       isNew,
       withError
     } = this.state
 
-    const providerOptionsWithPlaceholder = [{
-      label: 'Sélectionnez un fournisseur',
-    }].concat(providerOptions)
+    const providerOptionsWithPlaceholder = get(providerOptions, 'length') > 1
+      ? (
+        [{
+          label: 'Sélectionnez un fournisseur',
+        }].concat(providerOptions)
+      )
+      : providerOptions
 
     return (
       <div className='section'>
         <h2 className='pc-list-title'>
-          Mes fournisseurs
+          IMPORTATIONS D'OFFRES
+          <span className='is-pulled-right is-size-7 has-text-grey'>
+            Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
+          </span>
         </h2>
         <ul className='pc-list'>
-          { get(this.props, 'venueProviders', []).map(vp => (
-            <li>
-              <div className='picto'><Icon svg='picto-db-default' /></div>
-              <div className='has-text-weight-bold is-size-3'>{vp.name}</div>
-              <div> ?? offres</div>
-              <div>Compte : <strong className='has-text-weight-bold'>[identifiant]</strong></div>
-              <div><button className='button is-secondary'>x Désactiver</button></div>
-            </li>
-          ))}
+          {
+            venueProviders && venueProviders.map((vp, index) => (
+                <VenueProviderItem venueProvider={vp} key={vp.id} />
+            ))
+          }
           {isNew && (
             <li>
-              {withError && (
-                <p className={
-                  withError ? 'has-text-weight-bold has-text-danger' : ''
-                }>Il faut un identifiant ou celui-ci existe déjà</p>
-              )}
+              {
+                withError && (
+                  <p className={
+                    withError ? 'has-text-weight-bold has-text-danger' : ''
+                  }>
+                    Il faut un identifiant ou celui-ci existe déjà
+                  </p>
+                )
+              }
 
               <div className='picto'><Icon svg='picto-db-default' /></div>
               <FormField
+                className='column is-4'
                 collectionName="venueProviders"
-                defaultValue={get(providerOptionsWithPlaceholder, '0.value')}
                 name="providerId"
                 options={providerOptionsWithPlaceholder}
+                required
                 type="select"
                 size="small"
               />
-              <FormField
-                collectionName="venueProviders"
-                name="venueIdAtOfferProvider"
-                placeholder='Mon identifiant'
-                size="small"
-              />
-              <FormField
-                collectionName="venueProviders"
-                name="venueIdAtOfferProvider"
-                placeholder='Mot de passe'
-                type='password'
-                size="small"
-                showPassword={false}
-              />
-              <SubmitButton
-                className="button is-secondary"
-                getBody={form => get(form, `venueProvidersById.${NEW}`)}
-                getIsDisabled={form =>
-                  !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-                method="POST"
-                path="venueProviders"
-                storeKey="venueProviders"
-                text="Enregistrer"
-              />
+              {
+                selectedProvider && identifierRegexp && (
+                  <FormField
+                    collectionName="venueProviders"
+                    name="venueIdAtOfferProvider"
+                    placeholder={identifierDescription}
+                    size="small"
+                  />
+                )
+              }
+              {
+                selectedProvider && (
+                  <SubmitButton
+                    className="button is-secondary"
+                    getBody={form => get(form, `venueProvidersById.${NEW}`)}
+                    getIsDisabled={form =>
+                      !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
+                    handleSuccess={this.handleSuccessData}
+                    method="POST"
+                    path="venueProviders"
+                    storeKey="venueProviders"
+                    text="Enregistrer"
+                  />
+                )
+              }
             </li>
           )}
         </ul>
         <div className='has-text-right'>
           <button className="button is-secondary"
             onClick={this.onAddClick}>
-            + Ajouter un compte fournisseur
+            + Importer des offres
           </button>
         </div>
-        {venueProviders && venueProviders.map((vp, index) => (
-                  <VenueProviderItem {...vp} key={index} />
-                ))}
       </div>
       )
   }
@@ -184,6 +203,7 @@ export default compose(
     (state, ownProps) => ({
       providerOptions: selectProviderOptions(state),
       providers: state.data.providers,
+      selectedProvider: selectSelectedProvider(state, ownProps),
       venueProviders: selectVenueProviders(state, ownProps),
       venue: selectCurrentVenue(state, ownProps),
       user: state.user

@@ -5,6 +5,7 @@ import errors from './errors'
 import form from './form'
 import loading from './loading'
 import modal from './modal'
+import notification from './notification'
 import queries from './queries'
 import splash from './splash'
 import user from './user'
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   form,
   loading,
   modal,
+  notification,
   queries,
   splash,
   user,

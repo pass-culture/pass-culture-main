@@ -5,12 +5,10 @@ import { NavLink } from 'react-router-dom'
 import Icon from './layout/Icon'
 import createSelectManagedOccasions from '../selectors/managedOccasions'
 import createSelectManagedVenues from '../selectors/managedVenues'
-import { THUMBS_URL } from '../utils/config'
-import { collectionToPath } from '../utils/translate'
-
 
 
 const OffererItem = ({
+  managedOccasions,
   managedVenues,
   offerer: {
     id,
@@ -31,12 +29,14 @@ const OffererItem = ({
         <ul className='actions'>
           <li>
             <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-              <Icon svg='ico-offres-r' /> ?? offres
+              <Icon svg='ico-offres-r' /> {managedOccasions
+                ? managedOccasions.length : 0} offres
             </NavLink>
           </li>
           <li>
             <NavLink to={showPath}>
-              <Icon svg='picto-structure' /> {managedVenues ? managedVenues.length : 0} lieux
+              <Icon svg='picto-structure' /> {managedVenues
+                ? managedVenues.length : 0} lieux
             </NavLink>
           </li>
           <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>

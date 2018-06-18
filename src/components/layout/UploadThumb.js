@@ -1,18 +1,17 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
-import get from 'lodash.get'
+import { connect } from 'react-redux'
 
-import Icon from './Icon'
 import { requestData } from '../../reducers/data'
-import { API_URL, NEW } from '../../utils/config'
+import { NEW } from '../../utils/config'
 
 class UploadThumb extends Component {
 
   constructor() {
     super()
+    this.avatarEditor = React.createRef();
     this.state = {
       hasExistingImage: false,
       isEdited: false,
@@ -25,12 +24,12 @@ class UploadThumb extends Component {
   }
 
   static getDerivedStateFromProps(props, prevState) {
-    const hasExistingImage = typeof props.image === 'string'
-    const readOnly = hasExistingImage && !prevState.isEdited
+    // const hasExistingImage = typeof props.image === 'string'
+    const readOnly = props.hasExistingImage && !prevState.isEdited
     return {
-      hasExistingImage,
       readOnly,
-      image: readOnly ? props.image : prevState.image,
+      isDragging: prevState.isDragging,
+      image: prevState.image || props.image,
     }
   }
 
@@ -64,7 +63,7 @@ class UploadThumb extends Component {
       entityId,
       index,
       requestData,
-      storeKey
+      storeKey,
     } = this.props
     const {
       image,
@@ -76,7 +75,7 @@ class UploadThumb extends Component {
     if (typeof image === 'string') return;
     if (isUploadDisabled) return;
     e.preventDefault()
-    const type = image.type.includes('image/') && image.type.split('image/')[1]
+    // const type = image.type.includes('image/') && image.type.split('image/')[1]
     const formData = new FormData();
     formData.append('file', image);
     requestData(
@@ -95,6 +94,16 @@ class UploadThumb extends Component {
     this.setState({ zoom: parseFloat(e.target.value) })
   }
 
+  onImageChange = ctx => {
+    if (!this.state.image) return;
+    const {
+      onImageChange
+    } = this.props
+    if (onImageChange) {
+      onImageChange(this.state.image, this.avatarEditor.current.getCroppingRect(), ctx)
+    }
+  }
+
   render () {
     const {
       border,
@@ -103,13 +112,13 @@ class UploadThumb extends Component {
       maxSize,
       width,
       onImageChange,
-      className
+      className,
+      hasExistingImage,
     } = this.props
     const {
       image,
       dragging,
       isUploadDisabled,
-      hasExistingImage,
       readOnly,
       size,
       zoom
@@ -133,6 +142,7 @@ class UploadThumb extends Component {
               )
             }
             <AvatarEditor
+              ref={this.avatarEditor}
               width={width}
               height={height}
               scale={zoom}
@@ -140,7 +150,8 @@ class UploadThumb extends Component {
               borderRadius={borderRadius}
               color={[255, 255, 255, readOnly || !image ? 1 : 0.6]}
               image={image}
-              onImageChange={ctx => onImageChange && onImageChange(this.state.image, ctx)}
+              onImageChange={this.onImageChange}
+              crossOrigin='anonymous'
             />
           </Dropzone>
           <nav className="field ">
@@ -148,7 +159,6 @@ class UploadThumb extends Component {
               !readOnly && image && (
                 <input
                   className="zoom level-left"
-                  key={0}
                   type="range"
                   min="1"
                   max="3"
@@ -168,11 +178,16 @@ class UploadThumb extends Component {
             <div className="field is-grouped is-grouped-centered" >
               <div className="control">
                 {readOnly && <button onClick={ e => this.setState({isEdited: true})} className='button is-primary'>Modifier l'image</button>}
-                {!readOnly && image && <button onClick={this.onUploadClick} className='button is-primary' disabled={isUploadDisabled}>Enregistrer</button>}
+                {
+                  !onImageChange && // upload is managed by child component
+                  !readOnly &&
+                  image &&
+                  <button onClick={this.onUploadClick} className='button is-primary' disabled={isUploadDisabled}>Enregistrer</button>
+                }
               </div>
               {!readOnly && image && (
                 <div className="control">
-                  <button onClick={e => this.setState({image: null})} className='button is-primary is-outlined'>Changer d'image</button>
+                  <button onClick={e => this.setState({image: null})} className='button is-primary is-outlined'>Retirer l'image</button>
                 </div>
               )}
               {!readOnly && hasExistingImage && (

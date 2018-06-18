@@ -16,9 +16,7 @@ class HomeCard extends Component {
     return(
       <NavLink to={navLink}>
         <div className={classnames('home-card', { 'dotted-card': dottedCard })}>
-          <div className="home-card-picture">
-              <Icon svg={svg}/>
-          </div>
+            <Icon svg={svg}/>
           <div className="home-card-text">
             <h1>{title}</h1>
             <p>{text}</p>

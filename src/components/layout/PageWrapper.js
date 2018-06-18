@@ -1,13 +1,16 @@
 import classnames from 'classnames'
 import React from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Header from './Header'
 import Icon from './Icon'
+import { closeNotification } from '../../reducers/notification'
 
 const PageWrapper = props => {
   const {
     backTo,
+    closeNotification,
     header,
     Tag,
     name,
@@ -25,8 +28,14 @@ const PageWrapper = props => {
     .concat(children)
     .filter(e => e && e.type !== 'header' && e.type !== 'footer')
   return [
-    whiteHeader && <Header key='header' whiteHeader/>,
-    !noHeader && !whiteHeader && <Header key='header' {...header} />,
+// <<<<<<< HEAD
+//     whiteHeader && <Header key='header' whiteHeader/>,
+//     !noHeader && !whiteHeader && <Header key='header' {...header} />,
+// =======
+    whiteHeader
+      ? <Header key='header' whiteHeader/>
+      : !noHeader && <Header key='header' {...header} />,
+// >>>>>>> b2cf002794bbaa21ab6316099ad4fef6c11b663d
     <Tag
       className={classnames({
         page: true,
@@ -43,7 +52,9 @@ const PageWrapper = props => {
       <div className={classnames('page-content')}>
         {notification && (
           <div className={`notification is-${notification.type || 'info'}`}>
-            <button className="delete">Ok</button>
+            <button className="delete" onClick={closeNotification}>
+              Ok
+            </button>
             {notification.text}
           </div>
         )}
@@ -63,4 +74,7 @@ PageWrapper.defaultProps = {
   Tag: 'main',
 }
 
-export default PageWrapper
+export default connect(
+  state => ({ notification: state.notification }),
+  { closeNotification }
+)(PageWrapper)

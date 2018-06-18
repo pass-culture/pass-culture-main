@@ -35,7 +35,6 @@ class SearchInput extends Component {
       assignData,
       collectionNames,
       config,
-      hook,
       onChange,
       requestData,
       showLoading

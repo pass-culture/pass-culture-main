@@ -1,13 +1,17 @@
+import classnames from 'classnames'
+import get from 'lodash.get'
+import moment from 'moment'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-// import FormInput from './layout/FormInput'
-import SwitchButton from './layout/SwitchButton'
+import Price from './Price'
+import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
-import createSelectOccasionThumbUrl from '../selectors/occasionThumbUrl'
-import { modelToPath } from '../utils/translate'
+import createSelectOccasionItem from '../selectors/occasionItem'
+import { pluralize } from '../utils/string'
+import { modelToPath, typeToTag } from '../utils/translate'
 
 class OccasionItem extends Component {
 
@@ -20,20 +24,32 @@ class OccasionItem extends Component {
 
   onDeactivateClick = event => {
     const {
-      id,
+      occasion,
       occasionType,
       requestData
     } = this.props
+    const {
+      id,
+      isActive
+    } = (occasion || {})
     requestData(
       'PATCH',
       `occasions/${occasionType}/${id}`,
         {
           body: {
             occasion: {
-              isActive: event.target.value
+              isActive: !isActive
             }
           },
           key: 'occasions',
+          normalizer: {
+            occurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                venue: 'venues'
+              }
+            }
+          },
           isMergingDatum: true,
           isMutatingDatum: true,
           isMutaginArray: false
@@ -43,59 +59,67 @@ class OccasionItem extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     return {
-      path: `/offres/${modelToPath(nextProps.modelName)}`
+      path: `/offres/${modelToPath(get(nextProps, 'occasion.modelName'))}`
     }
   }
 
   render() {
     const {
-      description,
-      id,
-      isActive,
-      name,
-      thumbUrl
+      occasionItem,
+      occasion,
     } = this.props
     const {
-      path
-    } = this.state
+      createdAt,
+      id,
+      isActive,
+      mediations,
+      name,
+      occurences,
+      type
+    } = (occasion || {})
+    const {
+      available,
+      maxDate,
+      groupSizeMin,
+      groupSizeMax,
+      priceMin,
+      priceMax,
+      thumbUrl
+    } = (occasionItem || {})
+    const { path } = this.state
+    const mediationsLength = get(mediations, 'length')
     return (
-      <article className="occasion-item media">
-        <figure className="media-left">
-          <p className="image is-96x96 is-2by3">
-            <img alt='thumbnail' src={thumbUrl}/>
-          </p>
-        </figure>
-        <div className="media-content">
-          <div className="content">
-            <NavLink className='title is-block' to={`${path}/${id}`}>
-              {name}
-            </NavLink>
-            <Dotdotdot className='is-small' clamp={3}>
-              {description}
-            </Dotdotdot>
-          </div>
-          <nav className="level is-mobile">
-            <div className="level-left">
-              <NavLink  to={`${path}/${id}`}>
-                <button className="button is-primary level-item">
-                  Modifier
-                </button>
+      <li className={classnames('occasion-item', { active: isActive })}>
+        <img alt='thumbnail' src={thumbUrl} className="occasion-thumb"/>
+        <div className="list-content">
+          <NavLink className='name' to={`${path}/${id}`} title={name}>
+            <Dotdotdot clamp={1}>{name}</Dotdotdot>
+          </NavLink>
+          <ul className='infos'>
+            {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
+            <li className='is-uppercase'>{typeToTag(type)}</li>
+            <li className='has-text-primary'>{pluralize(get(occurences, 'length'), 'date')}</li>
+            <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
+            {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
+            {available > 0 && <li>restent {available}</li>}
+            <li>{priceMin === priceMax ? <Price value={priceMin} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
+          </ul>
+          <ul className='actions'>
+            <li>
+              <NavLink  to={`${path}/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
+                <span className='icon'><Icon svg='ico-stars' /></span>
+                <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
-              <NavLink  to={`${path}/${id}/accroches`}>
-                <button className="button is-primary level-item">
-                  Accroches
-                </button>
+            </li>
+            <li>
+              <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
+              <NavLink  to={`${path}/${id}`} className="button is-secondary is-small">
+                <Icon svg='ico-pen-r' />
               </NavLink>
-              <SwitchButton
-                isInitialActive={isActive}
-                OffElement={<p> Désactivé </p>}
-                OnElement={<p> Activé </p>}
-                onClick={this.onDeactivateClick}
-              />
-            </div>
-          </nav>
+            </li>
+          </ul>
         </div>
-      </article>
+      </li>
     )
   }
 }
@@ -108,9 +132,9 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
-    const selectOccasionThumbUrl = createSelectOccasionThumbUrl()
+    const selectOccasionItem = createSelectOccasionItem()
     return (state, ownProps) => ({
-      thumbUrl: selectOccasionThumbUrl(state, ownProps)
+      occasionItem: selectOccasionItem(state, ownProps)
     })
   },
   { requestData }

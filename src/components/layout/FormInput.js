@@ -22,17 +22,20 @@ class FormInput extends Component {
   onChange = event => {
     const { type, onChange } = this.props
     event.persist()
-    this.onDebouncedMergeForm(event)
-    if (type === 'checkbox' || type === 'radio' || 'type' === 'switch') {
-      return
-    }
+    this.onDebouncedMergeForm({
+      target: {
+          value: (type === 'checkbox' || type === 'radio')
+            ? event.target.checked
+            : event.target.value
+      }
+    })
     this.setState({ localValue: event.target.value })
     onChange && onChange(event)
   }
 
   onMergeForm = event => {
     const {
-      target: { checked, value },
+      target: { value },
     } = event
     const {
       collectionName,
@@ -47,7 +50,7 @@ class FormInput extends Component {
     } = this.props
     let mergedValue
     if (type === 'checkbox' || type === 'radio') {
-      mergedValue = checked ? (defaultValue || true) : false
+      mergedValue = value ? (defaultValue || true) : false
     } else if (type === 'switch') {
       mergedValue = value
     } else if (type === 'number') {
@@ -59,12 +62,20 @@ class FormInput extends Component {
     mergeForm(collectionName, entityId, name, mergedValue, parentValue)
   }
 
-  componentWillMount() {
+  componentDidMount() {
     // fill automatically the form when it is a NEW POST action
-    const { defaultValue, entityId } = this.props
-    defaultValue &&
-      entityId === NEW &&
-      this.onMergeForm({ target: { value: defaultValue } })
+    const { entityId, defaultValue } = this.props
+    defaultValue && entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      defaultValue,
+      entityId
+    } = this.props
+    if (defaultValue !== prevProps.defaultValue) {
+      entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
+    }
   }
 
   render() {
@@ -108,6 +119,7 @@ class FormInput extends Component {
 
 FormInput.defaultProps = {
   debounceTimeout: 500,
+  type: 'text',
   entityId: NEW,
   formatValue: v => v,
   storeValue: v => v,

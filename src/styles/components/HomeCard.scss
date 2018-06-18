@@ -1,3 +1,7 @@
+.page.container.home-page .page-content {
+  margin: 0;
+  padding: 0;
+}
 .home-cards {
   box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
   display: flex;
@@ -5,39 +9,39 @@
   height: 20rem;
   z-index: 10;
   margin: auto;
-  width: 52rem;
+  margin-top: 104px;
+  width: 100%;
+  a {
+    flex-direction: column;
+  }
 }
 
 .home-card {
+  // flex-direction: column;
+  flex-flow: row wrap;
   background-color: $red;
-  height: 20rem;
-  width: 100%;
-  flex-direction: row;
-
-  .home-card-picture {
-    width: 26rem;
-    img {
-      align: right;
-      height: auto;
-      width: 12rem;
-      padding: 3rem  4rem  2rem  2rem;
-    }
+  height: 100%;
+  padding-top: 3rem;
+  padding-left: 3rem;
+  padding-bottom: 2.6rem;
+  padding-right: 3rem;
+  img {
+    float: right;
+    width: 6rem;
   }
 
   .home-card-text {
-    width: 26rem;
+    margin-top: 7rem;
     h1 {
-      width: 100%;
       font-size: 2.6em;
       font-weight: $weight-semibold;
       color: $white;
-      padding: 0 4rem 0 3rem;
     }
 
     p {
+      margin-top: 0.5rem;
       color: $white;
       font-size: 1.2rem;
-      padding: 0 4rem 0 3rem;
     }
   }
 }

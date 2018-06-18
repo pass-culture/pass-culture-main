@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import AvatarEditor from 'react-avatar-editor'
-import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
@@ -8,7 +6,6 @@ import get from 'lodash.get'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import Icon from '../layout/Icon'
 import UploadThumb from '../layout/UploadThumb'
 import Label from '../layout/Label'
 import FormField from '../layout/FormField'
@@ -61,11 +58,6 @@ class ProfilePage extends Component {
   }
 
   render() {
-
-    const {
-      apiPath,
-    } = this.props
-
     const {
       id,
       publicName,
