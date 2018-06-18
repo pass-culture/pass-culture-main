@@ -1,3 +1,5 @@
+import uniqBy from 'lodash.uniqby'
+
 export function getNextState(state, method, patch, config = {}) {
 
   // UNPACK
@@ -25,9 +27,11 @@ export function getNextState(state, method, patch, config = {}) {
     // PREVIOUS
     const previousData = state[key]
 
-    // CLONE
+    // CLONE AND UNIFY BY ID
+    // (BECAUSE DEEPEST NORMALIZED DATA CAN RETURN ARRAY OF SAME ELEMENTS)
     const data = patch[key]
-    const nextData = data && data.map(datum => Object.assign({}, datum))
+    const nextData = data && uniqBy(data, datum => datum.id)
+      .map(datum => Object.assign({}, datum))
 
     // NORMALIZER
     if (normalizer) {
@@ -95,6 +99,8 @@ export function getNextState(state, method, patch, config = {}) {
 
     // no need to go further when we want just to trigger
     // a new fresh assign with nextData
+
+    console.log('QUOI', isMergingArray)
     if (!isMergingArray) {
       nextState[key] = nextData
       continue
@@ -108,6 +114,7 @@ export function getNextState(state, method, patch, config = {}) {
     // for each datum we are going to assign (by merging or not) them into
     // their right place in the resolved array
     nextData.forEach(nextDatum => {
+      console.log('previousData', previousData)
       const previousIndex = previousData.findIndex(previousDatum =>
         previousDatum.id === nextDatum.id)
       const resolvedIndex = previousIndex === -1
