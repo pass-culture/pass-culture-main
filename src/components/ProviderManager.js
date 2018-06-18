@@ -13,7 +13,6 @@ import { mergeForm } from '../reducers/form'
 import selectCurrentVenue from '../selectors/currentVenue'
 import selectProviderOptions from '../selectors/providerOptions'
 import selectSelectedProvider from '../selectors/selectedProvider'
-import selectVenueProviders from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
 
 class ProviderManager extends Component {
@@ -66,7 +65,7 @@ class ProviderManager extends Component {
       'GET',
       `venueProviders?venueId=${venueId}`,
       {
-        key: 'venueProviders'
+        key: 'venueProviders',
       }
     )
   }
@@ -101,10 +100,13 @@ class ProviderManager extends Component {
 
   render () {
     const {
+      currentVenue,
       selectedProvider,
-      providerOptions,
-      venueProviders
+      providerOptions
     } = this.props
+    const {
+      venueProviders
+    } = (currentVenue || {})
     const {
       identifierDescription,
       identifierRegexp,
@@ -201,11 +203,10 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => ({
+      currentVenue: selectCurrentVenue(state, ownProps),
       providerOptions: selectProviderOptions(state),
       providers: state.data.providers,
       selectedProvider: selectSelectedProvider(state, ownProps),
-      venueProviders: selectVenueProviders(state, ownProps),
-      venue: selectCurrentVenue(state, ownProps),
       user: state.user
     }),
     { mergeForm, requestData }

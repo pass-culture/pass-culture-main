@@ -1,4 +1,5 @@
 import classnames from 'classnames'
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -40,6 +41,7 @@ class VenueProviderItem extends Component {
     const {
       isActive,
       lastSyncDate,
+      occasions,
       provider,
       venueIdAtOfferProvider
     } = (venueProvider || {})
@@ -60,7 +62,11 @@ class VenueProviderItem extends Component {
           lastSyncDate
           ? [
             <div key={0}>
-              ?? offres
+              {
+                get(occasions, 'length')
+                  ? `${occasions.length} offres`
+                  : '0 offre'
+              }
             </div>,
             <div key={1}>
               <button className='button is-secondary'

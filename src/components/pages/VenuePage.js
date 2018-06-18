@@ -59,7 +59,15 @@ class VenuePage extends Component {
         'GET',
         `offerers/${offererId}/venues`,
         {
-          key: 'venues'
+          key: 'venues',
+          normalizer: {
+            eventOccurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                event: 'occasions'
+              }
+            }
+          }
         }
       )
     }
