@@ -148,6 +148,10 @@ USERS_INCLUDES = [
 
 VENUES_INCLUDES = [
     {
+        "key": "eventOccurences",
+        "sub_joins": ["event"]
+    },
+    {
         "key": 'venueProviders',
         "resolve": (lambda element, filters: element['provider']),
         "sub_joins": ["provider"]

@@ -68,8 +68,8 @@ class PcObject():
                         value = value[:options['cut']] + '...'
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
-                if options and options.get('has_dehumanized_id'):
-                    result['dehumanized' + key.title()] = value
+                # add still the dehumanized id
+                result['dehumanized' + key[0].capitalize() + key[1:]] = value
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
             else:
@@ -82,8 +82,8 @@ class PcObject():
                 '/' +
                 str(result['id'])
             )
-        if options and options.get('has_model_name'):
-            result['modelName'] = self.__class__.__name__
+        # add the model name
+        result['modelName'] = self.__class__.__name__
         if options\
            and 'include' in options\
            and options['include']:
@@ -118,8 +118,8 @@ class PcObject():
                         result[key] = list(
                             map(
                                 lambda attr: attr._asdict(
-                                    include=sub_joins,
                                     cut=options and options.get('cut'),
+                                    include=sub_joins,
                                     timezone=options and options.get('timezone')
                                 ),
                                 final_value
