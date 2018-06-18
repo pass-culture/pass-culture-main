@@ -16,6 +16,7 @@ class BetaPage extends Component {
   }
 
   render() {
+    const { user } = this.props
     return (
       <PageWrapper name="beta" noHeader noContainer redBg>
         <h1>
@@ -25,7 +26,7 @@ class BetaPage extends Component {
         <p>Et merci de votre participation pour nous aider à l'améliorer !</p>
         <footer>
           <Link
-            to="/inscription"
+            to={user ? "/offres" : "/inscription"}
             className="button is-secondary is-inversed has-text-weight-light is-italic"
           >
             C'est par là
