@@ -136,9 +136,14 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
                               + timedelta(minutes=self.providables[0].durationMinutes)
             obj.venue = self.venue
             obj.event = self.providables[0]
-            self.eos[obj.idAtProviders] = obj
         elif isinstance(obj, Offer):
-            obj.eventOccurence = self.eos[obj.idAtProviders]
+            for providable in self.providables[1:]:
+                if isinstance(providable, EventOccurence)\
+                   and providable.idAtProviders == obj.idAtProviders:
+                    obj.eventOccurence = providable
+                    break
+            if obj.eventOccurence is None:
+                raise ValueError("Can't find EventOccurence matching offer in updateObj")
             obj.price = 0
             obj.offerer = self.offerer
             if is_filled(self.line['Places Par Horaire']):
