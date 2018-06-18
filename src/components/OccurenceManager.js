@@ -88,7 +88,7 @@ class OccurenceManager extends Component {
               )
             }
             {
-              isAdding && <OccurenceForm isNew />
+              isAdding && <OccurenceForm {...this.props} isNew />
             }
           </tbody>
         </table>

@@ -191,10 +191,6 @@ class OfferPage extends Component {
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
-
-    console.log('ET LA', this.props)
-
-
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
