@@ -16,7 +16,7 @@ def read_date(date):
 
 def is_filled(info):
     info = str(info)
-    return info != 'nan' and info.replace(' ', '') != ''
+    return info.lower() != 'nan' and info.replace(' ', '') != ''
 
 
 Venue = app.model.Venue
@@ -81,7 +81,7 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
             raise ValueError("Format d'adresse incorrect : "+self.line['Adresse'])
 
         siret = str(self.line['Siret']).strip()
-        if siret.lower() == 'nan':
+        if not is_filled(siret):
             siret = None
 
         if isinstance(obj, Venue):
