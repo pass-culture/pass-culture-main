@@ -80,15 +80,20 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
         else:
             raise ValueError("Format d'adresse incorrect : "+self.line['Adresse'])
 
+        siret = str(self.line['Siret']).strip()
+        if siret.lower() == 'nan':
+            siret = None
+
         if isinstance(obj, Venue):
             obj.latitude = self.line['Latitude']
             obj.longitude = self.line['Longitude']
             obj.managingOfferer = self.providables[0]
             obj.departementCode = str(int(self.line['Département']))
-            obj.siret = str(self.line['Siret'])
+            obj.siret = siret
         else:
             obj.bookingEmail = self.line['Email contact'].replace('mailto:', '')
-            obj.siren = str(self.line['Siret'])[:9]
+            if siret is not None:
+                obj.siren = siret[:9]
 
 
     def getDeactivatedObjectIds(self):

@@ -25,7 +25,7 @@ class Offerer(app.model.PcObject,
 
     bookingEmail = db.Column(db.String(120), nullable=False)
 
-    siren = db.Column(db.String(9), nullable=False, unique=True)
+    siren = db.Column(db.String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     def make_admin(self, admin):
         if admin:
