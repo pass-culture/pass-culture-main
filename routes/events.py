@@ -1,6 +1,5 @@
 """events"""
 from flask import current_app as app, jsonify, request
-from flask_login import current_user
 
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data,\
@@ -9,15 +8,6 @@ from utils.rest import expect_json_data,\
                        update
 
 Event = app.model.Event
-EventType = app.model.EventType
-
-
-
-@app.route('/eventTypes', methods=['GET'])
-def list_event_types():
-    event_types = [{'label': et.value, 'value': str(et)}
-                   for et in app.model.EventType]
-    return jsonify(event_types), 200
 
 
 @app.route('/events/<id>', methods=['GET'])

@@ -11,6 +11,7 @@ import routes.providers
 import routes.recommendations
 import routes.search
 import routes.things
+import routes.types
 import routes.user_offerers
 import routes.users
 import routes.venue_providers
