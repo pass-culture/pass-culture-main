@@ -10,12 +10,6 @@ const Logo = ({ className, whiteHeader }) => {
       <img src={`${ROOT_PATH}/icon/app-icon-app-store.png`} alt="Logo" />
     )
     }
-    {/* {isLoggedIn ? (
-     <LogoutButton onClick={this.handleLogoutClick} />
-   ) : (
-     <LoginButton onClick={this.handleLoginClick} />
-   )} */}
-      <strong>pass</strong>culture <sub>PRO</sub>
     </NavLink>
   )
 }
