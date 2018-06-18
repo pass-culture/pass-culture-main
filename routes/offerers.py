@@ -5,23 +5,31 @@ from flask_login import current_user, login_required
 from utils.human_ids import dehumanize
 from utils.includes import OFFERERS_INCLUDES, VENUES_INCLUDES
 from utils.rest import expect_json_data,\
-                       update,\
-                       login_or_api_key_required
+                       handle_rest_get_list,\
+                       login_or_api_key_required,\
+                       update
+
+Offerer = app.model.Offerer
+UserOfferer = app.model.UserOfferer
+
 
 def check_offerer_user(query):
     return query.filter(
         app.model.Offerer.users.any(app.model.User.id == current_user.id)
-    )\
-    .first_or_404()
+    ).first_or_404()
+
 
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
-    offerers = [
-        o._asdict(include=OFFERERS_INCLUDES)
-        for o in current_user.offerers
-    ]
-    return jsonify(offerers), 200
+    query = app.model.Offerers.query
+    if not current_user.isAdmin:
+        query = query.join(UserOfferer)\
+                     .filter_by(user=current_user)
+    return handle_rest_get_list(Offerer,
+                                query=query,
+                                include=OFFERERS_INCLUDES)
+
 
 @app.route('/offerers/<id>/venues', methods=['GET'])
 @login_required
@@ -60,6 +68,7 @@ def create_offerer():
     offerer.make_admin(current_user)
     app.model.PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 201
+
 
 @app.route('/offerers/<offererId>', methods=['PATCH'])
 @login_or_api_key_required
