@@ -5,59 +5,43 @@ import { connect } from 'react-redux'
 
 import Icon from './Icon'
 import { getFormValue, mergeForm } from '../../reducers/form'
+import { NEW } from '../../utils/config'
 
 class FormDate extends Component {
 
   constructor () {
     super()
     this.state = {
+      date: null,
       focused: false
     }
   }
 
-  handleDateSelect = () => {
+  handleDateSelect = date => {
     const {
+      availableDates,
       collectionName,
       entityId,
       mergeForm,
       name,
-      value
     } = this.props
-
-    /*
-    // build the datetime based on the date plus the time
-    // given in the horaire form field
-    if (!newDate || !newDate.time || !newOffer) {
-      return this.setState({ withError: true })
-    }
-    const [hours, minutes] = newDate.time.split(':')
-    const datetime = date.clone().hour(hours).minute(minutes)
-
-    // check that it does not match already an occurence
-    const alreadySelectedOccurence = occurences && occurences.find(o =>
-      o.beginningDatetimeMoment.isSame(datetime))
-    if (alreadySelectedOccurence) {
-      return
-    }
-    */
-    mergeForm(collectionName, entityId, name, value)
+    mergeForm(collectionName, entityId, name, date)
   }
 
   render () {
     const { availableDates, value } = this.props
-    const { focused } = this.state
-    console.log('value', value)
+    const { date, focused } = this.state
     return (
       <div className="input-field date-picker">
         <SingleDatePicker
           customInputIcon={<Icon svg="ico-calendar" alt="calendrier" />}
           customCloseIcon={<Icon svg='ico-close-b' alt="Fermer" />}
-          date={value}
+          date={date}
           displayFormat="LL"
           focused={focused}
-          initialVisibleMonth={() => availableDates && moment.min(availableDates)}
+          initialVisibleMonth={() => moment.min(availableDates || [])}
           inputIconPosition="after"
-          isDayBlocked={date => availableDates &&
+          isDayBlocked={date => date && availableDates &&
             !availableDates.find(d => d.isSame(date, 'day'))
           }
           noBorder={true}
@@ -68,6 +52,10 @@ class FormDate extends Component {
       </div>
     )
   }
+}
+
+FormDate.defaultProps = {
+  entityId: NEW
 }
 
 export default connect(

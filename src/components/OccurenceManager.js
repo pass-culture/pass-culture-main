@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
+import withCurrentOccasion from './hocs/withCurrentOccasion'
 import { mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
@@ -59,8 +60,14 @@ class OccurenceManager extends Component {
   }
 
   render() {
-    const { occurences } = this.props
+    const {
+      currentOccasion
+    } = this.props
+    const {
+      occurences
+    } = (currentOccasion || {})
     const { isAdding } = this.state
+
     return (
       <div>
         <table className='table is-striped is-hoverable'>

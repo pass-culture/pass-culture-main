@@ -91,13 +91,7 @@ class OfferPage extends Component {
   }
 
   handleShowOccurencesModal = () => {
-    const {
-      occurences,
-      showModal
-    } = this.props
-    showModal(
-      <OccurenceManager occurences={occurences} />
-    )
+    this.props.showModal(<OccurenceManager {...this.props} />)
   }
 
   handleSuccessData = (state, action) => {
@@ -198,6 +192,9 @@ class OfferPage extends Component {
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
 
+    console.log('ET LA', this.props)
+
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -239,7 +236,6 @@ class OfferPage extends Component {
               }
               <MediationManager
                 mediations={mediations}
-                newMediationRoutePath={`${routePath}/accroches/nouveau`}
               />
             </div>
           )}

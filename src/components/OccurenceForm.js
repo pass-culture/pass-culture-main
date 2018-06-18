@@ -1,29 +1,58 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import FormField from './layout/FormField'
 import Label from './layout/Label'
 import SubmitButton from './layout/SubmitButton'
 import { NEW } from '../utils/config'
 
+import Icon from './layout/Icon'
+import { SingleDatePicker } from 'react-dates'
+
 class OccurenceForm extends Component {
+
+  componentDidUpdate () {
+    /*
+    console.log('date', date)
+    if (!time) {
+      console.warn('You need to define a time first')
+      return
+    }
+
+    const [hours, minutes] = time.split(':')
+    const value = date.clone().hour(hours).minute(minutes)
+
+    // check that it does not match already an occurence
+    const alreadySelectedDate = availableDates && availableDates.find(o =>
+      availableDates.isSame(value))
+    if (alreadySelectedDate) {
+      return
+    }
+    */
+  }
+
   render () {
     const {
       match: { params: { occasionId } },
       id,
       isNew,
-      offer
+      offer,
+      time
     } = this.props
     return (
       <tr>
         <td>
+
           <FormField
             collectionName="dates"
             entityId={id}
             label={<Label title="Date :" />}
             name="date"
             required
+            time={time}
             type="date"
           />
         </td>
@@ -98,4 +127,11 @@ class OccurenceForm extends Component {
   }
 }
 
-export default withRouter(OccurenceForm)
+export default compose(
+  withRouter,
+  connect(
+    state => ({
+      time: get(state, `form.${NEW}.time`)
+    })
+  )
+)(OccurenceForm)
