@@ -3,16 +3,22 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import createSelectOffers from '../selectors/offers'
+import createSelectVenueItem from '../selectors/venueItem'
 import Icon from './layout/Icon'
 
 const VenueItem = ({
-  address,
-  id,
-  managingOffererId,
-  name,
-  offers
+  venue,
+  venueItem
 }) => {
+  const {
+    address,
+    id,
+    managingOffererId,
+    name,
+  } = (venue || {})
+  const {
+    occasions
+  } = (venueItem || {})
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
     <li className="venue-item">
@@ -26,10 +32,15 @@ const VenueItem = ({
         <ul className='actions'>
           <li>
             {
-              get(offers, 'length')
+              get(occasions, 'length')
               ? (
                 <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
-                  <Icon svg='ico-offres-r' /> {offers ? offers.length : 0} offres
+                  <Icon svg='ico-offres-r' />
+                  {
+                    get(occasions, 'length')
+                      ? `${occasions.length} offres`
+                      : '0 offre'
+                  }
                 </NavLink>
               )
               : (
@@ -61,7 +72,9 @@ const VenueItem = ({
 
 export default connect(
   () => {
-    const selectOffers = createSelectOffers()
-    return (state, ownProps) => ({ offers: selectOffers(state, ownProps) })
+    const selectVenueItem = createSelectVenueItem()
+    return (state, ownProps) => ({
+      venueItem: selectVenueItem(state, ownProps)
+    })
   }
 )(VenueItem)

@@ -10,6 +10,7 @@ import Label from '../layout/Label'
 import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
+import { showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { NEW } from '../../utils/config'
@@ -62,6 +63,18 @@ class OffererPage extends Component {
     )
   }
 
+  handleSuccessData = () => {
+    const {
+      history,
+      showNotification
+    } = this.props
+    showNotification({
+      text: 'Votre structure a bien été enregistrée',
+      type: 'success'
+    })
+    history.push('/structures')
+  }
+
   onAddProviderClick = () => {
     this.setState({ isNewProvider: true })
   }
@@ -84,6 +97,7 @@ class OffererPage extends Component {
     const {
       currentOfferer,
       location: { search },
+      user
     } = this.props
 
     const {
@@ -158,7 +172,7 @@ class OffererPage extends Component {
               <FormField
                 autoComplete="email"
                 collectionName="offerers"
-                defaultValue={bookingEmail || ''}
+                defaultValue={bookingEmail || get(user, 'email')}
                 entityId={offererIdOrNew}
                 label={<Label title="Email de réservation :" />}
                 name="bookingEmail"
@@ -180,6 +194,7 @@ class OffererPage extends Component {
               </div>
               <div className="control">
                 <SubmitButton
+                  className="button is-primary is-medium"
                   getBody={form => form.offerersById[offererIdOrNew]}
                   getIsDisabled={form => {
                     return isNew
@@ -187,10 +202,8 @@ class OffererPage extends Component {
                         !get(form, `offerersById.${offererIdOrNew}.address`)
                       : !get(form, `offerersById.${offererIdOrNew}.name`) &&
                         !get(form, `offerersById.${offererIdOrNew}.address`)
-                  }
-
-                  }
-                  className="button is-primary is-medium"
+                  }}
+                  handleSuccess={this.handleSuccessData}
                   method={method}
                   path={apiPath}
                   storeKey="offerers"
@@ -224,6 +237,6 @@ export default compose(
     (state, ownProps) => ({
       currentOfferer: selectCurrentOfferer(state, ownProps),
     }),
-    { resetForm }
+    { resetForm, showNotification }
   )
 )(OffererPage)

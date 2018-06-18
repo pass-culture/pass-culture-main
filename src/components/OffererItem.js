@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
@@ -29,14 +30,22 @@ const OffererItem = ({
         <ul className='actions'>
           <li>
             <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-              <Icon svg='ico-offres-r' /> {managedOccasions
-                ? managedOccasions.length : 0} offres
+              <Icon svg='ico-offres-r' />
+              {
+                get(managedOccasions, 'length')
+                  ? `${managedOccasions.length} offres`
+                  : '0 offre'
+              }
             </NavLink>
           </li>
           <li>
             <NavLink to={showPath}>
-              <Icon svg='picto-structure' /> {managedVenues
-                ? managedVenues.length : 0} lieux
+              <Icon svg='picto-structure' />
+              {
+                get(managedVenues, 'length')
+                  ? `${managedVenues.length} lieux`
+                  : '0 lieu'
+              }
             </NavLink>
           </li>
           <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>

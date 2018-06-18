@@ -60,7 +60,14 @@ class VenuePage extends Component {
         `offerers/${offererId}/venues`,
         {
           key: 'venues',
-          isMergingArray: false
+          normalizer: {
+            eventOccurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                event: 'occasions'
+              }
+            }
+          }
         }
       )
     }

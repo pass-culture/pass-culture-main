@@ -28,7 +28,7 @@ export default () => createSelector(
 
     Object.assign(occasionItem,
       occurences.reduce((aggreged, o) => {
-        return o.offer.reduce((subaggreged, offer) => {
+        return o.offer && o.offer.reduce((subaggreged, offer) => {
           return {
             available: subaggreged.available + offer.available,
             groupSizeMin: subaggreged.groupSizeMin

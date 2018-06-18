@@ -41,7 +41,14 @@ class OffersPage extends Component {
           occurences: {
             key: 'eventOccurences',
             normalizer: {
+              offer: 'offers',
               venue: 'venues'
+            }
+          },
+          offers: {
+            key: 'offers',
+            normalizer: {
+              'venue': 'venues'
             }
           }
         }
