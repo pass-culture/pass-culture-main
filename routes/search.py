@@ -18,8 +18,7 @@ def get_founds():
             founds += [
                 dict(
                     entity._asdict(
-                        include=includes.get(collection_name),
-                        has_model_name=True
+                        include=includes.get(collection_name)
                     ),
                     **{'collectionName': collection_name}
                 )

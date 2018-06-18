@@ -1,5 +1,6 @@
 """events"""
 from flask import current_app as app, jsonify, request
+from flask_login import current_user
 
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data,\
@@ -9,6 +10,7 @@ from utils.rest import expect_json_data,\
 
 Event = app.model.Event
 EventType = app.model.EventType
+
 
 
 @app.route('/eventTypes', methods=['GET'])

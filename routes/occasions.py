@@ -10,13 +10,6 @@ from utils.rest import expect_json_data,\
 from utils.string_processing import inflect_engine
 
 
-def get_occasion_dict(occasion):
-    return occasion._asdict(
-        include=OCCASION_INCLUDES,
-        has_dehumanized_id=True,
-        has_model_name=True
-    )
-
 def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = app.model.EventOccurence()
     event_occurence.event = occasion
@@ -41,10 +34,12 @@ def list_occasions():
                 occasion = None
                 if eventOccurence.event.id not in event_ids:
                     event_ids.append(eventOccurence.event.id)
-                    occasion = get_occasion_dict(eventOccurence.event)
-                    occasions.append(occasion)
+                    occasions.append(eventOccurence.event)
             # TODO: find a similar method for things
-    return jsonify(occasions)
+    return jsonify([
+        occasion._asdict(include=OCCASION_INCLUDES)
+        for occasion in occasions
+    ])
 
 @app.route('/occasions/<occasionType>/<occasionId>', methods=['GET'])
 @login_or_api_key_required
@@ -53,7 +48,7 @@ def get_occasion(occasionType, occasionId):
     occasion = app.model[model_name]\
                   .query.filter_by(id=dehumanize(occasionId))\
                   .first_or_404()
-    occasion_dict = get_occasion_dict(occasion)
+    occasion_dict = occasion._asdict(include=OCCASION_INCLUDES)
     return jsonify(occasion_dict)
 
 
@@ -90,7 +85,7 @@ def post_occasion(occasionType):
                 venue
             )
 
-    return jsonify(get_occasion_dict(occasion)), 201
+    return jsonify(occasion._asdict(include=OCCASION_INCLUDES)), 201
 
 @app.route('/occasions/<occasionType>/<occasionId>', methods=['PATCH'])
 @login_or_api_key_required
@@ -131,4 +126,4 @@ def patch_occasion(occasionType, occasionId):
                     offerer,
                     venue
                 )
-    return jsonify(get_occasion_dict(occasion)), 200
+    return jsonify(occasion._asdict(include=OCCASION_INCLUDES)), 200

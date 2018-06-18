@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
 from utils.includes import OFFERERS_INCLUDES, VENUES_INCLUDES
 from utils.rest import expect_json_data,\
@@ -42,9 +43,9 @@ def list_offerers_venues(id):
                 for o in offerer.managedVenues
             ]
             return jsonify(venues), 200
-    return jsonify({
-        "text": "This offerer id does not belong to the current user."
-    }), 200
+    e = ApiErrors()
+    e.addError('global', "Cette structure n'est pas enregistrée chez cet utilisateur.")
+    return jsonify(e.errors), 400
 
 
 @app.route('/offerers/<id>', methods=['GET'])
@@ -54,9 +55,9 @@ def get_offerer(id):
     for offerer in current_user.offerers:
         if offerer.id == dehumanize_id:
             return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 200
-    return jsonify({
-        "text": "This offerer id does not belong to the current user."
-    }), 200
+    e = ApiErrors()
+    e.addError('global', "Cette structure n'est pas enregistrée chez cet utilisateur.")
+    return jsonify(e.errors), 400
 
 
 @app.route('/offerers', methods=['POST'])
