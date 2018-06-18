@@ -22,7 +22,7 @@ def check_offerer_user(query):
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
-    query = app.model.Offerers.query
+    query = app.model.Offerer.query
     if not current_user.isAdmin:
         query = query.join(UserOfferer)\
                      .filter_by(user=current_user)
