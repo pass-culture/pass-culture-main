@@ -28,14 +28,9 @@ const PageWrapper = props => {
     .concat(children)
     .filter(e => e && e.type !== 'header' && e.type !== 'footer')
   return [
-// <<<<<<< HEAD
-//     whiteHeader && <Header key='header' whiteHeader/>,
-//     !noHeader && !whiteHeader && <Header key='header' {...header} />,
-// =======
     whiteHeader
-      ? <Header key='header' whiteHeader/>
-      : !noHeader && <Header key='header' {...header} />,
-// >>>>>>> b2cf002794bbaa21ab6316099ad4fef6c11b663d
+      ? <Header key='header' whiteHeader={whiteHeader}/>
+      : !noHeader && <Header key='header' isPrimary={true} {...header} />,
     <Tag
       className={classnames({
         page: true,

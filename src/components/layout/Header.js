@@ -20,6 +20,7 @@ class Header extends Component {
     const {
       name,
       venuesCount,
+      isPrimary,
       whiteHeader
     } = this.props
     const {
@@ -27,12 +28,12 @@ class Header extends Component {
     } = this.state
     return (
       <header className={classnames(
-        'navbar is primary',
-        { 'white-header': whiteHeader }
+        'navbar',
+        { 'white-header': whiteHeader, 'is-primary': isPrimary }
       )}>
       <div className="container">
         <div className="navbar-brand">
-          <Logo className="navbar-item" whiteHeader />
+          <Logo className="navbar-item" whiteHeader={whiteHeader} />
           <span className="navbar-burger" onClick={e => this.setState({
             showMobileMenu: !showMobileMenu
           })}>
@@ -67,7 +68,7 @@ class Header extends Component {
               : <Icon svg='ico-user-circled' />
             }
           </span>
-          <span className={classnames('white-header': whiteHeader)}>
+          <span>
             {name}
           </span>
         </a>

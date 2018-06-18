@@ -1,3 +1,9 @@
+main.page.home-page.container {
+  @media (min-width: $widescreen) {
+    max-width: $desktop;
+  }
+}
+
 .page.container.home-page .page-content {
   margin: 0;
   padding: 0;
@@ -17,7 +23,7 @@
 }
 
 .home-card {
-  // flex-direction: column;
+  // flex-direction: column; TODO Fonctionne pas
   flex-flow: row wrap;
   background-color: $red;
   height: 100%;
