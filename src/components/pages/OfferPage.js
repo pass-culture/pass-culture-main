@@ -66,31 +66,10 @@ class OfferPage extends Component {
 
   handleRequestData = () => {
     const {
-      apiPath,
-      match: { params: { occasionId } },
       history,
       requestData,
       showModal
     } = this.props
-
-    console.log('apiPath', apiPath)
-    if (occasionId !== 'nouveau') {
-      requestData(
-        'GET',
-        apiPath,
-        {
-          key: 'occasions',
-          normalizer: {
-            occurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                venue: 'venues'
-              }
-            }
-          }
-        }
-      )
-    }
     requestData(
       'GET',
       'offerers',
@@ -108,7 +87,7 @@ class OfferPage extends Component {
         normalizer: { managedVenues: 'venues' }
       }
     )
-    requestData('GET', 'eventTypes')
+    requestData('GET', 'types')
   }
 
   handleShowOccurencesModal = () => {
@@ -180,7 +159,6 @@ class OfferPage extends Component {
     const {
       apiPath,
       currentOccasion,
-      eventTypes,
       isLoading,
       isNew,
       occasionCollection,
@@ -190,6 +168,7 @@ class OfferPage extends Component {
       routePath,
       selectedVenueId,
       selectedVenues,
+      typeOptions,
       user,
       venueOptions
     } = this.props
@@ -200,6 +179,7 @@ class OfferPage extends Component {
       contactPhone,
       description,
       durationMinutes,
+      eventType,
       id,
       mediaUrls,
       mediations,
@@ -248,7 +228,7 @@ class OfferPage extends Component {
           { !isNew && (
             <div>
               {
-                occasionCollection === 'events' && (
+                isEventType && (
                   <button
                     className='button'
                     onClick={this.handleShowOccurencesModal}
@@ -294,12 +274,12 @@ class OfferPage extends Component {
           }
           <FormField
             collectionName='occasions'
-            defaultValue={type || get(eventTypes, '0.value')}
+            defaultValue={type}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Type :" />}
             name="type"
-            options={eventTypes}
+            options={typeOptions}
             required
             type="select"
           />
@@ -424,7 +404,7 @@ class OfferPage extends Component {
                 }}
                 handleSuccess={this.handleSuccessData}
                 method={isNew ? 'POST' : 'PATCH'}
-                path={isEventType
+                path={eventType
                   ? `events${id ? `/${id}` : ''}`
                   : `things${id ? `/${id}` : ''}`
                 }
@@ -444,11 +424,11 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      eventTypes: state.data.eventTypes,
       offerForm: selectOfferForm(state, ownProps),
       offererOptions: selectOffererOptions(state, ownProps),
       selectedVenueId: selectSelectedVenueId(state, ownProps),
       selectedVenues: selectSelectedVenues(state, ownProps),
+      typeOptions: state.data.types,
       venueOptions: selectVenueOptions(state, ownProps)
     }),
     {

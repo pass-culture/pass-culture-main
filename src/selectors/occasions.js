@@ -8,7 +8,8 @@ export default createSelector(
   state => state.data.eventOccurences,
   state => state.data.mediations,
   state => state.data.venues,
-  (occasions, searchedOccasions, eventOccurences, mediations, venues) => {
+  state => state.data.types,
+  (occasions, searchedOccasions, eventOccurences, mediations, venues, types) => {
     if (!occasions && !searchedOccasions) return
 
     // priority to searched elements
@@ -44,6 +45,10 @@ export default createSelector(
           mediation => mediation.eventId === occasion.id ||
             mediation.thingId === occasion.id
         )) || []
+
+        // TYPE
+        occasion.type = types && types.find(type =>
+          type.value === occasion.type)
 
     })
 
