@@ -3,51 +3,50 @@ import moment from 'moment'
 import { createSelector } from 'reselect'
 
 export default createSelector(
-  state => state.data.occasions,
-  state => state.data.searchedOccasions,
+  state => state.data.events,
+  state => state.data.searchedEvents,
   state => state.data.eventOccurences,
   state => state.data.mediations,
   state => state.data.venues,
-  (occasions, searchedOccasions, eventOccurences, mediations, venues) => {
-    if (!occasions && !searchedOccasions) return
+  (events, searchedEvents, eventOccurences, mediations, venues) => {
+    if (!events && !searchedEvents) return
 
     // priority to searched elements
-    const filteredOccasions = [...(searchedOccasions || occasions)]
+    const filteredEvents = [...(searchedEvents || events)]
 
     // refill the objects from their join objects
     // but removed during the normalizer time
-    filteredOccasions.forEach(occasion => {
+    filteredEvents.forEach(event => {
 
         // OCCURENCES
         const occurences = (eventOccurences && eventOccurences.filter(
-          eo => eo.eventId === occasion.id
+          eo => eo.eventId === event.id
         )) || []
-        occurences.forEach(occurence => {
-          occurence.beginningDatetimeMoment = moment(occurence.beginningDatetime)
+        occurences.forEach(event => {
+          event.beginningDatetimeMoment = moment(event.beginningDatetime)
         })
         occurences.sort((event1,event2) =>
           event1.beginningDatetimeMoment - event2.beginningDatetimeMoment)
-        occasion.occurences = occurences
+        event.occurences = occurences
 
         // VENUE
         const venueId = get(occurences, '0.venueId')
         const venue = venueId && venues && venues.find(venue =>
           venue.id === venueId)
-        occasion.venue = venue
-        occasion.venueId = venueId
+        event.venue = venue
+        event.venueId = venueId
 
         // OFFERER
-        occasion.offererId = get(venue, 'managingOffererId')
+        event.offererId = get(venue, 'managingOffererId')
 
         // MEDIATIONS
-        occasion.mediations = (mediations && mediations.filter(
-          mediation => mediation.eventId === occasion.id ||
-            mediation.thingId === occasion.id
+        event.mediations = (mediations && mediations.filter(
+          mediation => mediation.eventId === event.id
         )) || []
 
     })
 
-    return filteredOccasions
+    return filteredEvents
       .sort((o1, o2) => o1.dehumanizedId - o2.dehumanizedId)
   }
 )

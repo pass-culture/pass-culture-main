@@ -34,7 +34,7 @@ class OccasionItem extends Component {
     } = (occasion || {})
     requestData(
       'PATCH',
-      `occasions/${occasionType}/${id}`,
+      `${occasionType}/${id}`,
         {
           body: {
             occasion: {

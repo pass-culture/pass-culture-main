@@ -99,8 +99,6 @@ export function getNextState(state, method, patch, config = {}) {
 
     // no need to go further when we want just to trigger
     // a new fresh assign with nextData
-
-    console.log('QUOI', isMergingArray)
     if (!isMergingArray) {
       nextState[key] = nextData
       continue
@@ -114,7 +112,6 @@ export function getNextState(state, method, patch, config = {}) {
     // for each datum we are going to assign (by merging or not) them into
     // their right place in the resolved array
     nextData.forEach(nextDatum => {
-      console.log('previousData', previousData)
       const previousIndex = previousData.findIndex(previousDatum =>
         previousDatum.id === nextDatum.id)
       const resolvedIndex = previousIndex === -1

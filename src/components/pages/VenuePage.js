@@ -59,8 +59,7 @@ class VenuePage extends Component {
         'GET',
         `offerers/${offererId}/venues`,
         {
-          key: 'venues',
-          isMergingArray: false
+          key: 'venues'
         }
       )
     }

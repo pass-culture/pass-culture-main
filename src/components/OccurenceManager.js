@@ -43,12 +43,15 @@ class OccurenceManager extends Component {
     const eventOccurenceId = !occurences
       ? `${NEW}_0`
       : `${NEW}_${occurences.length}`
-    mergeForm('eventOccurences', eventOccurenceId, {
-      beginningDatetime: datetime,
-      id: eventOccurenceId,
-      // TODO: SHOULD BE FIXED WITH SOON API NEW MERGE
-      offer: [newOffer]
-    })
+    mergeForm(
+      'eventOccurences',
+      eventOccurenceId, {
+        beginningDatetime: datetime,
+        id: eventOccurenceId,
+        // TODO: SHOULD BE FIXED WITH SOON API NEW MERGE
+        offer: [newOffer]
+      }
+    )
   }
 
   onAddClick = () => {
