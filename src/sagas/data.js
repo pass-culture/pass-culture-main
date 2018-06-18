@@ -48,8 +48,12 @@ function* fromWatchRequestDataActions(action) {
 }
 
 function* fromWatchFailDataActions(action) {
-  console.log('action.errors', action.errors)
-  yield put(assignErrors(action.errors))
+  const patches = Array.isArray(action.errors)
+    ? action.errors
+    : [action.errors]
+  for (let patch of patches) {
+    yield put(assignErrors(patch))
+  }
   if (action.config.handleFail) {
     const state = yield select(state => state)
     yield call(action.config.handleFail, state, action)
