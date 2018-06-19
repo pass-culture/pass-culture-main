@@ -213,6 +213,7 @@ class OfferPage extends Component {
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
 
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -289,22 +290,18 @@ class OfferPage extends Component {
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
-          {
-            !selectedOffererId && (
-              <FormField
-                collectionName='occasions'
-                defaultValue={selectedOffererId}
-                entityId={occasionIdOrNew}
-                isHorizontal
-                label={<Label title="Structure :" />}
-                readOnly={!isNew}
-                required
-                name='offererId'
-                options={offererOptionsWithPlaceholder}
-                type="select"
-              />
-            )
-          }
+          <FormField
+            collectionName='occasions'
+            defaultValue={selectedOffererId}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Structure :" />}
+            readOnly={!isNew}
+            required
+            name='offererId'
+            options={offererOptionsWithPlaceholder}
+            type="select"
+          />
           <FormField
             collectionName='occasions'
             defaultValue={selectedVenueId}
