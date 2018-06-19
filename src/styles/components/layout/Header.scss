@@ -1,4 +1,4 @@
-header.navbar {
+header.navbar  {
   height: $header-display-height;
   align-items: start;
   z-index: initial;
@@ -17,4 +17,38 @@ header.navbar {
       font-size: $size-small;
     }
   }
+
+  .navbar-link span {
+    color: $primary;
+    margin-right: 0.5rem;
+  }
+
+  a.navbar-item span {
+    color: $primary;
+    margin-right: 0.5rem;
+  }
+
+  span.white-header {
+    // quand menu est blanc
+    color: $primary;
+  }
+
+  .navbar-dropdown {
+    box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
+  }
+
+  &.is-primary {
+    a.navbar-item span {
+      color: $white;
+    }
+    .navbar-dropdown a.navbar-item span {
+      color: $primary;
+    }
+
+    a.navbar-link span {
+      color: $white;
+    }
+  }
 }
+
+

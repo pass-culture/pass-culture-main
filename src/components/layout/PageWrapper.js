@@ -5,7 +5,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import BackButton from './BackButton'
 import Header from './Header'
 import Icon from './Icon'
 import { closeNotification } from '../../reducers/notification'
@@ -64,17 +63,17 @@ class PageWrapper extends Component {
       noContainer,
       noHeader,
       noPadding,
-      backButton,
       children,
       loading,
       notification,
+      whiteHeader,
     } = this.props
     const footer = [].concat(children).find(e => e && e.type === 'footer')
     const content = []
       .concat(children)
       .filter(e => e && e.type !== 'header' && e.type !== 'footer')
     return [
-      !noHeader && <Header key='header' {...header} />,
+      !noHeader && <Header key='header' whiteHeader={whiteHeader} {...header} />,
       <Tag
         className={classnames({
           page: true,

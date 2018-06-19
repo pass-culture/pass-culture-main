@@ -121,6 +121,8 @@ class OffererPage extends Component {
       bookingEmail,
       name,
       siren,
+      postalCode,
+      city,
     } = currentOfferer || {}
 
     const {
@@ -171,20 +173,40 @@ class OffererPage extends Component {
             isHorizontal
             isExpanded
           />
-          <FormField
-            autoComplete="address"
-            collectionName="offerers"
-            defaultValue={address || ''}
-            entityId={offererIdOrNew}
-            label={<Label title="Siège social :" />}
-            name="address"
-            type="adress"
-            readOnly={!isNew}
-            isHorizontal
-            isExpanded
-          />
-          {isNew && (
+          {isNew ? (
             <div>
+              <FormField
+                autoComplete="address"
+                collectionName="offerers"
+                defaultValue={address || ''}
+                entityId={offererIdOrNew}
+                label={<Label title="Adresse du siège social :" />}
+                name="address"
+                type="address"
+                isHorizontal
+                isExpanded
+                required
+              />
+              <FormField
+                autoComplete="postalCode"
+                collectionName="offerers"
+                defaultValue={postalCode || ''}
+                entityId={offererIdOrNew}
+                label={<Label title="Code Postal :" />}
+                name="postalCode"
+                isHorizontal
+                required
+              />
+              <FormField
+                autoComplete="city"
+                collectionName="offerers"
+                defaultValue={city || ''}
+                entityId={offererIdOrNew}
+                label={<Label title="Ville :" />}
+                name="city"
+                isHorizontal
+                required
+              />
               <FormField
                 autoComplete="email"
                 collectionName="offerers"
@@ -195,6 +217,19 @@ class OffererPage extends Component {
                 isHorizontal
               />
             </div>
+          ) : (
+            <FormField
+              autoComplete="address"
+              collectionName="offerers"
+              defaultValue={address || ''}
+              entityId={offererIdOrNew}
+              label={<Label title="Siège social :" />}
+              name="address"
+              type="adress"
+              readOnly={!isNew}
+              isHorizontal
+              isExpanded
+            />
           )}
         </div>
         {isNew ? (
