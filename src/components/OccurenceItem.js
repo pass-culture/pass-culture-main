@@ -59,7 +59,6 @@ class OccurenceItem extends Component {
     if (isEditing) {
       return <OccurenceForm onDeleteClick={e => this.setState({isEditing: false})} {...this.props} />
     }
-    console.log(offer)
     return (
       <tr className=''>
         <td>{beginningDatetimeMoment.format('DD/MM/YYYY')}</td>

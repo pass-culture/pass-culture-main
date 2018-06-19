@@ -10,13 +10,15 @@ import selectEventOccurenceForm from '../selectors/eventOccurenceForm'
 import { NEW } from '../utils/config'
 
 const OccurenceForm = ({
+  available,
   currentOccasion,
   eventOccurence,
   eventOccurenceForm,
   onDeleteClick,
   isNew,
   selectedVenueId,
-  time
+  time,
+  price
 }) => {
   const {
     durationMinutes,
@@ -55,7 +57,7 @@ const OccurenceForm = ({
         <FormField
           collectionName="eventOccurences"
           entityId={get(offer, 'id')}
-          defaultValue={0}
+          defaultValue={price}
           min={0}
           name="price"
           required
@@ -73,6 +75,7 @@ const OccurenceForm = ({
           placeholder="Laissez vide si pas de limite"
           type="number"
           className='is-small'
+          defaultValue={available}
         />
       </td>
       <td>

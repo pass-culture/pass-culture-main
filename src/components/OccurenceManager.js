@@ -51,8 +51,8 @@ class OccurenceManager extends Component {
         </table>
         {
           !isAdding && (
-            <button className='button is-primary is-outlined' onClick={this.onAddClick}>
-              Ajouter un horaire
+            <button className='button is-secondary' onClick={this.onAddClick}>
+              + Ajouter un horaire
             </button>
           )
         }
