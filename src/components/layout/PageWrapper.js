@@ -1,7 +1,9 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import BackButton from './BackButton'
 import Header from './Header'
@@ -10,9 +12,36 @@ import { closeNotification } from '../../reducers/notification'
 
 class PageWrapper extends Component {
 
-  componentWillUnmount() {
-    this.props.closeNotification()
+  componentDidMount () {
+    const {
+      blockers,
+      history
+    } = this.props
+    this.unblock = history.block(
+      () => {
+        console.log('BEN')
+
+        // test all the blockers
+        for (let blocker of blockers) {
+          const {
+            block
+          } = (blocker || {})
+          const shouldBlock = block && block(this.props)
+          if (shouldBlock) {
+            return false
+          }
+        }
+
+        // return true by default, which means that we don't block
+        // the change of pathname
+        return true
+      }
+    )
   }
+
+  componentWillUnmount() {
+      this.unblock && this.unblock()
+   }
 
   render () {
     const {
@@ -75,7 +104,13 @@ PageWrapper.defaultProps = {
   Tag: 'main',
 }
 
-export default connect(
-  state => ({ notification: state.notification }),
-  { closeNotification }
+export default compose(
+  withRouter,
+  connect(
+    state => ({
+      blockers: state.blockers,
+      notification: state.notification
+    }),
+    { closeNotification }
+  )
 )(PageWrapper)
