@@ -60,9 +60,7 @@ class PageWrapper extends Component {
       Tag,
       name,
       redBg,
-      noContainer,
-      noHeader,
-      noPadding,
+      fullscreen,
       children,
       loading,
       notification,
@@ -73,38 +71,40 @@ class PageWrapper extends Component {
       .concat(children)
       .filter(e => e && e.type !== 'header' && e.type !== 'footer')
     return [
-      !noHeader && <Header key='header' whiteHeader={whiteHeader} {...header} />,
+      !fullscreen && <Header key='header' whiteHeader={whiteHeader} {...header} />,
       <Tag
         className={classnames({
           page: true,
           [`${name}-page`]: true,
           'with-header': Boolean(header),
-          'with-footer': Boolean(footer),
           'red-bg': redBg,
-          'no-padding': noPadding,
-          container: !noContainer,
+          'white-header': whiteHeader,
+          container: !fullscreen,
+          fullscreen,
           loading,
         })}
         key='page-wrapper'
       >
-        <div className={classnames('page-content')}>
-          <div className='ban'>
+        { fullscreen ? content : (
+          <div className={classnames('page-content')}>
             {notification && (
               <div className={`notification is-${notification.type || 'info'}`}>
-                <button className="delete" onClick={closeNotification}>
-                  Ok
-                </button>
                 {notification.text}
+                <button className="button is-text is-small close" onClick={closeNotification}>
+                  OK
+                </button>
               </div>
             )}
-            {backTo && (
-              <NavLink to={backTo.path} className='back-button has-text-primary'>
-                <Icon svg='ico-back' />{` ${backTo.label}`}
-              </NavLink>
-            )}
+            <div className='after-notification-content'>
+              {backTo && (
+                <NavLink to={backTo.path} className='back-button has-text-primary'>
+                  <Icon svg='ico-back' />{` ${backTo.label}`}
+                </NavLink>
+              )}
+              {content}
+            </div>
           </div>
-          {content}
-        </div>
+        )}
         {footer}
       </Tag>
     ]

@@ -10,51 +10,20 @@ import UploadThumb from '../layout/UploadThumb'
 import Label from '../layout/Label'
 import FormField from '../layout/FormField'
 import SubmitButton from '../layout/SubmitButton'
+import { showNotification } from '../../reducers/notification'
 
 import { apiUrl } from '../../utils/config'
 
 class ProfilePage extends Component {
 
-  constructor() {
-    super()
-    this.state = {
-      success: false,
-      image: null,
-      zoom: 1,
-    }
-  }
-
-  handleDrop = dropped => {
-    this.setState({ image: dropped[0] })
-  }
-
-  updateValue = e => {
-    const newUser = Object.assign({}, this.state.user, {[e.target.name]: e.target.value})
-    console.log(newUser)
-    this.setState({
-      user: newUser
+  handleSuccess = () => {
+    const {
+      showNotification
+    } = this.props
+    showNotification({
+      type: 'success',
+      text: 'Enregistré'
     })
-  }
-
-
-  onSubmitClick = () => {
-    this.setState({
-      success: true
-    })
-    // const {
-    //   history,
-    //   resetForm,
-    //   showModal
-    // } = this.props
-    // resetForm()
-    // showModal(
-    //   <div>
-    //     C'est soumis!
-    //   </div>,
-    //   {
-    //     onCloseClick: () => history.push('/offres')
-    //   }
-    // )
   }
 
   render() {
@@ -66,20 +35,16 @@ class ProfilePage extends Component {
     } = this.props.user || {}
 
     return (
-      <PageWrapper name="profile" loading={!this.props.user}>
-        <h1 className='pc-title'>Profil</h1>
+      <PageWrapper name="profile" loading={!this.props.user} backTo={{path: '/accueil', label: 'Accueil'}}>
         <div className='section'>
-          {this.state.success && (
-            <p className='notification is-success'>
-              <button class="delete" onClick={e => this.setState({success: false})}></button>
-              Enregistré
-            </p>
-          )}
+          <h1 className='pc-title'>Profil</h1>
+        </div>
+        <div className='section'>
             <FormField
               collectionName='users'
               defaultValue={publicName}
               entityId={id}
-              label={<Label title="Nom" />}
+              label={<Label title="Nom :" />}
               name="publicName"
               required
               isHorizontal
@@ -88,7 +53,7 @@ class ProfilePage extends Component {
               collectionName='users'
               defaultValue={email}
               entityId={id}
-              label={<Label title="Email" />}
+              label={<Label title="Email :" />}
               name="email"
               required
               readOnly // For now there is no check on whether the email already exists so it cannot be modified
@@ -104,7 +69,7 @@ class ProfilePage extends Component {
                   }}
                   className="button is-primary is-medium"
                   method='PATCH'
-                  onClick={this.onSubmitClick}
+                  handleSuccess={this.handleSuccess}
                   path='users/me'
                   storeKey="occasions"
                   text="Enregistrer"
@@ -143,6 +108,8 @@ export default compose(
   connect(
     state => ({
       user: state.user,
-    })
+    }), {
+      showNotification,
+    }
   )
 )(ProfilePage)

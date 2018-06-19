@@ -1,29 +1,25 @@
 // TODO: clean this
 .beta-page, .not-found-page {
+  text-align: center;
+  font-size: $size-medium;
+  font-style: italic;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
 
-  .page-content {
-    text-align: center;
-    font-size: $size-medium;
-    font-style: italic;
-    display: flex;
-    justify-content: space-around;
-    flex-direction: column;
-
-    h1 {
-      font-size: 1.5em;
-      font-weight: normal;
-      strong, span {
-        display: inline-block;
-      }
-      strong {
-        font-weight: $weight-semibold;
-      }
+  h1 {
+    font-size: 1.5em;
+    font-weight: normal;
+    strong, span {
+      display: inline-block;
     }
-
-    p {
+    strong {
       font-weight: $weight-semibold;
     }
+  }
 
+  p {
+    font-weight: $weight-semibold;
   }
 
   footer {

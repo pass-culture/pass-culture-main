@@ -41,7 +41,7 @@ const SignupPage = ({
   showNotification
 }) => {
   return (
-    <PageWrapper name="sign-up" noHeader noContainer>
+    <PageWrapper name="sign-up" fullscreen>
       <div className='columns'>
         <div className='column is-half logo-column'>
           <Logo />
@@ -141,15 +141,6 @@ const SignupPage = ({
                       ).length > 0
                     }
                     handleSuccess={() => {
-                      addBlockers(
-                        'signup-offerer-notification',
-                        ({ location: { pathname }}) => {
-                          if (pathname === '/structures') {
-                            removeBlockers('signup-offerer-notification')
-                            closeNotification()
-                          }
-                        }
-                      )
                       showNotification({
                         text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
                         type: 'success'
