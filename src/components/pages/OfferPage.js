@@ -57,6 +57,10 @@ class OfferPage extends Component {
     }
   }
 
+  componentWillUnmount () {
+    console.log('OUEI')
+  }
+
   handleMergeForm = () => {
     const {
       mergeForm,
@@ -94,9 +98,13 @@ class OfferPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
+      currentOccasion,
       selectedVenueId,
       showModal
     } = this.props
+    const {
+      occurences
+    } = (currentOccasion || {})
     showModal(
       selectedVenueId
         ? <OccurenceManager {...this.props} />
@@ -200,7 +208,6 @@ class OfferPage extends Component {
       isEventType,
       requiredFields
     } = (offerForm || {})
-
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
       ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
       : typeOptions
@@ -209,11 +216,9 @@ class OfferPage extends Component {
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
 
-    console.log(
-      'QSDQd',
-      selectedOffererId,
-      selectedVenueId
-    )
+    const venueOptionsWithPlaceholder = get(venueOptions, 'length') > 1
+      ? [{ label: 'Sélectionnez un lieu' }].concat(venueOptions)
+      : venueOptions
 
     return (
       <PageWrapper
@@ -291,34 +296,39 @@ class OfferPage extends Component {
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
-          {
-            !selectedOffererId && (
-              <FormField
-                collectionName='occasions'
-                defaultValue={selectedOffererId}
-                entityId={occasionIdOrNew}
-                isHorizontal
-                label={<Label title="Structure :" />}
-                readOnly={!isNew}
-                required
-                name='offererId'
-                options={offererOptionsWithPlaceholder}
-                type="select"
-              />
-            )
-          }
           <FormField
             collectionName='occasions'
-            defaultValue={selectedVenueId}
+            defaultValue={selectedOffererId}
             entityId={occasionIdOrNew}
             isHorizontal
-            label={<Label title="Lieu :" />}
-            name='venueId'
-            options={venueOptions}
+            label={<Label title="Structure :" />}
             readOnly={!isNew}
             required
+            name='offererId'
+            options={offererOptionsWithPlaceholder}
             type="select"
           />
+          {
+            selectedOffererId && get(venueOptions, 'length') === 0
+              ? (
+                <p>
+                  Il faut obligatoirement une structure avec un lieu.
+                </p>
+              )
+              :
+                get(venueOptions, 'length') > 0 && <FormField
+                  collectionName='occasions'
+                  defaultValue={selectedVenueId}
+                  entityId={occasionIdOrNew}
+                  isHorizontal
+                  label={<Label title="Lieu :" />}
+                  name='venueId'
+                  options={venueOptionsWithPlaceholder}
+                  readOnly={!isNew}
+                  required
+                  type="select"
+                />
+          }
           <FormField
             collectionName='occasions'
             defaultValue={get(typeOption, 'value')}

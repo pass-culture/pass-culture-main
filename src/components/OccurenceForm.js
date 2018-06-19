@@ -1,8 +1,6 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import FormField from './layout/FormField'
 import Label from './layout/Label'
@@ -12,14 +10,17 @@ import selectEventOccurenceForm from '../selectors/eventOccurenceForm'
 import { NEW } from '../utils/config'
 
 const OccurenceForm = ({
+  currentOccasion,
   eventOccurence,
   eventOccurenceForm,
-  match: { params: { occasionId } },
-  id,
   isNew,
   selectedVenueId,
   time
 }) => {
+  const {
+    durationMinutes,
+    id
+  } = (currentOccasion || {})
   const {
     offer
   } = (eventOccurence || {})
@@ -27,9 +28,6 @@ const OccurenceForm = ({
     beginningDatetime,
     eventOccurenceIdOrNew
   } = (eventOccurenceForm || {})
-
-  console.log("selectedVenueId", selectedVenueId)
-
   return (
     <tr>
       <td>
@@ -91,10 +89,14 @@ const OccurenceForm = ({
           className="button is-primary is-medium"
           getBody={form => {
             const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
-            console.log('eo', eo)
+            console.log('eo', eo, beginningDatetime, durationMinutes)
+            const endDatetime = beginningDatetime.add(durationMinutes, 'minutes')
+            console.log('endDatetime', endDatetime)
+            console.log( id)
             return Object.assign({
               beginningDatetime,
-              eventId: occasionId,
+              endDatetime,
+              eventId: id,
               venueId: selectedVenueId
             }, eo)
           }}
@@ -111,12 +113,9 @@ const OccurenceForm = ({
   )
 }
 
-export default compose(
-  withRouter,
-  connect(
-    (state, ownProps) => ({
-      eventOccurenceForm: selectEventOccurenceForm(state, ownProps)
-    }),
-    { mergeForm }
-  )
+export default connect(
+  (state, ownProps) => ({
+    eventOccurenceForm: selectEventOccurenceForm(state, ownProps)
+  }),
+  { mergeForm }
 )(OccurenceForm)

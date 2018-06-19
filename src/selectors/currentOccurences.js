@@ -1,13 +1,12 @@
-import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import selectOccurences from './occurences'
+import selectSelectedVenueId from './selectedVenueId'
 
-export default () => createSelector(
+export default createSelector(
   selectOccurences,
-  (state, ownProps) => get(ownProps, 'match.params.venueId'),
-  (state, ownProps) => get(ownProps, 'occasion.id'),
-  (occurences, venueId, occasionId) => {
+  selectSelectedVenueId,
+  (occurences, venueId) => {
     if (!occurences) {
       return
     }
