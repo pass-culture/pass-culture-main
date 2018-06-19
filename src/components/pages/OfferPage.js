@@ -208,7 +208,6 @@ class OfferPage extends Component {
       isEventType,
       requiredFields
     } = (offerForm || {})
-
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
       ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
       : typeOptions
@@ -220,8 +219,6 @@ class OfferPage extends Component {
     const venueOptionsWithPlaceholder = get(venueOptions, 'length') > 1
       ? [{ label: 'Sélectionnez un lieu' }].concat(venueOptions)
       : venueOptions
-
-    console.log('venueOptionsWithPlaceholder', venueOptionsWithPlaceholder)
 
     return (
       <PageWrapper
