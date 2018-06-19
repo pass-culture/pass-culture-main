@@ -19,7 +19,15 @@ const withLogin = (config = {}) => WrappedComponent => {
       }
     }
 
+    componentDidMount = () => {
+      this.handleRedirect()
+    }
+
     componentDidUpdate = prevProps => {
+      this.handleRedirect(prevProps)
+    }
+
+    handleRedirect = (prevProps={}) => {
       const { history, location, user } = this.props
       if (user && user !== prevProps.user) {
         if (!prevProps.user && redirectTo && redirectTo !== location.pathname) {
