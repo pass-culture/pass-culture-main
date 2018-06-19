@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import Price from './Price'
+import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
 
 class OccurenceItem extends Component {
@@ -16,7 +17,7 @@ class OccurenceItem extends Component {
   }
 
   onEditClick = () => {
-    this.state({ isEditing: true })
+    this.setState({ isEditing: true })
   }
 
   onDeleteClick = () => {
@@ -56,9 +57,8 @@ class OccurenceItem extends Component {
     } = this.state
 
     if (isEditing) {
-      return <OccurenceForm {...this.props} />
+      return <OccurenceForm onDeleteClick={e => this.setState({isEditing: false})} {...this.props} />
     }
-
     return (
       <tr className=''>
         <td>{beginningDatetimeMoment.format('DD/MM/YYYY')}</td>
@@ -68,9 +68,10 @@ class OccurenceItem extends Component {
         <td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>
         <td>
           <button
-            className="delete is-small"
-            onClick={this.onEditClick}
-          />
+            className="button is-small is-secondary"
+            onClick={this.onEditClick}>
+            <span className='icon'><Icon svg='ico-pen-r' /></span>
+          </button>
         </td>
         <td>
           <button

@@ -65,7 +65,7 @@ class FormField extends Component {
         input: type !== 'textarea' && !isSelect,
         textarea: type === 'textarea',
         'is-rounded': !isCheckbox,
-      }, inputClassName)}
+      }, inputClassName, className)}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}

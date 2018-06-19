@@ -35,6 +35,7 @@ class OccurenceManager extends Component {
               <td>Nombre de place total</td>
               <td>Nombre de place Personnes à Mobilité Réduite (PMR)</td>
               <td></td>
+              <td></td>
             </tr>
           </thead>
           <tbody>
@@ -44,14 +45,14 @@ class OccurenceManager extends Component {
               )
             }
             {
-              isAdding && <OccurenceForm {...this.props} isNew />
+              isAdding && <OccurenceForm onDeleteClick={e => this.setState({isAdding: false})} {...this.props} isNew />
             }
           </tbody>
         </table>
         {
           !isAdding && (
-            <button className='button' onClick={this.onAddClick}>
-              Ajouter un horaire
+            <button className='button is-secondary' onClick={this.onAddClick}>
+              + Ajouter un horaire
             </button>
           )
         }

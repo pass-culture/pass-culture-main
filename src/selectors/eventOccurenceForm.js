@@ -10,7 +10,7 @@ export default createSelector(
   (state, ownProps) => ownProps.isNew,
   (state, ownProps) => get(ownProps, 'currentOccasion.id'),
   (state, ownProps) => get(ownProps, 'currentOccasion.occurences'),
-  (eventOccurencesById, isNew, currentOccasionId, occurences) => {
+  (eventOccurencesById, isNew, currentOccasionId, occurences=[]) => {
 
     const eventOccurenceIdOrNew = isNew
       ? NEW
@@ -28,8 +28,6 @@ export default createSelector(
       date,
       time
     } = (eventOccurenceForm || {})
-
-    console.log('DATE', date, "TIME", time)
 
     if (!time || !date) {
       return
