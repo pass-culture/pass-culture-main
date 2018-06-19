@@ -2,7 +2,7 @@ server {
     listen 80;
     server_name ##FQDN##;
 
-    client_max_body_size 5M;
+    client_max_body_size 8M;
 
     location ^~ /.well-known {
         allow all;
@@ -18,7 +18,7 @@ server {
     listen 443;
     server_name ##FQDN##;
 
-    client_max_body_size 5M;
+    client_max_body_size 8M;
 
     ssl on;
     ssl_certificate /etc/letsencrypt/live/##FQDN##/fullchain.pem;

@@ -1,7 +1,7 @@
 server {
     listen 80;
 
-    client_max_body_size 5M;
+    client_max_body_size 8M;
 
     location / {
         proxy_set_header   Host                 $host;
