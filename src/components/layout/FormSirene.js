@@ -84,12 +84,13 @@ class FormSirene extends Component {
         } else {
           response.json().then(body => {
             const dataPath = isSiren ? 'siege_social' : 'etablissement'
+            const name =  get(body, `${dataPath}.l1_normalisee`) ||  get(body, `${dataPath}.l1_declaree`) || ''
             const sireneForm = {
               address: get(body, `${dataPath}.geo_adresse`),
               city: get(body, `${dataPath}.libelle_commune`),
               latitude: get(body, `${dataPath}.latitude`),
               longitude: get(body, `${dataPath}.longitude`),
-              name: get(body, `${dataPath}.l1_declaree`),
+              name: name,
               postalCode: get(body, `${dataPath}.code_postal`),
               [sireType]: get(body, `${dataPath}${sireType}`),
             }
