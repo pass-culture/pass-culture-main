@@ -22,7 +22,7 @@ const routes = [
   {
     exact: true,
     path: '/',
-    render: () => <Redirect to="/accueil" />,
+    render: () => <Redirect to="/beta" />,
   },
   {
     exact: true,
