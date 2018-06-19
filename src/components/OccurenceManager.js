@@ -45,7 +45,10 @@ class OccurenceManager extends Component {
               )
             }
             {
-              isAdding && <OccurenceForm onDeleteClick={e => this.setState({isAdding: false})} {...this.props} isNew />
+              isAdding && <OccurenceForm
+                onDeleteClick={e => this.setState({isAdding: false})}
+                {...this.props} isNew
+              />
             }
           </tbody>
         </table>

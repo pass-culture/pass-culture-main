@@ -92,6 +92,12 @@ class FormInput extends Component {
       formatValue,
     } = this.props
     const { localValue } = this.state
+    const formatedValue = formatValue(
+      localValue !== null
+        ? localValue
+        : value || defaultValue || ''
+    )
+    console.log('formatedValue', formatedValue)
     return (
       type !== 'switch'
       ? (
@@ -104,7 +110,7 @@ class FormInput extends Component {
           onChange={this.onChange}
           placeholder={placeholder}
           type={type}
-          value={formatValue(localValue !== null ? localValue : value || defaultValue || '')}
+          value={formatedValue}
         />
       )
       : (

@@ -57,7 +57,10 @@ class OccurenceItem extends Component {
     } = this.state
 
     if (isEditing) {
-      return <OccurenceForm onDeleteClick={e => this.setState({isEditing: false})} {...this.props} />
+      return <OccurenceForm
+        onDeleteClick={e => this.setState({isEditing: false})}
+        {...this.props}
+      />
     }
     return (
       <tr className=''>

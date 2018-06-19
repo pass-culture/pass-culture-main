@@ -28,14 +28,18 @@ class FormDate extends Component {
   }
 
   render () {
-    const { availableDates, value } = this.props
+    const {
+      availableDates,
+      defaultValue,
+      value
+    } = this.props
     const { focused } = this.state
     return (
       <div className="input-field date-picker">
         <SingleDatePicker
           customInputIcon={<Icon svg="ico-calendar" alt="calendrier" />}
           customCloseIcon={<Icon svg='ico-close-b' alt="Fermer" />}
-          date={value}
+          date={defaultValue || value}
           displayFormat="LL"
           focused={focused}
           initialVisibleMonth={() => moment.min(availableDates || [])}
