@@ -94,6 +94,23 @@ class FormField extends Component {
         {label}
       </label>
     )
+
+    const errorMarkup = (
+      <ul
+        id={`${inputId}-error`}
+        className={classnames('help', 'is-danger', { pop: error })}
+        key={1}
+      >
+        {
+          error && (
+            <p>
+              <Icon svg="picto-warning" alt="Warning" /> {error}
+            </p>
+          )
+        }
+      </ul>
+    )
+
     if (isHorizontal) {
       labelMarkup = (
         <div className={`field-label is-${size}`} key={`field_label_${inputId}`}>
@@ -104,9 +121,12 @@ class FormField extends Component {
         <div className='field-body' key={`field_body_${inputId}`}>
           <div className={`field ${isExpanded ? 'is-expanded' : 'is-narrow'}`}>
             {inputMarkup}
+            {errorMarkup}
           </div>
         </div>
       )
+    } else {
+      inputMarkup = [inputMarkup, errorMarkup]
     }
 
     return [
@@ -118,19 +138,6 @@ class FormField extends Component {
         key={0}
       >
         { isCheckbox ? labelMarkup : [labelMarkup, inputMarkup] }
-        <ul role='help is-danger'
-          id={`${inputId}-error`}
-          className={classnames('error', { pop: error })}
-          key={1}
-        >
-          {
-            error && (
-              <p>
-                <Icon svg="picto-warning" alt="Warning" /> {error}
-              </p>
-            )
-          }
-        </ul>
       </div>
     ]
   }
