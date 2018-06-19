@@ -1,6 +1,12 @@
-export function capitalize(word='') { return word ? `${word[0].toUpperCase()}${word.slice(1)}` : word}
+export function capitalize(word='') {
+  return word
+    ? `${word[0].toUpperCase()}${word.slice(1)}`
+    : word
+}
 
-export function removeWhitespaces(word) { return word.trim().replace(/\s/g, '') }
+export function removeWhitespaces(word) {
+  return word && word.trim().replace(/\s/g, '')
+}
 
 function pluralizeWord(singular, number) {
   return `${singular}${number > 1 ? 's' : ''}`

@@ -83,7 +83,13 @@ class VenuePage extends Component {
       removeBlockers,
       showNotification
     } = this.props
-    const redirectPathname = `/structures/${offerer.id}`
+    const venueId = get(action, 'data.id')
+    if (!venueId) {
+      console.warn('You should have a venueId here')
+      return
+    }
+    // const redirectPathname = `/structures/${offerer.id}`
+    const redirectPathname = `/structures/${offerer.id}/lieux/${venueId}`
     history.push(redirectPathname)
     showNotification({
       text: "Lieu ajouté avec succès !",
