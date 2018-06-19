@@ -2,13 +2,15 @@ import get from 'lodash.get'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
+import selectTypes from './types'
+
 export default createSelector(
   state => state.data.occasions,
   state => state.data.searchedOccasions,
   state => state.data.eventOccurences,
   state => state.data.mediations,
   state => state.data.venues,
-  state => state.data.types,
+  selectTypes,
   (occasions, searchedOccasions, eventOccurences, mediations, venues, types) => {
     if (!occasions && !searchedOccasions) return
 
@@ -47,8 +49,8 @@ export default createSelector(
         )) || []
 
         // TYPE
-        occasion.type = types && types.find(type =>
-          type.value === occasion.type)
+        occasion.typeOption = types && types.find(type =>
+          type.tag === occasion.type)
 
     })
 
