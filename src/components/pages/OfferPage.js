@@ -180,7 +180,7 @@ class OfferPage extends Component {
       occurences,
       offererId,
       stageDirector,
-      type,
+      typeOption,
     } = (currentOccasion || {})
     const {
       isEventType,
@@ -299,7 +299,7 @@ class OfferPage extends Component {
           }
           <FormField
             collectionName='occasions'
-            defaultValue={type}
+            defaultValue={get(typeOption, 'value')}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Type :" />}
