@@ -17,8 +17,8 @@ class Modal extends Component {
     this.state = initialState
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.isActive && !this.props.isActive) {
+  handleActiveChange = (prevProps = {}) => {
+    if (this.props.isActive && !prevProps.isActive) {
       // Opening
       this.setState({
         display: true,
@@ -29,7 +29,7 @@ class Modal extends Component {
         })
       }, this.props.transitionDuration)
       document.addEventListener('backbutton', this.onCloseClick)
-    } else if (!nextProps.isActive && this.props.isActive) {
+    } else if (!this.props.isActive && prevProps.isActive) {
       // Closing
       this.setState({
         translate: true,
@@ -56,22 +56,6 @@ class Modal extends Component {
     e.stopPropagation()
   }
 
-  componentDidUpdate (prevProps) {
-    const {
-      closeModal,
-      isClosingOnLocationChange,
-      location: { pathname }
-    } = this.props
-    if (isClosingOnLocationChange && pathname !== prevProps.location.pathname) {
-      closeModal()
-    }
-  }
-
-  componentWillUnmount() {
-    this.openTimeout && clearTimeout(this.openTimeout)
-    this.closeTimeout && clearTimeout(this.closeTimeout)
-  }
-
   transform() {
     if (!this.state.translate) return ''
     switch (this.props.fromDirection) {
@@ -86,6 +70,28 @@ class Modal extends Component {
       default:
         return {}
     }
+  }
+  
+  componentDidMount() {
+    this.handleActiveChange()
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      closeModal,
+      isClosingOnLocationChange,
+      location: { pathname }
+    } = this.props
+    if (isClosingOnLocationChange && pathname !== prevProps.location.pathname) {
+      closeModal()
+    }
+
+    this.handleActiveChange(prevProps)
+  }
+
+  componentWillUnmount() {
+    this.openTimeout && clearTimeout(this.openTimeout)
+    this.closeTimeout && clearTimeout(this.closeTimeout)
   }
 
   render() {
