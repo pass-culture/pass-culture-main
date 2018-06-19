@@ -124,11 +124,11 @@ class OfferPage extends Component {
     // POST
     if (method === 'POST') {
       // switch to the path with the new created id
-      history.push(`/offres/${occasionPath}/${data.id}`)
+      const routePath = `/offres/${isEventType ? 'evenements' : 'objets'}/${data.id}`
+      history.push(routePath)
 
       // modal
-      /*
-      showModal(
+      isEventType && showModal(
         <div>
           Cette offre est-elle soumise à des dates ou des horaires particuliers ?
           <button
@@ -145,8 +145,6 @@ class OfferPage extends Component {
           </button>
         </div>
       )
-      */
-      isEventType && this.handleShowOccurencesModal()
     }
   }
 

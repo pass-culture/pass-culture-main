@@ -25,17 +25,6 @@ class OffersPage extends Component {
       'GET',
       'occasions',
       {
-        handleSuccess: (state, action) =>
-          !get(state, 'data.venues.length')
-          && showModal(
-            <div>
-              Vous devez avoir déjà enregistré un lieu
-              dans une de vos structures pour ajouter des offres
-            </div>,
-            {
-              onCloseClick: () => history.push('/structures')
-            }
-          ),
         normalizer: {
           mediations: 'mediations',
           occurences: {
@@ -69,21 +58,16 @@ class OffersPage extends Component {
 
   render() {
     const {
-      hasAtLeastOneVenue,
       occasions
     } = this.props
 
     return (
       <PageWrapper name="offers" loading={!occasions}>
         <div className="section">
-          {
-            hasAtLeastOneVenue && (
-              <NavLink to={`/offres/nouveau`} className='button is-primary is-medium is-pulled-right'>
-                <span className='icon'><Icon svg='ico-offres-w' /></span>
-                <span>Créer une offre</span>
-              </NavLink>
-            )
-          }
+          <NavLink to={`/offres/nouveau`} className='button is-primary is-medium is-pulled-right'>
+            <span className='icon'><Icon svg='ico-offres-w' /></span>
+            <span>Créer une offre</span>
+          </NavLink>
           <h1 className='pc-title'>
             Vos offres
           </h1>
@@ -127,7 +111,6 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      hasAtLeastOneVenue: get(state, 'data.venues.length'),
       occasions: selectOccasions(state, ownProps),
       user: state.user
     }),
