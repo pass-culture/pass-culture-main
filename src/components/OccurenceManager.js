@@ -84,7 +84,7 @@ class OccurenceManager extends Component {
           <tbody>
             {
               occurences && occurences.map(o =>
-                <OccurenceItem key={o.id} {...o} />
+                <OccurenceItem key={o.id} occurence={o} />
               )
             }
             {
