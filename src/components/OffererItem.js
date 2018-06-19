@@ -11,13 +11,14 @@ import createSelectManagedVenues from '../selectors/managedVenues'
 const OffererItem = ({
   managedOccasions,
   managedVenues,
-  offerer: {
+  offerer
+}) => {
+  const {
     id,
     address,
     name,
     isActive,
-  }
-}) => {
+  } = (offerer || {})
   const showPath = `/structures/${id}`
   return (
     <li className="offerer-item">
@@ -29,24 +30,42 @@ const OffererItem = ({
         </p>
         <ul className='actions'>
           <li>
-            <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-              <Icon svg='ico-offres-r' />
-              {
-                get(managedOccasions, 'length')
-                  ? `${managedOccasions.length} offres`
-                  : '0 offre'
-              }
+            <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
+              className='has-text-primary'>
+              <Icon svg='ico-offres-r' /> Créer une offre
             </NavLink>
           </li>
           <li>
-            <NavLink to={showPath}>
-              <Icon svg='picto-structure' />
-              {
-                get(managedVenues, 'length')
-                  ? `${managedVenues.length} lieux`
-                  : '0 lieu'
-              }
-            </NavLink>
+            {
+              get(managedOccasions, 'length')
+                ? (
+                  <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
+                    <Icon svg='ico-offres-r' />
+                    {managedOccasions.length} offres
+                  </NavLink>
+                )
+                : (
+                  <p>
+                    0 offre
+                  </p>
+                )
+            }
+          </li>
+          <li>
+            {
+              get(managedVenues, 'length')
+                ? (
+                  <NavLink to={showPath}>
+                    <Icon svg='picto-structure' />
+                    {managedVenues.length} lieux
+                  </NavLink>
+                )
+                : (
+                  <p>
+                    0 lieu
+                  </p>
+                )
+            }
           </li>
           <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>
         </ul>

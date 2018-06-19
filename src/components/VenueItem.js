@@ -31,30 +31,25 @@ const VenueItem = ({
         </p>
         <ul className='actions'>
           <li>
+            <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres/nouveau`} className='has-text-primary'>
+              <Icon svg='ico-offres-r' /> Créer une offre
+            </NavLink>
+          </li>
+          <li>
             {
               get(occasions, 'length')
               ? (
                 <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                  {
-                    get(occasions, 'length')
-                      ? `${occasions.length} offres`
-                      : '0 offre'
-                  }
+                   {occasions.length} offres
                 </NavLink>
               )
               : (
-                <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres/nouveau`} className='has-text-primary'>
-                  <Icon svg='ico-offres-r' /> Créer une offre
-                </NavLink>
+                <p>
+                  0 offre
+                </p>
               )
             }
-          </li>
-          <li>
-            <NavLink to={`/structures/${managingOffererId}/lieux/${id}/fournisseurs/nouveau`}
-              className='has-text-primary'>
-              <Icon svg='ico-offres-r' /> Importer des offres
-            </NavLink>
           </li>
           <li>
             <p className="has-text-grey">{address}</p>

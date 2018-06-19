@@ -25,7 +25,8 @@ class VenuePage extends Component {
     super()
     this.state = {
       isLoading: false,
-      isNew: false
+      isNew: false,
+      isSubmitting: false
     }
   }
 
@@ -89,11 +90,16 @@ class VenuePage extends Component {
       console.warn('You should have a venueId here')
       return
     }
+
     // const redirectPathname = `/structures/${offerer.id}`
-    const redirectPathname = `/structures/${offerer.id}/lieux/${venueId}`
+    const redirectPathname = get(action, 'method') === 'POST'
+      ? `/structures/${offerer.id}/lieux/${venueId}`
+      : `/structures/${offerer.id}`
     history.push(redirectPathname)
     showNotification({
-      text: "Lieu ajouté avec succès !",
+      text: get(action, 'method') === 'POST'
+        ? "Lieu ajouté avec succès !"
+        : "Lieu modifié avec succès !",
       type: 'success'
     })
     addBlockers(
@@ -109,28 +115,39 @@ class VenuePage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
+      formVenuesById,
       match: { params: { venueId } },
+      offerer,
       venue
     } = nextProps
     const isNew = venueId === 'nouveau'
     const venueIdOrNew = isNew ? NEW : venueId
+    const formEntity = get(formVenuesById, venueIdOrNew)
+    const isSubmitting = formEntity && (Object.keys(formEntity).length > 0)
+    const offererName = get(offerer, 'name')
+    const routePath = `/structures/${get(offerer, 'id')}`
+    const venueName = get(venue, 'name')
     return {
       apiPath: isNew ? `venues` : `venues/${venueId}`,
       isLoading: !(get(venue, 'id') || isNew),
       isNew,
       method: isNew ? 'POST' : 'PATCH',
-      venueIdOrNew
+      isSubmitting,
+      offererName,
+      routePath,
+      venueIdOrNew,
+      venueName
     }
   }
 
   render () {
     const {
+      formVenuesById,
       match: {
         params: {
           offererId
         }
       },
-      offerer,
       venue,
     } = this.props
 
@@ -146,14 +163,24 @@ class VenuePage extends Component {
 
     const {
       apiPath,
+      offererName,
       isLoading,
       isNew,
+      isSubmitting,
       method,
-      venueIdOrNew
+      routePath,
+      venueIdOrNew,
+      venueName
     } = this.state
+
     return (
       <PageWrapper
-        backTo={{label: 'Structure', path: `/structures/${get(offerer, 'id')}`}}
+        backTo={{
+          label: offererName === venueName
+            ? 'STRUCTURE'
+            : venueName,
+          path: routePath
+        }}
         name='venue'
         loading={isLoading}
       >
@@ -258,30 +285,31 @@ class VenuePage extends Component {
           <div className="field is-grouped is-grouped-centered"
             style={{justifyContent: 'space-between'}}>
             <div className="control">
-              <SubmitButton
-                getBody={form => Object.assign(
-                    {
-                      managingOffererId: offererId
-                    },
-                    get(form, `venuesById.${venueIdOrNew}`)
+              {
+                isSubmitting
+                  ? (
+                    <SubmitButton
+                      className="button is-primary is-medium"
+                      getBody={form => Object.assign(
+                          {
+                            managingOffererId: offererId
+                          },
+                          get(form, `venuesById.${venueIdOrNew}`)
+                        )
+                      }
+                      handleSuccess={this.handleSuccessData}
+                      method={method}
+                      path={apiPath}
+                      storeKey="venues"
+                      text="Valider"
+                    />
                   )
-                }
-                getIsDisabled={form =>
-                  isNew
-                    ? !get(form, `venuesById.${venueIdOrNew}.name`) ||
-                      !get(form, `venuesById.${venueIdOrNew}.address`) ||
-                      !get(form, `venuesById.${venueIdOrNew}.postalCode`)
-                    : !get(form, `venuesById.${venueIdOrNew}.name`) &&
-                      !get(form, `venuesById.${venueIdOrNew}.address`) &&
-                      !get(form, `venuesById.${venueIdOrNew}.postalCode`)
-                }
-                className="button is-primary is-medium"
-                handleSuccess={this.handleSuccessData}
-                method={method}
-                path={apiPath}
-                storeKey="venues"
-                text="Valider"
-              />
+                  : (
+                    <NavLink to={routePath} className='button is-primary is-medium'>
+                      Valider
+                    </NavLink>
+                  )
+              }
             </div>
           </div>
         </div>
@@ -295,9 +323,10 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
+      formVenuesById: get(state, 'form.venuesById'),
       user: state.user,
       venue: selectCurrentVenue(state, ownProps),
-      offerer: selectCurrentOfferer(state, ownProps),
+      offerer: selectCurrentOfferer(state, ownProps)
     }),
     {
       addBlockers,
