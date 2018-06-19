@@ -32,8 +32,6 @@ def create_mediation():
         e.addError('thumb', "Ce format d'image n'est pas autorisé")
         return jsonify(e.errors), 400
 
-    print('request.form', request.json, request.form)
-
     offererId = dehumanize(request.form['offererId'])
     ensure_current_user_has_rights(RightsType.editor,
                                    offererId)
@@ -44,7 +42,14 @@ def create_mediation():
     new_mediation.offererId = offererId
     app.model.PcObject.check_and_save(new_mediation)
 
-    new_mediation.save_thumb(thumb.read(), 0)
+    if 'croppingRect[x]' in request.form:
+        crop = [float(request.form['croppingRect[x]']),
+                float(request.form['croppingRect[y]']),
+                float(request.form['croppingRect[height]'])]
+    else:
+        crop = None
+
+    new_mediation.save_thumb(thumb.read(), 0, crop=crop)
 
     return jsonify(new_mediation), 201
 

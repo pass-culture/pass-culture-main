@@ -36,7 +36,7 @@ class HasThumbMixin(object):
                                      + humanize(self.id)\
                                      + (('_' + str(index)) if index > 0 else '')
 
-    def save_thumb(self, thumb, index, image_type=None, dominant_color=None, no_convert=False):
+    def save_thumb(self, thumb, index, image_type=None, dominant_color=None, no_convert=False, crop=None):
         if isinstance(thumb, str):
             if not thumb[0:4] == 'http':
                 raise ValueError('Invalid thumb URL for object '
@@ -55,6 +55,13 @@ class HasThumbMixin(object):
         img = Image.open(thumb_bytes)
         if not no_convert:
             img = img.convert('RGB')
+            if crop is not None:
+                img = img.crop((img.size[0]*crop[0],
+                                img.size[1]*crop[1],
+                                min(img.size[0]*crop[0]+img.size[0]*crop[2],
+                                    img.size[0]),
+                                min(img.size[1]*crop[1]+img.size[0]*crop[2],
+                                    img.size[1])))
             if img.size[0] > IDEAL_THUMB_WIDTH:
                 ratio = img.size[1]/img.size[0]
                 img.resize([IDEAL_THUMB_WIDTH, int(IDEAL_THUMB_WIDTH*ratio)],
