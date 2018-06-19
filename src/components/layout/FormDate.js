@@ -30,7 +30,6 @@ class FormDate extends Component {
   render () {
     const { availableDates, value } = this.props
     const { focused } = this.state
-    console.log('value', value)
     return (
       <div className="input-field date-picker">
         <SingleDatePicker

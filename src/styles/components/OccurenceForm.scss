@@ -1,0 +1,33 @@
+tr.occurence-form {
+  td {
+    vertical-align: baseline;
+  }
+  input.input {
+    // max-width: 5rem;
+  }
+
+  .DateInput_input {
+    font-size: 1rem;
+    border: 2px solid $grey-light;
+    border-radius: 2rem;
+    font-size: $size-small;
+    padding: calc(0.375em - 2px) 1em;
+  }
+
+  .SingleDatePickerInput_calendarIcon {
+    position: absolute;
+    right: 0;
+    top: -0.2em;
+    img {
+      max-height: 1em;
+    }
+  }
+
+  .DateInput_fang {
+    margin-top: -1.5em;
+  }
+
+  .SingleDatePicker_picker {
+    margin-top: -1.5em;
+  }
+}

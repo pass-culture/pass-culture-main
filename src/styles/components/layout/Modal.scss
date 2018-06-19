@@ -41,5 +41,10 @@
       cursor: pointer;
       z-index: 10;
     }
+    .modal-content {
+      overflow: initial;
+      width: auto;
+      max-width: $desktop;
+    }
   }
 }

@@ -13,6 +13,7 @@ const OccurenceForm = ({
   currentOccasion,
   eventOccurence,
   eventOccurenceForm,
+  onDeleteClick,
   isNew,
   selectedVenueId,
   time
@@ -29,25 +30,25 @@ const OccurenceForm = ({
     eventOccurenceIdOrNew
   } = (eventOccurenceForm || {})
   return (
-    <tr>
+    <tr className='occurence-form'>
       <td>
         <FormField
           collectionName="eventOccurences"
           entityId={eventOccurenceIdOrNew}
-          label={<Label title="Date :" />}
           name="date"
           required
           type="date"
+          className='is-small'
         />
       </td>
       <td>
         <FormField
           collectionName="eventOccurences"
           entityId={eventOccurenceIdOrNew}
-          label={<Label title="Heure :" />}
           name="time"
           required
           type="time"
+          className='is-small'
         />
       </td>
       <td>
@@ -55,44 +56,42 @@ const OccurenceForm = ({
           collectionName="eventOccurences"
           entityId={get(offer, 'id')}
           defaultValue={0}
-          label={<Label title="Prix (€) :" />}
           min={0}
           name="price"
           required
           type="number"
+          className='is-small'
+          placeholder='Vide si gratuit'
         />
       </td>
       <td>
         <FormField
           collectionName="eventOccurences"
           entityId={get(offer, 'groupSize')}
-          label={<Label title="Nombre de places" />}
           min={0}
           name="groupSize"
           placeholder="Laissez vide si pas de limite"
           type="number"
+          className='is-small'
         />
       </td>
       <td>
         <FormField
           collectionName="eventOccurences"
           entityId={get(offer, 'pmrGroupSize')}
-          label={<Label title="Places en PMR" />}
           min={0}
           name="pmrGroupSize"
           placeholder="Laissez vide si pas de limite"
           type="number"
+          className='is-small'
         />
       </td>
       <td>
         <SubmitButton
-          className="button is-primary is-medium"
+          className="button is-primary is-small"
           getBody={form => {
             const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
-            console.log('eo', eo, beginningDatetime, durationMinutes)
             const endDatetime = beginningDatetime.add(durationMinutes, 'minutes')
-            console.log('endDatetime', endDatetime)
-            console.log( id)
             return Object.assign({
               beginningDatetime,
               endDatetime,
@@ -104,10 +103,16 @@ const OccurenceForm = ({
           method={isNew ? 'POST' : 'PATCH'}
           path={isNew ? 'eventOccurences' : `eventOccurences/${id}`}
           storeKey="eventOccurences"
-          text="Enregistrer"
+          text="Valider"
         >
           Enregistrer
         </SubmitButton>
+      </td>
+      <td>
+        <button
+          className="delete is-small"
+          onClick={e => onDeleteClick && onDeleteClick(e)}
+        />
       </td>
     </tr>
   )
