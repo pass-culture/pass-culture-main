@@ -94,9 +94,6 @@ class OffererPage extends Component {
 
   componentDidMount () {
     this.handleRequestData()
-
-    console.log('qdqsd')
-    this.props.showNotification({ type: 'success', text: 'bqsdqdqsd'})
   }
 
   componentDidUpdate (prevProps) {

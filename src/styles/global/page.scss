@@ -46,7 +46,6 @@
     position: relative;
     .page-content {
       // min-height: 100vh;
-      padding: $page-padding;
       position: relative;
       top: $header-height - $header-display-height;
       margin: 0 5rem;
@@ -54,19 +53,27 @@
       background: white;
       box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
 
-      .ban {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-
-        .back-button {
-          padding-left: 1rem;
-          padding-right: 1rem;
+      .notification {
+        margin: 0;
+        position: relative;
+        .close {
+          float: right;
         }
-
       }
 
+      .after-notification-content {
+        padding: $page-padding / 2 $page-padding;
+        position: relative;
+        .back-button {
+          position: absolute;
+          top: 1rem;
+
+          img {
+            position: absolute;
+            left: -2rem;
+          }
+        }
+      }
     }
   }
 
