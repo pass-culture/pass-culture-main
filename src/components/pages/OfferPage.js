@@ -10,6 +10,7 @@ import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
+import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
@@ -21,7 +22,7 @@ import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
 
-
+import { pluralize } from '../../utils/string'
 
 class OfferPage extends Component {
   constructor () {
@@ -179,6 +180,7 @@ class OfferPage extends Component {
       mediations,
       name,
       performer,
+      occurences,
       offererId,
       stageDirector,
       type,
@@ -191,6 +193,7 @@ class OfferPage extends Component {
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -219,15 +222,28 @@ class OfferPage extends Component {
             required
           />
           { !isNew && (
-            <div>
+            <div className='field'>
               {
                 isEventType && (
-                  <button
-                    className='button'
-                    onClick={this.handleShowOccurencesModal}
-                  >
-                    Gérer les dates
-                  </button>
+                  <div className='field form-field is-horizontal'>
+                    <div className='field-label'>
+                      <label className="label" htmlFor="input_occasions_name">
+                        <div className="subtitle">Dates :</div>
+                      </label>
+                    </div>
+                    <div className='field-body'>
+                      <div className='field'>
+                        <div className='nb-dates'>{pluralize(occurences.length, 'date')}</div>
+                        <button
+                          className='button is-primary is-outlined is-small'
+                          onClick={this.handleShowOccurencesModal}
+                        >
+                          <span className='icon'><Icon svg='ico-calendar' /></span>
+                          <span>Gérer les dates</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 )
               }
               <MediationManager
