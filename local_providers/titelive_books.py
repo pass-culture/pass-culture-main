@@ -168,9 +168,11 @@ class TiteLiveThings(app.model.LocalProvider):
             self.thing_type = ThingType.Book
             self.extraData['bookFormat'] = BookFormat.Hardcover.value
         elif tl_type == 'C':   # CARTE & PLAN
-            self.thing_type = ThingType.Map
+            #self.thing_type = ThingType.Map
+            return None
         elif tl_type == 'CA':  # CD AUDIO
-            self.thing_type = ThingType.MusicRecording
+            #self.thing_type = ThingType.MusicRecording
+            return None
         elif tl_type == 'CB':  # COFFRET / BOITE
             return None
         elif tl_type == 'CD':  # CD-ROM
@@ -178,7 +180,8 @@ class TiteLiveThings(app.model.LocalProvider):
         elif tl_type == 'CL':  # CALENDRIER
             return None
         elif tl_type == 'DV':  # DVD
-            self.thing_type = ThingType.Movie
+            #self.thing_type = ThingType.Movie
+            return None
         elif tl_type == 'EB':  # CONTENU NUMERIQUE
             return
         elif tl_type == 'K7':  # CASSETTE AUDIO VIDEO
@@ -210,7 +213,7 @@ class TiteLiveThings(app.model.LocalProvider):
         elif tl_type == 'PS':  # POSTER
             return None
         elif tl_type == 'R':   # REVUE
-            self.thing_type = ThingType.Periodical
+            return None
         elif tl_type == 'T'\
              or tl_type == 'TL':   # TL  Le support TL correspond au format par défaut (c'est-à-dire sans indication précise de l'éditeur)
             self.thing_type = ThingType.Book  # (hopefully)
