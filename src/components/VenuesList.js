@@ -33,10 +33,15 @@ class VenuesList extends Component {
         {
           key: 'venues',
           normalizer: {
+            eventOccurences: {
+              key: 'eventOccurences',
+              normalizer: {
+                event: 'occasions'
+              }
+            },
             // KEY IN THE OBJECY : //KEY IN THE STATE.DATA
             offers: 'offers'
-          },
-          isMergingArray: false
+          }
         }
       )
     }
@@ -46,7 +51,7 @@ class VenuesList extends Component {
     return (
       <ul className='pc-list venues-list'>
         {get(this.props, 'venues', []).map(v =>
-          <VenueItem key={v.id} {...v} />)}
+          <VenueItem key={v.id} venue={v} />)}
       </ul>
     )
   }

@@ -3,16 +3,6 @@ import { createSelector } from 'reselect'
 
 import selectSelectedType from './selectedType'
 
-const eventTypes = [
-  'ComedyEvent',
-  'DanceEvent',
-  'Festival',
-  'LiteraryEvent',
-  'MusicEvent',
-  'ScreeningEvent',
-  'TheaterEvent'
-]
-
 const requiredEventAndThingFields = [
   'name',
   'type',
@@ -28,12 +18,21 @@ const requiredEventFields = [
 export default createSelector(
   selectSelectedType,
   (state, ownProps) => get(ownProps, 'currentOccasion.type'),
-  (selectedType, propsType) => {
-    const type = selectedType || propsType
-    const isEventType = type && eventTypes.includes(type)
-    const requiredFields = isEventType
-      ? requiredEventAndThingFields.concat(requiredEventFields)
-      : requiredEventAndThingFields
+  (state, ownProps) => get(ownProps, 'currentOccasion.modelName'),
+  (formType, propsType, modelName) => {
+
+    const formTypeValue = get(formType, 'value')
+
+    const isEventType = modelName === 'Event'
+      || propsType && propsType.split('.')[0] === 'EventType'
+      || formTypeValue && formTypeValue.split('.')[0] === 'EventType'
+
+    let requiredFields = requiredEventAndThingFields
+
+    if (isEventType) {
+      requiredFields = requiredFields.concat(requiredEventFields)
+    }
+
     return {
       isEventType,
       requiredFields

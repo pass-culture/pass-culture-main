@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
+import withCurrentOccasion from './hocs/withCurrentOccasion'
 import { mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
@@ -43,12 +44,15 @@ class OccurenceManager extends Component {
     const eventOccurenceId = !occurences
       ? `${NEW}_0`
       : `${NEW}_${occurences.length}`
-    mergeForm('eventOccurences', eventOccurenceId, {
-      beginningDatetime: datetime,
-      id: eventOccurenceId,
-      // TODO: SHOULD BE FIXED WITH SOON API NEW MERGE
-      offer: [newOffer]
-    })
+    mergeForm(
+      'eventOccurences',
+      eventOccurenceId, {
+        beginningDatetime: datetime,
+        id: eventOccurenceId,
+        // TODO: SHOULD BE FIXED WITH SOON API NEW MERGE
+        offer: [newOffer]
+      }
+    )
   }
 
   onAddClick = () => {
@@ -56,8 +60,14 @@ class OccurenceManager extends Component {
   }
 
   render() {
-    const { occurences } = this.props
+    const {
+      currentOccasion
+    } = this.props
+    const {
+      occurences
+    } = (currentOccasion || {})
     const { isAdding } = this.state
+
     return (
       <div>
         <table className='table is-striped is-hoverable'>
@@ -78,7 +88,7 @@ class OccurenceManager extends Component {
               )
             }
             {
-              isAdding && <OccurenceForm isNew />
+              isAdding && <OccurenceForm {...this.props} isNew />
             }
           </tbody>
         </table>

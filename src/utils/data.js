@@ -1,3 +1,5 @@
+import uniqBy from 'lodash.uniqby'
+
 export function getNextState(state, method, patch, config = {}) {
 
   // UNPACK
@@ -26,8 +28,19 @@ export function getNextState(state, method, patch, config = {}) {
     const previousData = state[key]
 
     // CLONE
+    // FORCE TO GIVE AN ID
+    // UNIFY BY ID
+    // (BECAUSE DEEPEST NORMALIZED DATA CAN RETURN ARRAY OF SAME ELEMENTS)
     const data = patch[key]
-    const nextData = data && data.map(datum => Object.assign({}, datum))
+    if (!data) {
+      continue
+    }
+    const nextData = uniqBy(
+      data.map((datum, index) =>
+        Object.assign({ id: index }, datum)),
+      datum => datum.id
+    )
+
 
     // NORMALIZER
     if (normalizer) {

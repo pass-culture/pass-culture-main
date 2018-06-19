@@ -1,101 +1,119 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import FormField from './layout/FormField'
 import Label from './layout/Label'
 import SubmitButton from './layout/SubmitButton'
+import { mergeForm } from '../reducers/form'
+import selectEventOccurenceForm from '../selectors/eventOccurenceForm'
 import { NEW } from '../utils/config'
 
-class OccurenceForm extends Component {
-  render () {
-    const {
-      match: { params: { occasionId } },
-      id,
-      isNew,
-      offer
-    } = this.props
-    return (
-      <tr>
-        <td>
-          <FormField
-            collectionName="dates"
-            entityId={id}
-            label={<Label title="Date :" />}
-            name="date"
-            required
-            type="date"
-          />
-        </td>
-        <td>
-          <FormField
-            collectionName="dates"
-            entityId={id}
-            label={<Label title="Heure :" />}
-            name="time"
-            required
-            type="time"
-          />
-        </td>
-        <td>
-          <FormField
-            collectionName="offers"
-            entityId={get(offer, 'id')}
-            defaultValue={0}
-            label={<Label title="Prix (€) :" />}
-            min={0}
-            name="price"
-            required
-            type="number"
-          />
-        </td>
-        <td>
-          <FormField
-            collectionName="offers"
-            entityId={get(offer, 'id')}
-            label={<Label title="Nombre de places" />}
-            min={0}
-            name="groupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-          />
-        </td>
-        <td>
-          <FormField
-            collectionName="offers"
-            entityId={get(offer, 'id')}
-            label={<Label title="Places en PMR" />}
-            min={0}
-            name="pmrGroupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-          />
-        </td>
-        <td>
-          <SubmitButton
-            className="button is-primary is-medium"
-            getBody={form => {
-              const eo = get(form, `eventOccurencesById.${isNew ? NEW : id}`)
+const OccurenceForm = ({
+  eventOccurence,
+  eventOccurenceForm,
+  match: { params: { occasionId } },
+  id,
+  isNew,
+  time
+}) => {
+  const {
+    offer
+  } = (eventOccurence || {})
+  const {
+    beginningDatetime,
+    eventOccurenceIdOrNew
+  } = (eventOccurenceForm || {})
 
-              const [hours, minutes] = eo.time.split(':')
-              const beginningDatetime = eo.date.clone().hour(hours).minute(minutes)
+  console.log('beginningDatetime', beginningDatetime)
+  return (
+    <tr>
+      <td>
 
-              return Object.assign({
-                beginningDatetime,
-                eventId: occasionId
-              }, eo)
-            }}
-            method={isNew ? 'POST' : 'PATCH'}
-            path={isNew ? 'eventOccurences' : `eventOccurences/${id}`}
-            storeKey="eventOccurences"
-            text="Enregistrer"
-          >
-            Enregistrer
-          </SubmitButton>
-        </td>
-      </tr>
-    )
-  }
+        <FormField
+          collectionName="eventOccurences"
+          entityId={eventOccurenceIdOrNew}
+          label={<Label title="Date :" />}
+          name="date"
+          required
+          type="date"
+        />
+      </td>
+      <td>
+        <FormField
+          collectionName="eventOccurences"
+          entityId={eventOccurenceIdOrNew}
+          label={<Label title="Heure :" />}
+          name="time"
+          required
+          type="time"
+        />
+      </td>
+      <td>
+        <FormField
+          collectionName="offers"
+          entityId={get(offer, 'id')}
+          defaultValue={0}
+          label={<Label title="Prix (€) :" />}
+          min={0}
+          name="price"
+          required
+          type="number"
+        />
+      </td>
+      <td>
+        <FormField
+          collectionName="offers"
+          entityId={get(offer, 'id')}
+          label={<Label title="Nombre de places" />}
+          min={0}
+          name="groupSize"
+          placeholder="Laissez vide si pas de limite"
+          type="number"
+        />
+      </td>
+      <td>
+        <FormField
+          collectionName="offers"
+          entityId={get(offer, 'id')}
+          label={<Label title="Places en PMR" />}
+          min={0}
+          name="pmrGroupSize"
+          placeholder="Laissez vide si pas de limite"
+          type="number"
+        />
+      </td>
+      <td>
+        <SubmitButton
+          className="button is-primary is-medium"
+          getBody={form => {
+            const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
+            return Object.assign({
+              beginningDatetime,
+              eventId: occasionId
+            }, eo)
+          }}
+          getIsDisabled={form => !beginningDatetime}
+          method={isNew ? 'POST' : 'PATCH'}
+          path={isNew ? 'eventOccurences' : `eventOccurences/${id}`}
+          storeKey="eventOccurences"
+          text="Enregistrer"
+        >
+          Enregistrer
+        </SubmitButton>
+      </td>
+    </tr>
+  )
 }
 
-export default withRouter(OccurenceForm)
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => ({
+      eventOccurenceForm: selectEventOccurenceForm(state, ownProps)
+    }),
+    { mergeForm }
+  )
+)(OccurenceForm)

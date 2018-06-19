@@ -6,12 +6,10 @@ import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 
-const OccurencesPage = ({
-  currentOccurences
-}) => {
+const OccurencesPage = props => {
   return (
-    <PageWrapper key={0} name="occurences">
-      <OccurenceManager occurences={currentOccurences} />
+    <PageWrapper name="occurences">
+      <OccurenceManager {...props}/>
     </PageWrapper>
   )
 }

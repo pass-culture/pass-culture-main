@@ -30,11 +30,12 @@ class OccasionItem extends Component {
     } = this.props
     const {
       id,
-      isActive
+      isActive,
+      modelName,
     } = (occasion || {})
     requestData(
       'PATCH',
-      `occasions/${occasionType}/${id}`,
+      `offers/${id}`,
         {
           body: {
             occasion: {
@@ -70,12 +71,12 @@ class OccasionItem extends Component {
     } = this.props
     const {
       createdAt,
+      eventType,
       id,
       isActive,
       mediations,
       name,
       occurences,
-      type
     } = (occasion || {})
     const {
       available,
@@ -97,7 +98,7 @@ class OccasionItem extends Component {
           </NavLink>
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
-            <li className='is-uppercase'>{typeToTag(type)}</li>
+            <li className='is-uppercase'>{get(eventType, 'label')}</li>
             <li className='has-text-primary'>{pluralize(get(occurences, 'length'), 'date')}</li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}

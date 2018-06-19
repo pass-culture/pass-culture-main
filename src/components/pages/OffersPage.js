@@ -41,7 +41,14 @@ class OffersPage extends Component {
           occurences: {
             key: 'eventOccurences',
             normalizer: {
+              offer: 'offers',
               venue: 'venues'
+            }
+          },
+          offers: {
+            key: 'offers',
+            normalizer: {
+              'venue': 'venues'
             }
           }
         }
@@ -72,7 +79,7 @@ class OffersPage extends Component {
           {
             hasAtLeastOneVenue && (
               <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-medium is-pulled-right'>
-                <span className='icon'><Icon svg='ico-offres-r' /></span>
+                <span className='icon'><Icon svg='ico-offres-w' /></span>
                 <span>Créer une offre</span>
               </NavLink>
             )

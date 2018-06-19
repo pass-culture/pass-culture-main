@@ -29,7 +29,7 @@ class Header extends Component {
     return (
       <header className={classnames(
         'navbar',
-        { 'white-header': whiteHeader, 'is-primary': isPrimary }
+        { 'is-primary': !whiteHeader }
       )}>
       <div className="container">
         <div className="navbar-brand">
