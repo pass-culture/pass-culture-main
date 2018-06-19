@@ -30,11 +30,12 @@ class OccasionItem extends Component {
     } = this.props
     const {
       id,
-      isActive
+      isActive,
+      modelName,
     } = (occasion || {})
     requestData(
       'PATCH',
-      `${occasionType}/${id}`,
+      `offers/${id}`,
         {
           body: {
             occasion: {
