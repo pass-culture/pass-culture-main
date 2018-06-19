@@ -24,7 +24,7 @@ const SigninPage = ({ errors }) => {
           <section className='hero has-text-grey'>
             <div className='hero-body'>
               <h1 className='title is-spaced is-1'>
-                <span className="has-text-weight-bold ">Bienvenue</span>
+                <span className="has-text-weight-bold ">Bienvenue</span>{' '}
                 <span className="has-text-weight-semibold">dans la version bêta</span>
                 <span className="has-text-weight-normal">du Pass Culture pro.</span>
               </h1>

@@ -20,9 +20,9 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
     componentDidUpdate = prevProps => {
-      const { history, user } = this.props
+      const { history, location, user } = this.props
       if (user && user !== prevProps.user) {
-        if (!prevProps.user && redirectTo) {
+        if (!prevProps.user && redirectTo && redirectTo !== location.pathname) {
           history.push(redirectTo)
         }
       } else if (isRequired) {
