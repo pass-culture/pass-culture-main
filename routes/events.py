@@ -14,12 +14,9 @@ Event = app.model.Event
 @login_or_api_key_required
 def get_event(id):
     event = load_or_404(Event, id)
+    print('event.type', event.type)
     return jsonify(
-        event._asdict(
-            include=EVENT_INCLUDES,
-            has_dehumanized_id=True,
-            has_model_name=True
-        )
+        event._asdict(include=EVENT_INCLUDES)
     ), 200
 
 
