@@ -10,7 +10,8 @@ import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import { resetForm } from '../../reducers/form'
-import { showNotification } from '../../reducers/notification'
+import { addBlockers, removeBlockers } from '../../reducers/blockers'
+import { closeNotification, showNotification } from '../../reducers/notification'
 import SubmitButton from '../layout/SubmitButton'
 import selectCurrentVenue from '../../selectors/currentVenue'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
@@ -75,15 +76,28 @@ class VenuePage extends Component {
 
   handleSuccessData = (state, action) => {
     const {
+      addBlockers,
+      closeNotification,
       history,
       offerer,
+      removeBlockers,
       showNotification
     } = this.props
-    history.push(`/structures/${offerer.id}`)
+    const redirectPathname = `/structures/${offerer.id}`
+    history.push(redirectPathname)
     showNotification({
       text: "Lieu ajouté avec succès !",
       type: 'success'
     })
+    addBlockers(
+      'venue-notification',
+      ({ location: { pathname }}) => {
+        if (pathname === redirectPathname) {
+          removeBlockers('venue-notification')
+          closeNotification()
+        }
+      }
+    )
   }
 
   static getDerivedStateFromProps (nextProps) {
@@ -263,5 +277,11 @@ export default compose(
       venue: selectCurrentVenue(state, ownProps),
       offerer: selectCurrentOfferer(state, ownProps),
     }),
-    { resetForm, showNotification })
+    {
+      addBlockers,
+      closeNotification,
+      resetForm,
+      removeBlockers,
+      showNotification
+    })
 )(VenuePage)

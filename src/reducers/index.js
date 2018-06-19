@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 
+import blockers from './blockers'
 import data from './data'
 import errors from './errors'
 import form from './form'
@@ -11,6 +12,7 @@ import splash from './splash'
 import user from './user'
 
 const rootReducer = combineReducers({
+  blockers,
   data,
   errors,
   form,
