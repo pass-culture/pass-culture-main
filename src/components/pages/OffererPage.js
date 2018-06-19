@@ -74,7 +74,7 @@ class OffererPage extends Component {
     const redirectPathname = '/structures'
     history.push(redirectPathname)
     showNotification({
-      text: 'Votre structure a bien été enregistrée',
+      text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
       type: 'success'
     })
     addBlockers(
