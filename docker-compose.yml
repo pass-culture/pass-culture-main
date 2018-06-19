@@ -33,7 +33,7 @@ services:
       - postgres
 
   nginx:
-    image: "nginx:1.13.5"
+    build: dockerfiles/nginx
     ports:
       - "80:80"
       - "443:443"
