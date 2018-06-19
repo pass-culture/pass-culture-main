@@ -10,7 +10,8 @@ import Label from '../layout/Label'
 import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import { showNotification } from '../../reducers/notification'
+import { addBlockers, removeBlockers } from '../../reducers/blockers'
+import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
 import { NEW } from '../../utils/config'
@@ -65,14 +66,26 @@ class OffererPage extends Component {
 
   handleSuccessData = () => {
     const {
+      addBlockers,
       history,
+      removeBlockers,
       showNotification
     } = this.props
+    const redirectPathname = '/structures'
+    history.push(redirectPathname)
     showNotification({
       text: 'Votre structure a bien été enregistrée',
       type: 'success'
     })
-    history.push('/structures')
+    addBlockers(
+      'offerer-notification',
+      ({ location: { pathname }}) => {
+        if (pathname === redirectPathname) {
+          removeBlockers('offerer-notification')
+          closeNotification()
+        }
+      }
+    )
   }
 
   onAddProviderClick = () => {
@@ -81,6 +94,9 @@ class OffererPage extends Component {
 
   componentDidMount () {
     this.handleRequestData()
+
+    console.log('qdqsd')
+    this.props.showNotification({ type: 'success', text: 'bqsdqdqsd'})
   }
 
   componentDidUpdate (prevProps) {
@@ -237,6 +253,11 @@ export default compose(
     (state, ownProps) => ({
       currentOfferer: selectCurrentOfferer(state, ownProps),
     }),
-    { resetForm, showNotification }
+    {
+      closeNotification,
+      resetForm,
+      removeBlockers,
+      showNotification
+    }
   )
 )(OffererPage)
