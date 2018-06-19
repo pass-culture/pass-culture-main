@@ -67,6 +67,7 @@ class OffererPage extends Component {
   handleSuccessData = () => {
     const {
       addBlockers,
+      closeNotification,
       history,
       removeBlockers,
       showNotification
@@ -279,6 +280,7 @@ export default compose(
       currentOfferer: selectCurrentOfferer(state, ownProps),
     }),
     {
+      addBlockers,
       closeNotification,
       resetForm,
       removeBlockers,
