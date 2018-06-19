@@ -92,8 +92,9 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionPath',
-    render: () => <Redirect to="/offres" />,
+    path: '/offres/:occasionId',
+    title: 'Offre',
+    render: () => <OfferPage />,
   },
   {
     exact: true,
