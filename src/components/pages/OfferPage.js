@@ -18,6 +18,7 @@ import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import selectOfferForm from '../../selectors/offerForm'
 import selectOffererOptions from '../../selectors/offererOptions'
+import selectSelectedOffererId from '../../selectors/selectedOffererId'
 import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
@@ -92,7 +93,20 @@ class OfferPage extends Component {
   }
 
   handleShowOccurencesModal = () => {
-    this.props.showModal(<OccurenceManager {...this.props} />)
+    const {
+      selectedVenueId,
+      showModal
+    } = this.props
+    showModal(
+      selectedVenueId
+        ? <OccurenceManager {...this.props} />
+        : (
+          <div>
+            Vous devez déjà avoir sélectionné une structure et un lieu
+            responsable pour gérer des dates
+          </div>
+        )
+    )
   }
 
   handleSuccessData = (state, action) => {
@@ -159,6 +173,7 @@ class OfferPage extends Component {
       offerForm,
       offererOptions,
       routePath,
+      selectedOffererId,
       selectedVenueId,
       selectedVenues,
       typeOptions,
@@ -178,9 +193,8 @@ class OfferPage extends Component {
       name,
       performer,
       occurences,
-      offererId,
       stageDirector,
-      type,
+      typeOption,
     } = (currentOccasion || {})
     const {
       isEventType,
@@ -194,6 +208,12 @@ class OfferPage extends Component {
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
+
+    console.log(
+      'QSDQd',
+      selectedOffererId,
+      selectedVenueId
+    )
 
     return (
       <PageWrapper
@@ -250,7 +270,9 @@ class OfferPage extends Component {
                     </div>
                     <div className='field-body'>
                       <div className='field'>
-                        <div className='nb-dates'>{pluralize(occurences.length, 'date')}</div>
+                        <div className='nb-dates'>
+                          {pluralize(occurences.length, 'date')}
+                        </div>
                         <button
                           className='button is-primary is-outlined is-small'
                           onClick={this.handleShowOccurencesModal}
@@ -269,37 +291,37 @@ class OfferPage extends Component {
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
-          <FormField
-            collectionName='occasions'
-            defaultValue={offererId}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Structure :" />}
-            readOnly={!isNew}
-            required
-            name='offererId'
-            options={offererOptionsWithPlaceholder}
-            type="select"
-          />
           {
-            selectedVenues && selectedVenues.length > 1 && (
+            !selectedOffererId && (
               <FormField
                 collectionName='occasions'
-                defaultValue={selectedVenueId}
+                defaultValue={selectedOffererId}
                 entityId={occasionIdOrNew}
                 isHorizontal
-                label={<Label title="Lieu :" />}
-                name='venueId'
-                options={venueOptions}
+                label={<Label title="Structure :" />}
                 readOnly={!isNew}
                 required
+                name='offererId'
+                options={offererOptionsWithPlaceholder}
                 type="select"
               />
             )
           }
           <FormField
             collectionName='occasions'
-            defaultValue={type}
+            defaultValue={selectedVenueId}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Lieu :" />}
+            name='venueId'
+            options={venueOptions}
+            readOnly={!isNew}
+            required
+            type="select"
+          />
+          <FormField
+            collectionName='occasions'
+            defaultValue={get(typeOption, 'value')}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Type :" />}
@@ -458,6 +480,7 @@ export default compose(
     (state, ownProps) => ({
       offerForm: selectOfferForm(state, ownProps),
       offererOptions: selectOffererOptions(state, ownProps),
+      selectedOffererId: selectSelectedOffererId(state, ownProps),
       selectedVenueId: selectSelectedVenueId(state, ownProps),
       selectedVenues: selectSelectedVenues(state, ownProps),
       typeOptions: state.data.types,

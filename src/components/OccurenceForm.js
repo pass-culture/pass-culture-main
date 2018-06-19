@@ -17,6 +17,7 @@ const OccurenceForm = ({
   match: { params: { occasionId } },
   id,
   isNew,
+  selectedVenueId,
   time
 }) => {
   const {
@@ -26,6 +27,8 @@ const OccurenceForm = ({
     beginningDatetime,
     eventOccurenceIdOrNew
   } = (eventOccurenceForm || {})
+
+  console.log("selectedVenueId", selectedVenueId)
 
   return (
     <tr>
@@ -88,9 +91,11 @@ const OccurenceForm = ({
           className="button is-primary is-medium"
           getBody={form => {
             const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
+            console.log('eo', eo)
             return Object.assign({
               beginningDatetime,
-              eventId: occasionId
+              eventId: occasionId,
+              venueId: selectedVenueId
             }, eo)
           }}
           getIsDisabled={form => !beginningDatetime}

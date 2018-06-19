@@ -65,6 +65,7 @@ class OffererPage extends Component {
 
   handleSuccessData = () => {
     const {
+      closeNotification,
       history,
       showNotification
     } = this.props

@@ -16,7 +16,7 @@ class OccurenceItem extends Component {
   }
 
   onEditClick = () => {
-
+    this.state({ isEditing: true })
   }
 
   onDeleteClick = () => {
@@ -45,9 +45,12 @@ class OccurenceItem extends Component {
 
   render () {
     const {
+      occurence
+    } = this.props
+    const {
       beginningDatetimeMoment,
       offer
-    } = this.props
+    } = (occurence || {})
     const {
       isEditing
     } = this.state

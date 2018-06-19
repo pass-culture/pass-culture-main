@@ -16,6 +16,11 @@ export default createSelector(
       ? NEW
       : currentOccasionId
 
+    const occurence = occurences.find(occurence =>
+      occurence.id ===
+      occurence.beginningDatetimeMoment.isSame(beginningDatetime))
+
+
     const eventOccurenceForm = get(eventOccurencesById,
       eventOccurenceIdOrNew)
 
