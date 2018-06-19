@@ -29,45 +29,21 @@ class OfferPage extends Component {
   constructor () {
     super()
     this.state = {
+      isReadOnly: true,
       hasNoVenue: false
     }
   }
 
-  componentDidMount () {
+  static getDerivedStateFromProps (nextProps) {
     const {
-      uniqueVenue,
-      user
-    } = this.props
-    user && this.handleRequestData()
-    if (uniqueVenue) {
-      this.handleMergeForm()
+      location: { search },
+      isNew
+    } = nextProps
+    const isEdit = search === '?modifie'
+    const isReadOnly = !isNew && !isEdit
+    return {
+      isReadOnly
     }
-  }
-
-  componentDidUpdate (prevProps) {
-    const {
-      uniqueVenue,
-      user
-    } = this.props
-    if (prevProps.user !== user) {
-      this.handleRequestData()
-    }
-    if (!prevProps.uniqueVenue && uniqueVenue) {
-      this.handleMergeForm()
-    }
-  }
-
-  componentWillUnmount () {
-    console.log('OUEI')
-  }
-
-  handleMergeForm = () => {
-    const {
-      mergeForm,
-      occasionId,
-      uniqueVenue
-    } = this.props
-    mergeForm('occasions', occasionId, 'venueId', uniqueVenue.id)
   }
 
   handleRequestData = () => {
@@ -170,12 +146,50 @@ class OfferPage extends Component {
     }
   }
 
+  componentDidMount () {
+    const {
+      uniqueVenue,
+      user
+    } = this.props
+    user && this.handleRequestData()
+    if (uniqueVenue) {
+      this.handleMergeForm()
+    }
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      uniqueVenue,
+      user
+    } = this.props
+    if (prevProps.user !== user) {
+      this.handleRequestData()
+    }
+    if (!prevProps.uniqueVenue && uniqueVenue) {
+      this.handleMergeForm()
+    }
+  }
+
+  componentWillUnmount () {
+    console.log('OUEI')
+  }
+
+  handleMergeForm = () => {
+    const {
+      mergeForm,
+      occasionId,
+      uniqueVenue
+    } = this.props
+    mergeForm('occasions', occasionId, 'venueId', uniqueVenue.id)
+  }
+
   render () {
     const {
       apiPath,
       currentOccasion,
       isLoading,
       isNew,
+      location: { pathname },
       occasionCollection,
       occasionIdOrNew,
       offerForm,
@@ -208,6 +222,9 @@ class OfferPage extends Component {
       isEventType,
       requiredFields
     } = (offerForm || {})
+    const {
+      isReadOnly
+    } = this.state
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
       ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
       : typeOptions
@@ -245,7 +262,8 @@ class OfferPage extends Component {
             isExpanded
             label={<Label title="Titre de l'offre:" />}
             name="name"
-            required
+            readOnly={isReadOnly}
+            required={isReadOnly}
           />
           <FormField
             collectionName='occasions'
@@ -253,6 +271,7 @@ class OfferPage extends Component {
             isHorizontal
             label={<Label title="Prix:" />}
             name="price"
+            readOnly={isReadOnly}
           />
           <FormField
             className='column'
@@ -261,6 +280,7 @@ class OfferPage extends Component {
             inputClassName='input is-rounded'
             label={<Label title="Gratuit" />}
             name="isForFree"
+            readOnly={isReadOnly}
             type="checkbox"
           />
           { !isNew && (
@@ -306,6 +326,7 @@ class OfferPage extends Component {
             required
             name='offererId'
             options={offererOptionsWithPlaceholder}
+            readOnly={isReadOnly}
             type="select"
           />
           {
@@ -325,7 +346,8 @@ class OfferPage extends Component {
                   name='venueId'
                   options={venueOptionsWithPlaceholder}
                   readOnly={!isNew}
-                  required
+                  readOnly={isReadOnly}
+                  required={isReadOnly}
                   type="select"
                 />
           }
@@ -337,7 +359,8 @@ class OfferPage extends Component {
             label={<Label title="Type :" />}
             name="type"
             options={typeOptionsWithPlaceholder}
-            required
+            readOnly={isReadOnly}
+            required={isReadOnly}
             type="select"
           />
           {
@@ -349,7 +372,8 @@ class OfferPage extends Component {
                 isHorizontal
                 label={<Label title="Durée (en minutes) :" />}
                 name="durationMinutes"
-                required
+                readOnly={isReadOnly}
+                required={isReadOnly}
                 type="number"
               />
             )
@@ -363,8 +387,9 @@ class OfferPage extends Component {
             isExpanded
             label={<Label title="Description :" />}
             name="description"
+            readOnly={isReadOnly}
+            required={isReadOnly}
             type="textarea"
-            required
           />
           <FormField
             collectionName='occasions'
@@ -374,6 +399,7 @@ class OfferPage extends Component {
             isExpanded
             label={<Label title="Auteur :" />}
             name="author"
+            readOnly={isReadOnly}
           />
           {
             isEventType && [
@@ -386,6 +412,7 @@ class OfferPage extends Component {
                 key={0}
                 label={<Label title="Metteur en scène:" />}
                 name="stageDirector"
+                readOnly={isReadOnly}
               />,
               <FormField
                 collectionName='occasions'
@@ -396,6 +423,7 @@ class OfferPage extends Component {
                 key={1}
                 label={<Label title="Interprète:" />}
                 name="performer"
+                readOnly={isReadOnly}
               />
             ]
           }
@@ -408,7 +436,8 @@ class OfferPage extends Component {
             isExpanded
             label={<Label title="Nom du contact :" />}
             name="contactName"
-            required
+            readOnly={isReadOnly}
+            required={isReadOnly}
           />
           <FormField
             collectionName='occasions'
@@ -418,7 +447,8 @@ class OfferPage extends Component {
             isExpanded
             label={<Label title="Email de contact :" />}
             name="contactEmail"
-            required
+            readOnly={isReadOnly}
+            required={isReadOnly}
             type="email"
           />
           <FormField
@@ -428,6 +458,7 @@ class OfferPage extends Component {
             isHorizontal
             label={<Label title="Tel de contact :" />}
             name="contactPhone"
+            readOnly={isReadOnly}
           />
           {false && <FormField
                       collectionName='occasions'
@@ -435,46 +466,68 @@ class OfferPage extends Component {
                       entityId={occasionIdOrNew}
                       label={<Label title="Media URLs" />}
                       name="mediaUrls"
+                      readOnly={isReadOnly}
                       type="list"
                     />}
           <hr />
           <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
             <div className="control">
-              <NavLink to='/offres'
-                className="button is-primary is-outlined is-medium">
-                Retour
-              </NavLink>
+              {
+                isReadOnly
+                  ? (
+                    <NavLink to={`${pathname}?modifie`} className='button is-secondary is-medium'>
+                      Modifier l'offre
+                    </NavLink>
+                  )
+                  : (
+                    <NavLink
+                      className="button is-secondary is-medium"
+                      to='/offres'>
+                      Annuler
+                    </NavLink>
+                  )
+              }
             </div>
             <div className="control">
-              <SubmitButton
-                className="button is-primary is-medium"
-                getBody={form => {
-                  const occasionForm = get(form, `occasionsById.${occasionIdOrNew}`)
-                  // remove the EventType. ThingType.
-                  if (occasionForm.type) {
-                    occasionForm.type = occasionForm.type.split('.')[1]
-                  }
-                  return occasionForm
-                }}
-                getIsDisabled={form => {
-                  if (!requiredFields) {
-                    return true
-                  }
-                  const missingFields = requiredFields.filter(r =>
-                    !get(form, `occasionsById.${occasionIdOrNew}.${r}`))
-                  return isNew
-                    ? missingFields.length > 0
-                    : missingFields.length === requiredFields.length
-                }}
-                handleSuccess={this.handleSuccessData}
-                method={isNew ? 'POST' : 'PATCH'}
-                path={isEventType
-                  ? `events${id ? `/${id}` : ''}`
-                  : `things${id ? `/${id}` : ''}`
+              {
+                isReadOnly
+                  ? (
+                    <NavLink to={routePath} className='button is-primary is-medium'>
+                      Terminer
+                    </NavLink>
+                  )
+                  : (
+                    <SubmitButton
+                      className="button is-primary is-medium"
+                      getBody={form => {
+                        const occasionForm = get(form, `occasionsById.${occasionIdOrNew}`)
+                        // remove the EventType. ThingType.
+                        if (occasionForm.type) {
+                          occasionForm.type = occasionForm.type.split('.')[1]
+                        }
+                        return occasionForm
+                      }}
+                      getIsDisabled={form => {
+                        if (!requiredFields) {
+                          return true
+                        }
+                        const missingFields = requiredFields.filter(r =>
+                          !get(form, `occasionsById.${occasionIdOrNew}.${r}`))
+                        return isNew
+                          ? missingFields.length > 0
+                          : missingFields.length === requiredFields.length
+                      }}
+                      handleSuccess={this.handleSuccessData}
+                      method={isNew ? 'POST' : 'PATCH'}
+                      path={isEventType
+                        ? `events${id ? `/${id}` : ''}`
+                        : `things${id ? `/${id}` : ''}`
+                      }
+                      storeKey="occasions"
+                      text="Enregistrer"
+                    />
+                  )
                 }
-                storeKey="occasions"
-                text="Enregistrer"
-              />
             </div>
           </div>
         </div>

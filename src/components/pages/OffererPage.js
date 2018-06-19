@@ -123,11 +123,17 @@ class OffererPage extends Component {
         loading={isLoading}
         name='offerer'
       >
-        <div className='section'>
+        <div className='section hero'>
+          <h2 className='subtitle has-text-weight-bold'>
+            {name}
+          </h2>
           <h1 className="pc-title">Structure</h1>
           <p className="subtitle">
             Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
           </p>
+        </div>
+
+        <div className='section'>
           <FormField
             autoComplete="siren"
             collectionName="offerers"
@@ -244,10 +250,10 @@ class OffererPage extends Component {
         ) : (
           <div className='section'>
             <h2 className='pc-list-title'>
-              Lieux
+              LIEUX
             </h2>
             <VenuesList />
-            <div className='has-text-right'>
+            <div className='has-text-centered'>
               <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}
                 className="button is-secondary is-outlined">
                 + Ajouter un lieu
