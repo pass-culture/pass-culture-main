@@ -88,19 +88,21 @@ class PageWrapper extends Component {
         key='page-wrapper'
       >
         <div className={classnames('page-content')}>
-          {notification && (
-            <div className={`notification is-${notification.type || 'info'}`}>
-              <button className="delete" onClick={closeNotification}>
-                Ok
-              </button>
-              {notification.text}
-            </div>
-          )}
-          {backTo && (
-            <NavLink to={backTo.path} className='back-button has-text-primary'>
-              <Icon svg='ico-back' />{` ${backTo.label}`}
-            </NavLink>
-          )}
+          <div className='ban'>
+            {notification && (
+              <div className={`notification is-${notification.type || 'info'}`}>
+                <button className="delete" onClick={closeNotification}>
+                  Ok
+                </button>
+                {notification.text}
+              </div>
+            )}
+            {backTo && (
+              <NavLink to={backTo.path} className='back-button has-text-primary'>
+                <Icon svg='ico-back' />{` ${backTo.label}`}
+              </NavLink>
+            )}
+          </div>
           {content}
         </div>
         {footer}
