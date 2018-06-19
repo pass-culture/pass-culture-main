@@ -57,6 +57,10 @@ class OfferPage extends Component {
     }
   }
 
+  componentWillUnmount () {
+    console.log('OUEI')
+  }
+
   handleMergeForm = () => {
     const {
       mergeForm,
@@ -213,6 +217,11 @@ class OfferPage extends Component {
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
 
+    const venueOptionsWithPlaceholder = get(venueOptions, 'length') > 1
+      ? [{ label: 'Sélectionnez un lieu' }].concat(venueOptions)
+      : venueOptions
+
+    console.log('venueOptionsWithPlaceholder', venueOptionsWithPlaceholder)
 
     return (
       <PageWrapper
@@ -302,18 +311,27 @@ class OfferPage extends Component {
             options={offererOptionsWithPlaceholder}
             type="select"
           />
-          <FormField
-            collectionName='occasions'
-            defaultValue={selectedVenueId}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Lieu :" />}
-            name='venueId'
-            options={venueOptions}
-            readOnly={!isNew}
-            required
-            type="select"
-          />
+          {
+            selectedOffererId && get(venueOptions, 'length') === 0
+              ? (
+                <p>
+                  Il faut obligatoirement une structure avec un lieu.
+                </p>
+              )
+              :
+                get(venueOptions, 'length') > 0 && <FormField
+                  collectionName='occasions'
+                  defaultValue={selectedVenueId}
+                  entityId={occasionIdOrNew}
+                  isHorizontal
+                  label={<Label title="Lieu :" />}
+                  name='venueId'
+                  options={venueOptionsWithPlaceholder}
+                  readOnly={!isNew}
+                  required
+                  type="select"
+                />
+          }
           <FormField
             collectionName='occasions'
             defaultValue={get(typeOption, 'value')}
