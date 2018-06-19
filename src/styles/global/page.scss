@@ -1,33 +1,36 @@
 .page {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-
-  .page-content {
-    height: 100%;
-  }
-
   &.red-bg {
     background-color: $primary;
     color: $white;
-
-    header {
-      @include dotted($white, bottom);
-    }
-
-    footer {
-      @include dotted($white);
-    }
-
-    .errors {
-      color: $white;
-    }
   }
 
+  &.fullscreen {
+    height: 100vh;
+    width: 100%;
+
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: $footer-height;
+      text-align: right;
+      padding: $footer-height-padding $page-padding;
+      padding-left: 3em; // Beta footer
+      display: flex;
+      align-items: center;
+      flex-direction: row-reverse;
+
+      a, button {
+        font-size: $size-medium;
+      }
+    }
+  }
 
   &.loading {
     .load-wrapper {
       position: relative;
+      min-height: 6rem;
       &:before {
         content: 'Chargement ...';
         position: absolute;
@@ -42,6 +45,7 @@
       }
     }
   }
+
   &.container {
     position: relative;
     .page-content {
@@ -75,31 +79,14 @@
         }
       }
     }
-  }
 
-  &.with-footer {
-
-    .page-content {
-      bottom: $footer-height;
-    }
-
-    footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: $footer-height;
-      text-align: right;
-      padding: $footer-height-padding $page-padding;
-      padding-left: 3em; // Beta footer
-      display: flex;
-      align-items: center;
-      flex-direction: row-reverse;
-
-      a, button {
-        font-size: $size-medium;
+    &.white-header {
+      .page-content {
+        box-shadow: none;
+        .after-notification-content {
+          padding: 0;
+        }
       }
     }
-
   }
 }

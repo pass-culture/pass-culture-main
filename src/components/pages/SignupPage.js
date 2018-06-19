@@ -41,7 +41,7 @@ const SignupPage = ({
   showNotification
 }) => {
   return (
-    <PageWrapper name="sign-up" noHeader noContainer>
+    <PageWrapper name="sign-up" fullscreen>
       <div className='columns'>
         <div className='column is-half logo-column'>
           <Logo />

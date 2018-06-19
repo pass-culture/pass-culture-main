@@ -6,7 +6,7 @@ import PageWrapper from '../layout/PageWrapper'
 
 const NotFoundPage = () => {
   return (
-    <PageWrapper name="not-found" noHeader noContainer redBg>
+    <PageWrapper name="not-found" fullscreen redBg>
       <h1>
         <strong>Page Non Trouvée</strong>
       </h1>

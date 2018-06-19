@@ -15,7 +15,7 @@ const Label = ({ title }) => {
 
 const SigninPage = ({ errors }) => {
   return (
-    <PageWrapper name="sign-in" noHeader noContainer>
+    <PageWrapper name="sign-in" fullscreen>
       <div className='columns'>
         <div className='column is-half logo-column'>
           <Logo />

@@ -18,7 +18,7 @@ class BetaPage extends Component {
   render() {
     const { user } = this.props
     return (
-      <PageWrapper name="beta" noHeader noContainer redBg>
+      <PageWrapper name="beta" fullscreen redBg>
         <h1>
           <strong>Bienvenue dans la version beta</strong>{ ' ' }
           <span>du Pass Culture pour les Professionels</span>
