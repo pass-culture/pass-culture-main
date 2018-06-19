@@ -5,8 +5,8 @@ import selectSelectedVenues from './selectedVenues'
 
 export default createSelector(
   selectSelectedVenues,
-  (state, ownProps) => get(ownProps, 'occasion.venueId'),
+  (state, ownProps) => get(ownProps, 'currentOccasion.venueId'),
   (venues, venueId) =>
     venueId ||
-    (venues && venues.length === 1 && venues[0].id)
+    (get(venues, 'length') === 1 && get(venues, '0.id'))
 )

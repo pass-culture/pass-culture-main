@@ -67,6 +67,7 @@ class OffererPage extends Component {
   handleSuccessData = () => {
     const {
       addBlockers,
+      closeNotification,
       history,
       removeBlockers,
       showNotification
@@ -94,9 +95,6 @@ class OffererPage extends Component {
 
   componentDidMount () {
     this.handleRequestData()
-
-    console.log('qdqsd')
-    this.props.showNotification({ type: 'success', text: 'bqsdqdqsd'})
   }
 
   componentDidUpdate (prevProps) {
@@ -132,18 +130,11 @@ class OffererPage extends Component {
       method,
       offererIdOrNew,
     } = this.state
-
-    const notification = search === '?success=true' && {
-      text: "L' ajout du lieu a bien été prise en compte",
-      type: 'success'
-    }
-
     return (
       <PageWrapper
         backTo={{label: 'Vos structures', path: '/structures'}}
         loading={isLoading}
         name='offerer'
-        notification={notification}
       >
         <div className='section'>
           <h1 className="pc-title">Structure</h1>
@@ -289,6 +280,7 @@ export default compose(
       currentOfferer: selectCurrentOfferer(state, ownProps),
     }),
     {
+      addBlockers,
       closeNotification,
       resetForm,
       removeBlockers,

@@ -6,53 +6,15 @@ import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import withCurrentOccasion from './hocs/withCurrentOccasion'
 import { mergeForm } from '../reducers/form'
+import selectCurrentOccurences from '../selectors/currentOccurences'
 import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
   constructor () {
     super()
     this.state = {
-      isAdding: false,
-      calendarFocused: false
+      isAdding: false
     }
-  }
-
-  handleDateChange = date => {
-    const {
-      mergeForm,
-      newDate,
-      newOffer,
-      occurences
-    } = this.props
-
-    // build the datetime based on the date plus the time
-    // given in the horaire form field
-    if (!newDate || !newDate.time || !newOffer) {
-      return this.setState({ withError: true })
-    }
-    const [hours, minutes] = newDate.time.split(':')
-    const datetime = date.clone().hour(hours).minute(minutes)
-
-    // check that it does not match already an occurence
-    const alreadySelectedOccurence = occurences && occurences.find(o =>
-      o.beginningDatetimeMoment.isSame(datetime))
-    if (alreadySelectedOccurence) {
-      return
-    }
-
-    // add in the occurences form
-    const eventOccurenceId = !occurences
-      ? `${NEW}_0`
-      : `${NEW}_${occurences.length}`
-    mergeForm(
-      'eventOccurences',
-      eventOccurenceId, {
-        beginningDatetime: datetime,
-        id: eventOccurenceId,
-        // TODO: SHOULD BE FIXED WITH SOON API NEW MERGE
-        offer: [newOffer]
-      }
-    )
   }
 
   onAddClick = () => {
@@ -60,14 +22,8 @@ class OccurenceManager extends Component {
   }
 
   render() {
-    const {
-      currentOccasion
-    } = this.props
-    const {
-      occurences
-    } = (currentOccasion || {})
+    const { currentOccurences } = this.props
     const { isAdding } = this.state
-
     return (
       <div>
         <table className='table is-striped is-hoverable'>
@@ -83,8 +39,8 @@ class OccurenceManager extends Component {
           </thead>
           <tbody>
             {
-              occurences && occurences.map(o =>
-                <OccurenceItem key={o.id} {...o} />
+              currentOccurences && currentOccurences.map(o =>
+                <OccurenceItem key={o.id} occurence={o} />
               )
             }
             {
@@ -106,8 +62,6 @@ class OccurenceManager extends Component {
 
 export default connect(
   (state, ownProps) => ({
-    newDate: get(state, `form.datesById.${NEW}`),
-    newOffer: get(state, `form.offersById${NEW}`)
-  }),
-  { mergeForm }
+    currentOccurences: selectCurrentOccurences(state, ownProps)
+  })
 )(OccurenceManager)
