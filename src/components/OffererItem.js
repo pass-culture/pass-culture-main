@@ -29,12 +29,16 @@ const OffererItem = ({
           </NavLink>
         </p>
         <ul className='actions'>
-          <li>
-            <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
-              className='has-text-primary'>
-              <Icon svg='ico-offres-r' /> Créer une offre
-            </NavLink>
-          </li>
+          {
+            get(managedVenues, 'length') && (
+              <li>
+                <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
+                  className='has-text-primary'>
+                  <Icon svg='ico-offres-r' /> Créer une offre
+                </NavLink>
+              </li>
+            )
+          }
           <li>
             {
               get(managedOccasions, 'length')

@@ -71,9 +71,6 @@ class OffersPage extends Component {
           <h1 className='pc-title'>
             Vos offres
           </h1>
-          <p className="subtitle">
-            Voici toutes vos offres apparaissant dans le Pass Culture.
-          </p>
         </div>
         <div className='section'>
 

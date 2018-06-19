@@ -24,9 +24,10 @@ class VenuePage extends Component {
   constructor () {
     super()
     this.state = {
+      isEdit: false,
       isLoading: false,
       isNew: false,
-      isSubmitting: false
+      isReadOnly: true
     }
   }
 
@@ -115,15 +116,15 @@ class VenuePage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      formVenuesById,
+      location: { search },
       match: { params: { venueId } },
       offerer,
       venue
     } = nextProps
+    const isEdit = search === '?modifie'
     const isNew = venueId === 'nouveau'
+    const isReadOnly = !isNew && !isEdit
     const venueIdOrNew = isNew ? NEW : venueId
-    const formEntity = get(formVenuesById, venueIdOrNew)
-    const isSubmitting = formEntity && (Object.keys(formEntity).length > 0)
     const offererName = get(offerer, 'name')
     const routePath = `/structures/${get(offerer, 'id')}`
     const venueName = get(venue, 'name')
@@ -132,7 +133,8 @@ class VenuePage extends Component {
       isLoading: !(get(venue, 'id') || isNew),
       isNew,
       method: isNew ? 'POST' : 'PATCH',
-      isSubmitting,
+      isEdit,
+      isReadOnly,
       offererName,
       routePath,
       venueIdOrNew,
@@ -143,6 +145,9 @@ class VenuePage extends Component {
   render () {
     const {
       formVenuesById,
+      location: {
+        pathname
+      },
       match: {
         params: {
           offererId
@@ -164,8 +169,10 @@ class VenuePage extends Component {
     const {
       apiPath,
       offererName,
+      isEdit,
       isLoading,
       isNew,
+      isReadOnly,
       isSubmitting,
       method,
       routePath,
@@ -173,12 +180,14 @@ class VenuePage extends Component {
       venueName
     } = this.state
 
+    console.log('isEdit', isEdit, 'isReadOnly', isReadOnly)
+
     return (
       <PageWrapper
         backTo={{
           label: offererName === venueName
             ? 'STRUCTURE'
-            : venueName,
+            : offererName,
           path: routePath
         }}
         name='venue'
@@ -217,20 +226,22 @@ class VenuePage extends Component {
             collectionName="venues"
             defaultValue={siret}
             entityId={venueIdOrNew}
+            isHorizontal
             label={<Label title="SIRET :" />}
             name="siret"
-            type="sirene"
+            readOnly={isReadOnly}
             sireType="siret"
-            isHorizontal
+            type="sirene"
           />
           <FormField
             collectionName="venues"
             defaultValue={name}
             entityId={venueIdOrNew}
-            label={<Label title="Nom du lieu :" />}
-            name="name"
             isHorizontal
             isExpanded
+            label={<Label title="Nom du lieu :" />}
+            name="name"
+            readOnly={isReadOnly}
           />
         </div>
         <div className='section'>
@@ -242,32 +253,35 @@ class VenuePage extends Component {
             collectionName="venues"
             defaultValue={address || ''}
             entityId={venueIdOrNew}
-            label={<Label title="Numéro et voie :" />}
-            name="address"
-            type="address"
             isHorizontal
             isExpanded
-            required
+            label={<Label title="Numéro et voie :" />}
+            name="address"
+            readOnly={isReadOnly}
+            required={!isReadOnly}
+            type="address"
           />
           <FormField
             autoComplete="postalCode"
             collectionName="venues"
             defaultValue={postalCode || ''}
             entityId={venueIdOrNew}
+            isHorizontal
             label={<Label title="Code Postal :" />}
             name="postalCode"
-            isHorizontal
-            required
+            readOnly={isReadOnly}
+            required={!isReadOnly}
           />
           <FormField
             autoComplete="city"
             collectionName="venues"
             defaultValue={city || ''}
             entityId={venueIdOrNew}
+            isHorizontal
             label={<Label title="Ville :" />}
             name="city"
-            isHorizontal
-            required
+            readOnly={isReadOnly}
+            required={!isReadOnly}
           />
         </div>
 
@@ -275,19 +289,34 @@ class VenuePage extends Component {
       <div className="field is-grouped is-grouped-centered"
         style={{justifyContent: 'space-between'}}>
         <div className="control">
-          <NavLink
-            className="button is-secondary is-medium"
-            to={`/structures/${offererId}`}>
-            Retour
-          </NavLink>
+          {
+            isReadOnly
+              ? (
+                <NavLink to={`${pathname}?modifie`} className='button is-secondary is-medium'>
+                  Modifier le lieu
+                </NavLink>
+              )
+              : (
+                <NavLink
+                  className="button is-secondary is-medium"
+                  to={`/structures/${offererId}`}>
+                  Annuler
+                </NavLink>
+              )
+          }
         </div>
         <div className="control">
           <div className="field is-grouped is-grouped-centered"
             style={{justifyContent: 'space-between'}}>
             <div className="control">
               {
-                isSubmitting
+                isReadOnly
                   ? (
+                    <NavLink to={routePath} className='button is-primary is-medium'>
+                      Terminer
+                    </NavLink>
+                  )
+                  : (
                     <SubmitButton
                       className="button is-primary is-medium"
                       getBody={form => Object.assign(
@@ -301,13 +330,8 @@ class VenuePage extends Component {
                       method={method}
                       path={apiPath}
                       storeKey="venues"
-                      text="Valider"
+                      text={isNew ? "Créer" : "Valider"}
                     />
-                  )
-                  : (
-                    <NavLink to={routePath} className='button is-primary is-medium'>
-                      Valider
-                    </NavLink>
                   )
               }
             </div>
@@ -323,7 +347,6 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      formVenuesById: get(state, 'form.venuesById'),
       user: state.user,
       venue: selectCurrentVenue(state, ownProps),
       offerer: selectCurrentOfferer(state, ownProps)
