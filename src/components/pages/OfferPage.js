@@ -263,7 +263,7 @@ class OfferPage extends Component {
             label={<Label title="Titre de l'offre:" />}
             name="name"
             readOnly={isReadOnly}
-            required={isReadOnly}
+            required={!isReadOnly}
           />
           { !isNew && (
             <div className='field'>
@@ -351,7 +351,7 @@ class OfferPage extends Component {
                   options={venueOptionsWithPlaceholder}
                   readOnly={!isNew}
                   readOnly={isReadOnly}
-                  required={isReadOnly}
+                  required={!isReadOnly}
                   type="select"
                 />
           }
@@ -364,7 +364,7 @@ class OfferPage extends Component {
             name="type"
             options={typeOptionsWithPlaceholder}
             readOnly={isReadOnly}
-            required={isReadOnly}
+            required={!isReadOnly}
             type="select"
           />
           {
@@ -377,7 +377,7 @@ class OfferPage extends Component {
                 label={<Label title="Durée (en minutes) :" />}
                 name="durationMinutes"
                 readOnly={isReadOnly}
-                required={isReadOnly}
+                required={!isReadOnly}
                 type="number"
               />
             )
@@ -392,7 +392,7 @@ class OfferPage extends Component {
             label={<Label title="Description :" />}
             name="description"
             readOnly={isReadOnly}
-            required={isReadOnly}
+            required={!isReadOnly}
             type="textarea"
           />
           <FormField
@@ -441,7 +441,7 @@ class OfferPage extends Component {
             label={<Label title="Nom du contact :" />}
             name="contactName"
             readOnly={isReadOnly}
-            required={isReadOnly}
+            required={!isReadOnly}
           />
           <FormField
             collectionName='occasions'
@@ -452,7 +452,7 @@ class OfferPage extends Component {
             label={<Label title="Email de contact :" />}
             name="contactEmail"
             readOnly={isReadOnly}
-            required={isReadOnly}
+            required={!isReadOnly}
             type="email"
           />
           <FormField
