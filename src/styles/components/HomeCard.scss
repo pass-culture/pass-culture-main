@@ -12,6 +12,7 @@ main.page.home-page.container {
 
 .home-cards {
   margin: auto;
+  margin-top: 6.5rem;
   @media(max-width: $tablet) {
     margin-top: 2rem;
   }
@@ -23,7 +24,7 @@ main.page.home-page.container {
       border-right: 0.4rem dotted $white;
       @media(max-width: $tablet) {
         border-right: none;
-        margin-bottom: 2rem;
+        border-bottom: 0.4rem dotted $white;
       }
     }
     img {
