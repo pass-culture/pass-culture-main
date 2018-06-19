@@ -138,55 +138,56 @@ class ProviderManager extends Component {
                 <VenueProviderItem venueProvider={vp} key={vp.id} />
             ))
           }
-          {isNew && (
-            <li>
-              {
-                withError && (
-                  <p className={
-                    withError ? 'has-text-weight-bold has-text-danger' : ''
-                  }>
-                    Il faut un identifiant ou celui-ci existe déjà
-                  </p>
-                )
-              }
+          {
+            isNew && (
+              <li>
+                {
+                  withError && (
+                    <p className={
+                      withError ? 'has-text-weight-bold has-text-danger' : ''
+                    }>
+                      Il faut un identifiant ou celui-ci existe déjà
+                    </p>
+                  )
+                }
 
-              <div className='picto'><Icon svg='picto-db-default' /></div>
-              <FormField
-                className='column is-4'
-                collectionName="venueProviders"
-                name="providerId"
-                options={providerOptionsWithPlaceholder}
-                required
-                type="select"
-                size="small"
-              />
-              {
-                selectedProvider && identifierRegexp && (
-                  <FormField
-                    collectionName="venueProviders"
-                    name="venueIdAtOfferProvider"
-                    placeholder={identifierDescription}
-                    size="small"
-                  />
-                )
-              }
-              {
-                selectedProvider && (
-                  <SubmitButton
-                    className="button is-secondary"
-                    getBody={form => get(form, `venueProvidersById.${NEW}`)}
-                    getIsDisabled={form =>
-                      !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-                    handleSuccess={this.handleSuccessData}
-                    method="POST"
-                    path="venueProviders"
-                    storeKey="venueProviders"
-                    text="Enregistrer"
-                  />
-                )
-              }
-            </li>
-          )}
+                <div className='picto'><Icon svg='picto-db-default' /></div>
+                <FormField
+                  collectionName="venueProviders"
+                  name="providerId"
+                  options={providerOptionsWithPlaceholder}
+                  required
+                  type="select"
+                  size="small"
+                />
+                {
+                  selectedProvider && identifierRegexp && (
+                    <FormField
+                      collectionName="venueProviders"
+                      name="venueIdAtOfferProvider"
+                      placeholder={identifierDescription}
+                      size="small"
+                    />
+                  )
+                }
+                {
+                  selectedProvider && (
+                    <SubmitButton
+                      className="button is-secondary"
+                      getBody={form => get(form, `venueProvidersById.${NEW}`)}
+                      getIsDisabled={form =>
+                        !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
+                      handleSuccess={this.handleSuccessData}
+                      method="POST"
+                      path="venueProviders"
+                      storeKey="venueProviders"
+                      text="Enregistrer"
+                    />
+                  )
+                }
+              </li>
+            )
+          }
         </ul>
         <div className='has-text-centered'>
           <button className="button is-secondary"
