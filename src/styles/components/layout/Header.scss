@@ -6,7 +6,6 @@ header.navbar  {
   .navbar-brand {
     .navbar-item {
       font-size: $size-medium;
-
     }
   }
 
@@ -37,17 +36,19 @@ header.navbar  {
   .navbar-dropdown {
     box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
   }
+
+  &.is-primary {
+    a.navbar-item span {
+      color: $white;
+    }
+    .navbar-dropdown a.navbar-item span {
+      color: $primary;
+    }
+
+    a.navbar-link span {
+      color: $white;
+    }
+  }
 }
 
-// TODO Refactoring For primary menu
-header.navbar.is-primary a.navbar-item span {
-  color: $white;
-}
 
-header.navbar.is-primary .navbar-dropdown a.navbar-item span {
-  color: $primary;
-}
-
-header.navbar.is-primary a.navbar-link span {
-  color: $white;
-}
