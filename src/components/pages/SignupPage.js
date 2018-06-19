@@ -142,10 +142,10 @@ const SignupPage = ({
                     }
                     handleSuccess={() => {
                       addBlockers(
-                        'notification',
+                        'signup-offerer-notification',
                         ({ location: { pathname }}) => {
                           if (pathname === '/structures') {
-                            removeBlockers('notification')
+                            removeBlockers('signup-offerer-notification')
                             closeNotification()
                           }
                         }

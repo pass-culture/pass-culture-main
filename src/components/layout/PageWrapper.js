@@ -12,14 +12,14 @@ import { closeNotification } from '../../reducers/notification'
 
 class PageWrapper extends Component {
 
-  componentDidMount () {
+  handleHistoryBlock = () => {
     const {
       blockers,
       history
     } = this.props
+    this.unblock && this.unblock()
     this.unblock = history.block(
       () => {
-        console.log('BEN')
 
         // test all the blockers
         for (let blocker of blockers) {
@@ -37,6 +37,16 @@ class PageWrapper extends Component {
         return true
       }
     )
+  }
+
+  componentDidMount () {
+    this.handleHistoryBlock()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.blockers !== this.props.blockers) {
+      this.handleHistoryBlock()
+    }
   }
 
   componentWillUnmount() {
