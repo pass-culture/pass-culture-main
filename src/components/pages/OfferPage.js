@@ -10,6 +10,7 @@ import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
+import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { mergeForm, resetForm } from '../../reducers/form'
@@ -21,7 +22,7 @@ import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import selectSelectedVenues from '../../selectors/selectedVenues'
 import selectVenueOptions from '../../selectors/venueOptions'
 
-
+import { pluralize } from '../../utils/string'
 
 class OfferPage extends Component {
   constructor () {
@@ -123,11 +124,11 @@ class OfferPage extends Component {
     // POST
     if (method === 'POST') {
       // switch to the path with the new created id
-      history.push(`/offres/${occasionPath}/${data.id}`)
+      const routePath = `/offres/${isEventType ? 'evenements' : 'objets'}/${data.id}`
+      history.push(routePath)
 
       // modal
-      /*
-      showModal(
+      isEventType && showModal(
         <div>
           Cette offre est-elle soumise à des dates ou des horaires particuliers ?
           <button
@@ -144,8 +145,6 @@ class OfferPage extends Component {
           </button>
         </div>
       )
-      */
-      isEventType && this.handleShowOccurencesModal()
     }
   }
 
@@ -173,12 +172,12 @@ class OfferPage extends Component {
       contactPhone,
       description,
       durationMinutes,
-      eventType,
       id,
       mediaUrls,
       mediations,
       name,
       performer,
+      occurences,
       offererId,
       stageDirector,
       type,
@@ -188,9 +187,14 @@ class OfferPage extends Component {
       requiredFields
     } = (offerForm || {})
 
+    const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
+      ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
+      : typeOptions
+
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -214,20 +218,49 @@ class OfferPage extends Component {
             entityId={occasionIdOrNew}
             isHorizontal
             isExpanded
-            label={<Label title="Titre :" />}
+            label={<Label title="Titre de l'offre:" />}
             name="name"
             required
           />
+          <FormField
+            collectionName='occasions'
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Prix:" />}
+            name="price"
+          />
+          <FormField
+            className='column'
+            collectionName='occasions'
+            entityId={occasionIdOrNew}
+            inputClassName='input is-rounded'
+            label={<Label title="Gratuit" />}
+            name="isForFree"
+            type="checkbox"
+          />
           { !isNew && (
-            <div>
+            <div className='field'>
               {
                 isEventType && (
-                  <button
-                    className='button'
-                    onClick={this.handleShowOccurencesModal}
-                  >
-                    Gérer les dates
-                  </button>
+                  <div className='field form-field is-horizontal'>
+                    <div className='field-label'>
+                      <label className="label" htmlFor="input_occasions_name">
+                        <div className="subtitle">Dates :</div>
+                      </label>
+                    </div>
+                    <div className='field-body'>
+                      <div className='field'>
+                        <div className='nb-dates'>{pluralize(occurences.length, 'date')}</div>
+                        <button
+                          className='button is-primary is-outlined is-small'
+                          onClick={this.handleShowOccurencesModal}
+                        >
+                          <span className='icon'><Icon svg='ico-calendar' /></span>
+                          <span>Gérer les dates</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 )
               }
               <MediationManager
@@ -271,7 +304,7 @@ class OfferPage extends Component {
             isHorizontal
             label={<Label title="Type :" />}
             name="type"
-            options={typeOptions}
+            options={typeOptionsWithPlaceholder}
             required
             type="select"
           />
@@ -383,7 +416,14 @@ class OfferPage extends Component {
             <div className="control">
               <SubmitButton
                 className="button is-primary is-medium"
-                getBody={form => get(form, `occasionsById.${occasionIdOrNew}`)}
+                getBody={form => {
+                  const occasionForm = get(form, `occasionsById.${occasionIdOrNew}`)
+                  // remove the EventType. ThingType.
+                  if (occasionForm.type) {
+                    occasionForm.type = occasionForm.type.split('.')[1]
+                  }
+                  return occasionForm
+                }}
                 getIsDisabled={form => {
                   if (!requiredFields) {
                     return true
@@ -396,7 +436,7 @@ class OfferPage extends Component {
                 }}
                 handleSuccess={this.handleSuccessData}
                 method={isNew ? 'POST' : 'PATCH'}
-                path={eventType
+                path={isEventType
                   ? `events${id ? `/${id}` : ''}`
                   : `things${id ? `/${id}` : ''}`
                 }
