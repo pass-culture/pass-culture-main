@@ -64,8 +64,8 @@ class HasThumbMixin(object):
                                     img.size[1])))
             if img.size[0] > IDEAL_THUMB_WIDTH:
                 ratio = img.size[1]/img.size[0]
-                img.resize([IDEAL_THUMB_WIDTH, int(IDEAL_THUMB_WIDTH*ratio)],
-                           Image.ANTIALIAS)
+                img = img.resize([IDEAL_THUMB_WIDTH, int(IDEAL_THUMB_WIDTH*ratio)],
+                                 Image.ANTIALIAS)
             thumb_bytes.seek(0)
             img.save(thumb_bytes,
                      format='JPEG',

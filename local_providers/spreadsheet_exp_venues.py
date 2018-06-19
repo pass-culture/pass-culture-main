@@ -80,7 +80,7 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
         else:
             raise ValueError("Format d'adresse incorrect : "+self.line['Adresse'])
 
-        siret = str(self.line['Siret']).strip()
+        siret = str(self.line['Siret']).strip().replace('.0', '')
         if not is_filled(siret):
             siret = None
 
