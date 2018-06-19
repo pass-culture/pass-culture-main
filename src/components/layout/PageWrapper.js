@@ -1,7 +1,9 @@
 import classnames from 'classnames'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Header from './Header'
 import Icon from './Icon'
@@ -9,9 +11,46 @@ import { closeNotification } from '../../reducers/notification'
 
 class PageWrapper extends Component {
 
-  componentWillUnmount() {
-    this.props.closeNotification()
+  handleHistoryBlock = () => {
+    const {
+      blockers,
+      history
+    } = this.props
+    this.unblock && this.unblock()
+    this.unblock = history.block(
+      () => {
+
+        // test all the blockers
+        for (let blocker of blockers) {
+          const {
+            block
+          } = (blocker || {})
+          const shouldBlock = block && block(this.props)
+          if (shouldBlock) {
+            return false
+          }
+        }
+
+        // return true by default, which means that we don't block
+        // the change of pathname
+        return true
+      }
+    )
   }
+
+  componentDidMount () {
+    this.handleHistoryBlock()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.blockers !== this.props.blockers) {
+      this.handleHistoryBlock()
+    }
+  }
+
+  componentWillUnmount() {
+      this.unblock && this.unblock()
+   }
 
   render () {
     const {
@@ -49,19 +88,21 @@ class PageWrapper extends Component {
         key='page-wrapper'
       >
         <div className={classnames('page-content')}>
-          {notification && (
-            <div className={`notification is-${notification.type || 'info'}`}>
-              <button className="delete" onClick={closeNotification}>
-                Ok
-              </button>
-              {notification.text}
-            </div>
-          )}
-          {backTo && (
-            <NavLink to={backTo.path} className='back-button has-text-primary'>
-              <Icon svg='ico-back' />{` ${backTo.label}`}
-            </NavLink>
-          )}
+          <div className='ban'>
+            {notification && (
+              <div className={`notification is-${notification.type || 'info'}`}>
+                <button className="delete" onClick={closeNotification}>
+                  Ok
+                </button>
+                {notification.text}
+              </div>
+            )}
+            {backTo && (
+              <NavLink to={backTo.path} className='back-button has-text-primary'>
+                <Icon svg='ico-back' />{` ${backTo.label}`}
+              </NavLink>
+            )}
+          </div>
           {content}
         </div>
         {footer}
@@ -74,7 +115,13 @@ PageWrapper.defaultProps = {
   Tag: 'main',
 }
 
-export default connect(
-  state => ({ notification: state.notification }),
-  { closeNotification }
+export default compose(
+  withRouter,
+  connect(
+    state => ({
+      blockers: state.blockers,
+      notification: state.notification
+    }),
+    { closeNotification }
+  )
 )(PageWrapper)
