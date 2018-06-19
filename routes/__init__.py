@@ -1,6 +1,7 @@
 from utils.config import IS_DEV
 
 import routes.bookings
+import routes.event_occurences
 import routes.events
 import routes.export
 import routes.mediations
