@@ -7,6 +7,7 @@ import { compose } from 'redux'
 import ProviderManager from '../ProviderManager'
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
+import Icon from '../layout/Icon'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import { resetForm } from '../../reducers/form'
@@ -136,6 +137,7 @@ class VenuePage extends Component {
     const {
       address,
       city,
+      id,
       name,
       postalCode,
       siret,
@@ -150,15 +152,29 @@ class VenuePage extends Component {
       venueIdOrNew
     } = this.state
     return (
-      <PageWrapper name='offerer' loading={isLoading} backTo={{label: 'Structure', path: `/structures/${get(offerer, 'id')}`}}>
-        <div className='section'>
+      <PageWrapper
+        backTo={{label: 'Structure', path: `/structures/${get(offerer, 'id')}`}}
+        name='venue'
+        loading={isLoading}
+      >
+        <div className='section hero'>
           <h2 className='subtitle has-text-weight-bold'>
             {get(venue, 'name')}
           </h2>
 
           <h1 className='pc-title'>
-            {isNew ? 'Créer un' : 'Modifier le'} lieu
+            Lieu
           </h1>
+
+          {
+            !isNew && (
+              <NavLink to={`/offres?lieu=${id}`}
+                className='button is-primary is-medium is-pulled-right cta'>
+                <span className='icon'><Icon svg='ico-offres-w' /></span>
+                <span>Créer une offre</span>
+              </NavLink>
+            )
+          }
         </div>
 
         {!isNew && <ProviderManager venueProviders={venueProviders} />}

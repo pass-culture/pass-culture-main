@@ -188,7 +188,7 @@ class ProviderManager extends Component {
             </li>
           )}
         </ul>
-        <div className='has-text-right'>
+        <div className='has-text-centered'>
           <button className="button is-secondary"
             onClick={this.onAddClick}>
             + Importer des offres
