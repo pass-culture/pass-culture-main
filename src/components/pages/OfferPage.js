@@ -94,9 +94,13 @@ class OfferPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
+      currentOccasion,
       selectedVenueId,
       showModal
     } = this.props
+    const {
+      occurences
+    } = (currentOccasion || {})
     showModal(
       selectedVenueId
         ? <OccurenceManager {...this.props} />
@@ -208,12 +212,6 @@ class OfferPage extends Component {
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
       : offererOptions
-
-    console.log(
-      'QSDQd',
-      selectedOffererId,
-      selectedVenueId
-    )
 
     return (
       <PageWrapper

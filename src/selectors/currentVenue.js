@@ -1,7 +1,9 @@
 import { createSelector } from 'reselect'
 
+import selectVenues from './venues'
+
 export default createSelector(
-  state => state.data.venues,
+  selectVenues,
   (state, ownProps) => ownProps.match.params.venueId,
   state => state.data.venueProviders,
   state => state.data.occasions,
