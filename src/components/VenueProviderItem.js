@@ -47,6 +47,7 @@ class VenueProviderItem extends Component {
       provider,
       venueIdAtOfferProvider
     } = (venueProvider || {})
+
     return (
       <li className={classnames('is-disabled')}>
         <div className='picto'>

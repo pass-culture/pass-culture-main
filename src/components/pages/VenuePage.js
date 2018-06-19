@@ -180,8 +180,6 @@ class VenuePage extends Component {
       venueName
     } = this.state
 
-    console.log('isEdit', isEdit, 'isReadOnly', isReadOnly)
-
     return (
       <PageWrapper
         backTo={{
