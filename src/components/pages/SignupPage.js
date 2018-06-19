@@ -9,7 +9,8 @@ import FormField from '../layout/FormField'
 import Logo from '../layout/Logo'
 import SubmitButton from '../layout/SubmitButton'
 import withSign from '../hocs/withSign'
-import { showNotification } from '../../reducers/notification'
+import { addBlockers, removeBlockers } from '../../reducers/blockers'
+import { closeNotification, showNotification } from '../../reducers/notification'
 import { NEW } from '../../utils/config'
 
 const Label = ({ subtitle, title, inline }) => (
@@ -33,7 +34,10 @@ const requiredFields = [
 ]
 
 const SignupPage = ({
+  addBlockers,
+  closeNotification,
   errors,
+  removeBlockers,
   showNotification
 }) => {
   return (
@@ -136,10 +140,21 @@ const SignupPage = ({
                         !get(form, `usersById._new_.${k}`)
                       ).length > 0
                     }
-                    handleSuccess={() => showNotification({
-                      text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
-                      type: 'success'
-                    })}
+                    handleSuccess={() => {
+                      addBlockers(
+                        'signup-offerer-notification',
+                        ({ location: { pathname }}) => {
+                          if (pathname === '/structures') {
+                            removeBlockers('signup-offerer-notification')
+                            closeNotification()
+                          }
+                        }
+                      )
+                      showNotification({
+                        text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
+                        type: 'success'
+                      })
+                    }}
                     path="users"
                     storeKey="users"
                     text="Valider"
@@ -157,5 +172,13 @@ const SignupPage = ({
 
 export default compose(
   withSign,
-  connect(null, { showNotification })
+  connect(
+    null,
+    {
+      addBlockers,
+      closeNotification,
+      removeBlockers,
+      showNotification
+    }
+  )
 )(SignupPage)
