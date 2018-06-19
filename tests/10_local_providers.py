@@ -93,25 +93,25 @@ with app.app_context():
         provider_test(app.local_providers.TiteLiveThings,
                       None,
                       checkedObjects=422,
-                      createdObjects=393,
-                      updatedObjects=16,
+                      createdObjects=355,
+                      updatedObjects=13,
                       erroredObjects=0,
                       checkedThumbs=0,
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=393
+                      Thing=355
                       )
 
     def test_12_titelive_thing_thumbs_provider():
         provider_test(app.local_providers.TiteLiveBookThumbs,
                       None,
-                      checkedObjects=109,
+                      checkedObjects=106,
                       createdObjects=0,
                       updatedObjects=0,
                       erroredObjects=0,
-                      checkedThumbs=171,
-                      createdThumbs=94,
+                      checkedThumbs=166,
+                      createdThumbs=92,
                       updatedThumbs=0,
                       erroredThumbs=0,
                       Thing=0
