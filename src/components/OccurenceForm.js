@@ -27,11 +27,9 @@ const OccurenceForm = ({
     eventOccurenceIdOrNew
   } = (eventOccurenceForm || {})
 
-  console.log('beginningDatetime', beginningDatetime)
   return (
     <tr>
       <td>
-
         <FormField
           collectionName="eventOccurences"
           entityId={eventOccurenceIdOrNew}
@@ -53,7 +51,7 @@ const OccurenceForm = ({
       </td>
       <td>
         <FormField
-          collectionName="offers"
+          collectionName="eventOccurences"
           entityId={get(offer, 'id')}
           defaultValue={0}
           label={<Label title="Prix (€) :" />}
@@ -65,8 +63,8 @@ const OccurenceForm = ({
       </td>
       <td>
         <FormField
-          collectionName="offers"
-          entityId={get(offer, 'id')}
+          collectionName="eventOccurences"
+          entityId={get(offer, 'groupSize')}
           label={<Label title="Nombre de places" />}
           min={0}
           name="groupSize"
@@ -76,8 +74,8 @@ const OccurenceForm = ({
       </td>
       <td>
         <FormField
-          collectionName="offers"
-          entityId={get(offer, 'id')}
+          collectionName="eventOccurences"
+          entityId={get(offer, 'pmrGroupSize')}
           label={<Label title="Places en PMR" />}
           min={0}
           name="pmrGroupSize"

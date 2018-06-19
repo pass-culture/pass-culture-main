@@ -4,8 +4,12 @@ import { createSelector } from 'reselect'
 import { NEW } from '../utils/config'
 
 export default createSelector(
-  (state, ownProps) => get(ownProps, 'occasion.id'),
+  state => state.data.types,
   state => get(state, 'form.occasionsById'),
-  (occasionId, occasionsById) => occasionsById &&
-    get(occasionsById, `${occasionId || NEW}.type`)
+  (state, ownProps) => get(ownProps, 'currentOccasion.id'),
+  (types, occasionsById, occasionId) => {
+    const typeValue = occasionsById &&
+      get(occasionsById, `${occasionId || NEW}.type`)
+    return typeValue && types && types.find(type => type.value === typeValue)
+  }
 )
