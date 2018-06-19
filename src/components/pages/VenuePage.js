@@ -90,11 +90,10 @@ class VenuePage extends Component {
       type: 'success'
     })
     addBlockers(
-      'notification',
+      'venue-notification',
       ({ location: { pathname }}) => {
-        console.log('pathname', pathname)
         if (pathname === redirectPathname) {
-          removeBlockers('notification')
+          removeBlockers('venue-notification')
           closeNotification()
         }
       }
