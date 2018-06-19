@@ -20,7 +20,7 @@
 
   &.active {
     display: flex;
-    align-items: flex-end;
+    // align-items: flex-end;
     opacity: 1;
     // cannot just use opacity: 1 here,
     // the element is display none - not rendered, when this class gets applied
@@ -44,10 +44,10 @@
     padding: 1rem;
     position: relative;
     text-align: center;
-    width: 100%;
+    // width: 100%;
     will-change: transform, opacity;
     backface-visibility: hidden;
-    background-color: $primary;
+    background-color: $white;
     margin-bottom: 0.75rem;
     margin-left: 0.75rem;
     margin-right: 0.75rem;
