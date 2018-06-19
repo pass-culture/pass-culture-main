@@ -54,17 +54,19 @@
       background: white;
       box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
 
-      .notification {
+      .ban {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
+
+        .back-button {
+          padding-left: 1rem;
+          padding-right: 1rem;
+        }
+
       }
 
-      .back-button {
-        position: absolute;
-        top: 1rem;
-      }
     }
   }
 
