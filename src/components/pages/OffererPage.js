@@ -10,7 +10,6 @@ import Label from '../layout/Label'
 import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import selectCurrentOfferer from '../../selectors/currentOfferer'
@@ -66,26 +65,14 @@ class OffererPage extends Component {
 
   handleSuccessData = () => {
     const {
-      addBlockers,
       history,
-      removeBlockers,
       showNotification
     } = this.props
-    const redirectPathname = '/structures'
-    history.push(redirectPathname)
+    history.push('/structures')
     showNotification({
       text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
       type: 'success'
     })
-    addBlockers(
-      'offerer-notification',
-      ({ location: { pathname }}) => {
-        if (pathname === redirectPathname) {
-          removeBlockers('offerer-notification')
-          closeNotification()
-        }
-      }
-    )
   }
 
   onAddProviderClick = () => {
@@ -281,7 +268,6 @@ export default compose(
     {
       closeNotification,
       resetForm,
-      removeBlockers,
       showNotification
     }
   )
