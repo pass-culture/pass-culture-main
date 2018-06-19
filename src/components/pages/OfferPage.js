@@ -174,7 +174,6 @@ class OfferPage extends Component {
       contactPhone,
       description,
       durationMinutes,
-      eventType,
       id,
       mediaUrls,
       mediations,
@@ -189,6 +188,10 @@ class OfferPage extends Component {
       isEventType,
       requiredFields
     } = (offerForm || {})
+
+    const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
+      ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
+      : typeOptions
 
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
@@ -217,9 +220,25 @@ class OfferPage extends Component {
             entityId={occasionIdOrNew}
             isHorizontal
             isExpanded
-            label={<Label title="Titre :" />}
+            label={<Label title="Titre de l'offre:" />}
             name="name"
             required
+          />
+          <FormField
+            collectionName='occasions'
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Prix:" />}
+            name="price"
+          />
+          <FormField
+            className='column'
+            collectionName='occasions'
+            entityId={occasionIdOrNew}
+            inputClassName='input is-rounded'
+            label={<Label title="Gratuit" />}
+            name="isForFree"
+            type="checkbox"
           />
           { !isNew && (
             <div className='field'>
@@ -287,7 +306,7 @@ class OfferPage extends Component {
             isHorizontal
             label={<Label title="Type :" />}
             name="type"
-            options={typeOptions}
+            options={typeOptionsWithPlaceholder}
             required
             type="select"
           />
@@ -399,7 +418,14 @@ class OfferPage extends Component {
             <div className="control">
               <SubmitButton
                 className="button is-primary is-medium"
-                getBody={form => get(form, `occasionsById.${occasionIdOrNew}`)}
+                getBody={form => {
+                  const occasionForm = get(form, `occasionsById.${occasionIdOrNew}`)
+                  // remove the EventType. ThingType.
+                  if (occasionForm.type) {
+                    occasionForm.type = occasionForm.type.split('.')[1]
+                  }
+                  return occasionForm
+                }}
                 getIsDisabled={form => {
                   if (!requiredFields) {
                     return true
@@ -412,7 +438,7 @@ class OfferPage extends Component {
                 }}
                 handleSuccess={this.handleSuccessData}
                 method={isNew ? 'POST' : 'PATCH'}
-                path={eventType
+                path={isEventType
                   ? `events${id ? `/${id}` : ''}`
                   : `things${id ? `/${id}` : ''}`
                 }

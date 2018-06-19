@@ -132,18 +132,11 @@ class OffererPage extends Component {
       method,
       offererIdOrNew,
     } = this.state
-
-    const notification = search === '?success=true' && {
-      text: "L' ajout du lieu a bien été prise en compte",
-      type: 'success'
-    }
-
     return (
       <PageWrapper
         backTo={{label: 'Vos structures', path: '/structures'}}
         loading={isLoading}
         name='offerer'
-        notification={notification}
       >
         <div className='section'>
           <h1 className="pc-title">Structure</h1>

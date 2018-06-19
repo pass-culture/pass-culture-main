@@ -78,7 +78,7 @@ class OffersPage extends Component {
         <div className="section">
           {
             hasAtLeastOneVenue && (
-              <NavLink to={`/offres/evenements/nouveau`} className='button is-primary is-medium is-pulled-right'>
+              <NavLink to={`/offres/nouveau`} className='button is-primary is-medium is-pulled-right'>
                 <span className='icon'><Icon svg='ico-offres-w' /></span>
                 <span>Créer une offre</span>
               </NavLink>
