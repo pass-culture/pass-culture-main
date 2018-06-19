@@ -65,8 +65,7 @@ class MediationPage extends Component {
     }
   }
 
-  onImageChange = (image, croppingRect, context) => {
-    console.log(croppingRect)
+  onImageChange = (context, image, croppingRect) => {
     this.setState({
       image,
       croppingRect,
@@ -75,10 +74,6 @@ class MediationPage extends Component {
   }
 
   drawRectangles = ctx => {
-
-    if (!ctx) {
-      return
-    }
 
     const {
       imageUploadBorder,
@@ -195,7 +190,7 @@ class MediationPage extends Component {
               hasExistingImage={!isNew}
               required
             />
-            { imageUrl && (
+            { image && (
               <div className='section content'>
                 <ReactMarkdown source={uploadExplanation} />
               </div>

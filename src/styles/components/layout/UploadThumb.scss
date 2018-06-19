@@ -55,7 +55,7 @@
   .dropzone {
     background: transparent;
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     &.no-drag {
       &:before {
         position: absolute;
@@ -71,6 +71,15 @@
         display: none;
       }
     }
+    .zoom {
+      // margin-top: 1rem;
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 50%;
+      margin: auto;
+      cursor: pointer;
+    }
   }
 
   canvas {
@@ -78,15 +87,4 @@
     margin: auto;
   }
 
-  .zoom {
-    // margin-top: 1rem;
-    position: absolute;
-    bottom: 3.5rem;
-    left: 0;
-    right: 0;
-    width: 50%;
-    margin: auto;
-    z-index: 10;
-    cursor: pointer;
-  }
 }

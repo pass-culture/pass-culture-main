@@ -100,7 +100,8 @@ class UploadThumb extends Component {
       onImageChange
     } = this.props
     if (onImageChange) {
-      onImageChange(this.state.image, this.avatarEditor.current.getCroppingRect(), ctx)
+      if (this.state.isUploadDisabled) return onImageChange(ctx);
+      onImageChange(ctx, this.state.image, this.avatarEditor.current.getCroppingRect())
     }
   }
 
@@ -153,8 +154,6 @@ class UploadThumb extends Component {
               onImageChange={this.onImageChange}
               crossOrigin='anonymous'
             />
-          </Dropzone>
-          <nav className="field ">
             {
               !readOnly && image && (
                 <input
@@ -168,6 +167,8 @@ class UploadThumb extends Component {
                 />
               )
             }
+          </Dropzone>
+          <nav className="field content">
             {
               isUploadDisabled && (
                 <p className='has-text-danger'>
@@ -187,12 +188,12 @@ class UploadThumb extends Component {
               </div>
               {!readOnly && image && (
                 <div className="control">
-                  <button onClick={e => this.setState({image: null})} className='button is-primary is-outlined'>Retirer l'image</button>
+                  <button onClick={e => this.setState({image: null, dragging: false, isUploadDisabled: false})} className='button is-primary is-outlined'>Retirer l'image</button>
                 </div>
               )}
               {!readOnly && hasExistingImage && (
                 <div className="control">
-                  <button onClick={e => this.setState({isEdited: false})} className='button is-primary is-outlined'>Annuler la modification</button>
+                  <button onClick={e => this.setState({isEdited: false, dragging: false})} className='button is-primary is-outlined'>Annuler la modification</button>
                 </div>
               )}
             </div>
