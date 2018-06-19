@@ -291,34 +291,34 @@ class OfferPage extends Component {
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
-          <FormField
-            collectionName='occasions'
-            defaultValue={selectedOffererId}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Structure :" />}
-            readOnly={!isNew}
-            required
-            name='offererId'
-            options={offererOptionsWithPlaceholder}
-            type="select"
-          />
           {
-            selectedVenues && selectedVenues.length > 1 && (
+            !selectedOffererId && (
               <FormField
                 collectionName='occasions'
-                defaultValue={selectedVenueId}
+                defaultValue={selectedOffererId}
                 entityId={occasionIdOrNew}
                 isHorizontal
-                label={<Label title="Lieu :" />}
-                name='venueId'
-                options={venueOptions}
+                label={<Label title="Structure :" />}
                 readOnly={!isNew}
                 required
+                name='offererId'
+                options={offererOptionsWithPlaceholder}
                 type="select"
               />
             )
           }
+          <FormField
+            collectionName='occasions'
+            defaultValue={selectedVenueId}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Lieu :" />}
+            name='venueId'
+            options={venueOptions}
+            readOnly={!isNew}
+            required
+            type="select"
+          />
           <FormField
             collectionName='occasions'
             defaultValue={get(typeOption, 'value')}
