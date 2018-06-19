@@ -14,13 +14,11 @@ class HomeCard extends Component {
     } = this.props
 
     return(
-      <NavLink to={navLink}>
-        <div className={classnames('home-card', { 'dotted-card': dottedCard })}>
-            <Icon svg={svg}/>
-          <div className="home-card-text">
-            <h1>{title}</h1>
-            <p>{text}</p>
-          </div>
+      <NavLink to={navLink} className='home-card column'>
+        <Icon svg={svg}/>
+        <div className="home-card-text">
+          <h1>{title}</h1>
+          <p>{text}</p>
         </div>
       </NavLink>
     )

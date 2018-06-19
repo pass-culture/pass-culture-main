@@ -1,3 +1,4 @@
+// TODO: check if works on every page also
 main.page.home-page.container {
   @media (min-width: $widescreen) {
     max-width: $desktop;
@@ -8,50 +9,44 @@ main.page.home-page.container {
   margin: 0;
   padding: 0;
 }
+
 .home-cards {
-  box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
-  display: flex;
-  top: 9.3rem;
-  height: 20rem;
-  z-index: 10;
   margin: auto;
-  margin-top: 104px;
-  width: 100%;
-  a {
-    flex-direction: column;
+  margin-top: 6.5rem;
+  @media(max-width: $tablet) {
+    margin-top: 2rem;
   }
-}
-
-.home-card {
-  // flex-direction: column; TODO Fonctionne pas
-  flex-flow: row wrap;
-  background-color: $red;
-  height: 100%;
-  padding-top: 3rem;
-  padding-left: 3rem;
-  padding-bottom: 2.6rem;
-  padding-right: 3rem;
-  img {
-    float: right;
-    width: 6rem;
-  }
-
-  .home-card-text {
-    margin-top: 7rem;
-    h1 {
-      font-size: 2.6em;
-      font-weight: $weight-semibold;
-      color: $white;
+  .home-card {
+    background-color: $red;
+    padding: 3rem;
+    padding-bottom: 2.6rem;
+    &:not(:last-child) {
+      border-right: 0.4rem dotted $white;
+      @media(max-width: $tablet) {
+        border-right: none;
+        border-bottom: 0.4rem dotted $white;
+      }
+    }
+    img {
+      float: right;
+      width: 6rem;
     }
 
-    p {
-      margin-top: 0.5rem;
-      color: $white;
-      font-size: 1.2rem;
+    .home-card-text {
+      margin-top: 7rem;
+      h1 {
+        font-size: 2.6em;
+        font-weight: $weight-semibold;
+        color: $white;
+      }
+
+      p {
+        margin-top: 0.5rem;
+        color: $white;
+        font-size: 1.2rem;
+      }
     }
   }
+
 }
 
-div.home-card.dotted-card {
-    border-right: 0.4rem dotted $white;
-}
