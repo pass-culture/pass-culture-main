@@ -265,24 +265,6 @@ class OfferPage extends Component {
             readOnly={isReadOnly}
             required={isReadOnly}
           />
-          <FormField
-            collectionName='occasions'
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Prix:" />}
-            name="price"
-            readOnly={isReadOnly}
-          />
-          <FormField
-            className='column'
-            collectionName='occasions'
-            entityId={occasionIdOrNew}
-            inputClassName='input is-rounded'
-            label={<Label title="Gratuit" />}
-            name="isForFree"
-            readOnly={isReadOnly}
-            type="checkbox"
-          />
           { !isNew && (
             <div className='field'>
               {
@@ -316,6 +298,28 @@ class OfferPage extends Component {
             </div>
           )}
           <h2 className='pc-list-title'>Infos pratiques</h2>
+          {
+            /*
+            <FormField
+              collectionName='occasions'
+              entityId={occasionIdOrNew}
+              isHorizontal
+              label={<Label title="Prix:" />}
+              name="price"
+              readOnly={isReadOnly}
+            />
+            <FormField
+              className='column'
+              collectionName='occasions'
+              entityId={occasionIdOrNew}
+              inputClassName='input is-rounded'
+              label={<Label title="Gratuit" />}
+              name="isForFree"
+              readOnly={isReadOnly}
+              type="checkbox"
+            />
+            */
+          }
           <FormField
             collectionName='occasions'
             defaultValue={selectedOffererId}

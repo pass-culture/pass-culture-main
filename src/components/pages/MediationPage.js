@@ -147,13 +147,22 @@ class MediationPage extends Component {
     const backPath = `/offres/${occasionPath}/${occasionId}`
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
-        <section className='section'>
-          <h2 className='subtitle'>{name}</h2>
+        <section className='section hero'>
+          <h2 className='subtitle has-text-weight-bold'>
+            {name}
+          </h2>
           <h1 className='pc-title'>
             {isNew ? 'Créez' : 'Modifiez'} une accroche
           </h1>
-          <p className='subtitle'>Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
+          <p className='subtitle'>
+            Ajoutez un visuel marquant pour mettre en avant cette offre.
+            <br />
+            <span className="label">
+              Le fichier doit peser 100Ko minimum.
+            </span>
+          </p>
         </section>
+
         <div className='section'>
 
           <label className="label">Depuis une adresse Internet :</label>

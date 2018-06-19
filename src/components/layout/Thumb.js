@@ -1,22 +1,15 @@
 import classnames from 'classnames'
 import React from 'react'
 
-const Thumb = ({ withMediation, src, translated }) => {
+const Thumb = ({ src, translated }) => {
   const backgroundStyle = { backgroundImage: `url('${src}')` }
   const thumbStyle = Object.assign(backgroundStyle, {
-    backgroundSize: withMediation ? 'cover' : null,
+    backgroundSize: 'cover'
   })
   return (
     <div className="thumb">
-      {!withMediation && <div className="background" style={backgroundStyle} />}
-      <div
-        style={thumbStyle}
-        className={classnames({
-          image: true,
-          translatable: translated !== undefined,
-          translated,
-        })}
-      />
+      <div className="background" 
+        style={backgroundStyle} />
     </div>
   )
 }

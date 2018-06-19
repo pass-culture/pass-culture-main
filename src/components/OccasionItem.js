@@ -8,6 +8,7 @@ import { NavLink } from 'react-router-dom'
 
 import Price from './Price'
 import Icon from './layout/Icon'
+import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import { pluralize } from '../utils/string'
@@ -91,7 +92,7 @@ class OccasionItem extends Component {
     const mediationsLength = get(mediations, 'length')
     return (
       <li className={classnames('occasion-item', { active: isActive })}>
-        <img alt='thumbnail' src={thumbUrl} className="occasion-thumb"/>
+        <Thumb alt='offre' src={thumbUrl} />
         <div className="list-content">
           <NavLink className='name' to={`${path}/${id}`} title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
