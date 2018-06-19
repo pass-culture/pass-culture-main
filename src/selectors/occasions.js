@@ -14,8 +14,6 @@ export default createSelector(
   (occasions, searchedOccasions, eventOccurences, mediations, venues, types) => {
     if (!occasions && !searchedOccasions) return
 
-    console.log('QSDQSD', eventOccurences)
-
     // priority to searched elements
     const filteredOccasions = [...(searchedOccasions || occasions)]
 
