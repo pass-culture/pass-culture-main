@@ -2,6 +2,7 @@ import classnames from 'classnames'
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Icon from './layout/Icon'
@@ -36,6 +37,7 @@ class VenueProviderItem extends Component {
 
   render () {
     const {
+      currentVenue,
       venueProvider
     } = this.props
     const {
@@ -61,13 +63,19 @@ class VenueProviderItem extends Component {
         {
           lastSyncDate
           ? [
-            <div key={0}>
-              {
-                get(occasions, 'length')
-                  ? `${occasions.length} offres`
-                  : '0 offre'
-              }
-            </div>,
+            get(occasions, 'length')
+              ? (
+                <NavLink key={0} to={`/offres?structure=${get(currentVenue, 'id')}`}
+                  className='has-text-primary'>
+                  <Icon svg='ico-offres-r' />
+                  {occasions.length} offres
+                </NavLink>
+              )
+              : (
+                <div key={0}>
+                  0 offre
+                </div>
+              ),
             <div key={1}>
               <button className='button is-secondary'
                 onClick={this.onDeactivateClick}>

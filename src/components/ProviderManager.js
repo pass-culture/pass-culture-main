@@ -119,7 +119,7 @@ class ProviderManager extends Component {
     const providerOptionsWithPlaceholder = get(providerOptions, 'length') > 1
       ? (
         [{
-          label: 'Sélectionnez un fournisseur',
+          label: "Source d'importation",
         }].concat(providerOptions)
       )
       : providerOptions
@@ -135,7 +135,11 @@ class ProviderManager extends Component {
         <ul className='pc-list'>
           {
             venueProviders && venueProviders.map((vp, index) => (
-                <VenueProviderItem venueProvider={vp} key={vp.id} />
+                <VenueProviderItem
+                  currentVenue={currentVenue}
+                  venueProvider={vp}
+                  key={vp.id}
+                />
             ))
           }
           {
@@ -165,8 +169,9 @@ class ProviderManager extends Component {
                     <FormField
                       collectionName="venueProviders"
                       name="venueIdAtOfferProvider"
-                      placeholder={identifierDescription}
+                      placeholder="identifiant"
                       size="small"
+                      title={identifierDescription}
                     />
                   )
                 }
@@ -181,7 +186,7 @@ class ProviderManager extends Component {
                       method="POST"
                       path="venueProviders"
                       storeKey="venueProviders"
-                      text="Enregistrer"
+                      text="Importer"
                     />
                   )
                 }
