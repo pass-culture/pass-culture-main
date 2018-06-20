@@ -22,7 +22,7 @@ class FormTextarea extends Component {
   }
 
   render() {
-    const { className, defaultValue, id, placeholder, required, type, value, readOnly, } = this.props
+    const { className, defaultValue, id, placeholder, required, value, readOnly, } = this.props
     return (
       <textarea
         required={required}
@@ -31,7 +31,6 @@ class FormTextarea extends Component {
         onChange={this.onChange}
         placeholder={placeholder}
         ref={_element => (this._element = _element)}
-        type={type}
         value={value || defaultValue || ''}
         readOnly={readOnly}
       />
