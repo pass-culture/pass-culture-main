@@ -145,6 +145,7 @@ class MediationPage extends Component {
     } = this.state
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionPath}/${occasionId}`
+
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
         <section className='section hero'>

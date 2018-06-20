@@ -83,7 +83,7 @@ class OfferPage extends Component {
     } = (currentOccasion || {})
     showModal(
       selectedVenueId
-        ? <OccurenceManager {...this.props} />
+        ? <OccurenceManager occasion={currentOccasion} />
         : (
           <div>
             Vous devez déjà avoir sélectionné une structure et un lieu
@@ -135,12 +135,9 @@ class OfferPage extends Component {
           >
             Oui
           </button>
-          <button
-            className='button'
-            onClick={() => history.push('/offres')}
-          >
+          <NavLink to='/offres' className='button'>
             Non
-          </button>
+          </NavLink>
         </div>
       )
     }

@@ -12,75 +12,47 @@ import { NEW } from '../utils/config'
 
 class OccurenceForm extends Component {
 
-  constructor () {
-    super()
-    this.state = {
-      date: null,
-      time: null
-    }
-  }
-
-  static getDerivedStateFromProps (nextProps) {
-    const {
-      occurence
-    } = nextProps
-    const {
-      beginningDatetimeMoment
-    } = (occurence || {})
-    const date = moment(
-      beginningDatetimeMoment && beginningDatetimeMoment.format('MM/DD/YYYY')
-    )
-    const time = beginningDatetimeMoment.format('H:mm')
-    return {
-      date,
-      time
-    }
-  }
-
   render () {
     const {
-      available,
-      currentOccasion,
-      eventOccurence,
-      eventOccurenceForm,
-      onDeleteClick,
       isNew,
-      selectedVenueId,
-      price
+      occasion,
+      occurence,
+      onDeleteClick,
     } = this.props
     const {
-      durationMinutes,
-      id
-    } = (currentOccasion || {})
-    const {
-      offer
-    } = (eventOccurence || {})
-    const {
+      id,
+      available,
+      eventOccurence,
+      selectedVenueId,
+      price,
       beginningDatetime,
-      eventOccurenceIdOrNew
-    } = (eventOccurenceForm || {})
+      groupSize,
+      pmrGroupSize
+    } = occurence || {}
     const {
-      date,
-      time
-    } = this.state
+      durationMinutes,
+    } = occasion
+    const eventOccurenceIdOrNew = id || NEW
+
     return (
       <tr className='occurence-form'>
         <td>
           <FormField
             collectionName="eventOccurences"
-            defaultValue={date}
+            defaultValue={beginningDatetime && moment(beginningDatetime)}
             entityId={eventOccurenceIdOrNew}
             name="date"
             required
             type="date"
             className='is-small'
+            highlightedDates={occasion.occurences.map(o => moment(o.beginningDatetime))}
           />
         </td>
         <td>
           <FormField
             className='is-small'
             collectionName="eventOccurences"
-            defaultValue={time}
+            defaultValue={beginningDatetime && moment(beginningDatetime).format('HH:mm')}
             entityId={eventOccurenceIdOrNew}
             name="time"
             required
@@ -90,7 +62,7 @@ class OccurenceForm extends Component {
         <td>
           <FormField
             collectionName="eventOccurences"
-            entityId={get(offer, 'id')}
+            entityId={eventOccurenceIdOrNew}
             defaultValue={price}
             min={0}
             name="price"
@@ -103,24 +75,25 @@ class OccurenceForm extends Component {
         <td>
           <FormField
             collectionName="eventOccurences"
-            entityId={get(offer, 'groupSize')}
+            entityId={eventOccurenceIdOrNew}
             min={0}
             name="groupSize"
             placeholder="Laissez vide si pas de limite"
             type="number"
             className='is-small'
-            defaultValue={available}
+            defaultValue={groupSize}
           />
         </td>
         <td>
           <FormField
             collectionName="eventOccurences"
-            entityId={get(offer, 'pmrGroupSize')}
+            entityId={eventOccurenceIdOrNew}
             min={0}
             name="pmrGroupSize"
             placeholder="Laissez vide si pas de limite"
             type="number"
             className='is-small'
+            defaultValue={pmrGroupSize}
           />
         </td>
         <td>
@@ -128,15 +101,27 @@ class OccurenceForm extends Component {
             className="button is-primary is-small"
             getBody={form => {
               const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
-              const endDatetime = beginningDatetime.add(durationMinutes, 'minutes')
-              return Object.assign({
+              const [hour, minute] = eo.time.split(':')
+              const beginningDatetime = eo.date.set({
+                hour,
+                minute,
+              })
+              const endDatetime = beginningDatetime.clone().add(durationMinutes, 'minutes')
+              return {
                 beginningDatetime,
                 endDatetime,
-                eventId: id,
-                venueId: selectedVenueId
-              }, eo)
+                groupSize: eo.groupSize,
+                pmrGroupSize: eo.pmrGroupSize,
+                price: eo.price,
+                eventId: occasion.id,
+                venueId: occasion.venueId,
+              }
             }}
-            getIsDisabled={form => !beginningDatetime}
+            getIsDisabled={form => {
+              const missingFields = ['date', 'time'].filter(f => !get(form, `eventOccurencesById.${eventOccurenceIdOrNew}.${f}`))
+              return missingFields.length > 0
+            }}
+            handleSuccess={e => onDeleteClick && onDeleteClick()}
             method={isNew ? 'POST' : 'PATCH'}
             path={isNew ? 'eventOccurences' : `eventOccurences/${id}`}
             storeKey="eventOccurences"
@@ -156,9 +141,4 @@ class OccurenceForm extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    eventOccurenceForm: selectEventOccurenceForm(state, ownProps)
-  }),
-  { mergeForm }
-)(OccurenceForm)
+export default OccurenceForm

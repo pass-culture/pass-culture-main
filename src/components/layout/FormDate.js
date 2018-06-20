@@ -30,6 +30,7 @@ class FormDate extends Component {
   render () {
     const {
       availableDates,
+      highlightedDates,
       defaultValue,
       value
     } = this.props
@@ -47,6 +48,7 @@ class FormDate extends Component {
           isDayBlocked={date => date && availableDates &&
             !availableDates.find(d => d.isSame(date, 'day'))
           }
+          isDayHighlighted={date => (highlightedDates || []).find(d => d.isSame(date, 'day'))}
           noBorder={true}
           numberOfMonths={1}
           onDateChange={this.handleDateSelect}

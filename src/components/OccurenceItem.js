@@ -46,7 +46,8 @@ class OccurenceItem extends Component {
 
   render () {
     const {
-      occurence
+      occasion,
+      occurence,
     } = this.props
     const {
       beginningDatetimeMoment,
@@ -59,14 +60,15 @@ class OccurenceItem extends Component {
     if (isEditing) {
       return <OccurenceForm
         onDeleteClick={e => this.setState({isEditing: false})}
-        {...this.props}
+        occurence={occurence}
+        occasion={occasion}
       />
     }
     return (
       <tr className=''>
         <td>{beginningDatetimeMoment.format('DD/MM/YYYY')}</td>
         <td>{beginningDatetimeMoment.format('HH:mm')}</td>
-        <td><Price value={get(offer, '0.price')} /></td>
+        <td><Price value={get(offer, '0.price') || 0} /></td>
         <td>{get(offer, '0.groupSize') || 'Illimité'}</td>
         <td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>
         <td>

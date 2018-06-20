@@ -97,7 +97,6 @@ class FormInput extends Component {
         ? localValue
         : value || defaultValue || ''
     )
-    console.log('formatedValue', formatedValue)
     return (
       type !== 'switch'
       ? (
