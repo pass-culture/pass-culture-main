@@ -28,26 +28,30 @@ const OffererItem = ({
           </NavLink>
         </p>
         <ul className='actions'>
-          {
-            get(managedVenues, 'length') && (
-              <li>
-                <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
-                  className='has-text-primary'>
-                  <Icon svg='ico-offres-r' /> Créer une offre
-                </NavLink>
-              </li>
-            )
-          }
+          <li>
+            { get(managedVenues, 'length')
+          ? (
+            <li>
+              <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
+                className='has-text-primary'>
+                <Icon svg='ico-offres-r' /> Créer une offre
+              </NavLink>
+            </li>
+          ) : (
+            <p>Vous n'avez pas encore ajouté de lieu</p>
+          )}
+        </li>
           <li>
             {
               get(managedOccasions, 'length')
                 ? (
                   <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
                     <Icon svg='ico-offres-r' />
-                    {managedOccasions.length} offres
+                    {managedOccasions.length} offre
                   </NavLink>
                 )
                 : (
+                  // get(managedVenues, 'length') > 0
                   <p>
                     0 offre
                   </p>
@@ -60,13 +64,14 @@ const OffererItem = ({
                 ? (
                   <NavLink to={showPath}>
                     <Icon svg='picto-structure' />
-                    {managedVenues.length} lieux
+                    {managedVenues.length} lieu(x)
                   </NavLink>
                 )
                 : (
-                  <p>
-                    0 lieu
-                  </p>
+                  <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
+                    className='has-text-primary'>
+                    <Icon svg='picto-structure' /> Ajouter un lieu
+                  </NavLink>
                 )
             }
           </li>
