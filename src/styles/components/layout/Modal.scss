@@ -1,4 +1,9 @@
 
+.app.modal-open {
+  max-height: 100vh;
+  overflow-y: hidden;
+}
+
 @keyframes fadeIn {
   from {opacity: 0;}
   to {opacity: 1;}
@@ -14,6 +19,7 @@
   display: none;
   opacity: 0;
   will-change: opacity;
+  overflow: auto;
 
   &.active {
     display: flex;
