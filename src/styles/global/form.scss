@@ -12,7 +12,7 @@ label {
   color: $violet;
 }
 
-input.input, .select select {
+input.input, .select select, textarea.textarea {
 
   &[readonly] {
     border: none;
