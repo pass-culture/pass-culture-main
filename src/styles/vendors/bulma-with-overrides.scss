@@ -41,12 +41,6 @@
   opacity: $button-disabled-opacity;
 }
 
-.input, .textarea {
-  &[readonly] {
-    background-color: $grey-lighter;
-  }
-}
-
 textarea.textarea {
   &.is-rounded {
     border-radius: 1em;
