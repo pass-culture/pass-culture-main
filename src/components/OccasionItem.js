@@ -12,7 +12,7 @@ import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import { pluralize } from '../utils/string'
-import { modelToPath, typeToTag } from '../utils/translate'
+import { modelToPath } from '../utils/translate'
 
 class OccasionItem extends Component {
 
@@ -26,13 +26,11 @@ class OccasionItem extends Component {
   onDeactivateClick = event => {
     const {
       occasion,
-      occasionType,
       requestData
     } = this.props
     const {
       id,
       isActive,
-      modelName,
     } = (occasion || {})
     requestData(
       'PATCH',

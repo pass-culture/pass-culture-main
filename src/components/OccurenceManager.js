@@ -1,13 +1,9 @@
-import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
-import withCurrentOccasion from './hocs/withCurrentOccasion'
-import { mergeForm } from '../reducers/form'
 import selectCurrentOccurences from '../selectors/currentOccurences'
-import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
   constructor () {

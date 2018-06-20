@@ -20,7 +20,6 @@ class Header extends Component {
     const {
       name,
       venuesCount,
-      isPrimary,
       whiteHeader
     } = this.props
     const {
@@ -61,7 +60,7 @@ class Header extends Component {
       ]
     }
       <div className="navbar-item has-dropdown is-hoverable">
-        <a className="navbar-link" href="#">
+        <NavLink className="navbar-link" to="#">
           <span className='icon'>
             {!whiteHeader ?
               <Icon svg='ico-user-circled-w' />
@@ -71,7 +70,7 @@ class Header extends Component {
           <span>
             {name}
           </span>
-        </a>
+        </NavLink>
         <div className="navbar-dropdown is-right">
           <NavLink to={'/profil'} className='navbar-item'>
           <span className='icon'><Icon svg={'ico-user'} /></span>

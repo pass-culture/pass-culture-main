@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
 import Icon from './layout/Icon'
 import { NavLink } from 'react-router-dom'
@@ -10,7 +9,6 @@ class HomeCard extends Component {
       title,
       text,
       navLink,
-      dottedCard
     } = this.props
 
     return(

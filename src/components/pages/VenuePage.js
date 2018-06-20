@@ -144,7 +144,6 @@ class VenuePage extends Component {
 
   render () {
     const {
-      formVenuesById,
       location: {
         pathname
       },
@@ -159,7 +158,6 @@ class VenuePage extends Component {
     const {
       address,
       city,
-      id,
       name,
       postalCode,
       siret,
@@ -169,11 +167,9 @@ class VenuePage extends Component {
     const {
       apiPath,
       offererName,
-      isEdit,
       isLoading,
       isNew,
       isReadOnly,
-      isSubmitting,
       method,
       routePath,
       venueIdOrNew,

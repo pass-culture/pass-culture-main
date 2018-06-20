@@ -3,8 +3,6 @@ import { createSelector } from 'reselect'
 
 import { NEW } from '../utils/config'
 
-import selectSelectedType from './selectedType'
-
 export default createSelector(
   state => get(state, 'form.eventOccurencesById'),
   (state, ownProps) => ownProps.isNew,

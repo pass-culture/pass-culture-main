@@ -18,7 +18,6 @@ class FormDate extends Component {
 
   handleDateSelect = date => {
     const {
-      availableDates,
       collectionName,
       entityId,
       mergeForm,

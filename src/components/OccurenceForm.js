@@ -4,11 +4,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import FormField from './layout/FormField'
-import Label from './layout/Label'
 import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
 import selectEventOccurenceForm from '../selectors/eventOccurenceForm'
-import { NEW } from '../utils/config'
 
 class OccurenceForm extends Component {
 

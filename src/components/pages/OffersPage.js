@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
@@ -17,9 +16,7 @@ import selectOccasions from '../../selectors/occasions'
 class OffersPage extends Component {
   handleRequestData = () => {
     const {
-      history,
       requestData,
-      showModal
     } = this.props
     requestData(
       'GET',

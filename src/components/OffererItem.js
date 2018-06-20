@@ -15,7 +15,6 @@ const OffererItem = ({
 }) => {
   const {
     id,
-    address,
     name,
     isActive,
   } = (offerer || {})

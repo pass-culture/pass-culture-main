@@ -24,8 +24,8 @@ export default createSelector(
     const formTypeValue = get(formType, 'value')
 
     const isEventType = modelName === 'Event'
-      || propsType && propsType.split('.')[0] === 'EventType'
-      || formTypeValue && formTypeValue.split('.')[0] === 'EventType'
+      || (propsType || []).split('.')[0] === 'EventType'
+      || (formTypeValue || []).split('.')[0] === 'EventType'
 
     let requiredFields = requiredEventAndThingFields
 

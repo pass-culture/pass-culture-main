@@ -65,7 +65,6 @@ class OffererPage extends Component {
 
   handleSuccessData = () => {
     const {
-      closeNotification,
       history,
       showNotification
     } = this.props
@@ -97,7 +96,6 @@ class OffererPage extends Component {
   render () {
     const {
       currentOfferer,
-      location: { search },
       user
     } = this.props
 

@@ -50,8 +50,6 @@ class OfferersPage extends Component {
 
   render () {
     const {
-      location: { search },
-        user,
         offerers
       } = this.props
     return (

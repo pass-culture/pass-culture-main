@@ -74,13 +74,9 @@ class OfferPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      currentOccasion,
       selectedVenueId,
       showModal
     } = this.props
-    const {
-      occurences
-    } = (currentOccasion || {})
     showModal(
       selectedVenueId
         ? <OccurenceManager {...this.props} />
@@ -100,7 +96,6 @@ class OfferPage extends Component {
     } = action
     const {
       history,
-      match: { params: { occasionPath } },
       offerForm,
       showModal,
       showNotification
@@ -185,19 +180,16 @@ class OfferPage extends Component {
 
   render () {
     const {
-      apiPath,
       currentOccasion,
       isLoading,
       isNew,
       location: { pathname },
-      occasionCollection,
       occasionIdOrNew,
       offerForm,
       offererOptions,
       routePath,
       selectedOffererId,
       selectedVenueId,
-      selectedVenues,
       typeOptions,
       user,
       venueOptions
@@ -326,11 +318,10 @@ class OfferPage extends Component {
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Structure :" />}
-            readOnly={!isNew}
             required
             name='offererId'
             options={offererOptionsWithPlaceholder}
-            readOnly={isReadOnly}
+            readOnly={isReadOnly || !isNew}
             type="select"
           />
           {
@@ -349,8 +340,7 @@ class OfferPage extends Component {
                   label={<Label title="Lieu :" />}
                   name='venueId'
                   options={venueOptionsWithPlaceholder}
-                  readOnly={!isNew}
-                  readOnly={isReadOnly}
+                  readOnly={isReadOnly || !isNew}
                   required={!isReadOnly}
                   type="select"
                 />
