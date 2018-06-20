@@ -202,7 +202,7 @@ class VenuePage extends Component {
 
           {
             !isNew && (
-              <NavLink to={`/offres?lieu=${id}`}
+              <NavLink to={'/offres/nouveau'}
                 className='button is-primary is-medium is-pulled-right cta'>
                 <span className='icon'><Icon svg='ico-offres-w' /></span>
                 <span>Créer une offre</span>
