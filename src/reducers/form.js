@@ -11,37 +11,43 @@ const RESET_FORM = 'RESET_FORM'
 
 // REDUCER
 const form = (state = initialState, action) => {
-  const collectionKey = `${action.collectionName}ById`
-  const collection = Object.assign({}, state[collectionKey])
+  // const collectionKey = `${action.collectionName}ById`
+  // const collection = Object.assign({}, state[collectionKey])
   switch (action.type) {
     case REMOVE_FORM:
-      delete collection[action.id]
-      return Object.assign({}, state, { [collectionKey]: collection })
+      // delete collection[action.id]
+      // return Object.assign({}, state, { [collectionKey]: collection })
     case MERGE_FORM:
-      const entity = Object.assign({}, collection[action.id])
-      if (typeof action.nameOrObject === 'object' && !action.value) {
-        collection[action.id] = Object.assign({}, collection[action.id], action.nameOrObject)
-      } else if (action.nameOrObject === DELETE) {
-        collection[action.id] = DELETE
-      } else {
-        collection[action.id] = entity
-        if (action.nameOrObject.includes('.')) {
-          const chunks = action.nameOrObject.split('.')
-          const chainKey = chunks.slice(0, -1).join('.')
-          const lastKey = chunks.slice(-1)[0]
-          let value = get(entity, chainKey)
-          if (!value && !chainKey.includes('.')) {
-            entity[chainKey] = action.parentValue
-          }
-          value = entity[chainKey]
-          if (value) {
-            value[lastKey] = action.value
-          }
-        } else  {
-          entity[action.nameOrObject] = action.value
-        }
-      }
-      return Object.assign({}, state, { [collectionKey]: collection })
+      console.log(action)
+      const newState = Object.assign({}, state, {
+        [action.name]: {
+          data: Object.assign({}, get(state, `${action.name}.data`, {}), action.values)}
+      })
+      return newState
+      // const entity = Object.assign({}, collection[action.id])
+      // if (typeof action.nameOrObject === 'object' && !action.value) {
+      //   collection[action.id] = Object.assign({}, collection[action.id], action.nameOrObject)
+      // } else if (action.nameOrObject === DELETE) {
+      //   collection[action.id] = DELETE
+      // } else {
+      //   collection[action.id] = entity
+      //   if (action.nameOrObject.includes('.')) {
+      //     const chunks = action.nameOrObject.split('.')
+      //     const chainKey = chunks.slice(0, -1).join('.')
+      //     const lastKey = chunks.slice(-1)[0]
+      //     let value = get(entity, chainKey)
+      //     if (!value && !chainKey.includes('.')) {
+      //       entity[chainKey] = action.parentValue
+      //     }
+      //     value = entity[chainKey]
+      //     if (value) {
+      //       value[lastKey] = action.value
+      //     }
+      //   } else  {
+      //     entity[action.nameOrObject] = action.value
+      //   }
+      // }
+      // return Object.assign({}, state, { [collectionKey]: collection })
     case RESET_FORM:
       return {}
     default:
@@ -50,14 +56,21 @@ const form = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
-export const mergeForm = (collectionName, id, nameOrObject, value, parentValue) => ({
-  collectionName,
-  id,
-  nameOrObject,
+export const mergeForm = (name, values) => ({
   type: MERGE_FORM,
-  value,
-  parentValue
+  name,
+  values,
 })
+
+
+// export const mergeForm = (collectionName, id, nameOrObject, value, parentValue) => ({
+//   collectionName,
+//   id,
+//   nameOrObject,
+//   type: MERGE_FORM,
+//   value,
+//   parentValue
+// })
 
 export const removeForm = (collectionName, id) => ({
   collectionName,
