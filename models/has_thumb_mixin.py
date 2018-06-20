@@ -58,10 +58,11 @@ class HasThumbMixin(object):
             if crop is not None:
                 img = img.crop((img.size[0]*crop[0],
                                 img.size[1]*crop[1],
-                                min(img.size[0]*crop[0]+img.size[0]*crop[2],
+                                min(img.size[0]*crop[0]+img.size[1]*crop[2],
                                     img.size[0]),
-                                min(img.size[1]*crop[1]+img.size[0]*crop[2],
-                                    img.size[1])))
+                                min(img.size[1]*crop[1]+img.size[1]*crop[2],
+                                    img.size[1])
+                                    ))
             if img.size[0] > IDEAL_THUMB_WIDTH:
                 ratio = img.size[1]/img.size[0]
                 img = img.resize([IDEAL_THUMB_WIDTH, int(IDEAL_THUMB_WIDTH*ratio)],
