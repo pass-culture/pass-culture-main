@@ -1,167 +1,101 @@
-import get from 'lodash.get'
-import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { NavLink } from 'react-router-dom'
 
-import FormField from './layout/FormField'
-import Label from './layout/Label'
-import SubmitButton from './layout/SubmitButton'
-import { mergeForm } from '../reducers/form'
-import selectEventOccurenceForm from '../selectors/eventOccurenceForm'
-import { NEW } from '../utils/config'
+import Icon from '../layout/Icon'
+import withLogin from '../hocs/withLogin'
+import PageWrapper from '../layout/PageWrapper'
+import OfferersList from '../OfferersList'
+import SearchInput from '../layout/SearchInput'
+import selectOfferers from '../../selectors/offerers'
 
-class OccurenceForm extends Component {
+class OfferersPage extends Component {
 
-  constructor () {
-    super()
-    this.state = {
-      date: null,
-      time: null
+  componentDidMount () {
+    this.handleRequestData()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRequestData()
     }
   }
 
-  static getDerivedStateFromProps (nextProps) {
+  handleRequestData = () => {
     const {
-      occurence
-    } = nextProps
-    const {
-      beginningDatetimeMoment
-    } = (occurence || {})
-    const date = beginningDatetimeMoment && moment(
-       beginningDatetimeMoment.format('MM/DD/YYYY')
+      requestData,
+      user
+    } = this.props
+    user && requestData(
+      'GET',
+      'offerers',
+      {
+        normalizer: {
+          managedVenues: {
+            key: 'venues',
+            normalizer: {
+              eventOccurences: {
+                key: 'eventOccurences',
+                normalizer: {
+                  event: 'occasions'
+                }
+              }
+            }
+          }
+        }
+      }
     )
-    const time = beginningDatetimeMoment &&
-      beginningDatetimeMoment.format('H:mm')
-    return {
-      date,
-      time
-    }
   }
 
   render () {
     const {
-      available,
-      currentOccasion,
-      eventOccurence,
-      eventOccurenceForm,
-      onDeleteClick,
-      isNew,
-      selectedVenueId,
-      price
-    } = this.props
-    const {
-      durationMinutes,
-      id
-    } = (currentOccasion || {})
-    const {
-      offer
-    } = (eventOccurence || {})
-    const {
-      beginningDatetime,
-      eventOccurenceIdOrNew
-    } = (eventOccurenceForm || {})
-    const {
-      date,
-      time
-    } = this.state
-    console.log('currentOccasion', currentOccasion)
+      location: { search },
+        user,
+        offerers
+      } = this.props
     return (
-      <tr className='occurence-form'>
-        <td>
-          <FormField
-            collectionName="eventOccurences"
-            defaultValue={date}
-            entityId={eventOccurenceIdOrNew}
-            name="date"
-            required
-            type="date"
-            className='is-small'
-          />
-        </td>
-        <td>
-          <FormField
-            className='is-small'
-            collectionName="eventOccurences"
-            defaultValue={time}
-            entityId={eventOccurenceIdOrNew}
-            name="time"
-            required
-            type="time"
-          />
-        </td>
-        <td>
-          <FormField
-            collectionName="eventOccurences"
-            entityId={get(offer, 'id')}
-            defaultValue={price}
-            min={0}
-            name="price"
-            required
-            type="number"
-            className='is-small'
-            placeholder='Vide si gratuit'
-          />
-        </td>
-        <td>
-          <FormField
-            collectionName="eventOccurences"
-            entityId={get(offer, 'groupSize')}
-            min={0}
-            name="groupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-            className='is-small'
-            defaultValue={available}
-          />
-        </td>
-        <td>
-          <FormField
-            collectionName="eventOccurences"
-            entityId={get(offer, 'pmrGroupSize')}
-            min={0}
-            name="pmrGroupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-            className='is-small'
-          />
-        </td>
-        <td>
-          <SubmitButton
-            className="button is-primary is-small"
-            getBody={form => {
-              const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
-              const endDatetime = beginningDatetime.add(durationMinutes, 'minutes')
-              console.log('EVENTID', id)
-              return Object.assign({
-                beginningDatetime,
-                endDatetime,
-                eventId: id,
-                venueId: selectedVenueId
-              }, eo)
-            }}
-            getIsDisabled={form => !beginningDatetime}
-            method={isNew ? 'POST' : 'PATCH'}
-            path={isNew ? 'eventOccurences' : `eventOccurences/${id}`}
-            storeKey="eventOccurences"
-            text="Valider"
-          >
-            Enregistrer
-          </SubmitButton>
-        </td>
-        <td>
-          <button
-            className="delete is-small"
-            onClick={e => onDeleteClick && onDeleteClick(e)}
-          />
-        </td>
-      </tr>
+      <PageWrapper name="profile"
+        loading={!offerers}
+      >
+        <h1 className="pc-title">
+          Vos structures
+        </h1>
+
+        <p className="subtitle">
+          Retrouvez ici la ou les structures dont vous gérez les offres Pass Culture.
+        </p>
+
+        <br />
+        {false && (
+          <nav className="level is-mobile">
+            <SearchInput
+              collectionNames={["offerers"]}
+              config={{
+                isMergingArray: false,
+                key: 'searchedOfferers'
+              }}
+              isLoading
+            />
+          </nav>
+        )}
+        <OfferersList />
+        <NavLink to={`/structures/nouveau`} className="button is-primary is-outlined">
+          {false && <span className='icon'>
+                    <Icon svg={'ico-guichet-w'} />
+                  </span>}
+          + Rattacher une structure
+        </NavLink>
+      </PageWrapper>
     )
   }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    eventOccurenceForm: selectEventOccurenceForm(state, ownProps)
-  }),
-  { mergeForm }
-)(OccurenceForm)
+
+export default compose(
+  withLogin({ isRequired: true }),
+  connect(
+    (state, ownProps) => ({
+      offerers: selectOfferers(state, ownProps)
+    }))
+)(OfferersPage)
