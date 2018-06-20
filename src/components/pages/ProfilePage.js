@@ -10,6 +10,9 @@ import UploadThumb from '../layout/UploadThumb'
 import Label from '../layout/Label'
 import FormField from '../layout/FormField'
 import SubmitButton from '../layout/SubmitButton'
+import Form from '../layout/Form'
+import Field from '../layout/Field'
+import Submit from '../layout/Submit'
 import { showNotification } from '../../reducers/notification'
 
 import { apiUrl } from '../../utils/config'
@@ -40,49 +43,56 @@ class ProfilePage extends Component {
           <h1 className='pc-title'>Profil</h1>
         </div>
         <div className='section'>
-          <div className='field-group'>
-            <FormField
-              collectionName='users'
-              defaultValue={publicName}
-              entityId={id}
-              label={<Label title="Nom :" />}
-              name="publicName"
-              required
-              isHorizontal
-            />
-            <FormField
-              collectionName='users'
-              defaultValue={email}
-              entityId={id}
-              label={<Label title="Email :" />}
-              name="email"
-              required
-              readOnly // For now there is no check on whether the email already exists so it cannot be modified
-              isHorizontal
-            />
-          </div>
-          <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-            <div className="control">
-              <SubmitButton
-                getBody={form => (get(form, `usersById.${id}`))}
-                getIsDisabled={form => {
-                  return !get(form, `usersById.${id}.publicName`) &&
-                    !get(form, `usersById.${id}.email`)
-                }}
-                className="button is-primary is-medium"
-                method='PATCH'
-                handleSuccess={this.handleSuccess}
-                path='users/current'
-                storeKey="occasions"
-                text="Enregistrer"
-              />
+          <Form name='editProfile' action='users/me' data={this.props.user} handleSuccess={this.handleSuccess}>
+            <div className='field'>
+              <Field name='publicName' type='text' label='Nom :' required />
             </div>
-            <div className="control">
-              <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
-                Retour
-              </NavLink>
+            <div className='field'>
+              <Field name='email' type='email' label='Email :' required />
             </div>
-          </div>
+            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+              <div className="control">
+                <Submit className='button is-primary is-medium'>Enregistrer</Submit>
+              </div>
+              <div className="control">
+                <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
+                  Retour
+                </NavLink>
+              </div>
+            </div>
+            {false && <FormField
+                          collectionName='users'
+                          defaultValue={publicName}
+                          entityId={id}
+                          label={<Label title="Nom :" />}
+                          name="publicName"
+                          required
+                          isHorizontal
+                        />}
+                        {false && <FormField
+                          collectionName='users'
+                          defaultValue={email}
+                          entityId={id}
+                          label={<Label title="Email :" />}
+                          name="email"
+                          required
+                          readOnly // For now there is no check on whether the email already exists so it cannot be modified
+                          isHorizontal
+                        />}
+                {false && <SubmitButton
+                                  getBody={form => (get(form, `usersById.${id}`))}
+                                  getIsDisabled={form => {
+                                    return !get(form, `usersById.${id}.publicName`) &&
+                                      !get(form, `usersById.${id}.email`)
+                                  }}
+                                  className="button is-primary is-medium"
+                                  method='PATCH'
+                                  handleSuccess={this.handleSuccess}
+                                  path='users/me'
+                                  storeKey="occasions"
+                                  text="Enregistrer"
+                                />}
+          </Form>
           <hr />
           <h1 className='title has-text-centered'>Avatar</h1>
           <div className='field'>
