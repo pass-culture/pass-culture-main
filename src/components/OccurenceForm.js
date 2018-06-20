@@ -27,10 +27,10 @@ class OccurenceForm extends Component {
     const {
       beginningDatetimeMoment
     } = (occurence || {})
-    const date = moment(
-      beginningDatetimeMoment && beginningDatetimeMoment.format('MM/DD/YYYY')
+    const date = beginningDatetimeMoment && moment(
+      beginningDatetimeMoment.format('MM/DD/YYYY')
     )
-    const time = beginningDatetimeMoment.format('H:mm')
+    const time = beginningDatetimeMoment && beginningDatetimeMoment.format('H:mm')
     return {
       date,
       time
