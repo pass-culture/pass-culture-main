@@ -46,12 +46,27 @@ class OfferPage extends Component {
     }
   }
 
+  handleMergeForm = () => {
+    const {
+      mergeForm,
+      occasionId,
+      uniqueVenue
+    } = this.props
+    uniqueVenue && mergeForm('occasions', occasionId, 'venueId', uniqueVenue.id)
+  }
+
   handleRequestData = () => {
     const {
       history,
       requestData,
-      showModal
+      showModal,
+      user
     } = this.props
+
+    if (!user) {
+      return
+    }
+
     requestData(
       'GET',
       'offerers',
@@ -75,19 +90,31 @@ class OfferPage extends Component {
   handleShowOccurencesModal = () => {
     const {
       currentOccasion,
+      history,
+      match: { params: { modalType } },
+      location: { pathname },
+      routePath,
       selectedVenueId,
       showModal
     } = this.props
-    showModal(
-      selectedVenueId
-        ? <OccurenceManager occasion={currentOccasion} />
-        : (
-          <div>
-            Vous devez déjà avoir sélectionné une structure et un lieu
-            responsable pour gérer des dates
-          </div>
-        )
-    )
+
+    if (modalType !== 'dates') {
+      return
+    }
+
+    if (currentOccasion && !selectedVenueId) {
+      showModal(
+        <div>
+          Vous devez déjà avoir sélectionné une structure et un lieu
+          responsable pour gérer des dates
+        </div>
+      )
+      history.push(routePath)
+      return
+    }
+
+    showModal(<OccurenceManager occasion={currentOccasion} />)
+
   }
 
   handleSuccessData = (state, action) => {
@@ -119,18 +146,17 @@ class OfferPage extends Component {
     if (method === 'POST') {
       // switch to the path with the new created id
       const routePath = `/offres/${isEventType ? 'evenements' : 'objets'}/${data.id}`
-      history.push(routePath)
 
       // modal
       isEventType && showModal(
         <div>
           Cette offre est-elle soumise à des dates ou des horaires particuliers ?
-          <button
+          <NavLink
             className='button'
-            onClick={this.handleShowOccurencesModal}
+            to={`${routePath}/dates`}
           >
             Oui
-          </button>
+          </NavLink>
           <NavLink to='/offres' className='button'>
             Non
           </NavLink>
@@ -140,18 +166,14 @@ class OfferPage extends Component {
   }
 
   componentDidMount () {
-    const {
-      uniqueVenue,
-      user
-    } = this.props
-    user && this.handleRequestData()
-    if (uniqueVenue) {
-      this.handleMergeForm()
-    }
+    this.handleRequestData()
+    this.handleMergeForm()
+    this.handleShowOccurencesModal()
   }
 
   componentDidUpdate (prevProps) {
     const {
+      match: { params: { modalType } },
       uniqueVenue,
       user
     } = this.props
@@ -161,20 +183,15 @@ class OfferPage extends Component {
     if (!prevProps.uniqueVenue && uniqueVenue) {
       this.handleMergeForm()
     }
+    if (!get(prevProps, 'match.params.modalType') && modalType === 'dates') {
+      this.handleShowOccurencesModal()
+    }
   }
 
   componentWillUnmount () {
-    console.log('OUEI')
+    this.props.resetForm()
   }
 
-  handleMergeForm = () => {
-    const {
-      mergeForm,
-      occasionId,
-      uniqueVenue
-    } = this.props
-    mergeForm('occasions', occasionId, 'venueId', uniqueVenue.id)
-  }
 
   render () {
     const {
@@ -270,13 +287,13 @@ class OfferPage extends Component {
                         <div className='nb-dates'>
                           {pluralize(occurences.length, 'date')}
                         </div>
-                        <button
+                        <NavLink
                           className='button is-primary is-outlined is-small'
-                          onClick={this.handleShowOccurencesModal}
+                          to={`${routePath}/dates`}
                         >
                           <span className='icon'><Icon svg='ico-calendar' /></span>
                           <span>Gérer les dates</span>
-                        </button>
+                        </NavLink>
                       </div>
                     </div>
                   </div>
