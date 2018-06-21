@@ -9,9 +9,10 @@ class Submit extends Component {
     const {
       children,
       className,
+      getTitle,
       isDisabled,
     } = this.props
-    return <button type='submit' disabled={isDisabled()} className={className}>{children}</button>
+    return <button type='submit' title={getTitle()} disabled={isDisabled()} className={className}>{children}</button>
   }
 }
 
@@ -19,6 +20,7 @@ class Submit extends Component {
 Submit.defaultProps = {
   requiredFields: [],
   isDisabled: () => true,
+  getTitle: () => null,
 }
 
 export default Submit

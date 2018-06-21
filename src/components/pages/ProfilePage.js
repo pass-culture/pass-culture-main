@@ -45,10 +45,10 @@ class ProfilePage extends Component {
         <div className='section'>
           <Form name='editProfile' action='users/me' data={this.props.user} handleSuccess={this.handleSuccess}>
             <div className='field'>
-              <Field name='publicName' type='text' label='Nom :' required />
+              <Field name='publicName' type='text' label='Nom' required />
             </div>
             <div className='field'>
-              <Field name='email' type='email' label='Email :' required />
+              <Field name='email' type='email' label='Email' required />
             </div>
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
