@@ -9,7 +9,6 @@ from utils.rest import ensure_current_user_has_rights,\
                        handle_rest_get_list,\
                        login_or_api_key_required,\
                        update
-from utils.string_processing import inflect_engine
 
 
 Event = app.model.Event
@@ -56,6 +55,7 @@ def list_occasions():
                      .filter(UserOfferer.user == current_user)
 
     return handle_rest_get_list(Occasion,
+                                include=OCCASION_INCLUDES,
                                 query=query,
                                 page=request.args.get('page'),
                                 paginate=10,

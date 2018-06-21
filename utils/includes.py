@@ -28,11 +28,13 @@ EVENT_INCLUDES = [
             'venue'
         ]
     },
-    "mediations"
+    "mediations",
+    "occasions"
 ]
 
 THING_INCLUDES = [
-    "mediations"
+    "mediations",
+    "occasions"
 ]
 
 OCCASION_INCLUDES = [
