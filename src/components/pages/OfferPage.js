@@ -16,6 +16,7 @@ import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import selectOfferForm from '../../selectors/offerForm'
 import selectSelectedType from '../../selectors/selectedType'
+import { eventNormalizer } from '../../utils/normalizers'
 
 
 class OfferPage extends Component {
@@ -29,12 +30,24 @@ class OfferPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
+      currentMediation,
       location: { search },
-      isNew
+      isNew,
+      offerForm
     } = nextProps
+    const {
+      id
+    } = (currentMediation || {})
+    const {
+      isEventType
+    } = (offerForm || {})
     const isEdit = search === '?modifie'
     const isReadOnly = !isNew && !isEdit
+    const apiPath = isEventType
+      ? `events${id ? `/${id}` : ''}`
+      : `things${id ? `/${id}` : ''}`
     return {
+      apiPath,
       isReadOnly
     }
   }
@@ -71,6 +84,56 @@ class OfferPage extends Component {
     requestData('GET', 'types')
   }
 
+  handleSuccessData = (state, action) => {
+    const {
+      data,
+      method
+    } = action
+    const {
+      closeModal,
+      history,
+      offerForm,
+      showModal,
+      showNotification
+    } = this.props
+    const {
+      isEventType
+    } = (offerForm || {})
+
+    // PATCH
+    if (method === 'PATCH') {
+      history.push('/offres')
+      showNotification({
+        text: 'Votre offre a bien été enregistrée',
+        type: 'success'
+      })
+      return
+    }
+
+    // POST
+    if (method === 'POST') {
+      // switch to the path with the new created id
+      const routePath = `/offres/${isEventType ? 'evenements' : 'objets'}/${data.id}`
+
+      // modal
+      isEventType && showModal(
+        <div>
+          Cette offre est-elle soumise à des dates ou des horaires particuliers ?
+          <NavLink
+            className='button'
+            to={`${routePath}/dates`}
+          >
+            Oui
+          </NavLink>
+          <button onClick={() => { closeModal(); history.push('/offres') }}
+            className='button'>
+            Non
+          </button>
+        </div>
+      )
+    }
+  }
+  
   componentDidMount () {
     this.handleRequestData()
   }
@@ -110,6 +173,7 @@ class OfferPage extends Component {
       requiredFields
     } = (offerForm || {})
     const {
+      apiPath,
       isReadOnly
     } = this.state
 
@@ -211,12 +275,10 @@ class OfferPage extends Component {
                         : missingFields.length === requiredFields.length
                     }}
                     handleSuccess={this.handleSuccessData}
+                    normalizer={eventNormalizer}
                     method={isNew ? 'POST' : 'PATCH'}
-                    path={isEventType
-                      ? `events${id ? `/${id}` : ''}`
-                      : `things${id ? `/${id}` : ''}`
-                    }
-                    storeKey="occasions"
+                    path={apiPath}
+                    storeKey="events"
                     text="Enregistrer"
                   />
                 )

@@ -38,13 +38,17 @@ const withCurrentOccasion = WrappedComponent => {
         {
           key: 'occasions',
           normalizer: {
-            mediations: 'mediations',
-            occurences: {
-              key: 'eventOccurences',
+            events: {
+              key: 'events',
               normalizer: {
-                venue: 'venues'
+                occurences: {
+                  key: 'eventOccurences'
+                }
               }
-            }
+            },
+            mediations: 'mediations',
+            thing: 'things',
+            venue: 'venues'  
           }
         }
       )

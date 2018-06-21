@@ -22,15 +22,17 @@ class OfferForm extends Component {
   handleMergeForm = () => {
     const {
       mergeForm,
-      occasionId,
-      selectedVenueId,
-      uniqueVenue
+      occasionIdOrNew,
+      selectedVenueId
     } = this.props
-    uniqueVenue && mergeForm(
+    /*
+    selectedVenueId && mergeForm(
       'occasions',
-      occasionId,
-      'venueId', selectedVenueId
+      occasionIdOrNew,
+      'venueId',
+      selectedVenueId
     )
+    */
   }
 
   handleShowOccurencesModal = () => {
@@ -48,56 +50,6 @@ class OfferForm extends Component {
 
   }
 
-  handleSuccessData = (state, action) => {
-    const {
-      data,
-      method
-    } = action
-    const {
-      closeModal,
-      history,
-      offerForm,
-      showModal,
-      showNotification
-    } = this.props
-    const {
-      isEventType
-    } = (offerForm || {})
-
-    // PATCH
-    if (method === 'PATCH') {
-      history.push('/offres')
-      showNotification({
-        text: 'Votre offre a bien été enregistrée',
-        type: 'success'
-      })
-      return
-    }
-
-    // POST
-    if (method === 'POST') {
-      // switch to the path with the new created id
-      const routePath = `/offres/${isEventType ? 'evenements' : 'objets'}/${data.id}`
-
-      // modal
-      isEventType && showModal(
-        <div>
-          Cette offre est-elle soumise à des dates ou des horaires particuliers ?
-          <NavLink
-            className='button'
-            to={`${routePath}/dates`}
-          >
-            Oui
-          </NavLink>
-          <button onClick={() => { closeModal(); history.push('/offres') }}
-            className='button'>
-            Non
-          </button>
-        </div>
-      )
-    }
-  }
-
   componentDidMount () {
     this.handleMergeForm()
     this.handleShowOccurencesModal()
@@ -106,9 +58,9 @@ class OfferForm extends Component {
   componentDidUpdate (prevProps) {
     const {
       match: { params: { modalType } },
-      uniqueVenue
+      selectedVenueId
     } = this.props
-    if (!prevProps.uniqueVenue && uniqueVenue) {
+    if (prevProps.selectedVenueId !== selectedVenueId) {
       this.handleMergeForm()
     }
     if (!get(prevProps, 'match.params.modalType') && modalType === 'dates') {
