@@ -107,8 +107,8 @@ class OccurenceForm extends Component {
               })
               const endDatetime = beginningDatetime.clone().add(durationMinutes, 'minutes')
               return {
-                beginningDatetime,
-                endDatetime,
+                beginningDatetime: beginningDatetime.format(), // ignores the GMT part of the date
+                endDatetime: endDatetime.format(),
                 groupSize: eo.groupSize,
                 pmrGroupSize: eo.pmrGroupSize,
                 price: eo.price,
