@@ -45,7 +45,7 @@ class Form extends Component {
   onSubmit = e => {
     e.preventDefault()
     const {
-      action
+      action,
       handleFail,
       handleSuccess,
     } = this.props
@@ -120,7 +120,7 @@ class Form extends Component {
     } = this.props
     const {
       method
-    } ) this.state
+    } = this.state
     return (
       <form id={name} method={method} action={action} onSubmit={this.onSubmit}>
         {this.childrenWithProps()}
