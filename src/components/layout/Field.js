@@ -72,7 +72,7 @@ class Field extends Component {
       </p>
     </ul> : null
 
-    const $label = label ? <label htmlFor={id}>{label}</label> : null
+    const $label = label ? <label htmlFor={id}>{label} :</label> : null
 
     return (
       <div className={wrapperClassName}>
