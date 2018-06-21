@@ -30,6 +30,7 @@ class SubmitButton extends Component {
       handleFail,
       handleSuccess,
       method,
+      normalizer,
       onClick,
       path,
       storeKey,
@@ -48,6 +49,7 @@ class SubmitButton extends Component {
       handleFail,
       handleSuccess,
       key: storeKey,
+      normalizer,
       requestId: submitRequestId,
       encode: body instanceof FormData ? 'multipart/form-data' : null,
     })
