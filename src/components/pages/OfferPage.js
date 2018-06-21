@@ -74,6 +74,7 @@ class OfferPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
+      currentOccasion,
       selectedVenueId,
       showModal
     } = this.props

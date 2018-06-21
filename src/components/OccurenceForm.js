@@ -7,6 +7,7 @@ import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
 import selectEventOccurenceForm from '../selectors/eventOccurenceForm'
+import { NEW } from '../utils/config'
 
 class OccurenceForm extends Component {
 
