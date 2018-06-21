@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_script import Manager
+from sqlalchemy import func
 from glob import glob
 from inspect import isclass
 
@@ -116,6 +117,9 @@ with app.app_context():
                       erroredThumbs=0,
                       Thing=0
                       )
+        with app.app_context():
+            assert app.db.session.query(func.sum(app.model.Thing.thumbCount))\
+                                 .scalar() == 92
 
     def test_13_titelive_thing_desc_provider():
         provider_test(app.local_providers.TiteLiveBookDescriptions,
