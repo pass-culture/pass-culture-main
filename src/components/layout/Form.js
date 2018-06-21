@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
 
-import { mergeForm } from '../../reducers/form'
+import { newMergeForm } from '../../reducers/form'
 import { removeErrors } from '../../reducers/errors'
 
 import {recursiveMap} from '../../utils/react'
@@ -29,7 +29,7 @@ class Form extends Component {
 
   onMergeForm = () => {
     this.props.removeErrors()
-    this.props.mergeForm(this.props.name, this.state.editedValues)
+    this.props.newMergeForm(this.props.name, this.state.editedValues)
     this.setState({
       editedValues: {},
     })
@@ -37,6 +37,8 @@ class Form extends Component {
 
   onSubmit = e => {
     e.preventDefault()
+    console.log('submitted')
+    // TODO: write requestData logic
   }
 
   updateFormValue = (key, value) => {
@@ -105,5 +107,5 @@ export default connect(
     formData: get(state, `form.${ownProps.name}.data`),
     formErrors: get(state, `form.${ownProps.name}.errors`),
   }),
-  { mergeForm, removeErrors }
+  { newMergeForm, removeErrors }
 )(Form)
