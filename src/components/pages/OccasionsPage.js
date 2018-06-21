@@ -11,44 +11,32 @@ import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import selectOccasions from '../../selectors/occasions'
+import { occasionNormalizer } from '../../utils/normalizers'
 
 
 class OccasionsPage extends Component {
+
   handleRequestData = () => {
     const {
       requestData,
+      user
     } = this.props
-    requestData(
+    user && requestData(
       'GET',
       'occasions',
       {
-        normalizer: {
-          mediations: 'mediations',
-          occurences: {
-            key: 'eventOccurences',
-            normalizer: {
-              offer: 'offers',
-              venue: 'venues'
-            }
-          },
-          offers: {
-            key: 'offers',
-            normalizer: {
-              'venue': 'venues'
-            }
-          }
-        }
+        normalizer: occasionNormalizer
       }
     )
   }
 
   componentDidMount() {
-    this.props.user && this.handleRequestData()
+    this.handleRequestData()
   }
 
   componentDidUpdate(prevProps) {
     const { user } = this.props
-    if (user && user !== prevProps.user) {
+    if (user !== prevProps.user) {
       this.handleRequestData()
     }
   }

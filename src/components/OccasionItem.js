@@ -13,6 +13,7 @@ import { requestData } from '../reducers/data'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import { pluralize } from '../utils/string'
 import { modelToPath } from '../utils/translate'
+import { occasionNormalizer } from '../utils/normalizers'
 
 class OccasionItem extends Component {
 
@@ -34,7 +35,7 @@ class OccasionItem extends Component {
     } = (occasion || {})
     requestData(
       'PATCH',
-      `offers/${id}`,
+      `occasions/${id}`,
         {
           body: {
             occasion: {
@@ -42,14 +43,7 @@ class OccasionItem extends Component {
             }
           },
           key: 'occasions',
-          normalizer: {
-            occurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                venue: 'venues'
-              }
-            }
-          },
+          normalizer: occasionNormalizer,
           isMergingDatum: true,
           isMutatingDatum: true,
           isMutaginArray: false
@@ -65,18 +59,22 @@ class OccasionItem extends Component {
 
   render() {
     const {
+      isActive,
       occasionItem,
       occasion,
     } = this.props
     const {
+      event,
+      thing
+    } = (occasion || {})
+    const {
       createdAt,
       eventType,
       id,
-      isActive,
       mediations,
       name,
-      occurences,
-    } = (occasion || {})
+      occurences
+    } = (event || thing || {})
     const {
       available,
       maxDate,

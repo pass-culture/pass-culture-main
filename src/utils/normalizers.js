@@ -12,7 +12,7 @@ export const thingNormalizer = {
 }
 
 export const occasionNormalizer = {
-  events: {
+  event: {
     key: 'events',
     normalizer: eventNormalizer
   },
