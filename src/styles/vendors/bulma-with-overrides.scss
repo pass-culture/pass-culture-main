@@ -32,9 +32,9 @@
     }
   }
 
-  img {
-    height: 1em;
-  }
+  // img {
+  //   height: 1em;
+  // }
 }
 
 [disabled] {
@@ -70,7 +70,6 @@ input[type="checkbox"], input[type="radio"] {
   }
 }
 
-
 .field {
   &.has-addons {
     .control {
@@ -86,4 +85,9 @@ input[type="checkbox"], input[type="radio"] {
       }
     }
   }
+}
+
+.password:focus-within .button {
+  // For signin form
+  border-color: $input-focus-border-color;
 }

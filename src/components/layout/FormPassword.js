@@ -29,7 +29,7 @@ class FormPassword extends Component {
     }
 
     return (
-      <div className="field has-addons">
+      <div className="field has-addons password">
         <div className="control is-expanded">
           {input}
         </div>
