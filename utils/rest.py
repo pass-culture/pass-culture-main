@@ -66,7 +66,7 @@ def add_table_if_missing(sql_identifier, modelClass):
     return sql_identifier
 
 
-def handle_rest_get_list(modelClass, query=None, filter_fn=None,
+def handle_rest_get_list(modelClass, query=None,
                          refine=None, order_by=None, flask_request=None,
                          include=None, resolve=None, print_elements=None,
                          paginate=None, page=None):
@@ -77,10 +77,6 @@ def handle_rest_get_list(modelClass, query=None, filter_fn=None,
     # DELETED
     if hasattr(modelClass, 'deleted'):
         query = query.filter_by(deleted=False)
-    # FILTER
-    filters = flask_request.args.copy()
-    if filter_fn:
-        query = filter_fn(query, filters)
     # REFINE
     if refine:
         query = refine(query)
@@ -100,7 +96,8 @@ def handle_rest_get_list(modelClass, query=None, filter_fn=None,
                 raise e
     # PAGINATE
     if paginate:
-        page = 'page' in filters and filters['page']
+        if page is not None:
+            page = int(page)
         query = query.paginate(page, per_page=paginate, error_out=False)\
                      .items
     # DICTIFY
@@ -108,7 +105,6 @@ def handle_rest_get_list(modelClass, query=None, filter_fn=None,
         lambda o: o._asdict(
             include=include,
             resolve=resolve,
-            filters=filters
         ),
         query))
     # PRINT

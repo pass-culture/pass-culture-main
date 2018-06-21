@@ -87,8 +87,8 @@ class User(app.model.PcObject,
         else:
             compatible_rights = [rights]
         return app.model.UserOfferer.query\
-                  .filter(app.model.UserOfferer.offererId == offererId,
-                          app.model.UserOfferer.rights.in_(compatible_rights))\
+                  .filter((app.model.UserOfferer.offererId == offererId) &
+                          (app.model.UserOfferer.rights.in_(compatible_rights)))\
                   .first() is not None
 
 

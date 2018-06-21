@@ -8,6 +8,7 @@ from utils.rest import expect_json_data,\
                        update
 
 Event = app.model.Event
+Occasion = app.model.Occasion
 
 
 @app.route('/events/<id>', methods=['GET'])
@@ -26,7 +27,10 @@ def get_event(id):
 def post_event():
     event = Event()
     update(event, request.json)
-    app.model.PcObject.check_and_save(event)
+    ocas = Occasion()
+    ocas.venue = request.json['venueId']
+    ocas.event = event
+    app.model.PcObject.check_and_save(event, ocas)
     return jsonify(
         event._asdict(
             include=EVENT_INCLUDES,

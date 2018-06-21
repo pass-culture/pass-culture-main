@@ -35,6 +35,7 @@ def read_date(date):
 
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
+Occasion = app.model.Occasion
 
 
 class OpenAgendaEvents(app.model.LocalProvider):
@@ -50,6 +51,7 @@ class OpenAgendaEvents(app.model.LocalProvider):
         self.venue = app.model.Venue.query\
                                     .filter_by(id=self.venueProvider.venueId)\
                                     .one_or_none()
+        self.venueId = self.venueProvider.venueId
         self.is_mock = 'mock' in options and options['mock']
         self.seen_uids = []
         self.page = 0
@@ -88,6 +90,11 @@ class OpenAgendaEvents(app.model.LocalProvider):
         p_info_event.type = Event
         p_info_event.idAtProviders = str(self.oa_event['uid'])
         p_info_event.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
+        
+        p_info_occasion = app.model.ProvidableInfo()
+        p_info_occasion.type = Occasion
+        p_info_occasion.idAtProviders = str(self.oa_event['uid'])
+        p_info_occasion.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
 
         p_info_eos = []
         durations_sum = 0
@@ -103,7 +110,7 @@ class OpenAgendaEvents(app.model.LocalProvider):
 
         self.duration = int(durations_sum / len(p_info_eos))
 
-        return [p_info_event] + p_info_eos
+        return [p_info_event , p_info_occasion] + p_info_eos
 
     def getDeactivatedObjectIds(self):
         return app.db.session.query(Event.idAtProviders)\
@@ -123,11 +130,14 @@ class OpenAgendaEvents(app.model.LocalProvider):
             obj.durationMinutes = self.duration
             # obj.extraData['tags'] = list(map(lambda t: t['slug'], self.oa_event['tags']))
         elif isinstance(obj, EventOccurence):
-            index = len(self.providables)-2
+            index = len(self.providables)-3
             oa_timing = self.oa_event['timings'][index]
             obj.beginningDatetime = read_date(oa_timing['start'])
             obj.endDatetime = read_date(oa_timing['end'])
             obj.event = self.providables[0]
+        elif isinstance(obj, Occasion):
+            obj.event = self.providables[0]
+            obj.venueId = self.venueId
         else:
             raise ValueError('Unexpected object class in updateObject: '
                              + obj.__class__.__name__)

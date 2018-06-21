@@ -18,6 +18,7 @@ def read_datetime(date):
     return datetime.strptime(date, DATETIME_FORMAT)
 
 
+Occasion = app.model.Occasion
 Offer = app.model.Offer
 Thing = app.model.Thing
 
@@ -110,20 +111,31 @@ class TiteLiveOffers(app.model.LocalProvider):
 
         self.price = thing.extraData['prix_livre']
 
+        p_info_occasion = app.model.ProvidableInfo()
+        p_info_occasion.type = Occasion
+        self.idAtProviders = str(line[1])+':'+str(line[2])
+        p_info_occasion.idAtProviders = self.idAtProviders
+        p_info_occasion.dateModifiedAtProvider = self.dateModified
+
         p_info_offer = app.model.ProvidableInfo()
         p_info_offer.type = Offer
         self.idAtProviders = str(line[1])+':'+str(line[2])
         p_info_offer.idAtProviders = self.idAtProviders
         p_info_offer.dateModifiedAtProvider = self.dateModified
 
-        return p_info_offer
+        return p_info_offer, p_info_occasion
 
-    def updateObject(self, offer):
-        assert offer.idAtProviders == self.idAtProviders
-        offer.thing = self.thing
-        offer.venue = self.venue
-        offer.offererId = self.venue.managingOffererId
-        offer.price = self.price
+    def updateObject(self, obj):
+        assert obj.idAtProviders == self.idAtProviders
+        if isinstance(obj, Offer):
+            obj.thing = self.thing
+            obj.venue = self.venue
+            obj.offererId = self.venue.managingOffererId
+            obj.price = self.price
+        else:
+            obj.thing = self.thing
+            obj.venue = self.venue
+
 
     def getDeactivatedObjectIds(self):
         #TODO
