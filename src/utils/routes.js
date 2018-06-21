@@ -7,8 +7,8 @@ import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import MediationsPage from '../components/pages/MediationsPage'
 import NotFoundPage from '../components/pages/NotFoundPage'
-import OffersPage from '../components/pages/OffersPage'
-import OfferPage from '../components/pages/OfferPage'
+import OccasionsPage from '../components/pages/OccasionsPage'
+import OccasionPage from '../components/pages/OccasionPage'
 import OffererPage from '../components/pages/OffererPage'
 import OfferersPage from '../components/pages/OfferersPage'
 import ProfilePage from '../components/pages/ProfilePage'
@@ -81,43 +81,43 @@ const routes = [
     exact: true,
     path: '/structures/:offererId/lieux/:venueId/offres',
     title: 'Offres',
-    render: () => <OffersPage />,
+    render: () => <OccasionsPage />,
   },
   {
     exact: true,
     path: '/offres',
     title: 'Offres',
-    render: () => <OffersPage />,
+    render: () => <OccasionsPage />,
   },
   {
     exact: true,
     path: '/offres/:occasionId',
     title: 'Offre',
-    render: () => <OfferPage />,
+    render: () => <OccasionPage />,
   },
   {
     exact: true,
     path: '/offres/:occasionPath/:occasionId',
     title: 'Offre',
-    render: () => <OfferPage />,
+    render: () => <OccasionPage />,
   },
   {
     exact: true,
     path: '/offres/:occasionPath/:occasionId/:modalType',
     title: 'Offre',
-    render: () => <OfferPage />,
+    render: () => <OccasionPage />,
   },
   {
     exact: true,
     path: '/structures/:offererId/offres/:occasionId',
     title: 'Offres',
-    render: () => <OfferPage />,
+    render: () => <OccasionPage />,
   },
   {
     exact: true,
     path: '/structures/:offererId/lieux/:venueId/offres/:occasionId',
     title: 'Offres',
-    render: () => <OfferPage />,
+    render: () => <OccasionPage />,
   },
   {
     exact: true,

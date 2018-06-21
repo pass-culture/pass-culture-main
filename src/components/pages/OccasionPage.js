@@ -19,7 +19,7 @@ import selectSelectedType from '../../selectors/selectedType'
 import { eventNormalizer } from '../../utils/normalizers'
 
 
-class OfferPage extends Component {
+class OccasionPage extends Component {
   constructor () {
     super()
     this.state = {
@@ -133,7 +133,7 @@ class OfferPage extends Component {
       )
     }
   }
-  
+
   componentDidMount () {
     this.handleRequestData()
   }
@@ -306,4 +306,4 @@ export default compose(
       showNotification
     }
   )
-)(OfferPage)
+)(OccasionPage)

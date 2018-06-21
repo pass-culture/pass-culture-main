@@ -13,7 +13,7 @@ import { showModal } from '../../reducers/modal'
 import selectOccasions from '../../selectors/occasions'
 
 
-class OffersPage extends Component {
+class OccasionsPage extends Component {
   handleRequestData = () => {
     const {
       requestData,
@@ -110,4 +110,4 @@ export default compose(
     }),
     { showModal }
   )
-)(OffersPage)
+)(OccasionsPage)
