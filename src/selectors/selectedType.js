@@ -5,7 +5,8 @@ import selectFormOccasion from './formOccasion'
 
 export default createSelector(
   selectFormOccasion,
-  (state, ownProps) => get(ownProps, 'currentOccasion.typeOption'),
+  (state, ownProps) => get(ownProps, 'currentOccasion.event.typeOption') ||
+    get(ownProps, 'currentOccasion.thing.typeOption'),
   (formOccasion, typeOption) =>
     get(formOccasion, 'type') ||
     get(typeOption, 'value')

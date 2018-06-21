@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OfferForm from '../OfferForm'
+import OccasionForm from '../OccasionForm'
 import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
@@ -14,7 +14,7 @@ import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import selectOfferForm from '../../selectors/offerForm'
+import selectOccasionForm from '../../selectors/occasionForm'
 import selectSelectedType from '../../selectors/selectedType'
 import { eventNormalizer } from '../../utils/normalizers'
 
@@ -33,14 +33,14 @@ class OccasionPage extends Component {
       currentMediation,
       location: { search },
       isNew,
-      offerForm
+      occasionForm
     } = nextProps
     const {
       id
     } = (currentMediation || {})
     const {
       isEventType
-    } = (offerForm || {})
+    } = (occasionForm || {})
     const isEdit = search === '?modifie'
     const isReadOnly = !isNew && !isEdit
     const apiPath = isEventType
@@ -92,13 +92,13 @@ class OccasionPage extends Component {
     const {
       closeModal,
       history,
-      offerForm,
+      occasionForm,
       showModal,
       showNotification
     } = this.props
     const {
       isEventType
-    } = (offerForm || {})
+    } = (occasionForm || {})
 
     // PATCH
     if (method === 'PATCH') {
@@ -159,19 +159,24 @@ class OccasionPage extends Component {
       isNew,
       location: { pathname },
       occasionIdOrNew,
-      offerForm,
+      occasionForm,
       routePath,
       selectedType,
       typeOptions,
     } = this.props
     const {
+      event,
+      thing
+    } = (currentOccasion || {})
+    console.log('currentOccasion', currentOccasion, 'selectedType', selectedType)
+    const {
       id,
       name
-    } = (currentOccasion || {})
+    } = (event || thing || {})
     const {
       isEventType,
       requiredFields
-    } = (offerForm || {})
+    } = (occasionForm || {})
     const {
       apiPath,
       isReadOnly
@@ -223,7 +228,7 @@ class OccasionPage extends Component {
           />
         </div>
         {
-          selectedType && <OfferForm {...this.props} />
+          selectedType && <OccasionForm {...this.props} />
         }
 
         <hr />
@@ -295,7 +300,7 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      offerForm: selectOfferForm(state, ownProps),
+      occasionForm: selectOccasionForm(state, ownProps),
       selectedType: selectSelectedType(state, ownProps),
       typeOptions: state.data.types
     }),

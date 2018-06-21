@@ -57,7 +57,7 @@ export default createSelector(
 
           // TYPE
           event.typeOption = types && types.find(type =>
-            type.tag === occasion.type)
+            type.tag === event.type)
         }
       }
 
@@ -76,7 +76,7 @@ export default createSelector(
 
           // TYPE
           thing.typeOption = types && types.find(type =>
-            type.tag === occasion.type)
+            type.tag === thing.type)
         }
       }
 

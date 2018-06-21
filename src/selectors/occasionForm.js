@@ -17,7 +17,8 @@ const requiredEventFields = [
 
 export default createSelector(
   selectSelectedType,
-  (state, ownProps) => get(ownProps, 'currentOccasion.type'),
+  (state, ownProps) => get(ownProps, 'currentOccasion.event.type') ||
+    get(ownProps, 'currentOccasion.thing.type'),
   (state, ownProps) => get(ownProps, 'currentOccasion.modelName'),
   (formType, propsType, modelName) => {
 

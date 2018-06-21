@@ -7,6 +7,7 @@ import { requestData } from '../../reducers/data'
 import selectCurrentOccasion from '../../selectors/currentOccasion'
 import { NEW } from '../../utils/config'
 import { pathToCollection } from '../../utils/translate'
+import { occasionNormalizer } from '../../utils/normalizers'
 
 const withCurrentOccasion = WrappedComponent => {
   class _withCurrentOccasion extends Component {
@@ -37,19 +38,7 @@ const withCurrentOccasion = WrappedComponent => {
         apiPath,
         {
           key: 'occasions',
-          normalizer: {
-            events: {
-              key: 'events',
-              normalizer: {
-                occurences: {
-                  key: 'eventOccurences'
-                }
-              }
-            },
-            mediations: 'mediations',
-            thing: 'things',
-            venue: 'venues'  
-          }
+          normalizer: occasionNormalizer
         }
       )
     }
@@ -75,10 +64,8 @@ const withCurrentOccasion = WrappedComponent => {
       } = nextProps
       const isNew = occasionId === 'nouveau'
       const occasionCollection = pathToCollection(occasionPath)
-      const apiPath = isNew
-        ? `${occasionCollection}`
-        : `${occasionCollection}/${occasionId}`
-      const routePath = `/offres/${occasionPath}${isNew ? '' : `/${occasionId}`}`
+      const apiPath = `occasions${isNew ? '' : `/${occasionId}`}`
+      const routePath = `/offres/${isNew ? '' : `/${occasionId}`}`
       return {
         apiPath,
         isLoading: !(id || isNew),

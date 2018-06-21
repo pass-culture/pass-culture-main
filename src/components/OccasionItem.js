@@ -17,13 +17,6 @@ import { occasionNormalizer } from '../utils/normalizers'
 
 class OccasionItem extends Component {
 
-  constructor () {
-    super()
-    this.state = {
-      path: null
-    }
-  }
-
   onDeactivateClick = event => {
     const {
       occasion,
@@ -49,12 +42,6 @@ class OccasionItem extends Component {
           isMutaginArray: false
         }
       )
-  }
-
-  static getDerivedStateFromProps (nextProps) {
-    return {
-      path: `/offres/${modelToPath(get(nextProps, 'occasion.modelName'))}`
-    }
   }
 
   render() {
@@ -84,13 +71,12 @@ class OccasionItem extends Component {
       priceMax,
       thumbUrl
     } = (occasionItem || {})
-    const { path } = this.state
     const mediationsLength = get(mediations, 'length')
     return (
       <li className={classnames('occasion-item', { active: isActive })}>
         <Thumb alt='offre' src={thumbUrl} />
         <div className="list-content">
-          <NavLink className='name' to={`${path}/${id}`} title={name}>
+          <NavLink className='name' to={`/offres/${id}`} title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className='infos'>
@@ -104,14 +90,14 @@ class OccasionItem extends Component {
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`${path}/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
+              <NavLink  to={`offres/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
                 <span className='icon'><Icon svg='ico-stars' /></span>
                 <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
             </li>
             <li>
               <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
-              <NavLink  to={`${path}/${id}`} className="button is-secondary is-small">
+              <NavLink  to={`offres/${id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
               </NavLink>
             </li>

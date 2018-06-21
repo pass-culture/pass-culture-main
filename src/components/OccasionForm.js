@@ -17,7 +17,7 @@ import selectSelectedVenues from '../selectors/selectedVenues'
 import selectVenueOptions from '../selectors/venueOptions'
 import { pluralize } from '../utils/string'
 
-class OfferForm extends Component {
+class OccasionForm extends Component {
 
   handleMergeForm = () => {
     const {
@@ -83,6 +83,10 @@ class OfferForm extends Component {
       user
     } = this.props
     const {
+      event,
+      thing
+    } = (currentOccasion || {})
+    const {
       author,
       contactName,
       contactEmail,
@@ -94,7 +98,7 @@ class OfferForm extends Component {
       performer,
       occurences,
       stageDirector,
-    } = (currentOccasion || {})
+    } = (event || thing || {})
     const {
       isEventType
     } = (offerForm || {})
@@ -330,4 +334,4 @@ export default connect(
     mergeForm,
     showModal
   }
-)(OfferForm)
+)(OccasionForm)

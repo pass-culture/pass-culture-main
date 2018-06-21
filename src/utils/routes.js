@@ -97,13 +97,13 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionPath/:occasionId',
+    path: '/offres/:occasionId',
     title: 'Offre',
     render: () => <OccasionPage />,
   },
   {
     exact: true,
-    path: '/offres/:occasionPath/:occasionId/:modalType',
+    path: '/offres/:occasionId/:modalType',
     title: 'Offre',
     render: () => <OccasionPage />,
   },
@@ -121,13 +121,13 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionPath/:occasionId/accroches/:mediationId',
+    path: '/offres/:occasionId/accroches/:mediationId',
     title: 'Accroche',
     render: () => <MediationPage />,
   },
   {
     exact: true,
-    path: '/offres/:occasionPath/:occasionId/accroches',
+    path: '/offres/:occasionId/accroches',
     title: 'Accroches',
     render: () => <MediationsPage />,
   },
