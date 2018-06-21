@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
+import classnames from 'classnames'
 
 import { closeNotification } from './reducers/notification'
 
@@ -13,7 +14,6 @@ class App extends Component {
 
   componentWillMount() {
     this.unlisten = this.props.history.listen((location, action) => {
-      console.log(location, action)
       this.props.closeNotification()
     });
   }
@@ -22,9 +22,13 @@ class App extends Component {
   }
 
   render() {
+    const {
+      modalOpen,
+      children,
+    } = this.props
     return (
-      <div className="app">
-        {this.props.children}
+      <div className={classnames('app', {'modal-open': modalOpen})}>
+        {children}
         <Modal />
         <Splash />
       </div>
@@ -34,7 +38,9 @@ class App extends Component {
 
 export default compose(
   withRouter,
-  connect(null, {
+  connect(store => ({
+    modalOpen: store.modal.isActive,
+  }), {
     closeNotification,
   })
 )(App)

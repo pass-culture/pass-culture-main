@@ -18,8 +18,14 @@ class OccurenceManager extends Component {
   }
 
   render() {
-    const { currentOccurences } = this.props
+    const {
+      occasion
+    } = this.props
+    const {
+      occurences,
+    } = occasion
     const { isAdding } = this.state
+
     return (
       <div>
         <table className='table is-striped is-hoverable'>
@@ -36,14 +42,15 @@ class OccurenceManager extends Component {
           </thead>
           <tbody>
             {
-              currentOccurences && currentOccurences.map(o =>
-                <OccurenceItem key={o.id} occurence={o} />
+              occurences && occurences.map(o =>
+                <OccurenceItem key={o.id} occurence={o} occasion={occasion} />
               )
             }
             {
               isAdding && <OccurenceForm
                 onDeleteClick={e => this.setState({isAdding: false})}
-                {...this.props} isNew
+                occasion={occasion}
+                isNew
               />
             }
           </tbody>
@@ -60,8 +67,10 @@ class OccurenceManager extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    currentOccurences: selectCurrentOccurences(state, ownProps)
-  })
-)(OccurenceManager)
+export default OccurenceManager
+
+// export default connect(
+//   (state, ownProps) => ({
+//     currentOccurences: selectCurrentOccurences(state, ownProps)
+//   })
+// )(OccurenceManager)
