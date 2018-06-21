@@ -34,9 +34,9 @@ const SigninPage = ({ errors }) => {
                   autoComplete="email"
                   collectionName="users"
                   inputClassName='input is-rounded'
-                  label={<Label title="Adresse e-mail:" />}
+                  label={<Label title="Adresse e-mail" />}
                   name="identifier"
-                  type="email"
+                  // type="email"
                   placeholder="Identifiant (email)"
                 />
                 <FormField
