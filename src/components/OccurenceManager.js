@@ -23,7 +23,7 @@ class OccurenceManager extends Component {
     } = this.props
     const {
       occurences,
-    } = occasion
+    } = (occasion || {})
     const { isAdding } = this.state
 
     return (
