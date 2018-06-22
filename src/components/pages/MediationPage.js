@@ -13,6 +13,8 @@ import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
 import { showNotification } from '../../reducers/notification'
 import selectCurrentMediation from '../../selectors/currentMediation'
+import selectCurrentOfferer from '../../selectors/currentOfferer'
+import { mediationNormalizer } from '../../utils/normalizers'
 
 const uploadExplanation = `
 **Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
@@ -44,6 +46,22 @@ class MediationPage extends Component {
     type: 'image',
     imageUploadSize: 400,
     imageUploadBorder: 25,
+  }
+
+  handleRequestData = () => {
+    const {
+      match: { params: { mediationId } },
+      requestData,
+      user
+    } = this.props
+    user && mediationId && requestData(
+      'GET',
+      `mediations/${mediationId}`,
+      {
+        key: 'mediations',
+        normalizer: mediationNormalizer
+      }
+    )
   }
 
   handleSuccessData = (state, action) => {
@@ -119,6 +137,7 @@ class MediationPage extends Component {
   render () {
     const {
       currentOccasion,
+      currentOfferer,
       currentMediation,
       imageUploadSize,
       imageUploadBorder,
@@ -130,8 +149,9 @@ class MediationPage extends Component {
       },
     } = this.props
     const {
-      name,
-      offererId
+      event,
+      thing,
+      name
     } = (currentOccasion || {})
     const {
       id
@@ -144,6 +164,8 @@ class MediationPage extends Component {
     } = this.state
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionId}`
+
+    console.log('currentOfferer', currentOfferer)
 
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
@@ -224,17 +246,24 @@ class MediationPage extends Component {
             <SubmitButton
               className="button is-primary is-medium"
               getBody={form => {
+
+                const eventId = get(event, 'id')
+                const offererId = get(currentOfferer, 'id')
+                const thingId = get(thing, 'id')
+
                 if (typeof image === 'string') {
                   return {
-                    thumb: image,
+                    croppingRect,
                     eventId: occasionId,
                     offererId,
-                    croppingRect,
+                    thingId,
+                    thumb: image,
                   }
                 }
                 const formData = new FormData();
                 formData.append('thumb', image)
-                formData.append('eventId', occasionId)
+                formData.append('eventId', eventId)
+                formData.append('thingId', thingId)
                 formData.append('offererId', offererId)
                 formData.append('croppingRect[x]', croppingRect.x)
                 formData.append('croppingRect[y]', croppingRect.y)
@@ -261,7 +290,8 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      currentMediation: selectCurrentMediation(state, ownProps)
+      currentMediation: selectCurrentMediation(state, ownProps),
+      currentOfferer: selectCurrentOfferer(state, ownProps)
     }),
     { assignData, showNotification }
   )

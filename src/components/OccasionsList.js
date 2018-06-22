@@ -12,7 +12,7 @@ const OccasionsList = ({ occasions }) => {
     <ul className='occasions-list pc-list'>
       {
         occasions.map(o =>
-          <OccasionItem key={`${o.modelName}-${o.id}`} occasion={o} />)
+          <OccasionItem key={o.id} occasion={o} />)
       }
     </ul>
   )

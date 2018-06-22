@@ -10,6 +10,9 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
+import createSelectEvent from '../selectors/event'
+import createSelectMediations from '../selectors/mediations'
+import createSelectCurrentThing from '../selectors/thing'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import { pluralize } from '../utils/string'
 import { modelToPath } from '../utils/translate'
@@ -116,7 +119,13 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
-    const selectOccasionItem = createSelectOccasionItem()
+    const selectEvent =  createSelectEvent()
+    const selectThing =  createSelectCurrentThing()
+    const selectMediations = createSelectMediations(
+      selectEvent,
+      selectThing
+    )
+    const selectOccasionItem = createSelectOccasionItem(selectMediations)
     return (state, ownProps) => ({
       occasionItem: selectOccasionItem(state, ownProps)
     })

@@ -40,7 +40,7 @@ export default createSelector(
         if (event) {
           // OCCURENCES
           const occurences = (eventOccurences && eventOccurences.filter(
-            eo => eo.eventId === occasion.id
+            eo => eo.eventId === event.id
           )) || []
           occurences.forEach(occurence => {
             occurence.beginningDatetimeMoment = moment(occurence.beginningDatetime)

@@ -95,6 +95,8 @@ class OccasionForm extends Component {
       ? [{ label: 'Sélectionnez un lieu' }].concat(venueOptions)
       : venueOptions
 
+    console.log('occurences', occurences)
+
     return (
       <div>
         {
