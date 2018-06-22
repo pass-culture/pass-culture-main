@@ -21,11 +21,9 @@ export default createSelector(
   (state, ownProps) => get(ownProps, 'currentOccasion.modelName'),
   (formType, propsType, modelName) => {
 
-    const formTypeValue = get(formType, 'value')
-
     const isEventType = modelName === 'Event'
-      || (propsType || []).split('.')[0] === 'EventType'
-      || (formTypeValue || []).split('.')[0] === 'EventType'
+      || (propsType || '').split('.')[0] === 'EventType'
+      || (formType || '').split('.')[0] === 'EventType'
 
     let requiredFields = requiredEventAndThingFields
 
