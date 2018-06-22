@@ -28,54 +28,52 @@ const OffererItem = ({
           </NavLink>
         </p>
         <ul className='actions'>
-          <li>
-            { get(managedVenues, 'length')
-          ? (
-            <li>
-              <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
-                className='has-text-primary'>
-                <Icon svg='ico-offres-r' /> Créer une offre
-              </NavLink>
-            </li>
+          {isActive ? (
+            <li className='is-italic'>En cours de validation : vous allez recevoir un e-mail.</li>
           ) : (
-            <p>Vous n'avez pas encore ajouté de lieu</p>
-          )}
-        </li>
-          <li>
-            {
-              get(managedOccasions, 'length')
-                ? (
-                  <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-                    <Icon svg='ico-offres-r' />
-                    {managedOccasions.length} offre
-                  </NavLink>
-                )
-                : (
-                  // get(managedVenues, 'length') > 0
-                  <p>
-                    0 offre
-                  </p>
-                )
-            }
-          </li>
-          <li>
-            {
-              get(managedVenues, 'length')
-                ? (
-                  <NavLink to={showPath}>
-                    <Icon svg='picto-structure' />
-                    {managedVenues.length} lieu(x)
-                  </NavLink>
-                )
-                : (
-                  <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
-                    className='has-text-primary'>
-                    <Icon svg='picto-structure' /> Ajouter un lieu
-                  </NavLink>
-                )
-            }
-          </li>
-          <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>
+            [
+              <li>
+                <NavLink to={`/offres/nouveau`} className='has-text-primary'>
+                  <Icon svg='ico-offres-r' />
+                  Nouvelle offre
+                </NavLink>
+              </li>,
+              <li>
+                {
+                  get(managedOccasions, 'length')
+                    ? (
+                      <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
+                        <Icon svg='ico-offres-r' />
+                        {managedOccasions.length} offre
+                      </NavLink>
+                    )
+                    : (
+                      <p>
+                        0 offre
+                      </p>
+                    )
+                }
+              </li>,
+              <li>
+                {
+                  get(managedVenues, 'length')
+                    ? (
+                      <NavLink to={showPath}>
+                        <Icon svg='picto-structure' />
+                        {managedVenues.length} lieu
+                      </NavLink>
+                      )
+                    : (
+                      <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
+                        className='has-text-primary'>
+                        <Icon svg='picto-structure' /> Ajouter un lieu
+                      </NavLink>
+                      )
+                  }
+              </li>,
+            ]
+          )
+          }
         </ul>
       </div>
       <div className='caret'>
