@@ -14,10 +14,21 @@ import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import selectOccasionForm from '../../selectors/occasionForm'
 import selectSelectedType from '../../selectors/selectedType'
+import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import { eventNormalizer } from '../../utils/normalizers'
 
+const requiredEventAndThingFields = [
+  'name',
+  'type',
+  'description',
+  'contactName',
+  'contactEmail',
+]
+
+const requiredEventFields = [
+  'durationMinutes',
+]
 
 class OccasionPage extends Component {
   constructor () {
@@ -33,22 +44,29 @@ class OccasionPage extends Component {
       currentMediation,
       location: { search },
       isNew,
-      occasionForm
+      selectedType,
     } = nextProps
     const {
       id
     } = (currentMediation || {})
-    const {
-      isEventType
-    } = (occasionForm || {})
     const isEdit = search === '?modifie'
+    const isEventType = (selectedType || '').split('.')[0] === 'EventType'
     const isReadOnly = !isNew && !isEdit
     const apiPath = isEventType
       ? `events${id ? `/${id}` : ''}`
       : `things${id ? `/${id}` : ''}`
+
+    let requiredFields = requiredEventAndThingFields
+
+    if (isEventType) {
+      requiredFields = requiredFields.concat(requiredEventFields)
+    }
+
     return {
       apiPath,
-      isReadOnly
+      isEventType,
+      isReadOnly,
+      requiredFields
     }
   }
 
@@ -93,12 +111,13 @@ class OccasionPage extends Component {
       closeModal,
       history,
       occasionForm,
+      selectedVenueId,
       showModal,
       showNotification
     } = this.props
     const {
       isEventType
-    } = (occasionForm || {})
+    } = this.state
 
     // PATCH
     if (method === 'PATCH') {
@@ -111,17 +130,23 @@ class OccasionPage extends Component {
     }
 
     // POST
-    if (method === 'POST') {
-      // switch to the path with the new created id
-      const routePath = `/offres/${isEventType ? 'evenements' : 'objets'}/${data.id}`
-
-      // modal
-      isEventType && showModal(
+    if (isEventType && method === 'POST') {
+      const {
+        occasions
+      } = (data || {})
+      const occasion = occasions && occasions.find(o =>
+        o.venueId === selectedVenueId
+      )
+      if (!occasion) {
+        console.warn("Something wrong with returned data, we should retrieve the created occasion here")
+        return
+      }
+      showModal(
         <div>
           Cette offre est-elle soumise à des dates ou des horaires particuliers ?
           <NavLink
             className='button'
-            to={`${routePath}/dates`}
+            to={`/offres/${occasion.id}/dates`}
           >
             Oui
           </NavLink>
@@ -168,18 +193,14 @@ class OccasionPage extends Component {
       event,
       thing
     } = (currentOccasion || {})
-    console.log('currentOccasion', currentOccasion, 'selectedType', selectedType)
     const {
       id,
       name
     } = (event || thing || {})
     const {
-      isEventType,
-      requiredFields
-    } = (occasionForm || {})
-    const {
       apiPath,
-      isReadOnly
+      isReadOnly,
+      requiredFields
     } = this.state
 
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
@@ -227,8 +248,9 @@ class OccasionPage extends Component {
             type="select"
           />
         </div>
+
         {
-          selectedType && <OccasionForm {...this.props} />
+          selectedType && <OccasionForm {...this.props} {...this.state} />
         }
 
         <hr />
@@ -300,8 +322,8 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      occasionForm: selectOccasionForm(state, ownProps),
       selectedType: selectSelectedType(state, ownProps),
+      selectedVenueId: selectSelectedVenueId(state, ownProps),
       typeOptions: state.data.types
     }),
     {

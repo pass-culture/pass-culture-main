@@ -52,12 +52,12 @@ class OccasionItem extends Component {
     } = this.props
     const {
       event,
+      id,
       thing
     } = (occasion || {})
     const {
       createdAt,
       eventType,
-      id,
       mediations,
       name,
       occurences

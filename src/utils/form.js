@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { DELETE } from './config'
 
 export function getElementsWithoutDeletedFormValues (dataElements, formElements) {
@@ -25,7 +26,12 @@ export function getElementsWithoutDeletedFormValues (dataElements, formElements)
   formElements.forEach(formElement =>
     elements.push(formElement))
 
-  console.log('elements', elements)
   // return
   return elements
+}
+
+export function getIsDisabled (form, keys, isNew) {
+  return !form || isNew
+    ? keys.filter(f => !get(form, f)).length > 0
+    : keys.every(f => !get(form, f))
 }

@@ -56,22 +56,20 @@ const withCurrentOccasion = WrappedComponent => {
 
     static getDerivedStateFromProps (nextProps) {
       const {
-        occasionId,
-        occasionPath
-      } = nextProps.match.params
+        currentOccasion,
+        match: { params: { occasionId } },
+      } = nextProps
       const {
         id
-      } = nextProps
+      } = (currentOccasion || {})
       const isNew = occasionId === 'nouveau'
-      const occasionCollection = pathToCollection(occasionPath)
       const apiPath = `occasions${isNew ? '' : `/${occasionId}`}`
-      const routePath = `/offres/${isNew ? '' : `/${occasionId}`}`
+      const routePath = `/offres${isNew ? '' : `/${occasionId}`}`
       return {
         apiPath,
         isLoading: !(id || isNew),
         isNew,
         newMediationRoutePath: `${routePath}/accroches/nouveau`,
-        occasionCollection,
         occasionIdOrNew: isNew ? NEW : occasionId,
         routePath
       }

@@ -19,26 +19,12 @@ import { pluralize } from '../utils/string'
 
 class OccasionForm extends Component {
 
-  handleMergeForm = () => {
-    const {
-      mergeForm,
-      occasionIdOrNew,
-      selectedVenueId
-    } = this.props
-    /*
-    selectedVenueId && mergeForm(
-      'occasions',
-      occasionIdOrNew,
-      'venueId',
-      selectedVenueId
-    )
-    */
-  }
-
   handleShowOccurencesModal = () => {
     const {
       currentOccasion,
+      history,
       match: { params: { modalType } },
+      routePath,
       showModal
     } = this.props
 
@@ -46,23 +32,23 @@ class OccasionForm extends Component {
       return
     }
 
-    showModal(<OccurenceManager occasion={currentOccasion} />)
+    showModal(
+      <OccurenceManager currentOccasion={currentOccasion} />,
+      {
+        onCloseClick: () => history.push(routePath)
+      }
+    )
 
   }
 
   componentDidMount () {
-    this.handleMergeForm()
     this.handleShowOccurencesModal()
   }
 
   componentDidUpdate (prevProps) {
     const {
-      match: { params: { modalType } },
-      selectedVenueId
+      match: { params: { modalType } }
     } = this.props
-    if (prevProps.selectedVenueId !== selectedVenueId) {
-      this.handleMergeForm()
-    }
     if (!get(prevProps, 'match.params.modalType') && modalType === 'dates') {
       this.handleShowOccurencesModal()
     }
@@ -71,6 +57,7 @@ class OccasionForm extends Component {
   render () {
     const {
       currentOccasion,
+      isEventType,
       isNew,
       isReadOnly,
       occasionIdOrNew,
@@ -99,9 +86,6 @@ class OccasionForm extends Component {
       occurences,
       stageDirector,
     } = (event || thing || {})
-    const {
-      isEventType
-    } = (offerForm || {})
 
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
@@ -127,7 +111,7 @@ class OccasionForm extends Component {
                   <div className='field-body'>
                     <div className='field'>
                       <div className='nb-dates'>
-                        {pluralize(occurences.length, 'date')}
+                        {pluralize(get(occurences, 'length'), 'date')}
                       </div>
                       <NavLink
                         className='button is-primary is-outlined is-small'

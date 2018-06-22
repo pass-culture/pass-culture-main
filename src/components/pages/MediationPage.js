@@ -125,8 +125,7 @@ class MediationPage extends Component {
       match: {
         params: {
           mediationId,
-          occasionId,
-          occasionPath
+          occasionId
         }
       },
     } = this.props
@@ -144,7 +143,7 @@ class MediationPage extends Component {
       inputUrl,
     } = this.state
     const isNew = mediationId === 'nouveau'
-    const backPath = `/offres/${occasionPath}/${occasionId}`
+    const backPath = `/offres/${occasionId}`
 
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
