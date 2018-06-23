@@ -14,8 +14,8 @@ import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import SubmitButton from '../layout/SubmitButton'
-import selectCurrentVenue from '../../selectors/currentVenue'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
+import selectVenue from '../../selectors/venue'
+import selectOfferer from '../../selectors/offerer'
 import { NEW } from '../../utils/config'
 
 
@@ -342,8 +342,8 @@ export default compose(
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venue: selectCurrentVenue(state, ownProps),
-      offerer: selectCurrentOfferer(state, ownProps)
+      venue: selectVenue(state, ownProps),
+      offerer: selectOfferer(state, ownProps)
     }),
     {
       addBlockers,

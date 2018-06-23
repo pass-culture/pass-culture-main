@@ -4,7 +4,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
-import createSelectCurrentOccasion from '../../selectors/currentOccasion'
+import { selectCurrentOccasion } from '../../selectors/occasion'
 import { NEW } from '../../utils/config'
 import { pathToCollection } from '../../utils/translate'
 import { occasionNormalizer } from '../../utils/normalizers'
@@ -56,12 +56,12 @@ const withCurrentOccasion = WrappedComponent => {
 
     static getDerivedStateFromProps (nextProps) {
       const {
-        currentOccasion,
+        occasion,
         match: { params: { occasionId } },
       } = nextProps
       const {
         id
-      } = (currentOccasion || {})
+      } = (occasion || {})
       const isNew = occasionId === 'nouveau'
       const apiPath = `occasions${isNew ? '' : `/${occasionId}`}`
       const routePath = `/offres${isNew ? '' : `/${occasionId}`}`
@@ -80,13 +80,11 @@ const withCurrentOccasion = WrappedComponent => {
     }
   }
 
-  const selectCurrentOccasion = createSelectCurrentOccasion()
-
   return compose(
     withRouter,
     connect(
       (state, ownProps) => ({
-        currentOccasion: selectCurrentOccasion(state, ownProps),
+        occasion: selectCurrentOccasion(state, ownProps),
         user: state.user,
       }),
       { requestData }

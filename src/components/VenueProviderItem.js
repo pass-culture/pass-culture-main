@@ -37,7 +37,7 @@ class VenueProviderItem extends Component {
 
   render () {
     const {
-      currentVenue,
+      venue,
       venueProvider
     } = this.props
     const {
@@ -66,7 +66,7 @@ class VenueProviderItem extends Component {
           ? [
             get(occasions, 'length')
               ? (
-                <NavLink key={0} to={`/offres?structure=${get(currentVenue, 'id')}`}
+                <NavLink key={0} to={`/offres?structure=${get(venue, 'id')}`}
                   className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
                   {occasions.length} offres

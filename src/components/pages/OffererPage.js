@@ -12,7 +12,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
+import selectOfferer from '../../selectors/offerer'
 import { NEW } from '../../utils/config'
 
 
@@ -28,19 +28,19 @@ class OffererPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      currentOfferer,
-      match: { params: { offererId } },
+      offerer,
+      match: { params },
     } = nextProps
-    const currentOffererId = get(currentOfferer, 'id')
-    const isNew = offererId === 'nouveau'
-    const isLoading = !(currentOffererId || isNew)
+    const offererId = get(offerer, 'id')
+    const isNew = params.offererId === 'nouveau'
+    const isLoading = !(offererId || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `offerers/` : `offerers/${currentOffererId}`,
+      apiPath: isNew ? `offerers/` : `offerers/${offererId}`,
       isLoading,
       isNew,
       method,
-      offererIdOrNew: isNew ? NEW : currentOffererId
+      offererIdOrNew: isNew ? NEW : offererId
     }
   }
 
@@ -95,7 +95,7 @@ class OffererPage extends Component {
 
   render () {
     const {
-      currentOfferer,
+      offerer,
       user
     } = this.props
 
@@ -106,7 +106,7 @@ class OffererPage extends Component {
       siren,
       postalCode,
       city,
-    } = currentOfferer || {}
+    } = offerer || {}
 
     const {
       apiPath,
@@ -268,7 +268,7 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      currentOfferer: selectCurrentOfferer(state, ownProps),
+      offerer: selectOfferer(state, ownProps),
     }),
     {
       closeNotification,
