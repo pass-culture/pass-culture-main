@@ -5,16 +5,25 @@ import { createSelector } from 'reselect'
 import { API_URL, THUMBS_URL } from '../utils/config'
 
 export default (
-  selectMediations
+  selectEvent,
+  selectThing,
+  selectMediations,
+  selectOccurences
 ) => createSelector(
+  selectEvent,
+  selectThing,
   selectMediations,
   (state, ownProps) => get(ownProps, 'occasion.thumbPath'),
-  (state, ownProps) => get(ownProps, 'occasion.event.occurences'),
-  (mediations, thumbPath, occurences) => {
+  selectOccurences,
+  (event, thing, mediations, thumbPath, occurences) => {
 
-    console.log('mediations', mediations)
+    console.log('event', event, 'thing', thing)
 
     const occasionItem = {
+      event,
+      mediations,
+      occurences,
+      thing,
       thumbUrl: get(mediations, '0')
         ? `${THUMBS_URL}/mediations/${mediations[0].id}`
         : `${API_URL}${thumbPath}`
