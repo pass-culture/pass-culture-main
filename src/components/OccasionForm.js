@@ -10,10 +10,10 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
+import { selectCurrentOccurences } from '../selectors/occurences'
 import selectOffererOptions from '../selectors/offererOptions'
 import selectSelectedOffererId from '../selectors/selectedOffererId'
 import selectSelectedVenueId from '../selectors/selectedVenueId'
-import selectSelectedVenues from '../selectors/selectedVenues'
 import selectVenueOptions from '../selectors/venueOptions'
 import { pluralize } from '../utils/string'
 
@@ -61,6 +61,7 @@ class OccasionForm extends Component {
       isNew,
       isReadOnly,
       occasionIdOrNew,
+      occurences,
       offerForm,
       offererOptions,
       routePath,
@@ -83,7 +84,6 @@ class OccasionForm extends Component {
       mediaUrls,
       mediations,
       performer,
-      occurences,
       stageDirector,
     } = (event || thing || {})
 
@@ -94,8 +94,6 @@ class OccasionForm extends Component {
     const venueOptionsWithPlaceholder = get(venueOptions, 'length') > 1
       ? [{ label: 'Sélectionnez un lieu' }].concat(venueOptions)
       : venueOptions
-
-    console.log('occurences', occurences)
 
     return (
       <div>
@@ -308,10 +306,10 @@ class OccasionForm extends Component {
 
 export default connect(
   (state, ownProps) => ({
+    occurences: selectCurrentOccurences(state, ownProps),
     offererOptions: selectOffererOptions(state, ownProps),
     selectedOffererId: selectSelectedOffererId(state, ownProps),
     selectedVenueId: selectSelectedVenueId(state, ownProps),
-    selectedVenues: selectSelectedVenues(state, ownProps),
     typeOptions: state.data.types,
     venueOptions: selectVenueOptions(state, ownProps)
   }),

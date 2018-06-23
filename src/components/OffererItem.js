@@ -4,13 +4,13 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createSelectManagedOccasions from '../selectors/managedOccasions'
-import createSelectManagedVenues from '../selectors/managedVenues'
+import createSelectOccasions from '../selectors/occasions'
+import createSelectVenues from '../selectors/venues'
 
 
 const OffererItem = ({
   managedOccasions,
-  managedVenues,
+  venues,
   offerer
 }) => {
   const {
@@ -29,7 +29,7 @@ const OffererItem = ({
         </p>
         <ul className='actions'>
           {
-            get(managedVenues, 'length') && (
+            get(venues, 'length') && (
               <li>
                 <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
                   className='has-text-primary'>
@@ -56,11 +56,11 @@ const OffererItem = ({
           </li>
           <li>
             {
-              get(managedVenues, 'length')
+              get(venues, 'length')
                 ? (
                   <NavLink to={showPath}>
                     <Icon svg='picto-structure' />
-                    {managedVenues.length} lieux
+                    {venues.length} lieux
                   </NavLink>
                 )
                 : (
@@ -84,11 +84,11 @@ const OffererItem = ({
 
 export default connect(
   () => {
-    const selectManagedVenues = createSelectManagedVenues()
-    const selectManagedOccasions = createSelectManagedOccasions(selectManagedVenues)
+    const selectVenues = createSelectVenues()
+    const selectOccasions = createSelectOccasions(selectVenues)
     return (state, ownProps) => ({
-      managedOccasions: selectManagedOccasions(state, ownProps),
-      managedVenues: selectManagedVenues(state, ownProps),
+      occasions: selectOccasions(state, ownProps),
+      venues: selectVenues(state, ownProps),
     })
   }
 ) (OffererItem)

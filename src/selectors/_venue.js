@@ -1,25 +1,26 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import selectCurrentOccasion from './currentOccasion'
+import { selectCurrentOccasion } from './occasion'
 import selectOccasions from './occasions'
-import selectVenues from './venues'
+import { selectVenues } from './venues'
 
-export default createSelector(
+const createSelectVenue = selectOccasion => createSelector(
   selectVenues,
-  (state, ownProps) => ownProps.match.params.venueId,
-  selectCurrentOccasion,
+  (state, ownProps) => get(ownProps, 'match.params.venueId'),
+  selectOccasion,
   selectOccasions,
   state => state.data.venueProviders,
-  (venues, venueId, currentOccasion, occasions,  venueProviders) => {
-    console.log('currentOccasion', currentOccasion)
+  (venues, venueId, occasion, occasions, venueProviders) => {
     if (!venues) {
       return
     }
 
+    console.log('venues', venues, occasion, get(occasion, 'venueId'))
+
     const venue = venues.find(v =>
-      v.id === (venueId || get(currentOccasion, 'venueId')))
-    console.log('VENUE', venue)
+      v.id === (venueId || get(occasion, 'venueId')))
+
     if (!venue) {
       return
     }
@@ -38,3 +39,6 @@ export default createSelector(
     return venue
   }
 )
+export default createSelectVenue
+
+export const selectCurrentVenue = createSelectVenue(selectCurrentOccasion)

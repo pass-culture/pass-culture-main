@@ -14,8 +14,10 @@ import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
+import { selectCurrentEvent } from '../../selectors/event'
 import selectSelectedType from '../../selectors/selectedType'
 import selectSelectedVenueId from '../../selectors/selectedVenueId'
+import { selectCurrentThing } from '../../selectors/thing'
 import { eventNormalizer } from '../../utils/normalizers'
 
 const requiredEventAndThingFields = [
@@ -50,7 +52,7 @@ class OccasionPage extends Component {
       id
     } = (currentMediation || {})
     const isEdit = search === '?modifie'
-    const isEventType = (selectedType || '').split('.')[0] === 'EventType'
+    const isEventType = get(selectedType, 'model') === 'EventType'
     const isReadOnly = !isNew && !isEdit
     const apiPath = isEventType
       ? `events${id ? `/${id}` : ''}`
@@ -180,6 +182,7 @@ class OccasionPage extends Component {
   render () {
     const {
       currentOccasion,
+      event,
       isLoading,
       isNew,
       location: { pathname },
@@ -187,12 +190,9 @@ class OccasionPage extends Component {
       occasionForm,
       routePath,
       selectedType,
+      thing,
       typeOptions,
     } = this.props
-    const {
-      event,
-      thing
-    } = (currentOccasion || {})
     const {
       id,
       name
@@ -237,7 +237,7 @@ class OccasionPage extends Component {
           />
           <FormField
             collectionName='occasions'
-            defaultValue={selectedType}
+            defaultValue={get(selectedType, 'value')}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Type :" />}
@@ -322,8 +322,10 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
+      event: selectCurrentEvent(state, ownProps),
       selectedType: selectSelectedType(state, ownProps),
       selectedVenueId: selectSelectedVenueId(state, ownProps),
+      thing: selectCurrentThing(state, ownProps),
       typeOptions: state.data.types
     }),
     {

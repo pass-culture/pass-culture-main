@@ -1,8 +1,14 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
+import selectOfferers from './offerers'
+import selectVenue from './venue'
+
 export default createSelector(
-  (state, ownProps) => ownProps.match.params.offererId,
-  state => state.user,
-  (offererId, user) =>
-    user && user.offerers.find(o => o.id === offererId)
+  selectOfferers,
+  (state, ownProps) => get(ownProps, 'match.params.offererId'),
+  selectVenue,
+  (offerers, offererId, venue) => offerers &&
+    offerers.find(offerer =>
+      offerer.id === (offererId || get(venue, 'managingOffererId')))
 )

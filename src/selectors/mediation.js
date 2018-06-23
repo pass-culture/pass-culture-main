@@ -1,10 +1,10 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import selectCurrentOccasion from './currentOccasion'
+import selectOccasion from './occasion'
 
-export default () => createSelector(
-  selectCurrentOccasion,
+const createSelectMediation = () => createSelector(
+  selectOccasion,
   (state, ownProps) => ownProps.match.params.mediationId,
   state => state.data.mediations,
   (currentOccasion, mediationId, mediations) => {
@@ -15,3 +15,6 @@ export default () => createSelector(
       .find(m => m.id === mediationId)
   }
 )
+export default createSelectMediation
+
+export const selectCurrentMediation = createSelectMediation()

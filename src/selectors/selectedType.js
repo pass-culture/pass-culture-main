@@ -2,12 +2,11 @@ import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import selectFormOccasion from './formOccasion'
+import { selectCurrentType } from './type'
 
 export default createSelector(
+  selectCurrentType,
   selectFormOccasion,
-  (state, ownProps) => get(ownProps, 'currentOccasion.event.typeOption') ||
-    get(ownProps, 'currentOccasion.thing.typeOption'),
-  (formOccasion, typeOption) =>
-    get(formOccasion, 'type') ||
-    get(typeOption, 'value')
+  (type, formOccasion) =>
+    type || get(formOccasion, 'type')
 )

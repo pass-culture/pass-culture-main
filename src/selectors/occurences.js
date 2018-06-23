@@ -2,20 +2,26 @@ import get from 'lodash.get'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-export default () => createSelector(
+import selectSelectedVenueId from './selectedVenueId'
+
+const createSelectOccurences = () => createSelector(
   state => state.data.eventOccurences,
+  selectSelectedVenueId,
   (state, ownProps) => get(ownProps, 'occasion.eventId'),
-  (eventOccurences, eventId) => {
+  (eventOccurences, selectedVenueId, eventId) => {
     if (!eventOccurences) {
       return
     }
 
-    let filteredOccurences
+    let filteredOccurences = [...eventOccurences]
+
+    if (selectedVenueId) {
+      filteredOccurences = filteredOccurences.filter(o =>
+        o.venueId === selectedVenueId)
+    }
     if (eventId) {
-      filteredOccurences = eventOccurences.filter(eventOccurence =>
+      filteredOccurences = filteredOccurences.filter(eventOccurence =>
         eventOccurence.eventId === eventId)
-    } else {
-      filteredOccurences = [...eventOccurences]
     }
 
     // clone
@@ -33,3 +39,7 @@ export default () => createSelector(
     return filteredOccurences
   }
 )
+
+export default createSelectOccurences
+
+export const selectCurrentOccurences = createSelectOccurences()

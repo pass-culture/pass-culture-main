@@ -12,8 +12,10 @@ import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
 import { showNotification } from '../../reducers/notification'
-import selectCurrentMediation from '../../selectors/currentMediation'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
+import { selectCurrentEvent } from '../../selectors/event'
+import { selectCurrentMediation } from '../../selectors/mediation'
+import selectOfferer from '../../selectors/offerer'
+import { selectCurrentThing } from '../../selectors/thing'
 import { mediationNormalizer } from '../../utils/normalizers'
 
 const uploadExplanation = `
@@ -136,9 +138,7 @@ class MediationPage extends Component {
 
   render () {
     const {
-      currentOccasion,
-      currentOfferer,
-      currentMediation,
+      event,
       imageUploadSize,
       imageUploadBorder,
       match: {
@@ -147,15 +147,18 @@ class MediationPage extends Component {
           occasionId
         }
       },
+      mediation,
+      occasion,
+      offerer,
+      thing,
     } = this.props
     const {
-      event,
-      thing,
+
       name
-    } = (currentOccasion || {})
+    } = (occasion || {})
     const {
       id
-    } = (currentMediation || {})
+    } = (mediation || {})
     const {
       croppingRect,
       image,
@@ -165,7 +168,7 @@ class MediationPage extends Component {
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionId}`
 
-    console.log('currentOfferer', currentOfferer)
+    console.log('offerer', offerer)
 
     return (
       <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
@@ -248,7 +251,7 @@ class MediationPage extends Component {
               getBody={form => {
 
                 const eventId = get(event, 'id')
-                const offererId = get(currentOfferer, 'id')
+                const offererId = get(offerer, 'id')
                 const thingId = get(thing, 'id')
 
                 if (typeof image === 'string') {
@@ -290,8 +293,10 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      currentMediation: selectCurrentMediation(state, ownProps),
-      currentOfferer: selectCurrentOfferer(state, ownProps)
+      event: selectCurrentThing(state, ownProps),
+      mediation: selectCurrentMediation(state, ownProps),
+      offerer: selectOfferer(state, ownProps),
+      thing: selectCurrentThing(state, ownProps)
     }),
     { assignData, showNotification }
   )
