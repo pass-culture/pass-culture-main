@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OfferForm from '../OfferForm'
+import OccasionForm from '../OccasionForm'
 import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
@@ -14,12 +14,23 @@ import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import selectOfferForm from '../../selectors/offerForm'
 import selectSelectedType from '../../selectors/selectedType'
+import selectSelectedVenueId from '../../selectors/selectedVenueId'
 import { eventNormalizer } from '../../utils/normalizers'
 
+const requiredEventAndThingFields = [
+  'name',
+  'type',
+  'description',
+  'contactName',
+  'contactEmail',
+]
 
-class OfferPage extends Component {
+const requiredEventFields = [
+  'durationMinutes',
+]
+
+class OccasionPage extends Component {
   constructor () {
     super()
     this.state = {
@@ -33,22 +44,29 @@ class OfferPage extends Component {
       currentMediation,
       location: { search },
       isNew,
-      offerForm
+      selectedType,
     } = nextProps
     const {
       id
     } = (currentMediation || {})
-    const {
-      isEventType
-    } = (offerForm || {})
     const isEdit = search === '?modifie'
+    const isEventType = (selectedType || '').split('.')[0] === 'EventType'
     const isReadOnly = !isNew && !isEdit
     const apiPath = isEventType
       ? `events${id ? `/${id}` : ''}`
       : `things${id ? `/${id}` : ''}`
+
+    let requiredFields = requiredEventAndThingFields
+
+    if (isEventType) {
+      requiredFields = requiredFields.concat(requiredEventFields)
+    }
+
     return {
       apiPath,
-      isReadOnly
+      isEventType,
+      isReadOnly,
+      requiredFields
     }
   }
 
@@ -92,13 +110,14 @@ class OfferPage extends Component {
     const {
       closeModal,
       history,
-      offerForm,
+      occasionForm,
+      selectedVenueId,
       showModal,
       showNotification
     } = this.props
     const {
       isEventType
-    } = (offerForm || {})
+    } = this.state
 
     // PATCH
     if (method === 'PATCH') {
@@ -111,17 +130,23 @@ class OfferPage extends Component {
     }
 
     // POST
-    if (method === 'POST') {
-      // switch to the path with the new created id
-      const routePath = `/offres/${isEventType ? 'evenements' : 'objets'}/${data.id}`
-
-      // modal
-      isEventType && showModal(
+    if (isEventType && method === 'POST') {
+      const {
+        occasions
+      } = (data || {})
+      const occasion = occasions && occasions.find(o =>
+        o.venueId === selectedVenueId
+      )
+      if (!occasion) {
+        console.warn("Something wrong with returned data, we should retrieve the created occasion here")
+        return
+      }
+      showModal(
         <div>
           Cette offre est-elle soumise à des dates ou des horaires particuliers ?
           <NavLink
             className='button'
-            to={`${routePath}/dates`}
+            to={`/offres/${occasion.id}/dates`}
           >
             Oui
           </NavLink>
@@ -133,7 +158,7 @@ class OfferPage extends Component {
       )
     }
   }
-  
+
   componentDidMount () {
     this.handleRequestData()
   }
@@ -159,22 +184,23 @@ class OfferPage extends Component {
       isNew,
       location: { pathname },
       occasionIdOrNew,
-      offerForm,
+      occasionForm,
       routePath,
       selectedType,
       typeOptions,
     } = this.props
     const {
-      id,
-      name
+      event,
+      thing
     } = (currentOccasion || {})
     const {
-      isEventType,
-      requiredFields
-    } = (offerForm || {})
+      id,
+      name
+    } = (event || thing || {})
     const {
       apiPath,
-      isReadOnly
+      isReadOnly,
+      requiredFields
     } = this.state
 
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
@@ -222,8 +248,9 @@ class OfferPage extends Component {
             type="select"
           />
         </div>
+
         {
-          selectedType && <OfferForm {...this.props} />
+          selectedType && <OccasionForm {...this.props} {...this.state} />
         }
 
         <hr />
@@ -295,8 +322,8 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      offerForm: selectOfferForm(state, ownProps),
       selectedType: selectSelectedType(state, ownProps),
+      selectedVenueId: selectSelectedVenueId(state, ownProps),
       typeOptions: state.data.types
     }),
     {
@@ -306,4 +333,4 @@ export default compose(
       showNotification
     }
   )
-)(OfferPage)
+)(OccasionPage)

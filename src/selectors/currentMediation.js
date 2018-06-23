@@ -3,7 +3,7 @@ import { createSelector } from 'reselect'
 
 import selectCurrentOccasion from './currentOccasion'
 
-export default createSelector(
+export default () => createSelector(
   selectCurrentOccasion,
   (state, ownProps) => ownProps.match.params.mediationId,
   state => state.data.mediations,

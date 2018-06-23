@@ -5,13 +5,8 @@ import selectOccasions from './occasions'
 
 export default (selectOccurences) => createSelector(
   selectOccasions,
-  selectOccurences,
-  (state, ownProps) => ownProps.match.params.venueId,
-  (occasions, occurences, venueId) => {
-    return occasions
-      .filter(o => venueId
-        ? o.occurences.some(occ => occ.venueId === venueId)
-        : true
-      )
+  (state, ownProps) => get(ownProps, 'match.params.venueId'),
+  (occasions, occurences, venueId) =>
+    occasions.filter(o => o.venueId === venueId)
   }
 )

@@ -46,7 +46,8 @@ class OccurenceItem extends Component {
 
   render () {
     const {
-      occasion,
+      currentOccasion,
+      currentOccurences,
       occurence,
     } = this.props
     const {
@@ -59,9 +60,10 @@ class OccurenceItem extends Component {
 
     if (isEditing) {
       return <OccurenceForm
+        currentOccasion={currentOccasion}
+        currentOccurences={currentOccurences}
         onDeleteClick={e => this.setState({isEditing: false})}
         occurence={occurence}
-        occasion={occasion}
       />
     }
     return (

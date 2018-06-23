@@ -7,11 +7,22 @@ import selectTypes from './types'
 export default createSelector(
   state => state.data.occasions,
   state => state.data.searchedOccasions,
+  state => state.data.events,
   state => state.data.eventOccurences,
   state => state.data.mediations,
+  state => state.data.things,
   state => state.data.venues,
   selectTypes,
-  (occasions, searchedOccasions, eventOccurences, mediations, venues, types) => {
+  (
+    occasions,
+    searchedOccasions,
+    events,
+    eventOccurences,
+    mediations,
+    things,
+    venues,
+    types
+  ) => {
     if (!occasions && !searchedOccasions) return
 
     // priority to searched elements
@@ -21,36 +32,58 @@ export default createSelector(
     // but removed during the normalizer time
     filteredOccasions.forEach(occasion => {
 
-        // OCCURENCES
-        const occurences = (eventOccurences && eventOccurences.filter(
-          eo => eo.eventId === occasion.id
-        )) || []
-        occurences.forEach(occurence => {
-          occurence.beginningDatetimeMoment = moment(occurence.beginningDatetime)
-        })
-        occurences.sort((event1,event2) =>
-          event1.beginningDatetimeMoment - event2.beginningDatetimeMoment)
-        occasion.occurences = occurences
+      // EVENTS
+      if (occasion.eventId) {
+        const event = events && events.find(event => event.id === occasion.eventId)
+        occasion.event = event
 
-        // VENUE
-        const venueId = get(occurences, '0.venueId')
-        const venue = venueId && venues && venues.find(venue =>
-          venue.id === venueId)
-        occasion.venue = venue
-        occasion.venueId = venueId
+        if (event) {
+          // OCCURENCES
+          const occurences = (eventOccurences && eventOccurences.filter(
+            eo => eo.eventId === event.id
+          )) || []
+          occurences.forEach(occurence => {
+            occurence.beginningDatetimeMoment = moment(occurence.beginningDatetime)
+          })
+          occurences.sort((event1,event2) =>
+            event1.beginningDatetimeMoment - event2.beginningDatetimeMoment)
+          event.occurences = occurences
 
-        // OFFERER
-        occasion.offererId = get(venue, 'managingOffererId')
+          // MEDIATIONS
+          event.mediations = (mediations && mediations.filter(
+            mediation => mediation.eventId === occasion.id ||
+              mediation.thingId === occasion.id
+          )) || []
 
-        // MEDIATIONS
-        occasion.mediations = (mediations && mediations.filter(
-          mediation => mediation.eventId === occasion.id ||
-            mediation.thingId === occasion.id
-        )) || []
+          // TYPE
+          event.typeOption = types && types.find(type =>
+            type.tag === event.type)
+        }
+      }
 
-        // TYPE
-        occasion.typeOption = types && types.find(type =>
-          type.tag === occasion.type)
+      // THINGS
+      if (occasion.thingId) {
+        const thing = things && things.find(thing => thing.id === occasion.thingId)
+        occasion.thing = thing
+
+        if (thing) {
+
+          // MEDIATIONS
+          thing.mediations = (mediations && mediations.filter(
+            mediation => mediation.thingId === occasion.id ||
+              mediation.thingId === occasion.id
+          )) || []
+
+          // TYPE
+          thing.typeOption = types && types.find(type =>
+            type.tag === thing.type)
+        }
+      }
+
+      // VENUE
+      const venue = venues && venues.find(venue =>
+        venue.id === occasion.venueId)
+      occasion.venue = venue
 
     })
 

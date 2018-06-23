@@ -4,9 +4,10 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
-import selectCurrentOccasion from '../../selectors/currentOccasion'
+import createSelectCurrentOccasion from '../../selectors/currentOccasion'
 import { NEW } from '../../utils/config'
 import { pathToCollection } from '../../utils/translate'
+import { occasionNormalizer } from '../../utils/normalizers'
 
 const withCurrentOccasion = WrappedComponent => {
   class _withCurrentOccasion extends Component {
@@ -37,19 +38,7 @@ const withCurrentOccasion = WrappedComponent => {
         apiPath,
         {
           key: 'occasions',
-          normalizer: {
-            events: {
-              key: 'events',
-              normalizer: {
-                occurences: {
-                  key: 'eventOccurences'
-                }
-              }
-            },
-            mediations: 'mediations',
-            thing: 'things',
-            venue: 'venues'  
-          }
+          normalizer: occasionNormalizer
         }
       )
     }
@@ -67,24 +56,20 @@ const withCurrentOccasion = WrappedComponent => {
 
     static getDerivedStateFromProps (nextProps) {
       const {
-        occasionId,
-        occasionPath
-      } = nextProps.match.params
+        currentOccasion,
+        match: { params: { occasionId } },
+      } = nextProps
       const {
         id
-      } = nextProps
+      } = (currentOccasion || {})
       const isNew = occasionId === 'nouveau'
-      const occasionCollection = pathToCollection(occasionPath)
-      const apiPath = isNew
-        ? `${occasionCollection}`
-        : `${occasionCollection}/${occasionId}`
-      const routePath = `/offres/${occasionPath}${isNew ? '' : `/${occasionId}`}`
+      const apiPath = `occasions${isNew ? '' : `/${occasionId}`}`
+      const routePath = `/offres${isNew ? '' : `/${occasionId}`}`
       return {
         apiPath,
         isLoading: !(id || isNew),
         isNew,
         newMediationRoutePath: `${routePath}/accroches/nouveau`,
-        occasionCollection,
         occasionIdOrNew: isNew ? NEW : occasionId,
         routePath
       }
@@ -94,6 +79,8 @@ const withCurrentOccasion = WrappedComponent => {
       return <WrappedComponent {...this.props} {...this.state} />
     }
   }
+
+  const selectCurrentOccasion = createSelectCurrentOccasion()
 
   return compose(
     withRouter,

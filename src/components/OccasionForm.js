@@ -17,28 +17,14 @@ import selectSelectedVenues from '../selectors/selectedVenues'
 import selectVenueOptions from '../selectors/venueOptions'
 import { pluralize } from '../utils/string'
 
-class OfferForm extends Component {
-
-  handleMergeForm = () => {
-    const {
-      mergeForm,
-      occasionIdOrNew,
-      selectedVenueId
-    } = this.props
-    /*
-    selectedVenueId && mergeForm(
-      'occasions',
-      occasionIdOrNew,
-      'venueId',
-      selectedVenueId
-    )
-    */
-  }
+class OccasionForm extends Component {
 
   handleShowOccurencesModal = () => {
     const {
       currentOccasion,
+      history,
       match: { params: { modalType } },
+      routePath,
       showModal
     } = this.props
 
@@ -46,23 +32,23 @@ class OfferForm extends Component {
       return
     }
 
-    showModal(<OccurenceManager occasion={currentOccasion} />)
+    showModal(
+      <OccurenceManager currentOccasion={currentOccasion} />,
+      {
+        onCloseClick: () => history.push(routePath)
+      }
+    )
 
   }
 
   componentDidMount () {
-    this.handleMergeForm()
     this.handleShowOccurencesModal()
   }
 
   componentDidUpdate (prevProps) {
     const {
-      match: { params: { modalType } },
-      selectedVenueId
+      match: { params: { modalType } }
     } = this.props
-    if (prevProps.selectedVenueId !== selectedVenueId) {
-      this.handleMergeForm()
-    }
     if (!get(prevProps, 'match.params.modalType') && modalType === 'dates') {
       this.handleShowOccurencesModal()
     }
@@ -71,6 +57,7 @@ class OfferForm extends Component {
   render () {
     const {
       currentOccasion,
+      isEventType,
       isNew,
       isReadOnly,
       occasionIdOrNew,
@@ -83,6 +70,10 @@ class OfferForm extends Component {
       user
     } = this.props
     const {
+      event,
+      thing
+    } = (currentOccasion || {})
+    const {
       author,
       contactName,
       contactEmail,
@@ -94,10 +85,7 @@ class OfferForm extends Component {
       performer,
       occurences,
       stageDirector,
-    } = (currentOccasion || {})
-    const {
-      isEventType
-    } = (offerForm || {})
+    } = (event || thing || {})
 
     const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
       ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
@@ -106,6 +94,8 @@ class OfferForm extends Component {
     const venueOptionsWithPlaceholder = get(venueOptions, 'length') > 1
       ? [{ label: 'Sélectionnez un lieu' }].concat(venueOptions)
       : venueOptions
+
+    console.log('occurences', occurences)
 
     return (
       <div>
@@ -123,7 +113,7 @@ class OfferForm extends Component {
                   <div className='field-body'>
                     <div className='field'>
                       <div className='nb-dates'>
-                        {pluralize(occurences.length, 'date')}
+                        {pluralize(get(occurences, 'length'), 'date')}
                       </div>
                       <NavLink
                         className='button is-primary is-outlined is-small'
@@ -330,4 +320,4 @@ export default connect(
     mergeForm,
     showModal
   }
-)(OfferForm)
+)(OccasionForm)

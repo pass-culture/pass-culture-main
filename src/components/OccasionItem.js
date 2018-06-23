@@ -10,18 +10,15 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
+import createSelectEvent from '../selectors/event'
+import createSelectMediations from '../selectors/mediations'
+import createSelectCurrentThing from '../selectors/thing'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import { pluralize } from '../utils/string'
 import { modelToPath } from '../utils/translate'
+import { occasionNormalizer } from '../utils/normalizers'
 
 class OccasionItem extends Component {
-
-  constructor () {
-    super()
-    this.state = {
-      path: null
-    }
-  }
 
   onDeactivateClick = event => {
     const {
@@ -34,7 +31,7 @@ class OccasionItem extends Component {
     } = (occasion || {})
     requestData(
       'PATCH',
-      `offers/${id}`,
+      `occasions/${id}`,
         {
           body: {
             occasion: {
@@ -42,14 +39,7 @@ class OccasionItem extends Component {
             }
           },
           key: 'occasions',
-          normalizer: {
-            occurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                venue: 'venues'
-              }
-            }
-          },
+          normalizer: occasionNormalizer,
           isMergingDatum: true,
           isMutatingDatum: true,
           isMutaginArray: false
@@ -57,26 +47,24 @@ class OccasionItem extends Component {
       )
   }
 
-  static getDerivedStateFromProps (nextProps) {
-    return {
-      path: `/offres/${modelToPath(get(nextProps, 'occasion.modelName'))}`
-    }
-  }
-
   render() {
     const {
+      isActive,
       occasionItem,
       occasion,
     } = this.props
     const {
+      event,
+      id,
+      thing
+    } = (occasion || {})
+    const {
       createdAt,
       eventType,
-      id,
-      isActive,
       mediations,
       name,
-      occurences,
-    } = (occasion || {})
+      occurences
+    } = (event || thing || {})
     const {
       available,
       maxDate,
@@ -86,13 +74,12 @@ class OccasionItem extends Component {
       priceMax,
       thumbUrl
     } = (occasionItem || {})
-    const { path } = this.state
     const mediationsLength = get(mediations, 'length')
     return (
       <li className={classnames('occasion-item', { active: isActive })}>
         <Thumb alt='offre' src={thumbUrl} />
         <div className="list-content">
-          <NavLink className='name' to={`${path}/${id}`} title={name}>
+          <NavLink className='name' to={`/offres/${id}`} title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className='infos'>
@@ -106,14 +93,14 @@ class OccasionItem extends Component {
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`${path}/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
+              <NavLink  to={`offres/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
                 <span className='icon'><Icon svg='ico-stars' /></span>
                 <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
             </li>
             <li>
               <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
-              <NavLink  to={`${path}/${id}`} className="button is-secondary is-small">
+              <NavLink  to={`offres/${id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
               </NavLink>
             </li>
@@ -132,7 +119,13 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
-    const selectOccasionItem = createSelectOccasionItem()
+    const selectEvent =  createSelectEvent()
+    const selectThing =  createSelectCurrentThing()
+    const selectMediations = createSelectMediations(
+      selectEvent,
+      selectThing
+    )
+    const selectOccasionItem = createSelectOccasionItem(selectMediations)
     return (state, ownProps) => ({
       occasionItem: selectOccasionItem(state, ownProps)
     })

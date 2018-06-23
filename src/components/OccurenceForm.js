@@ -1,20 +1,43 @@
 import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
-import selectEventOccurenceForm from '../selectors/eventOccurenceForm'
+import selectCurrentOccurences from '../selectors/currentOccurences'
 import { NEW } from '../utils/config'
+import { getIsDisabled } from '../utils/form'
 
 class OccurenceForm extends Component {
 
+  constructor () {
+    super()
+    this.state = {
+      highlightedDates: null
+    }
+  }
+
+  static getDerivedStateFromProps (nextProps) {
+    const {
+      currentOccurences,
+      occurence
+    } = nextProps
+    const {
+      id
+    } = (occurence || {})
+    return {
+      apiPath: `eventOccurences${id ? `/${id}` : ''}`,
+      highlightedDates: currentOccurences &&
+        currentOccurences.map(o => moment(o.beginningDatetime)),
+      method: id ? 'PATCH' : 'POST'
+    }
+  }
+
   render () {
     const {
-      isNew,
-      occasion,
+      currentOccasion,
+      currentOccurences,
       occurence,
       onDeleteClick,
     } = this.props
@@ -30,7 +53,12 @@ class OccurenceForm extends Component {
     } = occurence || {}
     const {
       durationMinutes,
-    } = occasion
+    } = (currentOccasion || {})
+    const {
+      apiPath,
+      highlightedDates,
+      method
+    } = this.state
     const eventOccurenceIdOrNew = id || NEW
 
     return (
@@ -44,7 +72,7 @@ class OccurenceForm extends Component {
             required
             type="date"
             className='is-small'
-            highlightedDates={occasion.occurences.map(o => moment(o.beginningDatetime))}
+            highlightedDates={highlightedDates}
           />
         </td>
         <td>
@@ -112,17 +140,18 @@ class OccurenceForm extends Component {
                 groupSize: eo.groupSize,
                 pmrGroupSize: eo.pmrGroupSize,
                 price: eo.price,
-                eventId: occasion.id,
-                venueId: occasion.venueId,
+                eventId: get(currentOccasion, 'event.id'),
+                venueId: currentOccasion.venueId,
               }
             }}
-            getIsDisabled={form => {
-              const missingFields = ['date', 'time'].filter(f => !get(form, `eventOccurencesById.${eventOccurenceIdOrNew}.${f}`))
-              return missingFields.length > 0
-            }}
+            getIsDisabled={form => getIsDisabled(
+              get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
+              ['date', 'time'],
+              !occurence
+            )}
             handleSuccess={e => onDeleteClick && onDeleteClick()}
-            method={isNew ? 'POST' : 'PATCH'}
-            path={isNew ? 'eventOccurences' : `eventOccurences/${id}`}
+            method={method}
+            path={apiPath}
             storeKey="eventOccurences"
             text="Valider"
           >
