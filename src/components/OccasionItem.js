@@ -13,6 +13,7 @@ import { requestData } from '../reducers/data'
 import createSelectEvent from '../selectors/event'
 import createSelectMediations from '../selectors/mediations'
 import createSelectCurrentThing from '../selectors/thing'
+import createSelectOccurences from '../selectors/occurences'
 import createSelectOccasionItem from '../selectors/occasionItem'
 import { pluralize } from '../utils/string'
 import { modelToPath } from '../utils/translate'
@@ -54,26 +55,27 @@ class OccasionItem extends Component {
       occasion,
     } = this.props
     const {
-      event,
-      id,
-      thing
-    } = (occasion || {})
-    const {
-      createdAt,
-      eventType,
-      mediations,
-      name,
-      occurences
-    } = (event || thing || {})
-    const {
       available,
+      event,
       maxDate,
+      mediations,
       groupSizeMin,
       groupSizeMax,
       priceMin,
       priceMax,
-      thumbUrl
+      thing,
+      thumbUrl,
+      occurences,
     } = (occasionItem || {})
+    const {
+      id
+    } = (occasion || {})
+    const {
+      createdAt,
+      eventType,
+      name,
+    } = (event || thing || {})
+
     const mediationsLength = get(mediations, 'length')
     return (
       <li className={classnames('occasion-item', { active: isActive })}>
@@ -125,7 +127,13 @@ export default connect(
       selectEvent,
       selectThing
     )
-    const selectOccasionItem = createSelectOccasionItem(selectMediations)
+    const selectOccurences = createSelectOccurences()
+    const selectOccasionItem = createSelectOccasionItem(
+      selectEvent,
+      selectThing,
+      selectMediations,
+      selectOccurences
+    )
     return (state, ownProps) => ({
       occasionItem: selectOccasionItem(state, ownProps)
     })
