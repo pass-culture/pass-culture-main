@@ -5,11 +5,12 @@ import { NavLink } from 'react-router-dom'
 
 import createVenueSelector from '../selectors/createVenue'
 import createOccasionsSelector from '../selectors/createOccasions'
+import createOffersSelector from '../selectors/createOffers'
 import Icon from './layout/Icon'
 
 const VenueItem = ({
+  offers,
   venue,
-  venueId,
 }) => {
   const {
     address,
@@ -36,11 +37,11 @@ const VenueItem = ({
           </li>
           <li>
             {
-              get(occasions, 'length')
+              get(offers, 'length')
               ? (
                 <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                   {occasions.length} offres
+                   {offers.length} offres
                 </NavLink>
               )
               : (
@@ -68,6 +69,7 @@ export default connect(
   () => {
     return (state, ownProps) => ({
       occasions: createOccasionsSelector()(state, null, ownProps.venueId),
+      offers: createOffersSelector()(state, ownProps.venueId),
       venue: createVenueSelector()(state, ownProps.venueId)
     })
   }
