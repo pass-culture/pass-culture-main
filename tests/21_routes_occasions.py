@@ -15,14 +15,23 @@ def test_10_get_occasions_should_return_a_list_of_occasions():
     assert dehumanize(occasions[0]['id']) == last_id
     r = req_with_auth().get(API_URL + '/occasions?page=2')
     assert r.status_code == 200
-    occasions2 = r.json()
-    assert dehumanize(occasions2[0]['id']) == last_id-10
+    occasions = r.json()
+    assert dehumanize(occasions[0]['id']) == last_id-10
     r = req_with_auth().get(API_URL + '/occasions?venueId='+humanize(1))
     assert r.status_code == 200
-    occasions2 = r.json()
+    occasions = r.json()
+    for occasion in occasions:
+        assert occasion['venueId'] == humanize(1)
     r = req_with_auth().get(API_URL + '/occasions?venueId='+humanize(2))
     assert r.status_code == 200
-    occasions2 = r.json()
+    occasions = r.json()
+    for occasion in occasions:
+        assert occasion['venueId'] == humanize(2)
+    r = req_with_auth().get(API_URL + '/occasions?venueId='+humanize(2)+'&page=2')
+    assert r.status_code == 200
+    occasions = r.json()
+    for occasion in occasions:
+        assert occasion['venueId'] == humanize(2)
 
 
 def test_11_create_thing_occasion():
