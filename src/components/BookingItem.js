@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom'
 import TimeAgo from 'react-timeago'
 import frenchStrings from 'react-timeago/lib/language-strings/fr-short'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
+import moment from 'moment'
 
+import Capitalize from './utils/Capitalize'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { getDiscoveryPath } from '../utils/routes'
@@ -31,7 +33,7 @@ const BookingItem = props => {
                 {get(props, 'source.name')}
               </Dotdotdot>
             </h5>
-            <TimeAgo date={date} formatter={formatter} />
+            <Capitalize>{moment.parseZone(date).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
           </div>
           <div className="token">{token}</div>
         </div>

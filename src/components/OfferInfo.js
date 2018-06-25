@@ -69,7 +69,7 @@ class OfferInfo extends Component {
                 (occurence, index) =>
                   index < 7 && (
                     <li key={index}>
-                      <Capitalize>{moment(occurence).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
+                      <Capitalize>{moment.parseZone(occurence).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
                     </li>
                   )
               )}

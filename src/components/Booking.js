@@ -69,7 +69,7 @@ class Booking extends Component {
       'recommendation.mediatedOccurences',
       []
     )
-    const availableDates = mediatedOccurences.map(o => moment(o.beginningDatetime))
+    const availableDates = mediatedOccurences.map(o => moment.parseZone(o.beginningDatetime))
     const availableMediatedOccurences = []
     const availableHours = availableDates.filter((d, index) => {
       const isFiltered = d.isSame(selectedDate || this.state.date, 'day')
@@ -156,8 +156,8 @@ class Booking extends Component {
                     >
                       {availableHours.length === 0 && <option>hh:mm</option>}
                       {availableHours.map(d => (
-                        <option key={d} value={moment(d).format('H:mm')}>
-                          {moment(d).format('H:mm')}
+                        <option key={d} value={moment.parseZone(d).format('H:mm')}>
+                          {moment.parseZone(d).format('H:mm')}
                         </option>
                       ))}
                     </select>
