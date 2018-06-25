@@ -28,15 +28,21 @@ const OffererItem = ({
           </NavLink>
         </p>
         <ul className='actions'>
-          {isActive ? (
+          {!isActive ? (
             <li className='is-italic'>En cours de validation : vous allez recevoir un e-mail.</li>
           ) : (
             [
               <li>
-                <NavLink to={`/offres/nouveau`} className='has-text-primary'>
-                  <Icon svg='ico-offres-r' />
-                  Nouvelle offre
-                </NavLink>
+                {
+                  get(managedVenues, 'length')
+                  ? (
+                    <NavLink to={`/offres/nouveau`} className='has-text-primary'>
+                    <Icon svg='ico-offres-r' />
+                    Nouvelle offre
+                  </NavLink>
+                ) :
+                ''
+                }
               </li>,
               <li>
                 {
@@ -47,10 +53,11 @@ const OffererItem = ({
                         {managedOccasions.length} offre
                       </NavLink>
                     )
-                    : (
+                    : ( get(managedVenues, 'length') ? (
                       <p>
                         0 offre
                       </p>
+                    ) : ''
                     )
                 }
               </li>,
@@ -64,10 +71,13 @@ const OffererItem = ({
                       </NavLink>
                       )
                     : (
-                      <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
+                      [
+                        <p>Vous devez avoir déjà enregistré un lieu pour ajouter des offres</p>,
+                        <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
                         className='has-text-primary'>
                         <Icon svg='picto-structure' /> Ajouter un lieu
                       </NavLink>
+                      ]
                       )
                   }
               </li>,
