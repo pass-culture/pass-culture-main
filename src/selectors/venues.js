@@ -25,4 +25,5 @@ const createSelectVenues = () => createSelector(
 )
 export default createSelectVenues
 
-export const selectVenues = createSelectVenues()
+// Don't do that: exports are cached, so the method is called only once
+// export const selectVenues = createSelectVenues()

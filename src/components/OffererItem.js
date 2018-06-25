@@ -92,9 +92,8 @@ const OffererItem = ({
 export default connect(
   () => {
     const selectVenues = createSelectVenues()
-    const selectOccasions = createSelectOccasions(selectVenues)
     return (state, ownProps) => ({
-      occasions: selectOccasions(state, ownProps),
+      occasions: createSelectOccasions(state, ownProps),
       venues: selectVenues(state, ownProps),
     })
   }

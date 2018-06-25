@@ -1,13 +1,14 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import { selectCurrentOccasion } from './occasion'
-import { selectVenues } from './venues'
+// import { selectCurrentOccasion } from './occasion'
+import createSelectVenues from './venues'
+import createSelectOccasion from './occasion'
 
-const createSelectVenue = selectOccasion => createSelector(
-  selectVenues,
+const createSelectVenue = () => createSelector(
+  createSelectVenues(),
   (state, ownProps) => get(ownProps, 'match.params.venueId'),
-  selectOccasion,
+  createSelectOccasion(),
   (venues, venueId, occasion) => {
     if (!venues) {
       return
@@ -19,4 +20,5 @@ const createSelectVenue = selectOccasion => createSelector(
 )
 export default createSelectVenue
 
-export const selectCurrentVenue = createSelectVenue(selectCurrentOccasion)
+// Don't do that: exports are cached, so the method is called only once
+// export const selectCurrentVenue = createSelectVenue(selectCurrentOccasion)

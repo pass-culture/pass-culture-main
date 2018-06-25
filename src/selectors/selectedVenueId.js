@@ -1,10 +1,10 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import { selectVenues } from './venues'
+import createVenueSelector from './venues'
 
 export default createSelector(
-  selectVenues,
+  createVenueSelector,
   (state, ownProps) => get(ownProps, 'occasion.venueId'),
   (venues, venueId) =>
     venueId ||

@@ -5,7 +5,7 @@ import { withRouter } from 'react-router'
 import get from 'lodash.get'
 
 import { requestData } from '../reducers/data'
-import selectVenues from '../selectors/venues'
+import createSelectVenues from '../selectors/venues'
 import VenueItem from './VenueItem'
 
 class VenuesList extends Component {
@@ -62,7 +62,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venues: selectVenues(state, ownProps)
+      venues: createSelectVenues()(state, ownProps)
     }),
     { requestData }
   )

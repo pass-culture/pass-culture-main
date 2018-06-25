@@ -7,8 +7,7 @@ import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
 import { selectCurrentEvent } from '../selectors/event'
-import { selectCurrentOccurences } from '../selectors/occurences'
-import { selectCurrentVenue } from '../selectors/venue'
+import makeSelectVenue from '../selectors/venue'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -179,6 +178,6 @@ class OccurenceForm extends Component {
 export default connect(
   (state, ownProps) => ({
     event: selectCurrentEvent(state, ownProps),
-    venue: selectCurrentVenue(state, ownProps),
+    venue: makeSelectVenue()(state, ownProps),
   })
 )(OccurenceForm)
