@@ -12,7 +12,9 @@ class RightsType(enum.Enum):
 app.model.RightsType = RightsType
 
 
-class UserOfferer(app.model.PcObject, db.Model):
+class UserOfferer(app.model.PcObject,
+                  app.model.NeedsValidationMixin,
+                  db.Model):
     userId = db.Column(db.BigInteger,
                        db.ForeignKey('user.id'),
                        primary_key=True)

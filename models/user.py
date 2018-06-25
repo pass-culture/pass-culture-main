@@ -1,14 +1,16 @@
 """User model"""
+import bcrypt
 from datetime import datetime
 from flask import current_app as app
 from sqlalchemy.sql import expression
-import bcrypt
+import secrets
 db = app.db
 
 
 class User(app.model.PcObject,
            db.Model,
-           app.model.HasThumbMixin
+           app.model.HasThumbMixin,
+           app.model.NeedsValidationMixin
            ):
     email = db.Column(db.String(120), nullable=False)
     password = db.Column(db.Binary(60), nullable=False)

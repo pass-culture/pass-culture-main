@@ -1,4 +1,5 @@
 """ offerer """
+from datetime import datetime
 from flask import current_app as app
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TEXT
@@ -14,9 +15,14 @@ class Offerer(app.model.PcObject,
               app.model.HasThumbMixin,
               app.model.HasAddressMixin,
               app.model.ProvidableMixin,
+              app.model.NeedsValidationMixin,
               app.model.DeactivableMixin,
               db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
+
+    dateCreated = db.Column(db.DateTime,
+                            nullable=False,
+                            default=datetime.now)
 
     name = db.Column(db.String(140), nullable=False)
 
@@ -27,12 +33,12 @@ class Offerer(app.model.PcObject,
 
     siren = db.Column(db.String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
-    def make_admin(self, admin):
-        if admin:
+    def give_rights(self, user, rights):
+        if user:
             user_offerer = app.model.UserOfferer()
             user_offerer.offerer = self
-            user_offerer.user = admin
-            user_offerer.rights = app.model.RightsType.admin
+            user_offerer.user = user
+            user_offerer.rights = rights
             return user_offerer
 
     def errors(self):

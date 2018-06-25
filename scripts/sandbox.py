@@ -32,6 +32,9 @@ def do_sandbox():
             print("QUERY COUNT", query.count())
             if query.count() == 0:
                 user = model.User(from_dict=user_dict)
+                user.validationToken = None
+                from pprint import pprint
+                pprint(vars(user))
                 check_and_save(user)
                 if 'isAdmin' in user_dict and user_dict['isAdmin']:
                     # un acteur culturel qui peut jouer à rajouter des offres partout

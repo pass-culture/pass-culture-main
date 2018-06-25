@@ -3,6 +3,7 @@ from os import path
 from pathlib import Path
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
+from utils.mailing import send_pro_validation_email
 from utils.rest import update,\
                        expect_json_data,\
                        login_or_api_key_required
@@ -13,15 +14,22 @@ from oauth2client.service_account import ServiceAccountCredentials
 from models.api_errors import ApiErrors
 from utils.includes import USERS_INCLUDES
 
+
 def make_user_query():
     query = app.model.User.query
     return query
+
+
+Offerer = app.model.Offerer
+User = app.model.User
+
 
 @app.route("/users/me", methods=["GET"])
 @login_required
 def get_profile():
     user = current_user._asdict(include=USERS_INCLUDES)
     return jsonify(user)
+
 
 @app.route('/users/me', methods=['PATCH'])
 @login_or_api_key_required
@@ -103,21 +111,35 @@ def signup():
             e.addError('email', "Adresse non autorisée pour l'expérimentation")
             return jsonify(e.errors), 400
 
-    new_user = app.model.User(from_dict=request.json)
+    new_user = User(from_dict=request.json)
     new_user.id = None
     new_user.departementCode = departement_code
 
     offerer = None
     user_offerer = None
+    # we don't validate users yet
+    new_user.validationToken = None
     if 'siren' in request.json:
-        #TODO: handle case of already existing Offerer
         new_user.canBook = False
-        offerer = app.model.Offerer()
-        update(offerer, request.json)
-        user_offerer = offerer.make_admin(new_user)
-        offerer.bookingEmail = new_user.email
-        offerer.isActive = False
-        app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
+        existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
+        if existing_offerer is None:
+            offerer = app.model.Offerer()
+            update(offerer, request.json)
+            user_offerer = offerer.give_rights(new_user,
+                                               app.model.RightsType.admin)
+            offerer.bookingEmail = new_user.email
+            if new_user.validationToken is not None:
+                # if new_user needs to be validated, use same token for user and offerer
+                offerer.validationToken = new_user.validationToken
+            # Don't validate the first user / offerer link so that the user can immediately start loading offers
+            user_offerer.validationToken = None
+            app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
+        else:
+            offerer = existing_offerer
+            user_offerer = offerer.give_rights(new_user,
+                                               app.model.RightsType.editor)
+            app.model.PcObject.check_and_save(user_offerer)
+        send_pro_validation_email(new_user, offerer)
     else:
         app.model.PcObject.check_and_save(new_user)
     login_user(new_user)

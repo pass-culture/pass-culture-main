@@ -5,6 +5,7 @@ from flask import current_app as app
 from mailjet_rest import Client
 import os
 from pprint import pformat
+import requests
 
 from utils.date import format_datetime
 from utils.config import ENV, IS_DEV, IS_STAGING
@@ -15,17 +16,21 @@ MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
 Offer = app.model.Offer
 
 
-def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
-    if booking is None and len(offer.bookings)==0:
-        print("Not sending recap for  "+offer+" as it has no bookings")
+def init_mailjet():
     if MAILJET_API_KEY is None or MAILJET_API_KEY=='':
         raise ValueError("Missing environment variable MAILJET_API_KEY")
 
     if MAILJET_API_SECRET is None or MAILJET_API_SECRET=='':
         raise ValueError("Missing environment variable MAILJET_API_SECRET")
 
-    mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET),
-                     version='v3')
+    return Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET),
+                  version='v3')
+
+
+def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
+    if booking is None and len(offer.bookings)==0:
+        print("Not sending recap for  "+offer+" as it has no bookings")
+    mailjet = init_mailjet()
 
     email = make_booking_recap_email(offer, booking, is_cancellation)
 
@@ -111,3 +116,46 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
              'Subject': email_subject,
              'Html-part': email_html,
            }
+
+
+def send_pro_validation_email(user, offerer):
+    to = 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING\
+         else 'passculture@beta.gouv.fr'
+    mailjet = init_mailjet()
+    email_html = '<html><body>'
+    email_html += "<p>Inscription ou rattachement PRO à valider</p>"
+    if user.isValidated:
+        email_html += "<h3>Personne (existante): </h3>"
+    else:
+        email_html += "<h3>Personne (nouvelle, à valider + valider le rattachement à l'organisation): </h3>"
+    email_html += pformat(vars(user))
+    if offerer.isValidated:
+        email_html += "<h3>Organisation (existante): </h3>"
+    else:
+        email_html += "<h3>Organisation (nouvelle, à valider + valider le rattachement à la personne): </h3>"
+    email_html += pformat(vars(offerer))
+
+    if offerer.siren:
+        email_html += "<h3>Infos API entreprise : </h3>"
+        api_entreprise = requests.get("https://sirene.entreprise.api.gouv.fr/v1/SIREN/"+offerer.siren)
+        if api_entreprise.status_code == 200:
+            email_html += pformat(vars(api_entreprise.json()))
+        else:
+            raise ValueError('Error getting API entreprise DATA for SIREN : '
+                             + offerer.siren)
+
+    email_html += "Pour valider, "
+    token = offerer.validationToken if user.isValidated\
+            else user.validationToken
+    email_html += "<a href='/validate?token=" + token + "'>cliquez ici</a>"
+
+    email = {
+             'FromName': 'Pass Culture',
+             'FromEmail': 'passculture@beta.gouv.fr',
+             'Subject': "Inscription PRO à valider",
+             'Html-part': email_html,
+             'To': [to]
+           }
+    mailjet_result = mailjet.send.create(data=email)
+    if mailjet_result.status_code != 200:
+        raise Exception("Email send failed: "+pformat(vars(mailjet_result)))

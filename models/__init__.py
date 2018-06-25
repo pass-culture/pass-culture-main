@@ -23,6 +23,7 @@ import models.deactivable_mixin
 import models.extra_data_mixin
 import models.has_address_mixin
 import models.has_thumb_mixin
+import models.needs_validation_mixin
 import models.providable_mixin
 
 import models.booking

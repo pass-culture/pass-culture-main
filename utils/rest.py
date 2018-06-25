@@ -54,6 +54,8 @@ def update(obj, new_properties, **kwargs):
             continue
         elif key == 'id':
             continue
+        elif key == 'validationToken':
+            continue
         elif key.endswith('Id'):
             setattr(obj, key, dehumanize(value))
         else:

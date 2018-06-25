@@ -7,10 +7,12 @@ from pathlib import Path
 API_URL = "http://localhost:5000"
 
 
-def req_with_auth(email=None):
+def req_with_auth(email=None, password=None):
     r = req.Session()
     if email is None:
         r.auth = ('pctest.admin@btmx.fr', 'pctestadmin')
+    elif password is not None:
+        r.auth = (email, password)
     else:
         json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'users.json'
 

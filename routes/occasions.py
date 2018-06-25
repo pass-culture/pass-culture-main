@@ -25,6 +25,7 @@ UserOfferer = app.model.UserOfferer
 Venue = app.model.Venue
 
 
+
 def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = EventOccurence()
     event_occurence.event = occasion

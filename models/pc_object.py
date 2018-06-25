@@ -68,8 +68,9 @@ class PcObject():
                         value = value[:options['cut']] + '...'
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
-                # add still the dehumanized id
                 result['dehumanized' + key[0].capitalize() + key[1:]] = value
+            elif key == 'validationToken':
+                continue
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
             else:
@@ -240,7 +241,10 @@ class PcObject():
         db.session.add(self)
 
     def __repr__(self):
+        id = "unsaved"\
+               if self.id is None\
+               else str(self.id) + "/" + humanize(self.id)
         return '<%s #%s>' % (self.__class__.__name__,
-                             str(self.id) + "/" + humanize(self.id))
+                             id)
 
 app.model.PcObject = PcObject

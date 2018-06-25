@@ -18,6 +18,7 @@ Event = app.model.Event
 EventOccurence = app.model.EventOccurence
 Mediation = app.model.Mediation
 Offer = app.model.Offer
+Offerer = app.model.Offerer
 Recommendation = app.model.Recommendation
 Thing = app.model.Thing
 Venue = app.model.Venue
@@ -128,13 +129,22 @@ def bookable_occasions(query, occasion_type):
 
     bo_Offer = aliased(Offer)
     query = query.join(bo_Offer)\
-                 .filter(((bo_Offer.bookingLimitDatetime == None)
-                          | (bo_Offer.bookingLimitDatetime > datetime.now()))
+                 .filter((bo_Offer.isActive == True)
+                         & ((bo_Offer.bookingLimitDatetime == None)
+                            | (bo_Offer.bookingLimitDatetime > datetime.now()))
                          & ((bo_Offer.available == None) |
                             (bo_Offer.available > Booking.query.filter(Booking.offerId == bo_Offer.id)
                                                          .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))\
                  .distinct(occasion_type.id)
     print_dev('(reco) bookable '+str(occasion_type)+'.count', query.count())
+    return query
+
+
+def with_active_and_validated_offerer(query, occasion_type):
+    query = query.join(Offerer)\
+                 .filter((Offerer.isActive == True)
+                         & (Offerer.validationToken == None))
+    print_dev('(reco) from active and validated offerer '+str(occasion_type)+'.count', query.count())
     return query
 
 
@@ -157,6 +167,7 @@ def get_occasions_by_type(occasion_type,
 
     query = departement_occasions(query, occasion_type, departement_codes)
     query = bookable_occasions(query, occasion_type)
+    query = with_active_and_validated_offerer(query, occasion_type)
     query = not_yet_recommended_occasions(query, occasion_type, user)
 
     occasions = sort_by_score(make_score_tuples(query.all(),
