@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createOccasionsSelect from '../selectors/createOccasions'
-import createVenuesSelect from '../selectors/createVenues'
+import createOccasionsSelector from '../selectors/createOccasions'
+import createVenuesSelector from '../selectors/createVenues'
 
 
 const OffererItem = ({
@@ -18,6 +18,7 @@ const OffererItem = ({
     name,
     isActive,
   } = (offerer || {})
+
   const showPath = `/structures/${id}`
   return (
     <li className="offerer-item">
@@ -35,16 +36,17 @@ const OffererItem = ({
               )
               : [
               // J'ai déja ajouté Un lieu mais pas d'offres
-              get(venues, 'length') > 0
+              get(venues, 'length')
                 ? ([
                   <li>
-                    <NavLink to={`/offres/nouveau`} className='has-text-primary'>
+                    <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
+                      className='has-text-primary'>
                       <Icon svg='ico-offres-r' />
                       Nouvelle offre
                     </NavLink>
                   </li>,
                   // J'ai au moins 1 offre
-                  get(occasions, 'length') > 0 &&
+                  get(occasions, 'length') &&
                     <li>
                       <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
                         <Icon svg='ico-offres-r' />
@@ -59,23 +61,25 @@ const OffererItem = ({
                   <li className='is-italic'>Créez un lieu pour pouvoir y associer des offres.</li>
                 ),
               // J'ai ajouté un lieu
-              get(venues, 'length')  > 0 ?
-              (
+              get(venues, 'length')
+              ? (
+                  <li>
+                    <NavLink to={showPath}>
+                      <Icon svg='ico-offres-r' />
+                      { venues.length === 1 ?  (`${venues.length} lieu`) :
+                      (`${venues.length} lieux`)}
+                    </NavLink>
+                  </li>
+                )
+              : (
+                 // je n'ai pas encore ajouté de lieu
                 <li>
-                  <NavLink to={showPath}>
-                    <Icon svg='ico-offres-r' />
-                    { venues.length === 1 ?  (`${venues.length} lieu`) :
-                    (`${venues.length} lieux`)}
-                  </NavLink>
+                  <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
+                  className='has-text-primary'>
+                  <Icon svg='picto-structure' /> Ajouter un lieu
+                </NavLink>
                 </li>
-              ) :
-              // je n'ai pas encore ajouté de lieu
-              <li>
-                <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
-                className='has-text-primary'>
-                <Icon svg='picto-structure' /> Ajouter un lieu
-              </NavLink>
-              </li>
+              )
             ])
           }
         </ul>
@@ -92,8 +96,8 @@ const OffererItem = ({
 export default connect(
   () => {
     return (state, ownProps) => ({
-      occasions: createOccasionsSelect()(state, ownProps.offerer.id),
-      venues: createVenuesSelect()(state, ownProps.offerer.id),
+      occasions: createOccasionsSelector()(state, ownProps.offerer.id),
+      venues: createVenuesSelector()(state, ownProps.offerer.id),
     })
   }
 ) (OffererItem)

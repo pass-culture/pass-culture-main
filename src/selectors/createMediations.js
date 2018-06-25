@@ -4,7 +4,7 @@ import { createSelector } from 'reselect'
 export default () => createSelector(
   state => get(state, 'data.mediations', []),
   (state, params) => params,
-  (mediations, {eventId, thingId}) => {
-    return mediations.filter(m => m.eventId === eventId && m.thingId === thingId )
+  (mediations, {id, type}) => {
+    return mediations.filter(m => m[`${type}Id`] === id )
   }
 )

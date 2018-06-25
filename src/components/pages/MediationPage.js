@@ -14,11 +14,11 @@ import { assignData } from '../../reducers/data'
 import { showNotification } from '../../reducers/notification'
 import { mediationNormalizer } from '../../utils/normalizers'
 
-import createMediationSelect from '../../selectors/createMediation'
-import selectOfferer from '../../selectors/offerer'
+import createMediationSelector from '../../selectors/createMediation'
+import createOffererSelector from '../../selectors/createOfferer'
 
-import createEventSelect from '../../selectors/createEvent'
-import createThingSelect from '../../selectors/createThing'
+import createEventSelector from '../../selectors/createEvent'
+import createThingSelector from '../../selectors/createThing'
 
 const uploadExplanation = `
 **Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
@@ -295,10 +295,10 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      event: createEventSelect(state, ownProps),
-      mediation: createMediationSelect()(state, ownProps),
-      offerer: selectOfferer(state, ownProps),
-      thing: createThingSelect(state, ownProps)
+      event: createEventSelector(state, ownProps),
+      mediation: createMediationSelector()(state, ownProps),
+      offerer: createOffererSelector()(state, ownProps),
+      thing: createThingSelector(state, ownProps)
     }),
     { assignData, showNotification }
   )

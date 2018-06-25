@@ -1,10 +1,10 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import createOccasionsSelect from './createOccasions'
+import createOccasionsSelector from './createOccasions'
 
-const createOccasionSelect = () => createSelector(
-  createOccasionsSelect(),
+const createOccasionSelector = () => createSelector(
+  createOccasionsSelector(),
   (state, occasionId) => occasionId,
   (occasions, occasionId) => {
     if (!occasionId)
@@ -13,4 +13,4 @@ const createOccasionSelect = () => createSelector(
     return occasions.find(o => o.id === occasionId)
   }
 )
-export default createOccasionSelect
+export default createOccasionSelector

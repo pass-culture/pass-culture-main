@@ -11,16 +11,15 @@ import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
 import { pluralize } from '../utils/string'
-import { modelToPath } from '../utils/translate'
 import { occasionNormalizer } from '../utils/normalizers'
 
 import createMediationsSelect from '../selectors/createMediations'
 import createOccurencesSelect from '../selectors/createOccurences'
 
 import createEventSelect from '../selectors/createEvent'
-import createMaxDateSelect from '../selectors/maxDate'
+import createMaxDateSelect from '../selectors/createMaxDate'
 import createThingSelect from '../selectors/createThing'
-import createStockSelect from '../selectors/stock'
+import createStockSelect from '../selectors/createStock'
 import createThumbUrlSelect from '../selectors/thumbUrl'
 
 class OccasionItem extends Component {
@@ -73,13 +72,11 @@ class OccasionItem extends Component {
       priceMax,
     } = (stock || {})
     const {
-      id
-    } = (occasion || {})
-    const {
+      id,
       createdAt,
       eventType,
       name,
-    } = (event || thing || {})
+    } = (occasion || {})
 
     const mediationsLength = get(mediations, 'length')
     return (
@@ -126,15 +123,18 @@ OccasionItem.defaultProps = {
 
 export default connect(
   () => {
-    return (state, ownProps) => ({
-      event: createEventSelect()(state, ownProps),
-      maxDate: createMaxDateSelect()(state, ownProps),
-      mediations: createMediationsSelect()(state, ownProps),
-      occurences: createOccurencesSelect()(state, ownProps),
-      stock: createStockSelect()(state, ownProps),
-      thing: createThingSelect()(state, ownProps),
-      thumbUrl: createThumbUrlSelect()(state, ownProps)
-    })
+    return (state, ownProps) => {
+      const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
+      return {
+        event: createEventSelect()(state, {id: ownProps.occasion.id, type}),
+        thing: createThingSelect()(state, {id: ownProps.occasion.id, type}),
+        mediations: createMediationsSelect()(state, {id: ownProps.occasion.id, type}),
+        occurences: createOccurencesSelect()(state, ownProps),
+        maxDate: createMaxDateSelect()(state, ownProps),
+        stock: createStockSelect()(state, ownProps),
+        thumbUrl: createThumbUrlSelect()(state, ownProps),
+      }
+    }
   },
   { requestData }
 )(OccasionItem)

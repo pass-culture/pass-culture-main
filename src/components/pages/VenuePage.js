@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
+import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
 import withLogin from '../hocs/withLogin'
@@ -14,8 +15,8 @@ import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import SubmitButton from '../layout/SubmitButton'
-import selectVenue from '../../selectors/venue'
-import selectOfferer from '../../selectors/offerer'
+import createVenueSelector from '../../selectors/createVenue'
+import createOffererSelector from '../../selectors/createOfferer'
 import { NEW } from '../../utils/config'
 
 
@@ -175,6 +176,8 @@ class VenuePage extends Component {
       venueIdOrNew,
       venueName
     } = this.state
+
+    console.log(this.props.offerer)
 
     return (
       <PageWrapper
@@ -338,12 +341,13 @@ class VenuePage extends Component {
 }
 
 export default compose(
+  withRouter,
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venue: selectVenue(state, ownProps),
-      offerer: selectOfferer(state, ownProps)
+      venue: createVenueSelector()(state, ownProps.match.params.venueId),
+      offerer: createOffererSelector()(state, ownProps.match.params.offererId),
     }),
     {
       addBlockers,
