@@ -48,9 +48,17 @@ def post_booking():
         ae.addError('offerId', 'offerId ne correspond à aucune offer')
         return jsonify(ae.errors), 400
 
+    if not offer.isActive or\
+       not offer.offerer.isActive or\
+       (offer.thing and not offer.thing.isActive) or\
+       (offer.eventOccurence and (not offer.eventOccurence.isActive or
+                                  not offer.eventOccurence.event.isActive)):
+        ae.addError('offerId', "Cette offre a été retirée. Elle n'est plus valable.")
+        return jsonify(ae.errors), 400
+
     if offer.bookingLimitDatetime is not None and\
        offer.bookingLimitDatetime < datetime.utcnow():
-        ae.addError('global', 'la date limite de réservation de cette offre'
+        ae.addError('global', 'La date limite de réservation de cette offre'
                               + ' est dépassée')
         return jsonify(ae.errors), 400
 
