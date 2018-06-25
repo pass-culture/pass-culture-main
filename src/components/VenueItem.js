@@ -67,9 +67,8 @@ const VenueItem = ({
 
 export default connect(
   () => {
-    const selectVenueItem = createSelectVenueItem()
     return (state, ownProps) => ({
-      venueItem: selectVenueItem(state, ownProps)
+      venueItem: createSelectVenueItem()(state, ownProps)
     })
   }
 )(VenueItem)

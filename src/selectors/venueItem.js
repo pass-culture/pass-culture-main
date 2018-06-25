@@ -3,10 +3,10 @@ import groupby from 'lodash.groupby'
 import { createSelector } from 'reselect'
 
 import selectOccasions from './occasions'
-import selectVenues from './venues'
+import createSelectVenues from './venues'
 
 export default () => createSelector(
-  selectVenues,
+  createSelectVenues(),
   (state, ownProps) => get(ownProps, 'venue.id'),
   selectOccasions,
   (venues, venueId, occasions) => {
