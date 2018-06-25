@@ -32,57 +32,50 @@ const OffererItem = ({
             <li className='is-italic'>En cours de validation : vous allez recevoir un e-mail.</li>
           ) : (
             [
-              <li>
-                {
-                  get(managedVenues, 'length')
-                  ? (
-                    <NavLink to={`/offres/nouveau`} className='has-text-primary'>
+              // J'ai déja ajouté Un lieu mais pas d'offres
+              get(managedVenues, 'length') > 0  ?
+              (
+              [
+                <li>
+                  <NavLink to={`/offres/nouveau`} className='has-text-primary'>
                     <Icon svg='ico-offres-r' />
                     Nouvelle offre
                   </NavLink>
-                ) :
-                ''
-                }
-              </li>,
+                </li>,
+                // J'ai au moins 1 offre
+                get(managedOccasions, 'length') > 0 &&
+                  <li>
+                    <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
+                      <Icon svg='ico-offres-r' />
+                      { managedOccasions.length === 1 ?  (`${managedOccasions.length} offre`) :
+                      (`${managedOccasions.length} offres`)}
+                    </NavLink>
+                  </li>,
+                get(managedOccasions, 'length') === 0 &&
+                <li>0 offre</li>
+              ]
+              ) : (
+                <li className='is-italic'>Créez un lieu pour pouvoir y associer des offres.</li>
+              ),
+              // J'ai ajouté un lieu
+              get(managedVenues, 'length')  > 0 ?
+              (
+                <li>
+                  <NavLink to={showPath}>
+                    <Icon svg='ico-offres-r' />
+                    { managedVenues.length === 1 ?  (`${managedVenues.length} lieu`) :
+                    (`${managedVenues.length} lieux`)}
+                  </NavLink>
+                </li>
+              ) :
+              // je n'ai pas encore ajouté de lieu
               <li>
-                {
-                  get(managedOccasions, 'length')
-                    ? (
-                      <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-                        <Icon svg='ico-offres-r' />
-                        {managedOccasions.length} offre
-                      </NavLink>
-                    )
-                    : ( get(managedVenues, 'length') ? (
-                      <p>
-                        0 offre
-                      </p>
-                    ) : ''
-                    )
-                }
-              </li>,
-              <li>
-                {
-                  get(managedVenues, 'length')
-                    ? (
-                      <NavLink to={showPath}>
-                        <Icon svg='picto-structure' />
-                        {managedVenues.length} lieu
-                      </NavLink>
-                      )
-                    : (
-                      [
-                        <p>Vous devez avoir déjà enregistré un lieu pour ajouter des offres</p>,
-                        <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
-                        className='has-text-primary'>
-                        <Icon svg='picto-structure' /> Ajouter un lieu
-                      </NavLink>
-                      ]
-                      )
-                  }
-              </li>,
-            ]
-          )
+                <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
+                className='has-text-primary'>
+                <Icon svg='picto-structure' /> Ajouter un lieu
+              </NavLink>
+              </li>
+          ])
           }
         </ul>
       </div>
