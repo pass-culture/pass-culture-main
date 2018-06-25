@@ -9,6 +9,7 @@ import Icon from './layout/Icon'
 
 const VenueItem = ({
   venue,
+  venueId,
 }) => {
   const {
     address,
@@ -17,8 +18,6 @@ const VenueItem = ({
     name,
     occasions,
   } = (venue || {})
-
-  console.log(venue)
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
     <li className="venue-item">
@@ -68,7 +67,7 @@ const VenueItem = ({
 export default connect(
   () => {
     return (state, ownProps) => ({
-      occasions: createOccasionsSelector()(state, {venueId: ownProps.venueId}),
+      occasions: createOccasionsSelector()(state, null, ownProps.venueId),
       venue: createVenueSelector()(state, ownProps.venueId)
     })
   }
