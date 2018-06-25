@@ -47,13 +47,16 @@ class OccasionPage extends Component {
       location: { search },
       isNew,
       selectedType,
+      typeOptions,
     } = nextProps
     const {
       id
     } = (currentMediation || {})
     const isEdit = search === '?modifie'
-    const isEventType = get(selectedType, 'model') === 'EventType'
+    const eventOrThing = selectedType && selectedType.split('.')[0]
+    const isEventType = eventOrThing === 'EventType'
     const isReadOnly = !isNew && !isEdit
+
     const apiPath = isEventType
       ? `events${id ? `/${id}` : ''}`
       : `things${id ? `/${id}` : ''}`
@@ -121,13 +124,14 @@ class OccasionPage extends Component {
       isEventType
     } = this.state
 
+    showNotification({
+      text: 'Votre offre a bien été enregistrée',
+      type: 'success'
+    })
+
     // PATCH
     if (method === 'PATCH') {
       history.push('/offres')
-      showNotification({
-        text: 'Votre offre a bien été enregistrée',
-        type: 'success'
-      })
       return
     }
 
