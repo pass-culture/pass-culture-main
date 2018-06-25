@@ -1,6 +1,7 @@
 """events"""
 from flask import current_app as app, jsonify, request
 
+from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data,\
                        load_or_404,\
@@ -8,13 +9,13 @@ from utils.rest import expect_json_data,\
                        update
 
 Event = app.model.Event
+Occasion = app.model.Occasion
 
 
 @app.route('/events/<id>', methods=['GET'])
 @login_or_api_key_required
 def get_event(id):
     event = load_or_404(Event, id)
-    print('event.type', event.type)
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)
     ), 200
@@ -24,15 +25,15 @@ def get_event(id):
 @login_or_api_key_required
 @expect_json_data
 def post_event():
+    print('request.json', request.json)
     event = Event()
     update(event, request.json)
-    app.model.PcObject.check_and_save(event)
+    ocas = Occasion()
+    ocas.venueId = dehumanize(request.json['venueId'])
+    ocas.event = event
+    app.model.PcObject.check_and_save(event, ocas)
     return jsonify(
-        event._asdict(
-            include=EVENT_INCLUDES,
-            has_dehumanized_id=True,
-            has_model_name=True
-        )
+        event._asdict(include=EVENT_INCLUDES)
     ), 201
 
 

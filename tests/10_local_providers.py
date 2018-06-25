@@ -143,14 +143,15 @@ with app.app_context():
         assert venueProvider is not None
         provider_test(app.local_providers.TiteLiveOffers,
                       venueProvider,
-                      checkedObjects=203,
-                      createdObjects=185,
+                      checkedObjects=388,
+                      createdObjects=370,
                       updatedObjects=0,
                       erroredObjects=0,
                       checkedThumbs=0,
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
+                      Occasion=185,
                       Offer=185
                       )
 
@@ -161,14 +162,15 @@ with app.app_context():
         assert venueProvider is not None
         provider_test(app.local_providers.TiteLiveOffers,
                       venueProvider,
-                      checkedObjects=204,
-                      createdObjects=166,
+                      checkedObjects=370,
+                      createdObjects=332,
                       updatedObjects=0,
                       erroredObjects=0,
                       checkedThumbs=0,
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
+                      Occasion=166,
                       Offer=166
                       )
 
@@ -189,7 +191,7 @@ with app.app_context():
     def test_15_spreadsheet_exp_offers_provider():
         provider_test(app.local_providers.SpreadsheetExpOffers,
                       None,
-                      checkedObjects=482,
+                      checkedObjects=489,
                       createdObjects=482,
                       updatedObjects=0,
                       erroredObjects=0,
@@ -214,8 +216,8 @@ with app.app_context():
                                  .one_or_none()
         provider_test(app.local_providers.OpenAgendaEvents,
                       venueProvider,
-                      checkedObjects=15,
-                      createdObjects=15,
+                      checkedObjects=18,
+                      createdObjects=18,
                       updatedObjects=0,
                       erroredObjects=0,
                       checkedThumbs=3,
@@ -224,6 +226,7 @@ with app.app_context():
                       erroredThumbs=0,
                       Event=3,
                       EventOccurence=12,
+                      Occasion=3,
                       Offer=0,
                       Venue=0,
                       Offerer=0)

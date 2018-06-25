@@ -34,6 +34,7 @@ import models.offerer
 import models.venue_provider
 import models.local_provider_event
 import models.local_provider
+import models.occasion
 import models.provider
 import models.recommendation
 import models.thing

@@ -91,7 +91,7 @@ def signup():
             email_index = authorized_emails.index(request.json['email'])
         except ValueError:
             e = ApiErrors()
-            e.addError('email', "Addresse non autorisée pour l'expérimentation")
+            e.addError('email', "Adresse non autorisée pour l'expérimentation")
             return jsonify(e.errors), 400
 
         departement_code = values[email_index][departement_index]
@@ -100,7 +100,7 @@ def signup():
                   + request.json['email'])
 
             e = ApiErrors()
-            e.addError('email', "Addresse non autorisée pour l'expérimentation")
+            e.addError('email', "Adresse non autorisée pour l'expérimentation")
             return jsonify(e.errors), 400
 
     new_user = app.model.User(from_dict=request.json)

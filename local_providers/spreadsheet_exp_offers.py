@@ -26,6 +26,7 @@ def is_filled(info):
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
 Mediation = app.model.Mediation
+Occasion = app.model.Occasion
 Offer = app.model.Offer
 
 
@@ -84,6 +85,13 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
         providables.append(p_info_event)
 
+        p_info_occasion = app.model.ProvidableInfo()
+        p_info_occasion.type = Event
+        p_info_occasion.idAtProviders = str(int(self.line['Ref Évènement']))
+        p_info_occasion.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+
+        providables.append(p_info_occasion)
+
         for index, horaire in enumerate(self.line['Horaires'].split(';')):
             if is_filled(horaire):
                 horaire = HOUR_REGEX.sub(r'\1:\2', horaire.strip())
@@ -127,6 +135,9 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
             obj.mediaUrls = [self.line['Lien Internet']]
             obj.durationMinutes = format_duration(self.line['Durée'])
             self.eos = {}
+        elif isinstance(obj, Occasion):
+            obj.venue = self.venue
+            obj.event = self.providables[0]
         elif isinstance(obj, EventOccurence):
             obj.beginningDatetime = dateparser.parse(obj.idAtProviders.split('_')[1],
                                                      settings={'TIMEZONE': 'UTC-3' if self.venue.departementCode=='97'

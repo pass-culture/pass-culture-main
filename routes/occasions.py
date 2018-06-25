@@ -4,126 +4,78 @@ from flask_login import current_user
 
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES
-from utils.rest import expect_json_data,\
+from utils.rest import ensure_current_user_has_rights,\
+                       expect_json_data,\
+                       handle_rest_get_list,\
                        login_or_api_key_required,\
                        update
-from utils.string_processing import inflect_engine
+
+
+Event = app.model.Event
+EventOccurence = app.model.EventOccurence
+Occasion = app.model.Occasion
+Offer = app.model.Offer
+Offerer = app.model.Offerer
+RightsType = app.model.RightsType
+Thing = app.model.Thing
+UserOfferer = app.model.UserOfferer
+Venue = app.model.Venue
 
 
 def create_event_occurence(json, occasion, offerer, venue):
-    event_occurence = app.model.EventOccurence()
+    event_occurence = EventOccurence()
     event_occurence.event = occasion
     event_occurence.venue = venue
     update(event_occurence, json, **{ "skipped_keys": ['offer']})
     app.model.PcObject.check_and_save(event_occurence)
 
-    offer = app.model.Offer()
+    offer = Offer()
     offer.eventOccurence = event_occurence
     offer.offerer = offerer
     update(offer, json['offer'][0])
     app.model.PcObject.check_and_save(offer)
 
+
 @app.route('/occasions', methods=['GET'])
 @login_or_api_key_required
 def list_occasions():
-    event_ids = []
-    occasions = []
-    for offerer in current_user.offerers:
-        for managedVenue in offerer.managedVenues:
-            for eventOccurence in managedVenue.eventOccurences:
-                occasion = None
-                if eventOccurence.event.id not in event_ids:
-                    event_ids.append(eventOccurence.event.id)
-                    occasions.append(eventOccurence.event)
-            # TODO: find a similar method for things
-    return jsonify([
-        occasion._asdict(include=OCCASION_INCLUDES)
-        for occasion in occasions
-    ])
-
-@app.route('/occasions/<occasionType>/<occasionId>', methods=['GET'])
-@login_or_api_key_required
-def get_occasion(occasionType, occasionId):
-    model_name = inflect_engine.singular_noun(occasionType.title(), 1)
-    occasion = app.model[model_name]\
-                  .query.filter_by(id=dehumanize(occasionId))\
-                  .first_or_404()
-    occasion_dict = occasion._asdict(include=OCCASION_INCLUDES)
-    return jsonify(occasion_dict)
-
-
-@app.route('/occasions/<occasionType>', methods=['POST'])
-@login_or_api_key_required
-@expect_json_data
-def post_occasion(occasionType):
-    model_name = inflect_engine.singular_noun(occasionType.title(), 1)
-
-    # CREATE THE OCCASION (EVENT OR THING)
-    occasion = app.model[model_name]()
-    occasion_dict = request.json['occasion']
-    update(occasion, occasion_dict)
-    app.model.PcObject.check_and_save(occasion)
-
-    # DETERMINE OFFERER
-    offerer = app.model.Offerer.query\
-                       .filter_by(id=dehumanize(occasion_dict['offererId']))\
-                       .first_or_404()
-
-    # DETERMINE VENUE
-    venue = app.model.Venue.query\
-                           .filter_by(id=dehumanize(occasion_dict['venueId']))\
+    venueId = dehumanize(request.args.get('venueId'))
+    query = Occasion.query
+    if venueId is not None:
+        venue = Venue.query.filter_by(id=venueId)\
                            .first_or_404()
+        print("CHECKING RIGHTS")
+        ensure_current_user_has_rights(RightsType.editor,
+                                       venue.managingOffererId)
+        query = query.filter_by(venue=venue)
+    elif not current_user.isAdmin:
+        query = query.join(Venue)\
+                     .join(Offerer)\
+                     .join(UserOfferer)\
+                     .filter(UserOfferer.user == current_user)
 
-    # CREATE CORRESPONDING EVENT OCCURENCES
-    event_occurences = request.json.get('eventOccurences')
-    if event_occurences:
-        for event_occurence_dict in event_occurences:
-            create_event_occurence(
-                event_occurence_dict,
-                occasion,
-                offerer,
-                venue
-            )
+    return handle_rest_get_list(Occasion,
+                                include=OCCASION_INCLUDES,
+                                query=query,
+                                page=request.args.get('page'),
+                                paginate=10,
+                                order_by='occasion.id desc')
 
-    return jsonify(occasion._asdict(include=OCCASION_INCLUDES)), 201
 
-@app.route('/occasions/<occasionType>/<occasionId>', methods=['PATCH'])
+@app.route('/occasions', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
-def patch_occasion(occasionType, occasionId):
-    model_name = inflect_engine.singular_noun(occasionType.title(), 1)
-
-    # UPDATE THE OCCASION
-    occasion = app.model[model_name].query\
-                                    .filter_by(id=dehumanize(occasionId))\
-                                    .first_or_404()
-    occasion_dict = request.json.get('occasion')
-    if occasion_dict:
-        update(occasion, occasion_dict)
-        app.model.PcObject.check_and_save(occasion)
-    first_occurence = occasion.occurences[0]
-    venue = first_occurence.venue
-    offerer = venue.managingOfferer
-
-    # UPDATE CORRESPONDING EVENT OCCURENCES
-    event_occurences = request.json.get('eventOccurences')
-    if event_occurences:
-        for event_occurence_dict in event_occurences:
-            if event_occurence_dict.get('DELETE') == '_delete_':
-                app.model.Offer\
-                         .query\
-                         .filter_by(eventOccurenceId=dehumanize(event_occurence_dict['id']))\
-                         .delete()
-                app.model.EventOccurence\
-                         .query\
-                         .filter_by(id=dehumanize(event_occurence_dict['id']))\
-                         .delete()
-                app.db.session.commit()
-            else:
-                create_event_occurence(
-                    event_occurence_dict,
-                    occasion,
-                    offerer,
-                    venue
-                )
-    return jsonify(occasion._asdict(include=OCCASION_INCLUDES)), 200
+def post_occasion():
+    ocas = Occasion()
+    venue = Venue.query.filter_by(id=dehumanize(request.json['venueId']))\
+                       .first_or_404()
+    ensure_current_user_has_rights(RightsType.editor,
+                                   venue.managingOffererId)
+    update(ocas, request.json)
+    app.model.PcObject.check_and_save(ocas)
+    return jsonify(
+        ocas._asdict(
+            include=OCCASION_INCLUDES,
+            has_dehumanized_id=True
+        )
+    ), 201
