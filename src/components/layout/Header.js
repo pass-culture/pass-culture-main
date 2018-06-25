@@ -19,7 +19,6 @@ class Header extends Component {
   render() {
     const {
       name,
-      venuesCount,
       whiteHeader
     } = this.props
     const {
@@ -51,13 +50,11 @@ class Header extends Component {
             <span className='icon'><Icon svg={'ico-guichet-w'} /></span>
             <span>Guichet</span>
           </NavLink>,
-          venuesCount > 0 && (
             <NavLink className="navbar-item" to={'/offres'} key={1}>
             <span className='icon'><Icon svg={'ico-offres-w'} /></span>
             <span>Vos offres</span>
           </NavLink>
-        )
-      ]
+        ]
     }
       <div className="navbar-item has-dropdown is-hoverable">
         <NavLink className="navbar-link" to="#">
@@ -104,7 +101,6 @@ class Header extends Component {
 
 export default connect(
   state => ({
-    venuesCount: get(state, 'data.venues.length'),
     name: get(state, 'user.publicName')
   })
 )(Header)
