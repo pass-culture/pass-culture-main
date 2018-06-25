@@ -10,7 +10,7 @@ import Icon from '../layout/Icon'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
-import selectOccasions from '../../selectors/occasions'
+import createOccasionsSelect from '../../selectors/createOccasions'
 import { occasionNormalizer } from '../../utils/normalizers'
 
 
@@ -93,7 +93,7 @@ export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      occasions: selectOccasions(state, ownProps),
+      occasions: createOccasionsSelect(state, ownProps),
       user: state.user
     }),
     { showModal }
