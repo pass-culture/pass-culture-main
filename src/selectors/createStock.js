@@ -1,9 +1,9 @@
 import { createSelector } from 'reselect'
 
-export default (
-  selectOccurences
-) => createSelector(
-  selectOccurences,
+import createOccurencesSelector from './createOccurences'
+
+export default () => createSelector(
+  createOccurencesSelector(),
   occurences => occurences &&
     occurences.reduce((aggreged, o) => {
         return o.offer && o.offer.reduce((subaggreged, offer) => {

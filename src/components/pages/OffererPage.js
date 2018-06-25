@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
+import { withRouter } from 'react-router'
 
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
@@ -12,7 +13,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
-import selectOfferer from '../../selectors/offerer'
+import createOffererSelector from '../../selectors/createOfferer'
 import { NEW } from '../../utils/config'
 
 
@@ -115,6 +116,9 @@ class OffererPage extends Component {
       method,
       offererIdOrNew,
     } = this.state
+
+    console.log(offerer)
+
     return (
       <PageWrapper
         backTo={{label: 'Vos structures', path: '/structures'}}
@@ -265,10 +269,11 @@ class OffererPage extends Component {
 }
 
 export default compose(
+  withRouter,
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      offerer: selectOfferer(state, ownProps),
+      offerer: createOffererSelector()(state, ownProps.match.params.offererId),
     }),
     {
       closeNotification,

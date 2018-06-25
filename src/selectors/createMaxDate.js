@@ -1,10 +1,10 @@
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-export default (
-  selectOccurences
-) => createSelector(
-  selectOccurences,
+import createOccurencesSelector from './createOccurences'
+
+export default () => createSelector(
+  createOccurencesSelector(),
   occurences =>
     occurences && occurences.map(o =>
       moment(o.beginningDatetime)

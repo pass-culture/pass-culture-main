@@ -8,6 +8,8 @@ const createSelectVenues = () => createSelector(
   (state, offererId) => offererId,
   (venues, offererId) => {
     if (!offererId) return venues
+    // TODO: check the link between offerer and venue
+
     return venues.filter(v => v.managingOffererId === offererId)
   }
 )

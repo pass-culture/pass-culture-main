@@ -3,13 +3,13 @@ import { createSelector } from 'reselect'
 
 import { API_URL, THUMBS_URL } from '../utils/config'
 
-export default (
-  selectMediations
-) => createSelector(
-  selectMediations,
-  (state, ownProps) => get(ownProps, 'occasion.thumbPath'),
-  (mediations, thumbPath) =>
+import createMediationsSelector from './createMediations'
+
+export default () => createSelector(
+  createMediationsSelector(),
+  (state, occasion) => occasion,
+  (mediations, occasion) =>
     get(mediations, '0')
       ? `${THUMBS_URL}/mediations/${mediations[0].id}`
-      : `${API_URL}${thumbPath}`
+      : `${API_URL}${get(occasion, 'thumbPath')}`
 )
