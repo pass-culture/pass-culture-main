@@ -74,6 +74,10 @@ OCCASION_INCLUDES = [
             'venue',
             'mediations'
         ]
+    },
+    {
+        "key": "venue",
+        "sub_joins": ["managingOfferer"]
     }
 ]
 
@@ -107,8 +111,7 @@ OFFERS_INCLUDES = [
                 "key": "mediation"
             }
         ]
-    },
-    "venue"
+    }
 ]
 
 RECOMMENDATIONS_INCLUDES = [
