@@ -1,8 +1,7 @@
 import { createSelector } from 'reselect'
+import get from 'lodash.get'
 
 export default createSelector(
-  state => state.data.offerers,
-  state => state.data.searchedOfferers,
-  (offerers, searchedOfferers) =>
-    searchedOfferers || offerers
+  state => get(state, 'data.searchedOfferers', get(state, 'data.offerers', [])),
+  offerers => offerers
 )

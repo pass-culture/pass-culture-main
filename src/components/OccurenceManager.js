@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
-import { selectCurrentOccurences } from '../selectors/occurences'
+import createOccurencesSelect from '../selectors/createOccurences'
 
 class OccurenceManager extends Component {
   constructor () {
@@ -71,6 +71,6 @@ class OccurenceManager extends Component {
 
 export default connect(
  (state, ownProps) => ({
-   occurences: selectCurrentOccurences(state, ownProps)
+   occurences: createOccurencesSelect(state)
  })
 )(OccurenceManager)

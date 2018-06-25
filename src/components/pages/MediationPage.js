@@ -12,11 +12,13 @@ import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
 import { showNotification } from '../../reducers/notification'
-import { selectCurrentEvent } from '../../selectors/event'
-import { selectCurrentMediation } from '../../selectors/mediation'
-import selectOfferer from '../../selectors/offerer'
-import { selectCurrentThing } from '../../selectors/thing'
 import { mediationNormalizer } from '../../utils/normalizers'
+
+import createMediationSelect from '../../selectors/createMediation'
+import selectOfferer from '../../selectors/offerer'
+
+import createEventSelect from '../../selectors/createEvent'
+import createThingSelect from '../../selectors/createThing'
 
 const uploadExplanation = `
 **Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
@@ -293,10 +295,10 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      event: selectCurrentThing(state, ownProps),
-      mediation: selectCurrentMediation(state, ownProps),
+      event: createEventSelect(state, ownProps),
+      mediation: createMediationSelect()(state, ownProps),
       offerer: selectOfferer(state, ownProps),
-      thing: selectCurrentThing(state, ownProps)
+      thing: createThingSelect(state, ownProps)
     }),
     { assignData, showNotification }
   )

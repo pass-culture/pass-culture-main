@@ -10,10 +10,10 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
-import { selectCurrentOccurences } from '../selectors/occurences'
+import createOccurencesSelect from '../selectors/createOccurences'
 import selectOffererOptions from '../selectors/offererOptions'
 import selectSelectedOffererId from '../selectors/selectedOffererId'
-import selectSelectedVenueId from '../selectors/selectedVenueId'
+import createVenueSelect from '../selectors/createVenue'
 import selectVenueOptions from '../selectors/venueOptions'
 import { pluralize } from '../utils/string'
 
@@ -306,10 +306,10 @@ class OccasionForm extends Component {
 
 export default connect(
   (state, ownProps) => ({
-    occurences: selectCurrentOccurences(state, ownProps),
+    occurences: createOccurencesSelect()(state, ownProps),
     offererOptions: selectOffererOptions(state, ownProps),
     selectedOffererId: selectSelectedOffererId(state, ownProps),
-    selectedVenueId: selectSelectedVenueId(state, ownProps),
+    selectedVenueId: createVenueSelect()(state, ownProps),
     typeOptions: state.data.types,
     venueOptions: selectVenueOptions(state, ownProps)
   }),

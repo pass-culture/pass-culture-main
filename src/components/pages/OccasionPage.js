@@ -14,10 +14,10 @@ import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import { selectCurrentEvent } from '../../selectors/event'
+import createEventSelect from '../../selectors/createEvent'
+import createVenueSelect from '../../selectors/createVenue'
 import selectSelectedType from '../../selectors/selectedType'
-import selectSelectedVenueId from '../../selectors/selectedVenueId'
-import { selectCurrentThing } from '../../selectors/thing'
+import createThingSelect from '../../selectors/createThing'
 import { eventNormalizer } from '../../utils/normalizers'
 
 const requiredEventAndThingFields = [
@@ -326,10 +326,10 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      event: selectCurrentEvent(state, ownProps),
+      event: createEventSelect()(state, ownProps),
       selectedType: selectSelectedType(state, ownProps),
-      selectedVenueId: selectSelectedVenueId(state, ownProps),
-      thing: selectCurrentThing(state, ownProps),
+      // selectedVenueId: createVenueSelect()(state, ownProps.),
+      thing: createThingSelect(state, ownProps),
       typeOptions: state.data.types
     }),
     {

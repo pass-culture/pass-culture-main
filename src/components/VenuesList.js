@@ -5,7 +5,7 @@ import { withRouter } from 'react-router'
 import get from 'lodash.get'
 
 import { requestData } from '../reducers/data'
-import createSelectVenues from '../selectors/venues'
+import createSelectVenues from '../selectors/createVenues'
 import VenueItem from './VenueItem'
 
 class VenuesList extends Component {

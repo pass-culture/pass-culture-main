@@ -4,7 +4,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import OccasionItem from './OccasionItem'
-import selectOccasions from '../selectors/occasions'
+import createOccasionsSelect from '../selectors/createOccasions'
 
 const OccasionsList = ({ occasions }) => {
   if (!occasions) return null;
@@ -22,7 +22,7 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => ({
-      occasions: selectOccasions(state, ownProps)
+      occasions: createOccasionsSelect(state)
     })
   )
 )(OccasionsList)
