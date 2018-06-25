@@ -7,6 +7,7 @@ from utils.includes import OCCASION_INCLUDES
 from utils.rest import ensure_current_user_has_rights,\
                        expect_json_data,\
                        handle_rest_get_list,\
+                       load_or_404,\
                        login_or_api_key_required,\
                        update
 
@@ -61,6 +62,12 @@ def list_occasions():
                                 paginate=10,
                                 order_by='occasion.id desc')
 
+
+@app.route('/occasions/<id>', methods=['GET'])
+@login_or_api_key_required
+def get_occasion(id):
+    occasion = load_or_404(Occasion, id)
+    return jsonify(occasion._asdict(include=OCCASION_INCLUDES))
 
 @app.route('/occasions', methods=['POST'])
 @login_or_api_key_required
