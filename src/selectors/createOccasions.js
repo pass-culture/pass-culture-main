@@ -8,7 +8,7 @@ export default () => createSelector(
   state => get(state, 'data.searchedOccasions', get(state, 'data.occasions', [])),
   (_, offererId) => offererId,
   (_, __, venueId) => venueId,
-  (occasions, {offererId, venueId}) => {
+  (occasions, offererId, venueId) => {
     if (offererId)
       occasions = occasions.filter(o => o.lastProviderId === offererId)
 
