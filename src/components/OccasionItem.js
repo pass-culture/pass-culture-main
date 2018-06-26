@@ -10,17 +10,16 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
+import createEventSelector from '../selectors/createEvent'
 import createMaxDateSelector from '../selectors/createMaxDate'
 import createMediationsSelector from '../selectors/createMediations'
 import createOccurencesSelector from '../selectors/createOccurences'
-import createEventSelector from '../selectors/createEvent'
+import createStockSelector from '../selectors/createStock'
 import createThingSelector from '../selectors/createThing'
 import createThumbUrlSelector from '../selectors/createThumbUrl'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
-
-// import createStockSelect from '../selectors/createStock'
 
 
 class OccasionItem extends Component {
@@ -63,6 +62,7 @@ class OccasionItem extends Component {
       stock,
       thing,
       thumbUrl,
+      type,
     } = this.props
     const {
       available,
@@ -75,9 +75,10 @@ class OccasionItem extends Component {
     const {
       id,
       createdAt,
-      eventType,
-      name,
     } = (occasion || {})
+    const {
+      name
+    } = (event || thing || {})
 
     const mediationsLength = get(mediations, 'length')
     return (
@@ -89,7 +90,7 @@ class OccasionItem extends Component {
           </NavLink>
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
-            <li className='is-uppercase'>{get(eventType, 'label')}</li>
+            <li className='is-uppercase'>{get(type, 'label')}</li>
             <li className='has-text-primary'>{pluralize(get(occurences, 'length'), 'date')}</li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
@@ -127,6 +128,7 @@ export default connect(
     const occurencesSelector = createOccurencesSelector()
     const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const mediationsSelector = createMediationsSelector()
+    const stockSelector = createStockSelector(occurencesSelector)
     const thingSelector = createThingSelector()
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
     return (state, ownProps) => {
@@ -136,9 +138,8 @@ export default connect(
         maxDate: maxDateSelector(state, ownProps),
         mediations: mediationsSelector(state, ownProps), // TODO: replug this
         occurences: occurencesSelector(state, ownProps),
-        thing: thingSelector(state, ownProps.occasion.thingId),
-        // TODO: replug this
-        // stock: createStockSelect()(state, ownProps),
+        stock: stockSelector(state, ownProps),
+        thing: thingSelector(state, ownProps),
         thumbUrl: thumbUrlSelector(state, ownProps),
       }
     }
