@@ -2,13 +2,14 @@ import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 const createSelectVenues = () => createSelector(
-  state => get(state, 'data.venues', []),
-  (state, offererId) => offererId,
-  (venues, offererId) => {
-    if (!offererId) return venues
-    // TODO: check the link between offerer and venue
+  state => (console.log(state.data.venues, state) && get(state, 'data.venues', [])),
+  (state, params) => params,
+  (venues, {offererId}) => {
+    console.log(venues, offererId)
+    // if (offererId)
+    //   return venues.filter(v => v.managingOffererId === offererId)
 
-    return venues.filter(v => v.managingOffererId === offererId)
+    return venues
   }
 )
 export default createSelectVenues

@@ -6,12 +6,12 @@ import { NavLink } from 'react-router-dom'
 import Icon from './layout/Icon'
 import createOccasionsSelector from '../selectors/createOccasions'
 import createVenuesSelector from '../selectors/createVenues'
-
+import { pluralize } from '../utils/string'
 
 const OffererItem = ({
   occasions,
+  offerer,
   venues,
-  offerer
 }) => {
   const {
     id,
@@ -36,7 +36,7 @@ const OffererItem = ({
               )
               : [
               // J'ai déja ajouté Un lieu mais pas d'offres
-              get(venues, 'length')
+              venues.length
                 ? ([
                   <li key={0}>
                     <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
@@ -46,28 +46,27 @@ const OffererItem = ({
                     </NavLink>
                   </li>,
                   // J'ai au moins 1 offre
-                  get(occasions, 'length') &&
+                  occasions.length ? (
                     <li key={1}>
                       <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
                         <Icon svg='ico-offres-r' />
-                        { occasions.length === 1 ?  (`${occasions.length} offre`) :
-                        (`${occasions.length} offres`)}
+                        { pluralize(occasions.length, 'offres') }
                       </NavLink>
-                    </li>,
-                  get(occasions, 'length') === 0 &&
-                  <li key={2}>0 offre</li>
+                    </li>
+                  ) : (
+                    <li key={2}>0 offre</li>
+                  )
                 ])
                 : (
                   <li className='is-italic' key={0}>Créez un lieu pour pouvoir y associer des offres.</li>
                 ),
               // J'ai ajouté un lieu
-              get(venues, 'length')
+              venues.length
               ? (
                   <li key={4}>
                     <NavLink to={showPath}>
                       <Icon svg='ico-offres-r' />
-                      { venues.length === 1 ?  (`${venues.length} lieu`) :
-                      (`${venues.length} lieux`)}
+                      { pluralize(venues.length, 'lieux')}
                     </NavLink>
                   </li>
                 )
@@ -99,8 +98,8 @@ const venuesSelector = createVenuesSelector()
 export default connect(
   () => {
     return (state, ownProps) => ({
-      occasions: occasionsSelector(state, ownProps.offerer.id),
-      venues: venuesSelector(state, ownProps.offerer.id),
+      occasions: occasionsSelector(state, {offererId: ownProps.offerer.id}),
+      venues: venuesSelector(state, {offererId: ownProps.offerer.id}),
     })
   }
 ) (OffererItem)
