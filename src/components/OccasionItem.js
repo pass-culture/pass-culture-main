@@ -10,14 +10,14 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
+import createMediationsSelector from '../selectors/createMediations'
+import createOccurencesSelector from '../selectors/createOccurences'
+import createEventSelector from '../selectors/createEvent'
+import createThingSelector from '../selectors/createThing'
 import { pluralize } from '../utils/string'
 import { occasionNormalizer } from '../utils/normalizers'
 
-import createMediationsSelector from '../selectors/createMediations'
-import createOccurencesSelector from '../selectors/createOccurences'
 
-import createEventSelector from '../selectors/createEvent'
-import createThingSelector from '../selectors/createThing'
 
 // import createMaxDateSelect from '../selectors/createMaxDate'
 // import createStockSelect from '../selectors/createStock'
