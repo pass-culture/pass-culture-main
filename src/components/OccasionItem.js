@@ -10,6 +10,7 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
+import createMaxDateSelector from '../selectors/createMaxDate'
 import createMediationsSelector from '../selectors/createMediations'
 import createOccurencesSelector from '../selectors/createOccurences'
 import createEventSelector from '../selectors/createEvent'
@@ -18,7 +19,7 @@ import createThumbUrlSelector from '../selectors/createThumbUrl'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
-// import createMaxDateSelect from '../selectors/createMaxDate'
+
 // import createStockSelect from '../selectors/createStock'
 
 
@@ -123,19 +124,20 @@ OccasionItem.defaultProps = {
 export default connect(
   () => {
     const eventSelector = createEventSelector()
-    const mediationsSelector = createMediationsSelector()
     const occurencesSelector = createOccurencesSelector()
+    const maxDateSelector = createMaxDateSelector(occurencesSelector)
+    const mediationsSelector = createMediationsSelector()
     const thingSelector = createThingSelector()
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
     return (state, ownProps) => {
       const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
       return {
         event: eventSelector(state, ownProps.occasion.eventId),
+        maxDate: maxDateSelector(state, ownProps),
         mediations: mediationsSelector(state, ownProps), // TODO: replug this
         occurences: occurencesSelector(state, ownProps),
         thing: thingSelector(state, ownProps.occasion.thingId),
         // TODO: replug this
-        // maxDate: createMaxDateSelect()(state, ownProps),
         // stock: createStockSelect()(state, ownProps),
         thumbUrl: thumbUrlSelector(state, ownProps),
       }
