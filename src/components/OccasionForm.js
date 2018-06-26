@@ -327,10 +327,13 @@ export default connect(
     const venueId = get(ownProps, 'occasion.venueId')
     let venue = venueSelector(state, null, venueId)
     const offerers = offerersSelector(state)
+    // if there is only one offerer in the list,
+    // well choose it
     const offerer = offererSelector(state, get(venue, 'managingOffererId'))
       || (get(offerers, 'length') === 1 && get(offerers, '0'))
     const venues = venuesSelector(state,
       get(state, `form.occasionsById.${occasionId}.offererId`))
+    // same for the venue...
     venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
     return {
       event: eventSelector(state, eventId),
