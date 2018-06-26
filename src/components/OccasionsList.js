@@ -4,6 +4,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import OccasionItem from './OccasionItem'
+import createSearchSelector from '../selectors/createSearch'
 import createOccasionsSelector from '../selectors/createOccasions'
 
 const OccasionsList = ({ occasions }) => {
@@ -18,11 +19,17 @@ const OccasionsList = ({ occasions }) => {
   )
 }
 
+const searchSelector = createSearchSelector()
+const occasionsSelector = createOccasionsSelector()
+
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => ({
-      occasions: createOccasionsSelector()(state)
-    })
+    (state, ownProps) => {
+      const { offererId, venueId } = searchSelector(state, ownProps.location.search)
+      return {
+        occasions: occasionsSelector(state, offererId, venueId)
+      }
+    }
   )
 )(OccasionsList)

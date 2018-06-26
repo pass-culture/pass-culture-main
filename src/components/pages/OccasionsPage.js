@@ -10,9 +10,9 @@ import Icon from '../layout/Icon'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
+import createSearchSelector from '../../selectors/createSearch'
 import createOccasionsSelector from '../../selectors/createOccasions'
 import { occasionNormalizer } from '../../utils/normalizers'
-import { queryStringToObject } from '../../utils/string'
 
 class OccasionsPage extends Component {
 
@@ -88,16 +88,20 @@ class OccasionsPage extends Component {
   }
 }
 
-const occasionsSelector = createOccasionsSelector()
+const searchSelector = createSearchSelector()
+const occasionsSelector = createOccasionsSelector(searchSelector)
 
 export default compose(
   withRouter,
   withLogin({ isRequired: true }),
   connect(
-    (state, ownProps) => ({
-      occasions: occasionsSelector(state, queryStringToObject(ownProps.location.search)),
-      user: state.user
-    }),
+    (state, ownProps) => {
+      const { offererId, venueId } = searchSelector(state, ownProps.location.search)
+      return {
+        occasions: occasionsSelector(state, offererId, venueId),
+        user: state.user
+      }
+    },
     { showModal }
   )
 )(OccasionsPage)

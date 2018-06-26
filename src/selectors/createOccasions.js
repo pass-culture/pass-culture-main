@@ -1,9 +1,11 @@
 import { createSelector } from 'reselect'
 
-export default () => createSelector(
+export default searchSelector => createSelector(
   state => state.data.searchedOccasions || state.data.occasions,
-  (_, params) => params,
-  (occasions, {offererId, venueId}={}) => {
+  (_, offererId, venueId) => offererId,
+  (_, offererId, venueId) => venueId,
+  (occasions, offererId, venueId) => {
+
     if (offererId)
       occasions = occasions.filter(o => o.lastProviderId === offererId)
 
