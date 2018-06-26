@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
+import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
 import withLogin from '../hocs/withLogin'
@@ -14,8 +15,8 @@ import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import SubmitButton from '../layout/SubmitButton'
-import selectCurrentVenue from '../../selectors/currentVenue'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
+import createVenueSelector from '../../selectors/createVenue'
+import createOffererSelector from '../../selectors/createOfferer'
 import { NEW } from '../../utils/config'
 
 
@@ -175,6 +176,8 @@ class VenuePage extends Component {
       venueIdOrNew,
       venueName
     } = this.state
+
+    console.log(this.props.offerer)
 
     return (
       <PageWrapper
@@ -337,13 +340,17 @@ class VenuePage extends Component {
   }
 }
 
+const venueSelector = createVenueSelector()
+const offererSelector = createOffererSelector()
+
 export default compose(
+  withRouter,
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venue: selectCurrentVenue(state, ownProps),
-      offerer: selectCurrentOfferer(state, ownProps)
+      venue: venueSelector(state, ownProps.match.params.venueId),
+      offerer: offererSelector(state, ownProps.match.params.offererId),
     }),
     {
       addBlockers,

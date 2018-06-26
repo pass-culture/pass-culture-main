@@ -1,37 +1,11 @@
-import get from 'lodash.get'
-import moment from 'moment'
 import { createSelector } from 'reselect'
 
-import { API_URL, THUMBS_URL } from '../utils/config'
+import createOccurencesSelector from './createOccurences'
 
-export default (
-  selectMediations
-) => createSelector(
-  selectMediations,
-  (state, ownProps) => get(ownProps, 'occasion.thumbPath'),
-  (state, ownProps) => get(ownProps, 'occasion.event.occurences'),
-  (mediations, thumbPath, occurences) => {
-
-    console.log('mediations', mediations)
-
-    const occasionItem = {
-      thumbUrl: get(mediations, '0')
-        ? `${THUMBS_URL}/mediations/${mediations[0].id}`
-        : `${API_URL}${thumbPath}`
-    }
-
-    if (!occurences) {
-      return occasionItem
-    }
-
-    occasionItem.maxDate = occurences.map(o =>
-        moment(o.beginningDatetime)
-      ).reduce((max, d) => max &&
-        max.isAfter(d) ? max : d, null
-      )
-
-    Object.assign(occasionItem,
-      occurences.reduce((aggreged, o) => {
+export default () => createSelector(
+  createOccurencesSelector(),
+  occurences => occurences &&
+    occurences.reduce((aggreged, o) => {
         return o.offer && o.offer.reduce((subaggreged, offer) => {
           return {
             available: subaggreged.available + offer.available,
@@ -56,8 +30,4 @@ export default (
         priceMin: null,
         priceMax: null,
       })
-    )
-
-    return occasionItem
-  }
 )

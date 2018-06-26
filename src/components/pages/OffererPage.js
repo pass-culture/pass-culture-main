@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
+import { withRouter } from 'react-router'
 
 import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
@@ -12,7 +13,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
-import selectCurrentOfferer from '../../selectors/currentOfferer'
+import createOffererSelector from '../../selectors/createOfferer'
 import { NEW } from '../../utils/config'
 
 
@@ -28,19 +29,19 @@ class OffererPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      currentOfferer,
-      match: { params: { offererId } },
+      offerer,
+      match: { params },
     } = nextProps
-    const currentOffererId = get(currentOfferer, 'id')
-    const isNew = offererId === 'nouveau'
-    const isLoading = !(currentOffererId || isNew)
+    const offererId = get(offerer, 'id')
+    const isNew = params.offererId === 'nouveau'
+    const isLoading = !(offererId || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
-      apiPath: isNew ? `offerers/` : `offerers/${currentOffererId}`,
+      apiPath: isNew ? `offerers/` : `offerers/${offererId}`,
       isLoading,
       isNew,
       method,
-      offererIdOrNew: isNew ? NEW : currentOffererId
+      offererIdOrNew: isNew ? NEW : offererId
     }
   }
 
@@ -95,7 +96,7 @@ class OffererPage extends Component {
 
   render () {
     const {
-      currentOfferer,
+      offerer,
       user
     } = this.props
 
@@ -106,7 +107,7 @@ class OffererPage extends Component {
       siren,
       postalCode,
       city,
-    } = currentOfferer || {}
+    } = offerer || {}
 
     const {
       apiPath,
@@ -115,6 +116,7 @@ class OffererPage extends Component {
       method,
       offererIdOrNew,
     } = this.state
+
     return (
       <PageWrapper
         backTo={{label: 'Vos structures', path: '/structures'}}
@@ -264,11 +266,14 @@ class OffererPage extends Component {
   }
 }
 
+const offererSelector = createOffererSelector()
+
 export default compose(
+  withRouter,
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      currentOfferer: selectCurrentOfferer(state, ownProps),
+      offerer: offererSelector(state, ownProps.match.params.offererId),
     }),
     {
       closeNotification,

@@ -10,10 +10,11 @@ import SubmitButton from './layout/SubmitButton'
 import VenueProviderItem from './VenueProviderItem'
 import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
-import selectCurrentVenue from '../selectors/currentVenue'
-import selectProviderOptions from '../selectors/providerOptions'
-import selectSelectedProvider from '../selectors/selectedProvider'
+import createProviderSelector from '../selectors/createProvider'
+import createProvidersSelector from '../selectors/createProviders'
+import createVenueSelector from '../selectors/createVenue'
 import { NEW } from '../utils/config'
+import { optionify } from '../utils/form'
 
 class ProviderManager extends Component {
 
@@ -100,29 +101,23 @@ class ProviderManager extends Component {
 
   render () {
     const {
-      currentVenue,
-      selectedProvider,
-      providerOptions
+      provider,
+      providers,
+      venue
     } = this.props
     const {
       venueProviders
-    } = (currentVenue || {})
+    } = (venue || {})
     const {
       identifierDescription,
       identifierRegexp,
-    } = (selectedProvider || {})
+    } = (provider || {})
     const {
       isNew,
       withError
     } = this.state
 
-    const providerOptionsWithPlaceholder = get(providerOptions, 'length') > 1
-      ? (
-        [{
-          label: "Source d'importation",
-        }].concat(providerOptions)
-      )
-      : providerOptions
+    const providerOptionsWithPlaceholder = optionify(providers, 'Source d\'importation')
 
     return (
       <div className='section'>
@@ -136,7 +131,7 @@ class ProviderManager extends Component {
           {
             venueProviders && venueProviders.map((vp, index) => (
                 <VenueProviderItem
-                  currentVenue={currentVenue}
+                  venue={venue}
                   venueProvider={vp}
                   key={vp.id}
                 />
@@ -165,7 +160,7 @@ class ProviderManager extends Component {
                   size="small"
                 />
                 {
-                  selectedProvider && identifierRegexp && (
+                  provider && identifierRegexp && (
                     <FormField
                       collectionName="venueProviders"
                       name="venueIdAtOfferProvider"
@@ -176,7 +171,7 @@ class ProviderManager extends Component {
                   )
                 }
                 {
-                  selectedProvider && (
+                  provider && (
                     <SubmitButton
                       className="button is-secondary"
                       getBody={form => get(form, `venueProvidersById.${NEW}`)}
@@ -205,15 +200,18 @@ class ProviderManager extends Component {
   }
 }
 
+const providersSelector = createProvidersSelector()
+const providerSelector = createProviderSelector()
+const venueSelector = createVenueSelector()
+
 export default compose(
   withRouter,
   connect(
     (state, ownProps) => ({
-      currentVenue: selectCurrentVenue(state, ownProps),
-      providerOptions: selectProviderOptions(state),
-      providers: state.data.providers,
-      selectedProvider: selectSelectedProvider(state, ownProps),
-      user: state.user
+      user: state.user,
+      providers: providersSelector(state),
+      provider: providerSelector(state),
+      venue: venueSelector(state, ownProps.venueId), // TODO: check that link
     }),
     { mergeForm, requestData }
   )

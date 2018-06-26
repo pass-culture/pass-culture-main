@@ -10,13 +10,18 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
-import createSelectEvent from '../selectors/event'
-import createSelectMediations from '../selectors/mediations'
-import createSelectCurrentThing from '../selectors/thing'
-import createSelectOccasionItem from '../selectors/occasionItem'
 import { pluralize } from '../utils/string'
-import { modelToPath } from '../utils/translate'
 import { occasionNormalizer } from '../utils/normalizers'
+
+import createMediationsSelector from '../selectors/createMediations'
+import createOccurencesSelector from '../selectors/createOccurences'
+
+import createEventSelector from '../selectors/createEvent'
+import createThingSelector from '../selectors/createThing'
+
+// import createMaxDateSelect from '../selectors/createMaxDate'
+// import createStockSelect from '../selectors/createStock'
+// import createThumbUrlSelect from '../selectors/thumbUrl'
 
 class OccasionItem extends Component {
 
@@ -49,22 +54,16 @@ class OccasionItem extends Component {
 
   render() {
     const {
+      event,
       isActive,
+      mediations,
       occasionItem,
       occasion,
+      occurences,
+      stock,
+      thing,
+      thumbUrl,
     } = this.props
-    const {
-      event,
-      id,
-      thing
-    } = (occasion || {})
-    const {
-      createdAt,
-      eventType,
-      mediations,
-      name,
-      occurences
-    } = (event || thing || {})
     const {
       available,
       maxDate,
@@ -72,8 +71,14 @@ class OccasionItem extends Component {
       groupSizeMax,
       priceMin,
       priceMax,
-      thumbUrl
-    } = (occasionItem || {})
+    } = (stock || {})
+    const {
+      id,
+      createdAt,
+      eventType,
+      name,
+    } = (occasion || {})
+
     const mediationsLength = get(mediations, 'length')
     return (
       <li className={classnames('occasion-item', { active: isActive })}>
@@ -115,20 +120,26 @@ OccasionItem.defaultProps = {
   maxDescriptionLength: 300,
 }
 
-
+const eventSelector = createEventSelector()
+const thingSelector = createThingSelector()
+const mediationsSelector = createMediationsSelector()
+const occurencesSelector = createOccurencesSelector()
 
 export default connect(
   () => {
-    const selectEvent =  createSelectEvent()
-    const selectThing =  createSelectCurrentThing()
-    const selectMediations = createSelectMediations(
-      selectEvent,
-      selectThing
-    )
-    const selectOccasionItem = createSelectOccasionItem(selectMediations)
-    return (state, ownProps) => ({
-      occasionItem: selectOccasionItem(state, ownProps)
-    })
+    return (state, ownProps) => {
+      const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
+      return {
+        event: eventSelector(state, ownProps.occasion.eventId),
+        thing: thingSelector(state, ownProps.occasion.thingId),
+        mediations: mediationsSelector(state, ownProps), // TODO: replug this
+        occurences: occurencesSelector(state, ownProps),
+        // TODO: replug this
+        // maxDate: createMaxDateSelect()(state, ownProps),
+        // stock: createStockSelect()(state, ownProps),
+        // thumbUrl: createThumbUrlSelect()(state, ownProps),
+      }
+    }
   },
   { requestData }
 )(OccasionItem)

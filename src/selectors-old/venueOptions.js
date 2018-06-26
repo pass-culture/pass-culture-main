@@ -1,9 +1,9 @@
 import { createSelector } from 'reselect'
 
-import selectSelectedVenues from './selectedVenues'
+import createVenueSelect from './createVenues'
 
 export default createSelector(
-  selectSelectedVenues,
+  createVenueSelect(),
   venues => venues && venues.map(v =>
       ({ label: v.name, value: v.id }))
 )

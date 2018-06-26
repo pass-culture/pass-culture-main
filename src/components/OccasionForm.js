@@ -10,11 +10,10 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
-import selectOffererOptions from '../selectors/offererOptions'
-import selectSelectedOffererId from '../selectors/selectedOffererId'
-import selectSelectedVenueId from '../selectors/selectedVenueId'
-import selectSelectedVenues from '../selectors/selectedVenues'
-import selectVenueOptions from '../selectors/venueOptions'
+import createOccurencesSelector from '../selectors/createOccurences'
+import createOffererSelector from '../selectors/createOfferer'
+import createVenueSelector from '../selectors/createVenue'
+import createVenuesSelector from '../selectors/createVenues'
 import { pluralize } from '../utils/string'
 
 class OccasionForm extends Component {
@@ -61,13 +60,15 @@ class OccasionForm extends Component {
       isNew,
       isReadOnly,
       occasionIdOrNew,
+      occurences,
       offerForm,
-      offererOptions,
+      offerers,
       routePath,
       selectedOffererId,
       selectedVenueId,
       venueOptions,
-      user
+      user,
+      venues,
     } = this.props
     const {
       event,
@@ -83,19 +84,22 @@ class OccasionForm extends Component {
       mediaUrls,
       mediations,
       performer,
-      occurences,
       stageDirector,
     } = (event || thing || {})
 
-    const offererOptionsWithPlaceholder = get(offererOptions, 'length') > 1
-      ? [{ label: 'Sélectionnez une structure' }].concat(offererOptions)
-      : offererOptions
+    const offererOptionsWithPlaceholder = (get(offerers, 'length') > 1
+      ? [{ label: 'Sélectionnez une structure' }].concat(offerers)
+      : offerers).map(o => ({
+        label: o.name,
+        value: o.id,
+      }))
 
-    const venueOptionsWithPlaceholder = get(venueOptions, 'length') > 1
-      ? [{ label: 'Sélectionnez un lieu' }].concat(venueOptions)
-      : venueOptions
-
-    console.log('occurences', occurences)
+    const venueOptionsWithPlaceholder = (get(venues, 'length') > 1
+        ? [{ label: 'Sélectionnez un lieu' }].concat(venues)
+        : venues).map(v => ({
+          label: v.name,
+          value: v.id,
+        }))
 
     return (
       <div>
@@ -171,14 +175,14 @@ class OccasionForm extends Component {
           type="select"
         />
         {
-          selectedOffererId && get(venueOptions, 'length') === 0
+          selectedOffererId && get(venues, 'length') === 0
             ? (
               <p>
                 Il faut obligatoirement une structure avec un lieu.
               </p>
             )
             :
-              get(venueOptions, 'length') > 0 && <FormField
+              get(venues, 'length') > 0 && <FormField
                 collectionName='occasions'
                 defaultValue={selectedVenueId}
                 entityId={occasionIdOrNew}
@@ -306,14 +310,18 @@ class OccasionForm extends Component {
   }
 }
 
+const occurencesSelector = createOccurencesSelector()
+const offerersSelector = createOffererSelector()
+const venueSelector = createVenueSelector()
+const venuesSelector = createVenuesSelector()
+
 export default connect(
   (state, ownProps) => ({
-    offererOptions: selectOffererOptions(state, ownProps),
-    selectedOffererId: selectSelectedOffererId(state, ownProps),
-    selectedVenueId: selectSelectedVenueId(state, ownProps),
-    selectedVenues: selectSelectedVenues(state, ownProps),
+    occurences: occurencesSelector(state),
+    offerers: offerersSelector(state),
+    venue: venueSelector(state),
+    venues: venuesSelector(state),
     typeOptions: state.data.types,
-    venueOptions: selectVenueOptions(state, ownProps)
   }),
   {
     closeModal,

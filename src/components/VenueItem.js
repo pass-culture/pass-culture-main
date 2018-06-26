@@ -3,22 +3,22 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import createSelectVenueItem from '../selectors/venueItem'
+import createVenueSelector from '../selectors/createVenue'
+import createOccasionsSelector from '../selectors/createOccasions'
+import createOffersSelector from '../selectors/createOffers'
 import Icon from './layout/Icon'
 
 const VenueItem = ({
+  offers,
   venue,
-  venueItem
 }) => {
   const {
     address,
     id,
     managingOffererId,
     name,
+    occasions,
   } = (venue || {})
-  const {
-    occasions
-  } = (venueItem || {})
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
     <li className="venue-item">
@@ -31,22 +31,22 @@ const VenueItem = ({
         </p>
         <ul className='actions'>
           <li>
-            <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres/nouveau`} className='has-text-primary'>
+            <NavLink to={`/offres/nouveau?offererId=${managingOffererId}&venueId=${id}`} className='has-text-primary'>
               <Icon svg='ico-offres-r' /> Créer une offre
             </NavLink>
           </li>
           <li>
             {
-              get(occasions, 'length')
+              get(offers, 'length')
               ? (
                 <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                   {occasions.length} offres
+                   {offers.length} offres
                 </NavLink>
               )
               : (
                 <p>
-                  0 offre
+                  Pas encore d'offre
                 </p>
               )
             }
@@ -67,9 +67,10 @@ const VenueItem = ({
 
 export default connect(
   () => {
-    const selectVenueItem = createSelectVenueItem()
     return (state, ownProps) => ({
-      venueItem: selectVenueItem(state, ownProps)
+      occasions: createOccasionsSelector()(state, null, ownProps.venueId),
+      offers: createOffersSelector()(state, ownProps.venueId),
+      venue: createVenueSelector()(state, ownProps.venueId)
     })
   }
 )(VenueItem)

@@ -8,7 +8,7 @@ import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import OfferersList from '../OfferersList'
 import SearchInput from '../layout/SearchInput'
-import selectOfferers from '../../selectors/offerers'
+import createOfferersSelector from '../../selectors/createOfferers'
 
 class OfferersPage extends Component {
 
@@ -89,11 +89,12 @@ class OfferersPage extends Component {
   }
 }
 
+const offerersSelector = createOfferersSelector()
 
 export default compose(
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      offerers: selectOfferers(state, ownProps)
+      offerers: offerersSelector(state)
     }))
 )(OfferersPage)

@@ -19,3 +19,10 @@ export function pluralize(number, singular) {
   }
   return `${number} ${pluralizeWord(singular, number)}`
 }
+
+export function queryStringToObject(string='') {
+  return string.replace(/^\??/, '').split('&').reduce((result, group) => {
+    const [key, value] = group.split('=')
+    return Object.assign({}, result, {[key]: value})
+  }, {})
+}

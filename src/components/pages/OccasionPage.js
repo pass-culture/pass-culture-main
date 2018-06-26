@@ -14,8 +14,10 @@ import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import selectSelectedType from '../../selectors/selectedType'
-import selectSelectedVenueId from '../../selectors/selectedVenueId'
+import createEventSelector from '../../selectors/createEvent'
+import createVenueSelect from '../../selectors/createVenue'
+import createTypeSelector from '../../selectors/createSelectedType'
+import createThingSelector from '../../selectors/createThing'
 import { eventNormalizer } from '../../utils/normalizers'
 
 const requiredEventAndThingFields = [
@@ -45,13 +47,16 @@ class OccasionPage extends Component {
       location: { search },
       isNew,
       selectedType,
+      typeOptions,
     } = nextProps
     const {
       id
     } = (currentMediation || {})
     const isEdit = search === '?modifie'
-    const isEventType = (selectedType || '').split('.')[0] === 'EventType'
+    const eventOrThing = selectedType && selectedType.split('.')[0]
+    const isEventType = eventOrThing === 'EventType'
     const isReadOnly = !isNew && !isEdit
+
     const apiPath = isEventType
       ? `events${id ? `/${id}` : ''}`
       : `things${id ? `/${id}` : ''}`
@@ -119,13 +124,14 @@ class OccasionPage extends Component {
       isEventType
     } = this.state
 
+    showNotification({
+      text: 'Votre offre a bien été enregistrée',
+      type: 'success'
+    })
+
     // PATCH
     if (method === 'PATCH') {
       history.push('/offres')
-      showNotification({
-        text: 'Votre offre a bien été enregistrée',
-        type: 'success'
-      })
       return
     }
 
@@ -180,6 +186,7 @@ class OccasionPage extends Component {
   render () {
     const {
       currentOccasion,
+      event,
       isLoading,
       isNew,
       location: { pathname },
@@ -187,12 +194,9 @@ class OccasionPage extends Component {
       occasionForm,
       routePath,
       selectedType,
+      thing,
       typeOptions,
     } = this.props
-    const {
-      event,
-      thing
-    } = (currentOccasion || {})
     const {
       id,
       name
@@ -237,7 +241,7 @@ class OccasionPage extends Component {
           />
           <FormField
             collectionName='occasions'
-            defaultValue={selectedType}
+            defaultValue={get(selectedType, 'value')}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Type :" />}
@@ -317,13 +321,18 @@ class OccasionPage extends Component {
   }
 }
 
+const eventSelector = createEventSelector()
+const thingSelector = createThingSelector()
+const typeSelector = createTypeSelector()
+
 export default compose(
   withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      selectedType: selectSelectedType(state, ownProps),
-      selectedVenueId: selectSelectedVenueId(state, ownProps),
+      event: eventSelector(state, ownProps.occasion.eventId),
+      selectedType: typeSelector(state, ownProps), // TODO: plug ownProps ref to type
+      thing: thingSelector(state, ownProps.occasion.thingId),
       typeOptions: state.data.types
     }),
     {

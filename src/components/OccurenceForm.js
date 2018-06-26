@@ -1,11 +1,13 @@
 import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
-import selectCurrentOccurences from '../selectors/currentOccurences'
+import createEventSelector from '../selectors/createEvent'
+import createVenueSelector from '../selectors/createVenue'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -20,7 +22,7 @@ class OccurenceForm extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      currentOccurences,
+      occurences,
       occurence
     } = nextProps
     const {
@@ -28,18 +30,20 @@ class OccurenceForm extends Component {
     } = (occurence || {})
     return {
       apiPath: `eventOccurences${id ? `/${id}` : ''}`,
-      highlightedDates: currentOccurences &&
-        currentOccurences.map(o => moment(o.beginningDatetime)),
+      highlightedDates: occurences &&
+        occurences.map(o => moment(o.beginningDatetime)),
       method: id ? 'PATCH' : 'POST'
     }
   }
 
   render () {
     const {
-      currentOccasion,
-      currentOccurences,
+      event,
+      occasion,
       occurence,
+      occurences,
       onDeleteClick,
+      venue,
     } = this.props
     const {
       id,
@@ -53,13 +57,15 @@ class OccurenceForm extends Component {
     } = occurence || {}
     const {
       durationMinutes,
-    } = (currentOccasion || {})
+    } = (occasion || {})
     const {
       apiPath,
       highlightedDates,
       method
     } = this.state
     const eventOccurenceIdOrNew = id || NEW
+
+    console.log('venue', venue)
 
     return (
       <tr className='occurence-form'>
@@ -140,8 +146,8 @@ class OccurenceForm extends Component {
                 groupSize: eo.groupSize,
                 pmrGroupSize: eo.pmrGroupSize,
                 price: eo.price,
-                eventId: get(currentOccasion, 'event.id'),
-                venueId: currentOccasion.venueId,
+                eventId: get(event, 'id'),
+                venueId: get(venue, 'id'),
               }
             }}
             getIsDisabled={form => getIsDisabled(
@@ -169,4 +175,12 @@ class OccurenceForm extends Component {
   }
 }
 
-export default OccurenceForm
+const eventSelector = createEventSelector()
+const venueSelector = createVenueSelector()
+
+export default connect(
+  (state, ownProps) => ({
+    event: eventSelector(state, ownProps), // TODO: find eventId
+    venue: venueSelector(state, ownProps), // TODO: find venueId
+  })
+)(OccurenceForm)
