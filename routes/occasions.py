@@ -4,7 +4,8 @@ from flask_login import current_user
 
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES
-from utils.rest import ensure_current_user_has_rights,\
+from utils.rest import delete,\
+                       ensure_current_user_has_rights,\
                        expect_json_data,\
                        handle_rest_get_list,\
                        load_or_404,\
@@ -86,3 +87,11 @@ def post_occasion():
             has_dehumanized_id=True
         )
     ), 201
+
+@app.route('/occasions/<id>', methods=['DELETE'])
+@login_or_api_key_required
+def delete_occasion(id):
+    ocas = load_or_404(Occasion, id)
+    ensure_current_user_has_rights(app.model.RightsType.editor,
+                                   ocas.venue.managingOffererId)
+    return delete(ocas)

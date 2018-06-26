@@ -3,21 +3,21 @@ from os import path
 from pathlib import Path
 import subprocess
 from flask import current_app as app, jsonify, request
-from flask_login import login_required
-
 
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
 from utils.rest import delete, expect_json_data,\
                        ensure_current_user_has_rights,\
-                       load_or_404, update
+                       load_or_404,\
+                       login_or_api_key_required,\
+                       update
 
 VenueProvider = app.model.VenueProvider
 Provider = app.model.Provider
 
 @app.route('/venueProviders', methods=['GET'])
-@login_required
+@login_or_api_key_required
 def list_venue_providers():
     venueId = request.args.get('venueId')
     if venueId is None:
@@ -34,14 +34,14 @@ def list_venue_providers():
 
 
 @app.route('/venueProviders/<id>', methods=['GET'])
-@login_required
+@login_or_api_key_required
 def get_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     return jsonify(vp._asdict(include=VENUE_PROVIDER_INCLUDES))
 
 
 @app.route('/venueProviders', methods=['POST'])
-@login_required
+@login_or_api_key_required
 @expect_json_data
 def create_venue_provider():
     new_vp = VenueProvider(from_dict=request.json)
@@ -88,6 +88,7 @@ def create_venue_provider():
 
 
 @app.route('/venueProviders/<id>', methods=['PATCH'])
+@login_or_api_key_required
 @expect_json_data
 def edit_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
@@ -97,7 +98,7 @@ def edit_venue_provider(id):
 
 
 @app.route('/venueProviders/<id>', methods=['DELETE'])
-@login_required
+@login_or_api_key_required
 def delete_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     ensure_current_user_has_rights(app.model.RightsType.editor,
