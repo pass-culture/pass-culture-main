@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
 export default () => createSelector(
-  state => state.data.searchedOccasions || state.data.occasions),
+  state => state.data.searchedOccasions || state.data.occasions,
   (_, params) => params,
   (occasions, {offererId, venueId}={}) => {
     if (offererId)
