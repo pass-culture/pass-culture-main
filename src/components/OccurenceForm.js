@@ -6,8 +6,8 @@ import { connect } from 'react-redux'
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
-import createEventSelect from '../selectors/createEvent'
-import createVenueSelect from '../selectors/venue'
+import createEventSelector from '../selectors/createEvent'
+import createVenueSelector from '../selectors/createVenue'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -175,9 +175,12 @@ class OccurenceForm extends Component {
   }
 }
 
+const eventSelector = createEventSelector()
+const venueSelector = createVenueSelector()
+
 export default connect(
   (state, ownProps) => ({
-    event: createEventSelect()(state, ownProps),
-    venue: createVenueSelect()(state, ownProps),
+    event: eventSelector(state, ownProps), // TODO: find eventId
+    venue: venueSelector(state, ownProps), // TODO: find venueId
   })
 )(OccurenceForm)

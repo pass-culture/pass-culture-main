@@ -35,3 +35,8 @@ export function getIsDisabled (form, keys, isNew) {
     ? keys.filter(f => !get(form, f)).length > 0
     : keys.every(f => !get(form, f))
 }
+
+export function optionify(collection, placeholder, mapFn=(el => ({label: el.name, value: el.id}))) {
+  const collectionWithPlaceholder = collection.length > 1 ? [{label: placeholder}].concat(collection) : collection
+  return collectionWithPlaceholder.map(mapFn)
+}

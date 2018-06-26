@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import OffererItem from './OffererItem'
 import { requestData } from '../reducers/data'
-import selectOfferers from '../selectors/offerers'
+import createOfferersSelector from '../selectors/createOfferers'
 
 class OfferersList extends Component {
 
@@ -45,9 +45,11 @@ class OfferersList extends Component {
   }
 }
 
+const offerersSelector = createOfferersSelector()
+
 export default connect(
   state => ({
-    offerers: selectOfferers(state),
+    offerers: offerersSelector(state),
     user: state.user
   }),
   { requestData }

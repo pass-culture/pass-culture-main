@@ -16,7 +16,7 @@ import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
 import createVenueSelect from '../../selectors/createVenue'
-import createTypeSelector from '../../selectors/selectedType'
+import createTypeSelector from '../../selectors/createSelectedType'
 import createThingSelector from '../../selectors/createThing'
 import { eventNormalizer } from '../../utils/normalizers'
 

@@ -13,14 +13,15 @@ import { requestData } from '../reducers/data'
 import { pluralize } from '../utils/string'
 import { occasionNormalizer } from '../utils/normalizers'
 
-import createMediationsSelect from '../selectors/createMediations'
-import createOccurencesSelect from '../selectors/createOccurences'
+import createMediationsSelector from '../selectors/createMediations'
+import createOccurencesSelector from '../selectors/createOccurences'
 
-import createEventSelect from '../selectors/createEvent'
-import createMaxDateSelect from '../selectors/createMaxDate'
-import createThingSelect from '../selectors/createThing'
-import createStockSelect from '../selectors/createStock'
-import createThumbUrlSelect from '../selectors/thumbUrl'
+import createEventSelector from '../selectors/createEvent'
+import createThingSelector from '../selectors/createThing'
+
+// import createMaxDateSelect from '../selectors/createMaxDate'
+// import createStockSelect from '../selectors/createStock'
+// import createThumbUrlSelect from '../selectors/thumbUrl'
 
 class OccasionItem extends Component {
 
@@ -119,20 +120,24 @@ OccasionItem.defaultProps = {
   maxDescriptionLength: 300,
 }
 
-
+const eventSelector = createEventSelector()
+const thingSelector = createThingSelector()
+const mediationsSelector = createMediationsSelector()
+const occurencesSelector = createOccurencesSelector()
 
 export default connect(
   () => {
     return (state, ownProps) => {
       const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
       return {
-        event: createEventSelect()(state, {id: ownProps.occasion.id, type}),
-        thing: createThingSelect()(state, {id: ownProps.occasion.id, type}),
-        mediations: createMediationsSelect()(state, {id: ownProps.occasion.id, type}),
-        occurences: createOccurencesSelect()(state, ownProps),
-        maxDate: createMaxDateSelect()(state, ownProps),
-        stock: createStockSelect()(state, ownProps),
-        thumbUrl: createThumbUrlSelect()(state, ownProps),
+        event: eventSelector(state, ownProps.occasion.eventId),
+        thing: thingSelector(state, ownProps.occasion.thingId),
+        mediations: mediationsSelector(state, ownProps), // TODO: replug this
+        occurences: occurencesSelector(state, ownProps),
+        // TODO: replug this
+        // maxDate: createMaxDateSelect()(state, ownProps),
+        // stock: createStockSelect()(state, ownProps),
+        // thumbUrl: createThumbUrlSelect()(state, ownProps),
       }
     }
   },

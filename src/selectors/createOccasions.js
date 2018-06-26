@@ -2,8 +2,6 @@ import get from 'lodash.get'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-import selectTypes from './types'
-
 export default () => createSelector(
   state => get(state, 'data.searchedOccasions', get(state, 'data.occasions', [])),
   (_, params) => params,

@@ -1,11 +1,10 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import createMediationsSelect from './createMediations'
-import createOccasionSelect from './createOccasion'
+import createMediationsSelector from './createMediations'
 
 const createSelectMediation = () => createSelector(
-  createMediationsSelect(),
+  createMediationsSelector(),
   (state, mediationId) => mediationId,
   (mediations, mediationId) => {
     return mediations.filter(m => m.id === mediationId)
