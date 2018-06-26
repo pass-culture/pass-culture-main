@@ -5,15 +5,17 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
+import VenueItem from '../VenueItem'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
-import VenuesList from '../VenuesList'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
+import { requestData } from '../../reducers/data'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
+import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
 
 
@@ -60,7 +62,19 @@ class OffererPage extends Component {
         handleError,
         key: 'offerers',
         normalizer: {
-          managedVenues: 'venues'
+          managedVenues: {
+            key: 'venues',
+            normalizer: {
+              eventOccurences: {
+                key: 'eventOccurences',
+                normalizer: {
+                  event: 'occasions'
+                }
+              },
+              // KEY IN THE OBJECY : //KEY IN THE STATE.DATA
+              offers: 'offers'
+            }
+          }
         }
       }
     )
@@ -89,7 +103,8 @@ class OffererPage extends Component {
   render () {
     const {
       offerer,
-      user
+      user,
+      venues
     } = this.props
 
     const {
@@ -245,7 +260,12 @@ class OffererPage extends Component {
             <h2 className='pc-list-title'>
               LIEUX
             </h2>
-            <VenuesList />
+            <ul className='pc-list venues-list'>
+              {
+                venues.map(v =>
+                  <VenueItem key={v.id} venue={v} />)
+              }
+            </ul>
             <div className='has-text-centered'>
               <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}
                 className="button is-secondary is-outlined">
@@ -261,15 +281,22 @@ class OffererPage extends Component {
 
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
+const venuesSelector = createVenuesSelector()
 
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => ({
-      offerer: offererSelector(state, ownProps.match.params.offererId),
-    }),
+    (state, ownProps) => {
+      const offererId = ownProps.match.params.offererId
+      return {
+        offerer: offererSelector(state, offererId),
+        venues: venuesSelector(state, offererId),
+        user: state.user
+      }
+    },
     {
       closeNotification,
+      requestData,
       resetForm,
       showNotification
     }
