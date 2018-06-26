@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
-import OccasionsList from '../OccasionsList'
+import OccasionItem from '../OccasionItem'
 import withLogin from '../hocs/withLogin'
 import Icon from '../layout/Icon'
 import SearchInput from '../layout/SearchInput'
@@ -83,7 +83,12 @@ class OccasionsPage extends Component {
         </div>
         {
           <div className='section load-wrapper'>
-            <OccasionsList />
+            <ul className='occasions-list pc-list'>
+              {
+                occasions.map(o =>
+                  <OccasionItem key={o.id} occasion={o} />)
+              }
+            </ul>
           </div>
         }
       </PageWrapper>

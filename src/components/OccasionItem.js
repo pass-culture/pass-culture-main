@@ -54,7 +54,6 @@ class OccasionItem extends Component {
   render() {
     const {
       event,
-      isActive,
       mediations,
       occasionItem,
       occasion,
@@ -73,12 +72,15 @@ class OccasionItem extends Component {
       priceMax,
     } = (stock || {})
     const {
-      id,
       createdAt,
+      id,
+      isActive,
     } = (occasion || {})
     const {
       name
     } = (event || thing || {})
+
+    console.log(occasion, event, mediations, occurences, thing)
 
     const mediationsLength = get(mediations, 'length')
     return (
@@ -125,21 +127,22 @@ OccasionItem.defaultProps = {
 export default connect(
   () => {
     const eventSelector = createEventSelector()
-    const occurencesSelector = createOccurencesSelector()
-    const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const mediationsSelector = createMediationsSelector()
-    const stockSelector = createStockSelector(occurencesSelector)
+    const occurencesSelector = createOccurencesSelector()
     const thingSelector = createThingSelector()
+
+    const maxDateSelector = createMaxDateSelector(occurencesSelector)
+    const stockSelector = createStockSelector(occurencesSelector)
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
     return (state, ownProps) => {
       const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
       return {
         event: eventSelector(state, ownProps.occasion.eventId),
-        maxDate: maxDateSelector(state, ownProps),
-        mediations: mediationsSelector(state, ownProps), // TODO: replug this
-        occurences: occurencesSelector(state, ownProps),
-        stock: stockSelector(state, ownProps),
+        mediations: mediationsSelector(state, ownProps.occasion.eventId, ownProps.occasion.thingId),
+        occurences: occurencesSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
         thing: thingSelector(state, ownProps),
+        maxDate: maxDateSelector(state, ownProps),
+        stock: stockSelector(state, ownProps),
         thumbUrl: thumbUrlSelector(state, ownProps),
       }
     }
