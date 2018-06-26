@@ -5,7 +5,6 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
-import withLogin from '../hocs/withLogin'
 import Icon from '../layout/Icon'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
@@ -32,17 +31,6 @@ class OccasionsPage extends Component {
       }
     )
   }
-
-  // componentDidMount() {
-  //   this.handleDataRequest()
-  // }
-
-  // componentDidUpdate(prevProps) {
-  //   const { user } = this.props
-  //   if (user !== prevProps.user) {
-  //     this.handleDataRequest()
-  //   }
-  // }
 
   render() {
     const {
@@ -101,7 +89,6 @@ const occasionsSelector = createOccasionsSelector(searchSelector)
 
 export default compose(
   withRouter,
-  // withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => {
       const { offererId, venueId } = searchSelector(state, ownProps.location.search)

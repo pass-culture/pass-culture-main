@@ -4,7 +4,6 @@ import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from '../layout/Icon'
-import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import OffererItem from '../OffererItem'
 import SearchInput from '../layout/SearchInput'
@@ -12,16 +11,6 @@ import createOfferersSelector from '../../selectors/createOfferers'
 import { requestData } from '../../reducers/data'
 
 class OfferersPage extends Component {
-
-  // componentDidMount () {
-  //   this.handleDataRequest()
-  // }
-
-  // componentDidUpdate (prevProps) {
-  //   if (prevProps.user !== this.props.user) {
-  //     this.handleDataRequest()
-  //   }
-  // }
 
   handleDataRequest = (handleSuccess, handleError) => {
     const {

@@ -64,14 +64,12 @@ class OccasionForm extends Component {
       isReadOnly,
       occasionIdOrNew,
       occurences,
-      offerForm,
       offerers,
       routePath,
       selectedOffererId,
       selectedVenueId,
       thing,
       user,
-      venueOptions,
       venues,
     } = this.props
     const {

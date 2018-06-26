@@ -18,7 +18,6 @@ const VenueItem = ({
     id,
     managingOffererId,
     name,
-    occasions,
   } = (venue || {})
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (

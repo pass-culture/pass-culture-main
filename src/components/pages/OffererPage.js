@@ -5,7 +5,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
-import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import VenuesList from '../VenuesList'
@@ -82,16 +81,6 @@ class OffererPage extends Component {
   onAddProviderClick = () => {
     this.setState({ isNewProvider: true })
   }
-
-  // componentDidMount () {
-  //   this.handleDataRequest()
-  // }
-
-  // componentDidUpdate (prevProps) {
-  //   if (prevProps.user !== this.props.user) {
-  //     this.handleDataRequest()
-  //   }
-  // }
 
   componentWillUnmount() {
     this.props.resetForm()
@@ -275,7 +264,6 @@ const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,
-  // withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       offerer: offererSelector(state, ownProps.match.params.offererId),

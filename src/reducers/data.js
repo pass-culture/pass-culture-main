@@ -8,7 +8,6 @@ const RESET_DATA = 'RESET_DATA'
 const initialState = {
   events: [],
   eventOccurences: [],
-  events: [],
   mediations: [],
   occasions: [],
   offers: [],

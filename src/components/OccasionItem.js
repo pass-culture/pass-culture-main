@@ -55,7 +55,6 @@ class OccasionItem extends Component {
     const {
       event,
       mediations,
-      occasionItem,
       occasion,
       occurences,
       stock,
@@ -79,8 +78,6 @@ class OccasionItem extends Component {
       name,
       createdAt,
     } = (event || thing || {})
-
-    console.log(occasion, event, mediations, occurences, thing)
 
     const mediationsLength = get(mediations, 'length')
     return (
@@ -135,7 +132,6 @@ export default connect(
     const stockSelector = createStockSelector(occurencesSelector)
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
     return (state, ownProps) => {
-      const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
       return {
         event: eventSelector(state, ownProps.occasion.eventId),
         thing: thingSelector(state, ownProps.occasion.thingId),

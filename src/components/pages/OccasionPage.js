@@ -5,7 +5,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import OccasionForm from '../OccasionForm'
-import withLogin from '../hocs/withLogin'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
 import Label from '../layout/Label'
@@ -115,7 +114,6 @@ class OccasionPage extends Component {
     const {
       closeModal,
       history,
-      occasionForm,
       selectedVenueId,
       showModal,
       showNotification
@@ -165,39 +163,22 @@ class OccasionPage extends Component {
     }
   }
 
-  // componentDidMount () {
-  //   this.handleDataRequest()
-  // }
-
-  // componentDidUpdate (prevProps) {
-  //   const {
-  //     user
-  //   } = this.props
-  //   if (prevProps.user !== user) {
-  //     this.handleDataRequest()
-  //   }
-  // }
-
   componentWillUnmount () {
     this.props.resetForm()
   }
 
-
   render () {
     const {
       event,
-      isLoading,
       isNew,
       location: { pathname },
       occasionIdOrNew,
-      occasionForm,
       routePath,
       thing,
       type,
       typeOptions,
     } = this.props
     const {
-      id,
       name
     } = (event || thing || {})
     const {

@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
-import { mergeForm } from '../reducers/form'
 import createEventSelector from '../selectors/createEvent'
 import createVenueSelector from '../selectors/createVenue'
 import createVenuesSelector from '../selectors/createVenues'
@@ -49,15 +48,11 @@ class OccurenceForm extends Component {
       event,
       occasion,
       occurence,
-      occurences,
       onDeleteClick,
       venue,
     } = this.props
     const {
       id,
-      available,
-      eventOccurence,
-      selectedVenueId,
       price,
       beginningDatetime,
       groupSize,
@@ -74,8 +69,6 @@ class OccurenceForm extends Component {
       time
     } = this.state
     const eventOccurenceIdOrNew = id || NEW
-
-    console.log('venue', venue, occasion)
 
     return (
       <tr className='occurence-form'>

@@ -6,7 +6,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
-import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
@@ -305,7 +304,6 @@ const mediationSelector = createMediationSelector(mediationsSelector)
 const thingSelector = createThingSelector()
 
 export default compose(
-  // withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({

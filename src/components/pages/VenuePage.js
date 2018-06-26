@@ -6,7 +6,6 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
-import withLogin from '../hocs/withLogin'
 import FormField from '../layout/FormField'
 import Icon from '../layout/Icon'
 import Label from '../layout/Label'
@@ -34,24 +33,13 @@ class VenuePage extends Component {
     }
   }
 
-  // componentDidMount () {
-  //   this.handleDataRequest()
-  // }
-
-  // componentDidUpdate (prevProps) {
-  //   if (prevProps.user !== this.props.user) {
-  //     this.handleDataRequest()
-  //   }
-  // }
-
   componentWillUnmount() {
     this.props.resetForm()
   }
 
   handleDataRequest = (handleSuccess, handleError) => {
     const {
-      match: { params: { offererId, venueId } },
-      offerer,
+      match: { params: { offererId } },
       requestData,
       user
     } = this.props
@@ -172,7 +160,6 @@ class VenuePage extends Component {
     const {
       apiPath,
       offererName,
-      isLoading,
       isNew,
       isReadOnly,
       method,
@@ -349,7 +336,6 @@ const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,
-  // withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       user: state.user,
