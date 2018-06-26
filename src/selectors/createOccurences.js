@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 

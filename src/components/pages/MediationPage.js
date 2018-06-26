@@ -53,7 +53,7 @@ class MediationPage extends Component {
     imageUploadBorder: 25,
   }
 
-  handleRequestData = () => {
+  handleDataRequest = (handleSuccess, handleError) => {
     const {
       match: { params: { mediationId } },
       requestData,
@@ -63,6 +63,8 @@ class MediationPage extends Component {
       'GET',
       `mediations/${mediationId}`,
       {
+        handleSuccess,
+        handleError,
         key: 'mediations',
         normalizer: mediationNormalizer
       }
@@ -174,7 +176,11 @@ class MediationPage extends Component {
     console.log('offerer', offerer)
 
     return (
-      <PageWrapper name='mediation' backTo={{path: backPath, label: 'Revenir à l\'offre'}}>
+      <PageWrapper
+        name='mediation'
+        backTo={{path: backPath, label: 'Revenir à l\'offre'}}
+        handleDataRequest={this.handleDataRequest}
+        >
         <section className='section hero'>
           <h2 className='subtitle has-text-weight-bold'>
             {name}
@@ -299,7 +305,7 @@ const mediationSelector = createMediationSelector(mediationsSelector)
 const thingSelector = createThingSelector()
 
 export default compose(
-  withLogin({ isRequired: true }),
+  // withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({

@@ -5,7 +5,6 @@ import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
 import createOccasionSelector from '../../selectors/createOccasion'
-import createOccasionsSelector from '../../selectors/createOccasions'
 import { NEW } from '../../utils/config'
 import { occasionNormalizer } from '../../utils/normalizers'
 
@@ -22,7 +21,7 @@ const withCurrentOccasion = WrappedComponent => {
       }
     }
 
-    handleRequestData = () => {
+    handleDataRequest = () => {
       const {
         match: {
           params: {
@@ -44,13 +43,13 @@ const withCurrentOccasion = WrappedComponent => {
     }
 
     componentDidMount() {
-      this.props.user && this.handleRequestData()
+      this.props.user && this.handleDataRequest()
     }
 
     componentDidUpdate(prevProps) {
       const { user } = this.props
       if (user && user !== prevProps.user) {
-        this.handleRequestData()
+        this.handleDataRequest()
       }
     }
 
@@ -80,8 +79,7 @@ const withCurrentOccasion = WrappedComponent => {
     }
   }
 
-  const occasionsSelector = createOccasionsSelector()
-  const occasionSelector = createOccasionSelector(occasionsSelector)
+  const occasionSelector = createOccasionSelector()
 
   return compose(
     withRouter,

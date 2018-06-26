@@ -35,7 +35,7 @@ class ProfilePage extends Component {
     } = this.props.user || {}
 
     return (
-      <PageWrapper name="profile" loading={!this.props.user} backTo={{path: '/accueil', label: 'Accueil'}}>
+      <PageWrapper name="profile" backTo={{path: '/accueil', label: 'Accueil'}}>
         <div className='section'>
           <h1 className='pc-title'>Profil</h1>
         </div>

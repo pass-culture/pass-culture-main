@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect'
-import get from 'lodash.get'
 
 const removedLocalClasses = [
   'SpreadsheetExpVenues',
@@ -9,7 +8,6 @@ const removedLocalClasses = [
   'TiteLiveBookThumbs',
   'TiteLiveBookDescriptions'
 ]
-
 
 export default () => createSelector(
   state => state.data.providers,

@@ -34,21 +34,21 @@ class VenuePage extends Component {
     }
   }
 
-  componentDidMount () {
-    this.handleRequestData()
-  }
+  // componentDidMount () {
+  //   this.handleDataRequest()
+  // }
 
-  componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.handleRequestData()
-    }
-  }
+  // componentDidUpdate (prevProps) {
+  //   if (prevProps.user !== this.props.user) {
+  //     this.handleDataRequest()
+  //   }
+  // }
 
   componentWillUnmount() {
     this.props.resetForm()
   }
 
-  handleRequestData = () => {
+  handleDataRequest = (handleSuccess, handleError) => {
     const {
       match: { params: { offererId, venueId } },
       offerer,
@@ -67,6 +67,8 @@ class VenuePage extends Component {
         'GET',
         `offerers/${offererId}/venues`,
         {
+          handleSuccess,
+          handleError,
           key: 'venues',
           normalizer: {
             eventOccurences: {
@@ -188,7 +190,7 @@ class VenuePage extends Component {
           path: routePath
         }}
         name='venue'
-        loading={isLoading}
+        handleDataRequest={this.handleDataRequest}
       >
         <div className='section hero'>
           <h2 className='subtitle has-text-weight-bold'>
@@ -347,7 +349,7 @@ const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,
-  withLogin({ isRequired: true }),
+  // withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       user: state.user,

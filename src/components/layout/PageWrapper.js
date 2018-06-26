@@ -5,11 +5,26 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import withLogin from '../hocs/withLogin'
 import Header from './Header'
 import Icon from './Icon'
-import { closeNotification } from '../../reducers/notification'
+import { showNotification, closeNotification } from '../../reducers/notification'
+import { requestData } from '../../reducers/data'
 
 class PageWrapper extends Component {
+
+  constructor () {
+    super()
+    this.state = {
+      loading: false,
+    }
+  }
+
+  static defaultProps = {
+    Tag: 'main',
+    handleDataRequest: () => {},
+  }
+
 
   handleHistoryBlock = () => {
     const {
@@ -38,13 +53,40 @@ class PageWrapper extends Component {
     )
   }
 
+  handleDataRequest = () => {
+    this.setState({
+      loading: true,
+    })
+    this.props.handleDataRequest(this.handleDataSuccess, this.handleDataError)
+  }
+
+  handleDataSuccess = () => {
+    this.setState({
+      loading: false,
+    })
+  }
+
+  handleDataError = () => {
+    this.setState({
+      loading: false,
+    })
+    this.props.showNotification({
+      type: 'error',
+      text: 'Erreur de chargement'
+    })
+  }
+
   componentDidMount () {
     this.handleHistoryBlock()
+    this.handleDataRequest()
   }
 
   componentDidUpdate (prevProps) {
     if (prevProps.blockers !== this.props.blockers) {
       this.handleHistoryBlock()
+    }
+    if (prevProps.user !== this.props.user) {
+      this.handleDataRequest()
     }
   }
 
@@ -62,14 +104,17 @@ class PageWrapper extends Component {
       redBg,
       fullscreen,
       children,
-      loading,
       notification,
       whiteHeader,
     } = this.props
+    const {
+      loading
+    } = this.state
     const footer = [].concat(children).find(e => e && e.type === 'footer')
     const content = []
       .concat(children)
       .filter(e => e && e.type !== 'header' && e.type !== 'footer')
+
     return [
       !fullscreen && <Header key='header' whiteHeader={whiteHeader} {...header} />,
       <Tag
@@ -111,17 +156,19 @@ class PageWrapper extends Component {
   }
 }
 
-PageWrapper.defaultProps = {
-  Tag: 'main',
-}
-
 export default compose(
   withRouter,
+  withLogin(),
   connect(
     state => ({
       blockers: state.blockers,
-      notification: state.notification
+      notification: state.notification,
+      user: state.user,
     }),
-    { closeNotification }
+    {
+      showNotification,
+      closeNotification,
+      requestData,
+    }
   )
 )(PageWrapper)

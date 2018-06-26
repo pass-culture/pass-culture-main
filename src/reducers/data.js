@@ -6,6 +6,7 @@ const RESET_DATA = 'RESET_DATA'
 
 // INITIAL STATE
 const initialState = {
+  events: [],
   eventOccurences: [],
   mediations: [],
   occasions: [],

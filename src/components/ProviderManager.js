@@ -53,7 +53,7 @@ class ProviderManager extends Component {
     isNew && mergeForm('venueProviders', NEW, { venueId })
   }
 
-  handleRequestData = () => {
+  handleDataRequest = () => {
     const {
       match: { params : { venueId } },
       requestData,
@@ -84,13 +84,13 @@ class ProviderManager extends Component {
     const {
       match: { params: { venueProviderId } },
     } = this.props
-    this.handleRequestData()
+    this.handleDataRequest()
     venueProviderId === 'nouveau' && this.handleMergeForm()
   }
 
   componentDidUpdate (prevProps) {
     if (prevProps.user !== this.props.user) {
-      this.handleRequestData()
+      this.handleDataRequest()
     }
     if (
       prevProps.match.params.venueProviderId === 'nouveau'

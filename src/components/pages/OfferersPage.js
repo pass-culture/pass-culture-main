@@ -9,28 +9,30 @@ import PageWrapper from '../layout/PageWrapper'
 import OffererItem from '../OffererItem'
 import SearchInput from '../layout/SearchInput'
 import createOfferersSelector from '../../selectors/createOfferers'
+import { requestData } from '../../reducers/data'
 
 class OfferersPage extends Component {
 
-  componentDidMount () {
-    this.handleRequestData()
-  }
+  // componentDidMount () {
+  //   this.handleDataRequest()
+  // }
 
-  componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.handleRequestData()
-    }
-  }
+  // componentDidUpdate (prevProps) {
+  //   if (prevProps.user !== this.props.user) {
+  //     this.handleDataRequest()
+  //   }
+  // }
 
-  handleRequestData = () => {
+  handleDataRequest = (handleSuccess, handleError) => {
     const {
       requestData,
-      user
     } = this.props
-    user && requestData(
+    requestData(
       'GET',
       'offerers',
       {
+        handleSuccess,
+        handleError,
         normalizer: {
           managedVenues: {
             key: 'venues',
@@ -53,8 +55,8 @@ class OfferersPage extends Component {
         offerers
       } = this.props
     return (
-      <PageWrapper name="profile"
-        loading={!offerers}
+      <PageWrapper name="offerers"
+        handleDataRequest={this.handleDataRequest}
       >
         <h1 className="pc-title">
           Vos structures
@@ -95,9 +97,10 @@ class OfferersPage extends Component {
 const offerersSelector = createOfferersSelector()
 
 export default compose(
-  withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       offerers: offerersSelector(state)
-    }))
+    }), {
+      requestData,
+    })
 )(OfferersPage)

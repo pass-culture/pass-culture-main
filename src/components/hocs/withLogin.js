@@ -7,14 +7,23 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
+import { DEFAULT_TO } from '../../utils/config'
+
 
 const withLogin = (config = {}) => WrappedComponent => {
   const { isRequired, redirectTo } = config
 
   class _withLogin extends Component {
+
+    constructor(props) {
+      super(props)
+      this.isRequired = isRequired || Boolean(props.handleDataRequest)
+      this.redirectTo = redirectTo || DEFAULT_TO
+    }
+
     componentWillMount = () => {
       const { user, requestData } = this.props
-      if (!user) {
+      if (this.isRequired && !user) {
         requestData('GET', `users/me`, { key: 'users' })
       }
     }
@@ -30,10 +39,10 @@ const withLogin = (config = {}) => WrappedComponent => {
     handleRedirect = (prevProps={}) => {
       const { history, location, user } = this.props
       if (user && user !== prevProps.user) {
-        if (!prevProps.user && redirectTo && redirectTo !== location.pathname) {
+        if (!prevProps.user && this.redirectTo !== location.pathname) {
           history.push(redirectTo)
         }
-      } else if (isRequired) {
+      } else if (this.isRequired) {
         if (user === false && prevProps.user === null) {
           // CASE WHERE WE STILL HAVE A USER NULL
           // SO WE FORCE THE SIGNING PUSH

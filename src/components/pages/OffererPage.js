@@ -46,7 +46,7 @@ class OffererPage extends Component {
     }
   }
 
-  handleRequestData () {
+  handleDataRequest = (handleSuccess, handleError) => {
     const {
       match: { params: { offererId } },
       requestData,
@@ -57,6 +57,8 @@ class OffererPage extends Component {
       'GET',
       `offerers/${offererId}`,
       {
+        handleSuccess,
+        handleError,
         key: 'offerers',
         normalizer: {
           managedVenues: 'venues'
@@ -81,15 +83,15 @@ class OffererPage extends Component {
     this.setState({ isNewProvider: true })
   }
 
-  componentDidMount () {
-    this.handleRequestData()
-  }
+  // componentDidMount () {
+  //   this.handleDataRequest()
+  // }
 
-  componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.handleRequestData()
-    }
-  }
+  // componentDidUpdate (prevProps) {
+  //   if (prevProps.user !== this.props.user) {
+  //     this.handleDataRequest()
+  //   }
+  // }
 
   componentWillUnmount() {
     this.props.resetForm()
@@ -123,6 +125,7 @@ class OffererPage extends Component {
         backTo={{label: 'Vos structures', path: '/structures'}}
         loading={isLoading}
         name='offerer'
+        handleDataRequest={this.handleDataRequest}
       >
         <div className='section hero'>
           <h2 className='subtitle has-text-weight-bold'>
@@ -272,7 +275,7 @@ const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,
-  withLogin({ isRequired: true }),
+  // withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       offerer: offererSelector(state, ownProps.match.params.offererId),

@@ -73,7 +73,7 @@ class OccasionPage extends Component {
     }
   }
 
-  handleRequestData = () => {
+  handleDataRequest = (handleSuccess, handleError) => {
     const {
       history,
       requestData,
@@ -89,16 +89,19 @@ class OccasionPage extends Component {
       'GET',
       'offerers',
       {
-        handleSuccess: (state, action) => !get(state, 'data.venues.length')
-          && showModal(
-            <div>
-              Vous devez avoir déjà enregistré un lieu
-              dans une de vos structures pour ajouter des offres
-            </div>,
-            {
-              onCloseClick: () => history.push('/structures')
-            }
-          ),
+        handleSuccess: (state, action) => {
+          if (!get(state, 'data.venues.length')) {
+            showModal(
+              <div>
+                Vous devez avoir déjà enregistré un lieu
+                dans une de vos structures pour ajouter des offres
+              </div>, {
+                onCloseClick: () => history.push('/structures')
+              })
+          }
+          handleSuccess()
+        },
+        handleError,
         normalizer: { managedVenues: 'venues' }
       }
     )
@@ -163,18 +166,18 @@ class OccasionPage extends Component {
     }
   }
 
-  componentDidMount () {
-    this.handleRequestData()
-  }
+  // componentDidMount () {
+  //   this.handleDataRequest()
+  // }
 
-  componentDidUpdate (prevProps) {
-    const {
-      user
-    } = this.props
-    if (prevProps.user !== user) {
-      this.handleRequestData()
-    }
-  }
+  // componentDidUpdate (prevProps) {
+  //   const {
+  //     user
+  //   } = this.props
+  //   if (prevProps.user !== user) {
+  //     this.handleDataRequest()
+  //   }
+  // }
 
   componentWillUnmount () {
     this.props.resetForm()
@@ -212,7 +215,7 @@ class OccasionPage extends Component {
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
         name='offer'
-        loading={isLoading}
+        handleDataRequest={this.handleDataRequest}
       >
         <div className='section'>
           <h1 className='pc-title'>
@@ -323,13 +326,13 @@ const thingSelector = createThingSelector()
 const typeSelector = createTypeSelector()
 
 export default compose(
-  withLogin({ isRequired: true }),
+  // withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      event: eventSelector(state, ownProps.occasion.eventId),
+      event: eventSelector(state, get(ownProps, 'occasion.eventId')),
       selectedType: typeSelector(state, ownProps), // TODO: plug ownProps ref to type
-      thing: thingSelector(state, ownProps.occasion.thingId),
+      thing: thingSelector(state, get(ownProps, 'occasion.thingId')),
       typeOptions: state.data.types
     }),
     {

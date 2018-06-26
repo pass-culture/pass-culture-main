@@ -10,13 +10,14 @@ import Icon from '../layout/Icon'
 import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
+import { requestData } from '../../reducers/data'
 import createSearchSelector from '../../selectors/createSearch'
 import createOccasionsSelector from '../../selectors/createOccasions'
 import { occasionNormalizer } from '../../utils/normalizers'
 
 class OccasionsPage extends Component {
 
-  handleRequestData = () => {
+  handleDataRequest = (handleSuccess, handleError) => {
     const {
       requestData,
       user
@@ -25,21 +26,23 @@ class OccasionsPage extends Component {
       'GET',
       'occasions',
       {
+        handleSuccess,
+        handleError,
         normalizer: occasionNormalizer
       }
     )
   }
 
-  componentDidMount() {
-    this.handleRequestData()
-  }
+  // componentDidMount() {
+  //   this.handleDataRequest()
+  // }
 
-  componentDidUpdate(prevProps) {
-    const { user } = this.props
-    if (user !== prevProps.user) {
-      this.handleRequestData()
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   const { user } = this.props
+  //   if (user !== prevProps.user) {
+  //     this.handleDataRequest()
+  //   }
+  // }
 
   render() {
     const {
@@ -47,7 +50,7 @@ class OccasionsPage extends Component {
     } = this.props
 
     return (
-      <PageWrapper name="offers" loading={!occasions}>
+      <PageWrapper name="offers" handleDataRequest={this.handleDataRequest}>
         <div className="section">
           <NavLink to={`/offres/nouveau`} className='button is-primary is-medium is-pulled-right'>
             <span className='icon'><Icon svg='ico-offres-w' /></span>
@@ -93,7 +96,7 @@ const occasionsSelector = createOccasionsSelector(searchSelector)
 
 export default compose(
   withRouter,
-  withLogin({ isRequired: true }),
+  // withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => {
       const { offererId, venueId } = searchSelector(state, ownProps.location.search)
@@ -102,6 +105,6 @@ export default compose(
         user: state.user
       }
     },
-    { showModal }
+    { showModal, requestData }
   )
 )(OccasionsPage)

@@ -8,15 +8,15 @@ import createOfferersSelector from '../selectors/createOfferers'
 class OfferersList extends Component {
 
   componentDidMount () {
-    this.handleRequestData ()
+    this.handleDataRequest ()
   }
   componentDidUpdate(prevProps) {
     if (prevProps.user !== this.props.user) {
-      this.handleRequestData ()
+      this.handleDataRequest ()
     }
   }
 
-  handleRequestData = () => {
+  handleDataRequest = () => {
     const {
       requestData,
       user

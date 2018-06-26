@@ -1,8 +1,9 @@
 import { createSelector } from 'reselect'
 
 import createVenuesSelector from './createVenues'
+const venuesSelector = createVenuesSelector()
 
-export default venuesSelector => createSelector(
+export default () => createSelector(
   venuesSelector,
   (state, venueId) => venueId,
   (venues, venueId) => {
