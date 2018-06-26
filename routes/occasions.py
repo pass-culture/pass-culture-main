@@ -11,6 +11,7 @@ from utils.rest import delete,\
                        load_or_404,\
                        login_or_api_key_required,\
                        update
+from utils.search import get_search_filter
 
 
 Event = app.model.Event
@@ -55,6 +56,12 @@ def list_occasions():
                      .join(Offerer)\
                      .join(UserOfferer)\
                      .filter(UserOfferer.user == current_user)
+
+    search = request.args.get('search')
+    if search is not None:
+        query = query.outerjoin(Event)\
+                     .outerjoin(Thing)\
+                     .filter(get_search_filter([Event, Thing], search))
 
     return handle_rest_get_list(Occasion,
                                 include=OCCASION_INCLUDES,

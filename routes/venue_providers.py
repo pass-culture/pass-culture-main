@@ -1,10 +1,10 @@
 """ venue providers """
 from os import path
-from pathlib import Path
 import subprocess
 from flask import current_app as app, jsonify, request
 
 from models.api_errors import ApiErrors
+from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
 from utils.rest import delete, expect_json_data,\
@@ -72,13 +72,12 @@ def create_venue_provider():
     app.model.PcObject.check_and_save(new_vp)
 
     # CALL THE PROVIDER SUB PROCESS
-    api_root = Path(path.dirname(path.realpath(__file__))) / '..'
     p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
                          + ' --venueProvider ' + str(new_vp.id),
                          #stdout=subprocess.PIPE,
                          #stderr=subprocess.PIPE,
                          shell=True,
-                         cwd=api_root)
+                         cwd=API_ROOT_PATH)
     #out, err = p.communicate()
     #print("STDOUT:", out)
     #print("STDERR:", err)

@@ -22,6 +22,7 @@ pandas
 PostgreSQL-Audit
 psycopg2-binary
 pytest
+pytest-flask
 python-geoip
 requests
 simplejson

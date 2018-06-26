@@ -2,7 +2,7 @@ from utils.human_ids import dehumanize, humanize
 from utils.test_utils import API_URL, req, req_with_auth
 
 
-def test_10_get_occasions_should_return_a_list_of_occasions():
+def test_10_get_occasions():
     r = req_with_auth().get(API_URL + '/occasions')
     assert r.status_code == 200
     occasions = r.json()
@@ -32,6 +32,20 @@ def test_10_get_occasions_should_return_a_list_of_occasions():
     occasions = r.json()
     for occasion in occasions:
         assert occasion['venueId'] == humanize(2)
+    r = req_with_auth().get(API_URL + '/occasions?venueId='+humanize(2)+'&page=1&search=guide')
+    assert r.status_code == 200
+    occasions = r.json()
+    assert len(occasions) == 10
+    for occasion in occasions:
+        assert occasion['venueId'] == humanize(2)
+        assert 'guide' in occasion['thing']['name'].lower()
+    r = req_with_auth().get(API_URL + '/occasions?venueId='+humanize(2)+'&page=2&search=guide')
+    assert r.status_code == 200
+    occasions = r.json()
+    assert len(occasions) == 2
+    for occasion in occasions:
+        assert occasion['venueId'] == humanize(2)
+        assert 'guide' in occasion['thing']['name'].lower()
 
 
 def test_11_create_thing_occasion():
