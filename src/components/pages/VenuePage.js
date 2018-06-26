@@ -48,21 +48,22 @@ class VenuePage extends Component {
 
   handleRequestData = () => {
     const {
+      match: { params: { offererId, venueId } },
       offerer,
       requestData,
       user
     } = this.props
-    if (user && offerer) {
+    if (user) {
       requestData(
         'GET',
-        `offerers/${offerer.id}`,
+        `offerers/${offererId}`,
         {
           key: 'offerers'
         }
       )
       requestData(
         'GET',
-        `offerers/${offerer.id}/venues`,
+        `offerers/${offererId}/venues`,
         {
           key: 'venues',
           normalizer: {
@@ -118,7 +119,7 @@ class VenuePage extends Component {
   static getDerivedStateFromProps (nextProps) {
     const {
       location: { search },
-      match: { params: { venueId } },
+      match: { params: { offererId, venueId } },
       offerer,
       venue
     } = nextProps
@@ -127,11 +128,11 @@ class VenuePage extends Component {
     const isReadOnly = !isNew && !isEdit
     const venueIdOrNew = isNew ? NEW : venueId
     const offererName = get(offerer, 'name')
-    const routePath = `/structures/${get(offerer, 'id')}`
+    const routePath = `/structures/${offererId}`
     const venueName = get(venue, 'name')
     return {
       apiPath: isNew ? `venues` : `venues/${venueId}`,
-      isLoading: !(get(venue, 'id') || isNew),
+      isLoading: !(get(offerer, 'id') && (get(venue, 'id') || isNew)),
       isNew,
       method: isNew ? 'POST' : 'PATCH',
       isEdit,
@@ -145,6 +146,9 @@ class VenuePage extends Component {
 
   render () {
     const {
+      match: {
+        params: { offererId }
+      },
       location: {
         pathname
       },
@@ -194,7 +198,7 @@ class VenuePage extends Component {
           </h1>
 
           {
-            get(offerer, 'id') && (
+            get(offerer, 'id') && get(venue, 'id') && (
               <NavLink to={`/offres/nouveau?offererId=${offerer.id}&venueId=${venue.id}`}
                 className='button is-primary is-medium is-pulled-right cta'>
                 <span className='icon'><Icon svg='ico-offres-w' /></span>
@@ -290,7 +294,7 @@ class VenuePage extends Component {
               : (
                 <NavLink
                   className="button is-secondary is-medium"
-                  to={`/structures/${offerer.id}`}>
+                  to={`/structures/${offererId}`}>
                   Annuler
                 </NavLink>
               )
@@ -312,7 +316,7 @@ class VenuePage extends Component {
                       className="button is-primary is-medium"
                       getBody={form => Object.assign(
                           {
-                            managingOffererId: offerer.id
+                            managingOffererId: offererId
                           },
                           get(form, `venuesById.${venueIdOrNew}`)
                         )

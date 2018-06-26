@@ -57,12 +57,14 @@ class VenuesList extends Component {
   }
 }
 
+const venuesSelector = createVenuesSelector()
+
 export default compose(
   withRouter,
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venues: createVenuesSelector()(state, ownProps.match.params.offererId)
+      venues: venuesSelector(state, {offererId: ownProps.match.params.offererId})
     }),
     { requestData }
   )
