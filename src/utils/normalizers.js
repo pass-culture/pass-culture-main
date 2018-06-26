@@ -41,6 +41,13 @@ export const mediationNormalizer = {
   */
 }
 
-export const offererNormalizer = {}
+export const offererNormalizer = {
+  managedVenues: {
+    key: 'venues',
+    normalizer: {
+      occasions: 'occasions',
+    }
+  }
+}
 
 export const venueNormalizer = {}

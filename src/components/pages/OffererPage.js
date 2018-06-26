@@ -17,6 +17,7 @@ import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
 import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
+import { offererNormalizer } from '../../utils/normalizers'
 
 
 class OffererPage extends Component {
@@ -61,21 +62,7 @@ class OffererPage extends Component {
         handleSuccess,
         handleError,
         key: 'offerers',
-        normalizer: {
-          managedVenues: {
-            key: 'venues',
-            normalizer: {
-              eventOccurences: {
-                key: 'eventOccurences',
-                normalizer: {
-                  event: 'occasions'
-                }
-              },
-              // KEY IN THE OBJECY : //KEY IN THE STATE.DATA
-              offers: 'offers'
-            }
-          }
-        }
+        normalizer: offererNormalizer
       }
     )
   }
