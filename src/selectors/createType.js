@@ -9,7 +9,8 @@ export default (selectEvent, selectThing) => createSelector(
   typesSelector,
   selectEvent,
   selectThing,
-  (types, event, thing, typeLabel) => {
+  (state, eventOrThingId, formLabel) => formLabel,
+  (types, event, thing, formLabel) => {
     // get the tag which is actually the type key in event and thing
     let tag = get(event, 'type')
     let type
@@ -25,8 +26,8 @@ export default (selectEvent, selectThing) => createSelector(
           model: 'ThingType',
           tag
         }
-      } else if (typeLabel) {
-        const [model, tag] = typeLabel.split('.')
+      } else if (formLabel) {
+        const [model, tag] = formLabel.split('.')
         type = {
           model,
           tag

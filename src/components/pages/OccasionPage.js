@@ -17,6 +17,7 @@ import createEventSelector from '../../selectors/createEvent'
 import createTypeSelector from '../../selectors/createType'
 import createThingSelector from '../../selectors/createThing'
 import { eventNormalizer } from '../../utils/normalizers'
+import { NEW } from '../../utils/config'
 
 const requiredEventAndThingFields = [
   'name',
@@ -306,12 +307,13 @@ const thingSelector = createThingSelector()
 const typeSelector = createTypeSelector(eventSelector, thingSelector)
 
 export default compose(
-  // withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
       event: eventSelector(state, get(ownProps, 'occasion.eventId')),
-      type: typeSelector(state, get(ownProps, 'occasion.eventId') || get(ownProps, 'occasion.thingId')),
+      type: typeSelector(state,
+        get(ownProps, 'occasion.eventId') || get(ownProps, 'occasion.thingId'),
+        get(state, `form.occasionsById.${get(ownProps, 'occasion.id') || NEW}.type`)),
       thing: thingSelector(state, get(ownProps, 'occasion.thingId')),
       typeOptions: state.data.types
     }),

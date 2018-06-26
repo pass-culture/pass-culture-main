@@ -12,11 +12,13 @@ import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
 import createEventSelector from '../selectors/createEvent'
 import createOccurencesSelector from '../selectors/createOccurences'
+import createOffererSelector from '../selectors/createOfferer'
 import createOfferersSelector from '../selectors/createOfferers'
 import createThingSelector from '../selectors/createThing'
 import createTypesSelector from '../selectors/createTypes'
 import createVenueSelector from '../selectors/createVenue'
 import createVenuesSelector from '../selectors/createVenues'
+import { NEW } from '../utils/config'
 import { pluralize } from '../utils/string'
 
 class OccasionForm extends Component {
@@ -64,12 +66,12 @@ class OccasionForm extends Component {
       isReadOnly,
       occasionIdOrNew,
       occurences,
+      offerer,
       offerers,
       routePath,
-      selectedOffererId,
-      selectedVenueId,
       thing,
       user,
+      venue,
       venues,
     } = this.props
     const {
@@ -162,7 +164,7 @@ class OccasionForm extends Component {
         }
         <FormField
           collectionName='occasions'
-          defaultValue={selectedOffererId}
+          defaultValue={get(offerer, 'id')}
           entityId={occasionIdOrNew}
           isHorizontal
           label={<Label title="Structure :" />}
@@ -173,7 +175,7 @@ class OccasionForm extends Component {
           type="select"
         />
         {
-          selectedOffererId && get(venues, 'length') === 0
+          offerer && get(venues, 'length') === 0
             ? (
               <p>
                 Il faut obligatoirement une structure avec un lieu.
@@ -182,7 +184,7 @@ class OccasionForm extends Component {
             :
               get(venues, 'length') > 0 && <FormField
                 collectionName='occasions'
-                defaultValue={selectedVenueId}
+                defaultValue={get(venue, 'id')}
                 entityId={occasionIdOrNew}
                 isHorizontal
                 label={<Label title="Lieu :" />}
@@ -311,24 +313,36 @@ class OccasionForm extends Component {
 const eventSelector = createEventSelector()
 const occurencesSelector = createOccurencesSelector()
 const offerersSelector = createOfferersSelector()
+const offererSelector = createOffererSelector(offerersSelector)
 const thingSelector = createThingSelector()
 const typesSelector = createTypesSelector()
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector(venuesSelector)
 
 export default connect(
-  (state, ownProps) => ({
-    event: eventSelector(state, ownProps.occasion.eventId),
-    occurences: occurencesSelector(state,
-      ownProps.occasion.venueId,
-      ownProps.occasion.eventId
-    ),
-    offerers: offerersSelector(state),
-    venue: venueSelector(state, null, ownProps.occasion.venueId),
-    venues: venuesSelector(state),
-    thing: thingSelector(state, ownProps.occasion.thingId),
-    typeOptions: typesSelector(state),
-  }),
+  (state, ownProps) => {
+    const eventId = get(ownProps, 'occasion.eventId')
+    const occasionId = get(ownProps, 'occasion.id') || NEW
+    const thingId = get(ownProps, 'occasion.thingId')
+    const venueId = get(ownProps, 'occasion.venueId')
+    let venue = venueSelector(state, null, venueId)
+    const offerers = offerersSelector(state)
+    const offerer = offererSelector(state, get(venue, 'managingOffererId'))
+      || (get(offerers, 'length') === 1 && get(offerers, '0'))
+    const venues = venuesSelector(state,
+      get(state, `form.occasionsById.${occasionId}.offererId`))
+    venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
+    return {
+      event: eventSelector(state, eventId),
+      occurences: occurencesSelector(state, venueId, eventId),
+      offerer,
+      offerers,
+      venue,
+      venues,
+      thing: thingSelector(state, thingId),
+      typeOptions: typesSelector(state),
+    }
+  },
   {
     closeModal,
     mergeForm,
