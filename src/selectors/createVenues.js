@@ -3,9 +3,9 @@ import { createSelector } from 'reselect'
 export default () => createSelector(
   state => state.data.venues,
   (state, params) => params,
-  (venues, {offererId}) => {
+  (venues, {offererId}={}) => {
     if (offererId)
-      return venues.filter(v => v.managingOffererId === offererId)
+      venues = venues.filter(v => v.managingOffererId === offererId)
     return venues
   }
 )
