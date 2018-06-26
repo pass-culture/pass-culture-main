@@ -340,14 +340,17 @@ class VenuePage extends Component {
   }
 }
 
+const venueSelector = createVenueSelector()
+const offererSelector = createOffererSelector()
+
 export default compose(
   withRouter,
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venue: createVenueSelector()(state, ownProps.match.params.venueId),
-      offerer: createOffererSelector()(state, ownProps.match.params.offererId),
+      venue: venueSelector(state, ownProps.match.params.venueId),
+      offerer: offererSelector(state, ownProps.match.params.offererId),
     }),
     {
       addBlockers,

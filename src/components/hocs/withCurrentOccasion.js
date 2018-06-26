@@ -4,7 +4,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
-import createOccasionSelect from '../../selectors/createOccasion'
+import createOccasionSelector from '../../selectors/createOccasion'
 import { NEW } from '../../utils/config'
 import { pathToCollection } from '../../utils/translate'
 import { occasionNormalizer } from '../../utils/normalizers'
@@ -80,11 +80,13 @@ const withCurrentOccasion = WrappedComponent => {
     }
   }
 
+  const occasionSelector = createOccasionSelector()
+
   return compose(
     withRouter,
     connect(
       (state, ownProps) => ({
-        occasion: createOccasionSelect(state, ownProps.match.occasionId),
+        occasion: occasionSelector(state, ownProps.match.occasionId),
         user: state.user,
       }),
       { requestData }

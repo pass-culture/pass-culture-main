@@ -290,16 +290,23 @@ class MediationPage extends Component {
   }
 }
 
+const offererSelector = createOffererSelector()
+const eventSelector = createEventSelector()
+const mediationSelector = createMediationSelector()
+const thingSelector = createThingSelector()
+
 export default compose(
   withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
-    (state, ownProps) => ({
-      event: createEventSelector(state, ownProps),
-      mediation: createMediationSelector()(state, ownProps),
-      offerer: createOffererSelector()(state, ownProps),
-      thing: createThingSelector(state, ownProps)
-    }),
+    (state, ownProps) => {
+      return {
+          offerer: offererSelector(state, ownProps.occasion.id),
+          event: eventSelector(state, ownProps.occasion.eventId),
+          thing: thingSelector(state, ownProps.occasion.thingId),
+          mediation: mediationSelector(state, ownProps.match.params.mediationId),
+        }
+      },
     { assignData, showNotification }
   )
 )(MediationPage)

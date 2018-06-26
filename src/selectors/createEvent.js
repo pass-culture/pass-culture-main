@@ -4,9 +4,7 @@ import { createSelector } from 'reselect'
 const createSelectEvent = () => createSelector(
   state => get(state, 'data.events', []),
   (state, params) => params,
-  (events, {type, id}) => events.find(event =>
-    type === 'event' && event.id === id
-  )
+  (events, eventId) => events.find(event => event.id === eventId)
 )
 export default createSelectEvent
 

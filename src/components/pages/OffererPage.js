@@ -266,12 +266,14 @@ class OffererPage extends Component {
   }
 }
 
+const offererSelector = createOffererSelector()
+
 export default compose(
   withRouter,
   withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      offerer: createOffererSelector()(state, ownProps.match.params.offererId),
+      offerer: offererSelector(state, ownProps.match.params.offererId),
     }),
     {
       closeNotification,

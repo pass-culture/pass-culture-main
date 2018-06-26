@@ -14,10 +14,10 @@ import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import createEventSelect from '../../selectors/createEvent'
+import createEventSelector from '../../selectors/createEvent'
 import createVenueSelect from '../../selectors/createVenue'
-import selectSelectedType from '../../selectors/selectedType'
-import createThingSelect from '../../selectors/createThing'
+import createTypeSelector from '../../selectors/selectedType'
+import createThingSelector from '../../selectors/createThing'
 import { eventNormalizer } from '../../utils/normalizers'
 
 const requiredEventAndThingFields = [
@@ -321,15 +321,18 @@ class OccasionPage extends Component {
   }
 }
 
+const eventSelector = createEventSelector()
+const thingSelector = createThingSelector()
+const typeSelector = createTypeSelector()
+
 export default compose(
   withLogin({ isRequired: true }),
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      event: createEventSelect()(state, ownProps),
-      selectedType: selectSelectedType(state, ownProps),
-      // selectedVenueId: createVenueSelect()(state, ownProps.),
-      thing: createThingSelect(state, ownProps),
+      event: eventSelector(state, ownProps.occasion.eventId),
+      selectedType: typeSelector(state, ownProps), // TODO: plug ownProps ref to type
+      thing: thingSelector(state, ownProps.occasion.thingId),
       typeOptions: state.data.types
     }),
     {

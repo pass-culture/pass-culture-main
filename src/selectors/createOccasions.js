@@ -6,9 +6,8 @@ import selectTypes from './types'
 
 export default () => createSelector(
   state => get(state, 'data.searchedOccasions', get(state, 'data.occasions', [])),
-  (_, offererId) => offererId,
-  (_, __, venueId) => venueId,
-  (occasions, offererId, venueId) => {
+  (_, params) => params,
+  (occasions, {offererId, venueId}={}) => {
     if (offererId)
       occasions = occasions.filter(o => o.lastProviderId === offererId)
 

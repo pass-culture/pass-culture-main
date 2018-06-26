@@ -4,10 +4,7 @@ import { createSelector } from 'reselect'
 const createThingSelect = () => createSelector(
   state => get(state, 'data.things', []),
   (state, params) => params,
-  (things, {id, type}) => things.find(thing =>
-    type === 'thing' &&
-    thing.id === id
-  )
+  (things, thingId) => things.find(thing => thing.id === thingId)
 )
 export default createThingSelect
 
