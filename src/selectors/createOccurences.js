@@ -3,7 +3,7 @@ import moment from 'moment'
 import { createSelector } from 'reselect'
 
 const createOccurencesSelector = () => createSelector(
-  state => get(state, 'data.eventOccurences', []),
+  state => state.data.eventOccurences,
   (state, params) => params,
   (eventOccurences, {venueId, eventId}) => {
     return eventOccurences

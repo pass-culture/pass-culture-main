@@ -12,7 +12,7 @@ const removedLocalClasses = [
 
 
 export default () => createSelector(
-  state => get(state, 'data.providers', []),
+  state => state.data.providers,
   providers => providers
     .filter(p => !removedLocalClasses.includes(p.localClass))
     .sort((p1, p2) => p1.localClass - p2.localClass)

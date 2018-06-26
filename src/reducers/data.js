@@ -11,6 +11,7 @@ const initialState = {
   occasions: [],
   offers: [],
   offerers: [],
+  things: [],
   venues: [],
 }
 
