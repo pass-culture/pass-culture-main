@@ -138,11 +138,18 @@ export default connect(
       const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
       return {
         event: eventSelector(state, ownProps.occasion.eventId),
-        mediations: mediationsSelector(state, ownProps.occasion.eventId, ownProps.occasion.thingId),
-        occurences: occurencesSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        thing: thingSelector(state, ownProps),
-        maxDate: maxDateSelector(state, ownProps),
-        stock: stockSelector(state, ownProps),
+        maxDate: maxDateSelector(state,
+          ownProps.occasion.venueId,
+          ownProps.occasion.eventId),
+        mediations: mediationsSelector(state,
+          ownProps.occasion.eventId || ownProps.occasion.thingId),
+        occurences: occurencesSelector(state,
+          ownProps.occasion.venueId,
+          ownProps.occasion.eventId),
+        stock: stockSelector(state,
+          ownProps.occasion.venueId,
+          ownProps.occasion.eventId),
+        thing: thingSelector(state, ownProps.occasion.thingId),
         thumbUrl: thumbUrlSelector(state, ownProps),
       }
     }
