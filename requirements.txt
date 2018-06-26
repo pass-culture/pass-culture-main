@@ -23,6 +23,7 @@ PostgreSQL-Audit
 psycopg2-binary
 pytest
 pytest-flask
+pytest-mock
 python-geoip
 requests
 simplejson

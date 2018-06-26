@@ -1,6 +1,7 @@
 """ offerer """
 from datetime import datetime
 from flask import current_app as app
+from luhn import verify as verify_luhn
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.sql.expression import cast
@@ -43,8 +44,10 @@ class Offerer(app.model.PcObject,
 
     def errors(self):
         errors = super(Offerer, self).errors()
+        errors.errors.update(app.model.HasAddressMixin.errors(self).errors)
         if self.siren is not None\
-           and not len(self.siren) == 9:
+           and (not len(self.siren) == 9\
+                or not verify_luhn(self.siren)):
             errors.addError('siren', 'Ce code SIREN est invalide')
         return errors
 

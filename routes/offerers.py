@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
 from utils.includes import OFFERERS_INCLUDES, VENUES_INCLUDES
-from utils.mailing import send_pro_validation_email
+from utils.mailing import maybe_send_offerer_validation_email
 from utils.rest import expect_json_data,\
                        handle_rest_get_list,\
                        login_or_api_key_required,\
@@ -70,7 +70,7 @@ def create_offerer():
     offerer.make_admin(current_user)
     offerer.isActive = False
     app.model.PcObject.check_and_save(offerer)
-    send_pro_validation_email(current_user, offerer)
+    maybe_send_offerer_validation_email(current_user, offerer)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 201
 
 

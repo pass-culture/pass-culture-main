@@ -7,6 +7,7 @@ import os
 from pprint import pformat
 import requests
 
+from utils.config import API_URL
 from utils.date import format_datetime
 from utils.config import ENV, IS_DEV, IS_STAGING
 
@@ -118,43 +119,51 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
            }
 
 
-def send_pro_validation_email(user, offerer):
-    to = 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING\
-         else 'passculture@beta.gouv.fr'
+def maybe_send_offerer_validation_email(user, *objects_to_validate):
     mailjet = init_mailjet()
     email_html = '<html><body>'
     email_html += "<p>Inscription ou rattachement PRO à valider</p>"
-    if user.isValidated:
-        email_html += "<h3>Personne (existante): </h3>"
-    else:
-        email_html += "<h3>Personne (nouvelle, à valider + valider le rattachement à l'organisation): </h3>"
-    email_html += pformat(vars(user))
-    if offerer.isValidated:
-        email_html += "<h3>Organisation (existante): </h3>"
-    else:
-        email_html += "<h3>Organisation (nouvelle, à valider + valider le rattachement à la personne): </h3>"
-    email_html += pformat(vars(offerer))
 
-    if offerer.siren:
-        email_html += "<h3>Infos API entreprise : </h3>"
-        api_entreprise = requests.get("https://sirene.entreprise.api.gouv.fr/v1/SIREN/"+offerer.siren)
-        if api_entreprise.status_code == 200:
-            email_html += pformat(vars(api_entreprise.json()))
+    classes_to_validate = []
+    for obj in objects_to_validate:
+        if obj.isValidated:
+            continue
+        token = obj.validationToken  # objects validated together are supposed to have the same token
+        classes_to_validate.append(obj.__class__.__name__)
+        if isinstance(obj, app.model.UserOfferer):
+            email_html += "<h3>Nouveau Rattachement : </h3>"
+        elif isinstance(obj, app.model.Offerer):
+            email_html += "<h3>Nouvelle Structure : </h3>"
         else:
-            raise ValueError('Error getting API entreprise DATA for SIREN : '
-                             + offerer.siren)
+            raise ValueError("Unexpected object type in"
+                             + " maybe_send_pro_validation_email : "
+                             + obj.__class__.__name__)
+        email_html += "<pre>"+pformat(vars(obj))+"</pre>"
+        if isinstance(obj, app.model.Offerer):
+            email_html += "<h4>Infos API entreprise : </h4>"
+            api_entreprise = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/"+obj.siren, verify=False)  # FIXME: add root cerficate on docker image ?
+            if api_entreprise.status_code == 200:
+                print(api_entreprise.text)
+                email_html += "<pre>"+pformat(api_entreprise.json())+"</pre>"
+            else:
+                raise ValueError('Error getting API entreprise DATA for SIREN : '
+                                 + obj.siren)
+
+    if len(classes_to_validate) == 0:
+        return
 
     email_html += "Pour valider, "
-    token = offerer.validationToken if user.isValidated\
-            else user.validationToken
-    email_html += "<a href='/validate?token=" + token + "'>cliquez ici</a>"
+    email_html += "<a href='" + API_URL +"/validate?"\
+                  + "modelNames=" + ",".join(classes_to_validate)\
+                  + "&token=" + token + "'>cliquez ici</a>"
 
     email = {
              'FromName': 'Pass Culture',
              'FromEmail': 'passculture@beta.gouv.fr',
              'Subject': "Inscription PRO à valider",
              'Html-part': email_html,
-             'To': [to]
+             'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING
+                    else 'passculture@beta.gouv.fr'
            }
     mailjet_result = mailjet.send.create(data=email)
     if mailjet_result.status_code != 200:

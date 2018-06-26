@@ -26,14 +26,12 @@ def validate():
 
     model_names = model_names.split(',')
 
-    query = app.model[model_names[0]]\
-               .query\
-               .filter_by(validationToken=token)
-    for model_name in model_names[1:]:
-        query = query.union(app.model[model_name]
-                               .query
-                               .filter_by(validationToken=token))
-    objects_to_validate = query.all()
+    objects_to_validate = []
+    for model_name in model_names:
+        query = app.model[model_name]\
+                .query\
+                .filter_by(validationToken=token)
+        objects_to_validate += query.all()
 
     if len(objects_to_validate) == 0:
         return "Aucun(e) objet ne correspond à ce code de validation"\

@@ -1,4 +1,7 @@
 from flask import current_app as app
+import re
+
+from models.api_errors import ApiErrors
 
 db = app.db
 
@@ -12,5 +15,11 @@ class HasAddressMixin(object):
 
     city = db.Column(db.String(50), nullable=False)
 
+    def errors(self):
+        errors = ApiErrors()
+        if self.postalCode is not None\
+           and not re.match('^\d[AB0-9]\d{3,4}$', self.postalCode):
+            errors.addError('postalCode', 'Ce code postal est invalide')
+        return errors
 
 app.model.HasAddressMixin = HasAddressMixin
