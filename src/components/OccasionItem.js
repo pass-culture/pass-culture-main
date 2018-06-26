@@ -120,13 +120,16 @@ OccasionItem.defaultProps = {
   maxDescriptionLength: 300,
 }
 
-const eventSelector = createEventSelector()
-const thingSelector = createThingSelector()
-const mediationsSelector = createMediationsSelector()
-const occurencesSelector = createOccurencesSelector()
+
 
 export default connect(
   () => {
+
+    const eventSelector = createEventSelector()
+    const thingSelector = createThingSelector()
+    const mediationsSelector = createMediationsSelector()
+    const occurencesSelector = createOccurencesSelector()
+
     return (state, ownProps) => {
       const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
       return {
