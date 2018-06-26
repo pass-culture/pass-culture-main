@@ -10,15 +10,8 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
-import createEventSelector from '../selectors/createEvent'
 import createOccurencesSelector from '../selectors/createOccurences'
-import createOffererSelector from '../selectors/createOfferer'
-import createOfferersSelector from '../selectors/createOfferers'
-import createThingSelector from '../selectors/createThing'
 import createTypesSelector from '../selectors/createTypes'
-import createVenueSelector from '../selectors/createVenue'
-import createVenuesSelector from '../selectors/createVenues'
-import { NEW } from '../utils/config'
 import { pluralize } from '../utils/string'
 
 class OccasionForm extends Component {
@@ -310,39 +303,15 @@ class OccasionForm extends Component {
   }
 }
 
-const eventSelector = createEventSelector()
 const occurencesSelector = createOccurencesSelector()
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
-const thingSelector = createThingSelector()
 const typesSelector = createTypesSelector()
-const venuesSelector = createVenuesSelector()
-const venueSelector = createVenueSelector(venuesSelector)
 
 export default connect(
   (state, ownProps) => {
     const eventId = get(ownProps, 'occasion.eventId')
-    const occasionId = get(ownProps, 'occasion.id') || NEW
-    const thingId = get(ownProps, 'occasion.thingId')
     const venueId = get(ownProps, 'occasion.venueId')
-    let venue = venueSelector(state, null, venueId)
-    const offerers = offerersSelector(state)
-    // if there is only one offerer in the list,
-    // well choose it
-    const offerer = offererSelector(state, get(venue, 'managingOffererId'))
-      || (get(offerers, 'length') === 1 && get(offerers, '0'))
-    const venues = venuesSelector(state,
-      get(state, `form.occasionsById.${occasionId}.offererId`))
-    // same for the venue...
-    venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
     return {
-      event: eventSelector(state, eventId),
       occurences: occurencesSelector(state, venueId, eventId),
-      offerer,
-      offerers,
-      venue,
-      venues,
-      thing: thingSelector(state, thingId),
       typeOptions: typesSelector(state),
     }
   },

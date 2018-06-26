@@ -34,6 +34,7 @@ export default (selectEvent, selectThing) => createSelector(
         }
       }
     }
+    console.log('typeqsdqd', type, types)
     return type && types.find(t =>
       t.model === type.model && t.tag === type.tag)
   }

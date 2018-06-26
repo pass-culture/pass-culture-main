@@ -15,7 +15,11 @@ import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
 import createTypeSelector from '../../selectors/createType'
+import createOffererSelector from '../../selectors/createOfferer'
+import createOfferersSelector from '../../selectors/createOfferers'
 import createThingSelector from '../../selectors/createThing'
+import createVenueSelector from '../../selectors/createVenue'
+import createVenuesSelector from '../../selectors/createVenues'
 import { eventNormalizer } from '../../utils/normalizers'
 import { NEW } from '../../utils/config'
 
@@ -115,9 +119,9 @@ class OccasionPage extends Component {
     const {
       closeModal,
       history,
-      selectedVenueId,
       showModal,
-      showNotification
+      showNotification,
+      venue
     } = this.props
     const {
       isEventType
@@ -136,12 +140,10 @@ class OccasionPage extends Component {
 
     // POST
     if (isEventType && method === 'POST') {
-      const {
-        occasions
-      } = (data || {})
+      const { occasions } = (data || {})
+      console.log('VENUE', venue)
       const occasion = occasions && occasions.find(o =>
-        o.venueId === selectedVenueId
-      )
+        o.venueId === get(venue, 'id'))
       if (!occasion) {
         console.warn("Something wrong with returned data, we should retrieve the created occasion here")
         return
@@ -269,7 +271,8 @@ class OccasionPage extends Component {
                   <SubmitButton
                     className="button is-primary is-medium"
                     getBody={form => {
-                      const occasionForm = get(form, `occasionsById.${occasionIdOrNew}`)
+                      const occasionForm = Object.assign({},
+                        get(form, `occasionsById.${occasionIdOrNew}`))
                       // remove the EventType. ThingType.
                       if (occasionForm.type) {
                         occasionForm.type = occasionForm.type.split('.')[1]
@@ -303,20 +306,46 @@ class OccasionPage extends Component {
 }
 
 const eventSelector = createEventSelector()
+const offerersSelector = createOfferersSelector()
+const offererSelector = createOffererSelector(offerersSelector)
 const thingSelector = createThingSelector()
 const typeSelector = createTypeSelector(eventSelector, thingSelector)
+const venuesSelector = createVenuesSelector()
+const venueSelector = createVenueSelector(venuesSelector)
 
 export default compose(
   withCurrentOccasion,
   connect(
-    (state, ownProps) => ({
-      event: eventSelector(state, get(ownProps, 'occasion.eventId')),
-      type: typeSelector(state,
-        get(ownProps, 'occasion.eventId') || get(ownProps, 'occasion.thingId'),
-        get(state, `form.occasionsById.${get(ownProps, 'occasion.id') || NEW}.type`)),
-      thing: thingSelector(state, get(ownProps, 'occasion.thingId')),
-      typeOptions: state.data.types
-    }),
+    (state, ownProps) => {
+      const eventId = get(ownProps, 'occasion.eventId')
+      const occasionId = get(ownProps, 'occasion.id') || NEW
+      const thingId = get(ownProps, 'occasion.thingId')
+      const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
+      const venueId = get(ownProps, 'occasion.venueId')
+
+      let venue = venueSelector(state, null, venueId)
+      const offerers = offerersSelector(state)
+      // if there is only one offerer in the list,
+      // well choose it
+      const offerer = offererSelector(state, get(venue, 'managingOffererId'))
+        || (get(offerers, 'length') === 1 && get(offerers, '0'))
+      const venues = venuesSelector(state,
+        get(state, `form.occasionsById.${occasionId}.offererId`))
+      // same for the venue...
+      venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
+
+
+      return {
+        event: eventSelector(state, eventId),
+        type: typeSelector(state, eventId || thingId, formLabel),
+        thing: thingSelector(state, thingId),
+        typeOptions: state.data.types,
+        offerer,
+        offerers,
+        venue,
+        venues
+      }
+    },
     {
       closeModal,
       resetForm,
