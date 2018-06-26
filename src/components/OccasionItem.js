@@ -51,6 +51,15 @@ class OccasionItem extends Component {
       )
   }
 
+  onDeleteClick = () => {
+    const {
+      occasion,
+      requestData,
+    } = this.props
+    const { id } = (occasion || {})
+    requestData('DELETE', `occasions/${id}`, { key: 'occasions' })
+  }
+
   render() {
     const {
       event,
@@ -110,6 +119,10 @@ class OccasionItem extends Component {
               </NavLink>
             </li>
           </ul>
+        </div>
+        <div className="is-pulled-right" key={2}>
+          <button className="delete is-small"
+            onClick={this.onDeleteClick} />
         </div>
       </li>
     )

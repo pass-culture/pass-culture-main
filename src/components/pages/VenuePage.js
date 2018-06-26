@@ -153,8 +153,7 @@ class VenuePage extends Component {
       city,
       name,
       postalCode,
-      siret,
-      venueProviders
+      siret
     } = venue || {}
 
     const {
@@ -199,7 +198,7 @@ class VenuePage extends Component {
           }
         </div>
 
-        {!isNew && <ProviderManager venueProviders={venueProviders} />}
+        {!isNew && <ProviderManager venue={venue} />}
 
         <div className='section'>
           <h2 className='pc-list-title'>

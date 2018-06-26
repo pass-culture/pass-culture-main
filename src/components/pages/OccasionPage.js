@@ -334,7 +334,6 @@ export default compose(
       // same for the venue...
       venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
 
-
       return {
         event: eventSelector(state, eventId),
         type: typeSelector(state, eventId || thingId, formLabel),
