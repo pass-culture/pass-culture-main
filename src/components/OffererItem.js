@@ -38,7 +38,7 @@ const OffererItem = ({
               // J'ai déja ajouté Un lieu mais pas d'offres
               get(venues, 'length')
                 ? ([
-                  <li>
+                  <li key={0}>
                     <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
                       className='has-text-primary'>
                       <Icon svg='ico-offres-r' />
@@ -47,7 +47,7 @@ const OffererItem = ({
                   </li>,
                   // J'ai au moins 1 offre
                   get(occasions, 'length') &&
-                    <li>
+                    <li key={1}>
                       <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
                         <Icon svg='ico-offres-r' />
                         { occasions.length === 1 ?  (`${occasions.length} offre`) :
@@ -55,15 +55,15 @@ const OffererItem = ({
                       </NavLink>
                     </li>,
                   get(occasions, 'length') === 0 &&
-                  <li>0 offre</li>
+                  <li key={2}>0 offre</li>
                 ])
                 : (
-                  <li className='is-italic'>Créez un lieu pour pouvoir y associer des offres.</li>
+                  <li className='is-italic' key={0}>Créez un lieu pour pouvoir y associer des offres.</li>
                 ),
               // J'ai ajouté un lieu
               get(venues, 'length')
               ? (
-                  <li>
+                  <li key={4}>
                     <NavLink to={showPath}>
                       <Icon svg='ico-offres-r' />
                       { venues.length === 1 ?  (`${venues.length} lieu`) :
@@ -73,11 +73,11 @@ const OffererItem = ({
                 )
               : (
                  // je n'ai pas encore ajouté de lieu
-                <li>
+                <li key={4}>
                   <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
                   className='has-text-primary'>
-                  <Icon svg='picto-structure' /> Ajouter un lieu
-                </NavLink>
+                    <Icon svg='picto-structure' /> Ajouter un lieu
+                  </NavLink>
                 </li>
               )
             ]
