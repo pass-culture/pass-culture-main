@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect'
-import get from 'lodash.get'
 
 import createProvidersSelector from './createProviders'
 

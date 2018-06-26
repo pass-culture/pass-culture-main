@@ -6,7 +6,6 @@ import { compose } from 'redux'
 import { requestData } from '../../reducers/data'
 import createOccasionSelector from '../../selectors/createOccasion'
 import { NEW } from '../../utils/config'
-import { pathToCollection } from '../../utils/translate'
 import { occasionNormalizer } from '../../utils/normalizers'
 
 const withCurrentOccasion = WrappedComponent => {

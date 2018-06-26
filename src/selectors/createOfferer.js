@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import offerersSelector from './createOfferers'
