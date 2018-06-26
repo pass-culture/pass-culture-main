@@ -1,24 +1,7 @@
-from flask import Flask
-from flask_script import Manager
 from time import sleep
 
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth
-
-
-app = Flask(__name__)
-
-
-def create_app(env=None):
-    app.env = env
-    return app
-
-
-app.manager = Manager(create_app)
-
-with app.app_context():
-    import models
-    import local_providers
 
 
 def test_10_delete_venue_provider():
@@ -28,11 +11,10 @@ def test_10_delete_venue_provider():
     assert r_get2.status_code == 404
 
 
-def test_11_create_venue_provider():
-    with app.app_context():
-        openagenda_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
+def test_11_create_venue_provider(app):
+    openagenda_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
     vp_data = {'providerId': humanize(openagenda_provider.id),
-               'venueId': 'AE',
+               'venueId': 'A9',
                'venueIdAtOfferProvider': '49050769'}
     r_create = req_with_auth().post(API_URL + '/venueProviders',
                                     json=vp_data)
@@ -69,7 +51,7 @@ def test_13_delete_venue_provider():
 
 
 def test_14_get_venue_providers_by_venue():
-    r_list = req_with_auth().get(API_URL + '/venueProviders?venueId=AE')
+    r_list = req_with_auth().get(API_URL + '/venueProviders?venueId=A9')
     assert r_list.status_code == 200
 
 

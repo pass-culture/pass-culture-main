@@ -1,6 +1,4 @@
 from datetime import datetime, timedelta
-from flask import Flask
-from flask_script import Manager
 
 from glob import glob
 from inspect import isclass
@@ -8,25 +6,13 @@ from utils.human_ids import humanize
 from utils.test_utils import API_URL, req, req_with_auth
 
 
-app = Flask(__name__)
-
-
-def create_app(env=None):
-    app.env = env
-    return app
-
-
-app.manager = Manager(create_app)
-
-savedCounts = {}
-
-
 def test_10_create_booking():
     booking_json = {
-        'offerId': humanize(3),
+        'offerId': humanize(2),
         'recommendationId': humanize(1)
     }
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
+    print(r_create.json())
     assert r_create.status_code == 201
     id = r_create.json()['id']
     r_check = req_with_auth().get(API_URL + '/bookings/'+id)
@@ -36,21 +22,19 @@ def test_10_create_booking():
         assert created_booking_json[key] == booking_json[key]
 
 
-def test_11_create_booking_should_not_work_past_limit_date():
-    with app.app_context():
-        import models
-        expired_offer = app.model.Offer()
-        expired_offer.venueId = 1
-        expired_offer.offererId = 1
-        expired_offer.thingId = 1
-        expired_offer.price = 0
-        expired_offer.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
-        app.model.PcObject.check_and_save(expired_offer)
+def test_11_create_booking_should_not_work_past_limit_date(app):
+    expired_offer = app.model.Offer()
+    expired_offer.venueId = 1
+    expired_offer.offererId = 1
+    expired_offer.thingId = 1
+    expired_offer.price = 0
+    expired_offer.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
+    app.model.PcObject.check_and_save(expired_offer)
 
-        booking_json = {
-            'offerId': humanize(expired_offer.id),
-            'recommendationId': humanize(1)
-        }
+    booking_json = {
+        'offerId': humanize(expired_offer.id),
+        'recommendationId': humanize(1)
+    }
 
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
@@ -58,21 +42,19 @@ def test_11_create_booking_should_not_work_past_limit_date():
     assert 'date limite' in r_create.json()['global'][0]
 
 
-def test_12_create_booking_should_work_before_limit_date():
-    with app.app_context():
-        import models
-        ok_offer = app.model.Offer()
-        ok_offer.venueId = 1
-        ok_offer.offererId = 1
-        ok_offer.thingId = 1
-        ok_offer.price = 0
-        ok_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-        app.model.PcObject.check_and_save(ok_offer)
+def test_12_create_booking_should_work_before_limit_date(app):
+    ok_offer = app.model.Offer()
+    ok_offer.venueId = 1
+    ok_offer.offererId = 1
+    ok_offer.thingId = 1
+    ok_offer.price = 0
+    ok_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+    app.model.PcObject.check_and_save(ok_offer)
 
-        booking_json = {
-            'offerId': humanize(ok_offer.id),
-            'recommendationId': humanize(1)
-        }
+    booking_json = {
+        'offerId': humanize(ok_offer.id),
+        'recommendationId': humanize(1)
+    }
 
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 201
@@ -83,35 +65,35 @@ def test_12_create_booking_should_work_before_limit_date():
         assert created_booking_json[key] == booking_json[key]
 
 
-def test_13_create_booking_should_not_work_if_too_many_bookings():
-    with app.app_context():
-        import models
-        too_many_bookings_offer = app.model.Offer()
-        too_many_bookings_offer.venueId = 1
-        too_many_bookings_offer.offererId = 1
-        too_many_bookings_offer.thingId = 1
-        too_many_bookings_offer.price = 0
-        too_many_bookings_offer.available = 0
-        too_many_bookings_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-        app.model.PcObject.check_and_save(too_many_bookings_offer)
+def test_13_create_booking_should_not_work_if_too_many_bookings(app):
+    too_many_bookings_offer = app.model.Offer()
+    too_many_bookings_offer.venueId = 1
+    too_many_bookings_offer.offererId = 1
+    too_many_bookings_offer.thingId = 1
+    too_many_bookings_offer.price = 0
+    too_many_bookings_offer.available = 0
+    too_many_bookings_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+    app.model.PcObject.check_and_save(too_many_bookings_offer)
 
-        booking_json = {
-            'offerId': humanize(too_many_bookings_offer.id),
-            'recommendationId': humanize(1)
-        }
+    booking_json = {
+        'offerId': humanize(too_many_bookings_offer.id),
+        'recommendationId': humanize(1)
+    }
 
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
     assert 'global' in r_create.json()
     assert 'quantité disponible' in r_create.json()['global'][0]
 
+    
 def test_14_create_booking_should_work_if_user_can_book():
     booking_json = {
-        'offerId': humanize(3),
+        'offerId': humanize(2),
         'recommendationId': humanize(1)
     }
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 201
+
 
 def test_15_create_booking_should_not_work_if_user_can_not_book():
     # with default admin user

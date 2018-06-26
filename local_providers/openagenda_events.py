@@ -78,6 +78,8 @@ class OpenAgendaEvents(app.model.LocalProvider):
             total_objects = self.data['offset']+self.data['limit']
             self.more_pages = total_objects < self.data['total']
 
+        print("LEN", len(self.data['events']))
+        print("INDEX", self.index)
         self.oa_event = self.data['events'][self.index]
 
         self.seen_uids.append(str(self.oa_event['uid']))
