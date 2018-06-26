@@ -9,6 +9,7 @@ const initialState = {
   eventOccurences: [],
   mediations: [],
   occasions: [],
+  offers: [],
   offerers: [],
   venues: [],
 }

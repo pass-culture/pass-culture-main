@@ -2,10 +2,11 @@ import { createSelector } from 'reselect'
 import get from 'lodash.get'
 
 export default () => createSelector(
-  state => get(state, 'data.offers', []),
-  (state, venueId) => venueId,
-  (offers, venueId) => {
-    if (!venueId) return offers
-    return offers.filter(o => o.venueId === venueId)
+  state => state.data.offers,
+  (state, params) => params,
+  (offers, {venueId}) => {
+    if (venueId)
+      offers = offers.filter(o => o.venueId === venueId)
+    return offers
   }
 )

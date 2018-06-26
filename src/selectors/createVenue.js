@@ -2,8 +2,10 @@ import { createSelector } from 'reselect'
 
 import createVenuesSelector from './createVenues'
 
+const venuesSelector = createVenuesSelector()
+
 export default () => createSelector(
-  state => createVenuesSelector(),
+  state => venuesSelector(state),
   (state, venueId) => venueId,
   (venues, venueId) => {
     return venues.find(v => v.id === venueId)
