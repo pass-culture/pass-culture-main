@@ -106,7 +106,7 @@ const SignupPage = ({
                   required
                   label={
                     <Label
-                      title="Siren"
+                      title="SIREN"
                       subtitle="... de la structure à rattacher :"
                     />
                   }

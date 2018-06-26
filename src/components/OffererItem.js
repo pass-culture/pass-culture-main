@@ -30,48 +30,58 @@ const OffererItem = ({
         </p>
         <ul className='actions'>
           {
-            get(venues, 'length') && (
-              <li>
-                <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
-                  className='has-text-primary'>
-                  <Icon svg='ico-offres-r' /> Créer une offre
-                </NavLink>
-              </li>
-            )
-          }
-          <li>
-            {
-              get(occasions, 'length')
-                ? (
-                  <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-                    <Icon svg='ico-offres-r' />
-                    {occasions.length} offres
-                  </NavLink>
-                )
-                : (
-                  <p>
-                    0 offre
-                  </p>
-                )
-            }
-          </li>
-          <li>
-            {
+            !isActive
+              ? (
+                <li className='is-italic'>En cours de validation : vous allez recevoir un e-mail.</li>
+              )
+              : [
+              // J'ai déja ajouté Un lieu mais pas d'offres
               get(venues, 'length')
-                ? (
-                  <NavLink to={showPath}>
-                    <Icon svg='picto-structure' />
-                    {venues.length} lieux
-                  </NavLink>
-                )
+                ? ([
+                  <li>
+                    <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
+                      className='has-text-primary'>
+                      <Icon svg='ico-offres-r' />
+                      Nouvelle offre
+                    </NavLink>
+                  </li>,
+                  // J'ai au moins 1 offre
+                  get(occasions, 'length') &&
+                    <li>
+                      <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
+                        <Icon svg='ico-offres-r' />
+                        { occasions.length === 1 ?  (`${occasions.length} offre`) :
+                        (`${occasions.length} offres`)}
+                      </NavLink>
+                    </li>,
+                  get(occasions, 'length') === 0 &&
+                  <li>0 offre</li>
+                ])
                 : (
-                  <p>
-                    0 lieu
-                  </p>
+                  <li className='is-italic'>Créez un lieu pour pouvoir y associer des offres.</li>
+                ),
+              // J'ai ajouté un lieu
+              get(venues, 'length')
+              ? (
+                  <li>
+                    <NavLink to={showPath}>
+                      <Icon svg='ico-offres-r' />
+                      { venues.length === 1 ?  (`${venues.length} lieu`) :
+                      (`${venues.length} lieux`)}
+                    </NavLink>
+                  </li>
                 )
-            }
-          </li>
-          <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>
+              : (
+                 // je n'ai pas encore ajouté de lieu
+                <li>
+                  <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
+                  className='has-text-primary'>
+                  <Icon svg='picto-structure' /> Ajouter un lieu
+                </NavLink>
+                </li>
+              )
+            ])
+          }
         </ul>
       </div>
       <div className='caret'>
