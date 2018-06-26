@@ -10,8 +10,10 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
+import createEventSelector from '../selectors/createEvent'
 import createOccurencesSelector from '../selectors/createOccurences'
 import createOfferersSelector from '../selectors/createOfferers'
+import createThingSelector from '../selectors/createThing'
 import createVenueSelector from '../selectors/createVenue'
 import createVenuesSelector from '../selectors/createVenues'
 import { pluralize } from '../utils/string'
@@ -20,7 +22,7 @@ class OccasionForm extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      currentOccasion,
+      occasion,
       history,
       match: { params: { modalType } },
       routePath,
@@ -32,7 +34,7 @@ class OccasionForm extends Component {
     }
 
     showModal(
-      <OccurenceManager currentOccasion={currentOccasion} />,
+      <OccurenceManager occasion={occasion} />,
       {
         onCloseClick: () => history.push(routePath)
       }
@@ -55,7 +57,7 @@ class OccasionForm extends Component {
 
   render () {
     const {
-      currentOccasion,
+      event,
       isEventType,
       isNew,
       isReadOnly,
@@ -66,14 +68,11 @@ class OccasionForm extends Component {
       routePath,
       selectedOffererId,
       selectedVenueId,
-      venueOptions,
+      thing,
       user,
+      venueOptions,
       venues,
     } = this.props
-    const {
-      event,
-      thing
-    } = (currentOccasion || {})
     const {
       author,
       contactName,
@@ -310,17 +309,24 @@ class OccasionForm extends Component {
   }
 }
 
+const eventSelector = createEventSelector()
 const occurencesSelector = createOccurencesSelector()
 const offerersSelector = createOfferersSelector()
+const thingSelector = createThingSelector()
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector(venuesSelector)
 
 export default connect(
   (state, ownProps) => ({
-    occurences: occurencesSelector(state),
+    event: eventSelector(state, ownProps.occasion.eventId),
+    occurences: occurencesSelector(state,
+      ownProps.occasion.venueId,
+      ownProps.occasion.eventId
+    ),
     offerers: offerersSelector(state),
     venue: venueSelector(state),
     venues: venuesSelector(state),
+    thing: thingSelector(state, ownProps.occasion.thingId),
     typeOptions: state.data.types,
   }),
   {

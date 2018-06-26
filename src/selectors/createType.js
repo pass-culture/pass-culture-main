@@ -10,7 +10,6 @@ export default (selectEvent, selectThing) => createSelector(
   selectEvent,
   selectThing,
   (types, event, thing, typeLabel) => {
-    console.log('event, thing', event, thing)
     // get the tag which is actually the type key in event and thing
     let tag = get(event, 'type')
     let type
@@ -34,7 +33,6 @@ export default (selectEvent, selectThing) => createSelector(
         }
       }
     }
-    console.log('TYPE', type, types)
     return type && types.find(t =>
       t.model === type.model && t.tag === type.tag)
   }
