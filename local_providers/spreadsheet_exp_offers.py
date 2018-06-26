@@ -86,7 +86,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
         providables.append(p_info_event)
 
         p_info_occasion = app.model.ProvidableInfo()
-        p_info_occasion.type = Event
+        p_info_occasion.type = Occasion
         p_info_occasion.idAtProviders = str(int(self.line['Ref Évènement']))
         p_info_occasion.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 

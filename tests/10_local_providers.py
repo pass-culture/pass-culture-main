@@ -192,15 +192,20 @@ def test_15_spreadsheet_exp_offers_provider(app):
                   app.local_providers.SpreadsheetExpOffers,
                   None,
                   checkedObjects=489,
-                  createdObjects=482,
+                  createdObjects=489,
                   updatedObjects=0,
                   erroredObjects=0,
                   checkedThumbs=0,
                   createdThumbs=0,
                   updatedThumbs=0,
                   erroredThumbs=0,
-                  Venue=0,
-                  Offerer=0)
+                  Event=7,
+                  EventOccurence=234,
+                  Offer=234,
+                  Offerer=0,
+                  Occasion=7,
+                  Venue=0
+                  )
 
 
 def test_16_openagenda_events_provider(app):
