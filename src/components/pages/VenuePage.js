@@ -353,7 +353,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venue: venueSelector(state, ownProps.match.params.venueId),
+      venue: venueSelector(state, null, ownProps.match.params.venueId),
       offerer: offererSelector(state, ownProps.match.params.offererId),
     }),
     {

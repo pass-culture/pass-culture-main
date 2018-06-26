@@ -213,7 +213,7 @@ export default compose(
       user: state.user,
       providers: providersSelector(state),
       provider: providerSelector(state),
-      venue: venueSelector(state, ownProps.venueId), // TODO: check that link
+      venue: venueSelector(state, null, ownProps.venueId),
     }),
     { mergeForm, requestData }
   )

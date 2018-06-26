@@ -14,6 +14,7 @@ import createEventSelector from '../selectors/createEvent'
 import createOccurencesSelector from '../selectors/createOccurences'
 import createOfferersSelector from '../selectors/createOfferers'
 import createThingSelector from '../selectors/createThing'
+import createTypesSelector from '../selectors/createTypes'
 import createVenueSelector from '../selectors/createVenue'
 import createVenuesSelector from '../selectors/createVenues'
 import { pluralize } from '../utils/string'
@@ -313,6 +314,7 @@ const eventSelector = createEventSelector()
 const occurencesSelector = createOccurencesSelector()
 const offerersSelector = createOfferersSelector()
 const thingSelector = createThingSelector()
+const typesSelector = createTypesSelector()
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector(venuesSelector)
 
@@ -324,10 +326,10 @@ export default connect(
       ownProps.occasion.eventId
     ),
     offerers: offerersSelector(state),
-    venue: venueSelector(state),
+    venue: venueSelector(state, null, ownProps.occasion.venueId),
     venues: venuesSelector(state),
     thing: thingSelector(state, ownProps.occasion.thingId),
-    typeOptions: state.data.types,
+    typeOptions: typesSelector(state),
   }),
   {
     closeModal,
