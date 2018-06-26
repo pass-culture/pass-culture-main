@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import { requestData } from '../../reducers/data'
 import createOccasionSelector from '../../selectors/createOccasion'
 import createOccasionsSelector from '../../selectors/createOccasions'
+import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
 import { occasionNormalizer } from '../../utils/normalizers'
 
@@ -80,14 +81,15 @@ const withCurrentOccasion = WrappedComponent => {
     }
   }
 
-  const occasionsSelector = createOccasionsSelector()
+  const venuesSelector = createVenuesSelector()
+  const occasionsSelector = createOccasionsSelector(venuesSelector)
   const occasionSelector = createOccasionSelector(occasionsSelector)
 
   return compose(
     withRouter,
     connect(
       (state, ownProps) => ({
-        occasion: occasionSelector(state, ownProps.match.occasionId),
+        occasion: occasionSelector(state, ownProps.match.params.occasionId),
         user: state.user,
       }),
       { requestData }

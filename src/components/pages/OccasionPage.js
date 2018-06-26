@@ -204,6 +204,8 @@ class OccasionPage extends Component {
       requiredFields
     } = this.state
 
+    console.log('this.props.occasion', this.props.occasion)
+
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
       ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
       : typeOptions
@@ -327,9 +329,9 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => ({
-      event: eventSelector(state, ownProps.occasion.eventId),
+      event: eventSelector(state, get(ownProps, 'occasion.eventId')),
       selectedType: typeSelector(state, ownProps), // TODO: plug ownProps ref to type
-      thing: thingSelector(state, ownProps.occasion.thingId),
+      thing: thingSelector(state, get(ownProps, 'occasion.thingId')),
       typeOptions: state.data.types
     }),
     {

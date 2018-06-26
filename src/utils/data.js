@@ -51,6 +51,9 @@ export function getNextState(state, method, patch, config = {}) {
               nextData.forEach(nextDatum => {
                 if (Array.isArray(nextDatum[key])) {
                   nextNormalizedData = nextNormalizedData.concat(nextDatum[key])
+                  // replace by an array of ids
+                  nextDatum[`${key}Ids`] = nextDatum[key].map(d => d.id)
+                  // delete
                   delete nextDatum[key]
                 } else if (nextDatum[key]) {
                   nextNormalizedData.push(nextDatum[key])
