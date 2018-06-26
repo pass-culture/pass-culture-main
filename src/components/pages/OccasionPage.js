@@ -207,6 +207,8 @@ class OccasionPage extends Component {
       requiredFields
     } = this.state
 
+    console.log('this.props.occasion', this.props.occasion)
+
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
       ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
       : typeOptions

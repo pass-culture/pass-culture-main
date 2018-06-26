@@ -85,7 +85,7 @@ const withCurrentOccasion = WrappedComponent => {
     withRouter,
     connect(
       (state, ownProps) => ({
-        occasion: occasionSelector(state, ownProps.match.occasionId),
+        occasion: occasionSelector(state, ownProps.match.params.occasionId),
         user: state.user,
       }),
       { requestData }

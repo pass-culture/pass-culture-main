@@ -1,13 +1,19 @@
 import { createSelector } from 'reselect'
 
-export default searchSelector => createSelector(
-  state => state.data.searchedOccasions || state.data.occasions,
-  (_, offererId, venueId) => offererId,
-  (_, offererId, venueId) => venueId,
-  (occasions, offererId, venueId) => {
+import createVenuesSelector from './createVenues'
 
-    if (offererId)
-      occasions = occasions.filter(o => o.lastProviderId === offererId)
+const selectVenues = createVenuesSelector()
+
+export default () => createSelector(
+  state => state.data.searchedOccasions || state.data.occasions,
+  selectVenues,
+  (_, offererId, venueId) => venueId,
+  (occasions, venues, venueId) => {
+
+    if (venues.length) {
+      const venueIds = venues.map(v => v.id)
+      occasions = occasions.filter(o => venueIds.includes(o.venueId))
+    }
 
     // TODO: find the link between occasion and venue
     if (venueId)

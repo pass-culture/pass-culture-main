@@ -92,14 +92,14 @@ const OffererItem = ({
   )
 }
 
-const occasionsSelector = createOccasionsSelector()
 const venuesSelector = createVenuesSelector()
+const occasionsSelector = createOccasionsSelector(venuesSelector)
 
 export default connect(
   () => {
     return (state, ownProps) => ({
       occasions: occasionsSelector(state, ownProps.offerer.id),
-      venues: venuesSelector(state, {offererId: ownProps.offerer.id}),
+      venues: venuesSelector(state, ownProps.offerer.id),
     })
   }
 ) (OffererItem)

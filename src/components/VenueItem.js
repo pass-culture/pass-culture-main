@@ -3,10 +3,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import createVenueSelector from '../selectors/createVenue'
-import createVenuesSelector from '../selectors/createVenues'
 import createOccasionsSelector from '../selectors/createOccasions'
 import createOffersSelector from '../selectors/createOffers'
+import createVenueSelector from '../selectors/createVenue'
+import createVenuesSelector from '../selectors/createVenues'
 import Icon from './layout/Icon'
 
 const VenueItem = ({
@@ -66,9 +66,9 @@ const VenueItem = ({
   )
 }
 
-const occasionsSelector = createOccasionsSelector()
-const offersSelector = createOffersSelector()
 const venuesSelector = createVenuesSelector()
+const occasionsSelector = createOccasionsSelector(venuesSelector)
+const offersSelector = createOffersSelector()
 const venueSelector = createVenueSelector(venuesSelector)
 
 

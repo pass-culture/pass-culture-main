@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import OccasionItem from './OccasionItem'
 import createSearchSelector from '../selectors/createSearch'
 import createOccasionsSelector from '../selectors/createOccasions'
+import createVenuesSelector from '../selectors/createVenues'
 
 const OccasionsList = ({ occasions }) => {
   if (!occasions) return null;
@@ -20,7 +21,8 @@ const OccasionsList = ({ occasions }) => {
 }
 
 const searchSelector = createSearchSelector()
-const occasionsSelector = createOccasionsSelector()
+const venuesSelector = createVenuesSelector()
+const occasionsSelector = createOccasionsSelector(venuesSelector)
 
 export default compose(
   withRouter,
