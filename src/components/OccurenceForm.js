@@ -8,6 +8,7 @@ import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
 import createEventSelector from '../selectors/createEvent'
 import createVenueSelector from '../selectors/createVenue'
+import createVenuesSelector from '../selectors/createVenues'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -176,7 +177,8 @@ class OccurenceForm extends Component {
 }
 
 const eventSelector = createEventSelector()
-const venueSelector = createVenueSelector()
+const venuesSelector = createVenuesSelector()
+const venueSelector = createVenueSelector(venuesSelector)
 
 export default connect(
   (state, ownProps) => ({

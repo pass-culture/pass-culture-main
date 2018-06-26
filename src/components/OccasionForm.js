@@ -11,7 +11,7 @@ import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
 import createOccurencesSelector from '../selectors/createOccurences'
-import createOffererSelector from '../selectors/createOfferer'
+import createOfferersSelector from '../selectors/createOfferers'
 import createVenueSelector from '../selectors/createVenue'
 import createVenuesSelector from '../selectors/createVenues'
 import { pluralize } from '../utils/string'
@@ -311,9 +311,9 @@ class OccasionForm extends Component {
 }
 
 const occurencesSelector = createOccurencesSelector()
-const offerersSelector = createOffererSelector()
-const venueSelector = createVenueSelector()
+const offerersSelector = createOfferersSelector()
 const venuesSelector = createVenuesSelector()
+const venueSelector = createVenueSelector(venuesSelector)
 
 export default connect(
   (state, ownProps) => ({

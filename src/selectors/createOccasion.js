@@ -1,9 +1,7 @@
 import { createSelector } from 'reselect'
 
-import createOccasionsSelector from './createOccasions'
-
-export default () => createSelector(
-  createOccasionsSelector(),
+export default occasionsSelector => createSelector(
+  occasionsSelector,
   (state, occasionId) => occasionId,
   (occasions, occasionId) => {
     if (!occasionId)

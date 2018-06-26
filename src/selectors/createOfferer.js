@@ -1,9 +1,7 @@
 import { createSelector } from 'reselect'
 
-import offerersSelector from './createOfferers'
-
-export default () => createSelector(
-  offerersSelector(),
+export default offerersSelector => createSelector(
+  offerersSelector,
   (state, offererId) => offererId,
   (offerers, offererId) => {
     return offerers.find(offerer => offerer.id === offererId)

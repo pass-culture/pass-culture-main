@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import createVenueSelector from '../selectors/createVenue'
+import createVenuesSelector from '../selectors/createVenues'
 import createOccasionsSelector from '../selectors/createOccasions'
 import createOffersSelector from '../selectors/createOffers'
 import Icon from './layout/Icon'
@@ -67,7 +68,9 @@ const VenueItem = ({
 
 const occasionsSelector = createOccasionsSelector()
 const offersSelector = createOffersSelector()
-const venueSelector = createVenueSelector()
+const venuesSelector = createVenuesSelector()
+const venueSelector = createVenueSelector(venuesSelector)
+
 
 export default connect(
   () => {

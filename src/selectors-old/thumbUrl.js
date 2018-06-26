@@ -3,10 +3,8 @@ import { createSelector } from 'reselect'
 
 import { API_URL, THUMBS_URL } from '../utils/config'
 
-import createMediationsSelector from './createMediations'
-
-export default () => createSelector(
-  createMediationsSelector(),
+export default mediationsSelector => createSelector(
+  mediationsSelector,
   (state, occasion) => occasion,
   (mediations, occasion) =>
     get(mediations, '0')

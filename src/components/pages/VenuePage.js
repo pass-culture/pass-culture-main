@@ -11,12 +11,14 @@ import FormField from '../layout/FormField'
 import Icon from '../layout/Icon'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
+import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
-import SubmitButton from '../layout/SubmitButton'
-import createVenueSelector from '../../selectors/createVenue'
 import createOffererSelector from '../../selectors/createOfferer'
+import createOfferersSelector from '../../selectors/createOfferers'
+import createVenueSelector from '../../selectors/createVenue'
+import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
 
 
@@ -338,8 +340,10 @@ class VenuePage extends Component {
   }
 }
 
-const venueSelector = createVenueSelector()
-const offererSelector = createOffererSelector()
+const venuesSelector = createVenuesSelector()
+const venueSelector = createVenueSelector(venuesSelector)
+const offerersSelector = createOfferersSelector()
+const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,

@@ -14,6 +14,7 @@ import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import createOffererSelector from '../../selectors/createOfferer'
+import createOfferersSelector from '../../selectors/createOfferers'
 import { NEW } from '../../utils/config'
 
 
@@ -266,7 +267,8 @@ class OffererPage extends Component {
   }
 }
 
-const offererSelector = createOffererSelector()
+const offerersSelector = createOfferersSelector()
+const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,
