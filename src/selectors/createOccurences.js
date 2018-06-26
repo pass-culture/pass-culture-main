@@ -3,8 +3,9 @@ import { createSelector } from 'reselect'
 
 const createOccurencesSelector = () => createSelector(
   state => state.data.eventOccurences,
-  (state, params) => params,
-  (eventOccurences, {venueId, eventId}) => {
+  (state, venueId) => venueId,
+  (state, venueId, eventId) => eventId,
+  (eventOccurences, venueId, eventId) => {
     return eventOccurences
       .filter(o =>
         o.venueId === venueId &&

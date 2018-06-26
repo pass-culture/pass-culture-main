@@ -15,7 +15,7 @@ import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
-import createTypeSelector from '../../selectors/createSelectedType'
+import createTypeSelector from '../../selectors/createType'
 import createThingSelector from '../../selectors/createThing'
 import { eventNormalizer } from '../../utils/normalizers'
 
@@ -45,14 +45,13 @@ class OccasionPage extends Component {
       location: { search },
       isNew,
       occasion,
-      selectedType,
+      type,
     } = nextProps
     const {
       id
     } = (occasion || {})
     const isEdit = search === '?modifie'
-    const eventOrThing = selectedType && selectedType.split('.')[0]
-    const isEventType = eventOrThing === 'EventType'
+    const isEventType = get(type, 'model') === 'EventType'
     const isReadOnly = !isNew && !isEdit
 
     const apiPath = isEventType
@@ -193,8 +192,8 @@ class OccasionPage extends Component {
       occasionIdOrNew,
       occasionForm,
       routePath,
-      selectedType,
       thing,
+      type,
       typeOptions,
     } = this.props
     const {
@@ -207,7 +206,7 @@ class OccasionPage extends Component {
       requiredFields
     } = this.state
 
-    console.log('this.props.occasion', this.props.occasion)
+    console.log('this.props.occasion', this.props.occasion, 'type', type)
 
     const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
       ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
@@ -243,7 +242,7 @@ class OccasionPage extends Component {
           />
           <FormField
             collectionName='occasions'
-            defaultValue={get(selectedType, 'value')}
+            defaultValue={get(type, 'value')}
             entityId={occasionIdOrNew}
             isHorizontal
             label={<Label title="Type :" />}
@@ -256,7 +255,7 @@ class OccasionPage extends Component {
         </div>
 
         {
-          selectedType && <OccasionForm {...this.props} {...this.state} />
+          type && <OccasionForm {...this.props} {...this.state} />
         }
 
         <hr />
@@ -325,7 +324,7 @@ class OccasionPage extends Component {
 
 const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
-const typeSelector = createTypeSelector()
+const typeSelector = createTypeSelector(eventSelector, thingSelector)
 
 export default compose(
   // withLogin({ isRequired: true }),
@@ -333,7 +332,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       event: eventSelector(state, get(ownProps, 'occasion.eventId')),
-      selectedType: typeSelector(state, ownProps), // TODO: plug ownProps ref to type
+      type: typeSelector(state, get(ownProps, 'occasion.eventId') || get(ownProps, 'occasion.thingId')),
       thing: thingSelector(state, get(ownProps, 'occasion.thingId')),
       typeOptions: state.data.types
     }),
