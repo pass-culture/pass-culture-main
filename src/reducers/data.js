@@ -5,7 +5,13 @@ const ASSIGN_DATA = 'ASSIGN_DATA'
 const RESET_DATA = 'RESET_DATA'
 
 // INITIAL STATE
-const initialState = {}
+const initialState = {
+  eventOccurences: [],
+  mediations: [],
+  occasions: [],
+  offerers: [],
+  venues: [],
+}
 
 // REDUCER
 const data = (state = initialState, action) => {

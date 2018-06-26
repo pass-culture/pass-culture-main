@@ -8,16 +8,25 @@ export function removeWhitespaces(word) {
   return word && word.trim().replace(/\s/g, '')
 }
 
-function pluralizeWord(singular, number) {
-  return `${singular}${number > 1 ? 's' : ''}`
+function pluralizeWord(word, number, pluralizeWith='s') {
+  let singular, plural
+  const lastLetter = word.slice(-1)[0]
+  if (lastLetter === 's' || lastLetter === 'x') {
+    singular = word.slice(0, -1)
+    plural = word
+  } else {
+    singular = word
+    plural = `${word}${pluralizeWith}`
+  }
+  return number > 1 ? plural : singular
 }
 
-export function pluralize(number, singular) {
-  if (typeof number === 'string' && typeof singular === 'number') {
+export function pluralize(number, word, pluralizeWith) {
+  if (typeof number === 'string' && typeof word === 'number') {
     // arguments are in the other way round, don't write number
-    return pluralizeWord(number, singular)
+    return pluralizeWord(number, word, pluralizeWith)
   }
-  return `${number} ${pluralizeWord(singular, number)}`
+  return `${number} ${pluralizeWord(word, number, pluralizeWith)}`
 }
 
 export function queryStringToObject(string='') {

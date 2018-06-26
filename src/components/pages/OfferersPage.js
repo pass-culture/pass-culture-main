@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 import Icon from '../layout/Icon'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import OfferersList from '../OfferersList'
+import OffererItem from '../OffererItem'
 import SearchInput from '../layout/SearchInput'
 import createOfferersSelector from '../../selectors/createOfferers'
 
@@ -77,7 +77,10 @@ class OfferersPage extends Component {
             />
           </nav>
         )}
-        <OfferersList />
+        <ul className="pc-list offerers-list">
+          {offerers.map(o =>
+            <OffererItem key={o.id} offerer={o} />)}
+        </ul>
         <NavLink to={`/structures/nouveau`} className="button is-primary is-outlined">
           {false && <span className='icon'>
                     <Icon svg={'ico-guichet-w'} />

@@ -2,11 +2,10 @@ import { createSelector } from 'reselect'
 
 export default () => createSelector(
   state => state.data.venues,
-  (state, offererId) => offererId,
-  (venues, offererId) => {
-    if (!offererId) return venues
-    // TODO: check the link between offerer and venue
-
-    return venues && venues.filter(v => v.managingOffererId === offererId)
+  (state, params) => params,
+  (venues, {offererId}) => {
+    if (offererId)
+      return venues.filter(v => v.managingOffererId === offererId)
+    return venues
   }
 )

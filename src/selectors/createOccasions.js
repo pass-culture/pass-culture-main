@@ -1,8 +1,7 @@
-import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 export default () => createSelector(
-  state => get(state, 'data.searchedOccasions', get(state, 'data.occasions', [])),
+  state => state.data.searchedOccasions || state.data.occasions),
   (_, params) => params,
   (occasions, {offererId, venueId}={}) => {
     if (offererId)
