@@ -17,7 +17,11 @@ class OccurenceForm extends Component {
   constructor () {
     super()
     this.state = {
-      highlightedDates: null
+      apiPath: null,
+      date: null,
+      highlightedDates: null,
+      method: null,
+      time: null
     }
   }
 
@@ -27,13 +31,16 @@ class OccurenceForm extends Component {
       occurence
     } = nextProps
     const {
+      beginningDatetime,
       id
     } = (occurence || {})
     return {
       apiPath: `eventOccurences${id ? `/${id}` : ''}`,
+      date: beginningDatetime && moment(beginningDatetime),
       highlightedDates: occurences &&
         occurences.map(o => moment(o.beginningDatetime)),
-      method: id ? 'PATCH' : 'POST'
+      method: id ? 'PATCH' : 'POST',
+      time: beginningDatetime && moment(beginningDatetime).format('HH:mm')
     }
   }
 
@@ -61,12 +68,14 @@ class OccurenceForm extends Component {
     } = (occasion || {})
     const {
       apiPath,
+      date,
       highlightedDates,
-      method
+      method,
+      time
     } = this.state
     const eventOccurenceIdOrNew = id || NEW
 
-    console.log('venue', venue)
+    console.log('venue', venue, occasion)
 
     return (
       <tr className='occurence-form'>
@@ -135,21 +144,19 @@ class OccurenceForm extends Component {
             className="button is-primary is-small"
             getBody={form => {
               const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
-              const [hour, minute] = eo.time.split(':')
-              const beginningDatetime = eo.date.set({
+              const [hour, minute] = (time || eo.time).split(':')
+              const beginningDatetime = (date || eo.date).set({
                 hour,
                 minute,
               })
-              const endDatetime = beginningDatetime.clone().add(durationMinutes, 'minutes')
-              return {
+              const endDatetime = beginningDatetime.clone()
+                .add(durationMinutes, 'minutes')
+              return Object.assign({
                 beginningDatetime: beginningDatetime.format(), // ignores the GMT part of the date
                 endDatetime: endDatetime.format(),
-                groupSize: eo.groupSize,
-                pmrGroupSize: eo.pmrGroupSize,
-                price: eo.price,
                 eventId: get(event, 'id'),
                 venueId: get(venue, 'id'),
-              }
+              }, eo)
             }}
             getIsDisabled={form => getIsDisabled(
               get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
@@ -182,7 +189,7 @@ const venueSelector = createVenueSelector(venuesSelector)
 
 export default connect(
   (state, ownProps) => ({
-    event: eventSelector(state, ownProps), // TODO: find eventId
-    venue: venueSelector(state, ownProps), // TODO: find venueId
+    event: eventSelector(state, ownProps.occasion.eventId),
+    venue: venueSelector(state, null, ownProps.occasion.venueId)
   })
 )(OccurenceForm)

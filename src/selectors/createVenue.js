@@ -5,8 +5,9 @@ const venuesSelector = createVenuesSelector()
 
 export default () => createSelector(
   venuesSelector,
-  (state, venueId) => venueId,
+  (state, offererId, venueId) => venueId,
   (venues, venueId) => {
+    console.log('venues', venues, venueId)
     return venues.find(v => v.id === venueId)
   }
 )

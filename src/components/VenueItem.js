@@ -76,8 +76,8 @@ export default connect(
   () => {
     return (state, ownProps) => ({
       occasions: occasionsSelector(state, null, ownProps.venueId),
-      offers: offersSelector(state, {venueId: ownProps.venueId}),
-      venue: venueSelector(state, ownProps.venueId)
+      offers: offersSelector(state, ownProps.venueId),
+      venue: venueSelector(state, null, ownProps.venueId)
     })
   }
 )(VenueItem)
