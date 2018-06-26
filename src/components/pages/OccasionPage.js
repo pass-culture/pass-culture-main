@@ -42,14 +42,14 @@ class OccasionPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      currentMediation,
       location: { search },
       isNew,
+      occasion,
       selectedType,
     } = nextProps
     const {
       id
-    } = (currentMediation || {})
+    } = (occasion || {})
     const isEdit = search === '?modifie'
     const eventOrThing = selectedType && selectedType.split('.')[0]
     const isEventType = eventOrThing === 'EventType'
