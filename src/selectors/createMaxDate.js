@@ -1,7 +1,11 @@
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-export default occurencesSelector => createSelector(
+import createOccurencesSelector from './createOccurences'
+
+const occurencesSelector = createOccurencesSelector()
+
+export default () => createSelector(
   occurencesSelector,
   occurences =>
     occurences && occurences.map(o =>

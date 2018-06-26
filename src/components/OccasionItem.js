@@ -72,12 +72,12 @@ class OccasionItem extends Component {
       priceMax,
     } = (stock || {})
     const {
-      createdAt,
       id,
       isActive,
     } = (occasion || {})
     const {
-      name
+      name,
+      createdAt,
     } = (event || thing || {})
 
     console.log(occasion, event, mediations, occurences, thing)
@@ -138,12 +138,12 @@ export default connect(
       const type = ownProps.occasion.modelName === 'Event' ? 'event' : 'thing'
       return {
         event: eventSelector(state, ownProps.occasion.eventId),
+        thing: thingSelector(state, ownProps.occasion.thingId),
         mediations: mediationsSelector(state, ownProps.occasion.eventId, ownProps.occasion.thingId),
         occurences: occurencesSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        thing: thingSelector(state, ownProps),
-        maxDate: maxDateSelector(state, ownProps),
-        stock: stockSelector(state, ownProps),
-        thumbUrl: thumbUrlSelector(state, ownProps),
+        maxDate: maxDateSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
+        stock: stockSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
+        thumbUrl: thumbUrlSelector(state, ownProps.occasion),
       }
     }
   },
