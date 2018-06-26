@@ -48,21 +48,21 @@ class VenuePage extends Component {
 
   handleRequestData = () => {
     const {
-      match: { params: { offererId } },
+      offerer,
       requestData,
       user
     } = this.props
-    if (user) {
+    if (user && offerer) {
       requestData(
         'GET',
-        `offerers/${offererId}`,
+        `offerers/${offerer.id}`,
         {
           key: 'offerers'
         }
       )
       requestData(
         'GET',
-        `offerers/${offererId}/venues`,
+        `offerers/${offerer.id}/venues`,
         {
           key: 'venues',
           normalizer: {
@@ -148,11 +148,7 @@ class VenuePage extends Component {
       location: {
         pathname
       },
-      match: {
-        params: {
-          offererId
-        }
-      },
+      offerer,
       venue,
     } = this.props
 
@@ -177,8 +173,6 @@ class VenuePage extends Component {
       venueName
     } = this.state
 
-    console.log(this.props.offerer)
-
     return (
       <PageWrapper
         backTo={{
@@ -200,8 +194,8 @@ class VenuePage extends Component {
           </h1>
 
           {
-            !isNew && (
-              <NavLink to={'/offres/nouveau'}
+            get(offerer, 'id') && (
+              <NavLink to={`/offres/nouveau?offererId=${offerer.id}&venueId=${venue.id}`}
                 className='button is-primary is-medium is-pulled-right cta'>
                 <span className='icon'><Icon svg='ico-offres-w' /></span>
                 <span>Créer une offre</span>
@@ -296,7 +290,7 @@ class VenuePage extends Component {
               : (
                 <NavLink
                   className="button is-secondary is-medium"
-                  to={`/structures/${offererId}`}>
+                  to={`/structures/${offerer.id}`}>
                   Annuler
                 </NavLink>
               )
@@ -318,7 +312,7 @@ class VenuePage extends Component {
                       className="button is-primary is-medium"
                       getBody={form => Object.assign(
                           {
-                            managingOffererId: offererId
+                            managingOffererId: offerer.id
                           },
                           get(form, `venuesById.${venueIdOrNew}`)
                         )
