@@ -146,6 +146,7 @@ class VenuePage extends Component {
         pathname
       },
       offerer,
+      user,
       venue,
     } = this.props
 
@@ -229,16 +230,18 @@ class VenuePage extends Component {
             label={<Label title="Nom du lieu :" />}
             name="name"
             readOnly={isReadOnly}
+            required
           />
           <FormField
             collectionName="venues"
-            defaultValue={bookingEmail}
+            defaultValue={bookingEmail || get(user, 'email', '')}
             entityId={venueIdOrNew}
             isHorizontal
             isExpanded
             label={<Label title="E-mail :" />}
             name="bookingEmail"
             readOnly={isReadOnly}
+            required
           />
         </div>
         <div className='section'>

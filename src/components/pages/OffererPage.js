@@ -90,6 +90,7 @@ class OffererPage extends Component {
   render () {
     const {
       offerer,
+      user,
       venues,
       fetchedName,
     } = this.props
@@ -187,6 +188,15 @@ class OffererPage extends Component {
                 name="city"
                 isHorizontal
                 readOnly={isNew}
+              />
+              <FormField
+                autoComplete="email"
+                collectionName="offerers"
+                defaultValue={get(user, 'email', '')}
+                entityId={offererIdOrNew}
+                label={<Label title="Email de réservation :" />}
+                name="bookingEmail"
+                isHorizontal
               />
             </div>
           }
