@@ -91,7 +91,8 @@ class OffererPage extends Component {
     const {
       offerer,
       user,
-      venues
+      venues,
+      fetchedName,
     } = this.props
 
     const {
@@ -110,6 +111,8 @@ class OffererPage extends Component {
       method,
       offererIdOrNew,
     } = this.state
+
+    console.log('fetchedName ---', fetchedName)
 
     return (
       <PageWrapper
@@ -141,19 +144,21 @@ class OffererPage extends Component {
             readOnly={!isNew}
             isHorizontal
           />
-          <FormField
-            autoComplete="name"
-            collectionName="offerers"
-            defaultValue={name}
-            entityId={offererIdOrNew}
-            label={<Label title="Dénomination :" />}
-            name="name"
-            readOnly={!isNew}
-            isHorizontal
-            isExpanded
-          />
-          {isNew ? (
+
+          {isNew && fetchedName &&
             <div>
+              <FormField
+                autoComplete="name"
+                collectionName="offerers"
+                defaultValue={name || ''}
+                entityId={offererIdOrNew}
+                label={<Label title="Désignation:" />}
+                name="name"
+                type="name"
+                isHorizontal
+                isExpanded
+                required
+              />
               <FormField
                 autoComplete="address"
                 collectionName="offerers"
@@ -191,26 +196,42 @@ class OffererPage extends Component {
                 collectionName="offerers"
                 defaultValue={bookingEmail || get(user, 'email')}
                 entityId={offererIdOrNew}
-                label={<Label title="Email de réservation :" />}
+                label={<Label title="Email de contact :" />}
                 name="bookingEmail"
                 isHorizontal
               />
             </div>
-          ) : (
-            <FormField
-              autoComplete="address"
-              collectionName="offerers"
-              defaultValue={address || ''}
-              entityId={offererIdOrNew}
-              label={<Label title="Siège social :" />}
-              name="address"
-              type="adress"
-              readOnly={!isNew}
-              isHorizontal
-              isExpanded
-            />
-          )}
+          }
+          { !isNew &&
+            ([
+              <FormField
+                autoComplete="name"
+                collectionName="offerers"
+                defaultValue={name || ''}
+                entityId={offererIdOrNew}
+                label={<Label title="Désignation :" />}
+                name="name"
+                type="name"
+                readOnly={!isNew}
+                isHorizontal
+                isExpanded
+              />,
+              <FormField
+                autoComplete="address"
+                collectionName="offerers"
+                defaultValue={address || ''}
+                entityId={offererIdOrNew}
+                label={<Label title="Siège social :" />}
+                name="address"
+                type="adress"
+                readOnly={!isNew}
+                isHorizontal
+                isExpanded
+              />
+            ])
+          }
         </div>
+
         {isNew ? (
           <div>
             <hr />
@@ -261,6 +282,7 @@ class OffererPage extends Component {
             </div>
           </div>
         )}
+
     </PageWrapper>
     )
   }
@@ -275,10 +297,13 @@ export default compose(
   connect(
     (state, ownProps) => {
       const offererId = ownProps.match.params.offererId
+      const offerer = offererSelector(state, offererId)
+      const fetchedName = get(offerer, 'name') || get(state,   `form.offerersById.${NEW}.name`)
       return {
         offerer: offererSelector(state, offererId),
         venues: venuesSelector(state, offererId),
-        user: state.user
+        user: state.user,
+        fetchedName
       }
     },
     {

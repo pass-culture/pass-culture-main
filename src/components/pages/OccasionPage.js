@@ -203,6 +203,10 @@ class OccasionPage extends Component {
 
     const showAllForm = type || !isNew
 
+    console.log('---- showAllForm ----- ', showAllForm)
+    console.log('---- type ----- ', type)
+    console.log('---- isNew ----- ', isNew)
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
