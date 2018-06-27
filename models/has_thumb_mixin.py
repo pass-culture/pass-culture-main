@@ -68,7 +68,6 @@ class HasThumbMixin(object):
                 img = img.resize([IDEAL_THUMB_WIDTH, int(IDEAL_THUMB_WIDTH*ratio)],
                                  Image.ANTIALIAS)
             thumb_bytes.seek(0)
-            print("RESIZING")
             img.save(thumb_bytes,
                      format='JPEG',
                      quality=80,
