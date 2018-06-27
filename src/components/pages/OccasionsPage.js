@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
@@ -20,12 +21,20 @@ class OccasionsPage extends Component {
 
   handleDataRequest = (handleSuccess, handleError) => {
     const {
+      lieu,
       requestData,
+      structure,
       user
     } = this.props
+    let apiPath = 'occasions'
+    if (lieu) {
+      apiPath = `${apiPath}?venueId=${lieu}`
+    } else if (structure) {
+      apiPath = `${apiPath}?offererId=${structure}`
+    }
     user && requestData(
       'GET',
-      'occasions',
+      apiPath,
       {
         handleSuccess,
         handleError,
@@ -117,8 +126,10 @@ export default compose(
     (state, ownProps) => {
       const { structure, lieu } = searchSelector(state, ownProps.location.search)
       return {
+        lieu,
         occasions: occasionsSelector(state, structure, lieu),
         offerer: offererSelector(state, structure),
+        structure,
         user: state.user,
         venue: venueSelector(state, lieu)
       }
