@@ -46,10 +46,16 @@ class Offerer(app.model.PcObject,
         errors = super(Offerer, self).errors()
         errors.errors.update(app.model.HasAddressMixin.errors(self).errors)
         if self.siren is not None\
-           and (not len(self.siren) == 9\
-                or not verify_luhn(self.siren)):
+           and (not len(self.siren) == 9):
+                #TODO: or not verify_luhn(self.siren)):
             errors.addError('siren', 'Ce code SIREN est invalide')
         return errors
+
+    @property
+    def nOccasions(self):
+        return app.model.Occasion.query\
+                  .filter(app.model.Occasion.venueId.in_(list(map(lambda v: v.id,
+                                                                  self.managedVenues)))).count()
 
 
 Offerer.__ts_vector__ = create_tsvector(

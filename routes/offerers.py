@@ -67,9 +67,10 @@ def get_offerer(id):
 def create_offerer():
     offerer = app.model.Offerer()
     update(offerer, request.json)
-    offerer.make_admin(current_user)
+    user_offerer = offerer.give_rights(current_user,
+                                       app.model.RightsType.admin)
     offerer.isActive = False
-    app.model.PcObject.check_and_save(offerer)
+    app.model.PcObject.check_and_save(offerer, user_offerer)
     maybe_send_offerer_validation_email(current_user, offerer)
     return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 201
 

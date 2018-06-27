@@ -136,11 +136,11 @@ def test_18_signup_should_not_work_for_user_not_in_exp_spreadsheet():
     data['email'] = 'unknown@unknown.com'
     assert_signup_error(data, 'email')
 
-
-def test_19_pro_signup_should_not_work_with_invalid_siren():
-    data = BASE_DATA_PRO.copy()
-    data['siren'] = '123456789'
-    assert_signup_error(data, 'siren')
+#TODO
+#def test_19_pro_signup_should_not_work_with_invalid_siren():
+#    data = BASE_DATA_PRO.copy()
+#    data['siren'] = '123456789'
+#    assert_signup_error(data, 'siren')
 
 
 def test_19_pro_signup_should_not_work_without_offerer_name():
