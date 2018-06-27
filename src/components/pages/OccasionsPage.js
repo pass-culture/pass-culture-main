@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
 import Icon from '../layout/Icon'
-import SearchInput from '../layout/SearchInput'
+import Search from '../layout/Search'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import { requestData } from '../../reducers/data'
@@ -64,23 +64,12 @@ class OccasionsPage extends Component {
         </div>
         <div className='section'>
           <label className="label">Rechercher une offre :</label>
-          <div className="field is-grouped">
-            <p className="control is-expanded">
-              <SearchInput
-                collectionNames={["events", "things"]}
-                config={{
-                  isMergingArray: false,
-                  key: 'searchedOccasions'
-                }}
-                isLoading
-              />
-            </p>
-            <p className="control">
-              <button className='button is-primary is-outlined is-medium'>OK</button>
-              {' '}
-              <button className='button is-secondary is-medium'>&nbsp;<Icon svg='ico-filter' />&nbsp;</button>
-            </p>
-          </div>
+          <Search collectionName="occasions"
+                  config={{
+                    isMergingArray: false,
+                    key: 'searchedOccasions'
+                  }}
+          />
         </div>
 
         <div className='section'>
