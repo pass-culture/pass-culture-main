@@ -7,7 +7,6 @@ import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import createEventSelector from '../selectors/createEvent'
 import createVenueSelector from '../selectors/createVenue'
-import createVenuesSelector from '../selectors/createVenues'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -69,6 +68,8 @@ class OccurenceForm extends Component {
       time
     } = this.state
     const eventOccurenceIdOrNew = id || NEW
+
+    console.log('venue', venue)
 
     return (
       <tr className='occurence-form'>
@@ -177,7 +178,6 @@ class OccurenceForm extends Component {
 }
 
 const eventSelector = createEventSelector()
-const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector()
 
 export default connect(
