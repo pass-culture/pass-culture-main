@@ -91,3 +91,7 @@ input[type="checkbox"], input[type="radio"] {
   // For signin form
   border-color: $input-focus-border-color;
 }
+
+.password .button {
+  height: 1.875em;
+}
