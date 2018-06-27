@@ -194,6 +194,8 @@ class OccasionPage extends Component {
       ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
       : typeOptions
 
+    const showAllForm = type || !isNew
+
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -217,7 +219,7 @@ class OccasionPage extends Component {
             entityId={occasionIdOrNew}
             isHorizontal
             isExpanded
-            label={<Label title="Titre de l'offre:" />}
+            label={<Label title="Titre de l'offre :" />}
             name="name"
             readOnly={isReadOnly}
             required={!isReadOnly}
@@ -237,7 +239,7 @@ class OccasionPage extends Component {
         </div>
 
         {
-          type && <OccasionForm {...this.props} {...this.state} />
+          showAllForm && <OccasionForm {...this.props} {...this.state} />
         }
 
         <hr />

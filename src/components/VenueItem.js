@@ -69,7 +69,7 @@ const VenueItem = ({
 }
 
 const venuesSelector = createVenuesSelector()
-const occasionsSelector = createOccasionsSelector(venuesSelector)
+const occasionsSelector = createOccasionsSelector()
 const offersSelector = createOffersSelector()
 
 export default connect(

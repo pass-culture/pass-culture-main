@@ -85,7 +85,7 @@ class OccasionsPage extends Component {
 }
 
 const searchSelector = createSearchSelector()
-const occasionsSelector = createOccasionsSelector(searchSelector)
+const occasionsSelector = createOccasionsSelector()
 
 export default compose(
   withRouter,

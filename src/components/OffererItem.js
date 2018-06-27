@@ -39,7 +39,7 @@ const OffererItem = ({
               venues.length
                 ? ([
                   <li key={0}>
-                    <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
+                    <NavLink to={`/offres/nouveau?offererId=${id}`}
                       className='has-text-primary'>
                       <Icon svg='ico-offres-r' />
                       Nouvelle offre
@@ -93,7 +93,7 @@ const OffererItem = ({
 }
 
 const venuesSelector = createVenuesSelector()
-const occasionsSelector = createOccasionsSelector(venuesSelector)
+const occasionsSelector = createOccasionsSelector()
 
 export default connect(
   () => {
