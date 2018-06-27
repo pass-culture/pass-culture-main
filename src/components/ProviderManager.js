@@ -117,6 +117,8 @@ class ProviderManager extends Component {
 
     const providerOptionsWithPlaceholder = optionify(providers, 'Source d\'importation')
 
+    console.log('providers', providers)
+
     return (
       <div className='section'>
         <h2 className='pc-list-title'>

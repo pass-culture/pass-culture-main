@@ -1,12 +1,9 @@
-import get from 'lodash.get'
 import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
 import createOffersSelector from '../selectors/createOffers'
-import createVenuesSelector from '../selectors/createVenues'
-
 
 const VenueItem = ({
   venue,
@@ -64,7 +61,6 @@ const VenueItem = ({
   )
 }
 
-const venuesSelector = createVenuesSelector()
 const offersSelector = createOffersSelector()
 
 export default connect(
