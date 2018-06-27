@@ -57,8 +57,7 @@ class OccasionItem extends Component {
       occasion,
       requestData,
     } = this.props
-    const { id } = (occasion || {})
-    requestData('DELETE', `occasions/${id}`, { key: 'occasions' })
+    requestData('DELETE', `occasions/${occasion.id}`, { key: 'occasions' })
   }
 
   render() {
@@ -98,7 +97,7 @@ class OccasionItem extends Component {
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>{get(type, 'label')}</li>
             <li>
-              <NavLink className='has-text-primary' to={`/offres/${id}/dates`}>
+              <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates`}>
                 {pluralize(get(occurences, 'length'), 'dates')}
               </NavLink>
             </li>
@@ -147,7 +146,6 @@ export default connect(
     const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const stockSelector = createStockSelector(occurencesSelector)
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
-    const typeSelector = createTypeSelector()
 
     return (state, ownProps) => {
       const occasion = ownProps.occasion
