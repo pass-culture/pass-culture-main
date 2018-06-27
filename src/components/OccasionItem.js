@@ -4,7 +4,9 @@ import moment from 'moment'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Price from './Price'
 import Icon from './layout/Icon'
@@ -63,6 +65,7 @@ class OccasionItem extends Component {
   render() {
     const {
       event,
+      location: { search },
       mediations,
       occasion,
       occurences,
@@ -90,14 +93,14 @@ class OccasionItem extends Component {
       <li className={classnames('occasion-item', { active: isActive })}>
         <Thumb alt='offre' src={thumbUrl} />
         <div className="list-content">
-          <NavLink className='name' to={`/offres/${occasion.id}`} title={name}>
+          <NavLink className='name' to={`/offres/${occasion.id}${search}`} title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>{get(type, 'label')}</li>
             <li>
-              <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates`}>
+              <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates${search}`}>
                 {pluralize(get(occurences, 'length'), 'dates')}
               </NavLink>
             </li>
@@ -108,13 +111,17 @@ class OccasionItem extends Component {
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`offres/${occasion.id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
+              <NavLink  to={`offres/${occasion.id}${mediationsLength ? '' : '/accroches/nouveau${search}'}`}
+                className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
                 <span className='icon'><Icon svg='ico-stars' /></span>
                 <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
             </li>
             <li>
-              <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
+              <button className='button is-secondary is-small'
+                onClick={this.onDeactivateClick}>
+                {isActive ? ('X Désactiver') : ('Activer')}
+              </button>
               <NavLink  to={`offres/${occasion.id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
               </NavLink>
@@ -135,33 +142,36 @@ OccasionItem.defaultProps = {
 }
 
 
-export default connect(
-  () => {
-    const eventSelector = createEventSelector()
-    const mediationsSelector = createMediationsSelector()
-    const occurencesSelector = createOccurencesSelector()
-    const thingSelector = createThingSelector()
-    const typeSelector = createTypeSelector(eventSelector, thingSelector)
+export default compose(
+  withRouter,
+  connect(
+    () => {
+      const eventSelector = createEventSelector()
+      const mediationsSelector = createMediationsSelector()
+      const occurencesSelector = createOccurencesSelector()
+      const thingSelector = createThingSelector()
+      const typeSelector = createTypeSelector(eventSelector, thingSelector)
 
-    const maxDateSelector = createMaxDateSelector(occurencesSelector)
-    const stockSelector = createStockSelector(occurencesSelector)
-    const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
+      const maxDateSelector = createMaxDateSelector(occurencesSelector)
+      const stockSelector = createStockSelector(occurencesSelector)
+      const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
 
-    return (state, ownProps) => {
-      const occasion = ownProps.occasion
-      const event = eventSelector(state, occasion.eventId)
-      const thing = thingSelector(state, occasion.thingId)
-      return {
-        event,
-        mediations: mediationsSelector(state, event, thing),
-        occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
-        maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
-        stock: stockSelector(state, occasion.venueId, occasion.eventId),
-        thing,
-        thumbUrl: thumbUrlSelector(state, event, thing),
-        type: typeSelector(state, occasion.eventId, occasion.thingId)
+      return (state, ownProps) => {
+        const occasion = ownProps.occasion
+        const event = eventSelector(state, occasion.eventId)
+        const thing = thingSelector(state, occasion.thingId)
+        return {
+          event,
+          mediations: mediationsSelector(state, event, thing),
+          occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
+          maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
+          stock: stockSelector(state, occasion.venueId, occasion.eventId),
+          thing,
+          thumbUrl: thumbUrlSelector(state, event, thing),
+          type: typeSelector(state, occasion.eventId, occasion.thingId)
+        }
       }
-    }
-  },
-  { requestData }
+    },
+    { requestData }
+  )
 )(OccasionItem)

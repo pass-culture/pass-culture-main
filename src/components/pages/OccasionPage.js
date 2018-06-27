@@ -207,7 +207,7 @@ class OccasionPage extends Component {
 
     return (
       <PageWrapper
-        backTo={{path: '/offres', label: 'Vos offres'}}
+        backTo={{path: `/offres${search}`, label: 'Vos offres'}}
         name='offer'
         handleDataRequest={this.handleDataRequest}
       >
