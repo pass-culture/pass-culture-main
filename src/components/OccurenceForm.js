@@ -182,7 +182,7 @@ const venueSelector = createVenueSelector()
 
 export default connect(
   (state, ownProps) => ({
-    event: eventSelector(state, ownProps.occasion.eventId),
-    venue: venueSelector(state, ownProps.occasion.venueId)
+    event: eventSelector(state, get(ownProps, 'occasion.eventId')),
+    venue: venueSelector(state, get(ownProps, 'occasion.venueId'))
   })
 )(OccurenceForm)
