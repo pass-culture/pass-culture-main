@@ -5,9 +5,8 @@ import createTypesSelector from './createTypes'
 import createEventSelector from './createEvent'
 import createThingSelector from './createThing'
 
-const typesSelector = createTypesSelector()
-
 export default (
+  typesSelector = createTypesSelector(),
   eventSelector=createEventSelector(),
   thingSelector=createThingSelector()
 ) => createSelector(

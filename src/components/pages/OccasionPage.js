@@ -14,10 +14,11 @@ import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
-import createTypeSelector from '../../selectors/createType'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
 import createThingSelector from '../../selectors/createThing'
+import createTypeSelector from '../../selectors/createType'
+import createTypesSelector from '../../selectors/createTypes'
 import createVenueSelector from '../../selectors/createVenue'
 import createVenuesSelector from '../../selectors/createVenues'
 import { eventNormalizer } from '../../utils/normalizers'
@@ -320,7 +321,12 @@ const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
-const typeSelector = createTypeSelector()
+const typesSelector = createTypesSelector()
+const typeSelector = createTypeSelector(
+  typesSelector,
+  eventSelector,
+  thingSelector
+)
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector()
 
@@ -348,7 +354,7 @@ export default compose(
         event: eventSelector(state, eventId),
         thing: thingSelector(state, thingId),
         type: typeSelector(state, eventId, thingId, formLabel),
-        typeOptions: state.data.types,
+        typeOptions: typesSelector(state),
         offerer,
         offerers,
         venue,
