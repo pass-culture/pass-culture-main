@@ -27,14 +27,14 @@ class OccurenceManager extends Component {
 
     return (
       <div>
-        <table className='table is-striped is-hoverable'>
+        <table className='table is-striped is-hoverable occurence-table'>
           <thead>
             <tr>
               <td>Date</td>
               <td>Heure</td>
               <td>Prix</td>
-              <td>Nombre de place total</td>
-              <td>Nombre de place Personnes à Mobilité Réduite (PMR)</td>
+              <td>Nombre de places total</td>
+              <td>Nombre de places Personnes à Mobilité Réduite (PMR)</td>
               <td></td>
               <td></td>
             </tr>

@@ -21,12 +21,12 @@ class OccasionForm extends Component {
     const {
       occasion,
       history,
-      match: { params: { modalType } },
+      match: { params: { feature } },
       routePath,
       showModal
     } = this.props
 
-    if (modalType !== 'dates') {
+    if (feature !== 'dates') {
       return
     }
 
@@ -45,9 +45,9 @@ class OccasionForm extends Component {
 
   componentDidUpdate (prevProps) {
     const {
-      match: { params: { modalType } }
+      match: { params: { feature } }
     } = this.props
-    if (!get(prevProps, 'match.params.modalType') && modalType === 'dates') {
+    if (!get(prevProps, 'match.params.feature') && feature === 'dates') {
       this.handleShowOccurencesModal()
     }
   }
