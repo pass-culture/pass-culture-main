@@ -90,14 +90,12 @@ class OffererPage extends Component {
   render () {
     const {
       offerer,
-      user,
       venues,
       fetchedName,
     } = this.props
 
     const {
       address,
-      bookingEmail,
       name,
       siren,
       postalCode,
@@ -141,6 +139,7 @@ class OffererPage extends Component {
             sireType="siren"
             readOnly={!isNew}
             isHorizontal
+            required
           />
 
           {isNew && fetchedName &&
@@ -155,7 +154,7 @@ class OffererPage extends Component {
                 type="name"
                 isHorizontal
                 isExpanded
-                required
+                readOnly={isNew}
               />
               <FormField
                 autoComplete="address"
@@ -167,7 +166,7 @@ class OffererPage extends Component {
                 type="address"
                 isHorizontal
                 isExpanded
-                required
+                readOnly={isNew}
               />
               <FormField
                 autoComplete="postalCode"
@@ -177,7 +176,7 @@ class OffererPage extends Component {
                 label={<Label title="Code Postal :" />}
                 name="postalCode"
                 isHorizontal
-                required
+                readOnly={isNew}
               />
               <FormField
                 autoComplete="city"
@@ -187,16 +186,7 @@ class OffererPage extends Component {
                 label={<Label title="Ville :" />}
                 name="city"
                 isHorizontal
-                required
-              />
-              <FormField
-                autoComplete="email"
-                collectionName="offerers"
-                defaultValue={bookingEmail || get(user, 'email')}
-                entityId={offererIdOrNew}
-                label={<Label title="Email de contact :" />}
-                name="bookingEmail"
-                isHorizontal
+                readOnly={isNew}
               />
             </div>
           }
