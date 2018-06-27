@@ -7,10 +7,10 @@ import createMediationsSelector from './createMediations'
 const mediationsSelector = createMediationsSelector()
 
 export default () => createSelector(
-  (state, occasion) => mediationsSelector(state, occasion.eventId, occasion.thingId),
-  (state, occasion) => occasion,
-  (mediations, occasion) =>
+  mediationsSelector,
+  (state, event, thing) => event || thing,
+  (mediations, eventOrthing) =>
     get(mediations, '0')
       ? `${THUMBS_URL}/mediations/${mediations[0].id}`
-      : `${API_URL}${get(occasion, 'thumbPath')}`
+      : `${API_URL}${get(eventOrthing, 'thumbPath')}`
 )

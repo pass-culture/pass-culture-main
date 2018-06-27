@@ -47,13 +47,16 @@ class Header extends Component {
         {
           !whiteHeader && [
             <NavLink className="navbar-item" to={'/guichet'} key={0}>
-            <span className='icon'><Icon svg={'ico-guichet-w'} /></span>
-            <span>Guichet</span>
-          </NavLink>,
+                { false && [
+                    <span className='icon'><Icon svg={'ico-guichet-w'} /></span>,
+                    <span>Guichet</span>
+                  ]
+                }
+            </NavLink>,
             <NavLink className="navbar-item" to={'/offres'} key={1}>
-            <span className='icon'><Icon svg={'ico-offres-w'} /></span>
-            <span>Vos offres</span>
-          </NavLink>
+              <span className='icon'><Icon svg={'ico-offres-w'} /></span>
+              <span>Vos offres</span>
+            </NavLink>
         ]
     }
       <div className="navbar-item has-dropdown is-hoverable">
@@ -77,18 +80,21 @@ class Header extends Component {
           <span className='icon'><Icon svg={'ico-structure'} /></span>
           <span>Structures</span>
         </NavLink>
-      <NavLink to={'/delegations'} className='navbar-item'>
-        <span className='icon'><Icon svg={'ico-delegation'} /></span>
-        <span>Délégations</span>
-      </NavLink>
-      <NavLink to={'/comptabilite'} className='navbar-item'>
-        <span className='icon'><Icon svg={'ico-compta'} /></span>
-        <span>Comptabilité</span>
-      </NavLink>
-      <SignoutButton tagName='a' className='navbar-item'>
-        <span className='icon'><Icon svg={'ico-deconnect'} /></span>
-        <span>Déconnexion</span>
-      </SignoutButton>
+        { false && [
+          <NavLink to={'/delegations'} className='navbar-item'>
+            <span className='icon'><Icon svg={'ico-delegation'} /></span>
+            <span>Délégations</span>
+          </NavLink>
+          ,
+          <NavLink to={'/comptabilite'} className='navbar-item'>
+            <span className='icon'><Icon svg={'ico-compta'} /></span>
+            <span>Comptabilité</span>
+          </NavLink>
+        ]}
+        <SignoutButton tagName='a' className='navbar-item'>
+          <span className='icon'><Icon svg={'ico-deconnect'} /></span>
+          <span>Déconnexion</span>
+        </SignoutButton>
     </div>
   </div>
 </div>

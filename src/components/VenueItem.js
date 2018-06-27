@@ -4,13 +4,11 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createOccasionsSelector from '../selectors/createOccasions'
 import createOffersSelector from '../selectors/createOffers'
 import createVenuesSelector from '../selectors/createVenues'
 
 
 const VenueItem = ({
-  occasions,
   venue,
 }) => {
   const {
@@ -19,8 +17,6 @@ const VenueItem = ({
     managingOffererId,
     name,
   } = (venue || {})
-
-  console.log('occasions', occasions)
 
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
@@ -40,11 +36,11 @@ const VenueItem = ({
           </li>
           <li>
             {
-              get(occasions, 'length')
+              venue.nOccasions && venue.nOccasions > 0
               ? (
                 <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                   {occasions.length} offres
+                   {venue.nOccasions} offres
                 </NavLink>
               )
               : (
@@ -69,7 +65,6 @@ const VenueItem = ({
 }
 
 const venuesSelector = createVenuesSelector()
-const occasionsSelector = createOccasionsSelector()
 const offersSelector = createOffersSelector()
 
 export default connect(
@@ -77,7 +72,6 @@ export default connect(
     return (state, ownProps) => {
       const venueId = ownProps.venue.id
       return {
-        occasions: occasionsSelector(state, null, venueId),
         offers: offersSelector(state, venueId)
       }
     }

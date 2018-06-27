@@ -100,7 +100,11 @@ class OccasionItem extends Component {
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>{get(type, 'label')}</li>
-            <li className='has-text-primary'>{pluralize(get(occurences, 'length'), 'date')}</li>
+            <li>
+              <NavLink className='has-text-primary' to={`/offres/${id}/dates`}>
+                {pluralize(get(occurences, 'length'), 'date')}
+              </NavLink>
+            </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
             {available > 0 && <li>restent {available}</li>}
@@ -141,6 +145,7 @@ export default connect(
     const mediationsSelector = createMediationsSelector()
     const occurencesSelector = createOccurencesSelector()
     const thingSelector = createThingSelector()
+    const typeSelector = createTypeSelector(eventSelector, thingSelector)
 
     const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const stockSelector = createStockSelector(occurencesSelector)
@@ -148,15 +153,18 @@ export default connect(
     const typeSelector = createTypeSelector()
 
     return (state, ownProps) => {
+      const occasion = ownProps.occasion
+      const event = eventSelector(state, occasion.eventId)
+      const thing = thingSelector(state, occasion.thingId)
       return {
-        event: eventSelector(state, ownProps.occasion.eventId),
-        thing: thingSelector(state, ownProps.occasion.thingId),
-        mediations: mediationsSelector(state, ownProps.occasion.eventId, ownProps.occasion.thingId),
-        occurences: occurencesSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        maxDate: maxDateSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        stock: stockSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        thumbUrl: thumbUrlSelector(state, ownProps.occasion),
-        type: typeSelector(state, ownProps.occasion.eventId, ownProps.occasion.thingId),
+        event,
+        mediations: mediationsSelector(state, event, thing),
+        occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
+        maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
+        stock: stockSelector(state, occasion.venueId, occasion.eventId),
+        thing,
+        thumbUrl: thumbUrlSelector(state, event, thing),
+        type: typeSelector(state, occasion.eventId, occasion.thingId)
       }
     }
   },

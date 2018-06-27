@@ -55,15 +55,16 @@ class OccasionPage extends Component {
       thing,
     } = nextProps
     const {
-      id
-    } = event || thing || {}
+      eventId,
+      thingId
+    } = (occasion || {})
     const isEdit = search === '?modifie'
-    const isEventType = get(type, 'model') === 'EventType'
+    const isEventType = eventId || get(type, 'model') === 'EventType'
     const isReadOnly = !isNew && !isEdit
 
     const apiPath = isEventType
-      ? `events${id ? `/${id}` : ''}`
-      : `things${id ? `/${id}` : ''}`
+      ? `events${eventId ? `/${eventId}` : ''}`
+      : `things${thingId ? `/${thingId}` : ''}`
 
     let requiredFields = requiredEventAndThingFields
 
@@ -151,7 +152,6 @@ class OccasionPage extends Component {
     // POST
     if (isEventType && method === 'POST') {
       const { occasions } = (data || {})
-      console.log('VENUE', venue)
       const occasion = occasions && occasions.find(o =>
         o.venueId === get(venue, 'id'))
       if (!occasion) {
@@ -184,7 +184,7 @@ class OccasionPage extends Component {
     const {
       event,
       isNew,
-      location: { pathname },
+      location: { pathname, search },
       occasionIdOrNew,
       routePath,
       thing,
@@ -204,6 +204,10 @@ class OccasionPage extends Component {
     const typeOptionsWithPlaceholder = optionify(typeOptions, 'Sélectionnez un type d\'offre', o => o)
 
     const showAllForm = type || !isNew
+
+    console.log('---- showAllForm ----- ', showAllForm)
+    console.log('---- type ----- ', type)
+    console.log('---- isNew ----- ', isNew)
 
     return (
       <PageWrapper
@@ -240,7 +244,7 @@ class OccasionPage extends Component {
             isHorizontal
             label={<Label title="Type :" />}
             name="type"
-            options={typeOptionsWithPlaceholder}
+            options={(isReadOnly && !get(type, 'value') && []) || typeOptionsWithPlaceholder}
             readOnly={isReadOnly}
             required={!isReadOnly}
             type="select"
@@ -274,7 +278,7 @@ class OccasionPage extends Component {
             {
               isReadOnly
                 ? (
-                  <NavLink to={routePath} className='button is-primary is-medium'>
+                  <NavLink to={`/offres${search}`} className='button is-primary is-medium'>
                     Terminer
                   </NavLink>
                 )
