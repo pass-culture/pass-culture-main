@@ -25,7 +25,6 @@ def get_event(id):
 @login_or_api_key_required
 @expect_json_data
 def post_event():
-    print('request.json', request.json)
     event = Event()
     update(event, request.json)
     ocas = Occasion()
@@ -45,9 +44,5 @@ def patch_event(id):
     update(event, request.json)
     app.model.PcObject.check_and_save(event)
     return jsonify(
-        event._asdict(
-            include=EVENT_INCLUDES,
-            has_dehumanized_id=True,
-            has_model_name=True
-        )
+        event._asdict(include=EVENT_INCLUDES)
     ), 200

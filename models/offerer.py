@@ -52,7 +52,8 @@ class Offerer(app.model.PcObject,
     @property
     def nOccasions(self):
         return app.model.Occasion.query\
-                  .filter(app.model.Venue.in_(self.managedVenues)).count()
+                  .filter(app.model.Occasion.venueId.in_(list(map(lambda v: v.id,
+                                                                  self.managedVenues)))).count()
 
 
 Offerer.__ts_vector__ = create_tsvector(

@@ -43,15 +43,22 @@ def create_event_occurence(json, occasion, offerer, venue):
 @app.route('/occasions', methods=['GET'])
 @login_or_api_key_required
 def list_occasions():
+    offererId = dehumanize(request.args.get('offererId'))
     venueId = dehumanize(request.args.get('venueId'))
     query = Occasion.query
+
     if venueId is not None:
         venue = Venue.query.filter_by(id=venueId)\
                            .first_or_404()
-        print("CHECKING RIGHTS")
         ensure_current_user_has_rights(RightsType.editor,
                                        venue.managingOffererId)
         query = query.filter_by(venue=venue)
+    elif offererId is not None:
+        ensure_current_user_has_rights(RightsType.editor,
+                                       offererId)
+        query = query.join(Venue)\
+                     .join(Offerer)\
+                     .filter_by(id=offererId)
     elif not current_user.isAdmin:
         query = query.join(Venue)\
                      .join(Offerer)\
