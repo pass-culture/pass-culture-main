@@ -31,3 +31,26 @@ tr.occurence-form {
     margin-top: -1.5em;
   }
 }
+
+.occurence-table {
+  display: block;
+  tbody {
+    display: block;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    max-height: 60vh;
+    }
+
+  td {
+    width: 7rem;
+  }
+
+  td:nth-child(5) {
+    width: 18rem;
+  }
+
+  td:nth-child(6), td:nth-child(7) {
+    width: 2rem;
+  }
+
+}
