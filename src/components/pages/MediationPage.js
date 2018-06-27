@@ -78,12 +78,13 @@ class MediationPage extends Component {
     } = action
     const {
       history,
-      showNotification
+      showNotification,
+      occasion,
     } = this.props
 
     // PATCH
     if (method === 'PATCH' || method === 'POST') {
-      history.push('/offres')
+      history.push(`/offres/${occasion.id}`)
       showNotification({
         text: 'Votre accroche a bien été enregistrée',
         type: 'success'
