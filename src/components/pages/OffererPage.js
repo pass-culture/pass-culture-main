@@ -207,6 +207,7 @@ class OffererPage extends Component {
                 collectionName="offerers"
                 defaultValue={name || ''}
                 entityId={offererIdOrNew}
+                key={0}
                 label={<Label title="Désignation :" />}
                 name="name"
                 type="name"
@@ -219,6 +220,7 @@ class OffererPage extends Component {
                 collectionName="offerers"
                 defaultValue={address || ''}
                 entityId={offererIdOrNew}
+                key={1}
                 label={<Label title="Siège social :" />}
                 name="address"
                 type="adress"
