@@ -25,6 +25,13 @@ input.input, .select select, textarea.textarea {
   &:after {
     display: none !important;
   }
+  select[disabled] {
+    opacity: 1;
+    border: none;
+    background-color: transparent;
+    cursor: default;
+    color: $input-color;
+  }
 }
 
 @media (min-width: $tablet) {

@@ -22,6 +22,7 @@ import createVenueSelector from '../../selectors/createVenue'
 import createVenuesSelector from '../../selectors/createVenues'
 import { eventNormalizer } from '../../utils/normalizers'
 import { NEW } from '../../utils/config'
+import { optionify } from '../../utils/form'
 
 const requiredEventAndThingFields = [
   'name',
@@ -190,9 +191,8 @@ class OccasionPage extends Component {
       requiredFields
     } = this.state
 
-    const typeOptionsWithPlaceholder = get(typeOptions, 'length') > 1
-      ? [{ label: "Sélectionnez un type d'offre" }].concat(typeOptions)
-      : typeOptions
+
+    const typeOptionsWithPlaceholder = optionify(typeOptions, 'Sélectionnez un type d\'offre', o => o)
 
     const showAllForm = type || !isNew
 
