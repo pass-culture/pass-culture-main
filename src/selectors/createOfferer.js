@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect'
 
-export default offerersSelector => createSelector(
+import createOfferersSelector from './createOfferers'
+
+export default (offerersSelector=createOfferersSelector()) => createSelector(
   offerersSelector,
   (state, offererId) => offererId,
   (offerers, offererId) => {

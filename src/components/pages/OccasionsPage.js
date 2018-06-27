@@ -10,8 +10,10 @@ import SearchInput from '../layout/SearchInput'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import { requestData } from '../../reducers/data'
-import createSearchSelector from '../../selectors/createSearch'
 import createOccasionsSelector from '../../selectors/createOccasions'
+import createOffererSelector from '../../selectors/createOfferer'
+import createSearchSelector from '../../selectors/createSearch'
+import createVenueSelector from '../../selectors/createVenue'
 import { occasionNormalizer } from '../../utils/normalizers'
 
 class OccasionsPage extends Component {
@@ -34,7 +36,9 @@ class OccasionsPage extends Component {
 
   render() {
     const {
-      occasions
+      occasions,
+      offerer,
+      venue
     } = this.props
 
     return (
@@ -49,7 +53,6 @@ class OccasionsPage extends Component {
           </h1>
         </div>
         <div className='section'>
-
           <label className="label">Rechercher une offre :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
@@ -69,6 +72,23 @@ class OccasionsPage extends Component {
             </p>
           </div>
         </div>
+
+        <div className='section'>
+          {
+            offerer
+              ? (
+                <p>
+                  structure: {offerer.name}
+                </p>
+              )
+              : venue && (
+                <p>
+                  lieu: {venue.name}
+                </p>
+              )
+          }
+        </div>
+
         {
           <div className='section load-wrapper'>
             <ul className='occasions-list pc-list'>
@@ -84,8 +104,11 @@ class OccasionsPage extends Component {
   }
 }
 
-const searchSelector = createSearchSelector()
+
 const occasionsSelector = createOccasionsSelector()
+const offererSelector = createOffererSelector()
+const searchSelector = createSearchSelector()
+const venueSelector = createVenueSelector()
 
 export default compose(
   withRouter,
@@ -94,7 +117,9 @@ export default compose(
       const { offererId, venueId } = searchSelector(state, ownProps.location.search)
       return {
         occasions: occasionsSelector(state, offererId, venueId),
-        user: state.user
+        offerer: offererSelector(state, offererId),
+        user: state.user,
+        venue: venueSelector(state, venueId)
       }
     },
     { showModal, requestData }
