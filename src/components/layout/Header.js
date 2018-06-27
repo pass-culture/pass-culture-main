@@ -47,15 +47,16 @@ class Header extends Component {
         {
           !whiteHeader && [
             <NavLink className="navbar-item" to={'/guichet'} key={0}>
-            <span className='icon'><Icon svg={'ico-guichet-w'} /></span>
-            { false && [
-              <span>Guichet</span>
-            ]}
-          </NavLink>,
+                { false && [
+                    <span className='icon'><Icon svg={'ico-guichet-w'} /></span>,
+                    <span>Guichet</span>
+                  ]
+                }
+            </NavLink>,
             <NavLink className="navbar-item" to={'/offres'} key={1}>
-            <span className='icon'><Icon svg={'ico-offres-w'} /></span>
-            <span>Vos offres</span>
-          </NavLink>
+              <span className='icon'><Icon svg={'ico-offres-w'} /></span>
+              <span>Vos offres</span>
+            </NavLink>
         ]
     }
       <div className="navbar-item has-dropdown is-hoverable">

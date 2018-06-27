@@ -32,6 +32,7 @@ class OccasionsPage extends Component {
         normalizer: occasionNormalizer
       }
     )
+    requestData('GET', 'types')
   }
 
   render() {
