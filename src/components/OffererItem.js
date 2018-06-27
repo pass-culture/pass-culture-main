@@ -16,8 +16,10 @@ const OffererItem = ({
   const {
     id,
     name,
-    isActive,
+    isValidated,
   } = (offerer || {})
+
+  console.log('isValidated ----- ', isValidated)
 
   const showPath = `/structures/${id}`
   return (
@@ -30,7 +32,7 @@ const OffererItem = ({
         </p>
         <ul className='actions'>
           {
-            !isActive
+            !isValidated
               ? (
                 <li className='is-italic'>En cours de validation : vous allez recevoir un e-mail.</li>
               )
