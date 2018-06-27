@@ -154,7 +154,8 @@ class VenuePage extends Component {
       city,
       name,
       postalCode,
-      siret
+      siret,
+      bookingEmail
     } = venue || {}
 
     const {
@@ -227,6 +228,16 @@ class VenuePage extends Component {
             isExpanded
             label={<Label title="Nom du lieu :" />}
             name="name"
+            readOnly={isReadOnly}
+          />
+          <FormField
+            collectionName="venues"
+            defaultValue={bookingEmail}
+            entityId={venueIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="E-mail :" />}
+            name="bookingEmail"
             readOnly={isReadOnly}
           />
         </div>
