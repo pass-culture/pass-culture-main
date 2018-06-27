@@ -191,7 +191,7 @@ class VenuePage extends Component {
 
           {
             get(offerer, 'id') && get(venue, 'id') && (
-              <NavLink to={`/offres/nouveau?offererId=${offerer.id}&venueId=${venue.id}`}
+              <NavLink to={`/offres/nouveau?lieu=${venue.id}`}
                 className='button is-primary is-medium is-pulled-right cta'>
                 <span className='icon'><Icon svg='ico-offres-w' /></span>
                 <span>Créer une offre</span>
