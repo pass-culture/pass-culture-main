@@ -329,7 +329,7 @@ class VenuePage extends Component {
 }
 
 const venuesSelector = createVenuesSelector()
-const venueSelector = createVenueSelector(venuesSelector)
+const venueSelector = createVenueSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
 
@@ -338,7 +338,7 @@ export default compose(
   connect(
     (state, ownProps) => ({
       user: state.user,
-      venue: venueSelector(state, null, ownProps.match.params.venueId),
+      venue: venueSelector(state, ownProps.match.params.venueId),
       offerer: offererSelector(state, ownProps.match.params.offererId),
     }),
     {

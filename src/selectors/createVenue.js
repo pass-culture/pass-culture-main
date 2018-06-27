@@ -4,8 +4,8 @@ import createVenuesSelector from './createVenues'
 const venuesSelector = createVenuesSelector()
 
 export default () => createSelector(
-  venuesSelector,
-  (state, offererId, venueId) => venueId,
+  (state, venueId, offererId) => venuesSelector(state, offererId),
+  (state, venueId, offererId) => venueId,
   (venues, venueId) => {
     return venues.find(v => v.id === venueId)
   }

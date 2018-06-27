@@ -178,11 +178,11 @@ class OccurenceForm extends Component {
 
 const eventSelector = createEventSelector()
 const venuesSelector = createVenuesSelector()
-const venueSelector = createVenueSelector(venuesSelector)
+const venueSelector = createVenueSelector()
 
 export default connect(
   (state, ownProps) => ({
     event: eventSelector(state, ownProps.occasion.eventId),
-    venue: venueSelector(state, null, ownProps.occasion.venueId)
+    venue: venueSelector(state, ownProps.occasion.venueId)
   })
 )(OccurenceForm)

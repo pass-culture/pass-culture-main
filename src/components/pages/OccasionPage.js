@@ -313,7 +313,7 @@ const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
 const typeSelector = createTypeSelector(eventSelector, thingSelector)
 const venuesSelector = createVenuesSelector()
-const venueSelector = createVenueSelector(venuesSelector)
+const venueSelector = createVenueSelector()
 
 export default compose(
   withCurrentOccasion,
@@ -325,7 +325,7 @@ export default compose(
       const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
       const venueId = get(ownProps, 'occasion.venueId')
 
-      let venue = venueSelector(state, null, venueId)
+      let venue = venueSelector(state, venueId)
       const offerers = offerersSelector(state)
       // if there is only one offerer in the list,
       // well choose it
