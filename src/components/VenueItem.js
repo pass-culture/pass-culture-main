@@ -30,7 +30,7 @@ const VenueItem = ({
         </p>
         <ul className='actions'>
           <li>
-            <NavLink to={`/offres/nouveau?offererId=${managingOffererId}&venueId=${id}`} className='has-text-primary'>
+            <NavLink to={`/offres/nouveau?lieu=${id}`} className='has-text-primary'>
               <Icon svg='ico-offres-r' /> Créer une offre
             </NavLink>
           </li>
@@ -38,7 +38,7 @@ const VenueItem = ({
             {
               venue.nOccasions && venue.nOccasions > 0
               ? (
-                <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
+                <NavLink to={`/offres?lieu=${id}`} className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
                    {venue.nOccasions} offres
                 </NavLink>
