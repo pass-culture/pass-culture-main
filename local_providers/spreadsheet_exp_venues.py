@@ -90,8 +90,8 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
             obj.managingOfferer = self.providables[0]
             obj.departementCode = str(int(self.line['Département']))
             obj.siret = siret
-        else:
             obj.bookingEmail = self.line['Email contact'].replace('mailto:', '')
+        else:
             if siret is not None:
                 obj.siren = siret[:9]
 

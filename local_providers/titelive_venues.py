@@ -90,8 +90,8 @@ class TiteLiveVenues(app.model.LocalProvider):
             obj.city = row[5]
             obj.managingOfferer = self.providables[0]
             obj.siret = luhn.append(str(row[1]))
-        elif isinstance(obj, app.model.Offerer):
             obj.bookingEmail = 'passculture-dev@beta.gouv.fr'
+        elif isinstance(obj, app.model.Offerer):
             obj.name = row[2]
             obj.address = row[3]
             obj.postalCode = str(row[4]).strip()
