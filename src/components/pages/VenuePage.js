@@ -11,6 +11,7 @@ import Icon from '../layout/Icon'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
+import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
@@ -33,8 +34,32 @@ class VenuePage extends Component {
     }
   }
 
-  componentWillUnmount() {
-    this.props.resetForm()
+  static getDerivedStateFromProps (nextProps) {
+    const {
+      location: { search },
+      match: { params: { offererId, venueId } },
+      offerer,
+      venue
+    } = nextProps
+    const isEdit = search === '?modifie'
+    const isNew = venueId === 'nouveau'
+    const isReadOnly = !isNew && !isEdit
+    const venueIdOrNew = isNew ? NEW : venueId
+    const offererName = get(offerer, 'name')
+    const routePath = `/structures/${offererId}`
+    const venueName = get(venue, 'name')
+    return {
+      apiPath: isNew ? `venues` : `venues/${venueId}`,
+      isLoading: !(get(offerer, 'id') && (get(venue, 'id') || isNew)),
+      isNew,
+      method: isNew ? 'POST' : 'PATCH',
+      isEdit,
+      isReadOnly,
+      offererName,
+      routePath,
+      venueIdOrNew,
+      venueName
+    }
   }
 
   handleDataRequest = (handleSuccess, handleError) => {
@@ -108,32 +133,8 @@ class VenuePage extends Component {
     )
   }
 
-  static getDerivedStateFromProps (nextProps) {
-    const {
-      location: { search },
-      match: { params: { offererId, venueId } },
-      offerer,
-      venue
-    } = nextProps
-    const isEdit = search === '?modifie'
-    const isNew = venueId === 'nouveau'
-    const isReadOnly = !isNew && !isEdit
-    const venueIdOrNew = isNew ? NEW : venueId
-    const offererName = get(offerer, 'name')
-    const routePath = `/structures/${offererId}`
-    const venueName = get(venue, 'name')
-    return {
-      apiPath: isNew ? `venues` : `venues/${venueId}`,
-      isLoading: !(get(offerer, 'id') && (get(venue, 'id') || isNew)),
-      isNew,
-      method: isNew ? 'POST' : 'PATCH',
-      isEdit,
-      isReadOnly,
-      offererName,
-      routePath,
-      venueIdOrNew,
-      venueName
-    }
+  componentWillUnmount() {
+    this.props.resetForm()
   }
 
   render () {
@@ -346,6 +347,7 @@ export default compose(
       closeNotification,
       resetForm,
       removeBlockers,
+      requestData,
       showNotification
     })
 )(VenuePage)

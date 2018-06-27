@@ -209,7 +209,7 @@ export default compose(
       user: state.user,
       providers: providersSelector(state),
       provider: providerSelector(state),
-      venueProviders: venueProvidersSelector(state, ownProps.venue.id)
+      venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
     }),
     { mergeForm, requestData }
   )

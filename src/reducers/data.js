@@ -12,6 +12,7 @@ const initialState = {
   occasions: [],
   offers: [],
   offerers: [],
+  providers: [],
   things: [],
   types: [],
   venues: [],
