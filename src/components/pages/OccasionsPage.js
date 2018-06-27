@@ -88,12 +88,12 @@ class OccasionsPage extends Component {
             offerer
               ? (
                 <p>
-                  structure: {offerer.name}
+                  Structure: <span className="is-medium"> {offerer.name} </span>
                 </p>
               )
               : venue && (
                 <p>
-                  lieu: {venue.name}
+                  Lieu: <span className="is-medium"> {venue.name} </span>
                 </p>
               )
           }
