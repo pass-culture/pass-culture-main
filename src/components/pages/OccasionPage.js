@@ -54,15 +54,15 @@ class OccasionPage extends Component {
     } = nextProps
     const {
       eventId,
-      id
+      thingId
     } = (occasion || {})
     const isEdit = search === '?modifie'
     const isEventType = eventId || get(type, 'model') === 'EventType'
     const isReadOnly = !isNew && !isEdit
 
     const apiPath = isEventType
-      ? `events${id ? `/${id}` : ''}`
-      : `things${id ? `/${id}` : ''}`
+      ? `events${eventId ? `/${eventId}` : ''}`
+      : `things${thingId ? `/${thingId}` : ''}`
 
     let requiredFields = requiredEventAndThingFields
 
