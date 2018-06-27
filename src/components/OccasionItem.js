@@ -98,7 +98,7 @@ class OccasionItem extends Component {
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>{get(type, 'label')}</li>
             <li>
-              <NavLink className='has-text-primary' to={`/offres/${id}/dates`}>
+              <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates`}>
                 {pluralize(get(occurences, 'length'), 'dates')}
               </NavLink>
             </li>
@@ -147,7 +147,6 @@ export default connect(
     const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const stockSelector = createStockSelector(occurencesSelector)
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
-    const typeSelector = createTypeSelector()
 
     return (state, ownProps) => {
       const occasion = ownProps.occasion
