@@ -97,13 +97,7 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionId',
-    title: 'Offre',
-    render: () => <OccasionPage />,
-  },
-  {
-    exact: true,
-    path: '/offres/:occasionId/:modalType',
+    path: '/offres/:occasionId/:feature',
     title: 'Offre',
     render: () => <OccasionPage />,
   },

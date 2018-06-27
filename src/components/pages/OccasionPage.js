@@ -47,6 +47,7 @@ class OccasionPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
+      match: { params: { feature } },
       location: { search },
       isNew,
       occasion,
@@ -58,7 +59,7 @@ class OccasionPage extends Component {
       eventId,
       thingId
     } = (occasion || {})
-    const isEdit = search === '?modifie'
+    const isEdit = feature === 'modifie'
     const isEventType = eventId || get(type, 'model') === 'EventType'
     const isReadOnly = !isNew && !isEdit
 
@@ -201,9 +202,7 @@ class OccasionPage extends Component {
       requiredFields
     } = this.state
 
-
     const typeOptionsWithPlaceholder = optionify(typeOptions, 'Sélectionnez un type d\'offre', o => o)
-
     const showAllForm = type || !isNew
 
     return (
@@ -259,14 +258,15 @@ class OccasionPage extends Component {
             {
               isReadOnly
                 ? (
-                  <NavLink to={`${pathname}?modifie`} className='button is-secondary is-medium'>
+                  <NavLink to={`${pathname}/modifie${search}`}
+                    className='button is-secondary is-medium'>
                     Modifier l'offre
                   </NavLink>
                 )
                 : (
                   <NavLink
                     className="button is-secondary is-medium"
-                    to={pathname}>
+                    to={`/offres${search}`}>
                     Annuler
                   </NavLink>
                 )
