@@ -15,7 +15,7 @@ import { API_URL } from '../utils/config'
 const mediationExplanation = `
   **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
 
-  Les accroches font la **spécificité du Pass Culture**. Prenz le temps de les choisir avec soin !
+  Les accroches font la **spécificité du Pass Culture**. Prenez le temps de les choisir avec soin !
 `
 
 const MediationManager = ({
