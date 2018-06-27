@@ -229,6 +229,7 @@ class VenuePage extends Component {
             label={<Label title="Nom du lieu :" />}
             name="name"
             readOnly={isReadOnly}
+            required
           />
           <FormField
             collectionName="venues"
@@ -239,6 +240,7 @@ class VenuePage extends Component {
             label={<Label title="E-mail :" />}
             name="bookingEmail"
             readOnly={isReadOnly}
+            required
           />
         </div>
         <div className='section'>
