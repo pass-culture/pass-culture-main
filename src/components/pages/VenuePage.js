@@ -146,6 +146,7 @@ class VenuePage extends Component {
         pathname
       },
       offerer,
+      user,
       venue,
     } = this.props
 
@@ -232,7 +233,7 @@ class VenuePage extends Component {
           />
           <FormField
             collectionName="venues"
-            defaultValue={bookingEmail}
+            defaultValue={bookingEmail || get(user, 'email', '')}
             entityId={venueIdOrNew}
             isHorizontal
             isExpanded

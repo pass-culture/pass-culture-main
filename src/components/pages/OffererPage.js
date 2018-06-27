@@ -192,7 +192,7 @@ class OffererPage extends Component {
               <FormField
                 autoComplete="email"
                 collectionName="offerers"
-                defaultValue={user.email || ''}
+                defaultValue={get(user, 'email', '')}
                 entityId={offererIdOrNew}
                 label={<Label title="Email de réservation :" />}
                 name="bookingEmail"
