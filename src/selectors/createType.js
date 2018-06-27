@@ -5,12 +5,12 @@ import createTypesSelector from './createTypes'
 import createEventSelector from './createEvent'
 import createThingSelector from './createThing'
 
-
-const eventSelector = createEventSelector()
-const thingSelector = createThingSelector()
 const typesSelector = createTypesSelector()
 
-export default () => createSelector(
+export default (
+  eventSelector=createEventSelector(),
+  thingSelector=createThingSelector()
+) => createSelector(
   typesSelector,
   (state, eventId, thingId, formLabel) => eventSelector(state, eventId),
   (state, eventId, thingId, formLabel) => thingSelector(state, thingId),

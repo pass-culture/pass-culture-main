@@ -17,6 +17,7 @@ import createOccurencesSelector from '../selectors/createOccurences'
 import createStockSelector from '../selectors/createStock'
 import createThingSelector from '../selectors/createThing'
 import createThumbUrlSelector from '../selectors/createThumbUrl'
+import createTypeSelector from '../selectors/createType'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
@@ -140,6 +141,7 @@ export default connect(
     const mediationsSelector = createMediationsSelector()
     const occurencesSelector = createOccurencesSelector()
     const thingSelector = createThingSelector()
+    const typeSelector = createTypeSelector(eventSelector, thingSelector)
 
     const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const stockSelector = createStockSelector(occurencesSelector)
@@ -156,6 +158,7 @@ export default connect(
         stock: stockSelector(state, occasion.venueId, occasion.eventId),
         thing,
         thumbUrl: thumbUrlSelector(state, event, thing),
+        type: typeSelector(state, occasion.eventId, occasion.thingId)
       }
     }
   },
