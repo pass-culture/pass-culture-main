@@ -182,7 +182,7 @@ class OccasionPage extends Component {
     const {
       event,
       isNew,
-      location: { pathname },
+      location: { pathname, search },
       occasionIdOrNew,
       routePath,
       thing,
@@ -272,7 +272,7 @@ class OccasionPage extends Component {
             {
               isReadOnly
                 ? (
-                  <NavLink to={routePath} className='button is-primary is-medium'>
+                  <NavLink to={`/offres${search}`} className='button is-primary is-medium'>
                     Terminer
                   </NavLink>
                 )
