@@ -114,12 +114,12 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-      const { offererId, venueId } = searchSelector(state, ownProps.location.search)
+      const { structure, lieu } = searchSelector(state, ownProps.location.search)
       return {
-        occasions: occasionsSelector(state, offererId, venueId),
-        offerer: offererSelector(state, offererId),
+        occasions: occasionsSelector(state, structure, lieu),
+        offerer: offererSelector(state, structure),
         user: state.user,
-        venue: venueSelector(state, venueId)
+        venue: venueSelector(state, lieu)
       }
     },
     { showModal, requestData }

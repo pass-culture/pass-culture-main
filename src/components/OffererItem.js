@@ -39,7 +39,7 @@ const OffererItem = ({
               venues.length
                 ? ([
                   <li key={0}>
-                    <NavLink to={`/offres/nouveau?offererId=${id}`}
+                    <NavLink to={`/offres/nouveau?structure=${id}`}
                       className='has-text-primary'>
                       <Icon svg='ico-offres-r' />
                       Nouvelle offre
@@ -48,7 +48,7 @@ const OffererItem = ({
                   // J'ai au moins 1 offre
                   occasions.length ? (
                     <li key={1}>
-                      <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
+                      <NavLink to={`/offres?structure=${id}`} className='has-text-primary'>
                         <Icon svg='ico-offres-r' />
                         { pluralize(occasions.length, 'offres') }
                       </NavLink>

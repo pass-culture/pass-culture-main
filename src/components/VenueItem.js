@@ -20,8 +20,6 @@ const VenueItem = ({
     name,
   } = (venue || {})
 
-  console.log('occasions', occasions)
-
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
     <li className="venue-item">
@@ -34,7 +32,7 @@ const VenueItem = ({
         </p>
         <ul className='actions'>
           <li>
-            <NavLink to={`/offres/nouveau?offererId=${managingOffererId}&venueId=${id}`} className='has-text-primary'>
+            <NavLink to={`/offres/nouveau?lieu=${id}`} className='has-text-primary'>
               <Icon svg='ico-offres-r' /> Créer une offre
             </NavLink>
           </li>
@@ -42,7 +40,7 @@ const VenueItem = ({
             {
               get(occasions, 'length')
               ? (
-                <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
+                <NavLink to={`/offres?lieu=${id}`} className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
                    {occasions.length} offres
                 </NavLink>
