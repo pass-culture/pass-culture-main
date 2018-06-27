@@ -127,7 +127,7 @@ class ProviderManager extends Component {
         </h2>
         <ul className='pc-list'>
           {
-            venueProviders && venueProviders.map((vp, index) => (
+            venueProviders.map((vp, index) => (
                 <VenueProviderItem
                   venue={venue}
                   venueProvider={vp}
@@ -208,7 +208,8 @@ export default compose(
     (state, ownProps) => ({
       user: state.user,
       providers: providersSelector(state),
-      provider: providerSelector(state),
+      provider: providerSelector(state,
+        get(state, `form.venueProvidersById.${NEW}.providerId`)),
       venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
     }),
     { mergeForm, requestData }

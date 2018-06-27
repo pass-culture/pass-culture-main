@@ -16,6 +16,7 @@ const initialState = {
   things: [],
   types: [],
   venues: [],
+  venueProviders: []
 }
 
 // REDUCER
