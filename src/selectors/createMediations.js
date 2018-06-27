@@ -1,15 +1,16 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 export default () => createSelector(
   state => state.data.mediations,
-  (_, eventId) => eventId,
-  (_, __, thingId) => thingId,
-  (mediations, eventId, thingId) => {
-    if (eventId)
-      mediations = mediations.filter(m => m.eventId === eventId)
+  (state, event) => event,
+  (state, event, thing) => thing,
+  (mediations, event, thing) => {
+    if (event)
+      mediations = mediations.filter(m => m.eventId === event.id)
 
-    if (thingId)
-      mediations = mediations.filter(m => m.thingId === thingId)
+    if (thing)
+      mediations = mediations.filter(m => m.thingId === thing.id)
 
     return mediations
   }

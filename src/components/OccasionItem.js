@@ -145,14 +145,17 @@ export default connect(
     const stockSelector = createStockSelector(occurencesSelector)
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
     return (state, ownProps) => {
+      const occasion = ownProps.occasion
+      const event = eventSelector(state, occasion.eventId)
+      const thing = thingSelector(state, occasion.thingId)
       return {
-        event: eventSelector(state, ownProps.occasion.eventId),
-        thing: thingSelector(state, ownProps.occasion.thingId),
-        mediations: mediationsSelector(state, ownProps.occasion.eventId, ownProps.occasion.thingId),
-        occurences: occurencesSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        maxDate: maxDateSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        stock: stockSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
-        thumbUrl: thumbUrlSelector(state, ownProps.occasion),
+        event,
+        mediations: mediationsSelector(state, event, thing),
+        occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
+        maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
+        stock: stockSelector(state, occasion.venueId, occasion.eventId),
+        thing,
+        thumbUrl: thumbUrlSelector(state, event, thing),
       }
     }
   },
