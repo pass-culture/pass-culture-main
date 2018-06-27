@@ -4,7 +4,7 @@ OFFERERS_INCLUDES = [
     {
         "key": "managedVenues",
         "sub_joins": [
-            "occasions"
+            "nOccasions"
         ]
     }
 ]

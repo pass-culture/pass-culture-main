@@ -128,7 +128,7 @@ class PcObject():
                         if resolve != None:
                             result[key] = list(map(lambda v: resolve(v, options.get('filters', {})),
                                                    result[key]))
-                    else:
+                    elif isinstance(value, PcObject):
                         result[key] = value._asdict(
                             include=sub_joins,
                             cut=options and options.get('cut'),
@@ -136,6 +136,8 @@ class PcObject():
                         )
                         if resolve != None:
                             result[key] = resolve(result[key], options.get('filters', {}))
+                    else:
+                        result[key] = serialize(value)
 
         if options and\
            'resolve' in options and\

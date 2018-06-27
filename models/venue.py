@@ -63,6 +63,10 @@ class Venue(app.model.PcObject,
                 errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
         return errors
 
+    @property
+    def nOccasions(self):
+        return app.model.Occasion.query.filter_by(venue=self).count()
+
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
     self.store_department_code()

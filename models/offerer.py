@@ -42,6 +42,7 @@ class Offerer(app.model.PcObject,
             errors.addError('siren', 'Ce code SIREN est invalide')
         return errors
 
+
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
     cast(coalesce(Offerer.address, ''), TEXT),
