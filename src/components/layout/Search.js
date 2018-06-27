@@ -98,7 +98,7 @@ Search.defaultProps = {
 }
 
 Search.propTypes = {
-  collectionName: PropTypes.array.isRequired
+  collectionName: PropTypes.string.isRequired
 }
 
 export default connect(
