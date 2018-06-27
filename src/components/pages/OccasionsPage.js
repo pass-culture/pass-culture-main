@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
@@ -6,7 +7,7 @@ import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
 import Icon from '../layout/Icon'
-import SearchInput from '../layout/SearchInput'
+import Search from '../layout/Search'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import { requestData } from '../../reducers/data'
@@ -20,18 +21,27 @@ class OccasionsPage extends Component {
 
   handleDataRequest = (handleSuccess, handleError) => {
     const {
+      lieu,
       requestData,
+      structure,
       user
     } = this.props
+    let apiPath = 'occasions'
+    if (lieu) {
+      apiPath = `${apiPath}?venueId=${lieu}`
+    } else if (structure) {
+      apiPath = `${apiPath}?offererId=${structure}`
+    }
     user && requestData(
       'GET',
-      'occasions',
+      apiPath,
       {
         handleSuccess,
         handleError,
         normalizer: occasionNormalizer
       }
     )
+    requestData('GET', 'types')
   }
 
   render() {
@@ -54,23 +64,12 @@ class OccasionsPage extends Component {
         </div>
         <div className='section'>
           <label className="label">Rechercher une offre :</label>
-          <div className="field is-grouped">
-            <p className="control is-expanded">
-              <SearchInput
-                collectionNames={["events", "things"]}
-                config={{
-                  isMergingArray: false,
-                  key: 'searchedOccasions'
-                }}
-                isLoading
-              />
-            </p>
-            <p className="control">
-              <button className='button is-primary is-outlined is-medium'>OK</button>
-              {' '}
-              <button className='button is-secondary is-medium'>&nbsp;<Icon svg='ico-filter' />&nbsp;</button>
-            </p>
-          </div>
+          <Search collectionName="occasions"
+                  config={{
+                    isMergingArray: false,
+                    key: 'searchedOccasions'
+                  }}
+          />
         </div>
 
         <div className='section'>
@@ -78,12 +77,12 @@ class OccasionsPage extends Component {
             offerer
               ? (
                 <p>
-                  structure: {offerer.name}
+                  Structure: <span className="has-text-weight-semibold"> {offerer.name} </span>
                 </p>
               )
               : venue && (
                 <p>
-                  lieu: {venue.name}
+                  Lieu: <span className="has-text-weight-semibold"> {venue.name} </span>
                 </p>
               )
           }
@@ -114,12 +113,14 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-      const { offererId, venueId } = searchSelector(state, ownProps.location.search)
+      const { structure, lieu } = searchSelector(state, ownProps.location.search)
       return {
-        occasions: occasionsSelector(state, offererId, venueId),
-        offerer: offererSelector(state, offererId),
+        lieu,
+        occasions: occasionsSelector(state, structure, lieu),
+        offerer: offererSelector(state, structure),
+        structure,
         user: state.user,
-        venue: venueSelector(state, venueId)
+        venue: venueSelector(state, lieu)
       }
     },
     { showModal, requestData }

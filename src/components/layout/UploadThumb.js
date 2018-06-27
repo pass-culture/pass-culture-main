@@ -210,7 +210,7 @@ UploadThumb.defaultProps = {
   height: 250,
   entityId: NEW,
   index: 0,
-  maxSize: 2, // in MB
+  maxSize: 10, // in MB
   width: 250
 }
 

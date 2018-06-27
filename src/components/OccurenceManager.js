@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -74,8 +75,8 @@ const occurencesSelector = createOccurencesSelector()
 export default connect(
  (state, ownProps) => ({
    occurences: occurencesSelector(state,
-     ownProps.occasion.venueId,
-     ownProps.occasion.eventId
+     get(ownProps, 'occasion.venueId'),
+     get(ownProps, 'occasion.eventId')
    )
  })
 )(OccurenceManager)

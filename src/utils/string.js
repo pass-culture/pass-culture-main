@@ -1,32 +1,36 @@
-export function capitalize(word='') {
-  return word
-    ? `${word[0].toUpperCase()}${word.slice(1)}`
-    : word
+export function capitalize(string='') {
+  return string
+    ? `${string[0].toUpperCase()}${string.slice(1)}`
+    : string
 }
 
-export function removeWhitespaces(word) {
-  return word && word.trim().replace(/\s/g, '')
+export function removeWhitespaces(string) {
+  return string && string.trim().replace(/\s/g, '')
 }
 
-function pluralizeWord(word, number, pluralizeWith='s') {
+function pluralizeWord(string, number, pluralizeWith='s') {
   let singular, plural
-  const lastLetter = word.slice(-1)[0]
+  const lastLetter = string.slice(-1)[0]
   if (lastLetter === 's' || lastLetter === 'x') {
-    singular = word.slice(0, -1)
-    plural = word
+    singular = string.slice(0, -1)
+    plural = string
   } else {
-    singular = word
-    plural = `${word}${pluralizeWith}`
+    singular = string
+    plural = `${string}${pluralizeWith}`
   }
   return number > 1 ? plural : singular
 }
 
-export function pluralize(number, word, pluralizeWith) {
-  if (typeof number === 'string' && typeof word === 'number') {
+function pluralizeString(string, number, pluralizeWith) {
+  return string.split(' ').map(w => pluralizeWord(w, number, pluralizeWith)).join(' ')
+}
+
+export function pluralize(number, string, pluralizeWith) {
+  if (typeof number === 'string' && typeof string === 'number') {
     // arguments are in the other way round, don't write number
-    return pluralizeWord(number, word, pluralizeWith)
+    return pluralizeString(number, string, pluralizeWith)
   }
-  return `${number} ${pluralizeWord(word, number, pluralizeWith)}`
+  return `${number} ${pluralizeString(string, number, pluralizeWith)}`
 }
 
 export function queryStringToObject(string='') {

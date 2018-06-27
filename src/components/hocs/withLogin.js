@@ -18,7 +18,7 @@ const withLogin = (config = {}) => WrappedComponent => {
     constructor(props) {
       super(props)
       this.isRequired = isRequired || Boolean(props.handleDataRequest)
-      this.redirectTo = redirectTo || DEFAULT_TO
+      this.redirectTo = redirectTo
     }
 
     componentWillMount = () => {
@@ -39,8 +39,8 @@ const withLogin = (config = {}) => WrappedComponent => {
     handleRedirect = (prevProps={}) => {
       const { history, location, user } = this.props
       if (user && user !== prevProps.user) {
-        if (!prevProps.user && this.redirectTo !== location.pathname) {
-          history.push(redirectTo)
+        if (!prevProps.user && this.redirectTo && this.redirectTo !== location.pathname) {
+          history.push(this.redirectTo)
         }
       } else if (this.isRequired) {
         if (user === false && prevProps.user === null) {

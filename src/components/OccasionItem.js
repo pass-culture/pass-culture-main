@@ -57,8 +57,7 @@ class OccasionItem extends Component {
       occasion,
       requestData,
     } = this.props
-    const { id } = (occasion || {})
-    requestData('DELETE', `occasions/${id}`, { key: 'occasions' })
+    requestData('DELETE', `occasions/${occasion.id}`, { key: 'occasions' })
   }
 
   render() {
@@ -81,12 +80,9 @@ class OccasionItem extends Component {
       priceMax,
     } = (stock || {})
     const {
-      id,
-      isActive,
-    } = (occasion || {})
-    const {
       name,
       createdAt,
+      isActive,
     } = (event || thing || {})
 
     const mediationsLength = get(mediations, 'length')
@@ -94,41 +90,41 @@ class OccasionItem extends Component {
       <li className={classnames('occasion-item', { active: isActive })}>
         <Thumb alt='offre' src={thumbUrl} />
         <div className="list-content">
-          <NavLink className='name' to={`/offres/${id}`} title={name}>
+          <NavLink className='name' to={`/offres/${occasion.id}`} title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>{get(type, 'label')}</li>
             <li>
-              <NavLink className='has-text-primary' to={`/offres/${id}/dates`}>
-                {pluralize(get(occurences, 'length'), 'date')}
+              <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates`}>
+                {pluralize(get(occurences, 'length'), 'dates')}
               </NavLink>
             </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
-            {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
-            {available > 0 && <li>restent {available}</li>}
+            {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? `minimum ${pluralize(groupSizeMin, 'personnes')}` : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
+            {available > 0 && <li>{pluralize(available, 'places restantes')}</li>}
             <li>{priceMin === priceMax ? <Price value={priceMin} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`offres/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
+              <NavLink  to={`offres/${occasion.id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
                 <span className='icon'><Icon svg='ico-stars' /></span>
                 <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
             </li>
             <li>
               <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
-              <NavLink  to={`offres/${id}`} className="button is-secondary is-small">
+              <NavLink  to={`offres/${occasion.id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
               </NavLink>
             </li>
           </ul>
         </div>
-        <div className="is-pulled-right" key={2}>
-          <button className="delete is-small"
-            onClick={this.onDeleteClick} />
-        </div>
+        {false && <div className="is-pulled-right" key={2}>
+                  <button className="delete is-small"
+                    onClick={this.onDeleteClick} />
+                </div>}
       </li>
     )
   }
@@ -150,6 +146,7 @@ export default connect(
     const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const stockSelector = createStockSelector(occurencesSelector)
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
+
     return (state, ownProps) => {
       const occasion = ownProps.occasion
       const event = eventSelector(state, occasion.eventId)

@@ -51,6 +51,8 @@ class OccasionPage extends Component {
       isNew,
       occasion,
       type,
+      event,
+      thing,
     } = nextProps
     const {
       eventId,
@@ -323,7 +325,7 @@ const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
-const typeSelector = createTypeSelector(eventSelector, thingSelector)
+const typeSelector = createTypeSelector()
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector()
 
@@ -350,8 +352,8 @@ export default compose(
 
       return {
         event: eventSelector(state, eventId),
-        type: typeSelector(state, eventId, thingId, formLabel),
         thing: thingSelector(state, thingId),
+        type: typeSelector(state, eventId, thingId, formLabel),
         typeOptions: state.data.types,
         offerer,
         offerers,

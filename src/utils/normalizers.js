@@ -29,7 +29,6 @@ export const occasionNormalizer = {
 }
 
 export const mediationNormalizer = {
-  /*
   event: {
     key: 'events',
     normalizer: eventNormalizer
@@ -38,7 +37,6 @@ export const mediationNormalizer = {
     key: 'things',
     normalizer: thingNormalizer
   }
-  */
 }
 
 export const offererNormalizer = {

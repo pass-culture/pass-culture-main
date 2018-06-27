@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import OffererItem from '../OffererItem'
-import SearchInput from '../layout/SearchInput'
+import Search from '../layout/Search'
 import createOfferersSelector from '../../selectors/createOfferers'
 import { requestData } from '../../reducers/data'
 
@@ -58,8 +58,8 @@ class OfferersPage extends Component {
         <br />
         {false && (
           <nav className="level is-mobile">
-            <SearchInput
-              collectionNames={["offerers"]}
+            <Search
+              collectionName="offerers"
               config={{
                 isMergingArray: false,
                 key: 'searchedOfferers'
