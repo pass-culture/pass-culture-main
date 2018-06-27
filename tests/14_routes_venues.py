@@ -38,6 +38,7 @@ def test_13_create_venue():
                   'siret': '30255917810045',
                   'address': '75 Rue Charles Fourier, 75013 Paris',
                   'postalCode': '75200',
+                  'bookingEmail': 'toto@btmx.fr',
                   'city': 'Paris',
                   'managingOffererId': 'AE',
                   'latitude': 48.82387,
