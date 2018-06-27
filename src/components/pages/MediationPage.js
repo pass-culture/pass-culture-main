@@ -17,6 +17,7 @@ import createMediationsSelector from '../../selectors/createMediations'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
 import createThingSelector from '../../selectors/createThing'
+import createVenueSelector from '../../selectors/createVenue'
 import { mediationNormalizer } from '../../utils/normalizers'
 
 
@@ -58,7 +59,8 @@ class MediationPage extends Component {
       requestData,
       user
     } = this.props
-    user && mediationId && requestData(
+    const isNew = mediationId === 'nouveau'
+    user && !isNew && requestData(
       'GET',
       `mediations/${mediationId}`,
       {
@@ -157,12 +159,8 @@ class MediationPage extends Component {
       thing,
     } = this.props
     const {
-
       name
     } = (occasion || {})
-    const {
-      id
-    } = (mediation || {})
     const {
       croppingRect,
       image,
@@ -220,7 +218,7 @@ class MediationPage extends Component {
               onImageChange={this.onImageChange}
               borderRadius={0}
               collectionName='mediations'
-              entityId={id}
+              entityId={get(mediation, 'id')}
               index={0}
               border={imageUploadBorder}
               width={imageUploadSize}
@@ -283,7 +281,7 @@ class MediationPage extends Component {
               getIsDisabled={form => !image}
               handleSuccess={this.handleSuccessData}
               method={isNew ? 'POST' : 'PATCH'}
-              path={'mediations' + (isNew ? '' : `/${id}`)}
+              path={'mediations' + (isNew ? '' : `/${get(mediation, 'id')}`)}
               storeKey="thumb"
               text='Valider'
             />
@@ -300,6 +298,7 @@ const eventSelector = createEventSelector()
 const mediationsSelector = createMediationsSelector()
 const mediationSelector = createMediationSelector(mediationsSelector)
 const thingSelector = createThingSelector()
+const venueSelector = createVenueSelector()
 
 export default compose(
   withCurrentOccasion,
@@ -308,10 +307,12 @@ export default compose(
       const {
         id,
         eventId,
-        thingId
+        thingId,
+        venueId,
       } = get(ownProps, 'occasion', {})
+      const venue = venueSelector(state, venueId)
       return {
-        offerer: offererSelector(state, id),
+        offerer: offererSelector(state, get(venue, 'managingOffererId')),
         event: eventSelector(state, eventId),
         mediation: mediationSelector(state, ownProps.match.params.mediationId),
         thing: thingSelector(state, thingId),
