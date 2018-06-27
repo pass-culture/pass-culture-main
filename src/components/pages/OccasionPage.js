@@ -212,9 +212,9 @@ class OccasionPage extends Component {
           <h1 className='pc-title'>
             {
               isNew
-                ? 'Ajouter'
-                : 'Modifier'
-            } une offre
+                ? "Ajouter une"
+                : "Détails de l'"
+            } offre
           </h1>
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
