@@ -17,6 +17,7 @@ import createOccurencesSelector from '../selectors/createOccurences'
 import createStockSelector from '../selectors/createStock'
 import createThingSelector from '../selectors/createThing'
 import createThumbUrlSelector from '../selectors/createThumbUrl'
+import createTypeSelector from '../selectors/createType'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
@@ -144,6 +145,8 @@ export default connect(
     const maxDateSelector = createMaxDateSelector(occurencesSelector)
     const stockSelector = createStockSelector(occurencesSelector)
     const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
+    const typeSelector = createTypeSelector()
+
     return (state, ownProps) => {
       return {
         event: eventSelector(state, ownProps.occasion.eventId),
@@ -153,6 +156,7 @@ export default connect(
         maxDate: maxDateSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
         stock: stockSelector(state, ownProps.occasion.venueId, ownProps.occasion.eventId),
         thumbUrl: thumbUrlSelector(state, ownProps.occasion),
+        type: typeSelector(state, ownProps.occasion.eventId, ownProps.occasion.thingId),
       }
     }
   },

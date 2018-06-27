@@ -321,7 +321,7 @@ const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
-const typeSelector = createTypeSelector(eventSelector, thingSelector)
+const typeSelector = createTypeSelector()
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector()
 
