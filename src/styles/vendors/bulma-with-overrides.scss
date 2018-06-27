@@ -51,22 +51,18 @@ input[type="checkbox"], input[type="radio"] {
   vertical-align: middle;
 }
 
-.navbar.is-primary {
+.navbar {
+  &.is-primary {
 
-  .navbar-brand {
-    & > .navbar-item:hover {
-      background: transparent !important; // Bug?
+    .navbar-brand {
+      & > .navbar-item:hover {
+        background: transparent !important; // Bug?
+      }
     }
-  }
 
+  }
   .icon {
     margin-right: 0.5rem;
-  }
-
-  @media(max-width: $desktop) {
-    .navbar-menu {
-      background-color: #ccc; // TODO: make this white when icons have the color of the text
-    }
   }
 }
 
