@@ -13,6 +13,7 @@ import { closeModal, showModal } from '../reducers/modal'
 import createOccurencesSelector from '../selectors/createOccurences'
 import createTypesSelector from '../selectors/createTypes'
 import { pluralize } from '../utils/string'
+import { optionify } from '../utils/form'
 
 class OccasionForm extends Component {
 
@@ -78,20 +79,6 @@ class OccasionForm extends Component {
       performer,
       stageDirector,
     } = (event || thing || {})
-
-    const offererOptionsWithPlaceholder = (get(offerers, 'length') > 1
-      ? [{ label: 'Sélectionnez une structure' }].concat(offerers)
-      : offerers).map(o => ({
-        label: o.name,
-        value: o.id,
-      }))
-
-    const venueOptionsWithPlaceholder = (get(venues, 'length') > 1
-        ? [{ label: 'Sélectionnez un lieu' }].concat(venues)
-        : venues).map(v => ({
-          label: v.name,
-          value: v.id,
-        }))
 
     return (
       <div>
@@ -160,7 +147,7 @@ class OccasionForm extends Component {
           label={<Label title="Structure :" />}
           required
           name='offererId'
-          options={offererOptionsWithPlaceholder}
+          options={optionify(offerers, 'Sélectionnez une structure')}
           readOnly={isReadOnly || !isNew}
           type="select"
         />
@@ -179,7 +166,7 @@ class OccasionForm extends Component {
                 isHorizontal
                 label={<Label title="Lieu :" />}
                 name='venueId'
-                options={venueOptionsWithPlaceholder}
+                options={optionify(venues, 'Sélectionnez un lieu')}
                 readOnly={isReadOnly || !isNew}
                 required={!isReadOnly}
                 type="select"
@@ -311,7 +298,6 @@ export default connect(
     const venueId = get(ownProps, 'occasion.venueId')
     return {
       occurences: occurencesSelector(state, venueId, eventId),
-      typeOptions: typesSelector(state),
     }
   },
   {

@@ -206,10 +206,6 @@ class OccasionPage extends Component {
 
     const showAllForm = type || !isNew
 
-    console.log('---- showAllForm ----- ', showAllForm)
-    console.log('---- type ----- ', type)
-    console.log('---- isNew ----- ', isNew)
-
     return (
       <PageWrapper
         backTo={{path: '/offres', label: 'Vos offres'}}
@@ -253,6 +249,7 @@ class OccasionPage extends Component {
         </div>
 
         {
+          // TODO: connect OccasionForm properly from store, not by passing props
           showAllForm && <OccasionForm {...this.props} {...this.state} />
         }
 
