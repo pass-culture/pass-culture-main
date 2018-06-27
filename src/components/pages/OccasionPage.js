@@ -149,7 +149,6 @@ class OccasionPage extends Component {
     // POST
     if (isEventType && method === 'POST') {
       const { occasions } = (data || {})
-      console.log('VENUE', venue)
       const occasion = occasions && occasions.find(o =>
         o.venueId === get(venue, 'id'))
       if (!occasion) {
@@ -238,7 +237,7 @@ class OccasionPage extends Component {
             isHorizontal
             label={<Label title="Type :" />}
             name="type"
-            options={typeOptionsWithPlaceholder}
+            options={(isReadOnly && !get(type, 'value') && []) || typeOptionsWithPlaceholder}
             readOnly={isReadOnly}
             required={!isReadOnly}
             type="select"
