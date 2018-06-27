@@ -2,14 +2,19 @@ import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import createTypesSelector from './createTypes'
+import createEventSelector from './createEvent'
+import createThingSelector from './createThing'
 
+
+const eventSelector = createEventSelector()
+const thingSelector = createThingSelector()
 const typesSelector = createTypesSelector()
 
-export default (selectEvent, selectThing) => createSelector(
+export default () => createSelector(
   typesSelector,
-  selectEvent,
-  selectThing,
-  (state, eventOrThingId, formLabel) => formLabel,
+  (state, eventId, thingId, formLabel) => eventSelector(state, eventId),
+  (state, eventId, thingId, formLabel) => thingSelector(state, thingId),
+  (state, eventId, thingId, formLabel) => formLabel,
   (types, event, thing, formLabel) => {
     // get the tag which is actually the type key in event and thing
     let tag = get(event, 'type')
@@ -34,7 +39,6 @@ export default (selectEvent, selectThing) => createSelector(
         }
       }
     }
-    console.log('typeqsdqd', type, types)
     return type && types.find(t =>
       t.model === type.model && t.tag === type.tag)
   }

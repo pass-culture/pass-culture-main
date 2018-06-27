@@ -308,9 +308,9 @@ class OccasionPage extends Component {
 }
 
 const eventSelector = createEventSelector()
+const thingSelector = createThingSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
-const thingSelector = createThingSelector()
 const typeSelector = createTypeSelector(eventSelector, thingSelector)
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector(venuesSelector)
@@ -338,7 +338,7 @@ export default compose(
 
       return {
         event: eventSelector(state, eventId),
-        type: typeSelector(state, eventId || thingId, formLabel),
+        type: typeSelector(state, eventId, thingId, formLabel),
         thing: thingSelector(state, thingId),
         typeOptions: state.data.types,
         offerer,
