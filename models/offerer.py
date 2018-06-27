@@ -30,8 +30,6 @@ class Offerer(app.model.PcObject,
     users = db.relationship(lambda: app.model.User,
                             secondary='user_offerer')
 
-    bookingEmail = db.Column(db.String(120), nullable=False)
-
     siren = db.Column(db.String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     def give_rights(self, user, rights):

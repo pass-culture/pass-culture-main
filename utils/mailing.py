@@ -35,7 +35,12 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
 
     email = make_booking_recap_email(offer, booking, is_cancellation)
 
-    recipients = [offer.offerer.bookingEmail, 'passculture@beta.gouv.fr']
+    if offer.venue:
+        venue = offer.venue
+    else:
+        venue = offer.eventOccurence.venue
+
+    recipients = [venue.bookingEmail, 'passculture@beta.gouv.fr']
 
 
     if IS_DEV or IS_STAGING:

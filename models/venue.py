@@ -34,9 +34,12 @@ class Venue(app.model.PcObject,
     managingOffererId = db.Column(db.BigInteger,
                                   db.ForeignKey("offerer.id"),
                                   nullable=False)
+
     managingOfferer = db.relationship(lambda: app.model.Offerer,
                                       foreign_keys=[managingOffererId],
                                       backref='managedVenues')
+
+    bookingEmail = db.Column(db.String(120), nullable=False)
 
     #openingHours = db.Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]

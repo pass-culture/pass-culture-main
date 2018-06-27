@@ -128,7 +128,7 @@ def signup():
             offerer.generate_validation_token()
             user_offerer = offerer.give_rights(new_user,
                                                app.model.RightsType.admin)
-            offerer.bookingEmail = new_user.email
+            # offerer.bookingEmail = new_user.email
             # Don't validate the first user / offerer link so that the user can immediately start loading offers
             app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
         else:
