@@ -251,7 +251,8 @@ class OccasionForm extends Component {
           ]
         }
 
-        <h2 className='pc-list-title'>Contact</h2>
+      { false && [
+        <h2 className='pc-list-title'>Contact</h2>,
         <FormField
           collectionName='occasions'
           defaultValue={contactName || get(user, 'publicName')}
@@ -262,7 +263,7 @@ class OccasionForm extends Component {
           name="contactName"
           readOnly={isReadOnly}
           required={!isReadOnly}
-        />
+        />,
         <FormField
           collectionName='occasions'
           defaultValue={contactEmail || get(user, 'email')}
@@ -274,7 +275,7 @@ class OccasionForm extends Component {
           readOnly={isReadOnly}
           required={!isReadOnly}
           type="email"
-        />
+        />,
         <FormField
           collectionName='occasions'
           defaultValue={contactPhone}
@@ -283,7 +284,8 @@ class OccasionForm extends Component {
           label={<Label title="Tel de contact :" />}
           name="contactPhone"
           readOnly={isReadOnly}
-        />
+        />,
+        ]}
         {false && <FormField
                     collectionName='occasions'
                     defaultValue={mediaUrls}
