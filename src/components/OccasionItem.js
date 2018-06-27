@@ -20,6 +20,7 @@ import createStockSelector from '../selectors/createStock'
 import createThingSelector from '../selectors/createThing'
 import createThumbUrlSelector from '../selectors/createThumbUrl'
 import createTypeSelector from '../selectors/createType'
+import createTypesSelector from '../selectors/createTypes'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
@@ -142,6 +143,8 @@ OccasionItem.defaultProps = {
 }
 
 
+const typesSelector = createTypesSelector()
+
 export default compose(
   withRouter,
   connect(
@@ -150,7 +153,7 @@ export default compose(
       const mediationsSelector = createMediationsSelector()
       const occurencesSelector = createOccurencesSelector()
       const thingSelector = createThingSelector()
-      const typeSelector = createTypeSelector(eventSelector, thingSelector)
+      const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
 
       const maxDateSelector = createMaxDateSelector(occurencesSelector)
       const stockSelector = createStockSelector(occurencesSelector)
