@@ -5,7 +5,8 @@
   overflow: hidden;
 
   .background {
-    background-size: 100% auto;
+    background-color: $grey-lighter;
+    background-size: cover;
     background-position: center;
     height: 100%;
     width: 100%;
