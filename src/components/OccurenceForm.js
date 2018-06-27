@@ -69,8 +69,6 @@ class OccurenceForm extends Component {
     } = this.state
     const eventOccurenceIdOrNew = id || NEW
 
-    console.log('venue', venue)
-
     return (
       <tr className='occurence-form'>
         <td>

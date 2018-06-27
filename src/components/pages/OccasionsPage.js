@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'

@@ -49,12 +49,9 @@ class OccasionPage extends Component {
   static getDerivedStateFromProps (nextProps) {
     const {
       match: { params: { feature } },
-      location: { search },
       isNew,
       occasion,
       type,
-      event,
-      thing,
     } = nextProps
     const {
       eventId,
@@ -189,7 +186,6 @@ class OccasionPage extends Component {
       isNew,
       location: { pathname, search },
       occasionIdOrNew,
-      routePath,
       thing,
       type,
       typeOptions,
@@ -339,9 +335,9 @@ export default compose(
       const thingId = get(ownProps, 'occasion.thingId')
       const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
       venueId = venueId || get(ownProps, 'occasion.venueId')
+      const venue = venueSelector(state, venueId)
       offererId = offererId || get(venue, 'managingOffererId')
 
-      let venue = venueSelector(state, venueId)
       const offerers = offerersSelector(state)
       const offerer = offererSelector(state, offererId)
 

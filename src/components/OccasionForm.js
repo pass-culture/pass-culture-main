@@ -11,7 +11,6 @@ import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
 import createOccurencesSelector from '../selectors/createOccurences'
-import createTypesSelector from '../selectors/createTypes'
 import { pluralize } from '../utils/string'
 import { optionify } from '../utils/form'
 
@@ -290,7 +289,6 @@ class OccasionForm extends Component {
 }
 
 const occurencesSelector = createOccurencesSelector()
-const typesSelector = createTypesSelector()
 
 export default connect(
   (state, ownProps) => {

@@ -306,7 +306,6 @@ export default compose(
   connect(
     (state, ownProps) => {
       const {
-        id,
         eventId,
         thingId,
         venueId,

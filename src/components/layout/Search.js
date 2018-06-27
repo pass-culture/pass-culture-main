@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 
 import { assignData, requestData } from '../../reducers/data'
 import { closeLoading, showLoading } from '../../reducers/loading'
-import { AND } from '../../utils/config'
 
 const KEY_RETURN = 13
 
@@ -29,7 +28,7 @@ class Search extends Component {
       closeLoading()
     }
   }
-  
+
   onRequestData = event => {
     const {
       target: { value },
@@ -44,7 +43,6 @@ class Search extends Component {
       assignData,
       collectionName,
       config,
-      onChange,
       requestData,
       showLoading
     } = this.props
@@ -79,7 +77,7 @@ class Search extends Component {
                 //onChange={this.onChange}
                 placeholder="Saisissez une recherche"
                 ref={_element => (this._element = _element)}
-                onKeyUp={e => e.keyCode == KEY_RETURN && this.runSearch(this._element.value)}
+                onKeyUp={e => e.keyCode === KEY_RETURN && this.runSearch(this._element.value)}
                 type="text"
               />
             </p>

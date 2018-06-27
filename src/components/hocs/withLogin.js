@@ -7,7 +7,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
-import { DEFAULT_TO } from '../../utils/config'
 
 
 const withLogin = (config = {}) => WrappedComponent => {

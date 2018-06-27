@@ -18,7 +18,6 @@ import { closeNotification, showNotification } from '../../reducers/notification
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
 import createVenueSelector from '../../selectors/createVenue'
-import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
 
 
@@ -343,7 +342,6 @@ class VenuePage extends Component {
   }
 }
 
-const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
