@@ -4,12 +4,10 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createOccasionsSelector from '../selectors/createOccasions'
 import createVenuesSelector from '../selectors/createVenues'
 import { pluralize } from '../utils/string'
 
 const OffererItem = ({
-  occasions,
   offerer,
   venues,
 }) => {
@@ -48,11 +46,11 @@ const OffererItem = ({
                     </NavLink>
                   </li>,
                   // J'ai au moins 1 offre
-                  occasions.length ? (
+                  offerer.nOccasions > 0 ? (
                     <li key={1}>
                       <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
                         <Icon svg='ico-offres-r' />
-                        { pluralize(occasions.length, 'offres') }
+                        { pluralize(offerer.nOccasions, 'offres') }
                       </NavLink>
                     </li>
                   ) : (
@@ -95,12 +93,10 @@ const OffererItem = ({
 }
 
 const venuesSelector = createVenuesSelector()
-const occasionsSelector = createOccasionsSelector()
 
 export default connect(
   () => {
     return (state, ownProps) => ({
-      occasions: occasionsSelector(state, ownProps.offerer.id),
       venues: venuesSelector(state, ownProps.offerer.id),
     })
   }

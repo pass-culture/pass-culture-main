@@ -100,7 +100,11 @@ class OccasionItem extends Component {
           <ul className='infos'>
             {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
             <li className='is-uppercase'>{get(type, 'label')}</li>
-            <li className='has-text-primary'>{pluralize(get(occurences, 'length'), 'date')}</li>
+            <li>
+              <NavLink className='has-text-primary' to={`/offres/${id}/dates`}>
+                {pluralize(get(occurences, 'length'), 'date')}
+              </NavLink>
+            </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
             {available > 0 && <li>restent {available}</li>}
