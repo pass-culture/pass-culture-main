@@ -104,7 +104,7 @@ class MediationPage extends Component {
       imageUploadSize
     } = this.props
 
-    const size = imageUploadSize + 2 * imageUploadBorder
+    const size = window.devicePixelRatio * (imageUploadSize + 2 * imageUploadBorder)
     const firstDimensions = [
       imageUploadBorder + size / 7.5,
       imageUploadBorder + size / 32,
@@ -171,8 +171,6 @@ class MediationPage extends Component {
     } = this.state
     const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionId}`
-
-    console.log('offerer', offerer)
 
     return (
       <PageWrapper
@@ -306,12 +304,19 @@ const thingSelector = createThingSelector()
 export default compose(
   withCurrentOccasion,
   connect(
-    (state, ownProps) => ({
-      offerer: offererSelector(state, ownProps.occasion.id),
-      event: eventSelector(state, ownProps.occasion.eventId),
-      thing: thingSelector(state, ownProps.occasion.thingId),
-      mediation: mediationSelector(state, ownProps.match.params.mediationId),
-    }),
+    (state, ownProps) => {
+      const {
+        id,
+        eventId,
+        thingId
+      } = get(ownProps, 'occasion', {})
+      return {
+        offerer: offererSelector(state, id),
+        event: eventSelector(state, eventId),
+        mediation: mediationSelector(state, ownProps.match.params.mediationId),
+        thing: thingSelector(state, thingId),
+      }
+    },
     { assignData, showNotification }
   )
 )(MediationPage)

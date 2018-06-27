@@ -1,10 +1,15 @@
 import get from 'lodash.get'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import withCurrentOccasion from './hocs/withCurrentOccasion'
 import Icon from './layout/Icon'
+import createEventSelector from '../selectors/createEvent'
+import createMediationSelector from '../selectors/createMediations'
+import createThingSelector from '../selectors/createThing'
 import { API_URL } from '../utils/config'
 
 const mediationExplanation = `
@@ -14,24 +19,23 @@ const mediationExplanation = `
 `
 
 const MediationManager = ({
-  currentOccasion,
+  mediations,
   routePath
 }) => {
-  const {
-    mediations
-  } = (currentOccasion || {})
   const mediationsLength = get(mediations, 'length')
   return (
     <div className='box content has-text-centered'>
       <ReactMarkdown source={mediationExplanation} className='section' />
       <ul className='mediations-list'>
-        {mediations && mediations.map(m => (
-          <li key={m.id}>
-            <img
-              alt={`accroche-${m.thumbPath}`}
-              src={`${API_URL}${m.thumbPath}`} />
-          </li>
-        ))}
+        {
+          mediations.map(m => (
+            <li key={m.id}>
+              <img
+                alt={`accroche-${m.thumbPath}`}
+                src={`${API_URL}${m.thumbPath}`} />
+            </li>
+          ))
+        }
       </ul>
       <p>
         <NavLink
@@ -45,4 +49,19 @@ const MediationManager = ({
   )
 }
 
-export default withCurrentOccasion(MediationManager)
+const eventSelector = createEventSelector()
+const thingSelector = createThingSelector()
+const mediationsSelector = createMediationSelector()
+
+export default compose(
+  withCurrentOccasion,
+  connect(
+    (state, ownProps) => {
+      const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
+      const thing = thingSelector(state, get(ownProps, 'occasion.thingId'))
+      return {
+        mediations: mediationsSelector(state, event, thing)
+      }
+    }
+  )
+)(MediationManager)

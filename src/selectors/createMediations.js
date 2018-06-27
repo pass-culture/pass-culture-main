@@ -3,7 +3,7 @@ import { createSelector } from 'reselect'
 
 export default () => createSelector(
   state => state.data.mediations,
-  (state, event) => event,
+  (state, event, thing) => event,
   (state, event, thing) => thing,
   (mediations, event, thing) => {
     if (event)

@@ -75,7 +75,6 @@ class OccasionForm extends Component {
       description,
       durationMinutes,
       mediaUrls,
-      mediations,
       performer,
       stageDirector,
     } = (event || thing || {})
@@ -124,9 +123,7 @@ class OccasionForm extends Component {
                 </div>
               )
             }
-            <MediationManager
-              mediations={mediations}
-            />
+            <MediationManager />
           </div>
           )
         }
