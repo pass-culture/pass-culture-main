@@ -134,6 +134,7 @@ class UploadThumb extends Component {
             onDragLeave={this.handleDragStop}
             onDrop={this.handleDrop}
             disableClick={Boolean(image || readOnly)}
+            style={{width, height}}
           >
             {
               !image && (

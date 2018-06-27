@@ -55,6 +55,7 @@
   .dropzone {
     background: transparent;
     position: relative;
+    margin: auto;
     margin-bottom: 2rem;
     &.no-drag {
       &:before {
