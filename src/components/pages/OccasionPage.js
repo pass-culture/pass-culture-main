@@ -128,6 +128,7 @@ class OccasionPage extends Component {
       method
     } = action
     const {
+      occasion,
       closeModal,
       history,
       showModal,
@@ -145,7 +146,7 @@ class OccasionPage extends Component {
 
     // PATCH
     if (method === 'PATCH') {
-      history.push('/offres')
+      history.push(`/offres/${occasion.id}`)
       return
     }
 
@@ -167,7 +168,7 @@ class OccasionPage extends Component {
           >
             Oui
           </NavLink>
-          <button onClick={() => { closeModal(); history.push('/offres') }}
+          <button onClick={() => { closeModal(); history.push(`/offres/${occasion.id}`) }}
             className='button'>
             Non
           </button>
@@ -268,7 +269,7 @@ class OccasionPage extends Component {
                 : (
                   <NavLink
                     className="button is-secondary is-medium"
-                    to='/offres'>
+                    to={pathname}>
                     Annuler
                   </NavLink>
                 )
