@@ -17,8 +17,6 @@ const OffererItem = ({
     isValidated,
   } = (offerer || {})
 
-  console.log('isValidated ----- ', isValidated)
-
   const showPath = `/structures/${id}`
   return (
     <li className="offerer-item">
