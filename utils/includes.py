@@ -6,7 +6,9 @@ OFFERERS_INCLUDES = [
         "sub_joins": [
             "nOccasions"
         ]
-    }
+    },
+    "nOccasions",
+    "isValidated"
 ]
 
 EVENT_INCLUDES = [

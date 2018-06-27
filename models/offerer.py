@@ -51,6 +51,11 @@ class Offerer(app.model.PcObject,
             errors.addError('siren', 'Ce code SIREN est invalide')
         return errors
 
+    @property
+    def nOccasions(self):
+        return app.model.Occasion.query\
+                  .filter(app.model.Venue.in_(self.managedVenues)).count()
+
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
