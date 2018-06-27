@@ -23,6 +23,7 @@ import createVenuesSelector from '../../selectors/createVenues'
 import { eventNormalizer } from '../../utils/normalizers'
 import { NEW } from '../../utils/config'
 import { optionify } from '../../utils/form'
+import { queryStringToObject } from '../../utils/string'
 
 const requiredEventAndThingFields = [
   'name',
@@ -331,22 +332,21 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => {
-      const eventId = get(ownProps, 'occasion.eventId')
+      let {offererId, venueId} = queryStringToObject(ownProps.location.search)
+
       const occasionId = get(ownProps, 'occasion.id') || NEW
+      const eventId = get(ownProps, 'occasion.eventId')
       const thingId = get(ownProps, 'occasion.thingId')
       const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
-      const venueId = get(ownProps, 'occasion.venueId')
+      venueId = venueId || get(ownProps, 'occasion.venueId')
+      offererId = offererId || get(venue, 'managingOffererId')
 
       let venue = venueSelector(state, venueId)
       const offerers = offerersSelector(state)
-      // if there is only one offerer in the list,
-      // well choose it
-      const offerer = offererSelector(state, get(venue, 'managingOffererId'))
-        || (get(offerers, 'length') === 1 && get(offerers, '0'))
+      const offerer = offererSelector(state, offererId)
+
       const venues = venuesSelector(state,
         get(state, `form.occasionsById.${occasionId}.offererId`))
-      // same for the venue...
-      venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
 
       return {
         event: eventSelector(state, eventId),
