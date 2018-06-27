@@ -1,3 +1,5 @@
+import { scrollIt } from '../utils/dom'
+
 export const CLOSE_NOTIFICATION = 'CLOSE_NOTIFICATION'
 export const SHOW_NOTIFICATION = 'SHOW_NOTIFICATION'
 
@@ -10,6 +12,7 @@ function notification(state = initialState, action) {
     case CLOSE_NOTIFICATION:
       return initialState
     case SHOW_NOTIFICATION:
+      scrollIt(0, 250, 'easeInOutQuad')
       return action.notification
     default:
       return state

@@ -112,6 +112,13 @@ class OccasionPage extends Component {
     requestData('GET', 'types')
   }
 
+  handleFailData = (state, action) => {
+    this.props.showNotification({
+      type: 'danger',
+      text: 'Un problème est survenu lors de l\'enregistrement',
+    })
+  }
+
   handleSuccessData = (state, action) => {
     const {
       data,
@@ -292,6 +299,7 @@ class OccasionPage extends Component {
                         : missingFields.length === requiredFields.length
                     }}
                     handleSuccess={this.handleSuccessData}
+                    handleFail={this.handleFailData}
                     normalizer={eventNormalizer}
                     method={isNew ? 'POST' : 'PATCH'}
                     path={apiPath}

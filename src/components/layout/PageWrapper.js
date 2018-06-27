@@ -71,7 +71,7 @@ class PageWrapper extends Component {
       loading: false,
     })
     this.props.showNotification({
-      type: 'error',
+      type: 'danger',
       text: 'Erreur de chargement'
     })
   }
