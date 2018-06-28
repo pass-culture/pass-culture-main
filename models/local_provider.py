@@ -180,7 +180,11 @@ class LocalProvider(Iterator):
             # FIXME: keep this until we make type an ENUM again
             if isinstance(obj, app.model.Thing)\
                or isinstance(obj, app.model.Event):
-                obj.type = str(obj.type)
+                type_elems = str(obj.type).split('.')
+                if len(type_elems) == 2:
+                    obj.type = type_elems[1]
+                else:
+                    obj.type = type_elems[0]
             obj.dateModifiedAtLastProvider = providable_info.dateModifiedAtProvider
             obj.lastProvider = self.dbObject
             if self.venueProvider is not None:
