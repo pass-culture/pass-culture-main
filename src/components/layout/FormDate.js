@@ -35,7 +35,7 @@ class FormDate extends Component {
     } = this.props
     const { focused } = this.state
     return (
-      <div className="input-field date-picker">
+      <div className="date-picker">
         <DatePicker
           selected={value || defaultValue}
           onChange={this.handleDateSelect}
