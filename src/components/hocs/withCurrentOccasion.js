@@ -29,10 +29,10 @@ const withCurrentOccasion = WrappedComponent => {
           }
         },
         requestData,
+        user,
       } = this.props
       const { apiPath } = this.state
-
-      occasionId !== 'nouveau' && requestData(
+      user && occasionId !== 'nouveau' && requestData(
         'GET',
         apiPath,
         {
@@ -43,12 +43,12 @@ const withCurrentOccasion = WrappedComponent => {
     }
 
     componentDidMount() {
-      this.props.user && this.handleDataRequest()
+      this.handleDataRequest()
     }
 
     componentDidUpdate(prevProps) {
       const { user } = this.props
-      if (user && user !== prevProps.user) {
+      if (user && !prevProps.user) {
         this.handleDataRequest()
       }
     }

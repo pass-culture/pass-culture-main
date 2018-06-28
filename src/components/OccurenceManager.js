@@ -6,14 +6,14 @@ import { connect } from 'react-redux'
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
-import createOccurencesSelector from '../selectors/createOccurences'
 import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
   constructor () {
     super()
     this.state = {
-      isAdding: false
+      isAdding: false,
+      isEditing: false
     }
   }
 
@@ -25,22 +25,37 @@ class OccurenceManager extends Component {
 
     const lastOccurence = occurences.length > 0 && occurences[occurences.length-1]
     if (lastOccurence) {
-      const date = moment(lastOccurence.beginningDatetime).add(1, 'days')
-      console.log(lastOccurence)
-      mergeForm('eventOccurences',
-                NEW,
-                {
-                  date: date,
-                  time: date.format('HH:mm'),
-                  endTime: moment(lastOccurence.endDatetime).add(1, 'days').format('HH:mm'),
-                  groupSize: get(lastOccurence, 'offer.0.groupSize'),
-                  pmrGroupSize: get(lastOccurence, 'offer.0.pmrGroupSize'),
-                  price: get(lastOccurence, 'offer.0.price'),
-                }
-               )
+      const {
+        beginningDatetime,
+        endDatetime,
+        offer
+      } = lastOccurence
+      const {
+        available,
+        groupSize,
+        pmrGroupSize,
+        price
+      } = get(offer, '0', {})
+      const date = moment(beginningDatetime).add(1, 'days')
+      mergeForm('eventOccurences', NEW,
+        {
+          available,
+          date,
+          time: date.format('HH:mm'),
+          endTime: moment(endDatetime).add(1, 'days').format('HH:mm'),
+          groupSize,
+          pmrGroupSize,
+          price: typeof price === 'undefined'
+            ? 0
+            : price
+        })
     }
 
     this.setState({ isAdding: true })
+  }
+
+  onEditChange = (isEditing) => {
+    this.setState({ isEditing })
   }
 
   render() {
@@ -48,7 +63,7 @@ class OccurenceManager extends Component {
       occasion,
       occurences,
     } = this.props
-    const { isAdding } = this.state
+    const { isAdding, isEditing } = this.state
 
     return (
       <div className='occurence-manager'>
@@ -61,10 +76,9 @@ class OccurenceManager extends Component {
                 <td>Heure de fin</td>
                 <td>Prix</td>
                 <td>Places (total)</td>
-                <td>Dont PMR</td>
+                <td>Dont (PMR)</td>
                 <td>Supprimer</td>
                 <td>Modifier</td>
-                <td>Dupliquer J+1</td>
               </tr>
             </thead>
             <tbody>
@@ -72,6 +86,7 @@ class OccurenceManager extends Component {
                 isAdding ? (<OccurenceForm
                   occasion={occasion}
                   onDeleteClick={e => this.setState({isAdding: false})}
+                  onEditChange={this.onEditChange}
                 />) : (
                   <tr><td colspan='10'>
                     <button className='button is-secondary' onClick={this.onAddClick}>
@@ -84,9 +99,12 @@ class OccurenceManager extends Component {
                 occurences && occurences.map(o =>
                   <OccurenceItem
                     key={o.id}
+                    isAdding={isAdding}
+                    isEditing={isEditing}
                     occasion={occasion}
                     occurence={o}
                     occurences={occurences}
+                    onEditChange={this.onEditChange}
                   />
                 )
               }
@@ -102,7 +120,6 @@ class OccurenceManager extends Component {
                   <td>Dont PMR</td>
                   <td>Supprimer</td>
                   <td>Modifier</td>
-                  <td>Dupliquer J+1</td>
                 </tr>
               </thead>
             )}
@@ -113,14 +130,4 @@ class OccurenceManager extends Component {
   }
 }
 
-const occurencesSelector = createOccurencesSelector()
-
-export default connect(
- (state, ownProps) => ({
-   occurences: occurencesSelector(state,
-     get(ownProps, 'occasion.venueId'),
-     get(ownProps, 'occasion.eventId')
-   )
- }),
-  { mergeForm }
-)(OccurenceManager)
+export default connect(null, { mergeForm })(OccurenceManager)

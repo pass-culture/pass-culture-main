@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import createEventSelector from '../selectors/createEvent'
+import createOfferSelector from '../selectors/createOffer'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
 import createOccurencesSelector from '../selectors/createOccurences'
@@ -27,8 +28,10 @@ class OccurenceForm extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
+      event,
       occurences,
       occurence,
+      offer,
       tz
     } = nextProps
     const {
@@ -36,15 +39,70 @@ class OccurenceForm extends Component {
       endDatetime,
       id
     } = (occurence || {})
+
+    const isEventOccurenceFrozen = typeof event.lastProviderId !== 'undefined'
+    const offerId = get(offer, 'id')
+    const offerIdOrNew = offerId || NEW
+
+    let apiPath, method, storeKey
+    if (isEventOccurenceFrozen) {
+      apiPath = `offers${offerId ? `/${offerId}` : ''}`
+      method = offerId ? 'PATCH' : 'POST'
+      storeKey = 'offers'
+    } else {
+      apiPath = `eventOccurences${id ? `/${id}` : ''}`
+      method = id ? 'PATCH' : 'POST'
+      storeKey = 'eventOccurences'
+    }
+
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
     return {
-      apiPath: `eventOccurences${id ? `/${id}` : ''}`,
+      apiPath,
       date,
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
+      eventOccurenceIdOrNew: id || NEW,
       highlightedDates: occurences &&
         occurences.map(o => moment(o.beginningDatetime)),
-      method: id ? 'PATCH' : 'POST',
+      isEventOccurenceFrozen,
+      method,
+      offerIdOrNew,
+      storeKey,
       time: date && date.format('HH:mm'),
+    }
+  }
+
+  handleSuccessData = (state, action) => {
+    const {
+      form,
+      method,
+      onEditChange,
+      requestData,
+      venue
+    } = this.props
+    const {
+      offerIdOrNew
+    } = this.state
+
+    // ON A POST EVENT OCCURENCE SUCCESS
+    // WE CAN CHECK IF WE NEED TO POST ALSO
+    // AN ASSOCIATED OFFER
+    if (method === 'POST' ) {
+      const offerForm = form.offersById[offerIdOrNew] || {}
+      if (Object.keys(offerForm).length) {
+        requestData(
+          'POST',
+          'offers',
+          {
+            body: Object.key({
+              eventOccurenceId: action.data.id,
+              offererId: venue.managingOffererId
+            }, offerForm),
+            key: 'offers'
+          }
+        )
+      }
+    } else {
+      onEditChange && onEditChange(false)
     }
   }
 
@@ -53,15 +111,14 @@ class OccurenceForm extends Component {
       event,
       occasion,
       occurence,
+      offer,
       onDeleteClick,
       venue,
-      tz,
     } = this.props
     const {
       id,
       beginningDatetime,
       endDatetime,
-      offer,
     } = occurence || {}
     const {
       price,
@@ -73,87 +130,106 @@ class OccurenceForm extends Component {
     } = (occasion || {})
     const {
       apiPath,
+      endTime,
       date,
+      eventOccurenceIdOrNew,
       highlightedDates,
+      isEventOccurenceFrozen,
       method,
-      time,
-      endTime
+      offerIdOrNew,
+      storeKey,
+      time
     } = this.state
-    const eventOccurenceIdOrNew = id || NEW
 
     return (
       <tr className='occurence-form'>
         <td>
-          <FormField
-            collectionName="eventOccurences"
-            defaultValue={date}
-            entityId={eventOccurenceIdOrNew}
-            name="date"
-            required
-            type="date"
-            className='is-small'
-            highlightedDates={highlightedDates}
-          />
+          {
+            isEventOccurenceFrozen
+              ? date.format('DD/MM/YYYY')
+              : <FormField
+                  className='is-small'
+                  collectionName="eventOccurences"
+                  defaultValue={date}
+                  entityId={eventOccurenceIdOrNew}
+                  highlightedDates={highlightedDates}
+                  name="date"
+                  readOnly={isEventOccurenceFrozen}
+                  required
+                  type="date"
+                />
+          }
         </td>
         <td>
-          <FormField
-            className='is-small'
-            collectionName="eventOccurences"
-            defaultValue={time}
-            entityId={eventOccurenceIdOrNew}
-            name="time"
-            required
-            type="time"
-          />
+          {
+            isEventOccurenceFrozen
+              ? time
+              : <FormField
+                  className='is-small'
+                  collectionName="eventOccurences"
+                  defaultValue={time}
+                  entityId={eventOccurenceIdOrNew}
+                  name="time"
+                  required
+                  type="time"
+                />
+          }
         </td>
         <td>
-          <FormField
-            className='is-small'
-            collectionName="eventOccurences"
-            defaultValue={endTime}
-            entityId={eventOccurenceIdOrNew}
-            name="endTime"
-            required
-            type="time"
-          />
+          {
+            isEventOccurenceFrozen
+              ? endTime
+              : <FormField
+                  className='is-small'
+                  collectionName="eventOccurences"
+                  defaultValue={endTime}
+                  entityId={eventOccurenceIdOrNew}
+                  name="endTime"
+                  required
+                  type="time"
+                />
+          }
         </td>
         <td title='Vide si gratuit'>
           <FormField
-            collectionName="eventOccurences"
-            entityId={eventOccurenceIdOrNew}
+            className='is-small'
+            collectionName="offers"
             defaultValue={price}
+            entityId={offerIdOrNew}
             min={0}
             name="price"
+            placeholder='Vide si gratuit'
             required
             type="number"
-            className='is-small'
-            placeholder='Vide si gratuit'
           />
         </td>
         <td title='Laissez vide si pas de limite'>
           <FormField
-            collectionName="eventOccurences"
-            entityId={eventOccurenceIdOrNew}
+            className='is-small'
+            collectionName="offers"
+            defaultValue={available}
+            entityId={offerIdOrNew}
             min={0}
             name="available"
             placeholder="Laissez vide si pas de limite"
             type="number"
             className='is-small'
-            defaultValue={available}
           />
         </td>
-        <td title='Laissez vide si pas de limite'>
-          <FormField
-            collectionName="eventOccurences"
-            entityId={eventOccurenceIdOrNew}
-            min={0}
-            name="pmrGroupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-            className='is-small'
-            defaultValue={pmrGroupSize}
-          />
-        </td>
+        { false && (
+          <td>
+            <FormField
+              className='is-small'
+              collectionName="offers"
+              defaultValue={pmrGroupSize}
+              entityId={offerIdOrNew}
+              min={0}
+              name="pmrGroupSize"
+              placeholder="Laissez vide si pas de limite"
+              type="number"
+            />
+          </td>
+        )}
         <td>
           <button
             className="button is-secondary is-small"
@@ -164,6 +240,16 @@ class OccurenceForm extends Component {
           <SubmitButton
             className="button is-primary is-small"
             getBody={form => {
+
+              // MAYBE WE CAN ONLY TOUCH ON THE OFFER
+              if (isEventOccurenceFrozen) {
+                return Object.assign({
+                    eventOccurenceId: id,
+                    offererId: venue.managingOffererId
+                  }, get(form, `offersById.${offerIdOrNew}`))
+              }
+
+              // ELSE IT IS AN OCCURENCE FORM
               const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
               const [hour, minute] = (eo.time || time).split(':')
               const beginningDatetime = (eo.date || date).set({
@@ -185,16 +271,34 @@ class OccurenceForm extends Component {
                 eventId: get(event, 'id'),
                 venueId: get(venue, 'id'),
               })
+
             }}
-            getIsDisabled={form => getIsDisabled(
-              get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
-              ['date', 'time', 'endTime'],
-              !occurence
-            )}
-            handleSuccess={e => onDeleteClick && onDeleteClick()}
+            getIsDisabled={form => {
+              const isDisabledBecauseOffer = getIsDisabled(
+                get(form, `offersById.${offerIdOrNew}`),
+                ['price'],
+                typeof offer === 'undefined'
+              )
+
+              if (isEventOccurenceFrozen) {
+                return isDisabledBecauseOffer
+              }
+
+              const isDisabledBecauseEventOccurence = getIsDisabled(
+                get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
+                ['date', 'endTime', 'time',],
+                typeof occurence === 'undefined'
+              )
+              if (isDisabledBecauseEventOccurence) {
+                return false
+              }
+
+              return isDisabledBecauseOffer
+            }}
+            handleSuccess={this.handleSuccessData}
             method={method}
             path={apiPath}
-            storeKey="eventOccurences"
+            storeKey={storeKey}
             text="Valider"
           >
             Enregistrer
@@ -207,13 +311,16 @@ class OccurenceForm extends Component {
 }
 
 const eventSelector = createEventSelector()
+const offerSelector = createOfferSelector()
 const venueSelector = createVenueSelector()
 const occurencesSelector = createOccurencesSelector()
 const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(
   (state, ownProps) => ({
+    form: state.form,
     event: eventSelector(state, get(ownProps, 'occasion.eventId')),
+    offer: offerSelector(state, get(ownProps, 'occurence.offerId')),
     venue: venueSelector(state, get(ownProps, 'occasion.venueId')),
     tz: timezoneSelector(state, get(ownProps, 'occasion.venueId')),
     occurences: occurencesSelector(state, get(ownProps, 'occasion.venueId'), get(ownProps, 'occasion.eventId')),

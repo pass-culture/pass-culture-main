@@ -31,9 +31,10 @@ export function getElementsWithoutDeletedFormValues (dataElements, formElements)
 }
 
 export function getIsDisabled (form, keys, isNew) {
-  return !form || isNew
-    ? keys.filter(f => !get(form, f)).length > 0
-    : keys.every(f => !get(form, f))
+  return !form ||
+    isNew
+      ? keys.filter(f => typeof get(form, f) === 'undefined').length > 0
+      : keys.every(f => typeof get(form, f) === 'undefined')
 }
 
 export function optionify(collection, placeholder, mapFn=(el => ({label: el.name, value: el.id}))) {

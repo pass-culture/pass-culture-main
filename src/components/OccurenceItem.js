@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -7,6 +8,7 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
 import createEventSelector from '../selectors/createEvent'
+import createOfferSelector from '../selectors/createOffer'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
 
@@ -19,12 +21,27 @@ class OccurenceItem extends Component {
     }
   }
 
-  onEditClick = () => {
-    this.setState({ isEditing: true })
+  static getDerivedStateFromProps (nextProps) {
+    const {
+      occurence,
+      tz
+    } = nextProps
+    const {
+      beginningDatetime,
+      endDatetime,
+      id
+    } = (occurence || {})
+    const date = beginningDatetime && moment.tz(beginningDatetime, tz)
+    return {
+      date: date && date.format('DD/MM/YYYY'),
+      endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
+      time: date && date.format('HH:mm'),
+    }
   }
 
-  onDuplicateClick = () => {
-    // TODO
+  onEditChange = () => {
+    this.setState({ isEditing: true })
+    this.props.onEditChange && this.props.onEditChange(true)
   }
 
   onDeleteClick = () => {
@@ -33,32 +50,24 @@ class OccurenceItem extends Component {
       requestData
     } = this.props
     const {
-      id,
-      offer
+      id
     } = occurence
     requestData(
       'DELETE',
       `eventOccurences/${id}`,
       {
-        key: 'eventOccurences',
-        handleSuccess: () => {
-          requestData(
-            'DELETE',
-            `offers/${offer.id}`,
-            {
-              key: 'offers'
-            }
-          )
-        }
+        key: 'eventOccurences'
       }
     )
   }
 
   render () {
     const {
+      isAdding,
       occasion,
       occurences,
       occurence,
+      onEditChange,
       tz
     } = this.props
     const {
@@ -69,7 +78,10 @@ class OccurenceItem extends Component {
     const beginningDatetimeMomentTz = beginningDatetimeMoment.clone().tz(tz)
     const endDatetimeMomentTz = endDatetimeMoment.clone().tz(tz)
     const {
-      isEditing
+      date,
+      endTime,
+      isEditing,
+      time,
     } = this.state
 
     if (isEditing) {
@@ -78,13 +90,14 @@ class OccurenceItem extends Component {
         occurence={occurence}
         occurences={occurences}
         onDeleteClick={e => this.setState({isEditing: false})}
+        onEditChange={onEditChange}
       />
     }
     return (
       <tr className=''>
-        <td>{beginningDatetimeMomentTz.format('DD/MM/YYYY')}</td>
-        <td>{beginningDatetimeMomentTz.format('HH:mm')}</td>
-        <td>{endDatetimeMomentTz.format('HH:mm')}</td>
+        <td>{date}</td>
+        <td>{time}</td>
+        <td>{endTime}</td>
         <td><Price value={get(offer, '0.price') || 0} /></td>
         <td>{get(offer, '0.available') || 'Illimité'}</td>
         <td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>
@@ -97,20 +110,16 @@ class OccurenceItem extends Component {
           </button>
         </td>
         <td>
-          <button
-            className="button is-small is-secondary"
-            onClick={this.onEditClick}>
-            <span className='icon'><Icon svg='ico-pen-r' /></span>
-          </button>
+          {
+            (!isAdding || !isEditing) && (
+              <button
+                className="button is-small is-secondary"
+                onClick={this.onEditChange}>
+                <span className='icon'><Icon svg='ico-pen-r' /></span>
+              </button>
+            )
+          }
         </td>
-        <td>
-          <button
-            className="button is-small is-secondary"
-            onClick={this.onDuplicateClick}>
-            <span className='icon'><Icon svg='ico-offres-r' /></span>
-          </button>
-        </td>
-
       </tr>
     )
   }
@@ -121,8 +130,12 @@ const timezoneSelector = createTimezoneSelector(venueSelector)
 
 
 export default connect(
-  (state, ownProps) => ({
-    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
-  }),
+  () => {
+    const offerSelector = createOfferSelector()
+    return (state, ownProps) => ({
+      offer: offerSelector(state, get(ownProps, 'occurence.offerId')),
+      tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
+    })
+  },
   { requestData }
 )(OccurenceItem)

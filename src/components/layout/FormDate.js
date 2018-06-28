@@ -31,6 +31,7 @@ class FormDate extends Component {
       availableDates,
       highlightedDates,
       defaultValue,
+      readOnly,
       value
     } = this.props
     const { focused } = this.state

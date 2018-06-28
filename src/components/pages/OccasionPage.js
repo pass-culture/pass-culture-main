@@ -86,7 +86,6 @@ class OccasionPage extends Component {
       requestData,
       showModal,
     } = this.props
-
     requestData(
       'GET',
       'offerers',
