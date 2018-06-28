@@ -11,7 +11,8 @@ const createOccurencesSelector = () => createSelector(
         o.venueId === venueId &&
         o.eventId === eventId
       )
-      .map(o => Object.assign(o, {beginningDatetimeMoment: moment(o.beginningDatetime)}))
+      .map(o => Object.assign(o, {beginningDatetimeMoment: moment(o.beginningDatetime),
+                                 endDatetimeMoment: moment(o.endDatetime)}))
       .sort((o1,o2) =>
       o1.beginningDatetimeMoment - o2.beginningDatetimeMoment)
   }

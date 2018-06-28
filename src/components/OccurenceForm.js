@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import createEventSelector from '../selectors/createEvent'
+import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
@@ -26,19 +27,23 @@ class OccurenceForm extends Component {
   static getDerivedStateFromProps (nextProps) {
     const {
       occurences,
-      occurence
+      occurence,
+      tz
     } = nextProps
     const {
       beginningDatetime,
+      endDatetime,
       id
     } = (occurence || {})
+    const date = beginningDatetime && moment.tz(beginningDatetime, tz)
     return {
       apiPath: `eventOccurences${id ? `/${id}` : ''}`,
-      date: beginningDatetime && moment(beginningDatetime),
+      date,
+      endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
       highlightedDates: occurences &&
         occurences.map(o => moment(o.beginningDatetime)),
       method: id ? 'PATCH' : 'POST',
-      time: beginningDatetime && moment(beginningDatetime).format('HH:mm')
+      time: date && date.format('HH:mm'),
     }
   }
 
@@ -49,14 +54,19 @@ class OccurenceForm extends Component {
       occurence,
       onDeleteClick,
       venue,
+      tz,
     } = this.props
     const {
       id,
-      price,
       beginningDatetime,
-      groupSize,
-      pmrGroupSize
+      endDatetime,
+      offer,
     } = occurence || {}
+    const {
+      price,
+      available,
+      pmrGroupSize
+    } = get(offer, '0') || {}
     const {
       durationMinutes,
     } = (occasion || {})
@@ -65,8 +75,10 @@ class OccurenceForm extends Component {
       date,
       highlightedDates,
       method,
-      time
+      time,
+      endTime
     } = this.state
+    console.log("OC", occurence)
     const eventOccurenceIdOrNew = id || NEW
 
     return (
@@ -74,7 +86,7 @@ class OccurenceForm extends Component {
         <td>
           <FormField
             collectionName="eventOccurences"
-            defaultValue={beginningDatetime && moment(beginningDatetime)}
+            defaultValue={date}
             entityId={eventOccurenceIdOrNew}
             name="date"
             required
@@ -87,9 +99,20 @@ class OccurenceForm extends Component {
           <FormField
             className='is-small'
             collectionName="eventOccurences"
-            defaultValue={beginningDatetime && moment(beginningDatetime).format('HH:mm')}
+            defaultValue={time}
             entityId={eventOccurenceIdOrNew}
             name="time"
+            required
+            type="time"
+          />
+        </td>
+        <td>
+          <FormField
+            className='is-small'
+            collectionName="eventOccurences"
+            defaultValue={endTime}
+            entityId={eventOccurenceIdOrNew}
+            name="endTime"
             required
             type="time"
           />
@@ -112,47 +135,56 @@ class OccurenceForm extends Component {
             collectionName="eventOccurences"
             entityId={eventOccurenceIdOrNew}
             min={0}
-            name="groupSize"
+            name="available"
             placeholder="Laissez vide si pas de limite"
             type="number"
             className='is-small'
-            defaultValue={groupSize}
+            defaultValue={available}
           />
         </td>
-        <td>
-          <FormField
-            collectionName="eventOccurences"
-            entityId={eventOccurenceIdOrNew}
-            min={0}
-            name="pmrGroupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-            className='is-small'
-            defaultValue={pmrGroupSize}
-          />
-        </td>
+        { false && (
+          <td>
+            <FormField
+              collectionName="eventOccurences"
+              entityId={eventOccurenceIdOrNew}
+              min={0}
+              name="pmrGroupSize"
+              placeholder="Laissez vide si pas de limite"
+              type="number"
+              className='is-small'
+              defaultValue={pmrGroupSize}
+            />
+          </td>
+        )}
         <td>
           <SubmitButton
             className="button is-primary is-small"
             getBody={form => {
               const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
-              const [hour, minute] = (time || eo.time).split(':')
-              const beginningDatetime = (date || eo.date).set({
-                hour,
-                minute,
+              const [hour, minute] = (eo.time || time).split(':')
+              const beginningDatetime = (eo.date || date).set({
+                'hour': hour,
+                'minute': minute
               })
+              const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()
-                .add(durationMinutes, 'minutes')
-              return Object.assign({
-                beginningDatetime: beginningDatetime.format(), // ignores the GMT part of the date
-                endDatetime: endDatetime.format(),
+                                                   .set({
+                                                          hour: endHour,
+                                                          minute: endMinute
+                                                        })
+              if (endDatetime < beginningDatetime) {
+                endDatetime.add(1, 'days')
+              }
+              return Object.assign({}, eo, {
+                beginningDatetime: beginningDatetime.utc().format(),
+                endDatetime: endDatetime.utc().format(),
                 eventId: get(event, 'id'),
                 venueId: get(venue, 'id'),
-              }, eo)
+              })
             }}
             getIsDisabled={form => getIsDisabled(
               get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
-              ['date', 'time'],
+              ['date', 'time', 'endTime', 'available', 'price'],
               !occurence
             )}
             handleSuccess={e => onDeleteClick && onDeleteClick()}
@@ -177,10 +209,12 @@ class OccurenceForm extends Component {
 
 const eventSelector = createEventSelector()
 const venueSelector = createVenueSelector()
+const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(
   (state, ownProps) => ({
     event: eventSelector(state, get(ownProps, 'occasion.eventId')),
-    venue: venueSelector(state, get(ownProps, 'occasion.venueId'))
+    venue: venueSelector(state, get(ownProps, 'occasion.venueId')),
+    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
   })
 )(OccurenceForm)

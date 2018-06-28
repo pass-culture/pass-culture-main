@@ -6,6 +6,9 @@ import OccurenceForm from './OccurenceForm'
 import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
+import createEventSelector from '../selectors/createEvent'
+import createTimezoneSelector from '../selectors/createTimezone'
+import createVenueSelector from '../selectors/createVenue'
 
 class OccurenceItem extends Component {
 
@@ -22,15 +25,18 @@ class OccurenceItem extends Component {
 
   onDeleteClick = () => {
     const {
-      id,
-      offer,
+      occurence,
       requestData
     } = this.props
+    const {
+      id,
+      offer
+    } = occurence
     requestData(
       'DELETE',
       `eventOccurences/${id}`,
       {
-        key: 'eventOccurence',
+        key: 'eventOccurences',
         handleSuccess: () => {
           requestData(
             'DELETE',
@@ -49,11 +55,15 @@ class OccurenceItem extends Component {
       occasion,
       occurences,
       occurence,
+      tz
     } = this.props
     const {
       beginningDatetimeMoment,
+      endDatetimeMoment,
       offer
     } = (occurence || {})
+    const beginningDatetimeMomentTz = beginningDatetimeMoment.clone().tz(tz)
+    const endDatetimeMomentTz = endDatetimeMoment.clone().tz(tz)
     const {
       isEditing
     } = this.state
@@ -68,11 +78,12 @@ class OccurenceItem extends Component {
     }
     return (
       <tr className=''>
-        <td>{beginningDatetimeMoment.format('DD/MM/YYYY')}</td>
-        <td>{beginningDatetimeMoment.format('HH:mm')}</td>
+        <td>{beginningDatetimeMomentTz.format('DD/MM/YYYY')}</td>
+        <td>{beginningDatetimeMomentTz.format('HH:mm')}</td>
+        <td>{endDatetimeMomentTz.format('HH:mm')}</td>
         <td><Price value={get(offer, '0.price') || 0} /></td>
-        <td>{get(offer, '0.groupSize') || 'Illimité'}</td>
-        <td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>
+        <td>{get(offer, '0.available') || 'Illimité'}</td>
+        {false && (<td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>)}
         <td>
           <button
             className="button is-small is-secondary"
@@ -91,7 +102,13 @@ class OccurenceItem extends Component {
   }
 }
 
+const venueSelector = createVenueSelector()
+const timezoneSelector = createTimezoneSelector(venueSelector)
+
+
 export default connect(
-  null,
+  (state, ownProps) => ({
+    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
+  }),
   { requestData }
 )(OccurenceItem)
