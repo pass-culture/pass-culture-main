@@ -14,34 +14,49 @@ import createVenueSelector from '../selectors/createVenue'
 
 class OccurenceItem extends Component {
 
-  constructor () {
+  constructor() {
     super()
     this.state = {
-      isEditing: false
+      date: null,
+      endTime: null,
+      isEditing: null,
+      time: null
     }
   }
 
   static getDerivedStateFromProps (nextProps) {
     const {
+      match: { params: { eventOccurenceId } },
       occurence,
       tz
     } = nextProps
+
     const {
       beginningDatetime,
       endDatetime,
       id
     } = (occurence || {})
+
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
     return {
       date: date && date.format('DD/MM/YYYY'),
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
+      isEditing: eventOccurenceId === id,
       time: date && date.format('HH:mm'),
     }
   }
 
-  onEditChange = () => {
-    this.setState({ isEditing: true })
-    this.props.onEditChange && this.props.onEditChange(true)
+  onEditClick = () => {
+    const {
+      history,
+      location: { search },
+      occasion,
+      occurence
+    } = this.props
+    const {
+      id
+    } = (occasion || {})
+    history.push(`/offres/${id}/dates/${occurence.id}${search}`)
   }
 
   onDeleteClick = () => {
@@ -63,11 +78,11 @@ class OccurenceItem extends Component {
 
   render () {
     const {
+      history,
       isAdding,
       occasion,
       occurences,
       occurence,
-      onEditChange,
       tz
     } = this.props
     const {
@@ -86,11 +101,11 @@ class OccurenceItem extends Component {
 
     if (isEditing) {
       return <OccurenceForm
+        history={history}
         occasion={occasion}
         occurence={occurence}
         occurences={occurences}
         onDeleteClick={e => this.setState({isEditing: false})}
-        onEditChange={onEditChange}
       />
     }
     return (
@@ -114,7 +129,7 @@ class OccurenceItem extends Component {
             (!isAdding || !isEditing) && (
               <button
                 className="button is-small is-secondary"
-                onClick={this.onEditChange}>
+                onClick={this.onEditClick}>
                 <span className='icon'><Icon svg='ico-pen-r' /></span>
               </button>
             )

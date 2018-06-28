@@ -1,6 +1,7 @@
 import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
+import { findDOMNode } from 'react-dom'
 import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
@@ -12,8 +13,7 @@ class OccurenceManager extends Component {
   constructor () {
     super()
     this.state = {
-      isAdding: false,
-      isEditing: false
+      isAdding: false
     }
   }
 
@@ -54,16 +54,16 @@ class OccurenceManager extends Component {
     this.setState({ isAdding: true })
   }
 
-  onEditChange = (isEditing) => {
-    this.setState({ isEditing })
-  }
 
   render() {
     const {
+      history,
+      location,
+      match,
       occasion,
       occurences,
     } = this.props
-    const { isAdding, isEditing } = this.state
+    const { isAdding } = this.state
 
     return (
       <div className='occurence-manager'>
@@ -83,12 +83,15 @@ class OccurenceManager extends Component {
             </thead>
             <tbody>
               {
-                isAdding ? (<OccurenceForm
-                  occasion={occasion}
-                  onDeleteClick={e => this.setState({isAdding: false})}
-                  onEditChange={this.onEditChange}
-                />) : (
-                  <tr><td colspan='10'>
+                isAdding
+                  ? (
+                    <OccurenceForm
+                      history={history}
+                      occasion={occasion}
+                      onDeleteClick={e => this.setState({isAdding: false})}
+                    />
+                  ) : (
+                  <tr><td colSpan='10'>
                     <button className='button is-secondary' onClick={this.onAddClick}>
                       + Ajouter un horaire
                     </button>
@@ -100,11 +103,12 @@ class OccurenceManager extends Component {
                   <OccurenceItem
                     key={o.id}
                     isAdding={isAdding}
-                    isEditing={isEditing}
+                    history={history}
+                    location={location}
+                    match={match}
                     occasion={occasion}
                     occurence={o}
                     occurences={occurences}
-                    onEditChange={this.onEditChange}
                   />
                 )
               }

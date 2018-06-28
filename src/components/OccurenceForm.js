@@ -71,6 +71,17 @@ class OccurenceForm extends Component {
     }
   }
 
+  onCancelClick = () => {
+    const {
+      history,
+      occasion
+    } = this.props
+    const {
+      id
+    } = (occasion || {})
+    history.push(`/offres/${id}/dates`)
+  }
+
   handleSuccessData = (state, action) => {
     const {
       form,
@@ -231,7 +242,7 @@ class OccurenceForm extends Component {
         <td>
           <button
             className="button is-secondary is-small"
-            onClick={e => onDeleteClick && onDeleteClick(e)}
+            onClick={this.onCancelClick}
           >Annuler</button>
         </td>
         <td>
