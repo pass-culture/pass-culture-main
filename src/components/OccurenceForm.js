@@ -8,6 +8,7 @@ import SubmitButton from './layout/SubmitButton'
 import createEventSelector from '../selectors/createEvent'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
+import createOccurencesSelector from '../selectors/createOccurences'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -78,7 +79,6 @@ class OccurenceForm extends Component {
       time,
       endTime
     } = this.state
-    console.log("OC", occurence)
     const eventOccurenceIdOrNew = id || NEW
 
     return (
@@ -208,12 +208,14 @@ class OccurenceForm extends Component {
 
 const eventSelector = createEventSelector()
 const venueSelector = createVenueSelector()
+const occurencesSelector = createOccurencesSelector()
 const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(
   (state, ownProps) => ({
     event: eventSelector(state, get(ownProps, 'occasion.eventId')),
     venue: venueSelector(state, get(ownProps, 'occasion.venueId')),
-    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
+    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId')),
+    occurences: occurencesSelector(state, get(ownProps, 'occasion.venueId'), get(ownProps, 'occasion.eventId')),
   })
 )(OccurenceForm)

@@ -69,31 +69,6 @@ class OccurenceManager extends Component {
             </thead>
             <tbody>
               {
-                occurences && occurences.map(o =>
-                  <OccurenceItem
-                    key={o.id}
-                    occasion={occasion}
-                    occurence={o}
-                    occurences={occurences}
-                  />
-                )
-              }
-            </tbody>
-            <thead>
-              <tr>
-                <td>Date</td>
-                <td>Heure de début</td>
-                <td>Heure de fin</td>
-                <td>Prix</td>
-                <td>Places (total)</td>
-                <td>Dont PMR</td>
-                <td>Supprimer</td>
-                <td>Modifier</td>
-                <td>Dupliquer J+1</td>
-              </tr>
-            </thead>
-            <tbody>
-              {
                 isAdding ? (<OccurenceForm
                   occasion={occasion}
                   onDeleteClick={e => this.setState({isAdding: false})}
@@ -105,7 +80,32 @@ class OccurenceManager extends Component {
                   </td></tr>
                 )
               }
+              {
+                occurences && occurences.map(o =>
+                  <OccurenceItem
+                    key={o.id}
+                    occasion={occasion}
+                    occurence={o}
+                    occurences={occurences}
+                  />
+                )
+              }
             </tbody>
+            {occurences.length > 12 && (
+              <thead>
+                <tr>
+                  <td>Date</td>
+                  <td>Heure de début</td>
+                  <td>Heure de fin</td>
+                  <td>Prix</td>
+                  <td>Places (total)</td>
+                  <td>Dont PMR</td>
+                  <td>Supprimer</td>
+                  <td>Modifier</td>
+                  <td>Dupliquer J+1</td>
+                </tr>
+              </thead>
+            )}
           </table>
         </div>
       </div>
