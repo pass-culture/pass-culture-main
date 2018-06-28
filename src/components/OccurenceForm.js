@@ -216,20 +216,18 @@ class OccurenceForm extends Component {
             className='is-small'
           />
         </td>
-        { false && (
-          <td>
-            <FormField
-              className='is-small'
-              collectionName="offers"
-              defaultValue={pmrGroupSize}
-              entityId={offerIdOrNew}
-              min={0}
-              name="pmrGroupSize"
-              placeholder="Laissez vide si pas de limite"
-              type="number"
-            />
-          </td>
-        )}
+        <td>
+          <FormField
+            className='is-small'
+            collectionName="offers"
+            defaultValue={pmrGroupSize}
+            entityId={offerIdOrNew}
+            min={0}
+            name="pmrGroupSize"
+            placeholder="Laissez vide si pas de limite"
+            type="number"
+          />
+        </td>
         <td>
           <button
             className="button is-secondary is-small"
