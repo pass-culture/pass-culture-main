@@ -33,21 +33,14 @@ def get_event_occurence(id):
 @login_or_api_key_required
 @expect_json_data
 def create_event_occurence():
-    print('request.json', request.json)
     ensure_can_be_updated(Event, request.json['eventId'])
 
     eo = EventOccurence(from_dict=request.json)
     venue = load_or_404(Venue, request.json['venueId'])
     ensure_current_user_has_rights(app.model.RightsType.editor,
                                    venue.managingOffererId)
+
     app.model.PcObject.check_and_save(eo)
-
-    print(eo.beginningDatetime)
-    offer = Offer(from_dict=request.json)
-    offer.eventOccurence = eo
-    offer.offererId = venue.managingOffererId
-    app.model.PcObject.check_and_save(offer)
-
     return jsonify(eo._asdict(include=EVENT_OCCURENCE_INCLUDES)), 201
 
 
@@ -64,11 +57,6 @@ def edit_event_occurence(id):
     #TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
     #TODO: Interdire la modification d'évenements passés
     app.model.PcObject.check_and_save(eo)
-
-    offer = Offer.query.filter_by(eventOccurenceId=eo.id)\
-                       .first_or_404()
-    update(offer, request.json)
-    app.model.PcObject.check_and_save(offer)
 
     return jsonify(eo._asdict(include=EVENT_OCCURENCE_INCLUDES)), 200
 
