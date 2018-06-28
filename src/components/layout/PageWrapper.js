@@ -4,10 +4,12 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
+import get from 'lodash.get'
 
 import withLogin from '../hocs/withLogin'
 import Header from './Header'
 import Icon from './Icon'
+import Loader from './Loader'
 import { showNotification, closeNotification } from '../../reducers/notification'
 import { requestData } from '../../reducers/data'
 
@@ -22,7 +24,6 @@ class PageWrapper extends Component {
 
   static defaultProps = {
     Tag: 'main',
-    handleDataRequest: () => {},
   }
 
 
@@ -54,38 +55,40 @@ class PageWrapper extends Component {
   }
 
   handleDataRequest = () => {
-    this.setState({
-      loading: true,
-    })
-    this.props.handleDataRequest(this.handleDataSuccess, this.handleDataError)
+    if (this.props.handleDataRequest) {
+      this.setState({
+        loading: true,
+      })
+      this.props.handleDataRequest(this.handleDataSuccess, this.handleDataFail)
+    }
   }
 
-  handleDataSuccess = () => {
+  handleDataSuccess = (state, action) => {
     this.setState({
       loading: false,
     })
   }
 
-  handleDataError = () => {
+  handleDataFail = (state, action) => {
     this.setState({
       loading: false,
     })
     this.props.showNotification({
       type: 'danger',
-      text: 'Erreur de chargement'
+      text: get(action, 'errors.global', []).join('\n') || 'Erreur de chargement'
     })
   }
 
   componentDidMount () {
     this.handleHistoryBlock()
-    this.handleDataRequest()
+    this.props.user && this.handleDataRequest()
   }
 
   componentDidUpdate (prevProps) {
     if (prevProps.blockers !== this.props.blockers) {
       this.handleHistoryBlock()
     }
-    if (prevProps.user !== this.props.user) {
+    if (!prevProps.user && this.props.user) { // User just loaded
       this.handleDataRequest()
     }
   }
@@ -146,7 +149,10 @@ class PageWrapper extends Component {
                   <Icon svg='ico-back' />{` ${backTo.label}`}
                 </NavLink>
               )}
-              {content}
+              <div className='pc-content'>
+                {content}
+              </div>
+              {loading && <Loader />}
             </div>
           </div>
         )}

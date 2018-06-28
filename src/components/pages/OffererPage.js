@@ -25,7 +25,6 @@ class OffererPage extends Component {
   constructor () {
     super()
     this.state = {
-      isLoading: false,
       isNew: false
     }
   }
@@ -37,30 +36,27 @@ class OffererPage extends Component {
     } = nextProps
     const offererId = get(offerer, 'id')
     const isNew = params.offererId === 'nouveau'
-    const isLoading = !(offererId || isNew)
     const method = isNew ? 'POST' : 'PATCH'
     return {
       apiPath: isNew ? `offerers/` : `offerers/${offererId}`,
-      isLoading,
       isNew,
       method,
       offererIdOrNew: isNew ? NEW : offererId
     }
   }
 
-  handleDataRequest = (handleSuccess, handleError) => {
+  handleDataRequest = (handleSuccess, handleFail) => {
     const {
       match: { params: { offererId } },
       requestData,
-      user
     } = this.props
     const { isNew } = this.state
-    user && !isNew && requestData(
+    !isNew && requestData(
       'GET',
       `offerers/${offererId}`,
       {
         handleSuccess,
-        handleError,
+        handleFail,
         key: 'offerers',
         normalizer: offererNormalizer
       }
@@ -105,7 +101,6 @@ class OffererPage extends Component {
 
     const {
       apiPath,
-      isLoading,
       isNew,
       method,
       offererIdOrNew,
@@ -114,7 +109,6 @@ class OffererPage extends Component {
     return (
       <PageWrapper
         backTo={{label: 'Vos structures', path: '/structures'}}
-        loading={isLoading}
         name='offerer'
         handleDataRequest={this.handleDataRequest}
       >

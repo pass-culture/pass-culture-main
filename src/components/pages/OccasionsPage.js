@@ -5,6 +5,7 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
+import InfiniteScroller from '../layout/InfiniteScroller'
 import Icon from '../layout/Icon'
 import Search from '../layout/Search'
 import PageWrapper from '../layout/PageWrapper'
@@ -18,14 +19,15 @@ import { occasionNormalizer } from '../../utils/normalizers'
 
 class OccasionsPage extends Component {
 
-  handleDataRequest = (handleSuccess, handleError) => {
+  handleDataRequest = (handleSuccess, handleFail, page=1) => {
     const {
       lieu,
       requestData,
       structure,
-      user
+      user,
+      types,
     } = this.props
-    let apiPath = 'occasions'
+    let apiPath = 'occasions?'
     if (lieu) {
       apiPath = `${apiPath}?venueId=${lieu}`
     } else if (structure) {
@@ -33,14 +35,14 @@ class OccasionsPage extends Component {
     }
     user && requestData(
       'GET',
-      apiPath,
+      `${apiPath}&page=${page}`,
       {
         handleSuccess,
-        handleError,
+        handleFail,
         normalizer: occasionNormalizer
       }
     )
-    requestData('GET', 'types')
+    types.length === 0 && requestData('GET', 'types')
   }
 
   render() {
@@ -88,13 +90,12 @@ class OccasionsPage extends Component {
         </div>
 
         {
-          <div className='section load-wrapper'>
-            <ul className='occasions-list pc-list'>
-              {
-                occasions.map(o =>
-                  <OccasionItem key={o.id} occasion={o} />)
-              }
-            </ul>
+          <div className='section'>
+            <InfiniteScroller className='occasions-list pc-list' handleLoadMore={this.handleDataRequest}>
+              { occasions.map(o =>
+                <OccasionItem key={o.id} occasion={o} />
+              )}
+            </InfiniteScroller>
           </div>
         }
       </PageWrapper>
@@ -119,6 +120,7 @@ export default compose(
         offerer: offererSelector(state, structure),
         structure,
         user: state.user,
+        types: state.data.types,
         venue: venueSelector(state, lieu)
       }
     },

@@ -61,7 +61,7 @@ class VenuePage extends Component {
     }
   }
 
-  handleDataRequest = (handleSuccess, handleError) => {
+  handleDataRequest = (handleSuccess, handleFail) => {
     const {
       match: { params: { offererId } },
       requestData,
@@ -80,7 +80,7 @@ class VenuePage extends Component {
         `offerers/${offererId}/venues`,
         {
           handleSuccess,
-          handleError,
+          handleFail,
           key: 'venues',
           normalizer: {
             eventOccurences: {
