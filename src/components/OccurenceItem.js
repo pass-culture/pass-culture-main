@@ -24,7 +24,7 @@ class OccurenceItem extends Component {
   }
 
   onDuplicateClick = () => {
-
+    // TODO
   }
 
   onDeleteClick = () => {
