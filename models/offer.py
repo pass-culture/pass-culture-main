@@ -89,18 +89,6 @@ class Offer(app.model.PcObject,
     def object(self):
         return self.thing or self.eventOccurence
 
-    def _asdict(self, **options):
-        if 'venueTz' in options\
-           and options['venueTz']:
-            venue = None
-            if self.eventOccurence is not None:
-                venue = self.eventOccurence.venue
-            elif self.venue is not None:
-                venue = self.venue
-            options['timezone'] = 'UTC-3' if venue.departementCode == '97'\
-                                          else 'Europe/Paris'
-        return super()._asdict(**options)
-
 app.model.Offer = Offer
 
 
