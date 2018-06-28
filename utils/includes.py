@@ -11,6 +11,10 @@ OFFERERS_INCLUDES = [
     "isValidated"
 ]
 
+EVENT_OCCURENCE_INCLUDES = [
+    'offer'
+]
+
 EVENT_INCLUDES = [
     {
         "key": "occurences",
@@ -191,6 +195,7 @@ VENUE_PROVIDER_INCLUDES = [
 includes = {
     'bookings': BOOKINGS_INCLUDES,
     'events': EVENT_INCLUDES,
+    'eventOccurences': EVENT_OCCURENCE_INCLUDES,
     'occasions': OCCASION_INCLUDES,
     'offerers': OFFERERS_INCLUDES,
     'offers': OFFERS_INCLUDES,
