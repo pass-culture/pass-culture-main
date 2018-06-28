@@ -11,7 +11,7 @@ from utils.human_ids import dehumanize
 from utils.compose import compose
 from utils.content import get_mediation, get_source
 from utils.distance import distance
-from utils.includes import RECOMMENDATIONS_INCLUDES
+from utils.includes import RECOMMENDATION_INCLUDES
 
 Booking = app.model.Booking
 Event = app.model.Event
@@ -74,7 +74,7 @@ def score_event(event, departement_codes):
                                                  (EventOccurence.beginningDatetime > datetime.now())).first()
     if next_occurence is None:
         return None
-    
+
     # If the next occurence of an event is less than 10 days away,
     # it gets one more point for each day closer it is to now
     score += max(0, 10 - (next_occurence.beginningDatetime - datetime.now()).days)

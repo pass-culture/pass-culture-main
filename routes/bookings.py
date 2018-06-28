@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from sqlalchemy.exc import InternalError
 
 from models.api_errors import ApiErrors
-from utils.includes import BOOKINGS_INCLUDES
+from utils.includes import BOOKING_INCLUDES
 from utils.mailing import send_booking_recap_emails
 from utils.rest import expect_json_data
 from utils.token import random_token
@@ -19,14 +19,14 @@ Offer = app.model.Offer
 def get_bookings():
     bookings = Booking.query.filter_by(userId=current_user.id).all()
     print(bookings)
-    return jsonify([booking._asdict(include=BOOKINGS_INCLUDES)
+    return jsonify([booking._asdict(include=BOOKING_INCLUDES)
                     for booking in bookings]), 200
 
 @app.route('/bookings/<booking_id>', methods=['GET'])
 @login_required
 def get_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
-    return jsonify(booking._asdict(include=BOOKINGS_INCLUDES)), 200
+    return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
 
 @app.route('/bookings', methods=['POST'])
 @login_required
@@ -84,4 +84,4 @@ def post_booking():
 
     send_booking_recap_emails(app.model.Offer.query.get(new_booking.offerId),
                               new_booking)
-    return jsonify(new_booking._asdict(include=BOOKINGS_INCLUDES)), 201
+    return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201

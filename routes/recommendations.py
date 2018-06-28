@@ -13,7 +13,7 @@ from utils.rest import expect_json_data
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
                          BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize, humanize
-from utils.includes import RECOMMENDATIONS_INCLUDES,\
+from utils.includes import RECOMMENDATION_INCLUDES,\
                            RECOMMENDATION_OFFER_INCLUDES
 from utils.rest import expect_json_data,\
                        update
@@ -171,7 +171,7 @@ def put_recommendations():
     # clients (or at least those who do use the app) have
     # a recent version of the app
 
-    dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATIONS_INCLUDES),
+    dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATION_INCLUDES),
                           recos))
 
     for index, reco in enumerate(dict_recos):

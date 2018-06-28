@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
-from utils.includes import OFFERERS_INCLUDES, VENUES_INCLUDES
+from utils.includes import OFFERER_INCLUDES, VENUE_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email
 from utils.rest import expect_json_data,\
                        handle_rest_get_list,\
@@ -30,7 +30,7 @@ def list_offerers():
                      .filter_by(user=current_user)
     return handle_rest_get_list(Offerer,
                                 query=query,
-                                include=OFFERERS_INCLUDES)
+                                include=OFFERER_INCLUDES)
 
 
 @app.route('/offerers/<id>/venues', methods=['GET'])
@@ -40,7 +40,7 @@ def list_offerers_venues(id):
     for offerer in current_user.offerers:
         if offerer.id == dehumanize_id:
             venues = [
-                o._asdict(include=VENUES_INCLUDES)
+                o._asdict(include=VENUE_INCLUDES)
                 for o in offerer.managedVenues
             ]
             return jsonify(venues), 200
@@ -55,7 +55,7 @@ def get_offerer(id):
     dehumanize_id = dehumanize(id)
     for offerer in current_user.offerers:
         if offerer.id == dehumanize_id:
-            return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 200
+            return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
     e = ApiErrors()
     e.addError('global', "Cette structure n'est pas enregistrée chez cet utilisateur.")
     return jsonify(e.errors), 400
@@ -72,7 +72,7 @@ def create_offerer():
     offerer.isActive = False
     app.model.PcObject.check_and_save(offerer, user_offerer)
     maybe_send_offerer_validation_email(current_user, offerer)
-    return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 201
+    return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 201
 
 
 @app.route('/offerers/<offererId>', methods=['PATCH'])
@@ -83,4 +83,4 @@ def patch_offerer(offererId):
                        .query.filter_by(id=dehumanize(offererId))
     update(offerer, request.json)
     app.model.PcObject.check_and_save(offerer)
-    return jsonify(offerer._asdict(include=OFFERERS_INCLUDES)), 200
+    return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
