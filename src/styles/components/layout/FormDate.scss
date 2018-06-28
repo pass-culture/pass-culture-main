@@ -1,0 +1,15 @@
+.date-picker {
+
+  .react-datepicker__day {
+    border-radius: 50%;
+    &--highlighted {
+      background-color: $grey-lighter;
+      color: $text;
+    }
+
+    &--selected {
+      background-color: $primary;
+    }
+  }
+
+}

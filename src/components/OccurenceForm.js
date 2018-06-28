@@ -8,6 +8,7 @@ import SubmitButton from './layout/SubmitButton'
 import createEventSelector from '../selectors/createEvent'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
+import createOccurencesSelector from '../selectors/createOccurences'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -78,7 +79,6 @@ class OccurenceForm extends Component {
       time,
       endTime
     } = this.state
-    console.log("OC", occurence)
     const eventOccurenceIdOrNew = id || NEW
 
     return (
@@ -117,7 +117,7 @@ class OccurenceForm extends Component {
             type="time"
           />
         </td>
-        <td>
+        <td title='Vide si gratuit'>
           <FormField
             collectionName="eventOccurences"
             entityId={eventOccurenceIdOrNew}
@@ -130,7 +130,7 @@ class OccurenceForm extends Component {
             placeholder='Vide si gratuit'
           />
         </td>
-        <td>
+        <td title='Laissez vide si pas de limite'>
           <FormField
             collectionName="eventOccurences"
             entityId={eventOccurenceIdOrNew}
@@ -142,20 +142,24 @@ class OccurenceForm extends Component {
             defaultValue={available}
           />
         </td>
-        { false && (
-          <td>
-            <FormField
-              collectionName="eventOccurences"
-              entityId={eventOccurenceIdOrNew}
-              min={0}
-              name="pmrGroupSize"
-              placeholder="Laissez vide si pas de limite"
-              type="number"
-              className='is-small'
-              defaultValue={pmrGroupSize}
-            />
-          </td>
-        )}
+        <td title='Laissez vide si pas de limite'>
+          <FormField
+            collectionName="eventOccurences"
+            entityId={eventOccurenceIdOrNew}
+            min={0}
+            name="pmrGroupSize"
+            placeholder="Laissez vide si pas de limite"
+            type="number"
+            className='is-small'
+            defaultValue={pmrGroupSize}
+          />
+        </td>
+        <td>
+          <button
+            className="button is-secondary is-small"
+            onClick={e => onDeleteClick && onDeleteClick(e)}
+          >Annuler</button>
+        </td>
         <td>
           <SubmitButton
             className="button is-primary is-small"
@@ -184,7 +188,7 @@ class OccurenceForm extends Component {
             }}
             getIsDisabled={form => getIsDisabled(
               get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
-              ['date', 'time', 'endTime', 'available', 'price'],
+              ['date', 'time', 'endTime'],
               !occurence
             )}
             handleSuccess={e => onDeleteClick && onDeleteClick()}
@@ -196,12 +200,7 @@ class OccurenceForm extends Component {
             Enregistrer
           </SubmitButton>
         </td>
-        <td>
-          <button
-            className="delete is-small"
-            onClick={e => onDeleteClick && onDeleteClick(e)}
-          />
-        </td>
+        <td></td>
       </tr>
     )
   }
@@ -209,12 +208,14 @@ class OccurenceForm extends Component {
 
 const eventSelector = createEventSelector()
 const venueSelector = createVenueSelector()
+const occurencesSelector = createOccurencesSelector()
 const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(
   (state, ownProps) => ({
     event: eventSelector(state, get(ownProps, 'occasion.eventId')),
     venue: venueSelector(state, get(ownProps, 'occasion.venueId')),
-    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
+    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId')),
+    occurences: occurencesSelector(state, get(ownProps, 'occasion.venueId'), get(ownProps, 'occasion.eventId')),
   })
 )(OccurenceForm)

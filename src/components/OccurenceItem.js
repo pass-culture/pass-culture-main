@@ -23,6 +23,10 @@ class OccurenceItem extends Component {
     this.setState({ isEditing: true })
   }
 
+  onDuplicateClick = () => {
+    // TODO
+  }
+
   onDeleteClick = () => {
     const {
       occurence,
@@ -83,7 +87,15 @@ class OccurenceItem extends Component {
         <td>{endDatetimeMomentTz.format('HH:mm')}</td>
         <td><Price value={get(offer, '0.price') || 0} /></td>
         <td>{get(offer, '0.available') || 'Illimité'}</td>
-        {false && (<td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>)}
+        <td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>
+        <td>
+          <button
+            className="button is-small is-secondary"
+            onClick={this.onDeleteClick}
+          >
+            <span className='icon'><Icon svg='ico-close-r' /></span>
+          </button>
+        </td>
         <td>
           <button
             className="button is-small is-secondary"
@@ -93,10 +105,12 @@ class OccurenceItem extends Component {
         </td>
         <td>
           <button
-            className="delete is-small"
-            onClick={this.onDeleteClick}
-          />
+            className="button is-small is-secondary"
+            onClick={this.onDuplicateClick}>
+            <span className='icon'><Icon svg='ico-offres-r' /></span>
+          </button>
         </td>
+
       </tr>
     )
   }
