@@ -25,15 +25,18 @@ class OccurenceItem extends Component {
 
   onDeleteClick = () => {
     const {
-      id,
-      offer,
+      occurence,
       requestData
     } = this.props
+    const {
+      id,
+      offer
+    } = occurence
     requestData(
       'DELETE',
       `eventOccurences/${id}`,
       {
-        key: 'eventOccurence',
+        key: 'eventOccurences',
         handleSuccess: () => {
           requestData(
             'DELETE',
@@ -79,8 +82,8 @@ class OccurenceItem extends Component {
         <td>{beginningDatetimeMomentTz.format('HH:mm')}</td>
         <td>{endDatetimeMomentTz.format('HH:mm')}</td>
         <td><Price value={get(offer, '0.price') || 0} /></td>
-        <td>{get(offer, '0.groupSize') || 'Illimité'}</td>
-        <td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>
+        <td>{get(offer, '0.available') || 'Illimité'}</td>
+        {false && (<td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>)}
         <td>
           <button
             className="button is-small is-secondary"

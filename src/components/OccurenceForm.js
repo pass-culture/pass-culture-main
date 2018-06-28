@@ -58,12 +58,15 @@ class OccurenceForm extends Component {
     } = this.props
     const {
       id,
-      price,
       beginningDatetime,
       endDatetime,
-      groupSize,
-      pmrGroupSize
+      offer,
     } = occurence || {}
+    const {
+      price,
+      available,
+      pmrGroupSize
+    } = get(offer, '0') || {}
     const {
       durationMinutes,
     } = (occasion || {})
@@ -75,6 +78,7 @@ class OccurenceForm extends Component {
       time,
       endTime
     } = this.state
+    console.log("OC", occurence)
     const eventOccurenceIdOrNew = id || NEW
 
     return (
@@ -131,25 +135,27 @@ class OccurenceForm extends Component {
             collectionName="eventOccurences"
             entityId={eventOccurenceIdOrNew}
             min={0}
-            name="groupSize"
+            name="available"
             placeholder="Laissez vide si pas de limite"
             type="number"
             className='is-small'
-            defaultValue={groupSize}
+            defaultValue={available}
           />
         </td>
-        <td>
-          <FormField
-            collectionName="eventOccurences"
-            entityId={eventOccurenceIdOrNew}
-            min={0}
-            name="pmrGroupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-            className='is-small'
-            defaultValue={pmrGroupSize}
-          />
-        </td>
+        { false && (
+          <td>
+            <FormField
+              collectionName="eventOccurences"
+              entityId={eventOccurenceIdOrNew}
+              min={0}
+              name="pmrGroupSize"
+              placeholder="Laissez vide si pas de limite"
+              type="number"
+              className='is-small'
+              defaultValue={pmrGroupSize}
+            />
+          </td>
+        )}
         <td>
           <SubmitButton
             className="button is-primary is-small"
@@ -178,7 +184,7 @@ class OccurenceForm extends Component {
             }}
             getIsDisabled={form => getIsDisabled(
               get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
-              ['date', 'time', 'endTime'],
+              ['date', 'time', 'endTime', 'available', 'price'],
               !occurence
             )}
             handleSuccess={e => onDeleteClick && onDeleteClick()}

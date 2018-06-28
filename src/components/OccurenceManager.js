@@ -1,10 +1,13 @@
 import get from 'lodash.get'
+import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
+import { mergeForm } from '../reducers/form'
 import createOccurencesSelector from '../selectors/createOccurences'
+import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
   constructor () {
@@ -15,6 +18,28 @@ class OccurenceManager extends Component {
   }
 
   onAddClick = () => {
+    const {
+      mergeForm,
+      occurences,
+    } = this.props
+
+    const lastOccurence = occurences.length > 0 && occurences[occurences.length-1]
+    if (lastOccurence) {
+      const date = moment(lastOccurence.beginningDatetime).add(1, 'days')
+      console.log(lastOccurence)
+      mergeForm('eventOccurences',
+                NEW,
+                {
+                  date: date,
+                  time: date.format('HH:mm'),
+                  endTime: moment(lastOccurence.endDatetime).add(1, 'days').format('HH:mm'),
+                  groupSize: get(lastOccurence, 'offer.0.groupSize'),
+                  pmrGroupSize: get(lastOccurence, 'offer.0.pmrGroupSize'),
+                  price: get(lastOccurence, 'offer.0.price'),
+                }
+               )
+    }
+
     this.setState({ isAdding: true })
   }
 
@@ -35,7 +60,7 @@ class OccurenceManager extends Component {
               <td>Heure de fin</td>
               <td>Prix</td>
               <td>Nombre de places total</td>
-              <td>Nombre de places Personnes à Mobilité Réduite (PMR)</td>
+              { false && (<td>Nombre de places Personnes à Mobilité Réduite (PMR)</td>) }
               <td></td>
               <td></td>
             </tr>
@@ -79,5 +104,6 @@ export default connect(
      get(ownProps, 'occasion.venueId'),
      get(ownProps, 'occasion.eventId')
    )
- })
+ }),
+  { mergeForm }
 )(OccurenceManager)
