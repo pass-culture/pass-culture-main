@@ -8,6 +8,7 @@ import { compose } from 'redux'
 import withLogin from '../hocs/withLogin'
 import Header from './Header'
 import Icon from './Icon'
+import Loader from './Loader'
 import { showNotification, closeNotification } from '../../reducers/notification'
 import { requestData } from '../../reducers/data'
 
@@ -22,7 +23,6 @@ class PageWrapper extends Component {
 
   static defaultProps = {
     Tag: 'main',
-    handleDataRequest: () => {},
   }
 
 
@@ -54,10 +54,12 @@ class PageWrapper extends Component {
   }
 
   handleDataRequest = () => {
-    this.setState({
-      loading: true,
-    })
-    this.props.handleDataRequest(this.handleDataSuccess, this.handleDataError)
+    if (this.props.handleDataRequest) {
+      this.setState({
+        loading: true,
+      })
+      this.props.handleDataRequest(this.handleDataSuccess, this.handleDataError)
+    }
   }
 
   handleDataSuccess = () => {
@@ -146,7 +148,10 @@ class PageWrapper extends Component {
                   <Icon svg='ico-back' />{` ${backTo.label}`}
                 </NavLink>
               )}
-              {content}
+              <div className='pc-content'>
+                {content}
+              </div>
+              {loading && <Loader />}
             </div>
           </div>
         )}

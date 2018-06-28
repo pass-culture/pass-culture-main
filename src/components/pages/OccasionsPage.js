@@ -19,7 +19,7 @@ import { occasionNormalizer } from '../../utils/normalizers'
 
 class OccasionsPage extends Component {
 
-  handleDataRequest = (handleSuccess, handleError, page=0) => {
+  handleDataRequest = (handleSuccess, handleError, page=1) => {
     const {
       lieu,
       requestData,
@@ -33,7 +33,6 @@ class OccasionsPage extends Component {
     } else if (structure) {
       apiPath = `${apiPath}?offererId=${structure}`
     }
-    console.log('called', page, user,)
     user && requestData(
       'GET',
       `${apiPath}&page=${page}`,

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import classnames from 'classnames'
 
+import Loader from './Loader'
+
 const UP = 'up'
 const DOWN = 'down'
 
@@ -13,7 +15,7 @@ class InfiniteScroller extends Component {
       isLoading: false,
       isFinished: false,
       lastScrollTop: 0,
-      loadCounts: 1, // First one is at page level
+      loadCounts: 2, // First one is at page level and count starts at 1
     }
   }
 
@@ -21,7 +23,9 @@ class InfiniteScroller extends Component {
     Tag: 'ul',
     loadScrollRatio: 0.9,
     scrollingElement: document.documentElement,
-    loadingInfo: <li>Chargement ...</li>
+    renderLoading: () => <Loader Tag='li' style={{justifyContent: 'center'}} />,
+    renderFinished: () => <li style={{justifyContent: 'center'}}>C'est fini !</li>,
+    renderErrors: errors => <li className='notification is-danger'>{errors.join(' ')}</li>,
   }
 
   scrollWatch = e => {
@@ -45,8 +49,6 @@ class InfiniteScroller extends Component {
     const scrollDirection = this.state.lastScrollTop > scrollTop ? UP : DOWN
     const shouldLoadMore = !isFinished && !isLoading && scrollDirection === DOWN && pageScrollRatio > loadScrollRatio
 
-    console.log('scrolling', pageScrollRatio, scrollDirection)
-
     this.setState({
       isLoading: shouldLoadMore,
       lastScrollTop: scrollTop,
@@ -56,7 +58,6 @@ class InfiniteScroller extends Component {
   }
 
   loadSuccess = (state, action) => {
-    console.log(state, action)
     this.setState({
       isLoading: false,
       isFinished: action.data.length === 0,
@@ -64,7 +65,6 @@ class InfiniteScroller extends Component {
   }
 
   loadError = (state, action) => {
-    console.log(state, action)
     this.setState({
       isLoading: false,
       errors: action.errors,
@@ -86,16 +86,22 @@ class InfiniteScroller extends Component {
     const {
       children,
       className,
-      loadingInfo,
+      renderErrors,
+      renderLoading,
+      renderFinished,
       Tag,
     } = this.props
     const {
-      isLoading
+      errors,
+      isFinished,
+      isLoading,
     } = this.state
     return (
       <Tag className={classnames('infinite-scroller', className)}>
         {children}
-        { isLoading && loadingInfo }
+        { isLoading && renderLoading() }
+        { isFinished && renderFinished()}
+        { errors && renderErrors(errors) }
       </Tag>
     )
   }
