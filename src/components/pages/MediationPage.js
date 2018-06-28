@@ -53,7 +53,7 @@ class MediationPage extends Component {
     imageUploadBorder: 25,
   }
 
-  handleDataRequest = (handleSuccess, handleError) => {
+  handleDataRequest = (handleSuccess, handleFail) => {
     const {
       match: { params: { mediationId } },
       requestData,
@@ -65,7 +65,7 @@ class MediationPage extends Component {
       `mediations/${mediationId}`,
       {
         handleSuccess,
-        handleError,
+        handleFail,
         key: 'mediations',
         normalizer: mediationNormalizer
       }

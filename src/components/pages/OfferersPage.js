@@ -12,7 +12,7 @@ import { requestData } from '../../reducers/data'
 
 class OfferersPage extends Component {
 
-  handleDataRequest = (handleSuccess, handleError) => {
+  handleDataRequest = (handleSuccess, handleFail) => {
     const {
       requestData,
     } = this.props
@@ -21,7 +21,7 @@ class OfferersPage extends Component {
       'offerers',
       {
         handleSuccess,
-        handleError,
+        handleFail,
         normalizer: {
           managedVenues: {
             key: 'venues',

@@ -79,17 +79,12 @@ class OccasionPage extends Component {
     }
   }
 
-  handleDataRequest = (handleSuccess, handleError) => {
+  handleDataRequest = (handleSuccess, handleFail) => {
     const {
       history,
       requestData,
       showModal,
-      user
     } = this.props
-
-    if (!user) {
-      return
-    }
 
     requestData(
       'GET',
@@ -105,9 +100,9 @@ class OccasionPage extends Component {
                 onCloseClick: () => history.push('/structures')
               })
           }
-          handleSuccess()
+          handleSuccess(state, action)
         },
-        handleError,
+        handleFail,
         normalizer: { managedVenues: 'venues' }
       }
     )

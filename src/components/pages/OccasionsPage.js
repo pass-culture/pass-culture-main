@@ -19,7 +19,7 @@ import { occasionNormalizer } from '../../utils/normalizers'
 
 class OccasionsPage extends Component {
 
-  handleDataRequest = (handleSuccess, handleError, page=1) => {
+  handleDataRequest = (handleSuccess, handleFail, page=1) => {
     const {
       lieu,
       requestData,
@@ -38,7 +38,7 @@ class OccasionsPage extends Component {
       `${apiPath}&page=${page}`,
       {
         handleSuccess,
-        handleError,
+        handleFail,
         normalizer: occasionNormalizer
       }
     )
