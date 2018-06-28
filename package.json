@@ -52,7 +52,7 @@
     "react": "^0.14||^15.5.4||^16.1.1",
     "react-autosize-textarea": "^4.0.0",
     "react-avatar-editor": "augnustin/react-avatar-editor#pass-culture",
-    "react-dates": "^16.6.1",
+    "react-datepicker": "^1.5.0",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^0.14||^15.5.4||^16.1.1",
     "react-dotdotdot": "^1.2.3",

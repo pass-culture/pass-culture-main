@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { Component } from 'react'
-import { SingleDatePicker } from 'react-dates'
+import DatePicker from 'react-datepicker'
 import { connect } from 'react-redux'
 
 import Icon from './Icon'
@@ -37,22 +37,12 @@ class FormDate extends Component {
     console.log('')
     return (
       <div className="input-field date-picker">
-        <SingleDatePicker
-          customInputIcon={<Icon svg="ico-calendar" alt="calendrier" />}
-          customCloseIcon={<Icon svg='ico-close-b' alt="Fermer" />}
-          date={value || defaultValue}
-          displayFormat="LL"
-          focused={focused}
-          initialVisibleMonth={() => moment.min(availableDates || [])}
-          inputIconPosition="after"
-          isDayBlocked={date => date && availableDates &&
-            !availableDates.find(d => d.isSame(date, 'day'))
-          }
-          isDayHighlighted={date => (highlightedDates || []).find(d => d.isSame(date, 'day'))}
-          noBorder={true}
-          numberOfMonths={1}
-          onDateChange={this.handleDateSelect}
-          onFocusChange={({ focused }) => this.setState({ focused })}
+        <DatePicker
+          selected={value || defaultValue}
+          onChange={this.handleDateSelect}
+          className='input is-rounded is-small'
+          minDate={moment()}
+          highlightDates={highlightedDates || []}
         />
       </div>
     )

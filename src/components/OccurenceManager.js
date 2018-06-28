@@ -51,46 +51,63 @@ class OccurenceManager extends Component {
     const { isAdding } = this.state
 
     return (
-      <div>
-        <table className='table is-striped is-hoverable occurence-table'>
-          <thead>
-            <tr>
-              <td>Date</td>
-              <td>Heure de début</td>
-              <td>Heure de fin</td>
-              <td>Prix</td>
-              <td>Nombre de places total</td>
-              { false && (<td>Nombre de places Personnes à Mobilité Réduite (PMR)</td>) }
-              <td></td>
-              <td></td>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              occurences && occurences.map(o =>
-                <OccurenceItem
-                  key={o.id}
+      <div className='occurence-manager'>
+        <div className='occurence-table-wrapper'>
+          <table className='table is-hoverable occurence-table'>
+            <thead>
+              <tr>
+                <td>Date</td>
+                <td>Heure de début</td>
+                <td>Heure de fin</td>
+                <td>Prix</td>
+                <td>Places (total)</td>
+                <td>Dont PMR</td>
+                <td>Supprimer</td>
+                <td>Modifier</td>
+                <td>Dupliquer J+1</td>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                occurences && occurences.map(o =>
+                  <OccurenceItem
+                    key={o.id}
+                    occasion={occasion}
+                    occurence={o}
+                    occurences={occurences}
+                  />
+                )
+              }
+            </tbody>
+            <thead>
+              <tr>
+                <td>Date</td>
+                <td>Heure de début</td>
+                <td>Heure de fin</td>
+                <td>Prix</td>
+                <td>Places (total)</td>
+                <td>Dont PMR</td>
+                <td>Supprimer</td>
+                <td>Modifier</td>
+                <td>Dupliquer J+1</td>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                isAdding ? (<OccurenceForm
                   occasion={occasion}
-                  occurence={o}
-                  occurences={occurences}
-                />
-              )
-            }
-            {
-              isAdding && <OccurenceForm
-                occasion={occasion}
-                onDeleteClick={e => this.setState({isAdding: false})}
-              />
-            }
-          </tbody>
-        </table>
-        {
-          !isAdding && (
-            <button className='button is-secondary' onClick={this.onAddClick}>
-              + Ajouter un horaire
-            </button>
-          )
-        }
+                  onDeleteClick={e => this.setState({isAdding: false})}
+                />) : (
+                  <tr><td colspan='10'>
+                    <button className='button is-secondary' onClick={this.onAddClick}>
+                      + Ajouter un horaire
+                    </button>
+                  </td></tr>
+                )
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     )
   }
