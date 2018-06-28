@@ -83,15 +83,20 @@ class OccurenceItem extends Component {
       occasion,
       occurences,
       occurence,
+      offer,
       tz
     } = this.props
     const {
       beginningDatetimeMoment,
-      endDatetimeMoment,
-      offer
+      endDatetimeMoment
     } = (occurence || {})
-    const beginningDatetimeMomentTz = beginningDatetimeMoment.clone().tz(tz)
-    const endDatetimeMomentTz = endDatetimeMoment.clone().tz(tz)
+    const {
+      available,
+      groupSize,
+      pmrGroupSize,
+      price
+    } = (offer || {})
+
     const {
       date,
       endTime,
@@ -113,9 +118,9 @@ class OccurenceItem extends Component {
         <td>{date}</td>
         <td>{time}</td>
         <td>{endTime}</td>
-        <td><Price value={get(offer, '0.price') || 0} /></td>
-        <td>{get(offer, '0.available') || 'Illimité'}</td>
-        <td>{get(offer, '0.pmrGroupSize') || 'Illimité'}</td>
+        <td><Price value={price || 0} /></td>
+        <td>{available || 'Illimité'}</td>
+        <td>{pmrGroupSize || 'Illimité'}</td>
         <td>
           <button
             className="button is-small is-secondary"
@@ -148,7 +153,7 @@ export default connect(
   () => {
     const offerSelector = createOfferSelector()
     return (state, ownProps) => ({
-      offer: offerSelector(state, get(ownProps, 'occurence.offerId')),
+      offer: offerSelector(state, get(ownProps, 'occurence.id')),
       tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
     })
   },

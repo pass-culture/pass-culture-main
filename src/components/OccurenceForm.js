@@ -85,11 +85,16 @@ class OccurenceForm extends Component {
   handleSuccessData = (state, action) => {
     const {
       form,
+      history,
       method,
+      occasion,
       onEditChange,
       requestData,
       venue
     } = this.props
+    const {
+      id
+    } = (occasion || {})
     const {
       offerIdOrNew
     } = this.state
@@ -115,6 +120,7 @@ class OccurenceForm extends Component {
     } else {
       onEditChange && onEditChange(false)
     }
+    history.push(`/offres/${id}/dates`)
   }
 
   render () {
@@ -326,12 +332,17 @@ const occurencesSelector = createOccurencesSelector()
 const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(
-  (state, ownProps) => ({
-    form: state.form,
-    event: eventSelector(state, get(ownProps, 'occasion.eventId')),
-    offer: offerSelector(state, get(ownProps, 'occurence.offerId')),
-    venue: venueSelector(state, get(ownProps, 'occasion.venueId')),
-    tz: timezoneSelector(state, get(ownProps, 'occasion.venueId')),
-    occurences: occurencesSelector(state, get(ownProps, 'occasion.venueId'), get(ownProps, 'occasion.eventId')),
-  })
+  (state, ownProps) => {
+    const eventId = get(ownProps, 'occasion.eventId')
+    const occurenceId = get(ownProps, 'occurence.id')
+    const venueId = get(ownProps, 'occasion.venueId')
+    return {
+      form: state.form,
+      event: eventSelector(state, eventId),
+      offer: offerSelector(state, occurenceId),
+      venue: venueSelector(state, venueId),
+      tz: timezoneSelector(state, venueId),
+      occurences: occurencesSelector(state, venueId, eventId),
+    }
+  }
 )(OccurenceForm)

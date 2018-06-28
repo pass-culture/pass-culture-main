@@ -2,6 +2,7 @@ import { createSelector } from 'reselect'
 
 export default () => createSelector(
   state => state.data.offers,
-  (state, offerId) => offerId,
-  (offers, offerId) => offers.find(offer => offer.id === offerId)
+  (state, eventOccurenceId) => eventOccurenceId,
+  (offers, eventOccurenceId) => offers.find(offer =>
+    offer.eventOccurenceId === eventOccurenceId)
 )
