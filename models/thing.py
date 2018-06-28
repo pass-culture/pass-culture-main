@@ -47,7 +47,7 @@ class Thing(app.model.PcObject,
                    primary_key=True,
                    autoincrement=True)
 
-    type = db.Column(db.Enum(ThingType),
+    type = db.Column(db.String(50),
                      db.CheckConstraint("\"type\" <> 'Book' OR \"extraData\"->>'prix_livre' SIMILAR TO '[0-9]+(.[0-9]*|)'",
                                         name='check_thing_book_has_price'),
                      db.CheckConstraint("\"type\" <> 'Book' OR NOT \"extraData\"->'author' IS NULL",

@@ -54,7 +54,7 @@ class Event(app.model.PcObject,
     id = db.Column(db.BigInteger,
                    primary_key=True)
 
-    type = db.Column(db.Enum(app.model.EventType),
+    type = db.Column(db.String(50),
                      nullable=True)
 
     name = db.Column(db.String(140), nullable=False)
