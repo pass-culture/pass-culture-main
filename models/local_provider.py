@@ -177,6 +177,10 @@ class LocalProvider(Iterator):
             self.updatedObjects += 1
         try:
             self.updateObject(obj)
+            # FIXME: keep this until we make type an ENUM again
+            if isinstance(obj, app.model.Thing)\
+               or isinstance(obj, app.model.Event):
+                obj.type = str(obj.type)
             obj.dateModifiedAtLastProvider = providable_info.dateModifiedAtProvider
             obj.lastProvider = self.dbObject
             if self.venueProvider is not None:
