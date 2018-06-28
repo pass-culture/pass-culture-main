@@ -1,12 +1,17 @@
 from flask import current_app as app, request
+from flask import jsonify
 from utils.mailing import send_dev_email
-from utils.rest import expect_json_data
+from pprint import pformat
 
-
-@app.route('/client_errors', methods=['POST'])
-@expect_json_data
+@app.route('/api/client_errors/store', methods=['POST'])
 def post_error():
-    send_dev_email("Client JS error",
-                   "<html><body><pre>"
-                   + request.json()
-                   + "</pre></body></html>")
+    data = request.get_json(force=True)
+    if data is None:
+        return "JSON data expected", 400
+    else:
+        send_dev_email("Client JS error",
+                       "<html><body><pre>"
+                       + pformat(data)
+                       + "</pre></body></html>")
+
+    return 'Email correctly send to dev with client error data'

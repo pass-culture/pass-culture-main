@@ -169,6 +169,10 @@ def maybe_send_offerer_validation_email(user, *objects_to_validate):
              'Html-part': email_html,
              'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING
                     else 'passculture@beta.gouv.fr'
+           }
+    mailjet_result = mailjet.send.create(data=email)
+    if mailjet_result.status_code != 200:
+        raise Exception(": "+pformat(vars(mailjet_result)))
 
 def send_dev_email(subject, html_text):
     mailjet = init_mailjet()
@@ -177,7 +181,7 @@ def send_dev_email(subject, html_text):
              'FromEmail': 'passculture-dev@beta.gouv.fr',
              'Subject': subject,
              'Html-part': html_text,
-             'To': ['passculture-dev@beta.gouv.fr']
+             'To': 'passculture-dev@beta.gouv.fr'
            }
     mailjet_result = mailjet.send.create(data=email)
     if mailjet_result.status_code != 200:
