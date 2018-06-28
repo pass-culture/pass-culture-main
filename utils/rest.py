@@ -126,6 +126,16 @@ def ensure_current_user_has_rights(rights, offererId):
     if not current_user.hasRights(rights, offererId):
         abort(403)
 
+def ensure_can_be_updated(model, id):
+    element = load_or_404(model, id)
+    if element.lastProvider:
+        errors = ApiErrors()
+        errors.addError(
+            'global',
+            'not allowed because data come from provider ' + element.lastProvider.name
+        )
+        raise errors
+    return element
 
 def feed(entity, json, keys):
     for key in keys:

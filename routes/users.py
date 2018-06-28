@@ -3,16 +3,17 @@ from os import path
 from pathlib import Path
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email
 from utils.rest import update,\
                        expect_json_data,\
                        login_or_api_key_required
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
 
 from models.api_errors import ApiErrors
-from utils.includes import USERS_INCLUDES
+
 
 
 def make_user_query():
@@ -27,7 +28,7 @@ User = app.model.User
 @app.route("/users/me", methods=["GET"])
 @login_required
 def get_profile():
-    user = current_user._asdict(include=USERS_INCLUDES)
+    user = current_user._asdict(include=USER_INCLUDES)
     return jsonify(user)
 
 
@@ -37,7 +38,7 @@ def get_profile():
 def patch_profile():
     update(current_user, request.json)
     app.model.PcObject.check_and_save(current_user)
-    return jsonify(current_user._asdict(include=USERS_INCLUDES)), 200
+    return jsonify(current_user._asdict(include=USER_INCLUDES)), 200
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -46,7 +47,7 @@ def signin():
     identifier = json.get("identifier")
     password = json.get("password")
     user = app.get_user_with_credentials(identifier, password)
-    return jsonify(user._asdict(include=USERS_INCLUDES)), 200
+    return jsonify(user._asdict(include=USER_INCLUDES)), 200
 
 
 @app.route("/users/signout", methods=["GET"])
@@ -141,4 +142,4 @@ def signup():
     else:
         app.model.PcObject.check_and_save(new_user)
     login_user(new_user)
-    return jsonify(new_user._asdict(include=USERS_INCLUDES)), 201
+    return jsonify(new_user._asdict(include=USER_INCLUDES)), 201

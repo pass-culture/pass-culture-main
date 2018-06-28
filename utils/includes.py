@@ -1,6 +1,6 @@
 """ includes """
 
-OFFERERS_INCLUDES = [
+OFFERER_INCLUDES = [
     {
         "key": "managedVenues",
         "sub_joins": [
@@ -24,7 +24,7 @@ EVENT_INCLUDES = [
                 "sub_joins": [
                     {
                         "key": "offerer",
-                        "sub_joins": OFFERERS_INCLUDES
+                        "sub_joins": OFFERER_INCLUDES
                     }
                 ]
             },
@@ -52,7 +52,7 @@ OCCASION_INCLUDES = [
                         "sub_joins": [
                             {
                                 "key": "offerer",
-                                "sub_joins": OFFERERS_INCLUDES
+                                "sub_joins": OFFERER_INCLUDES
                             }
                         ]
                     },
@@ -70,7 +70,7 @@ OCCASION_INCLUDES = [
                 "sub_joins": [
                     {
                         "key": "offerer",
-                        "sub_joins": OFFERERS_INCLUDES
+                        "sub_joins": OFFERER_INCLUDES
                     }
                 ]
             },
@@ -84,7 +84,7 @@ OCCASION_INCLUDES = [
     }
 ]
 
-OFFERS_INCLUDES = [
+OFFER_INCLUDES = [
     {
         "key": "eventOccurence",
         "sub_joins": [
@@ -98,7 +98,7 @@ OFFERS_INCLUDES = [
     "occurencesAtVenue",
     {
         "key": "offerer",
-        #"sub_joins": OFFERERS_INCLUDES
+        #"sub_joins": OFFERER_INCLUDES
     },
     {
         "key": "thing",
@@ -117,7 +117,7 @@ OFFERS_INCLUDES = [
     }
 ]
 
-RECOMMENDATIONS_INCLUDES = [
+RECOMMENDATION_INCLUDES = [
     {
         "key": "mediatedOccurences",
         "sub_joins": [
@@ -160,22 +160,22 @@ RECOMMENDATION_OFFER_INCLUDES =  [
     }
 ]
 
-BOOKINGS_INCLUDES = [
+BOOKING_INCLUDES = [
     {
         "key": "recommendation",
-        "sub_joins": RECOMMENDATIONS_INCLUDES
+        "sub_joins": RECOMMENDATION_INCLUDES
     },
     {
         "key": "offer",
-        "sub_joins": OFFERS_INCLUDES
+        "sub_joins": OFFER_INCLUDES
     }
 ]
 
-USERS_INCLUDES = [
+USER_INCLUDES = [
     '-password'
 ]
 
-VENUES_INCLUDES = [
+VENUE_INCLUDES = [
     {
         "key": "eventOccurences",
         "sub_joins": ["event"]
@@ -193,15 +193,15 @@ VENUE_PROVIDER_INCLUDES = [
 ]
 
 includes = {
-    'bookings': BOOKINGS_INCLUDES,
+    'bookings': BOOKING_INCLUDES,
     'events': EVENT_INCLUDES,
     'eventOccurences': EVENT_OCCURENCE_INCLUDES,
     'occasions': OCCASION_INCLUDES,
-    'offerers': OFFERERS_INCLUDES,
-    'offers': OFFERS_INCLUDES,
-    'recommendations': RECOMMENDATIONS_INCLUDES,
+    'offerers': OFFERER_INCLUDES,
+    'offers': OFFER_INCLUDES,
+    'recommendations': RECOMMENDATION_INCLUDES,
     'things': THING_INCLUDES,
-    'users': USERS_INCLUDES,
-    'venues': VENUES_INCLUDES,
+    'users': USER_INCLUDES,
+    'venues': VENUE_INCLUDES,
     'venueProviders': VENUE_PROVIDER_INCLUDES
 }

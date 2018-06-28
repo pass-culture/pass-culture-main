@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify, request
 
 from utils.config import DELETE
 from utils.human_ids import dehumanize
-from utils.includes import VENUES_INCLUDES
+from utils.includes import VENUE_INCLUDES
 from utils.rest import current_user,\
                        ensure_current_user_has_rights,\
                        expect_json_data,\
@@ -23,7 +23,7 @@ def list_venues():
 @app.route('/venues/<venueId>', methods=['GET'])
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
-    return jsonify(venue._asdict(include=VENUES_INCLUDES))
+    return jsonify(venue._asdict(include=VENUE_INCLUDES))
 
 
 @app.route('/venues', methods=['POST'])
@@ -32,7 +32,7 @@ def create_venue():
     venue = Venue(from_dict=request.json)
     venue.departementCode = 'XX'  # avoid triggerring check on this
     app.model.PcObject.check_and_save(venue)
-    return jsonify(venue._asdict(include=VENUES_INCLUDES)), 201
+    return jsonify(venue._asdict(include=VENUE_INCLUDES)), 201
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
@@ -43,4 +43,4 @@ def edit_venue(venueId):
                                    venue.managingOffererId)
     update(venue, request.json)
     app.model.PcObject.check_and_save(venue)
-    return jsonify(venue._asdict(include=VENUES_INCLUDES)), 200
+    return jsonify(venue._asdict(include=VENUE_INCLUDES)), 200
