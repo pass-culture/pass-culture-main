@@ -20,15 +20,7 @@ def serialize(value, **options):
     if isinstance(value, Enum):
         return value.name
     elif isinstance(value, datetime):
-        if 'timezone' in options\
-           and options['timezone']:
-            from_zone = tz.gettz('UTC')
-            to_zone = tz.gettz(options['timezone'])
-            utc = value.replace(tzinfo=from_zone)
-            in_tz = utc.astimezone(to_zone)
-            return in_tz.isoformat()
-        else:
-            return value.isoformat()
+        return value.isoformat()+"Z"
     elif isinstance(value, DateTimeRange):
         return {
             'start': value.lower,
@@ -121,7 +113,6 @@ class PcObject():
                                 lambda attr: attr._asdict(
                                     cut=options and options.get('cut'),
                                     include=sub_joins,
-                                    timezone=options and options.get('timezone')
                                 ),
                                 final_value
                             )
@@ -133,7 +124,6 @@ class PcObject():
                         result[key] = value._asdict(
                             include=sub_joins,
                             cut=options and options.get('cut'),
-                            timezone=options and options.get('timezone')
                         )
                         if resolve != None:
                             result[key] = resolve(result[key], options.get('filters', {}))
