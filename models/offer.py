@@ -96,7 +96,6 @@ app.model.Offer = Offer
 def page_defaults(mapper, configuration, target):
     # `bookingLimitDatetime` defaults to midnight before `beginningDatetime`
     # for eventOccurences
-    print('target.eventOccurenceId', target.eventOccurenceId)
     if target.eventOccurenceId and not target.bookingLimitDatetime:
         eventOccurence = target.eventOccurence
         if eventOccurence is None:
