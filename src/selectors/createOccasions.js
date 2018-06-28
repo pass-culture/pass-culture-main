@@ -20,6 +20,6 @@ export default () => createSelector(
       occasions = occasions.filter(o => o.venueId === venueId)
 
     return occasions
-      .sort((o1, o2) => o1.dehumanizedId - o2.dehumanizedId)
+      .sort((o1, o2) => o2.dehumanizedId - o1.dehumanizedId)
   }
 )
