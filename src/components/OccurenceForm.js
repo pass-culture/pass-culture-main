@@ -161,51 +161,42 @@ class OccurenceForm extends Component {
     return (
       <tr className='occurence-form'>
         <td>
-          {
-            isEventOccurenceFrozen
-              ? date.format('DD/MM/YYYY')
-              : <FormField
-                  className='is-small'
-                  collectionName="eventOccurences"
-                  defaultValue={date}
-                  entityId={eventOccurenceIdOrNew}
-                  highlightedDates={highlightedDates}
-                  name="date"
-                  readOnly={isEventOccurenceFrozen}
-                  required
-                  type="date"
-                />
-          }
+          <FormField
+            className='is-small'
+            collectionName="eventOccurences"
+            defaultValue={date}
+            entityId={eventOccurenceIdOrNew}
+            format='DD/MM/YYYY'
+            highlightedDates={highlightedDates}
+            name="date"
+            readOnly={isEventOccurenceFrozen}
+            required
+            type="date"
+          />
         </td>
         <td>
-          {
-            isEventOccurenceFrozen
-              ? time
-              : <FormField
-                  className='is-small'
-                  collectionName="eventOccurences"
-                  defaultValue={time}
-                  entityId={eventOccurenceIdOrNew}
-                  name="time"
-                  required
-                  type="time"
-                />
-          }
+          <FormField
+            className='is-small'
+            collectionName="eventOccurences"
+            defaultValue={time}
+            entityId={eventOccurenceIdOrNew}
+            name="time"
+            readOnly={isEventOccurenceFrozen}
+            required
+            type="time"
+          />
         </td>
         <td>
-          {
-            isEventOccurenceFrozen
-              ? endTime
-              : <FormField
-                  className='is-small'
-                  collectionName="eventOccurences"
-                  defaultValue={endTime}
-                  entityId={eventOccurenceIdOrNew}
-                  name="endTime"
-                  required
-                  type="time"
-                />
-          }
+          <FormField
+            className='is-small'
+            collectionName="eventOccurences"
+            defaultValue={endTime}
+            entityId={eventOccurenceIdOrNew}
+            name="endTime"
+            readOnly={isEventOccurenceFrozen}
+            required
+            type="time"
+          />
         </td>
         <td title='Vide si gratuit'>
           <FormField

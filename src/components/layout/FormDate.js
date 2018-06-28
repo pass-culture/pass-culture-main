@@ -9,13 +9,6 @@ import { NEW } from '../../utils/config'
 
 class FormDate extends Component {
 
-  constructor () {
-    super()
-    this.state = {
-      focused: false
-    }
-  }
-
   handleDateSelect = date => {
     const {
       collectionName,
@@ -29,27 +22,36 @@ class FormDate extends Component {
   render () {
     const {
       availableDates,
+      format,
       highlightedDates,
       defaultValue,
       readOnly,
       value
     } = this.props
-    const { focused } = this.state
+    const resolvedValue = value || defaultValue
     return (
       <div className="date-picker">
-        <DatePicker
-          selected={value || defaultValue}
-          onChange={this.handleDateSelect}
-          className='input is-rounded is-small'
-          minDate={moment()}
-          highlightDates={highlightedDates || []}
-        />
+        {
+          readOnly
+            ? <span> {resolvedValue && resolvedValue.format(format)} </span>
+            :
+              (
+                <DatePicker
+                  selected={resolvedValue}
+                  onChange={this.handleDateSelect}
+                  className='input is-rounded is-small'
+                  minDate={moment()}
+                  highlightDates={highlightedDates || []}
+                />
+            )
+        }
       </div>
     )
   }
 }
 
 FormDate.defaultProps = {
+  format: 'DD/MM/YYYY',
   entityId: NEW
 }
 
