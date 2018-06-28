@@ -39,25 +39,6 @@
     }
   }
 
-  // &.loading {
-  //   .load-wrapper {
-  //     position: relative;
-  //     min-height: 6rem;
-  //     &:before {
-  //       content: 'Chargement ...';
-  //       position: absolute;
-  //       top: 0;
-  //       bottom: 0;
-  //       right: 0;
-  //       left: 0;
-  //       background: $white;
-  //       z-index: 5;
-  //       text-align: center;
-  //       padding-top: $page-padding;
-  //     }
-  //   }
-  // }
-
   &.container {
     position: relative;
     .page-content {
