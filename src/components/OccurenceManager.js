@@ -31,7 +31,8 @@ class OccurenceManager extends Component {
           <thead>
             <tr>
               <td>Date</td>
-              <td>Heure</td>
+              <td>Heure de début</td>
+              <td>Heure de fin</td>
               <td>Prix</td>
               <td>Nombre de places total</td>
               <td>Nombre de places Personnes à Mobilité Réduite (PMR)</td>

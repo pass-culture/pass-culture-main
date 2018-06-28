@@ -5554,7 +5554,13 @@ moment-locale-fr@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/moment-locale-fr/-/moment-locale-fr-1.0.0.tgz#cfbad79ac29cbe6d5bb022ea4cfd483bfb3ae2bd"
 
-moment@>=1.6.0, moment@^2.10.3, moment@^2.14.1, moment@^2.18.1:
+moment-timezone@^0.5.21:
+  version "0.5.21"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.21.tgz#3cba247d84492174dbf71de2a9848fa13207b845"
+  dependencies:
+    moment ">= 2.9.0"
+
+"moment@>= 2.9.0", moment@>=1.6.0, moment@^2.10.3, moment@^2.14.1, moment@^2.18.1:
   version "2.22.2"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 
