@@ -28,6 +28,7 @@ class Booking(app.model.PcObject,
 
     offerId = db.Column(db.BigInteger,
                         db.ForeignKey("offer.id"),
+                        index=True,
                         nullable=True)
 
     offer = db.relationship(lambda: app.model.Offer,
@@ -44,6 +45,7 @@ class Booking(app.model.PcObject,
 
     userId = db.Column(db.BigInteger,
                        db.ForeignKey('user.id'),
+                       index=True,
                        nullable=False)
 
     user = db.relationship(lambda: app.model.User,

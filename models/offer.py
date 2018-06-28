@@ -26,6 +26,7 @@ class Offer(app.model.PcObject,
                                  db.ForeignKey("event_occurence.id"),
                                  db.CheckConstraint('"eventOccurenceId" IS NOT NULL OR "thingId" IS NOT NULL',
                                                     name='check_offer_has_event_occurence_or_thing'),
+                                 index=True,
                                  nullable=True)
 
     eventOccurence = db.relationship(lambda: app.model.EventOccurence,
@@ -34,6 +35,7 @@ class Offer(app.model.PcObject,
 
     thingId = db.Column(db.BigInteger,
                         db.ForeignKey("thing.id"),
+                        index=True,
                         nullable=True)
 
     thing = db.relationship(lambda: app.model.Thing,
@@ -45,6 +47,7 @@ class Offer(app.model.PcObject,
                         db.CheckConstraint('("venueId" IS NOT NULL AND "eventOccurenceId" IS NULL)'
                                            + 'OR ("venueId" IS NULL AND "eventOccurenceId" IS NOT NULL)',
                                            name='check_offer_has_venue_xor_event_occurence'),
+                        index=True,
                         nullable=True)
 
     venue = db.relationship(lambda: app.model.Venue,
@@ -53,6 +56,7 @@ class Offer(app.model.PcObject,
 
     offererId = db.Column(db.BigInteger,
                           db.ForeignKey("offerer.id"),
+                          index=True,
                           nullable=False)
 
     offerer = db.relationship(lambda: app.model.Offerer,
@@ -63,6 +67,7 @@ class Offer(app.model.PcObject,
                       nullable=False)
 
     available = db.Column(db.Integer,
+                          index=True,
                           nullable=True)
 
     # TODO: add pmr

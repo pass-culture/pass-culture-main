@@ -47,6 +47,7 @@ class Mediation(app.model.PcObject,
 
     eventId = db.Column(db.BigInteger,
                         db.ForeignKey("event.id"),
+                        index=True,
                         nullable=True)
 
     event = db.relationship(lambda: app.model.Event,
@@ -55,6 +56,7 @@ class Mediation(app.model.PcObject,
 
     thingId = db.Column(db.BigInteger,
                         db.ForeignKey("thing.id"),
+                        index=True,
                         nullable=True)
 
     thing = db.relationship(lambda: app.model.Thing,

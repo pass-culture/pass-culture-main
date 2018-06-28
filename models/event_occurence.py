@@ -18,6 +18,7 @@ class EventOccurence(app.model.PcObject,
 
     eventId = db.Column(db.BigInteger,
                         db.ForeignKey("event.id"),
+                        index=True,
                         nullable=False)
 
     event = db.relationship(lambda: app.model.Event,
@@ -26,6 +27,7 @@ class EventOccurence(app.model.PcObject,
 
     venueId = db.Column(db.BigInteger,
                         db.ForeignKey("venue.id"),
+                        index=True,
                         nullable=True)
 
     venue = db.relationship(lambda: app.model.Venue,
@@ -33,6 +35,7 @@ class EventOccurence(app.model.PcObject,
                             backref='eventOccurences')
 
     beginningDatetime = db.Column(db.DateTime,
+                                  index=True,
                                   nullable=False)
 
     endDatetime = db.Column(db.DateTime,

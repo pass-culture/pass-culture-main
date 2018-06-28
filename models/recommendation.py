@@ -23,6 +23,7 @@ class Recommendation(app.model.PcObject, db.Model):
 
     mediationId = db.Column(db.BigInteger,
                             db.ForeignKey('mediation.id'),
+                            index=True,
                             nullable=True) # NULL for recommendation created directly from a thing or an event
 
     mediation = db.relationship(lambda: app.model.Mediation,
@@ -31,6 +32,7 @@ class Recommendation(app.model.PcObject, db.Model):
 
     thingId = db.Column(db.BigInteger,
                         db.ForeignKey('thing.id'),
+                        index=True,
                         nullable=True) # NULL for recommendation created from a mediation or an event
 
     thing = db.relationship(lambda: app.model.Thing,
@@ -43,6 +45,7 @@ class Recommendation(app.model.PcObject, db.Model):
                                            + 'OR ("mediationId" IS NULL AND "thingId" IS NOT NULL AND "eventId" IS NULL)'
                                            + 'OR ("mediationId" IS NULL AND "thingId" IS NULL AND "eventId" IS NOT NULL)',
                                            name='check_reco_has_mediationid_xor_thingid_xor_eventid'),
+                        index=True,
                         nullable=True) # NULL for recommendation created a mediation or an offer
 
     event = db.relationship(lambda: app.model.Event,
