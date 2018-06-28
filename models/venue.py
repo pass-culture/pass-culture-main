@@ -33,7 +33,8 @@ class Venue(app.model.PcObject,
 
     managingOffererId = db.Column(db.BigInteger,
                                   db.ForeignKey("offerer.id"),
-                                  nullable=False)
+                                  nullable=False,
+                                  index=True)
 
     managingOfferer = db.relationship(lambda: app.model.Offerer,
                                       foreign_keys=[managingOffererId],

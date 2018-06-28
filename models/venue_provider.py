@@ -10,7 +10,8 @@ class VenueProvider(app.model.PcObject,
 
     venueId = db.Column(db.BigInteger,
                         db.ForeignKey('venue.id'),
-                        nullable=False)
+                        nullable=False,
+                        index=True)
     venue = db.relationship(lambda: app.model.Venue,
                             back_populates="venueProviders",
                             foreign_keys=[venueId])

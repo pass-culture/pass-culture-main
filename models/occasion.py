@@ -40,7 +40,8 @@ class Occasion(app.model.PcObject,
 
     venueId = db.Column(db.BigInteger,
                         db.ForeignKey("venue.id"),
-                        nullable=True)
+                        nullable=True,
+                        index=True)
 
     venue = db.relationship(lambda: app.model.Venue,
                             foreign_keys=[venueId],
