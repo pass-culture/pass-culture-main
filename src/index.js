@@ -11,7 +11,6 @@ import registerCacheWorker from './workers/cache'
 import registerDexieWorker from './workers/dexie/register'
 
 const initApp = () => {
-
   ReactDOM.render(<Root />, document.getElementById('root'))
   if (module.hot) {
     module.hot.accept('./Root', () => {
