@@ -120,7 +120,7 @@ class OccasionForm extends Component {
                         to={`${routePath}/dates`}
                       >
                         <span className='icon'><Icon svg='ico-calendar' /></span>
-                        <span>Gérer les dates</span>
+                        <span>Gérer les dates et les prix</span>
                       </NavLink>
                     </div>
                   </div>

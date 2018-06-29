@@ -45,6 +45,8 @@ class OffererPage extends Component {
     }
   }
 
+
+
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       match: { params: { offererId } },
@@ -83,7 +85,10 @@ class OffererPage extends Component {
     this.props.resetForm()
   }
 
+
   render () {
+    console.log('state -------------------', this.state)
+
     const {
       offerer,
       user,

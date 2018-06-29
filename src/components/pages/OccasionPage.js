@@ -106,6 +106,7 @@ class OccasionPage extends Component {
         normalizer: { managedVenues: 'venues' }
       }
     )
+    requestData('GET', 'providers')
     requestData('GET', 'types')
   }
 
