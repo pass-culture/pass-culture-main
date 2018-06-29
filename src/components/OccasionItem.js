@@ -101,10 +101,10 @@ class OccasionItem extends Component {
               </NavLink>
             </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
-            <li title={groupSizeMin > 0 && (groupSizeMin === groupSizeMax ? `minimum ${pluralize(groupSizeMin, 'personnes')}` : `entre ${groupSizeMin} et ${groupSizeMax} personnes`)}>
-              {groupSizeMin === 0 && [<Icon svg='picto-user' />, 'ou ', <Icon svg='picto-group' />]}
+            <li title={groupSizeMin > 0 ? (groupSizeMin === groupSizeMax ? `minimum ${pluralize(groupSizeMin, 'personnes')}` : `entre ${groupSizeMin} et ${groupSizeMax} personnes`) : undefined}>
+              {groupSizeMin === 0 && <div><Icon svg='picto-user' /> {'ou '} <Icon svg='picto-group' /></div>}
               {groupSizeMin === 1 && <Icon svg='picto-user' />}
-              {groupSizeMin > 1 && [<Icon svg='picto-group' />, <p>{groupSizeMin === groupSizeMax ? groupSizeMin : `${groupSizeMin} - ${groupSizeMax}`}</p>]}
+              {groupSizeMin > 1 && <div><Icon svg='picto-group' />, <p>{groupSizeMin === groupSizeMax ? groupSizeMin : `${groupSizeMin} - ${groupSizeMax}`}</p></div>}
             </li>
             <li>{available ? `${pluralize('restent', available)} ${available}` : 'Places illimitées'} </li>
             <li>{priceMin === priceMax ? <Price value={priceMin || 0} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
@@ -120,10 +120,10 @@ class OccasionItem extends Component {
             <li>
               <button className='button is-secondary is-small'
                 onClick={this.onDeactivateClick}>
-                {isActive ? [
+                {isActive ? <span>
                   <Icon svg='ico-close-r' />,
                   'Désactiver'
-                  ] : ('Activer')}
+                  </span> : ('Activer')}
               </button>
               <NavLink  to={`offres/${occasion.id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
