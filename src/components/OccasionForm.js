@@ -18,24 +18,30 @@ class OccasionForm extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      occasion,
       history,
-      match: { params: { feature } },
+      location,
+      match,
+      occasion,
+      occurences,
       routePath,
       showModal
     } = this.props
-
+    const { params: { feature } } = match
     if (feature !== 'dates') {
       return
     }
-
     showModal(
-      <OccurenceManager occasion={occasion} />,
+      <OccurenceManager
+        history={history}
+        location={location}
+        match={match}
+        occasion={occasion}
+        occurences={occurences}
+      />,
       {
         onCloseClick: () => history.push(routePath)
       }
     )
-
   }
 
   componentDidMount () {
@@ -44,10 +50,20 @@ class OccasionForm extends Component {
 
   componentDidUpdate (prevProps) {
     const {
-      match: { params: { feature } }
+      match: { params: { feature } },
+      location: { pathname },
+      occasion,
+      occurences
     } = this.props
-    if (!get(prevProps, 'match.params.feature') && feature === 'dates') {
-      this.handleShowOccurencesModal()
+    if (feature === 'dates') {
+      if (
+        !get(prevProps, 'match.params.feature') ||
+        prevProps.occasion !== occasion ||
+        prevProps.occurences !== occurences ||
+        prevProps.location.pathname !== pathname
+      ) {
+        this.handleShowOccurencesModal()
+      }
     }
   }
 

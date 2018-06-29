@@ -2,7 +2,10 @@ export const eventNormalizer = {
   mediations: 'mediations',
   occasions: 'occasions',
   occurences: {
-    key: 'eventOccurences'
+    key: 'eventOccurences',
+    normalizer: {
+      offer: 'offers'
+    }
   }
 }
 

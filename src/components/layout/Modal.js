@@ -18,7 +18,12 @@ class Modal extends Component {
   }
 
   handleActiveChange = (prevProps = {}) => {
-    if (this.props.isActive && !prevProps.isActive) {
+    const {
+      isActive,
+      transitionDuration
+    } = this.props
+
+    if (isActive && !prevProps.isActive) {
       // Opening
       this.setState({
         display: true,
@@ -27,9 +32,9 @@ class Modal extends Component {
         this.setState({
           translate: false,
         })
-      }, this.props.transitionDuration)
+      }, transitionDuration)
       document.addEventListener('backbutton', this.onCloseClick)
-    } else if (!this.props.isActive && prevProps.isActive) {
+    } else if (!isActive && prevProps.isActive) {
       // Closing
       this.setState({
         translate: true,
@@ -38,7 +43,7 @@ class Modal extends Component {
         this.setState({
           display: false,
         })
-      }, this.props.transitionDuration)
+      }, transitionDuration)
       document.removeEventListener('backbutton', this.onCloseClick)
     }
   }
@@ -71,7 +76,7 @@ class Modal extends Component {
         return {}
     }
   }
-  
+
   componentDidMount() {
     this.handleActiveChange()
   }
@@ -96,11 +101,11 @@ class Modal extends Component {
 
   render() {
     const {
-      ContentComponent,
       fullscreen,
       hasCloseButton,
       isUnclosable,
       maskColor,
+      $modal,
       transitionDuration,
     } = this.props
     return (
@@ -130,7 +135,7 @@ class Modal extends Component {
               </button>
             )}
           <div className="modal-content">
-            {ContentComponent && <ContentComponent />}
+            {$modal}
           </div>
         </div>
       </div>
@@ -146,7 +151,7 @@ Modal.defaultProps = {
 }
 
 export default  withRouter(connect(
-  ({ modal: { config, ContentComponent, isActive } }) =>
-    Object.assign({ ContentComponent, isActive }, config),
+  ({ modal: { config, $modal, isActive } }) =>
+    Object.assign({ $modal, isActive }, config),
   { closeModal }
 )(Modal))
