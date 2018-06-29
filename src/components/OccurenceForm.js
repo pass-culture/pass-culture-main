@@ -112,14 +112,22 @@ class OccurenceForm extends Component {
     // AN ASSOCIATED OFFER
     const offerForm = form.offersById[offerIdOrNew] || {}
     if (method !== 'DELETE' && Object.keys(offerForm).length) {
+
+      const body = Object.assign({
+        eventOccurenceId: action.data.id,
+        offererId: venue.managingOffererId,
+      }, offerForm)
+      // price is actually compulsory for posting an offer
+      // but we can let automatically set to gratuit
+      if (method === 'POST' && typeof body.price === 'undefined') {
+        body.price = 0
+      }
+
       requestData(
         method,
         'offers',
         {
-          body: Object.assign({
-            eventOccurenceId: action.data.id,
-            offererId: venue.managingOffererId
-          }, offerForm),
+          body,
           key: 'offers'
         }
       )
@@ -256,10 +264,16 @@ class OccurenceForm extends Component {
 
               // MAYBE WE CAN ONLY TOUCH ON THE OFFER
               if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
-                return Object.assign({
+                const body = Object.assign({
                     eventOccurenceId: id,
                     offererId: venue.managingOffererId
                   }, get(form, `offersById.${offerIdOrNew}`))
+                // price is actually compulsory for posting an offer
+                // but we can let automatically set to gratuit
+                if (method === 'POST' && typeof body.price === 'undefined') {
+                  body.price = 0
+                }
+                return body
               }
 
               // ELSE IT IS AN OCCURENCE FORM
