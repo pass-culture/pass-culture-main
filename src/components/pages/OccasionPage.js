@@ -184,6 +184,7 @@ class OccasionPage extends Component {
       occasionIdOrNew,
       offerer,
       offerers,
+      routePath,
       thing,
       type,
       typeOptions,
@@ -251,6 +252,7 @@ class OccasionPage extends Component {
             occasion={occasion}
             offerer={offerer}
             offerers={offerers}
+            routePath={routePath}
             thing={thing}
             venue={venue}
             venues={venues}

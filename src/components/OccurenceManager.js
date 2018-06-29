@@ -10,18 +10,17 @@ import { mergeForm } from '../reducers/form'
 import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
-  constructor () {
-    super()
-    this.state = {
-      isAdding: false
-    }
-  }
 
   onAddClick = () => {
     const {
+      history,
       mergeForm,
+      occasion,
       occurences,
     } = this.props
+    const {
+      id
+    } = (occasion || {})
 
     const lastOccurence = occurences.length > 0 && occurences[occurences.length-1]
     if (lastOccurence) {
@@ -50,8 +49,7 @@ class OccurenceManager extends Component {
             : price
         })
     }
-
-    this.setState({ isAdding: true })
+    history.push(`/offres/${id}/dates/nouvelle`)
   }
 
 
@@ -63,7 +61,9 @@ class OccurenceManager extends Component {
       occasion,
       occurences,
     } = this.props
-    const { isAdding } = this.state
+    const {
+      params: { eventOccurenceId }
+    } = match
 
     return (
       <div className='occurence-manager'>
@@ -83,12 +83,11 @@ class OccurenceManager extends Component {
             </thead>
             <tbody>
               {
-                isAdding
+                eventOccurenceId === 'nouvelle'
                   ? (
                     <OccurenceForm
                       history={history}
                       occasion={occasion}
-                      onDeleteClick={e => this.setState({isAdding: false})}
                     />
                   ) : (
                   <tr><td colSpan='10'>
@@ -102,7 +101,6 @@ class OccurenceManager extends Component {
                 occurences && occurences.map(o =>
                   <OccurenceItem
                     key={o.id}
-                    isAdding={isAdding}
                     history={history}
                     location={location}
                     match={match}

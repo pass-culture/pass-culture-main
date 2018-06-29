@@ -97,8 +97,6 @@ class OccasionForm extends Component {
       stageDirector,
     } = (event || thing || {})
 
-    console.log('venue', venue, isNew)
-
     return (
       <div>
         {

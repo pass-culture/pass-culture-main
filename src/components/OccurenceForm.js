@@ -40,7 +40,8 @@ class OccurenceForm extends Component {
       id
     } = (occurence || {})
 
-    const isEventOccurenceFrozen = typeof event.lastProviderId !== 'undefined'
+    const isEventOccurenceFrozen = typeof event.lastProviderId === 'string'
+
     const offerId = get(offer, 'id')
     const offerIdOrNew = offerId || NEW
 
@@ -117,8 +118,6 @@ class OccurenceForm extends Component {
           }
         )
       }
-    } else {
-      onEditChange && onEditChange(false)
     }
     history.push(`/offres/${id}/dates`)
   }
@@ -290,16 +289,19 @@ class OccurenceForm extends Component {
                 return isDisabledBecauseOffer
               }
 
-              const isDisabledBecauseEventOccurence = getIsDisabled(
-                get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
-                ['date', 'endTime', 'time',],
-                typeof occurence === 'undefined'
-              )
-              if (isDisabledBecauseEventOccurence) {
-                return false
+
+              if (isDisabledBecauseOffer) {
+
+                const isDisabledBecauseEventOccurence = getIsDisabled(
+                  get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
+                  ['date', 'endTime', 'time',],
+                  typeof occurence === 'undefined'
+                )
+
+                return isDisabledBecauseEventOccurence
               }
 
-              return isDisabledBecauseOffer
+              return false
             }}
             handleSuccess={this.handleSuccessData}
             method={method}
