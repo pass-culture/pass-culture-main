@@ -63,11 +63,8 @@ def edit_event_occurence(id):
 
 @app.route('/eventOccurences/<id>', methods=['DELETE'])
 @login_or_api_key_required
-@expect_json_data
 def delete_event_occurence(id):
     eo = load_or_404(EventOccurence, id)
     ensure_current_user_has_rights(app.model.RightsType.editor,
                                    eo.venue.managingOffererId)
-    #TODO: S'il y a des réservations il faut envoyer des mails !
-    #TODO: Interdire la suppression d'évenements passés
-    return delete(eo, request.json)
+    return delete(eo)

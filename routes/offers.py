@@ -7,9 +7,12 @@ from models.api_errors import ApiErrors
 from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
-from utils.rest import ensure_provider_can_update,\
+from utils.rest import delete,\
+                       ensure_provider_can_update,\
+                       ensure_current_user_has_rights,\
                        expect_json_data,\
                        handle_rest_get_list,\
+                       load_or_404,\
                        login_or_api_key_required,\
                        update
 from utils.search import get_ts_queries, LANGUAGE
@@ -131,3 +134,15 @@ def edit_offer(offer_id):
         else:
             raise ie
     return jsonify(offer._asdict(include=OFFER_INCLUDES)), 200
+
+@app.route('/offers/<id>', methods=['DELETE'])
+@login_or_api_key_required
+def delete_offer(id):
+    offer = load_or_404(Offer, id)
+    if offer.eventOccurence:
+        offererId = offer.eventOccurence.venue.managingOffererId
+    else:
+        offererId = offer.venue.managingOffererId
+    ensure_current_user_has_rights(app.model.RightsType.editor,
+                                   offererId)
+    return delete(offer)
