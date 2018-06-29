@@ -3,6 +3,7 @@
   .occurence-table-wrapper {
     position: relative;
     max-height: 60vh;
+    min-height: 375px;
     overflow-y: auto;
 
     table.occurence-table {
