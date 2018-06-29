@@ -147,7 +147,7 @@ class OccurenceForm extends Component {
       price,
       available,
       pmrGroupSize
-    } = get(offer, '0') || {}
+    } = (offer || {})
     const {
       durationMinutes,
     } = (occasion || {})
