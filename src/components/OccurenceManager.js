@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
+import createEventSelector from '../selectors/createEvent'
+import createProviderSelector from '../selectors/createProvider'
 import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
@@ -58,6 +60,7 @@ class OccurenceManager extends Component {
       history,
       location,
       match,
+      provider,
       occasion,
       occurences,
     } = this.props
@@ -91,9 +94,19 @@ class OccurenceManager extends Component {
                     />
                   ) : (
                   <tr><td colSpan='10'>
-                    <button className='button is-secondary' onClick={this.onAddClick}>
-                      + Ajouter un horaire
-                    </button>
+                    {
+                      provider
+                        ? (
+                          <i>
+                            Il n'est pas possible d'ajouter ni de supprimer de dates pour cet événement {provider.name}
+                          </i>
+                        )
+                        : (
+                          <button className='button is-secondary' onClick={this.onAddClick}>
+                            + Ajouter un horaire
+                          </button>
+                        )
+                    }
                   </td></tr>
                 )
               }
@@ -107,6 +120,7 @@ class OccurenceManager extends Component {
                     occasion={occasion}
                     occurence={o}
                     occurences={occurences}
+                    provider={provider}
                   />
                 )
               }
@@ -132,4 +146,15 @@ class OccurenceManager extends Component {
   }
 }
 
-export default connect(null, { mergeForm })(OccurenceManager)
+const eventSelector = createEventSelector()
+const providerSelector = createProviderSelector()
+
+export default connect(
+  (state, ownProps) => {
+    const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
+    return {
+      provider: providerSelector(state, get(event, 'lastProviderId'))
+    }
+  },
+  { mergeForm }
+)(OccurenceManager)

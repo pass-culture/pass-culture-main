@@ -16,6 +16,7 @@ import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
+import createProvidersSelector from '../../selectors/createProviders'
 import createSearchSelector from '../../selectors/createSearch'
 import createThingSelector from '../../selectors/createThing'
 import createTypeSelector from '../../selectors/createType'
@@ -83,10 +84,13 @@ class OccasionPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       history,
+      offerers,
+      providers,
       requestData,
       showModal,
+      typeOptions,
     } = this.props
-    requestData(
+    offerers.length === 0 && requestData(
       'GET',
       'offerers',
       {
@@ -106,7 +110,12 @@ class OccasionPage extends Component {
         normalizer: { managedVenues: 'venues' }
       }
     )
-    requestData('GET', 'types')
+    providers.length === 0 && requestData('GET', 'providers')
+    typeOptions.length === 0 && requestData('GET', 'types')
+
+    if (offerers.length && providers.length && typeOptions.length) {
+      return false
+    }
   }
 
   handleFailData = (state, action) => {
@@ -327,6 +336,7 @@ const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
+const providersSelector = createProvidersSelector()
 const searchSelector = createSearchSelector()
 const typesSelector = createTypesSelector()
 const typeSelector = createTypeSelector(
@@ -373,6 +383,7 @@ export default compose(
 
       return {
         event: eventSelector(state, eventId),
+        providers: providersSelector(state),
         offerer,
         offerers,
         thing: thingSelector(state, thingId),

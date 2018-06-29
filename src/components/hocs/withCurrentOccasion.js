@@ -28,11 +28,12 @@ const withCurrentOccasion = WrappedComponent => {
             occasionId
           }
         },
+        occasion,
         requestData,
         user,
       } = this.props
-      const { apiPath } = this.state
-      user && occasionId !== 'nouveau' && requestData(
+      const { apiPath, isNew } = this.state
+      user && !isNew  && !occasion && requestData(
         'GET',
         apiPath,
         {
