@@ -4,7 +4,9 @@ import moment from 'moment'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Price from './Price'
 import Icon from './layout/Icon'
@@ -143,33 +145,36 @@ OccasionItem.defaultProps = {
 
 const typesSelector = createTypesSelector()
 
-export default connect(
-  () => {
-    const eventSelector = createEventSelector()
-    const mediationsSelector = createMediationsSelector()
-    const occurencesSelector = createOccurencesSelector()
-    const thingSelector = createThingSelector()
-    const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
+export default compose(
+  withRouter,
+  connect(
+    () => {
+      const eventSelector = createEventSelector()
+      const mediationsSelector = createMediationsSelector()
+      const occurencesSelector = createOccurencesSelector()
+      const thingSelector = createThingSelector()
+      const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
 
-    const maxDateSelector = createMaxDateSelector(occurencesSelector)
-    const stockSelector = createStockSelector(occurencesSelector)
-    const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
+      const maxDateSelector = createMaxDateSelector(occurencesSelector)
+      const stockSelector = createStockSelector(occurencesSelector)
+      const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
 
-    return (state, ownProps) => {
-      const occasion = ownProps.occasion
-      const event = eventSelector(state, occasion.eventId)
-      const thing = thingSelector(state, occasion.thingId)
-      return {
-        event,
-        mediations: mediationsSelector(state, event, thing),
-        occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
-        maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
-        stock: stockSelector(state, occasion.venueId, occasion.eventId),
-        thing,
-        thumbUrl: thumbUrlSelector(state, event, thing),
-        type: typeSelector(state, occasion.eventId, occasion.thingId)
+      return (state, ownProps) => {
+        const occasion = ownProps.occasion
+        const event = eventSelector(state, occasion.eventId)
+        const thing = thingSelector(state, occasion.thingId)
+        return {
+          event,
+          mediations: mediationsSelector(state, event, thing),
+          occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
+          maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
+          stock: stockSelector(state, occasion.venueId, occasion.eventId),
+          thing,
+          thumbUrl: thumbUrlSelector(state, event, thing),
+          type: typeSelector(state, occasion.eventId, occasion.thingId)
+        }
       }
-    }
-  },
-  { requestData }
+    },
+    { requestData }
+  )
 )(OccasionItem)
