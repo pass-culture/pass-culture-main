@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
+import { requestData } from '../reducers/data'
 import createEventSelector from '../selectors/createEvent'
 import createOfferSelector from '../selectors/createOffer'
 import createTimezoneSelector from '../selectors/createTimezone'
@@ -44,7 +45,7 @@ class OccurenceForm extends Component {
     const eventOccurenceIdOrNew = id || NEW
     const formOccurence = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`, {})
     const isEmptyOccurenceForm = Object.keys(formOccurence).length === 0
-    const isEventOccurenceFrozen = typeof event.lastProviderId === 'string'
+    const isEventOccurenceFrozen = event && typeof event.lastProviderId === 'string'
     const offerId = get(offer, 'id')
     const offerIdOrNew = offerId || NEW
     const formOffer = get(form, `offersById.${offerIdOrNew}`)
@@ -92,7 +93,6 @@ class OccurenceForm extends Component {
     const {
       form,
       history,
-      method,
       occasion,
       onEditChange,
       requestData,
@@ -102,28 +102,29 @@ class OccurenceForm extends Component {
       id
     } = (occasion || {})
     const {
+      method,
       offerIdOrNew
     } = this.state
 
-    // ON A POST EVENT OCCURENCE SUCCESS
-    // WE CAN CHECK IF WE NEED TO POST ALSO
+
+    // ON A POST/PATCH EVENT OCCURENCE SUCCESS
+    // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
-    if (method === 'POST' ) {
-      const offerForm = form.offersById[offerIdOrNew] || {}
-      if (Object.keys(offerForm).length) {
-        requestData(
-          'POST',
-          'offers',
-          {
-            body: Object.key({
-              eventOccurenceId: action.data.id,
-              offererId: venue.managingOffererId
-            }, offerForm),
-            key: 'offers'
-          }
-        )
-      }
+    const offerForm = form.offersById[offerIdOrNew] || {}
+    if (Object.keys(offerForm).length) {
+      requestData(
+        method,
+        'offers',
+        {
+          body: Object.assign({
+            eventOccurenceId: action.data.id,
+            offererId: venue.managingOffererId
+          }, offerForm),
+          key: 'offers'
+        }
+      )
     }
+
     history.push(`/offres/${id}/dates`)
   }
 
@@ -347,5 +348,6 @@ export default connect(
       tz: timezoneSelector(state, venueId),
       occurences: occurencesSelector(state, venueId, eventId),
     }
-  }
+  },
+  { requestData }
 )(OccurenceForm)
