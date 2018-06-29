@@ -9,7 +9,7 @@ def list_providers():
     result = []
     for p in providers:
         p_dict = p._asdict()
-        if p.localClass is not None:
+        if p.localClass is not None and p.localClass in app.local_providers:
             providerClass = app.local_providers[p.localClass]
             p_dict['identifierRegexp'] = providerClass.identifierRegexp
             p_dict['identifierDescription'] = providerClass.identifierDescription
