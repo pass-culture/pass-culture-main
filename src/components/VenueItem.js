@@ -65,11 +65,6 @@ const offersSelector = createOffersSelector()
 
 export default connect(
   () => {
-    return (state, ownProps) => {
-      const venueId = ownProps.venue.id
-      return {
-        offers: offersSelector(state, venueId)
-      }
-    }
+    return (state, ownProps) => ({})
   }
 )(VenueItem)

@@ -6,15 +6,18 @@ const createOccurencesSelector = () => createSelector(
   (state, venueId) => venueId,
   (state, venueId, eventId) => eventId,
   (eventOccurences, venueId, eventId) => {
+    if (venueId)
+      eventOccurences = eventOccurences.filter(o => o.venueId === venueId)
+    if (eventId)
+      eventOccurences = eventOccurences.filter(o => o.eventId === eventId)
     return eventOccurences
-      .filter(o =>
-        o.venueId === venueId &&
-        o.eventId === eventId
-      )
-      .map(o => Object.assign(o, {beginningDatetimeMoment: moment(o.beginningDatetime),
-                                 endDatetimeMoment: moment(o.endDatetime)}))
+      .map(o => Object.assign(o, {
+        beginningDatetimeMoment: moment(o.beginningDatetime),
+        endDatetimeMoment: moment(o.endDatetime)
+      }))
       .sort((o1,o2) =>
-      o1.beginningDatetimeMoment - o2.beginningDatetimeMoment)
+        o1.beginningDatetimeMoment - o2.beginningDatetimeMoment
+      )
   }
 )
 

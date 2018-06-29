@@ -31,4 +31,13 @@ li.occasion-item {
     justify-content: space-between;
     align-items: flex-start;
   }
+
+  ul.actions {
+    .button {
+      margin-right: 2rem;
+      &:last-child {
+        margin-right: inherit;
+      }
+    }
+  }
 }
