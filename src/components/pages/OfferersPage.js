@@ -40,6 +40,7 @@ class OfferersPage extends Component {
   }
 
   render () {
+
     const {
         offerers
       } = this.props
