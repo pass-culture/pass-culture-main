@@ -35,7 +35,15 @@ export function pluralize(number, string, pluralizeWith) {
 
 export function queryStringToObject(string='') {
   return string.replace(/^\??/, '').split('&').reduce((result, group) => {
-    const [key, value] = group.split('=')
+    let [key, value] = group.split('=')
+    switch (key) {
+      case 'lieu':
+        key = 'venueId'
+      case 'structure':
+        key = 'offererId'
+      default:
+        break
+    }
     return Object.assign({}, result, {[key]: value})
   }, {})
 }

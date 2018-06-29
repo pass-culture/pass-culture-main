@@ -21,17 +21,17 @@ class OccasionsPage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail, page=1) => {
     const {
-      lieu,
+      offererId,
       requestData,
-      structure,
       user,
       types,
+      venueId
     } = this.props
     let apiPath = 'occasions?'
-    if (lieu) {
-      apiPath = `${apiPath}?venueId=${lieu}`
-    } else if (structure) {
-      apiPath = `${apiPath}?offererId=${structure}`
+    if (venueId) {
+      apiPath = `${apiPath}?venueId=${venueId}`
+    } else if (offererId) {
+      apiPath = `${apiPath}?offererId=${offererId}`
     }
     user && requestData(
       'GET',
@@ -113,15 +113,15 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-      const { structure, lieu } = searchSelector(state, ownProps.location.search)
+      const { offererId, venueId } = searchSelector(state, ownProps.location.search)
       return {
-        lieu,
-        occasions: occasionsSelector(state, structure, lieu),
-        offerer: offererSelector(state, structure),
-        structure,
+        occasions: occasionsSelector(state, offererId, venueId),
+        offerer: offererSelector(state, offererId),
+        offererId,
         user: state.user,
         types: state.data.types,
-        venue: venueSelector(state, lieu)
+        venue: venueSelector(state, venueId),
+        venueId
       }
     },
     { showModal, requestData }

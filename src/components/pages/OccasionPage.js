@@ -16,6 +16,7 @@ import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
+import createSearchSelector from '../../selectors/createSearch'
 import createThingSelector from '../../selectors/createThing'
 import createTypeSelector from '../../selectors/createType'
 import createTypesSelector from '../../selectors/createTypes'
@@ -23,15 +24,14 @@ import createVenueSelector from '../../selectors/createVenue'
 import createVenuesSelector from '../../selectors/createVenues'
 import { eventNormalizer } from '../../utils/normalizers'
 import { NEW } from '../../utils/config'
-import { optionify } from '../../utils/form'
-import { queryStringToObject } from '../../utils/string'
+import { getIsDisabled, optionify } from '../../utils/form'
 
 const requiredEventAndThingFields = [
   'name',
   'type',
   'description',
-  'contactName',
-  'contactEmail',
+  //'contactName',
+  //'contactEmail',
 ]
 
 const requiredEventFields = [
@@ -180,10 +180,15 @@ class OccasionPage extends Component {
       event,
       isNew,
       location: { pathname, search },
+      occasion,
       occasionIdOrNew,
+      offerer,
+      offerers,
       thing,
       type,
       typeOptions,
+      venue,
+      venues
     } = this.props
     const {
       name
@@ -240,8 +245,17 @@ class OccasionPage extends Component {
         </div>
 
         {
-          // TODO: connect OccasionForm properly from store, not by passing props
-          showAllForm && <OccasionForm {...this.props} {...this.state} />
+          showAllForm && <OccasionForm
+            event={event}
+            isNew={isNew}
+            occasion={occasion}
+            offerer={offerer}
+            offerers={offerers}
+            thing={thing}
+            venue={venue}
+            venues={venues}
+            {...this.state}
+          />
         }
 
         <hr />
@@ -284,16 +298,12 @@ class OccasionPage extends Component {
                       }
                       return occasionForm
                     }}
-                    getIsDisabled={form => {
-                      if (!requiredFields) {
-                        return true
-                      }
-                      const missingFields = requiredFields.filter(r =>
-                        !get(form, `occasionsById.${occasionIdOrNew}.${r}`))
-                      return isNew
-                        ? missingFields.length > 0
-                        : missingFields.length === requiredFields.length
-                    }}
+                    getIsDisabled={form => getIsDisabled(
+                        get(form, `occasionsById.${occasionIdOrNew}`),
+                        requiredFields,
+                        isNew
+                      )
+                    }
                     handleSuccess={this.handleSuccessData}
                     handleFail={this.handleFailData}
                     normalizer={eventNormalizer}
@@ -315,6 +325,7 @@ const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
+const searchSelector = createSearchSelector()
 const typesSelector = createTypesSelector()
 const typeSelector = createTypeSelector(
   typesSelector,
@@ -322,35 +333,49 @@ const typeSelector = createTypeSelector(
   thingSelector
 )
 const venuesSelector = createVenuesSelector()
-const venueSelector = createVenueSelector()
+const venueSelector = createVenueSelector(venuesSelector)
 
 export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => {
-      let {offererId, venueId} = queryStringToObject(ownProps.location.search)
+      let { offererId, venueId } = searchSelector(state, ownProps.location.search)
 
-      const occasionId = get(ownProps, 'occasion.id') || NEW
       const eventId = get(ownProps, 'occasion.eventId')
+      const occasionId = get(ownProps, 'occasion.id') || NEW
       const thingId = get(ownProps, 'occasion.thingId')
       const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
-      venueId = venueId || get(ownProps, 'occasion.venueId')
-      const venue = venueSelector(state, venueId)
-      offererId = offererId || get(venue, 'managingOffererId')
 
+      venueId = venueId ||
+        get(ownProps, 'occasion.venueId') ||
+        get(state, `form.occasionsById.${occasionId}.venueId`)
+
+      let venue
+      if (venueId) {
+        venue = venueSelector(state, venueId)
+        offererId = get(venue, 'managingOffererId')
+      } else {
+        offererId = offererId ||
+          get(state, `form.occasionsById.${occasionId}.offererId`)
+      }
+
+      // if there is only one offerer in the list,
+      // well choose it
       const offerers = offerersSelector(state)
-      const offerer = offererSelector(state, offererId)
+      const offerer = offererSelector(state, offererId) ||
+        (get(offerers, 'length') === 1 && get(offerers, '0'))
 
-      const venues = venuesSelector(state,
-        get(state, `form.occasionsById.${occasionId}.offererId`))
+      // same for the venue...
+      const venues = venuesSelector(state, offererId)
+      venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
 
       return {
         event: eventSelector(state, eventId),
+        offerer,
+        offerers,
         thing: thingSelector(state, thingId),
         type: typeSelector(state, eventId, thingId, formLabel),
         typeOptions: typesSelector(state),
-        offerer,
-        offerers,
         venue,
         venues
       }
