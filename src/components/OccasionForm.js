@@ -103,7 +103,7 @@ class OccasionForm extends Component {
           !isNew && (
             <div className='field'>
             {
-              isEventType && (
+              event && (
                 <div className='field form-field is-horizontal'>
                   <div className='field-label'>
                     <label className="label" htmlFor="input_occasions_name">
