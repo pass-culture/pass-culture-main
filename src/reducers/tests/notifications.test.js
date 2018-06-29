@@ -1,39 +1,77 @@
-import notification from '../notification'
-import {PENDING} from '../notification'
-import { requestData } from '../data'
+import notification,
+{
+  closeNotification,
+  showNotification
+} from '../notification'
+
+import { CLOSE_NOTIFICATION, SHOW_NOTIFICATION } from '../notification'
+
+jest.mock('../../utils/dom', () => ({
+  scrollIt: () => {
+  },
+}))
 
 describe('src | reducers | notification  ', () => {
 
-  describe('notification', () => {
-    let state
-    beforeEach(() => {
-      state = []
-    })
+  let initialState
+  beforeEach(() => {
+    initialState = []
+  })
 
-    describe('When action.type is REQUEST_DATA', () => {
-      it('should return correct update state', () => {
-        // given
-        const method = 'POST'
-        const path = 'http://fakeUrl.com'
-        const config = {
-          key: 'fakeKey',
-          requestId: 'fakeRequestId'
-        }
-        const action = requestData(method, path, config)
+  describe('When action.type is CLOSE_NOTIFICATION', () => {
 
-        // when
-        const notificationReducer = notification(state, action)
-        const expected = [
-          {
-          "id": "fakeRequestId",
-          "key": "fakeKey",
-          "path": path,
-          status: PENDING
-        }
-      ]
-        // then
-        expect(notificationReducer).toEqual(expected)
-      })
+    it('should return correct update state', () => {
+      // given
+      const action = closeNotification()
+
+      // when
+      const notificationReducer = notification(initialState, action)
+
+      // then
+      expect(notificationReducer).toEqual(null)
     })
   })
+
+  describe('When action.type is SHOW_NOTIFICATION', () => {
+
+    it('should return correct update state', () => {
+      // given
+      const notificationMessage = {
+        text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
+        type: 'success'
+      }
+      const action = showNotification(notificationMessage)
+
+      // when
+      const notificationReducer = notification(initialState, action)
+
+      // then
+      expect(notificationReducer).toEqual(notificationMessage)
+    })
+  })
+
+})
+
+describe('src | actions  ', () => {
+
+  const notification = {
+    text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
+    type: 'success'
+  }
+
+  describe('closeNotification  ', () => {
+    const expected = {
+      type: CLOSE_NOTIFICATION
+    }
+    expect(closeNotification(notification)).toEqual(expected)
+  })
+
+  describe('showNotification  ', () => {
+    const expected = {
+      type: SHOW_NOTIFICATION,
+      notification
+    }
+    expect(showNotification(notification)).toEqual(expected)
+  })
+
 })

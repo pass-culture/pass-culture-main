@@ -8,6 +8,7 @@ const initialState = null
 
 // REDUCER
 function notification(state = initialState, action) {
+
   switch (action.type) {
     case CLOSE_NOTIFICATION:
       return initialState
@@ -20,7 +21,7 @@ function notification(state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function closeNotification(notification) {
+export function closeNotification() {
   return {
     type: CLOSE_NOTIFICATION
   }

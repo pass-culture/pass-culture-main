@@ -4,7 +4,19 @@ describe('src | reducers | data  ', () => {
 
   let state
   beforeEach(() => {
-    state = {}
+    state = {
+      events: [],
+      eventOccurences: [],
+      mediations: [],
+      occasions: [],
+      offers: [],
+      offerers: [],
+      providers: [],
+      things: [],
+      types: [],
+      venues: [],
+      venueProviders: []
+    }
   })
 
   it('should return the initial state by default', () => {
@@ -18,7 +30,7 @@ describe('src | reducers | data  ', () => {
     expect(updatedState).toEqual(state)
   })
 
-  describe('actions', () => {
+  describe('src |  actions', () => {
 
     describe('requestData', () => {
       it('should return correct action', () => {
