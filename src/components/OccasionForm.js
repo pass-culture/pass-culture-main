@@ -1,7 +1,9 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import MediationManager from './MediationManager'
 import OccurenceManager from './OccurenceManager'
@@ -160,10 +162,10 @@ class OccasionForm extends Component {
           entityId={occasionIdOrNew}
           isHorizontal
           label={<Label title="Structure :" />}
-          required
           name='offererId'
           options={optionify(offerers, 'Sélectionnez une structure')}
           readOnly={isReadOnly || !isNew}
+          required={!isReadOnly}
           type="select"
         />
         {
@@ -306,17 +308,20 @@ class OccasionForm extends Component {
 
 const occurencesSelector = createOccurencesSelector()
 
-export default connect(
-  (state, ownProps) => {
-    const eventId = get(ownProps, 'occasion.eventId')
-    const venueId = get(ownProps, 'occasion.venueId')
-    return {
-      occurences: occurencesSelector(state, venueId, eventId),
+export default compose(
+  withRouter,
+    connect(
+    (state, ownProps) => {
+      const eventId = get(ownProps, 'occasion.eventId')
+      const venueId = get(ownProps, 'occasion.venueId')
+      return {
+        occurences: occurencesSelector(state, venueId, eventId),
+      }
+    },
+    {
+      closeModal,
+      mergeForm,
+      showModal
     }
-  },
-  {
-    closeModal,
-    mergeForm,
-    showModal
-  }
+  )
 )(OccasionForm)

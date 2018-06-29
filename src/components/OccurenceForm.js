@@ -29,6 +29,7 @@ class OccurenceForm extends Component {
   static getDerivedStateFromProps (nextProps) {
     const {
       event,
+      form,
       occurences,
       occurence,
       offer,
@@ -40,12 +41,16 @@ class OccurenceForm extends Component {
       id
     } = (occurence || {})
 
-    const isEventOccurenceFrozen = typeof event.lastProviderId !== 'undefined'
+    const eventOccurenceIdOrNew = id || NEW
+    const formOccurence = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`, {})
+    const isEmptyOccurenceForm = Object.keys(formOccurence).length === 0
+    const isEventOccurenceFrozen = typeof event.lastProviderId === 'string'
     const offerId = get(offer, 'id')
     const offerIdOrNew = offerId || NEW
+    const formOffer = get(form, `offersById.${offerIdOrNew}`)
 
     let apiPath, method, storeKey
-    if (isEventOccurenceFrozen) {
+    if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
       apiPath = `offers${offerId ? `/${offerId}` : ''}`
       method = offerId ? 'PATCH' : 'POST'
       storeKey = 'offers'
@@ -60,9 +65,10 @@ class OccurenceForm extends Component {
       apiPath,
       date,
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
-      eventOccurenceIdOrNew: id || NEW,
+      eventOccurenceIdOrNew,
       highlightedDates: occurences &&
         occurences.map(o => moment(o.beginningDatetime)),
+      isEmptyOccurenceForm,
       isEventOccurenceFrozen,
       method,
       offerIdOrNew,
@@ -117,8 +123,6 @@ class OccurenceForm extends Component {
           }
         )
       }
-    } else {
-      onEditChange && onEditChange(false)
     }
     history.push(`/offres/${id}/dates`)
   }
@@ -129,6 +133,7 @@ class OccurenceForm extends Component {
       occasion,
       occurence,
       offer,
+      offerer,
       onDeleteClick,
       venue,
     } = this.props
@@ -151,6 +156,7 @@ class OccurenceForm extends Component {
       date,
       eventOccurenceIdOrNew,
       highlightedDates,
+      isEmptyOccurenceForm,
       isEventOccurenceFrozen,
       method,
       offerIdOrNew,
@@ -248,7 +254,7 @@ class OccurenceForm extends Component {
             getBody={form => {
 
               // MAYBE WE CAN ONLY TOUCH ON THE OFFER
-              if (isEventOccurenceFrozen) {
+              if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
                 return Object.assign({
                     eventOccurenceId: id,
                     offererId: venue.managingOffererId
@@ -257,6 +263,10 @@ class OccurenceForm extends Component {
 
               // ELSE IT IS AN OCCURENCE FORM
               const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
+              if (!eo) {
+                console.warn('weird eo form is empty')
+                return
+              }
               const [hour, minute] = (eo.time || time).split(':')
               const beginningDatetime = (eo.date || date).set({
                 'hour': hour,
@@ -277,7 +287,6 @@ class OccurenceForm extends Component {
                 eventId: get(event, 'id'),
                 venueId: get(venue, 'id'),
               })
-
             }}
             getIsDisabled={form => {
               const isDisabledBecauseOffer = getIsDisabled(
@@ -290,16 +299,19 @@ class OccurenceForm extends Component {
                 return isDisabledBecauseOffer
               }
 
-              const isDisabledBecauseEventOccurence = getIsDisabled(
-                get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
-                ['date', 'endTime', 'time',],
-                typeof occurence === 'undefined'
-              )
-              if (isDisabledBecauseEventOccurence) {
-                return false
+
+              if (isDisabledBecauseOffer) {
+
+                const isDisabledBecauseEventOccurence = getIsDisabled(
+                  get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
+                  ['date', 'endTime', 'time',],
+                  typeof occurence === 'undefined'
+                )
+
+                return isDisabledBecauseEventOccurence
               }
 
-              return isDisabledBecauseOffer
+              return false
             }}
             handleSuccess={this.handleSuccessData}
             method={method}

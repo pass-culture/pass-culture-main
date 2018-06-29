@@ -41,6 +41,7 @@ class OccurenceItem extends Component {
     return {
       date: date && date.format('DD/MM/YYYY'),
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
+      isAdding: eventOccurenceId === 'nouvelle',
       isEditing: eventOccurenceId === id,
       time: date && date.format('HH:mm'),
     }
@@ -79,7 +80,6 @@ class OccurenceItem extends Component {
   render () {
     const {
       history,
-      isAdding,
       occasion,
       occurences,
       occurence,
@@ -100,6 +100,7 @@ class OccurenceItem extends Component {
     const {
       date,
       endTime,
+      isAdding,
       isEditing,
       time,
     } = this.state
