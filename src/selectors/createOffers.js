@@ -1,11 +1,13 @@
 import { createSelector } from 'reselect'
 
-export default () => createSelector(
+import createOccurencesSelector from './createOccurences'
+
+export default (occurencesSelector=createOccurencesSelector()) => createSelector(
   state => state.data.offers,
-  (state, venueId) => venueId,
-  (offers, venueId) => {
-    if (venueId)
-      offers = offers.filter(o => o.managedVenueIds.includes(venueId))
-    return offers
+  occurencesSelector,
+  (offers, occurences) => {
+    return offers.filter(offer => {
+      return occurences.some(occurence => offer.eventOccurenceId === occurence.id)
+    })
   }
 )

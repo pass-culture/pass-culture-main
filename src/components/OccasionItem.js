@@ -16,6 +16,7 @@ import createEventSelector from '../selectors/createEvent'
 import createMaxDateSelector from '../selectors/createMaxDate'
 import createMediationsSelector from '../selectors/createMediations'
 import createOccurencesSelector from '../selectors/createOccurences'
+import createOffersSelector from '../selectors/createOffers'
 import createStockSelector from '../selectors/createStock'
 import createThingSelector from '../selectors/createThing'
 import createThumbUrlSelector from '../selectors/createThumbUrl'
@@ -55,21 +56,15 @@ class OccasionItem extends Component {
       )
   }
 
-  onDeleteClick = () => {
-    const {
-      occasion,
-      requestData,
-    } = this.props
-    requestData('DELETE', `occasions/${occasion.id}`, { key: 'occasions' })
-  }
-
   render() {
     const {
       event,
       location: { search },
+      maxDate,
       mediations,
       occasion,
       occurences,
+      offers,
       stock,
       thing,
       thumbUrl,
@@ -77,7 +72,6 @@ class OccasionItem extends Component {
     } = this.props
     const {
       available,
-      maxDate,
       groupSizeMin,
       groupSizeMax,
       priceMin,
@@ -90,6 +84,7 @@ class OccasionItem extends Component {
     } = (event || thing || {})
 
     const mediationsLength = get(mediations, 'length')
+
     return (
       <li className={classnames('occasion-item', { active: isActive })}>
         <Thumb alt='offre' src={thumbUrl} />
@@ -98,17 +93,21 @@ class OccasionItem extends Component {
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className='infos'>
-            {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
-            <li className='is-uppercase'>{get(type, 'label')}</li>
+            {false && moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
+            <li className='is-uppercase'>{get(type, 'label') || 'Type inconnu'}</li>
             <li>
               <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates${search}`}>
                 {pluralize(get(occurences, 'length'), 'dates')}
               </NavLink>
             </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
-            {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? `minimum ${pluralize(groupSizeMin, 'personnes')}` : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
-            {available > 0 && <li>{pluralize(available, 'places restantes')}</li>}
-            <li>{priceMin === priceMax ? <Price value={priceMin} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
+            <li title={groupSizeMin > 0 && (groupSizeMin === groupSizeMax ? `minimum ${pluralize(groupSizeMin, 'personnes')}` : `entre ${groupSizeMin} et ${groupSizeMax} personnes`)}>
+              {groupSizeMin === 0 && [<Icon svg='picto-user' />, 'ou ', <Icon svg='picto-group' />]}
+              {groupSizeMin === 1 && <Icon svg='picto-user' />}
+              {groupSizeMin > 1 && [<Icon svg='picto-group' />, <p>{groupSizeMin === groupSizeMax ? groupSizeMin : `${groupSizeMin} - ${groupSizeMax}`}</p>]}
+            </li>
+            <li>{available ? `${pluralize('restent', available)} ${available}` : 'Places illimitées'} </li>
+            <li>{priceMin === priceMax ? <Price value={priceMin || 0} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
           </ul>
           <ul className='actions'>
             <li>
@@ -121,7 +120,10 @@ class OccasionItem extends Component {
             <li>
               <button className='button is-secondary is-small'
                 onClick={this.onDeactivateClick}>
-                {isActive ? ('X Désactiver') : ('Activer')}
+                {isActive ? [
+                  <Icon svg='ico-close-r' />,
+                  'Désactiver'
+                  ] : ('Activer')}
               </button>
               <NavLink  to={`offres/${occasion.id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
@@ -129,10 +131,6 @@ class OccasionItem extends Component {
             </li>
           </ul>
         </div>
-        {false && <div className="is-pulled-right" key={2}>
-                  <button className="delete is-small"
-                    onClick={this.onDeleteClick} />
-                </div>}
       </li>
     )
   }
@@ -143,21 +141,23 @@ OccasionItem.defaultProps = {
 }
 
 
-const typesSelector = createTypesSelector()
 
 export default compose(
   withRouter,
   connect(
     () => {
+      const typesSelector = createTypesSelector()
       const eventSelector = createEventSelector()
-      const mediationsSelector = createMediationsSelector()
-      const occurencesSelector = createOccurencesSelector()
       const thingSelector = createThingSelector()
       const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
+      const mediationsSelector = createMediationsSelector()
+      const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
+
+      const occurencesSelector = createOccurencesSelector()
+      const offersSelector = createOffersSelector(occurencesSelector)
 
       const maxDateSelector = createMaxDateSelector(occurencesSelector)
-      const stockSelector = createStockSelector(occurencesSelector)
-      const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
+      const stockSelector = createStockSelector(offersSelector)
 
       return (state, ownProps) => {
         const occasion = ownProps.occasion
