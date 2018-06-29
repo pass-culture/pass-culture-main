@@ -62,8 +62,10 @@ class OccurenceItem extends Component {
 
   onDeleteClick = () => {
     const {
+      isEventOccurenceFrozen,
       occurence,
       offer,
+      provider,
       requestData
     } = this.props
     const {
@@ -78,7 +80,7 @@ class OccurenceItem extends Component {
         {
           key: 'offers',
           handleSuccess: () => {
-            requestData(
+            !provider && requestData(
               'DELETE',
               `eventOccurences/${id}`,
               {
@@ -88,7 +90,7 @@ class OccurenceItem extends Component {
           }
         }
       )
-    } else {
+    } else if (!provider) {
       requestData(
         'DELETE',
         `eventOccurences/${id}`,
@@ -107,6 +109,7 @@ class OccurenceItem extends Component {
       occurences,
       occurence,
       offer,
+      provider,
       tz
     } = this.props
     const {
@@ -146,12 +149,16 @@ class OccurenceItem extends Component {
         <td>{available || 'Illimité'}</td>
         <td>{pmrGroupSize || 'Illimité'}</td>
         <td>
-          <button
-            className="button is-small is-secondary"
-            onClick={this.onDeleteClick}
-          >
-            <span className='icon'><Icon svg='ico-close-r' /></span>
-          </button>
+          {
+            !provider && (
+              <button
+                className="button is-small is-secondary"
+                onClick={this.onDeleteClick}
+              >
+                <span className='icon'><Icon svg='ico-close-r' /></span>
+              </button>
+            )
+          }
         </td>
         <td>
           {
