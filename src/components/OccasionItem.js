@@ -94,12 +94,14 @@ class OccasionItem extends Component {
           </NavLink>
           <ul className='infos'>
             {false && moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
-            <li className='is-uppercase'>{get(type, 'label') || 'Type inconnu'}</li>
-            <li>
-              <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates${search}`}>
-                {pluralize(get(occurences, 'length'), 'dates')}
-              </NavLink>
-            </li>
+            <li className='is-uppercase'>{get(type, 'label') || (event ? 'Evénement' : 'Objet')}</li>
+            {event &&
+              <li>
+                <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates${search}`}>
+                  {pluralize(get(occurences, 'length'), 'dates')}
+                </NavLink>
+              </li>
+            }
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             <li title={groupSizeMin > 0 ? (groupSizeMin === groupSizeMax ? `minimum ${pluralize(groupSizeMin, 'personnes')}` : `entre ${groupSizeMin} et ${groupSizeMax} personnes`) : undefined}>
               {groupSizeMin === 0 && <div><Icon svg='picto-user' /> {'ou '} <Icon svg='picto-group' /></div>}
