@@ -63,18 +63,41 @@ class OccurenceItem extends Component {
   onDeleteClick = () => {
     const {
       occurence,
+      offer,
       requestData
     } = this.props
     const {
       id
     } = occurence
-    requestData(
-      'DELETE',
-      `eventOccurences/${id}`,
-      {
-        key: 'eventOccurences'
-      }
-    )
+
+    // IF AN OFFER IS ASSOCIATED WE NEED TO DELETE IT FIRST
+    if (offer) {
+      requestData(
+        'DELETE',
+        `offers/${offer.id}`,
+        {
+          key: 'offers',
+          handleSuccess: () => {
+            requestData(
+              'DELETE',
+              `eventOccurences/${id}`,
+              {
+                key: 'eventOccurences'
+              }
+            )
+          }
+        }
+      )
+    } else {
+      requestData(
+        'DELETE',
+        `eventOccurences/${id}`,
+        {
+          key: 'eventOccurences'
+        }
+      )
+    }
+
   }
 
   render () {

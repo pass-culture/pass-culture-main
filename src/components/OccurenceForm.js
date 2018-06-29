@@ -111,7 +111,7 @@ class OccurenceForm extends Component {
     // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
     const offerForm = form.offersById[offerIdOrNew] || {}
-    if (Object.keys(offerForm).length) {
+    if (method !== 'DELETE' && Object.keys(offerForm).length) {
       requestData(
         method,
         'offers',
