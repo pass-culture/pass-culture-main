@@ -6,5 +6,5 @@ export default (providersSelector=createProvidersSelector()) => createSelector(
   providersSelector,
   (state, providerId) => providerId,
   (providers, providerId) => providers
-    .find(p => p.id === providerId) || {}
+    .find(p => p.id === providerId)
 )

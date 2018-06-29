@@ -54,7 +54,7 @@ class VenueProviderItem extends Component {
           <Icon svg='picto-db-default' />
         </div>
         <div className='has-text-weight-bold is-size-3'>
-          {provider && provider.localClass}
+          {get(provider, 'localClass')}
         </div>
         <div>
           Compte : <strong className='has-text-weight-bold'>
