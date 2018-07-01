@@ -20,33 +20,25 @@ const withLogin = (config = {}) => WrappedComponent => {
       this.redirectTo = redirectTo
     }
 
-    componentWillMount = () => {
-      const { user, requestData } = this.props
-      if (this.isRequired && !user) {
-        requestData('GET', `users/me`, { key: 'users' })
-      }
-    }
-
     componentDidMount = () => {
-      this.handleRedirect()
-    }
+      const {
+        history,
+        location,
+        user,
+        requestData
+      } = this.props
 
-    componentDidUpdate = prevProps => {
-      this.handleRedirect(prevProps)
-    }
-
-    handleRedirect = (prevProps={}) => {
-      const { history, location, user } = this.props
-      if (user && user !== prevProps.user) {
-        if (!prevProps.user && this.redirectTo && this.redirectTo !== location.pathname) {
-          history.push(this.redirectTo)
-        }
-      } else if (this.isRequired) {
-        if (user === false && prevProps.user === null) {
-          // CASE WHERE WE STILL HAVE A USER NULL
-          // SO WE FORCE THE SIGNING PUSH
-          history.push('/connexion')
-        }
+      if (user === null && this.isRequired) {
+        requestData('GET', `users/me`, {
+          key: 'users',
+          handleSuccess: () => {
+            if (this.redirectTo && this.redirectTo !== location.pathname)
+              history.push(this.redirectTo)
+          },
+          handleFail: () => {
+            history.push('/connexion')
+          }
+        })
       }
     }
 
