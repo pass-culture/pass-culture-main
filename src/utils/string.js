@@ -47,3 +47,18 @@ export function queryStringToObject(string='') {
     return Object.assign({}, result, {[key]: value})
   }, {})
 }
+
+export function objectToQueryString (object={}) {
+  return object && Object.keys(object)
+    .map(key => {
+      const value = String(object[key])
+      return value && `${key}=${value}`
+    }).filter(arg => arg)
+      .join('&')
+}
+
+export function updateQueryString(string, object) {
+  const previousObject = queryStringToObject(object)
+  const nextObject = Object.assign({}, previousObject, object)
+  return objectToQueryString(nextObject)
+}

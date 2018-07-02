@@ -23,9 +23,10 @@ import createTypeSelector from '../../selectors/createType'
 import createTypesSelector from '../../selectors/createTypes'
 import createVenueSelector from '../../selectors/createVenue'
 import createVenuesSelector from '../../selectors/createVenues'
-import { eventNormalizer } from '../../utils/normalizers'
 import { NEW } from '../../utils/config'
 import { getIsDisabled, optionify } from '../../utils/form'
+import { eventNormalizer } from '../../utils/normalizers'
+import { updateQueryString } from '../../utils/string'
 
 const requiredEventAndThingFields = [
   'name',
@@ -177,6 +178,28 @@ class OccasionPage extends Component {
           </button>
         </div>
       )
+    }
+  }
+
+  componentDidUpdate () {
+    const {
+      history,
+      offerer,
+      search,
+      venue
+    } = this.props
+    const { offererId, venueId } = this.props
+
+    if (venue && venueId && venue.id !== venueId) {
+      history.push({
+        search: updateQueryString(search, { venueId })
+      })
+      return
+    }
+    if (offerer && offererId && offerer.id !== offererId) {
+      history.push({
+        search: updateQueryString(search, { offererId })
+      })
     }
   }
 
@@ -351,47 +374,86 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => {
-      let { offererId, venueId } = searchSelector(state, ownProps.location.search)
-
       const eventId = get(ownProps, 'occasion.eventId')
       const occasionId = get(ownProps, 'occasion.id') || NEW
       const thingId = get(ownProps, 'occasion.thingId')
       const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
+      const search = searchSelector(state, ownProps.location.search)
 
-      venueId = venueId ||
-        get(ownProps, 'occasion.venueId') ||
-        get(state, `form.occasionsById.${occasionId}.venueId`)
-
-      let venue
-      if (venueId) {
-        venue = venueSelector(state, venueId)
-        offererId = get(venue, 'managingOffererId')
-      } else {
-        offererId = offererId ||
-          get(state, `form.occasionsById.${occasionId}.offererId`)
-      }
-
-      // if there is only one offerer in the list,
-      // well choose it
-      const offerers = offerersSelector(state)
-      const offerer = offererSelector(state, offererId) ||
-        (get(offerers, 'length') === 1 && get(offerers, '0'))
-
-      // same for the venue...
-      const venues = venuesSelector(state, offererId)
-      venue = venue || (get(venues, 'length') === 1 && get(venues, '0'))
-
-      return {
+      const newState = {
         event: eventSelector(state, eventId),
+        offerers: offerersSelector(state),
         providers: providersSelector(state),
-        offerer,
-        offerers,
+        search,
         thing: thingSelector(state, thingId),
         type: typeSelector(state, eventId, thingId, formLabel),
         typeOptions: typesSelector(state),
-        venue,
-        venues
       }
+
+      // CASE WHERE ALL IS DECIDED FROM THE SELECTS
+      let offererId = get(state, `form.occasionsById.${occasionId}.offererId`)
+      if (offererId) {
+        newState.offerer = offererSelector(state, offererId)
+        newState.venues = venuesSelector(state, offererId)
+        if (get(newState.venues, 'length') === 1) {
+          newState.venue = get(newState.venues, '0')
+        }
+        return newState
+      }
+
+      let venueId = get(state, `form.occasionsById.${occasionId}.venueId`)
+      if (venueId) {
+        newState.venues = venuesSelector(state, offererId)
+        if (get(newState.venues, 'length') === 1) {
+          newState.venue = get(newState.venues, '0')
+        } else {
+          newState.venue = venueSelector(state, venueId)
+        }
+        newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+        return newState
+      }
+
+      // CASE WHERE ALL IS DECIDED FROM THE SEARCH
+      if (search.venueId) {
+        newState.venue = venueSelector(state, venueId)
+        newState.venues = [newState.venue]
+        newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+        newState.offerers = [newState.offerer]
+        return newState
+      }
+      if (search.offererId) {
+        newState.offerer = offererSelector(state, offererId)
+        newState.offerers = [newState.offerer]
+        newState.venues = venuesSelector(state, offererId)
+        if (get(newState.venues, 'length') === 1) {
+          newState.venue = get(newState.venues, '0')
+        }
+      }
+
+      // CASE WHERE ALL IS DECIDED FROM THE OCCASION
+      venueId = get(ownProps, 'occasion.venueId')
+      if (venueId) {
+        newState.venue = venueSelector(state, venueId)
+        newState.venues = [newState.venue]
+        newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+        return newState
+      }
+      offererId = get(ownProps, 'occasion.offererId')
+      if (offererId) {
+        newState.offerer = offererSelector(state, offererId)
+        newState.venues = venuesSelector(state, offererId)
+        if (get(newState.venues, 'length') === 1) {
+          newState.venue = get(newState.venues, '0')
+        }
+      }
+
+      // CASE WHERE WE DON T KNOW YET
+      // BUT MAYBE WE HAVE ONLY ONE OFFERER
+      if (get(newState.offerers, 'length') === 1) {
+        newState.offerer = get(newState.offerers, '0')
+      }
+
+      return newState
     },
     {
       closeModal,
