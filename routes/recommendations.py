@@ -8,7 +8,6 @@ from sqlalchemy.sql.expression import func
 
 from datascience import create_recommendation, create_recommendations
 from models.api_errors import ApiErrors
-from utils.geoip import get_geolocation
 from utils.rest import expect_json_data
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
                          BLOB_UNREAD_NUMBER
