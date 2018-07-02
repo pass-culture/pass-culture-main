@@ -344,9 +344,9 @@ class OccurenceForm extends Component {
               const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()
                                                    .set({
-                                                          hour: endHour,
-                                                          minute: endMinute
-                                                        })
+                                                      hour: endHour,
+                                                      minute: endMinute
+                                                    }).tz(tz)
               if (endDatetime < beginningDatetime) {
                 endDatetime.add(1, 'days')
               }
