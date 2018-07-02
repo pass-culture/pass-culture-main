@@ -16,6 +16,17 @@ class OccurenceManager extends Component {
   onAddClick = () => {
     const {
       history,
+      occasion
+    } = this.props
+    const {
+      id
+    } = (occasion || {})
+    id && history.push(`/offres/${id}/dates/nouvelle`)
+  }
+
+  handleNextData = () => {
+    const {
+      history,
       mergeForm,
       occasion,
       occurences,
@@ -24,7 +35,7 @@ class OccurenceManager extends Component {
       id
     } = (occasion || {})
 
-    const lastOccurence = occurences.length > 0 && occurences[occurences.length-1]
+    const lastOccurence = occurences.length > 0 && occurences[0]
     if (lastOccurence) {
       const {
         beginningDatetime,
@@ -37,7 +48,9 @@ class OccurenceManager extends Component {
         pmrGroupSize,
         price
       } = get(offer, '0', {})
+
       const date = moment(beginningDatetime).add(1, 'days')
+
       mergeForm('eventOccurences', NEW,
         {
           available,
@@ -51,9 +64,34 @@ class OccurenceManager extends Component {
             : price
         })
     }
-    history.push(`/offres/${id}/dates/nouvelle`)
   }
 
+  componentDidMount () {
+    const {
+      match: { params: { eventOccurenceId } }
+    } = this.props
+    if (eventOccurenceId === 'nouvelle') {
+      this.handleNextData()
+    }
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      match: { params: { eventOccurenceId } },
+      occasion
+    } = this.props
+    const {
+      id
+    } = (occasion || {})
+    if (eventOccurenceId === 'nouvelle' &&
+      (
+        eventOccurenceId !== get(prevProps, 'match.params.eventOccurenceId') ||
+        (id && get(prevProps, 'occasion.id'))
+      )
+    ) {
+      this.handleNextData()
+    }
+  }
 
   render() {
     const {

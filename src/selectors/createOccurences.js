@@ -16,7 +16,7 @@ const createOccurencesSelector = () => createSelector(
         endDatetimeMoment: moment(o.endDatetime)
       }))
       .sort((o1,o2) =>
-        o1.beginningDatetimeMoment - o2.beginningDatetimeMoment
+        o2.beginningDatetimeMoment - o1.beginningDatetimeMoment
       )
   }
 )

@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { requestData } from '../reducers/data'
+import { mergeForm } from '../reducers/form'
 import createEventSelector from '../selectors/createEvent'
 import createOfferSelector from '../selectors/createOffer'
 import createTimezoneSelector from '../selectors/createTimezone'
@@ -93,6 +94,7 @@ class OccurenceForm extends Component {
     const {
       form,
       history,
+      mergeForm,
       occasion,
       onEditChange,
       requestData,
@@ -102,6 +104,7 @@ class OccurenceForm extends Component {
       id
     } = (occasion || {})
     const {
+      eventOccurenceIdOrNew,
       method,
       offerIdOrNew
     } = this.state
@@ -110,30 +113,42 @@ class OccurenceForm extends Component {
     // ON A POST/PATCH EVENT OCCURENCE SUCCESS
     // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
-    const offerForm = form.offersById[offerIdOrNew] || {}
-    if (method !== 'DELETE' && Object.keys(offerForm).length) {
+    const offerForm = get(form, `offersById.${offerIdOrNew}`) || {}
+    if (method !== 'DELETE') {
 
-      const body = Object.assign({
-        eventOccurenceId: action.data.id,
-        offererId: venue.managingOffererId,
-      }, offerForm)
-      // price is actually compulsory for posting an offer
-      // but we can let automatically set to gratuit
-      if (method === 'POST' && typeof body.price === 'undefined') {
-        body.price = 0
+      // prepare the next add form to the next day
+      if (method === 'POST') {
+        const date = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}.date`)
+        // date && mergeForm('eventOccurences', NEW, 'date', date.add(1, 'days'))
       }
 
-      requestData(
-        method,
-        'offers',
-        {
-          body,
-          key: 'offers'
+      if (Object.keys(offerForm).length) {
+
+        const body = Object.assign({
+          eventOccurenceId: action.data.id,
+          offererId: venue.managingOffererId,
+        }, offerForm)
+
+        // price is actually compulsory for posting an offer
+        // but we can let automatically set to gratuit
+        if (method === 'POST' && typeof body.price === 'undefined') {
+          body.price = 0
         }
-      )
+
+        requestData(
+          method,
+          'offers',
+          {
+            body,
+            key: 'offers'
+          }
+        )
+      }
     }
 
-    history.push(`/offres/${id}/dates`)
+    if (method !== 'POST') {
+      history.push(`/offres/${id}/dates`)
+    }
   }
 
   render () {
@@ -268,10 +283,12 @@ class OccurenceForm extends Component {
                     eventOccurenceId: id,
                     offererId: venue.managingOffererId
                   }, get(form, `offersById.${offerIdOrNew}`))
-                // price is actually compulsory for posting an offer
-                // but we can let automatically set to gratuit
-                if (method === 'POST' && typeof body.price === 'undefined') {
-                  body.price = 0
+                if (method === 'POST') {
+                  // price is actually compulsory for posting an offer
+                  // but we can let automatically set to gratuit
+                  if (typeof body.price === 'undefined') {
+                    body.price = 0
+                  }
                 }
                 return body
               }
@@ -363,5 +380,5 @@ export default connect(
       occurences: occurencesSelector(state, venueId, eventId),
     }
   },
-  { requestData }
+  { mergeForm, requestData }
 )(OccurenceForm)
