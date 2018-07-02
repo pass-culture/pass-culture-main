@@ -16,9 +16,9 @@ C'est tout le framework du Pass Culture!
   ```
 
 ### Init
-  Pour obtenir une base de données minimale.
+  Pour verifier les tests et obtenir une db minimale:
   ```bash
-    ./pc set-backend-dev
+    ./pc test-backend
   ```
 
 ### Démarrage
@@ -71,7 +71,7 @@ C'est tout le framework du Pass Culture!
   Then connect to the staging server:
   ```bash
     cd ~/pass-culture-main
-    cat "../dumps_prod/2018053<TO BE COMPLETED> docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
+    cat "../dumps_prod/2018_<TBD>_<TBD>.pgdump" docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
     ./pc update-db
     ./pc sandbox
   ```
