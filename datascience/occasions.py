@@ -108,11 +108,14 @@ def aliased_join_table(occasion_type):
         return aliased(Offer)
 
 
-def departement_occasions(query, occasion_type, departement_codes):
+def departement_or_national_occasions(query, occasion_type, departement_codes):
     join_table = aliased_join_table(occasion_type)
+    condition = Venue.departementCode.in_(departement_codes)
+    if occasion_type == Event:
+        condition = (condition | (occasion_type.isNational == True))
     query = query.join(join_table)\
                  .join(Venue)\
-                 .filter(Venue.departementCode.in_(departement_codes))\
+                 .filter(condition)\
                  .distinct(occasion_type.id)
     print_dev('(reco) departement '+str(occasion_type)+'.count', query.count())
     return query
@@ -165,7 +168,7 @@ def get_occasions_by_type(occasion_type,
     query = occasion_type.query
     print_dev('(reco) all '+str(occasion_type)+'.count', query.count())
 
-    query = departement_occasions(query, occasion_type, departement_codes)
+    query = departement_or_national_occasions(query, occasion_type, departement_codes)
     query = bookable_occasions(query, occasion_type)
     query = with_active_and_validated_offerer(query, occasion_type)
     query = not_yet_recommended_occasions(query, occasion_type, user)

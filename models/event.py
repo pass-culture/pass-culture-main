@@ -4,7 +4,7 @@ from flask import current_app as app
 from sqlalchemy import Index
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects.postgresql import ARRAY, TEXT
-from sqlalchemy.sql.expression import cast
+from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
 
 from utils.schema_org import make_schema_org_hierarchy_and_enum
@@ -84,6 +84,12 @@ class Event(app.model.PcObject,
 
     durationMinutes = db.Column(db.Integer,
                                 nullable=False)
+
+    isNational = db.Column(db.Boolean,
+                           server_default=false(),
+                           default=False,
+                           nullable=False)
+
 
 Event.__ts_vector__ = create_tsvector(
     cast(coalesce(Event.name, ''), TEXT)
