@@ -14,7 +14,7 @@ while [ -h "$PRG" ] ; do
 	fi
 done
 
-ROOT_PATH=$(dirname "$PRG")
+ROOT_PATH=$(realpath $(dirname "$PRG"))
 
 function confirm {
  read -p "$1 (y/n) : " -n 1 -r
@@ -127,7 +127,6 @@ elif [[ "$CMD" == "install" ]]; then
        git submodule init;
        git submodule update;
        git submodule foreach git checkout origin master;
-			 ./pc install-geoip;
 			 ./pc symlink;
        cd $ROOT_PATH/webapp && yarn;
 			 cd $ROOT_PATH/pro && yarn'
