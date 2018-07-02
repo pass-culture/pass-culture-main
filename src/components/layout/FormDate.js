@@ -26,6 +26,7 @@ class FormDate extends Component {
       highlightedDates,
       defaultValue,
       readOnly,
+      showTimeSelect,
       value
     } = this.props
     const resolvedValue = value || defaultValue
@@ -42,6 +43,7 @@ class FormDate extends Component {
                   className='input is-rounded is-small'
                   minDate={moment()}
                   highlightDates={highlightedDates || []}
+                  showTimeSelect={showTimeSelect}
                 />
             )
         }

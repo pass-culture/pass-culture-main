@@ -213,6 +213,7 @@ class OccasionForm extends Component {
           isHorizontal
           isExpanded
           label={<Label title="Description :" />}
+          maxLength={500}
           name="description"
           readOnly={isReadOnly}
           required={!isReadOnly}

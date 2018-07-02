@@ -37,11 +37,16 @@ class OccurenceForm extends Component {
       offer,
       tz
     } = nextProps
+
     const {
       beginningDatetime,
       endDatetime,
       id
     } = (occurence || {})
+
+    const {
+      bookingLimitDatetime
+    } = (offer || {})
 
     const eventOccurenceIdOrNew = id || NEW
     const formOccurence = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`, {})
@@ -63,8 +68,10 @@ class OccurenceForm extends Component {
     }
 
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
+    const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
     return {
       apiPath,
+      bookingDate,
       date,
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
       eventOccurenceIdOrNew,
@@ -159,6 +166,7 @@ class OccurenceForm extends Component {
       offer,
       offerer,
       onDeleteClick,
+      tz,
       venue,
     } = this.props
     const {
@@ -176,6 +184,7 @@ class OccurenceForm extends Component {
     } = (occasion || {})
     const {
       apiPath,
+      bookingDate,
       endTime,
       date,
       eventOccurenceIdOrNew,
@@ -229,16 +238,44 @@ class OccurenceForm extends Component {
           />
         </td>
         <td title='Vide si gratuit'>
+          {
+            false &&
+              <FormField
+                className='is-small'
+                collectionName="offers"
+                defaultValue={price}
+                entityId={offerIdOrNew}
+                min={0}
+                name="price"
+                placeholder='Vide si gratuit'
+                required
+                type="number"
+              />
+          }
           <FormField
             className='is-small'
             collectionName="offers"
-            defaultValue={price}
+            defaultValue={0}
             entityId={offerIdOrNew}
             min={0}
             name="price"
-            placeholder='Vide si gratuit'
+            placeholder='Gratuit'
+            readOnly
             required
             type="number"
+          />
+        </td>
+        <td title='Laissez vide si pas de limite'>
+          <FormField
+            className='is-small'
+            collectionName="offers"
+            defaultValue={bookingDate}
+            entityId={offerIdOrNew}
+            format='DD/MM/YYYY'
+            min={0}
+            name="bookingDate"
+            placeholder="Laissez vide si pas de limite"
+            type="date"
           />
         </td>
         <td title='Laissez vide si pas de limite'>
@@ -303,7 +340,7 @@ class OccurenceForm extends Component {
               const beginningDatetime = (eo.date || date).set({
                 'hour': hour,
                 'minute': minute
-              })
+              }).tz(tz)
               const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()
                                                    .set({

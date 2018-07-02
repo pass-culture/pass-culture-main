@@ -28,6 +28,7 @@ class OccurenceItem extends Component {
     const {
       match: { params: { eventOccurenceId } },
       occurence,
+      offer,
       tz
     } = nextProps
 
@@ -37,8 +38,15 @@ class OccurenceItem extends Component {
       id
     } = (occurence || {})
 
+    const {
+      bookingLimitDatetime
+    } = (offer || {})
+
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
+    console.log('bookingLimitDatetime', bookingLimitDatetime)
+    const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
     return {
+      bookingDate: bookingDate && bookingDate.format('HH:mm'),
       date: date && date.format('DD/MM/YYYY'),
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
       isAdding: eventOccurenceId === 'nouvelle',
@@ -124,6 +132,7 @@ class OccurenceItem extends Component {
     } = (offer || {})
 
     const {
+      bookingDate,
       date,
       endTime,
       isAdding,
@@ -146,6 +155,7 @@ class OccurenceItem extends Component {
         <td>{time}</td>
         <td>{endTime}</td>
         <td><Price value={price || 0} /></td>
+        <td>{bookingDate || 'Pas de limite'}</td>
         <td>{available || 'Illimité'}</td>
         <td>{pmrGroupSize || 'Illimité'}</td>
         <td>

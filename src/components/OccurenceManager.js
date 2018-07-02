@@ -116,6 +116,7 @@ class OccurenceManager extends Component {
                 <td>Heure de début</td>
                 <td>Heure de fin</td>
                 <td>Prix</td>
+                <td>Date Limite de Réservation</td>
                 <td>Places (total)</td>
                 <td>Dont (PMR)</td>
                 <td>Supprimer</td>
@@ -170,6 +171,7 @@ class OccurenceManager extends Component {
                   <td>Heure de début</td>
                   <td>Heure de fin</td>
                   <td>Prix</td>
+                  <td>Date Limite de Réservation</td>
                   <td>Places (total)</td>
                   <td>Dont PMR</td>
                   <td>Supprimer</td>

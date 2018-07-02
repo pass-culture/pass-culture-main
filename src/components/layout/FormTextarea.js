@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import Textarea from 'react-autosize-textarea'
 import { connect } from 'react-redux'
-import Textarea from 'react-autosize-textarea';
 
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
@@ -23,7 +23,14 @@ class FormTextarea extends Component {
   }
 
   render() {
-    const { className, defaultValue, id, placeholder, required, value, readOnly, } = this.props
+    const { className,
+      defaultValue,
+      id,
+      placeholder,
+      readOnly,
+      required,
+      value,
+    } = this.props
     return (
 
       <Textarea
