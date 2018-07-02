@@ -166,7 +166,6 @@ class OccurenceForm extends Component {
       offer,
       offerer,
       onDeleteClick,
-      tz,
       venue,
     } = this.props
     const {
@@ -338,15 +337,17 @@ class OccurenceForm extends Component {
               }
               const [hour, minute] = (eo.time || time).split(':')
               const beginningDatetime = (eo.date || date).set({
-                'hour': hour,
-                'minute': minute
-              }).tz(tz)
+                hour,
+                minute
+              })
+              //.tz(tz)
               const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()
                                                    .set({
                                                       hour: endHour,
                                                       minute: endMinute
-                                                    }).tz(tz)
+                                                    })
+                                                    //.tz(tz)
               if (endDatetime < beginningDatetime) {
                 endDatetime.add(1, 'days')
               }

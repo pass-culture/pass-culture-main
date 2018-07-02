@@ -43,7 +43,10 @@ function* fromWatchRequestDataActions(action) {
 
   } catch (error) {
     console.warn('error', error)
-    yield put(failData(method, path, [{ global: error }], config))
+    yield put(failData(method, path, [{
+      //global: String(error)
+      global: "Une erreur s'est produite avec le serveur"
+    }], config))
   }
 }
 

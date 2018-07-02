@@ -403,13 +403,9 @@ export default compose(
 
       let venueId = get(state, `form.occasionsById.${occasionId}.venueId`)
       if (venueId) {
-        newState.venues = venuesSelector(state, offererId)
-        if (get(newState.venues, 'length') === 1) {
-          newState.venue = get(newState.venues, '0')
-        } else {
-          newState.venue = venueSelector(state, venueId)
-        }
+        newState.venue = venueSelector(state, venueId)
         newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+        newState.venues = venuesSelector(state, offererId)
         return newState
       }
 
