@@ -1,6 +1,10 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import { matchPath, Redirect, Route, Switch } from 'react-router-dom'
+import Raven from 'raven-js'
+
+import { version } from '../package.json'
+import { API_URL, IS_DEV } from './utils/config'
 
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
@@ -13,6 +17,14 @@ import store from './utils/store'
 import history from './utils/history'
 
 const Root = () => {
+  if (!IS_DEV) {
+    Raven
+    .config(API_URL+'/client_errors', {
+      release: version,
+      environment: process.env.NODE_ENV,
+      logger: 'javascript'})
+      .install()
+  }
   return (
     <Provider store={store}>
       <ConnectedRouter history={history}>

@@ -2,9 +2,6 @@ import get from 'lodash.get'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
-import TimeAgo from 'react-timeago'
-import frenchStrings from 'react-timeago/lib/language-strings/fr-short'
-import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 import moment from 'moment'
 
 import getTimezone from '../getters/timezone'
@@ -13,13 +10,6 @@ import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import Capitalize from './utils/Capitalize'
 import { getDiscoveryPath } from '../utils/routes'
-
-const formatter = buildFormatter(
-  Object.assign(frenchStrings, {
-    prefixAgo: 'Il y a',
-    prefixFromNow: 'Dans',
-  })
-)
 
 const BookingItem = props => {
   const { mediation, offer, thumbUrl, token } = props

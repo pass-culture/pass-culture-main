@@ -12,6 +12,7 @@ class ProfilePage extends Component {
     const { requestData } = this.props
     requestData('GET', 'users/signout')
   }
+  
   componentWillReceiveProps(nextProps) {
     const {
       history: { push },
@@ -21,6 +22,8 @@ class ProfilePage extends Component {
       push('/')
     }
   }
+
+
   render() {
     const { user } = this.props
     return (
