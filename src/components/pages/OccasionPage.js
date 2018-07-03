@@ -410,20 +410,23 @@ export default compose(
       }
 
       // CASE WHERE ALL IS DECIDED FROM THE SEARCH
-      if (search.venueId) {
+      venueId = search.venueId
+      if (venueId) {
         newState.venue = venueSelector(state, venueId)
         newState.venues = [newState.venue]
         newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
         newState.offerers = [newState.offerer]
         return newState
       }
-      if (search.offererId) {
+      offererId = search.offererId
+      if (offererId) {
         newState.offerer = offererSelector(state, offererId)
         newState.offerers = [newState.offerer]
         newState.venues = venuesSelector(state, offererId)
         if (get(newState.venues, 'length') === 1) {
           newState.venue = get(newState.venues, '0')
         }
+        return newState
       }
 
       // CASE WHERE ALL IS DECIDED FROM THE OCCASION
@@ -441,6 +444,7 @@ export default compose(
         if (get(newState.venues, 'length') === 1) {
           newState.venue = get(newState.venues, '0')
         }
+        return newState
       }
 
       // CASE WHERE WE DON T KNOW YET

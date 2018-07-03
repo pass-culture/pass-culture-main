@@ -12,7 +12,6 @@ export function optionify(
   placeholder,
   mapFn=(el => ({label: el.name, value: el.id}))
 ) {
-  console.log('HEIN', collection)
   const collectionWithPlaceholder = collection.length > 1
     ? [{label: placeholder}].concat(collection)
     : collection
