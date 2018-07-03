@@ -70,7 +70,7 @@ class ProfilePage extends Component {
                   className="button is-primary is-medium"
                   method='PATCH'
                   handleSuccess={this.handleSuccess}
-                  path='users/me'
+                  path='users/current'
                   storeKey="occasions"
                   text="Enregistrer"
                 />
