@@ -147,7 +147,7 @@ class OccasionsPage extends Component {
                 <li className='tag is-rounded is-medium'>
                   Structure :
                   <span className="has-text-weight-semibold"> {offerer.name} </span>
-                  <button class="delete is-small" onClick={this.handleRemoveFilter('offererId')}></button>
+                  <button className="delete is-small" onClick={this.handleRemoveFilter('offererId')}></button>
                 </li>
               )
               : venue && (
