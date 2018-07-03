@@ -87,8 +87,6 @@ class OffererPage extends Component {
 
 
   render () {
-    console.log('state -------------------', this.state)
-
     const {
       offerer,
       user,

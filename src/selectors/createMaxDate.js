@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { createSelector } from 'reselect'
 
 import createOccurencesSelector from './createOccurences'

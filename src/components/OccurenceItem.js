@@ -7,7 +7,6 @@ import OccurenceForm from './OccurenceForm'
 import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
-import createEventSelector from '../selectors/createEvent'
 import createOfferSelector from '../selectors/createOffer'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
@@ -70,7 +69,6 @@ class OccurenceItem extends Component {
 
   onDeleteClick = () => {
     const {
-      isEventOccurenceFrozen,
       occurence,
       offer,
       provider,
@@ -118,12 +116,8 @@ class OccurenceItem extends Component {
       occurence,
       offer,
       provider,
-      tz
+      //tz
     } = this.props
-    const {
-      beginningDatetimeMoment,
-      endDatetimeMoment
-    } = (occurence || {})
     const {
       available,
       groupSize,
@@ -157,7 +151,8 @@ class OccurenceItem extends Component {
         <td><Price value={price || 0} /></td>
         <td>{bookingDate || 'Pas de limite'}</td>
         <td>{available || 'Illimité'}</td>
-        <td>{pmrGroupSize || 'Illimité'}</td>
+        {false && (<td>{groupSize || 'Illimité'}</td>)}
+        {false && (<td>{pmrGroupSize || 'Illimité'}</td>)}
         <td>
           {
             !provider && (
