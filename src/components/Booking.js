@@ -16,7 +16,7 @@ import selectBooking from '../selectors/booking'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
-
+import selectTimezone from '../selectors/currentTimezone'
 moment.locale('fr')
 
 class Booking extends Component {
@@ -69,7 +69,8 @@ class Booking extends Component {
       'recommendation.mediatedOccurences',
       []
     )
-    const availableDates = mediatedOccurences.map(o => moment.parseZone(o.beginningDatetime))
+    const { tz } = this.props
+    const availableDates = mediatedOccurences.map(o => moment(o.beginningDatetime).tz(tz))
     const availableMediatedOccurences = []
     const availableHours = availableDates.filter((d, index) => {
       const isFiltered = d.isSame(selectedDate || this.state.date, 'day')
@@ -105,6 +106,7 @@ class Booking extends Component {
   render() {
     const token = get(this.props, 'booking.token')
     const price = get(this.props, 'offer.price')
+    const tz = this.props.tz
     const error = this.props.error
     const step = this.currentStep()
     const dateRequired =
@@ -132,7 +134,7 @@ class Booking extends Component {
                       }
                       numberOfMonths={1}
                       noBorder={true}
-                      initialVisibleMonth={() => moment.min(availableDates)}
+                      initialVisibleMonth={() => moment.min(availableDates.filter(d => d > moment.now()))}
                       inputIconPosition="after"
                       anchorDirection="center"
                       isDayBlocked={date =>
@@ -156,8 +158,8 @@ class Booking extends Component {
                     >
                       {availableHours.length === 0 && <option>hh:mm</option>}
                       {availableHours.map(d => (
-                        <option key={d} value={moment.parseZone(d).format('H:mm')}>
-                          {moment.parseZone(d).format('H:mm')}
+                        <option key={d} value={moment(d).tz(tz).format('H:mm')}>
+                          {moment(d).tz(tz).format('H:mm')}
                         </option>
                       ))}
                     </select>
@@ -306,7 +308,7 @@ export default connect(
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
     recommendation: selectCurrentRecommendation(state),
-    error: get(state, 'data.errors.global'),
+    tz: selectTimezone(state),
   }),
   {
     requestData,

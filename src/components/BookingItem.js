@@ -7,9 +7,11 @@ import frenchStrings from 'react-timeago/lib/language-strings/fr-short'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 import moment from 'moment'
 
-import Capitalize from './utils/Capitalize'
+import getTimezone from '../getters/timezone'
+import getVenue from '../getters/venue'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
+import Capitalize from './utils/Capitalize'
 import { getDiscoveryPath } from '../utils/routes'
 
 const formatter = buildFormatter(
@@ -21,6 +23,8 @@ const formatter = buildFormatter(
 
 const BookingItem = props => {
   const { mediation, offer, thumbUrl, token } = props
+  const venue = getVenue(null, offer)
+  const tz = getTimezone(venue)
   const date = get(offer, 'eventOccurence.beginningDatetime')
   return (
     <li className="booking-item">
@@ -33,7 +37,7 @@ const BookingItem = props => {
                 {get(props, 'source.name')}
               </Dotdotdot>
             </h5>
-            <Capitalize>{moment.parseZone(date).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
+            <Capitalize>{moment(date).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
           </div>
           <div className="token">{token}</div>
         </div>
