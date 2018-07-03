@@ -54,7 +54,6 @@ class OccurenceForm extends Component {
     const isEventOccurenceFrozen = event && typeof event.lastProviderId === 'string'
     const offerId = get(offer, 'id')
     const offerIdOrNew = offerId || NEW
-    const formOffer = get(form, `offersById.${offerIdOrNew}`)
 
     let apiPath, method, storeKey
     if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
@@ -101,9 +100,7 @@ class OccurenceForm extends Component {
     const {
       form,
       history,
-      mergeForm,
       occasion,
-      onEditChange,
       requestData,
       venue
     } = this.props
@@ -290,18 +287,20 @@ class OccurenceForm extends Component {
             className='is-small'
           />
         </td>
-        <td>
-          <FormField
-            className='is-small'
-            collectionName="offers"
-            defaultValue={pmrGroupSize}
-            entityId={offerIdOrNew}
-            min={0}
-            name="pmrGroupSize"
-            placeholder="Laissez vide si pas de limite"
-            type="number"
-          />
-        </td>
+        {
+          false && <td>
+            <FormField
+              className='is-small'
+              collectionName="offers"
+              defaultValue={pmrGroupSize}
+              entityId={offerIdOrNew}
+              min={0}
+              name="pmrGroupSize"
+              placeholder="Laissez vide si pas de limite"
+              type="number"
+            />
+          </td>
+        }
         <td>
           <button
             className="button is-secondary is-small"

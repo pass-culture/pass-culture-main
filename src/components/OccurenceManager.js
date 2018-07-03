@@ -1,7 +1,6 @@
 import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
-import { findDOMNode } from 'react-dom'
 import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
@@ -26,14 +25,10 @@ class OccurenceManager extends Component {
 
   handleNextData = () => {
     const {
-      history,
       mergeForm,
       occasion,
       occurences,
     } = this.props
-    const {
-      id
-    } = (occasion || {})
 
     const lastOccurence = occurences.length > 0 && occurences[0]
     if (lastOccurence) {
@@ -118,7 +113,8 @@ class OccurenceManager extends Component {
                 <td>Prix</td>
                 <td>Date Limite de Réservation</td>
                 <td>Places (total)</td>
-                <td>Dont (PMR)</td>
+                {false && <td>Taille groupe</td>}
+                {false && <td>Dont (PMR)</td>}
                 <td>Supprimer</td>
                 <td>Modifier</td>
               </tr>
@@ -173,7 +169,8 @@ class OccurenceManager extends Component {
                   <td>Prix</td>
                   <td>Date Limite de Réservation</td>
                   <td>Places (total)</td>
-                  <td>Dont PMR</td>
+                  {false && <td>Taille groupe</td>}
+                  {false && <td>Dont PMR</td>}
                   <td>Supprimer</td>
                   <td>Modifier</td>
                 </tr>
