@@ -135,7 +135,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
             obj.mediaUrls = [self.line['Lien Internet']]
             obj.durationMinutes = format_duration(self.line['Durée'])
             obj.isNational = is_filled(self.line["Territoire\n(Reporting)"])\
-                             and str(self.line["Territoire\n(Reporting)"]).lower() == 'national'
+                             and str(self.line["Territoire\n(Reporting)"]).lower() == '0'
             self.eos = {}
         elif isinstance(obj, Occasion):
             obj.venue = self.venue
