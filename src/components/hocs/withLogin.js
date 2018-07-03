@@ -23,7 +23,7 @@ const withLogin = (config = {}) => WrappedComponent => {
     componentWillMount = () => {
       const { user, requestData } = this.props
       if (!user) {
-        requestData('GET', `users/me`, {
+        requestData('GET', `users/current`, {
           key: 'users',
           local: IS_DEXIE
         })
@@ -44,7 +44,7 @@ const withLogin = (config = {}) => WrappedComponent => {
         // ON THE BACKEND TO CONFIRM THAT IT IS STILL
         // A STORED USER
         if (!this.props.user && !this.hasBackendRequest) {
-          requestData('GET', `users/me`, { key: 'users' })
+          requestData('GET', `users/current`, { key: 'users' })
           this.hasBackendRequest = true
           if (redirectTo) {
             history.push(redirectTo)
@@ -54,7 +54,7 @@ const withLogin = (config = {}) => WrappedComponent => {
         if (nextProps.user === false && this.props.user === null) {
           // CASE WHERE WE TRIED TO GET THE USER IN THE LOCAL
           // BUT WE GOT A FALSE RETURN SO WE NEED TO ASK THE BACKEND
-          requestData('GET', 'users/me', { key: 'users' })
+          requestData('GET', 'users/current', { key: 'users' })
           this.hasBackendRequest = true
         } else if (!isModalActive) {
           if (nextProps.user === null && this.props.user === false) {
