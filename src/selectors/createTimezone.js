@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect'
 
-export default venueSelector => createSelector(
+import createVenueSelector from './createVenue'
+
+export default (venueSelector=createVenueSelector()) => createSelector(
   venueSelector,
   venue => {
       if (!venue)

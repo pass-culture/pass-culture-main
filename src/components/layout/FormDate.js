@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import DatePicker from 'react-datepicker'
 import { connect } from 'react-redux'
 
-import Icon from './Icon'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
 
@@ -16,12 +15,27 @@ class FormDate extends Component {
       mergeForm,
       name,
     } = this.props
-    mergeForm(collectionName, entityId, name, date)
+    date && mergeForm(collectionName, entityId, name, date)
+  }
+
+  componentDidMount() {
+    // fill automatically the form when it is a NEW POST action
+    const { entityId, defaultValue } = this.props
+    entityId === NEW && this.handleDateSelect(defaultValue)
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      defaultValue,
+      entityId
+    } = this.props
+    if (defaultValue && !defaultValue.isSame(prevProps.defaultValue, 'day')) {
+      entityId === NEW && this.handleDateSelect(defaultValue)
+    }
   }
 
   render () {
     const {
-      availableDates,
       format,
       highlightedDates,
       defaultValue,

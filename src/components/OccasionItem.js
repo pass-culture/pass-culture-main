@@ -64,7 +64,6 @@ class OccasionItem extends Component {
       mediations,
       occasion,
       occurences,
-      offers,
       stock,
       thing,
       thumbUrl,

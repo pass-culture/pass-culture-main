@@ -29,7 +29,7 @@ const withLogin = (config = {}) => WrappedComponent => {
       } = this.props
 
       if (user === null && this.isRequired) {
-        requestData('GET', `users/me`, {
+        requestData('GET', `users/current`, {
           key: 'users',
           handleSuccess: () => {
             if (this.redirectTo && this.redirectTo !== location.pathname)

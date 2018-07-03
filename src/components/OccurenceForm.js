@@ -66,8 +66,11 @@ class OccurenceForm extends Component {
       storeKey = 'eventOccurences'
     }
 
+    const formDate = formOccurence.date
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
+    const bookingDate = (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
+      || (formDate && formDate.clone().subtract(2, 'days'))
+    // console.log('HEIN', formDate, formDate.subtract(2, 'days'))
     return {
       apiPath,
       bookingDate,
@@ -108,9 +111,9 @@ class OccurenceForm extends Component {
       id
     } = (occasion || {})
     const {
-      eventOccurenceIdOrNew,
       method,
-      offerIdOrNew
+      offerIdOrNew,
+      storeKey
     } = this.state
 
 
@@ -118,13 +121,7 @@ class OccurenceForm extends Component {
     // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
     const offerForm = get(form, `offersById.${offerIdOrNew}`) || {}
-    if (method !== 'DELETE') {
-
-      // prepare the next add form to the next day
-      if (method === 'POST') {
-        const date = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}.date`)
-        // date && mergeForm('eventOccurences', NEW, 'date', date.add(1, 'days'))
-      }
+    if (storeKey !== 'offers' && method !== 'DELETE') {
 
       if (Object.keys(offerForm).length) {
 
@@ -132,12 +129,6 @@ class OccurenceForm extends Component {
           eventOccurenceId: action.data.id,
           offererId: venue.managingOffererId,
         }, offerForm)
-
-        // price is actually compulsory for posting an offer
-        // but we can let automatically set to gratuit
-        if (method === 'POST' && typeof body.price === 'undefined') {
-          body.price = 0
-        }
 
         requestData(
           method,
@@ -158,26 +149,19 @@ class OccurenceForm extends Component {
   render () {
     const {
       event,
-      occasion,
       occurence,
       offer,
-      offerer,
-      onDeleteClick,
       venue,
+      tz,
     } = this.props
     const {
       id,
-      beginningDatetime,
-      endDatetime,
     } = occurence || {}
     const {
       price,
       available,
       pmrGroupSize
     } = (offer || {})
-    const {
-      durationMinutes,
-    } = (occasion || {})
     const {
       apiPath,
       bookingDate,
@@ -278,13 +262,11 @@ class OccurenceForm extends Component {
           <FormField
             className='is-small'
             collectionName="offers"
-            defaultValue={available}
+            defaultValue={available || 0}
             entityId={offerIdOrNew}
             min={0}
             name="available"
-            placeholder="Laissez vide si pas de limite"
             type="number"
-            className='is-small'
           />
         </td>
         {
@@ -322,7 +304,7 @@ class OccurenceForm extends Component {
                   // price is actually compulsory for posting an offer
                   // but we can let automatically set to gratuit
                   if (typeof body.price === 'undefined') {
-                    body.price = 0
+                    //body.price = 0
                   }
                 }
                 return body
@@ -335,10 +317,12 @@ class OccurenceForm extends Component {
                 return
               }
               const [hour, minute] = (eo.time || time).split(':')
-              const beginningDatetime = (eo.date || date).set({
-                hour,
-                minute
-              })
+              const beginningDatetime = (eo.date || date)
+                .tz(tz)
+                .set({
+                  hour,
+                  minute
+                })
               //.tz(tz)
               const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()
@@ -360,7 +344,7 @@ class OccurenceForm extends Component {
             getIsDisabled={form => {
               const isDisabledBecauseOffer = getIsDisabled(
                 get(form, `offersById.${offerIdOrNew}`),
-                ['price'],
+                ['available', 'bookingLimitDatetime', 'price'],
                 typeof offer === 'undefined'
               )
 
