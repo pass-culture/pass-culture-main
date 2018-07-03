@@ -7,9 +7,16 @@ C'est tout le framework du Pass Culture!
 ### Install
   Il vous faudra une machine UNIX.
 
-  Installer docker (https://docs.docker.com/install/) et docker-compose (https://docs.docker.com/compose/install/#install-compose)
+  Installer:
+    - docker (https://docs.docker.com/install/)
+    - docker-compose (https://docs.docker.com/compose/install/#install-compose)
+    - yarn (voir le README dans le dépot https://github.com/betagouv/pass-culture-browser/)
 
-  Installer yarn (voir le README dans le dépot https://github.com/betagouv/pass-culture-browser/), puis:
+  Mais spécialement, en plus pour macosx:
+    - brew install coreutils
+
+
+  Enfin pour tout le monde:
 
   ```bash
     ./pc install
