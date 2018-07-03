@@ -385,7 +385,7 @@ export default compose(
       nextRecommendation: selectNextRecommendation(state),
       previousLimit: selectPreviousLimit(state),
       previousRecommendation: selectPreviousRecommendation(state),
-      recommendations: selectSortedRecommendations(state),
+      recommendations: state.data.recommendations || [],
       unFlippable: state.verso.unFlippable,
       draggable: state.verso.draggable,
     }),

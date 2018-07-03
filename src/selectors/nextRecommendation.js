@@ -5,7 +5,7 @@ import selectCurrentRecommendation from './currentRecommendation'
 import getRecommendation from '../getters/recommendation'
 
 export default createSelector(
-  selectSortedRecommendations,
+  state => state.data.recommendations || [],
   selectCurrentRecommendation,
   (recommendations, currentRecommendation) => {
     const nextRecommendation =
