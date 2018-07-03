@@ -93,14 +93,14 @@ def test_12_signup_should_not_work_again_with_same_email():
 
 
 def test_13_get_profile_should_work_only_when_logged_in():
-    r = req.get(API_URL + '/users/me')
+    r = req.get(API_URL + '/users/current')
     assert r.status_code == 401
 
 
 #def test_14_get_profile_should_not_work_if_account_is_not_validated():
 #    r = req_with_auth(email='toto@btmx.fr',
 #                      password='toto12345678')\
-#                    .get(API_URL + '/users/me')
+#                    .get(API_URL + '/users/current')
 #    assert r.status_code == 401
 #    assert 'pas validé' in r.json()['identifier']
 
@@ -123,7 +123,7 @@ def test_13_get_profile_should_work_only_when_logged_in():
 def test_17_get_profile_should_return_the_users_profile_without_password_hash():
     r = req_with_auth(email='toto@btmx.fr',
                       password='toto12345678')\
-                 .get(API_URL + '/users/me')
+                 .get(API_URL + '/users/current')
     user = r.json()
     print(user)
     assert r.status_code == 200

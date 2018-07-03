@@ -25,14 +25,14 @@ Offerer = app.model.Offerer
 User = app.model.User
 
 
-@app.route("/users/me", methods=["GET"])
+@app.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
     user = current_user._asdict(include=USER_INCLUDES)
     return jsonify(user)
 
 
-@app.route('/users/me', methods=['PATCH'])
+@app.route('/users/current', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def patch_profile():
