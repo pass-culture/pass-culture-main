@@ -23,11 +23,6 @@ const withCurrentOccasion = WrappedComponent => {
 
     handleDataRequest = () => {
       const {
-        match: {
-          params: {
-            occasionId
-          }
-        },
         occasion,
         requestData,
         user,

@@ -39,8 +39,10 @@ export function queryStringToObject(string='') {
     switch (key) {
       case 'lieu':
         key = 'venueId'
+        break
       case 'structure':
         key = 'offererId'
+        break
       default:
         break
     }

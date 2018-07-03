@@ -26,7 +26,6 @@ class OccurenceManager extends Component {
   handleNextData = () => {
     const {
       mergeForm,
-      occasion,
       occurences,
     } = this.props
 

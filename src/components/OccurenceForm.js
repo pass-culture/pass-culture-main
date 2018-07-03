@@ -108,7 +108,6 @@ class OccurenceForm extends Component {
       id
     } = (occasion || {})
     const {
-      eventOccurenceIdOrNew,
       method,
       offerIdOrNew
     } = this.state
@@ -119,12 +118,6 @@ class OccurenceForm extends Component {
     // AN ASSOCIATED OFFER
     const offerForm = get(form, `offersById.${offerIdOrNew}`) || {}
     if (method !== 'DELETE') {
-
-      // prepare the next add form to the next day
-      if (method === 'POST') {
-        const date = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}.date`)
-        // date && mergeForm('eventOccurences', NEW, 'date', date.add(1, 'days'))
-      }
 
       if (Object.keys(offerForm).length) {
 
@@ -158,26 +151,18 @@ class OccurenceForm extends Component {
   render () {
     const {
       event,
-      occasion,
       occurence,
       offer,
-      offerer,
-      onDeleteClick,
       venue,
     } = this.props
     const {
       id,
-      beginningDatetime,
-      endDatetime,
     } = occurence || {}
     const {
       price,
       available,
       pmrGroupSize
     } = (offer || {})
-    const {
-      durationMinutes,
-    } = (occasion || {})
     const {
       apiPath,
       bookingDate,
@@ -284,7 +269,6 @@ class OccurenceForm extends Component {
             name="available"
             placeholder="Laissez vide si pas de limite"
             type="number"
-            className='is-small'
           />
         </td>
         {
