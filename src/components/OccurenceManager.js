@@ -8,6 +8,7 @@ import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
 import createEventSelector from '../selectors/createEvent'
 import createProviderSelector from '../selectors/createProvider'
+import createTimezoneSelector from '../selectors/createTimezone'
 import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
@@ -27,6 +28,7 @@ class OccurenceManager extends Component {
     const {
       mergeForm,
       occurences,
+      tz
     } = this.props
 
     const lastOccurence = occurences.length > 0 && occurences[0]
@@ -43,14 +45,14 @@ class OccurenceManager extends Component {
         price
       } = get(offer, '0', {})
 
-      const date = moment(beginningDatetime).add(1, 'days')
+      const date = moment(beginningDatetime).tz(tz).add(1, 'days')
 
       mergeForm('eventOccurences', NEW,
         {
           available,
           date,
           time: date.format('HH:mm'),
-          endTime: moment(endDatetime).add(1, 'days').format('HH:mm'),
+          endTime: moment(endDatetime).tz(tz).add(1, 'days').format('HH:mm'),
           groupSize,
           pmrGroupSize,
           price: typeof price === 'undefined'
@@ -184,12 +186,15 @@ class OccurenceManager extends Component {
 
 const eventSelector = createEventSelector()
 const providerSelector = createProviderSelector()
+const timezoneSelector = createTimezoneSelector()
 
 export default connect(
   (state, ownProps) => {
     const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
+    const venueId = get(ownProps, 'occasion.venueId')
     return {
-      provider: providerSelector(state, get(event, 'lastProviderId'))
+      provider: providerSelector(state, get(event, 'lastProviderId')),
+      tz: timezoneSelector(state, venueId),
     }
   },
   { mergeForm }

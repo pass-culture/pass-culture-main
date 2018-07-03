@@ -154,6 +154,7 @@ class OccurenceForm extends Component {
       occurence,
       offer,
       venue,
+      tz,
     } = this.props
     const {
       id,
@@ -319,10 +320,12 @@ class OccurenceForm extends Component {
                 return
               }
               const [hour, minute] = (eo.time || time).split(':')
-              const beginningDatetime = (eo.date || date).set({
-                hour,
-                minute
-              })
+              const beginningDatetime = (eo.date || date)
+                .tz(tz)
+                .set({
+                  hour,
+                  minute
+                })
               //.tz(tz)
               const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()

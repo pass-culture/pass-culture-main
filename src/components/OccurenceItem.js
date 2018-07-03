@@ -42,7 +42,6 @@ class OccurenceItem extends Component {
     } = (offer || {})
 
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    console.log('bookingLimitDatetime', bookingLimitDatetime)
     const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
     return {
       bookingDate: bookingDate && bookingDate.format('HH:mm'),

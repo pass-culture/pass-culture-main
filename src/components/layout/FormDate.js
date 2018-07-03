@@ -15,6 +15,7 @@ class FormDate extends Component {
       mergeForm,
       name,
     } = this.props
+    console.log('date', date)
     mergeForm(collectionName, entityId, name, date)
   }
 
