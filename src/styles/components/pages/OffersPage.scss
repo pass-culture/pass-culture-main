@@ -3,6 +3,33 @@
     margin-bottom: 0.25rem;
   }
 
+  .recently-added {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50px;
+    background-color: $blue;
+    margin-right: 0.5rem;
+  }
+
+  .list-header {
+    display: flex;
+    border-bottom: 1px solid;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    align-items: center;
+
+    .select {
+      width: auto;
+      vertical-align: middle;
+      select {
+        margin-left: 0.5rem;
+        display: inline-block;
+      }
+    }
+  }
+
 }
 
 .offer-page {

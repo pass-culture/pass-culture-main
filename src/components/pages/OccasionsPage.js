@@ -16,10 +16,39 @@ import createOffererSelector from '../../selectors/createOfferer'
 import createSearchSelector from '../../selectors/createSearch'
 import createVenueSelector from '../../selectors/createVenue'
 import { occasionNormalizer } from '../../utils/normalizers'
+import { queryStringToObject, objectToQueryString } from '../../utils/string'
+
+const ASC = 'asc'
+const DESC = 'desc'
+
+const defaultSearch = {
+  orderBy: 'date',
+  orderDirection: DESC,
+  q: null,
+  venueId: null,
+  offererId: null,
+}
 
 class OccasionsPage extends Component {
 
-  handleDataRequest = (handleSuccess, handleFail, page=1) => {
+  constructor() {
+    super()
+    this.state = {
+      search: defaultSearch,
+      occasions: [],
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    const search = Object.assign({}, defaultSearch, queryStringToObject(nextProps.location.search))
+    return {
+      search,
+      occasions: nextProps.occasions
+        .sort((o1, o2) => ((o1[search.orderBy] - o2[search.orderBy]) * (search.orderDirection === DESC ? 1 : -1)))
+    }
+  }
+
+  handleDataRequest = (handleSuccess=()=>{}, handleFail=()=>{}, page=1) => {
     const {
       offererId,
       requestData,
@@ -29,13 +58,13 @@ class OccasionsPage extends Component {
     } = this.props
     let apiPath = 'occasions?'
     if (venueId) {
-      apiPath = `${apiPath}?venueId=${venueId}`
+      apiPath = `${apiPath}venueId=${venueId}&`
     } else if (offererId) {
-      apiPath = `${apiPath}?offererId=${offererId}`
+      apiPath = `${apiPath}offererId=${offererId}&`
     }
     user && requestData(
       'GET',
-      `${apiPath}&page=${page}`,
+      `${apiPath}page=${page}`,
       {
         handleSuccess,
         handleFail,
@@ -45,12 +74,43 @@ class OccasionsPage extends Component {
     types.length === 0 && requestData('GET', 'types')
   }
 
+  handleSearchChange(newValue) {
+    console.log('path', this.props.location)
+    const newPath = `${this.props.location.pathname}?${objectToQueryString(Object.assign({}, this.state.search, newValue))}`
+    console.log('newPath', newPath)
+    this.props.history.push(newPath)
+  }
+
+  handleOrderDirectionChange = e => {
+    this.handleSearchChange({orderDirection: this.state.search.orderDirection === DESC ? ASC : DESC })
+  }
+
+  handleOrderByChange = e => {
+    this.handleSearchChange({orderBy: e.target.value})
+  }
+
+  handleQueryChange = e => {
+    this.handleSearchChange({q: e.target.value})
+  }
+
+  handleRemoveFilter = key => e => {
+    this.handleSearchChange({[key]: null})
+  }
+
   render() {
     const {
       occasions,
       offerer,
-      venue
+      venue,
     } = this.props
+
+    const {
+      orderBy,
+      orderDirection,
+      q,
+    } = this.state.search || {}
+
+    console.log(this.state.search)
 
     return (
       <PageWrapper name="offers" handleDataRequest={this.handleDataRequest}>
@@ -73,24 +133,48 @@ class OccasionsPage extends Component {
           />
         </div>
 
-        <div className='section'>
+        <ul className='section'>
           {
             offerer
               ? (
-                <p>
-                  Structure: <span className="has-text-weight-semibold"> {offerer.name} </span>
-                </p>
+                <li className='tag is-rounded is-medium'>
+                  Structure :
+                  <span className="has-text-weight-semibold"> {offerer.name} </span>
+                  <button class="delete is-small" onClick={this.handleRemoveFilter('offererId')}></button>
+                </li>
               )
               : venue && (
-                <p>
-                  Lieu: <span className="has-text-weight-semibold"> {venue.name} </span>
-                </p>
+                <li className='tag is-rounded is-medium'>
+                  Lieu :
+                  <span className="has-text-weight-semibold"> {venue.name} </span>
+                  <button class="delete is-small" onClick={this.handleRemoveFilter('venueId')}></button>
+                </li>
               )
           }
-        </div>
+        </ul>
 
         {
           <div className='section'>
+            <div className='list-header'>
+              <div>
+                <div className='recently-added'></div>
+                Ajouté récemment
+              </div>
+              <div>
+                Trier par:
+                <span className='select is-rounded is-small'>
+                <select onChange={this.handleOrderByChange} className=''>
+                  <option value='sold'>Offres écoulées</option>
+                  <option value='createdAt'>Date de création</option>
+                </select>
+                </span>
+              </div>
+              <div>
+                <button onClick={this.handleOrderDirectionChange} className='button is-secondary'>
+                  <Icon svg={orderDirection === ASC ? 'ico-sort-ascending' : 'ico-sort-descending'} />
+                </button>
+              </div>
+            </div>
             <InfiniteScroller className='occasions-list pc-list' handleLoadMore={this.handleDataRequest}>
               { occasions.map(o =>
                 <OccasionItem key={o.id} occasion={o} />
