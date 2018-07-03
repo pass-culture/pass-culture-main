@@ -15,7 +15,6 @@ class InfiniteScroller extends Component {
       isLoading: false,
       isFinished: false,
       lastScrollTop: 0,
-      loadCounts: 2, // First one is at page level and count starts at 1
     }
   }
 
@@ -32,7 +31,6 @@ class InfiniteScroller extends Component {
     const {
       isLoading,
       isFinished,
-      loadCounts,
     } = this.state
     const {
       loadScrollRatio,
@@ -50,17 +48,16 @@ class InfiniteScroller extends Component {
     const shouldLoadMore = !isFinished && !isLoading && scrollDirection === DOWN && pageScrollRatio > loadScrollRatio
 
     this.setState({
-      isLoading: shouldLoadMore,
+      isLoading: isLoading || shouldLoadMore,
       lastScrollTop: scrollTop,
-      loadCounts: loadCounts + (shouldLoadMore ? 1 : 0),
     })
-    shouldLoadMore && this.props.handleLoadMore(this.loadSuccess, this.loadError, loadCounts)
+    shouldLoadMore && this.props.handleLoadMore(this.loadSuccess, this.loadError)
   }
 
   loadSuccess = (state, action) => {
     this.setState({
       isLoading: false,
-      isFinished: action.data.length === 0,
+      isFinished: action.data.length === 0, //TODO consider action.data.length < perPage
     })
   }
 

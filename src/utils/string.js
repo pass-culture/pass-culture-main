@@ -34,7 +34,9 @@ export function pluralize(number, string, pluralizeWith) {
 }
 
 export function queryStringToObject(string='') {
-  return string.replace(/^\??/, '').split('&').reduce((result, group) => {
+  return string.replace(/^\??/, '').split('&')
+    .filter(el => el)
+    .reduce((result, group) => {
     let [key, value] = group.split('=')
     switch (key) {
       case 'lieu':
@@ -52,6 +54,7 @@ export function queryStringToObject(string='') {
 
 export function objectToQueryString (object={}) {
   return object && Object.keys(object)
+    .filter(k => (k && object[k]))
     .map(key => {
       const value = String(object[key])
       return value && `${key}=${value}`
