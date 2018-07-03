@@ -26,7 +26,6 @@ class PageWrapper extends Component {
     Tag: 'main',
   }
 
-
   handleHistoryBlock = () => {
     const {
       blockers,
@@ -90,10 +89,14 @@ class PageWrapper extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.blockers !== this.props.blockers) {
+    const blockersChanged = prevProps.blockers !== this.props.blockers
+    const userChanged = !prevProps.user && this.props.user // User just loaded
+    const searchChanged = this.props.location.search !== prevProps.location.search
+
+    if (blockersChanged) {
       this.handleHistoryBlock()
     }
-    if (!prevProps.user && this.props.user) { // User just loaded
+    if (userChanged || searchChanged) {
       this.handleDataRequest()
     }
   }

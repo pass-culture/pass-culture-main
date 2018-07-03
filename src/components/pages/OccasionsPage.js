@@ -7,24 +7,22 @@ import { connect } from 'react-redux'
 import OccasionItem from '../OccasionItem'
 import InfiniteScroller from '../layout/InfiniteScroller'
 import Icon from '../layout/Icon'
-import Search from '../layout/Search'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
-import { requestData } from '../../reducers/data'
+import { assignData, requestData } from '../../reducers/data'
 import createOccasionsSelector from '../../selectors/createOccasions'
 import createOffererSelector from '../../selectors/createOfferer'
 import createSearchSelector from '../../selectors/createSearch'
 import createVenueSelector from '../../selectors/createVenue'
 import { occasionNormalizer } from '../../utils/normalizers'
-import { queryStringToObject, objectToQueryString } from '../../utils/string'
+import { objectToQueryString } from '../../utils/string'
 
 const ASC = 'asc'
 const DESC = 'desc'
 
-const defaultSearch = {
-  orderBy: 'date',
-  orderDirection: DESC,
-  q: null,
+const defaultQueryParams = {
+  search: undefined,
+  order_by: `createdAt+${DESC}`,
   venueId: null,
   offererId: null,
 }
@@ -34,39 +32,35 @@ class OccasionsPage extends Component {
   constructor() {
     super()
     this.state = {
-      search: defaultSearch,
-      occasions: [],
+      queryParams: defaultQueryParams,
+      page: 1,
     }
   }
 
-  static getDerivedStateFromProps(nextProps) {
-    const search = Object.assign({}, defaultSearch, queryStringToObject(nextProps.location.search))
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const queryParams = Object.assign({}, defaultQueryParams, nextProps.queryParams)
     return {
-      search,
-      occasions: nextProps.occasions
-        .sort((o1, o2) => ((o1[search.orderBy] - o2[search.orderBy]) * (search.orderDirection === DESC ? 1 : -1)))
+      queryParams,
+      page: prevState.page,
     }
   }
 
-  handleDataRequest = (handleSuccess=()=>{}, handleFail=()=>{}, page=1) => {
+  handleDataRequest = (handleSuccess=()=>{}, handleFail=()=>{}) => {
     const {
-      offererId,
       requestData,
-      user,
       types,
-      venueId
     } = this.props
-    let apiPath = 'occasions?'
-    if (venueId) {
-      apiPath = `${apiPath}venueId=${venueId}&`
-    } else if (offererId) {
-      apiPath = `${apiPath}offererId=${offererId}&`
-    }
-    user && requestData(
+
+    requestData(
       'GET',
-      `${apiPath}page=${page}`,
+      `occasions?${objectToQueryString(Object.assign({}, this.state.queryParams, {page: this.state.page}))}`,
       {
-        handleSuccess,
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          this.setState({
+            page: this.state.page + 1,
+          })
+        },
         handleFail,
         normalizer: occasionNormalizer
       }
@@ -74,27 +68,32 @@ class OccasionsPage extends Component {
     types.length === 0 && requestData('GET', 'types')
   }
 
-  handleSearchChange(newValue) {
-    console.log('path', this.props.location)
-    const newPath = `${this.props.location.pathname}?${objectToQueryString(Object.assign({}, this.state.search, newValue))}`
-    console.log('newPath', newPath)
+  handleQueryParamsChange(newValue) {
+    const newPath = `${this.props.location.pathname}?${objectToQueryString(Object.assign({}, this.state.queryParams, newValue))}`
+    this.props.assignData({ occasions: [] })
+    this.setState({
+      page: 1,
+    })
     this.props.history.push(newPath)
   }
 
   handleOrderDirectionChange = e => {
-    this.handleSearchChange({orderDirection: this.state.search.orderDirection === DESC ? ASC : DESC })
+    const [by, direction] = this.state.queryParams.order_by.split('+')
+    this.handleQueryParamsChange({order_by: [by, direction === DESC ? ASC : DESC].join('+')  })
   }
 
   handleOrderByChange = e => {
-    this.handleSearchChange({orderBy: e.target.value})
-  }
-
-  handleQueryChange = e => {
-    this.handleSearchChange({q: e.target.value})
+    const [, direction] = this.state.queryParams.order_by.split('+')
+    this.handleQueryParamsChange({order_by: [e.target.value, direction].join('+')})
   }
 
   handleRemoveFilter = key => e => {
-    this.handleSearchChange({[key]: null})
+    this.handleQueryParamsChange({[key]: null})
+  }
+
+  handleSearchChange = e => {
+    e.preventDefault()
+    this.handleQueryParamsChange({search: e.target.elements.search.value})
   }
 
   render() {
@@ -105,13 +104,11 @@ class OccasionsPage extends Component {
     } = this.props
 
     const {
-      orderBy,
-      orderDirection,
-      q,
-    } = this.state.search || {}
+      search,
+      order_by,
+    } = this.state.queryParams || {}
 
-    console.log(this.state.search)
-
+    const [orderBy, orderDirection] = order_by.split('+')
     return (
       <PageWrapper name="offers" handleDataRequest={this.handleDataRequest}>
         <div className="section">
@@ -123,15 +120,25 @@ class OccasionsPage extends Component {
             Vos offres
           </h1>
         </div>
-        <div className='section'>
+        <form className='section' onSubmit={this.handleSearchChange}>
           <label className="label">Rechercher une offre :</label>
-          <Search collectionName="occasions"
-                  config={{
-                    isMergingArray: false,
-                    key: 'searchedOccasions'
-                  }}
-          />
-        </div>
+          <div className="field is-grouped">
+            <p className="control is-expanded">
+              <input
+                id='search'
+                className="input search-input"
+                placeholder="Saisissez une recherche"
+                type="text"
+                defaultValue={search}
+              />
+            </p>
+            <p className="control">
+              <button type='submit' className='button is-primary is-outlined is-medium'>OK</button>
+              {' '}
+              <button className='button is-secondary is-medium'>&nbsp;<Icon svg='ico-filter' />&nbsp;</button>
+            </p>
+          </div>
+        </form>
 
         <ul className='section'>
           {
@@ -163,7 +170,7 @@ class OccasionsPage extends Component {
               <div>
                 Trier par:
                 <span className='select is-rounded is-small'>
-                <select onChange={this.handleOrderByChange} className=''>
+                <select onChange={this.handleOrderByChange} className='' value={orderBy}>
                   <option value='sold'>Offres écoulées</option>
                   <option value='createdAt'>Date de création</option>
                 </select>
@@ -197,17 +204,16 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-      const { offererId, venueId } = searchSelector(state, ownProps.location.search)
+      const queryParams = searchSelector(state, ownProps.location.search)
       return {
-        occasions: occasionsSelector(state, offererId, venueId),
-        offerer: offererSelector(state, offererId),
-        offererId,
+        occasions: occasionsSelector(state, queryParams.offererId, queryParams.venueId),
+        offerer: offererSelector(state, queryParams.offererId),
+        queryParams,
         user: state.user,
         types: state.data.types,
-        venue: venueSelector(state, venueId),
-        venueId
+        venue: venueSelector(state, queryParams.venueId),
       }
     },
-    { showModal, requestData }
+    { showModal, requestData, assignData }
   )
 )(OccasionsPage)

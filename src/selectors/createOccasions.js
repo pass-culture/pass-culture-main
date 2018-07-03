@@ -2,24 +2,13 @@ import { createSelector } from 'reselect'
 
 import createVenuesSelector from './createVenues'
 
-const selectVenues = createVenuesSelector()
-
-export default () => createSelector(
+export default (selectVenues= createVenuesSelector()) => createSelector(
   state => state.data.searchedOccasions || state.data.occasions,
-  selectVenues,
+  (state, offererId, venueId) => offererId ? selectVenues(state, offererId) : [],
   (_, offererId, venueId) => venueId,
   (occasions, venues, venueId) => {
+    const venueIds = [].concat(venueId || venues.map(v => v.id))
 
-    if (venues.length) {
-      const venueIds = venues.map(v => v.id)
-      occasions = occasions.filter(o => venueIds.includes(o.venueId))
-    }
-
-    // TODO: find the link between occasion and venue
-    if (venueId)
-      occasions = occasions.filter(o => o.venueId === venueId)
-
-    return occasions
-      .sort((o1, o2) => o2.dehumanizedId - o1.dehumanizedId)
+    return occasions.filter(o => venueIds.length ? venueIds.includes(o.venueId) : true)
   }
 )
