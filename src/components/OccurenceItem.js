@@ -44,7 +44,7 @@ class OccurenceItem extends Component {
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
     const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
     return {
-      bookingDate: bookingDate && bookingDate.format('HH:mm'),
+      bookingDate: bookingDate && bookingDate.format('DD/MM/YYYY'),
       date: date && date.format('DD/MM/YYYY'),
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
       isAdding: eventOccurenceId === 'nouvelle',
@@ -147,11 +147,11 @@ class OccurenceItem extends Component {
         <td>{date}</td>
         <td>{time}</td>
         <td>{endTime}</td>
-        <td><Price value={price || 0} /></td>
-        <td>{bookingDate || 'Pas de limite'}</td>
-        <td>{available || 'Illimité'}</td>
-        {false && (<td>{groupSize || 'Illimité'}</td>)}
-        {false && (<td>{pmrGroupSize || 'Illimité'}</td>)}
+        <td><Price value={price} /></td>
+        <td>{bookingDate}</td>
+        <td>{available}</td>
+        {false && (<td>{groupSize}</td>)}
+        {false && (<td>{pmrGroupSize}</td>)}
         <td>
           {
             !provider && (

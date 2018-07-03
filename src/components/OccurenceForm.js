@@ -66,8 +66,11 @@ class OccurenceForm extends Component {
       storeKey = 'eventOccurences'
     }
 
+    const formDate = formOccurence.date
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
+    const bookingDate = (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
+      || (formDate && formDate.clone().subtract(2, 'days'))
+    // console.log('HEIN', formDate, formDate.subtract(2, 'days'))
     return {
       apiPath,
       bookingDate,
@@ -109,7 +112,8 @@ class OccurenceForm extends Component {
     } = (occasion || {})
     const {
       method,
-      offerIdOrNew
+      offerIdOrNew,
+      storeKey
     } = this.state
 
 
@@ -117,7 +121,7 @@ class OccurenceForm extends Component {
     // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
     const offerForm = get(form, `offersById.${offerIdOrNew}`) || {}
-    if (method !== 'DELETE') {
+    if (storeKey !== 'offers' && method !== 'DELETE') {
 
       if (Object.keys(offerForm).length) {
 
@@ -125,12 +129,6 @@ class OccurenceForm extends Component {
           eventOccurenceId: action.data.id,
           offererId: venue.managingOffererId,
         }, offerForm)
-
-        // price is actually compulsory for posting an offer
-        // but we can let automatically set to gratuit
-        if (method === 'POST' && typeof body.price === 'undefined') {
-          body.price = 0
-        }
 
         requestData(
           method,
@@ -264,11 +262,10 @@ class OccurenceForm extends Component {
           <FormField
             className='is-small'
             collectionName="offers"
-            defaultValue={available}
+            defaultValue={available || 0}
             entityId={offerIdOrNew}
             min={0}
             name="available"
-            placeholder="Laissez vide si pas de limite"
             type="number"
           />
         </td>
@@ -307,7 +304,7 @@ class OccurenceForm extends Component {
                   // price is actually compulsory for posting an offer
                   // but we can let automatically set to gratuit
                   if (typeof body.price === 'undefined') {
-                    body.price = 0
+                    //body.price = 0
                   }
                 }
                 return body
@@ -347,7 +344,7 @@ class OccurenceForm extends Component {
             getIsDisabled={form => {
               const isDisabledBecauseOffer = getIsDisabled(
                 get(form, `offersById.${offerIdOrNew}`),
-                ['price'],
+                ['available', 'bookingLimitDatetime', 'price'],
                 typeof offer === 'undefined'
               )
 

@@ -15,8 +15,23 @@ class FormDate extends Component {
       mergeForm,
       name,
     } = this.props
-    console.log('date', date)
-    mergeForm(collectionName, entityId, name, date)
+    date && mergeForm(collectionName, entityId, name, date)
+  }
+
+  componentDidMount() {
+    // fill automatically the form when it is a NEW POST action
+    const { entityId, defaultValue } = this.props
+    entityId === NEW && this.handleDateSelect(defaultValue)
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      defaultValue,
+      entityId
+    } = this.props
+    if (defaultValue && !defaultValue.isSame(prevProps.defaultValue, 'day')) {
+      entityId === NEW && this.handleDateSelect(defaultValue)
+    }
   }
 
   render () {
