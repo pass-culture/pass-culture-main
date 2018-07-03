@@ -123,8 +123,8 @@ class OccasionItem extends Component {
               <button className='button is-secondary is-small'
                 onClick={this.onDeactivateClick}>
                 {isActive ? <span>
-                  <Icon svg='ico-close-r' />,
-                  'Désactiver'
+                  <Icon svg='ico-close-r' />
+                  Désactiver
                   </span> : ('Activer')}
               </button>
               <NavLink  to={`offres/${occasion.id}`} className="button is-secondary is-small">
