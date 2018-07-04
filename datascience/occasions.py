@@ -71,13 +71,13 @@ def score_event(event, departement_codes):
         score += 20
 
     next_occurence = EventOccurence.query.filter((EventOccurence.event == event) &
-                                                 (EventOccurence.beginningDatetime > datetime.now())).first()
+                                                 (EventOccurence.beginningDatetime > datetime.utcnow())).first()
     if next_occurence is None:
         return None
 
     # If the next occurence of an event is less than 10 days away,
     # it gets one more point for each day closer it is to now
-    score += max(0, 10 - (next_occurence.beginningDatetime - datetime.now()).days)
+    score += max(0, 10 - (next_occurence.beginningDatetime - datetime.utcnow()).days)
 
     # a bit of randomness so we don't always return the same events
     score += randint(0, 10)
@@ -125,7 +125,7 @@ def bookable_occasions(query, occasion_type):
     # remove events for which all occurences are in the past
     # (crude filter to limit joins before the more complete one below)
     if occasion_type == Event:
-        query = query.filter(Event.occurences.any(EventOccurence.beginningDatetime > datetime.now()))
+        query = query.filter(Event.occurences.any(EventOccurence.beginningDatetime > datetime.utcnow()))
         print_dev('(reco) future events.count', query.count())
         join_table = aliased_join_table(occasion_type)
         query = query.join(join_table)
@@ -134,7 +134,7 @@ def bookable_occasions(query, occasion_type):
     query = query.join(bo_Offer)\
                  .filter((bo_Offer.isActive == True)
                          & ((bo_Offer.bookingLimitDatetime == None)
-                            | (bo_Offer.bookingLimitDatetime > datetime.now()))
+                            | (bo_Offer.bookingLimitDatetime > datetime.utcnow()))
                          & ((bo_Offer.available == None) |
                             (bo_Offer.available > Booking.query.filter(Booking.offerId == bo_Offer.id)
                                                          .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))\
@@ -151,9 +151,11 @@ def with_active_and_validated_offerer(query, occasion_type):
     return query
 
 
-def not_yet_recommended_occasions(query, occasion_type, user):
-    query = query.filter(~ ((occasion_type.recommendations.any(Recommendation.userId == user.id))
-                         | (occasion_type.mediations.any(Mediation.recommendations.any(Recommendation.userId == user.id)))))
+def not_currently_recommended_occasions(query, occasion_type, user):
+    query = query.filter(~ ((occasion_type.recommendations.any((Recommendation.userId == user.id)
+                                                               & (Recommendation.validUntilDate > datetime.utcnow())))
+                            | (occasion_type.mediations.any(Mediation.recommendations.any((Recommendation.userId == user.id)
+                                                                                          & (Recommendation.validUntilDate > datetime.utcnow()))))))
     print_dev('(reco) not already used '+str(occasion_type)+'occasions.count', query.count())
     return query
 
@@ -171,7 +173,7 @@ def get_occasions_by_type(occasion_type,
     query = departement_or_national_occasions(query, occasion_type, departement_codes)
     query = bookable_occasions(query, occasion_type)
     query = with_active_and_validated_offerer(query, occasion_type)
-    query = not_yet_recommended_occasions(query, occasion_type, user)
+    query = not_currently_recommended_occasions(query, occasion_type, user)
 
     occasions = sort_by_score(make_score_tuples(query.all(),
                                                 departement_codes))
