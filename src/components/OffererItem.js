@@ -64,7 +64,7 @@ const OffererItem = ({
               venues.length
               ? (
                   <li key={4}>
-                    <Icon svg='ico-offres-r' />
+                    <Icon svg='ico-venue' />
                     { pluralize(venues.length, 'lieux')}
                   </li>
                 )
@@ -73,7 +73,7 @@ const OffererItem = ({
                 <li key={4}>
                   <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
                   className='has-text-primary'>
-                    <Icon svg='picto-structure' /> Ajouter un lieu
+                    <Icon svg='ico-venue-r' /> Ajouter un lieu
                   </NavLink>
                 </li>
               )
