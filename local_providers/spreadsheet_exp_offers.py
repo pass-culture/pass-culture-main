@@ -7,7 +7,7 @@ from pandas import read_csv
 from pathlib import Path
 import re
 
-from utils.date import format_duration
+from utils.date import get_dept_timezone, format_duration
 
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
@@ -143,10 +143,10 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
             obj.venue = self.venue
             obj.event = self.providables[0]
         elif isinstance(obj, EventOccurence):
-            obj.beginningDatetime = dateparser.parse(obj.idAtProviders.split('_')[1],
-                                                     settings={'TIMEZONE': 'UTC-3' if self.venue.departementCode=='97'
-                                                                                 else 'Europe/Paris',
-                                                               'TO_TIMEZONE': 'UTC'})
+            eo_date = obj.idAtProviders.split('_')[1]
+            date_settings = {'TIMEZONE': get_dept_timezone(self.venue.departementCode),
+                             'TO_TIMEZONE': 'UTC'}
+            obj.beginningDatetime = dateparser.parse(eo_date, settings=date_settings)
             obj.endDatetime = obj.beginningDatetime\
                               + timedelta(minutes=self.providables[0].durationMinutes)
             obj.venue = self.venue

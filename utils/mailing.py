@@ -1,6 +1,5 @@
 """ mailing """
 from datetime import datetime
-from dateutil import tz
 from flask import current_app as app
 from mailjet_rest import Client
 import os
@@ -8,7 +7,7 @@ from pprint import pformat
 import requests
 
 from utils.config import API_URL
-from utils.date import format_datetime
+from utils.date import format_datetime, utc_datetime_to_dept_timezone
 from utils.config import ENV, IS_DEV, IS_STAGING
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
@@ -66,14 +65,11 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
     email_html += '<p>Cher partenaire Pass Culture,</p>'
 
     if offer.eventOccurence:
-        date = offer.eventOccurence.beginningDatetime
-        from_zone = tz.gettz('UTC')
-        to_zone = tz.gettz('UTC-3' if offer.eventOccurence.venue.departementCode == '97'
-                                   else 'Europe/Paris')
-        utc = date.replace(tzinfo=from_zone)
-        in_tz = utc.astimezone(to_zone)
+        date_in_utc = offer.eventOccurence.beginningDatetime
+        date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
+                                                   offer.eventOccurence.venue)
         description = '%s le %s' % (offer.eventOccurence.event.name,
-                                    format_datetime(in_tz))
+                                    format_datetime(date_in_tz))
     elif offer.thing:
         description = '%s (Ref: %s)' % (offer.thing.name, offer.thing.idAtProviders)
 
