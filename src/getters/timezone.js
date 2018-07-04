@@ -4,8 +4,9 @@ export default function getTimezone(venue) {
       return
     switch(venue.departementCode) {
         case '97':
+          return 'America/Cayenne'
         case '973':
-          return 'UTC+3' // POSIX compatibility requires that the offsets are inverted.
+          return 'America/Cayenne'
         default:
           return 'Europe/Paris'
   }
