@@ -1,5 +1,4 @@
 export default function getTimezone(venue) {
-  console.log("VENUE", venue)
   if (!venue)
       return
     switch(venue.departementCode) {
