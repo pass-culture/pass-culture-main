@@ -2,6 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
+import { pluralize } from '../utils/string'
 
 const VenueItem = ({
   venue,
@@ -31,17 +32,15 @@ const VenueItem = ({
           </li>
           <li>
             {
-              venue.nOccasions && venue.nOccasions > 0
-              ? (
-                <NavLink to={`/offres?lieu=${id}`} className='has-text-primary'>
-                  <Icon svg='ico-offres-r' />
-                   {venue.nOccasions} offres
-                </NavLink>
-              )
-              : (
-                <p>
-                  Pas encore d'offre
-                </p>
+              venue.nOccasions > 0 ? (
+                <li key={1}>
+                  <NavLink to={`/offres?lieu=${id}`} className='has-text-primary'>
+                    <Icon svg='ico-offres-r' />
+                    { pluralize(venue.nOccasions, 'offres') }
+                  </NavLink>
+                </li>
+              ) : (
+                <li key={2}>0 offre</li>
               )
             }
           </li>

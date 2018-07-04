@@ -45,7 +45,7 @@ function* fromWatchRequestDataActions(action) {
     console.warn('error', error)
     yield put(failData(method, path, [{
       //global: String(error)
-      global: "Une erreur s'est produite avec le serveur"
+      global: "Erreur serveur. Tentez de rafraîchir la page."
     }], config))
   }
 }
