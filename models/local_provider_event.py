@@ -34,7 +34,7 @@ class LocalProviderEvent(app.model.PcObject,
 
     date = db.Column(db.DateTime,
                      nullable=False,
-                     default=datetime.now)
+                     default=datetime.utcnow)
 
     type = db.Column(db.Enum(app.model.LocalProviderEventType),
                      nullable=False)

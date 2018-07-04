@@ -22,7 +22,7 @@ class User(app.model.PcObject,
 
     dateCreated = db.Column(db.DateTime,
                             nullable=False,
-                            default=datetime.now)
+                            default=datetime.utcnow)
 
     clearTextPassword = None
 

@@ -26,7 +26,7 @@ class ProvidableMixin(app.model.VersionedMixin):
 
     dateModifiedAtLastProvider = db.Column(db.DateTime,
                                            nullable=True,
-                                           default=datetime.now)
+                                           default=datetime.utcnow)
 
 
 app.model.ProvidableMixin = ProvidableMixin

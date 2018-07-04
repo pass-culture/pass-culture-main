@@ -23,7 +23,7 @@ class Offerer(app.model.PcObject,
 
     dateCreated = db.Column(db.DateTime,
                             nullable=False,
-                            default=datetime.now)
+                            default=datetime.utcnow)
 
     name = db.Column(db.String(140), nullable=False)
 

@@ -17,7 +17,7 @@ class Booking(app.model.PcObject,
 
     dateModified = db.Column(db.DateTime,
                              nullable=False,
-                             default=datetime.now)
+                             default=datetime.utcnow)
 
     recommendationId = db.Column(db.BigInteger,
                                 db.ForeignKey("recommendation.id"))

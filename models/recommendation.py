@@ -65,11 +65,11 @@ class Recommendation(app.model.PcObject, db.Model):
 
     dateCreated = db.Column(db.DateTime,
                             nullable=False,
-                            default=datetime.now)
+                            default=datetime.utcnow)
 
     dateUpdated = db.Column(db.DateTime,
                             nullable=False,
-                            default=datetime.now)
+                            default=datetime.utcnow)
 
     dateRead = db.Column(db.DateTime,
                          nullable=True,

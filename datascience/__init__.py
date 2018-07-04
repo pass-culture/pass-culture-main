@@ -57,7 +57,7 @@ def create_recommendation(user, occasion, mediation=None):
     if last_offer.bookingLimitDatetime:
         recommendation.validUntilDate = last_offer.bookingLimitDatetime - timedelta(minutes=1)
     else:
-        recommendation.validUntilDate = datetime.now() + timedelta(days=2)
+        recommendation.validUntilDate = datetime.utcnow() + timedelta(days=2)
 
     app.model.PcObject.check_and_save(recommendation)
     return recommendation

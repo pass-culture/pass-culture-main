@@ -292,7 +292,7 @@ class LocalProvider(Iterator):
         print("  " + str(self.erroredThumbs) + " errors in thumb creations/updates")
         self.logEvent(LocalProviderEventType.SyncEnd)
         if self.venueProvider is not None:
-            self.venueProvider.lastSyncDate = datetime.now()
+            self.venueProvider.lastSyncDate = datetime.utcnow()
             app.model.PcObject.check_and_save(self.venueProvider)
 
 app.model.LocalProvider = LocalProvider

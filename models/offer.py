@@ -20,7 +20,7 @@ class Offer(app.model.PcObject,
 
     dateModified = db.Column(db.DateTime,
                              nullable=False,
-                             default=datetime.now)
+                             default=datetime.utcnow)
 
     eventOccurenceId = db.Column(db.BigInteger,
                                  db.ForeignKey("event_occurence.id"),

@@ -27,7 +27,7 @@ def check_recos(recos):
         if 'mediation' in reco\
            and 'tutoIndex' not in reco['mediation']:
             assert not all([offer['bookingLimitDatetime'] is not None and
-                            parse_date(offer['bookingLimitDatetime']) <= datetime.now()
+                            parse_date(offer['bookingLimitDatetime']) <= datetime.utcnow()
                             for offer in oc['offers'] for oc in reco['mediatedOccurences']])
             if not reco['event']['isNational']:
                 assert not all([oc['venue']['departementCode'] != '93' for oc in reco['mediatedOccurences']])
@@ -158,7 +158,7 @@ def test_16_once_marked_as_read_tutos_should_not_come_back():
     assert recos_before[0]['mediation']['tutoIndex'] == 0
     assert recos_before[1]['mediation']['tutoIndex'] == 1
     r_update = req_with_auth().patch(API_URL + '/recommendations/' + recos_before[0]['id'],
-                                     json={'dateRead': datetime.now().strftime('%Y-%m-%dT%H:%M:%S')})
+                                     json={'dateRead': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')})
     assert r_update.status_code == 200
 
     r = req_with_auth().put(RECOMMENDATION_URL, json={})

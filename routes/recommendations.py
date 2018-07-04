@@ -83,7 +83,7 @@ def put_recommendations():
                                 .filter((Recommendation.user == current_user)
                                         & (Mediation.tutoIndex == None)
                                         & ((Recommendation.validUntilDate == None)
-                                           | (Recommendation.validUntilDate > datetime.now())))
+                                           | (Recommendation.validUntilDate > datetime.utcnow())))
 
     unread_recos = query.filter(Recommendation.dateRead == None)\
                                   .order_by(func.random())\

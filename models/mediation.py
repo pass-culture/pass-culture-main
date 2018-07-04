@@ -27,7 +27,7 @@ class Mediation(app.model.PcObject,
 
     dateCreated = db.Column(db.DateTime,
                             nullable=False,
-                            default=datetime.now)
+                            default=datetime.utcnow)
 
     authorId = db.Column(db.BigInteger,
                          db.ForeignKey("user.id"),
