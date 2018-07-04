@@ -22,18 +22,18 @@ def get_dept_timezone(departementCode):
         tz_name = 'America/Cayenne'
     else:
         tz_name = 'Europe/Paris'
-    return tz.gettz(tz_name)
+    return tz_name
 
 
 def utc_datetime_to_dept_timezone(datetimeObj, departementCode):
     from_zone = tz.gettz('UTC')
-    to_zone = get_dept_timezone(departementCode)
+    to_zone = tz.gettz(get_dept_timezone(departementCode))
     utc_datetime = datetimeObj.replace(tzinfo=from_zone)
     return utc_datetime.astimezone(to_zone)
 
 
 def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
-    from_zone = get_dept_timezone(departementCode)
+    from_zone = tz.gettz(get_dept_timezone(departementCode))
     to_zone = tz.gettz('UTC')
     dept_datetime = datetimeObj.replace(tzinfo=from_zone)
     return dept_datetime.astimezone(to_zone)
