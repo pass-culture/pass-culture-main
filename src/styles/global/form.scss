@@ -12,6 +12,33 @@ label {
   color: $violet;
 }
 
+.field.checkbox {
+  align-items: flex-start;
+  display: flex;
+  input {
+    margin-right: 0.5rem;
+    background-image: url(/icons/checkbox.svg);
+    border: none;
+    background-repeat: no-repeat;
+    background-size: $body-line-height;
+    width: $body-line-height;
+    height: $body-line-height;
+    padding: 0;
+    &:active, &:checked {
+      &:after {
+        content: '';
+        background-repeat: no-repeat;
+        background-image: url(/icons/checkbox-check-red.svg);
+        background-position: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+}
+
 input.input, .select select, textarea.textarea {
 
   &[readonly] {
@@ -47,5 +74,23 @@ input.input, .select select, textarea.textarea {
 ul.help {
   img {
     vertical-align: text-bottom;
+  }
+}
+
+
+.with-display-name {
+  input {
+    display: inline-block;
+    width: 50%;
+  }
+  .display-name {
+    display: inline-block;
+    width: 49%;
+    font-weight: $weight-semibold;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+    color: text;
   }
 }

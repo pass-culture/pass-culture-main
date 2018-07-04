@@ -52,6 +52,7 @@ class FormField extends Component {
       type,
       readOnly,
       required,
+      withDisplayName,
     } = this.props
 
     const inputId = id || `input_${collectionName}_${name}`
@@ -70,6 +71,7 @@ class FormField extends Component {
       key={inputId}
       aria-describedby={`${inputId}-error`}
       readOnly={readOnly}
+      withDisplayName={withDisplayName}
     />
 
     if (!isCheckbox) {

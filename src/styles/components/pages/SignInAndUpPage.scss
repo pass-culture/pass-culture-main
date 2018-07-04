@@ -1,18 +1,40 @@
 .sign-in-page, .sign-up-page {
+  position: relative;
+
+  @media(min-width: $tablet) {
+    &:before {
+      position: absolute;
+      left: 0;
+      right: 50%;
+      top: 0;
+      bottom: 0;
+      background-color: $red;
+      content: '';
+    }
+  }
 
   .page-content {
     padding: 0;
   }
 
   .columns {
-    height: 100%;
     margin: 0;
-
+    width: 100%;
     .column {
       display: flex;
       flex-direction: column;
       justify-content: center;
       padding: 0;
+      &.logo-column {
+        background-color: $red;
+        font-size: 3rem;
+        text-align: center;
+        padding: 2.5rem;
+        @media(min-width: $tablet) {
+          text-align: right;
+          padding-right: 2rem;
+        }
+      }
     }
   }
 
@@ -20,15 +42,9 @@
     padding: 0;
   }
 
-  .logo-column {
-    background-color: $red;
-    color: $white;
-    font-size: 3rem;
-    padding: 2.5rem 1rem;
-    text-align: center;
-  }
 
   .title, .subtitle {
+    color: $grey;
     font-style: italic;
     span {
       display: inline-block;
@@ -104,28 +120,28 @@
       font-weight: $weight-semibold;
     }
 
-    &.checkbox {
-      align-items: flex-start;
-      display: flex;
-      input {
-        margin-right: 0.5rem;
-        -webkit-appearance: none;
-        border-radius: $radius-small;
-        width: 1.5rem;
-        height: 1.5rem;
-        &:active, &:checked {
-          &:after {
-            content: '\2714';
-            font-size: 1.25rem;
-            position: absolute;
-            top: -5px;
-            left: 2px;
-            color: $primary;
-          }
-        }
-      }
+    // &.checkbox {
+    //   align-items: flex-start;
+    //   display: flex;
+    //   input {
+    //     margin-right: 0.5rem;
+    //     -webkit-appearance: none;
+    //     border-radius: $radius-small;
+    //     width: 1.5rem;
+    //     height: 1.5rem;
+    //     &:active, &:checked {
+    //       &:after {
+    //         content: '\2714';
+    //         font-size: 1.25rem;
+    //         position: absolute;
+    //         top: -5px;
+    //         left: 2px;
+    //         color: $primary;
+    //       }
+    //     }
+    //   }
 
-    }
+    // }
 
     .siren {
       width: 50%;

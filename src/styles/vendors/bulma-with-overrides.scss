@@ -8,33 +8,10 @@
 
 
 .button {
-  height: auto;
-
+  // height: auto;
   &:focus {
     outline: none;
   }
-
-  &.is-primary {
-    // border-top-right-radius: 0;
-    font-weight: $weight-bold;
-  }
-
-  &.is-secondary {
-    background: none;
-    border-color: transparent;
-    color: $red;
-    font-weight: $weight-bold;
-    text-decoration: none;
-    padding-left: 0;
-    padding-right: 0;
-    &.is-inversed {
-      color: $white;
-    }
-  }
-
-  // img {
-  //   height: 1em;
-  // }
 }
 
 [disabled] {
@@ -89,5 +66,12 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 .password .button {
-  height: 1.875em;
+  height: 100%;
+  &:focus {
+    border-color: $grey-light;
+
+    &:not(:active) {
+      box-shadow: none;
+    }
+  }
 }
