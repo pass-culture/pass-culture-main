@@ -1,5 +1,9 @@
 .date-picker {
 
+  margin: auto;
+  position: relative;
+  width: 110px;
+
   .react-datepicker__day {
     border-radius: 50%;
     &--highlighted {
