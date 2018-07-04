@@ -141,9 +141,8 @@ class OccurenceForm extends Component {
       }
     }
 
-    if (method !== 'POST') {
-      history.push(`/offres/${id}/dates`)
-    }
+    history.push(`/offres/${id}/dates`)
+
   }
 
   render () {
@@ -300,13 +299,6 @@ class OccurenceForm extends Component {
                     eventOccurenceId: id,
                     offererId: venue.managingOffererId
                   }, get(form, `offersById.${offerIdOrNew}`))
-                if (method === 'POST') {
-                  // price is actually compulsory for posting an offer
-                  // but we can let automatically set to gratuit
-                  if (typeof body.price === 'undefined') {
-                    //body.price = 0
-                  }
-                }
                 return body
               }
 
