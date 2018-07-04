@@ -1,7 +1,7 @@
 .button {
   font-weight: $weight-bold;
-  font-size: $button-font-size;
-  line-height: $button-line-height;
+  font-size: $font-size;
+  line-height: $body-line-height;
   border-radius: 1px;
   &:not(.is-outlined) {
     border-width: 0;

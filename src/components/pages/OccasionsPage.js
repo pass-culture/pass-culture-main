@@ -133,9 +133,9 @@ class OccasionsPage extends Component {
               />
             </p>
             <p className="control">
-              <button type='submit' className='button is-primary is-outlined is-medium'>OK</button>
+              <button type='submit' className='button is-primary is-outlined'>OK</button>
               {' '}
-              <button className='button is-secondary is-medium'>&nbsp;<Icon svg='ico-filter' />&nbsp;</button>
+              <button className='button is-secondary'>&nbsp;<Icon svg='ico-filter' />&nbsp;</button>
             </p>
           </div>
         </form>

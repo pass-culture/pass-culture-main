@@ -160,7 +160,7 @@ class PageWrapper extends Component {
               {notification && (
                 <div className={`notification is-${notification.type || 'info'}`}>
                   {notification.text}
-                  <button className="button is-text is-small close" onClick={closeNotification}>
+                  <button className="close" onClick={closeNotification}>
                     OK
                   </button>
                 </div>

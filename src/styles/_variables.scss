@@ -34,12 +34,12 @@ $weight-semibold: 500;
 $weight-bold: 700;
 
 $font-size: 16px; // Single px-value. Use `rem` or `em` every elsewhere.
-$button-font-size: 18px;
+// $button-font-size: 18px;
 
 $body-line-height: 1.1875em;
 $title-line-height: $body-line-height;
 $subtitle-line-height: 1.2em;
-$button-line-height: 22px;
+// $button-line-height: 22px;
 
 $size-xlarge: 2.5rem; // 40px
 $size-large: 2rem; // 32px
@@ -96,4 +96,4 @@ $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 $box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
 
 // Notifications
-$notification-padding: 1rem
+$notification-padding: 0.75rem

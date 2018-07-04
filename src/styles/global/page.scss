@@ -62,13 +62,25 @@
       .notification {
         margin: 0;
         position: relative;
-        .close {
+        button.close {
           float: right;
+          padding: 0;
+          font-size: $font-size;
+          height: auto;
+          font-weight: $weight-normal;
+          background: none;
+          border: none;
+          text-decoration: underline;
+          cursor: pointer;
+          &:hover {
+            text-decoration: none;
+            opacity: 0.75;
+          }
         }
       }
 
       .after-notification-content {
-        padding: $page-padding / 2 $page-padding;
+        padding: (3 * $page-padding / 4) $page-padding;
         position: relative;
         .back-button {
           position: absolute;
