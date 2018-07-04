@@ -27,6 +27,7 @@ class TermsPage extends Component {
         <header>Mentions légales</header>
         <div className="content">
           <ReactMarkdown source={mdText} />
+          <p className="version"><br/><br/>Pass Culture version ##VERSION##</p>
         </div>
       </PageWrapper>
     )
