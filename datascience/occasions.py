@@ -112,7 +112,7 @@ def departement_or_national_occasions(query, occasion_type, departement_codes):
     join_table = aliased_join_table(occasion_type)
     condition = Venue.departementCode.in_(departement_codes)
     if occasion_type == Event:
-        condition = (condition | (occasion_type.isNational == True))
+        condition = (condition | (Event.isNational == True))
     query = query.join(join_table)\
                  .join(Venue)\
                  .filter(condition)\
