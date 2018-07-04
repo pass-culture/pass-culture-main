@@ -28,9 +28,11 @@ const OffererItem = ({
         </p>
         <ul className='actions'>
           {
-            !isValidated
+            isValidated === false
               ? (
-                <li className='is-italic'>En cours de validation : vous allez recevoir un e-mail.</li>
+                <li className='is-italic'>
+                  En cours de validation : vous allez recevoir un e-mail.
+                </li>
               )
               : [
               // J'ai déja ajouté Un lieu mais pas d'offres
@@ -62,10 +64,8 @@ const OffererItem = ({
               venues.length
               ? (
                   <li key={4}>
-                    <NavLink to={showPath}>
-                      <Icon svg='ico-offres-r' />
-                      { pluralize(venues.length, 'lieux')}
-                    </NavLink>
+                    <Icon svg='ico-offres-r' />
+                    { pluralize(venues.length, 'lieux')}
                   </li>
                 )
               : (
