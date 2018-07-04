@@ -2,10 +2,12 @@ import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { NavLink } from 'react-router-dom'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
+import { closeModal } from '../reducers/modal'
 import createEventSelector from '../selectors/createEvent'
 import createProviderSelector from '../selectors/createProvider'
 import createTimezoneSelector from '../selectors/createTimezone'
@@ -13,15 +15,36 @@ import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
 
-  onAddClick = () => {
+  onCloseClick = () => {
     const {
+      closeModal,
       history,
+      location,
       occasion
     } = this.props
     const {
+      search
+    } = location
+    const {
       id
     } = (occasion || {})
-    id && history.push(`/offres/${id}/dates/nouvelle`)
+    closeModal()
+    id && history.push(`/offres/${id}${search}`)
+  }
+
+  onAddClick = () => {
+    const {
+      history,
+      location,
+      occasion
+    } = this.props
+    const {
+      search
+    } = location
+    const {
+      id
+    } = (occasion || {})
+    id && history.push(`/offres/${id}/dates/nouvelle${search}`)
   }
 
   handleNextData = () => {
@@ -98,6 +121,9 @@ class OccurenceManager extends Component {
       occasion,
       occurences,
     } = this.props
+    const {
+      id
+    } = (occasion || {})
     const {
       params: { eventOccurenceId }
     } = match
@@ -179,6 +205,11 @@ class OccurenceManager extends Component {
             )}
           </table>
         </div>
+        <button
+          className="button is-secondary is-pulled-right"
+          onClick={this.onCloseClick}>
+          Fermer
+        </button>
       </div>
     )
   }
@@ -197,5 +228,5 @@ export default connect(
       tz: timezoneSelector(state, venueId),
     }
   },
-  { mergeForm }
+  { closeModal, mergeForm }
 )(OccurenceManager)

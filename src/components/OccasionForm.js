@@ -41,7 +41,7 @@ class OccasionForm extends Component {
         occurences={occurences}
       />,
       {
-        onCloseClick: () => history.push(routePath)
+        isUnclosable: true
       }
     )
   }
