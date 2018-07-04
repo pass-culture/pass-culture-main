@@ -41,7 +41,7 @@ class OccasionForm extends Component {
         occurences={occurences}
       />,
       {
-        onCloseClick: () => history.push(routePath)
+        isUnclosable: true
       }
     )
   }
@@ -75,6 +75,7 @@ class OccasionForm extends Component {
       isEventType,
       isNew,
       isReadOnly,
+      occasion,
       occasionIdOrNew,
       occurences,
       offerer,
@@ -127,7 +128,10 @@ class OccasionForm extends Component {
                 </div>
               )
             }
-            <MediationManager />
+            <MediationManager
+              occasion={occasion}
+              routePath={routePath}
+            />
           </div>
           )
         }
@@ -213,7 +217,7 @@ class OccasionForm extends Component {
           isHorizontal
           isExpanded
           label={<Label title="Description :" />}
-          maxLength={500}
+          maxLength={750}
           name="description"
           readOnly={isReadOnly}
           required={!isReadOnly}

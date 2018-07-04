@@ -96,6 +96,12 @@ const routes = [
   },
   {
     exact: true,
+    path: '/offres/:occasionId/accroches/:mediationId',
+    title: 'Accroche',
+    render: () => <MediationPage />,
+  },
+  {
+    exact: true,
     path: '/offres/:occasionId/:feature/:eventOccurenceId',
     title: 'Offre',
     render: () => <OccasionPage />,
@@ -111,12 +117,6 @@ const routes = [
     path: '/structures/:offererId/lieux/:venueId/offres/:occasionId',
     title: 'Offres',
     render: () => <OccasionPage />,
-  },
-  {
-    exact: true,
-    path: '/offres/:occasionId/accroches/:mediationId',
-    title: 'Accroche',
-    render: () => <MediationPage />,
   },
   {
     exact: true,

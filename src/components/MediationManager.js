@@ -23,6 +23,7 @@ const MediationManager = ({
   routePath
 }) => {
   const mediationsLength = get(mediations, 'length')
+
   return (
     <div className='box content has-text-centered'>
       <ReactMarkdown source={mediationExplanation} className='section' />
@@ -53,15 +54,12 @@ const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const mediationsSelector = createMediationSelector()
 
-export default compose(
-  withCurrentOccasion,
-  connect(
-    (state, ownProps) => {
-      const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
-      const thing = thingSelector(state, get(ownProps, 'occasion.thingId'))
-      return {
-        mediations: mediationsSelector(state, event, thing)
-      }
+export default connect(
+  (state, ownProps) => {
+    const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
+    const thing = thingSelector(state, get(ownProps, 'occasion.thingId'))
+    return {
+      mediations: mediationsSelector(state, event, thing)
     }
-  )
+  }
 )(MediationManager)

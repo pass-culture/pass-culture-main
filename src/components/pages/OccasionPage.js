@@ -135,7 +135,6 @@ class OccasionPage extends Component {
       occasion,
       closeModal,
       history,
-      showModal,
       showNotification,
       venue
     } = this.props
@@ -163,21 +162,7 @@ class OccasionPage extends Component {
         console.warn("Something wrong with returned data, we should retrieve the created occasion here")
         return
       }
-      showModal(
-        <div>
-          Cette offre est-elle soumise à des dates ou des horaires particuliers ?
-          <NavLink
-            className='button'
-            to={`/offres/${occasion.id}/dates`}
-          >
-            Oui
-          </NavLink>
-          <button onClick={() => { closeModal(); history.push(`/offres/${occasion.id}`) }}
-            className='button'>
-            Non
-          </button>
-        </div>
-      )
+      history.push(`/offres/${occasion.id}/dates?modifie`)
     }
   }
 
@@ -282,6 +267,7 @@ class OccasionPage extends Component {
             event={event}
             isNew={isNew}
             occasion={occasion}
+            occasionIdOrNew={occasionIdOrNew}
             offerer={offerer}
             offerers={offerers}
             routePath={routePath}

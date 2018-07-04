@@ -71,11 +71,11 @@ class Header extends Component {
                     <span>Profil</span>
                   </NavLink>
                   <NavLink to={'/structures'} className='navbar-item'>
-                    <span className='icon'><Icon svg={'ico-venue-r'} /></span>
+                    <span className='icon'><Icon svg={'ico-structure-r'} /></span>
                     <span>Structures</span>
                   </NavLink>
                   { false && <NavLink to={'/delegations'} className='navbar-item'>
-                    <span className='icon'><Icon svg={'ico-delegation'} /></span>
+                    <span className='icon'><Icon svg={'ico-delegation-r'} /></span>
                     <span>Délégations</span>
                   </NavLink> }
                   { false && <NavLink to={'/comptabilite'} className='navbar-item'>
