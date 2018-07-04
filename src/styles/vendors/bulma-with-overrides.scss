@@ -39,32 +39,31 @@ input[type="checkbox"], input[type="radio"] {
 .field {
   &.has-addons {
     .control {
+      .button {
+        border-width: $control-border-width;
+        height: 100%;
+        &:focus {
+          border-color: $grey-light;
+
+          &:not(:active) {
+            box-shadow: none;
+          }
+        }
+      }
       &:not(:last-child) {
-        input {
+        .input {
           border-right: none;
         }
       }
       &:last-child {
-        button {
+        .button {
           border-left: none;
         }
       }
     }
-  }
-}
 
-.password:focus-within .button {
-  // For signin form
-  border-color: $input-focus-border-color;
-}
-
-.password .button {
-  height: 100%;
-  &:focus {
-    border-color: $grey-light;
-
-    &:not(:active) {
-      box-shadow: none;
+    &:focus-within .button {
+      border-color: $input-focus-border-color;
     }
   }
 }

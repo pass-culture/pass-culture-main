@@ -1,21 +1,22 @@
 // TODO: check if works on every page also
-main.page.home-page.container {
-  @media (min-width: $widescreen) {
-    max-width: $desktop;
-  }
-}
+// main.page.home-page.container {
+//   @media (min-width: $widescreen) {
+//     max-width: $desktop;
+//   }
+// }
 
-.page.container.home-page .page-content {
-  margin: 0;
-  padding: 0;
+// .page.container.home-page .page-content {
+//   margin: 0;
+//   padding: 0;
+// }
+
+.home-page.container .page-content {
+  top: 0;
 }
 
 .home-cards {
   margin: auto;
-  margin-top: 6.5rem;
-  @media(max-width: $tablet) {
-    margin-top: 2rem;
-  }
+  box-shadow: 0 0 60px 0 rgba(0,0,0,0.2);
   .home-card {
     color: $white;
     background-color: $red;

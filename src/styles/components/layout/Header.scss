@@ -42,10 +42,22 @@ header.navbar  {
     }
   }
 
-  .navbar-brand {
-    .navbar-item {
-      font-size: $size-medium;
+  @media(min-width: $desktop) {
+    & > .container {
+      .navbar-brand {
+        margin-left: 0;
+        .navbar-item {
+          padding: 0;
+        }
+      }
+      .navbar-menu {
+        margin-right: 0;
+      }
     }
+  }
+
+  .navbar-brand .navbar-item {
+    font-size: $size-medium;
   }
 
   .navbar-menu {

@@ -2,9 +2,9 @@
   font-weight: $weight-bold;
   font-size: $button-font-size;
   line-height: $button-line-height;
-  border-radius: 0;
+  border-radius: 1px;
   &:not(.is-outlined) {
-    border: none;
+    border-width: 0;
   }
   &.is-primary {
     box-shadow: inset 0 -2px 0 1px rgba(153,0,38,0.6);
