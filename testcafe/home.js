@@ -1,11 +1,19 @@
 import { Selector } from 'testcafe'
-import { BROWSER_URL } from '../src/utils/config'
 
-fixture `Home`
-  .page `${BROWSER_URL}`
+fixture `BetaPage | Arrivée d'un nouvel utilisateur à la racine de la webapp`
+    .page `http://localhost:3000/`
 
-test('logo', async t => {
+test('I should be redirected to beta pathname in first step', async t => {
     await t
-      .expect(Selector('.header__logo').innerText)
-      .eql('Pass Culture')
+    const location = await t.eval(() => window.location)
+    await t.expect(location.pathname).eql('/beta')
+})
+
+test('button Link to /inscription should redirect to /inscription when clicked', async t => {
+    await t
+      .expect(Selector('.button').innerText)
+      .eql('C\'est par là')
+      .click('.button')
+      const location = await t.eval(() => window.location)
+      await t.expect(location.pathname).eql('/inscription')
 })

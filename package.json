@@ -103,6 +103,7 @@
     ],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
+      "<rootDir>/testcafe/**/*.{js,jsx,mjs}",
       "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
     ],
     "testEnvironment": "node",
@@ -148,6 +149,7 @@
   "devDependencies": {
     "husky": "^0.14.3",
     "lint-staged": "^7.0.4",
-    "prettier": "1.12.1"
+    "prettier": "1.12.1",
+    "testcafe-react-selectors": "^2.1.0"
   }
 }
