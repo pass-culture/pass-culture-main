@@ -56,7 +56,9 @@ $size-7: 0.75rem;
 
 
 // Forms
+$control-height: 2.25em; // !! Not a bulma variable !!
 $control-border-width: 2px;
+$control-radius: $control-height/2;
 $input-border-color: $grey-light;
 $input-focus-border-color: $primary;
 $input-hover-border-color: $grey-light;

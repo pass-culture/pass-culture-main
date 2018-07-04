@@ -10,18 +10,18 @@ import withSign from '../hocs/withSign'
 import { NEW } from '../../utils/config'
 
 const Label = ({ title }) => {
-  return <div className="mb1">{title}</div>
+  return <h3>{title}</h3>
 }
 
 const SigninPage = ({ errors }) => {
   return (
     <PageWrapper name="sign-in" fullscreen>
+      <div className='logo-side'>
+        <Logo />
+      </div>
       <div className='container'>
         <div className='columns'>
-          <div className='column is-6 logo-column'>
-            <Logo />
-          </div>
-          <div className='column is-two-fifths'>
+          <div className='column is-offset-6 is-two-fifths'>
             <section className='hero has-text-grey'>
               <div className='hero-body'>
                 <h1 className='title is-spaced is-1'>
@@ -34,7 +34,7 @@ const SigninPage = ({ errors }) => {
                   <FormField
                     autoComplete="email"
                     collectionName="users"
-                    inputClassName='input is-rounded'
+                    inputClassName='input'
                     label={<Label title="Adresse e-mail" />}
                     name="identifier"
                     // type="email"
@@ -43,7 +43,7 @@ const SigninPage = ({ errors }) => {
                   <FormField
                     autoComplete="current-password"
                     collectionName="users"
-                    inputClassName='input is-rounded'
+                    inputClassName='input'
                     label={<Label title="Mot de passe" />}
                     name="password"
                     type="password"

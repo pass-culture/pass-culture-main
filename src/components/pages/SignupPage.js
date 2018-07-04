@@ -15,7 +15,7 @@ import { NEW } from '../../utils/config'
 
 const Label = ({ subtitle, title, inline }) => (
   <div className={inline && 'inline'}>
-    <h3 className='is-size-3 can-be-required'>{title}</h3>
+    <h3 className={`can-be-required ${subtitle ? 'with-subtitle' : ''}`}>{title}</h3>
     <p>{subtitle}</p>
   </div>
 )
@@ -41,15 +41,14 @@ const SignupPage = ({
   sirenName,
   showNotification
 }) => {
-  console.log('sirenName', sirenName)
   return (
     <PageWrapper name="sign-up" fullscreen>
+      <div className='logo-side'>
+        <Logo />
+      </div>
       <div className='container'>
         <div className='columns'>
-          <div className='column is-6 logo-column'>
-            <Logo />
-          </div>
-          <div className='column is-two-fifths'>
+          <div className='column is-offset-6 is-two-fifths'>
             <section className='hero'>
               <div className='hero-body'>
                 <h1 className='title is-spaced is-1'>Créez votre compte</h1>
@@ -60,7 +59,7 @@ const SignupPage = ({
                   <FormField
                     autoComplete="email"
                     collectionName="users"
-                    inputClassName="input is-rounded"
+                    inputClassName="input"
                     label={
                       <Label
                         title="Adresse e-mail"
@@ -73,7 +72,7 @@ const SignupPage = ({
                     type="email"
                   />
                   <FormField
-                    inputClassName="input is-rounded"
+                    inputClassName="input"
                     label={
                       <Label
                         title="Identifiant"
@@ -90,7 +89,7 @@ const SignupPage = ({
                   <FormField
                     autoComplete="new-password"
                     collectionName="users"
-                    inputClassName="input is-rounded"
+                    inputClassName="input"
                     label={
                       <Label
                         title="Mot de passe"
@@ -105,7 +104,7 @@ const SignupPage = ({
                   <FormField
                     autoComplete="siren"
                     collectionName="users"
-                    inputClassName="input is-rounded"
+                    inputClassName="input"
                     label={
                       <Label
                         title="SIREN"

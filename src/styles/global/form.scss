@@ -12,6 +12,10 @@ label {
   color: $violet;
 }
 
+textarea.textarea {
+  border-radius: $control-radius;
+}
+
 .field.checkbox {
   align-items: flex-start;
   display: flex;
@@ -24,6 +28,7 @@ label {
     width: $body-line-height;
     height: $body-line-height;
     padding: 0;
+    border-radius: 0;
     &:active, &:checked {
       &:after {
         content: '';

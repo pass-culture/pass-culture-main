@@ -18,19 +18,12 @@
   opacity: $button-disabled-opacity;
 }
 
-textarea.textarea {
-  &.is-rounded {
-    border-radius: 1em;
-  }
-}
-
 input[type="checkbox"], input[type="radio"] {
   vertical-align: middle;
 }
 
 .navbar {
   &.is-primary {
-
     .navbar-brand {
       & > .navbar-item:hover {
         background: transparent !important; // Bug?
