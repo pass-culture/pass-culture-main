@@ -17,6 +17,7 @@ main.page.home-page.container {
     margin-top: 2rem;
   }
   .home-card {
+    color: $white;
     background-color: $red;
     padding: 3rem;
     padding-bottom: 2.6rem;
@@ -35,15 +36,15 @@ main.page.home-page.container {
     .home-card-text {
       margin-top: 7rem;
       h1 {
-        font-size: 2.6em;
-        font-weight: $weight-semibold;
-        color: $white;
+        font-size: $size-xlarge;
+        // font-size: 2.6em;
+        // font-weight: $weight-semibold;
       }
 
       p {
-        margin-top: 0.5rem;
+        // margin-top: 0.5rem;
         color: $white;
-        font-size: 1.2rem;
+        // font-size: 1.2rem;
       }
     }
   }

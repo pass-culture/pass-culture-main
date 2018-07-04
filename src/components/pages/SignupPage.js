@@ -133,8 +133,7 @@ const SignupPage = ({
                     collectionName="users"
                     label={
                       <span className='can-be-required'>
-                        J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
-                        <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.
+                        J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture.
                       </span>
                     }
                     name="contact_ok"
