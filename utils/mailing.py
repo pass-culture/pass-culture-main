@@ -67,7 +67,7 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
     if offer.eventOccurence:
         date_in_utc = offer.eventOccurence.beginningDatetime
         date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                                   offer.eventOccurence.venue)
+                                                   offer.eventOccurence.venue.departementCode)
         description = '%s le %s' % (offer.eventOccurence.event.name,
                                     format_datetime(date_in_tz))
     elif offer.thing:
