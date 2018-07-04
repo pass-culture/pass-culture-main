@@ -101,13 +101,13 @@ class FormInput extends Component {
     )
     return (
       <input
-        readOnly={readOnly}
-        required={required}
         autoComplete={autoComplete}
         className={className || 'input'}
         id={id}
         onChange={this.onChange}
         placeholder={placeholder}
+        readOnly={readOnly}
+        required={required}
         type={type}
         value={formatedValue}
       />

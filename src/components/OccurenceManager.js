@@ -114,6 +114,7 @@ class OccurenceManager extends Component {
 
   render() {
     const {
+      event,
       history,
       location,
       match,
@@ -121,6 +122,9 @@ class OccurenceManager extends Component {
       occasion,
       occurences,
     } = this.props
+    const {
+      name
+    } = (event || {})
     const {
       id
     } = (occasion || {})
@@ -131,6 +135,12 @@ class OccurenceManager extends Component {
     return (
       <div className='occurence-manager'>
         <div className='occurence-table-wrapper'>
+          <div className='subtitle has-text-weight-bold has-text-left'>
+            {name && name.toUpperCase()}
+          </div>
+          <div className="pc-title has-text-left">
+            Dates, horaires et prix
+          </div>
           <table className='table is-hoverable occurence-table'>
             <thead>
               <tr>
@@ -224,6 +234,7 @@ export default connect(
     const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
     const venueId = get(ownProps, 'occasion.venueId')
     return {
+      event,
       provider: providerSelector(state, get(event, 'lastProviderId')),
       tz: timezoneSelector(state, venueId),
     }
