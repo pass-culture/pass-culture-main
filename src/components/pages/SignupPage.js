@@ -38,15 +38,17 @@ const SignupPage = ({
   closeNotification,
   errors,
   removeBlockers,
+  sirenName,
   showNotification
 }) => {
+  console.log('sirenName', sirenName)
   return (
     <PageWrapper name="sign-up" fullscreen>
       <div className='columns'>
         <div className='column is-half logo-column'>
           <Logo />
         </div>
-        <div className='column is-one-third has-big-margin'>
+        <div className='column is-half'>
           <section className='hero'>
             <div className='hero-body has-text-grey'>
               <h1 className='title is-spaced is-1'>Créez votre compte</h1>
@@ -99,22 +101,28 @@ const SignupPage = ({
                   required
                   type="password"
                 />
-                <FormField
-                  autoComplete="siren"
-                  collectionName="users"
-                  inputClassName="input is-rounded"
-                  required
-                  label={
-                    <Label
-                      title="SIREN"
-                      subtitle="... de la structure à rattacher :"
-                    />
-                  }
-                  name="siren"
-                  placeholder="123 456 789"
-                  sireType="siren"
-                  type="sirene"
-                />
+                <div className="columns">
+                  <FormField
+                    autoComplete="siren"
+                    className="column has-no-padding"
+                    collectionName="users"
+                    inputClassName="input is-rounded"
+                    label={
+                      <Label
+                        title="SIREN"
+                        subtitle="... de la structure à rattacher :"
+                      />
+                    }
+                    name="siren"
+                    placeholder="123 456 789"
+                    required
+                    sireType="siren"
+                    type="sirene"
+                  />
+                  <div className="column">
+                    { sirenName && <span> {sirenName} </span> }
+                  </div>
+                </div>
                 <FormField
                   collectionName="users"
                   label={
@@ -137,7 +145,7 @@ const SignupPage = ({
                     getBody={form => form.usersById[NEW]}
                     getIsDisabled={form =>
                       requiredFields.filter(k =>
-                        !get(form, `usersById._new_.${k}`)
+                        !get(form, `usersById.${NEW}.${k}`)
                       ).length > 0
                     }
                     handleSuccess={() => {
@@ -164,7 +172,9 @@ const SignupPage = ({
 export default compose(
   withSign,
   connect(
-    null,
+    state => ({
+      sirenName: get(state, `form.usersById.${NEW}.name`)
+    }),
     {
       addBlockers,
       closeNotification,

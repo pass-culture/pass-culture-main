@@ -2,7 +2,6 @@ import React from 'react'
 import { Redirect } from 'react-router'
 
 import AccoutingPage from '../components/pages/AccountingPage'
-import BetaPage from '../components/pages/BetaPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import MediationsPage from '../components/pages/MediationsPage'
@@ -21,19 +20,13 @@ const routes = [
   {
     exact: true,
     path: '/',
-    render: () => <Redirect to="/beta" />,
+    render: () => <Redirect to="/connexion" />,
   },
   {
     exact: true,
     path: '/comptabilite',
     title: "Comptabilité",
     render: () => <AccoutingPage />,
-  },
-  {
-    exact: true,
-    path: '/beta',
-    title: "Bienvenue dans l'avant-première du Pass Culture",
-    render: () => <BetaPage />,
   },
   {
     exact: true,

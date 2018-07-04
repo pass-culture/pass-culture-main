@@ -12,16 +12,12 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      // &.has-big-margin {
-      //   @media (min-width: $tablet) {
-      //     margin-top: 10rem;
-
-      //     .hero {
-      //       margin-top: -3rem;
-      //     }
-      //   }
-      // }
+      padding: 0;
     }
+  }
+
+  .has-no-padding {
+    padding: 0;
   }
 
   .logo-column {
@@ -129,6 +125,10 @@
         }
       }
 
+    }
+
+    .siren {
+      width: 50%;
     }
 
   }

@@ -1,17 +1,19 @@
 import classnames from 'classnames'
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
-import get from 'lodash.get'
 
-import withLogin from '../hocs/withLogin'
 import Header from './Header'
 import Icon from './Icon'
 import Loader from './Loader'
-import { showNotification, closeNotification } from '../../reducers/notification'
+import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
+import { showNotification, closeNotification } from '../../reducers/notification'
+import { closeSplash } from '../../reducers/splash'
+
 
 class PageWrapper extends Component {
 
@@ -23,7 +25,38 @@ class PageWrapper extends Component {
   }
 
   static defaultProps = {
+    closeSplashTimeout: 2000,
     Tag: 'main',
+  }
+
+  handleDataFail = (state, action) => {
+    this.setState({
+      loading: false,
+    })
+    this.props.showNotification({
+      type: 'danger',
+      text: get(action, 'errors.global', []).join('\n') || 'Erreur de chargement'
+    })
+  }
+
+  handleDataRequest = () => {
+    if (this.props.handleDataRequest) {
+      // possibility of the handleDataRequest to return
+      // false in orde to not trigger the loading
+      const loading = this.props.handleDataRequest(
+        this.handleDataSuccess,
+        this.handleDataFail
+      ) === false ? false : true
+      this.setState({
+        loading
+      })
+    }
+  }
+
+  handleDataSuccess = (state, action) => {
+    this.setState({
+      loading: false,
+    })
   }
 
   handleHistoryBlock = () => {
@@ -53,39 +86,18 @@ class PageWrapper extends Component {
     )
   }
 
-  handleDataRequest = () => {
-    if (this.props.handleDataRequest) {
-      // possibility of the handleDataRequest to return
-      // false in orde to not trigger the loading
-      const loading = this.props.handleDataRequest(
-        this.handleDataSuccess,
-        this.handleDataFail
-      ) === false ? false : true
-      this.setState({
-        loading
-      })
-    }
-  }
-
-  handleDataSuccess = (state, action) => {
-    this.setState({
-      loading: false,
-    })
-  }
-
-  handleDataFail = (state, action) => {
-    this.setState({
-      loading: false,
-    })
-    this.props.showNotification({
-      type: 'danger',
-      text: get(action, 'errors.global', []).join('\n') || 'Erreur de chargement'
-    })
+  handleCloseSplash = () => {
+    const {
+      closeSplash,
+      closeSplashTimeout
+    } = this.props
+    this.closeSplashTimeout = setTimeout(closeSplash, closeSplashTimeout)
   }
 
   componentDidMount () {
     this.handleHistoryBlock()
     this.props.user && this.handleDataRequest()
+    this.handleCloseSplash()
   }
 
   componentDidUpdate (prevProps) {
@@ -102,8 +114,9 @@ class PageWrapper extends Component {
   }
 
   componentWillUnmount() {
-      this.unblock && this.unblock()
-   }
+    this.unblock && this.unblock()
+    this.closeSplashTimeout && clearTimeout(this.closeSplashTimeout)
+  }
 
   render () {
     const {
@@ -180,9 +193,10 @@ export default compose(
       user: state.user,
     }),
     {
-      showNotification,
       closeNotification,
+      closeSplash,
       requestData,
+      showNotification,
     }
   )
 )(PageWrapper)

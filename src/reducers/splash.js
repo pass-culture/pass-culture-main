@@ -7,7 +7,9 @@ const initialState = {
   closeTimeout: 2000,
   isActive:
     window.location.pathname === '/' ||
-    ['/beta'].find(pageName => window.location.pathname.startsWith(pageName)),
+    [].find(pageName =>
+      window.location.pathname.startsWith(pageName)
+    ),
 }
 
 // REDUCER
