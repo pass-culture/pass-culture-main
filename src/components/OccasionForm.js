@@ -75,6 +75,7 @@ class OccasionForm extends Component {
       isEventType,
       isNew,
       isReadOnly,
+      occasion,
       occasionIdOrNew,
       occurences,
       offerer,
@@ -127,7 +128,10 @@ class OccasionForm extends Component {
                 </div>
               )
             }
-            <MediationManager />
+            <MediationManager
+              occasion={occasion}
+              routePath={routePath}
+            />
           </div>
           )
         }

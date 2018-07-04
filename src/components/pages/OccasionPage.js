@@ -282,6 +282,7 @@ class OccasionPage extends Component {
             event={event}
             isNew={isNew}
             occasion={occasion}
+            occasionIdOrNew={occasionIdOrNew}
             offerer={offerer}
             offerers={offerers}
             routePath={routePath}
