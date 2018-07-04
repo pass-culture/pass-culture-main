@@ -8,10 +8,11 @@ import Capitalize from './utils/Capitalize'
 import selectDistance from '../selectors/distance'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
+import selectCurrentRecommendation from '../selectors/currentRecommendation'
 import selectCurrentSource from '../selectors/currentSource'
 import selectCurrentThumbUrl from '../selectors/currentThumbUrl'
+import selectTimezone from '../selectors/currentTimezone'
 import selectVenue from '../selectors/currentVenue'
-import selectCurrentRecommendation from '../selectors/currentRecommendation'
 import { navigationLink } from '../utils/geolocation'
 
 class OfferInfo extends Component {
@@ -19,11 +20,12 @@ class OfferInfo extends Component {
     const {
       distance,
       offer,
+      offerer,
+      recommendation,
       source,
       thumbUrl,
+      tz,
       venue,
-      recommendation,
-      offerer,
     } = this.props
 
     const infos = {
@@ -69,7 +71,7 @@ class OfferInfo extends Component {
                 (occurence, index) =>
                   index < 7 && (
                     <li key={index}>
-                      <Capitalize>{moment.parseZone(occurence).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
+                      <Capitalize>{moment(occurence).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
                     </li>
                   )
               )}
@@ -108,4 +110,5 @@ export default connect(state => ({
   thumbUrl: selectCurrentThumbUrl(state),
   recommendation: selectCurrentRecommendation(state),
   venue: selectVenue(state),
+  tz: selectTimezone(state),
 }))(OfferInfo)
