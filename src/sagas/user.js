@@ -38,19 +38,19 @@ export function* watchUserActions() {
   yield takeEvery(
     ({ type }) =>
       /REQUEST_DATA_POST_USERS\/SIGN(.*)/.test(type) ||
-      /REQUEST_DATA_GET_USERS\/ME(.*)/.test(type),
+      /REQUEST_DATA_GET_USERS\/CURRENT(.*)/.test(type),
     fromWatchRequestSignActions
   )
   yield takeEvery(
     ({ type }) =>
       /FAIL_DATA_POST_USERS\/SIGN(.*)/.test(type) ||
-      /FAIL_DATA_GET_USERS\/ME(.*)/.test(type),
+      /FAIL_DATA_GET_USERS\/CURRENT(.*)/.test(type),
     fromWatchFailSignActions
   )
   yield takeEvery(
     ({ type }) =>
       /SUCCESS_DATA_POST_USERS/.test(type) ||
-      /SUCCESS_DATA_GET_USERS\/ME(.*)/.test(type),
+      /SUCCESS_DATA_GET_USERS\/CURRENT(.*)/.test(type),
     fromWatchSuccessSignActions
   )
   yield takeEvery(
