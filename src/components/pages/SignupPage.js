@@ -53,7 +53,7 @@ const SignupPage = ({
               <div className='hero-body'>
                 <h1 className='title is-spaced is-1'>Créez votre compte</h1>
                 <h2 className='subtitle is-2'>
-                  Merci de renseigner tous les champs suivants pour créer votre compte.
+                  Merci de renseigner tous les champs marqués d'un <span className='required-legend'>*</span>.
                 </h2>
                 <form>
                   <FormField
@@ -122,6 +122,17 @@ const SignupPage = ({
                     collectionName="users"
                     label={
                       <span>
+                        Je souhaite recevoir les actualités du Pass Culture.
+                      </span>
+                    }
+                    name="newsletter_ok"
+                    required
+                    type="checkbox"
+                  />
+                  <FormField
+                    collectionName="users"
+                    label={
+                      <span className='can-be-required'>
                         J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
                         <a href="http://passculture.beta.gouv.fr">Pass Culture</a>.
                       </span>
