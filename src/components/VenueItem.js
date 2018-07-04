@@ -1,4 +1,5 @@
 import React from 'react'
+import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
@@ -9,10 +10,14 @@ const VenueItem = ({
 }) => {
   const {
     address,
+    city,
     id,
     managingOffererId,
     name,
+    postalCode
   } = (venue || {})
+
+  console.log('address', venue)
 
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
@@ -30,22 +35,22 @@ const VenueItem = ({
               <Icon svg='ico-offres-r' /> Créer une offre
             </NavLink>
           </li>
+          {
+            venue.nOccasions > 0 ? (
+              <li>
+                <NavLink to={`/offres?lieu=${id}`} className='has-text-primary'>
+                  <Icon svg='ico-offres-r' />
+                  { pluralize(venue.nOccasions, 'offres') }
+                </NavLink>
+              </li>
+            ) : (
+              <li>0 offre</li>
+            )
+          }
           <li>
-            {
-              venue.nOccasions > 0 ? (
-                <li key={1}>
-                  <NavLink to={`/offres?lieu=${id}`} className='has-text-primary'>
-                    <Icon svg='ico-offres-r' />
-                    { pluralize(venue.nOccasions, 'offres') }
-                  </NavLink>
-                </li>
-              ) : (
-                <li key={2}>0 offre</li>
-              )
-            }
-          </li>
-          <li>
-            <p className="has-text-grey">{address}</p>
+            <Dotdotdot className="has-text-grey" clamp={2}>
+              {address} {postalCode} {city}
+            </Dotdotdot>
           </li>
         </ul>
       </div>
