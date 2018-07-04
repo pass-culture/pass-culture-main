@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import DatePicker from 'react-datepicker'
 import { connect } from 'react-redux'
 
+import Icon from './Icon'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
 
@@ -51,14 +52,21 @@ class FormDate extends Component {
             ? <span> {resolvedValue && resolvedValue.format(format)} </span>
             :
               (
-                <DatePicker
-                  selected={resolvedValue}
-                  onChange={this.handleDateSelect}
-                  className='input is-rounded is-small'
-                  minDate={moment()}
-                  highlightDates={highlightedDates || []}
-                  showTimeSelect={showTimeSelect}
-                />
+                [
+                  <DatePicker
+                    className='input is-rounded is-small'
+                    highlightDates={highlightedDates || []}
+                    minDate={moment()}
+                    onChange={this.handleDateSelect}
+                    selected={resolvedValue}
+                    showTimeSelect={showTimeSelect}
+                  />,
+                  <Icon
+                    alt='Horaires'
+                    className="input-icon"
+                    svg="ico-calendar"
+                  />
+                ]
             )
         }
       </div>
