@@ -137,28 +137,28 @@ def put_recommendations():
 
     print('(all read recos) count', all_read_recos_count)
 
-    tuto_recos = Recommendation.query.join(Mediation)\
-                               .filter((Mediation.tutoIndex != None)
-                                       & (Recommendation.user == current_user))\
-                               .order_by(Mediation.tutoIndex)\
-                               .all()
-    print('(tuto recos) count', len(tuto_recos))
-
-    tutos_read = 0
-    for tuto_reco in tuto_recos:
-        if tuto_reco.dateRead is not None:
-            tutos_read += 1
-        elif len(recos) >= tuto_reco.mediation.tutoIndex-tutos_read:
-            recos = recos[:tuto_reco.mediation.tutoIndex-tutos_read]\
-                    + [tuto_reco]\
-                    + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
-
     if requested_recommendation:
         for i, reco in enumerate(recos):
             if reco.id == requested_recommendation.id:
                 recos = recos[:i]+recos[i+1:]
                 break
         recos = [requested_recommendation] + recos
+    else:
+        tuto_recos = Recommendation.query.join(Mediation)\
+                                   .filter((Mediation.tutoIndex != None)
+                                           & (Recommendation.user == current_user))\
+                                   .order_by(Mediation.tutoIndex)\
+                                   .all()
+        print('(tuto recos) count', len(tuto_recos))
+
+        tutos_read = 0
+        for tuto_reco in tuto_recos:
+            if tuto_reco.dateRead is not None:
+                tutos_read += 1
+            elif len(recos) >= tuto_reco.mediation.tutoIndex-tutos_read:
+                recos = recos[:tuto_reco.mediation.tutoIndex-tutos_read]\
+                        + [tuto_reco]\
+                        + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
 
     print('(recap reco) ',
           [(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos],
