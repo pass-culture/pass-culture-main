@@ -5,7 +5,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import MediationManager from './MediationManager'
 import OccurenceManager from './OccurenceManager'
 import Icon from './layout/Icon'
 import FormField from './layout/FormField'
@@ -100,41 +99,6 @@ class OccasionForm extends Component {
 
     return (
       <div>
-        {
-          !isNew && (
-            <div className='field'>
-            {
-              event && (
-                <div className='field form-field is-horizontal'>
-                  <div className='field-label'>
-                    <label className="label" htmlFor="input_occasions_name">
-                      <div className="subtitle">Dates :</div>
-                    </label>
-                  </div>
-                  <div className='field-body'>
-                    <div className='field'>
-                      <div className='nb-dates'>
-                        {pluralize(get(occurences, 'length'), 'date')}
-                      </div>
-                      <NavLink
-                        className='button is-primary is-outlined is-small'
-                        to={`${routePath}/dates`}
-                      >
-                        <span className='icon'><Icon svg='ico-calendar' /></span>
-                        <span>Gérer les dates et les prix</span>
-                      </NavLink>
-                    </div>
-                  </div>
-                </div>
-              )
-            }
-            <MediationManager
-              occasion={occasion}
-              routePath={routePath}
-            />
-          </div>
-          )
-        }
         <h2 className='pc-list-title'>
           Infos pratiques
         </h2>
