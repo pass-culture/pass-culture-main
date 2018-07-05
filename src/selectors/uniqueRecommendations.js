@@ -5,7 +5,8 @@ export default createSelector(
   state => state.data.recommendations || [],
   (recommendations) => {
     let recosById = {}
-    recommendations.map(r => recosById[r.id] = r)
+    let recoUid = r => r.mediation ? r.mediationId : 'nomed_'+(r.thingId || r.eventId);
+    recommendations.forEach(r => recosById[recoUid(r)] = r)
     return Object.values(recosById)
   }
 )
