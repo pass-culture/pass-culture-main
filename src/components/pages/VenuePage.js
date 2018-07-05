@@ -261,7 +261,7 @@ class VenuePage extends Component {
               name="address"
               readOnly={isReadOnly}
               required={!isReadOnly}
-              type="address"
+              type="geo"
             />
             <FormField
               autoComplete="postalCode"
