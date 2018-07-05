@@ -20,6 +20,7 @@ app.url_map.strict_slashes = False
 with app.app_context():
     import models
     import utils.login_manager
+    import utils.logger
     import local_providers
     import routes
 
