@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import MediationManager from '../MediationManager'
 import OccasionForm from '../OccasionForm'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
@@ -12,7 +13,7 @@ import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import Icon from '../layout/Icon'
 import { resetForm } from '../../reducers/form'
-import { closeModal, showModal } from '../../reducers/modal'
+import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
 import createOccurencesSelector from '../../selectors/createOccurences'
@@ -28,9 +29,8 @@ import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
 import { getIsDisabled, optionify } from '../../utils/form'
 import { eventNormalizer } from '../../utils/normalizers'
-import { updateQueryString } from '../../utils/string'
-import { pluralize } from '../../utils/string'
-import MediationManager from '../MediationManager'
+import { pluralize, updateQueryString } from '../../utils/string'
+
 
 
 const requiredEventAndThingFields = [
@@ -117,9 +117,8 @@ class OccasionPage extends Component {
     )
     providers.length === 0 && requestData('GET', 'providers')
     typeOptions.length === 0 && requestData('GET', 'types')
-
-    // prevent loading on this page
-    return false
+    
+    handleSuccess()
   }
 
   handleFailData = (state, action) => {
@@ -136,7 +135,6 @@ class OccasionPage extends Component {
     } = action
     const {
       occasion,
-      closeModal,
       history,
       showNotification,
       venue
@@ -483,7 +481,6 @@ export default compose(
       return newState
     },
     {
-      closeModal,
       resetForm,
       showModal,
       showNotification

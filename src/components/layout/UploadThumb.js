@@ -76,8 +76,9 @@ class UploadThumb extends Component {
     if (isUploadDisabled) return;
     e.preventDefault()
     // const type = image.type.includes('image/') && image.type.split('image/')[1]
-    const formData = new FormData();
-    formData.append('file', image);
+    const formData = new FormData()
+    formData.append('file', image)
+    console.log('storeKey', storeKey)
     requestData(
       'POST',
       `storage/thumb/${collectionName}/${entityId}/${index}`,
@@ -109,11 +110,11 @@ class UploadThumb extends Component {
     const {
       border,
       borderRadius,
+      className,
       height,
       maxSize,
       width,
       onImageChange,
-      className,
       hasExistingImage,
     } = this.props
     const {

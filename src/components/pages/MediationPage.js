@@ -219,19 +219,19 @@ class MediationPage extends Component {
           <div className='column is-three-quarters'>
             <label className='label'>... ou depuis votre poste :</label>
             <UploadThumb
-              image={imageUrl}
-              onImageChange={this.onImageChange}
+              border={imageUploadBorder}
               borderRadius={0}
               collectionName='mediations'
               entityId={get(mediation, 'id')}
-              index={0}
-              border={imageUploadBorder}
-              width={imageUploadSize}
-              height={imageUploadSize}
-              storeKey='thumbedMediation'
-              type='thumb'
               hasExistingImage={!isNew}
+              height={imageUploadSize}
+              image={imageUrl}
+              index={0}
+              width={imageUploadSize}
               required
+              onImageChange={this.onImageChange}
+              storeKey='mediations'
+              type='thumb'
             />
             { image && (
               <div className='section content'>
@@ -287,7 +287,7 @@ class MediationPage extends Component {
               handleSuccess={this.handleSuccessData}
               method={isNew ? 'POST' : 'PATCH'}
               path={'mediations' + (isNew ? '' : `/${get(mediation, 'id')}`)}
-              storeKey="thumb"
+              storeKey="mediations"
               text='Valider'
             />
           </div>

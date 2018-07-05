@@ -53,8 +53,8 @@ class OffererPage extends Component {
       requestData,
     } = this.props
     const { isNew } = this.state
-    !isNew
-      ? requestData(
+    if (!isNew) {
+      requestData(
         'GET',
         `offerers/${offererId}`,
         {
@@ -64,10 +64,10 @@ class OffererPage extends Component {
           normalizer: offererNormalizer
         }
       )
-      : handleSuccess()
-
+      return
+    }
     // prevent loading
-    return false
+    handleSuccess()
   }
 
   handleSuccessData = () => {
