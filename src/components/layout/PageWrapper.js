@@ -43,13 +43,13 @@ class PageWrapper extends Component {
     if (this.props.handleDataRequest) {
       // possibility of the handleDataRequest to return
       // false in orde to not trigger the loading
+      this.setState({
+        loading: true
+      })
       this.props.handleDataRequest(
         this.handleDataSuccess,
         this.handleDataFail
       )
-      this.setState({
-        loading: true
-      })
     }
   }
 
