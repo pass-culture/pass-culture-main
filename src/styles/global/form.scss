@@ -1,3 +1,31 @@
+.field-group {
+  display: table;
+  width: 100%;
+  .form-field.is-horizontal {
+    display: table-row;
+    .field-label, .field-body {
+      display: table-cell;
+      vertical-align: middle;
+      padding-bottom: 1rem;
+    }
+
+    .field-label {
+      padding-right: 1rem;
+      white-space:nowrap;
+    }
+
+    .field-body {
+      width: 100%;
+      .field:not(.is-expanded) {
+        input, .select {
+          width: auto;
+        }
+      }
+    }
+  }
+}
+
+
 label {
   &.required {
     *.can-be-required:after {

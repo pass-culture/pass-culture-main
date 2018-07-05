@@ -76,7 +76,7 @@ class FormField extends Component {
 
     if (!isCheckbox) {
       inputMarkup = (
-        <div className='control is-expanded' key={`control_${inputId}`}>
+        <div className='control' key={`control_${inputId}`}>
           {inputMarkup}
         </div>
       )

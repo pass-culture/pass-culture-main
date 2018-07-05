@@ -237,29 +237,31 @@ class OccasionPage extends Component {
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
           </p>
-          <FormField
-            collectionName='occasions'
-            defaultValue={name}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Titre de l'offre :" />}
-            name="name"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-          />
-          <FormField
-            collectionName='occasions'
-            defaultValue={get(type, 'value')}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Type :" />}
-            name="type"
-            options={(isReadOnly && !get(type, 'value') && []) || typeOptionsWithPlaceholder}
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-            type="select"
-          />
+          <div className='field-group'>
+            <FormField
+              collectionName='occasions'
+              defaultValue={name}
+              entityId={occasionIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="Titre de l'offre :" />}
+              name="name"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              collectionName='occasions'
+              defaultValue={get(type, 'value')}
+              entityId={occasionIdOrNew}
+              isHorizontal
+              label={<Label title="Type :" />}
+              name="type"
+              options={(isReadOnly && !get(type, 'value') && []) || typeOptionsWithPlaceholder}
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+              type="select"
+            />
+          </div>
         </div>
 
         {
