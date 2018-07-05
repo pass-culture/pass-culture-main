@@ -49,12 +49,12 @@ OCCASION_INCLUDES = [
                 "sub_joins": [
                     {
                         "key": "offer",
-                        "sub_joins": [
-                            {
-                                "key": "offerer",
-                                "sub_joins": OFFERER_INCLUDES
-                            }
-                        ]
+                        #"sub_joins": [
+                        #    {
+                        #        "key": "offerer",
+                        #        "sub_joins": OFFERER_INCLUDES
+                        #    }
+                        #]
                     },
                     'venue'
                 ]
@@ -67,12 +67,12 @@ OCCASION_INCLUDES = [
         "sub_joins": [
             {
                 "key": "offer",
-                "sub_joins": [
-                    {
-                        "key": "offerer",
-                        "sub_joins": OFFERER_INCLUDES
-                    }
-                ]
+                #"sub_joins": [
+                #    {
+                #        "key": "offerer",
+                #        "sub_joins": OFFERER_INCLUDES
+                #    }
+                #]
             },
             'venue',
             'mediations'
@@ -80,7 +80,12 @@ OCCASION_INCLUDES = [
     },
     {
         "key": "venue",
-        "sub_joins": ["managingOfferer"]
+        "sub_joins": [
+            {
+                "key": "managingOfferer",
+                "sub_joins": OFFERER_INCLUDES
+            }
+        ]
     }
 ]
 
