@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect'
+import selectUniqueRecommendations from './uniqueRecommendations'
 
 export default createSelector(
-  state => state.data.recommendations || [],
+  selectUniqueRecommendations,
   recommendations =>
     recommendations.map((reco, index) => Object.assign(reco, { index }))
 )

@@ -3,9 +3,10 @@ import { createSelector } from 'reselect'
 import selectSortedRecommendations from './sortedRecommendations'
 import selectCurrentRecommendation from './currentRecommendation'
 import getRecommendation from '../getters/recommendation'
+import selectUniqueRecommendations from './uniqueRecommendations'
 
 export default createSelector(
-  state => state.data.recommendations || [],
+  selectUniqueRecommendations,
   selectCurrentRecommendation,
   (recommendations, currentRecommendation) => {
     const nextRecommendation =
