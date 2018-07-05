@@ -187,3 +187,16 @@ def test_18_patch_recommendations_should_return_is_clicked_true():
                                      json={'isClicked': True})
     assert r_update.status_code == 200
     assert r_update.json()['isClicked']
+
+def test_19_put_recommendations_should_not_return_already_seen_recos():
+    seen_occasions = ['AE', 'A9', '39', 'AEHQ', 'AE9Q', '64', 'AEEQ', '7E', 'FA', '7U', '3U',
+                      '3M', '9U', '4M', '6Q', 'AEBA', '2Y', 'AEEA', 'AECA', '24', '7A', '7Y', '5Y', 'VQ', 'RQ', 'AEBQ',
+                      '69', '34', 'AE9A',  '6M', '5Q', '44', 'AEGA',
+                      'AEJA', 'G4', '4U', '7M', 'CQ', '3E']
+    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenOccasionIds': seen_occasions})
+    assert r.status_code == 200
+    recos = r.json()
+    recoIds = [reco['id'] for reco in recos]
+    intersection_between_seen_and_recommended = set(seen_occasions).intersection(set(recoIds))
+    assert len(intersection_between_seen_and_recommended) == 0
+

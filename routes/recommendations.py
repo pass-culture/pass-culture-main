@@ -172,6 +172,8 @@ def put_recommendations():
 
     dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATION_INCLUDES),
                           recos))
+    seen_occasionIds = request.json['seenOccasionIds'] or []
+    dict_recos = [reco for reco in dict_recos if reco['id'] not in seen_occasionIds]
 
     for index, reco in enumerate(dict_recos):
         rbs = []
