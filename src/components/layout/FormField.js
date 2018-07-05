@@ -40,6 +40,7 @@ class FormField extends Component {
     const {
       className,
       collectionName,
+      controlClassName,
       error,
       id,
       inputClassName,
@@ -76,7 +77,7 @@ class FormField extends Component {
 
     if (!isCheckbox) {
       inputMarkup = (
-        <div className='control' key={`control_${inputId}`}>
+        <div className={classnames('control', controlClassName)} key={`control_${inputId}`}>
           {inputMarkup}
         </div>
       )

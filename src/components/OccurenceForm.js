@@ -182,6 +182,7 @@ class OccurenceForm extends Component {
           <FormField
             className='is-small'
             collectionName="eventOccurences"
+            controlClassName='has-text-centered'
             defaultValue={date}
             entityId={eventOccurenceIdOrNew}
             format='DD/MM/YYYY'
@@ -248,6 +249,7 @@ class OccurenceForm extends Component {
           <FormField
             className='is-small'
             collectionName="offers"
+            controlClassName='has-text-centered'
             defaultValue={bookingDate}
             entityId={offerIdOrNew}
             format='DD/MM/YYYY'
