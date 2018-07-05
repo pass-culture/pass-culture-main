@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect'
 
-import selectSortedRecommendations from './sortedRecommendations'
 import selectCurrentRecommendation from './currentRecommendation'
 import getRecommendation from '../getters/recommendation'
 import selectUniqueRecommendations from './uniqueRecommendations'
