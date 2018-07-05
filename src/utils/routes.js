@@ -26,7 +26,8 @@ export const getDiscoveryPath = (offer, mediation = '') => {
         : ''
   const eventId = offer
                   && typeof offer === 'object'
-                  && offer.eventId
+                  && offer.eventOccurence
+                  && offer.eventOccurence.eventId
   let url = `/decouverte/${offerId}/${mediationId}`
   if (eventId !== undefined) {
     url += `#${eventId}`

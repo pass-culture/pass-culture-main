@@ -81,7 +81,7 @@ export default compose(
   connect(state => ({
     backButton: state.router.location.search.indexOf('to=verso') > -1,
     currentRecommendation: selectCurrentRecommendation(state),
-    occasionId: state.router.location.hash,
+    occasionId: state.router.location.hash && state.router.location.hash.substr(1),
     recommendations: state.data.recommendations,
   }), { requestData })
 )(DiscoveryPage)
