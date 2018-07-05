@@ -43,16 +43,18 @@ function* fromWatchRequestDataActions(action) {
 
   } catch (error) {
     console.warn('error', error)
-    yield put(failData(method, path, [{ global: error }], config))
+    yield put(failData(method, path, [{
+      //global: String(error)
+      global: "Erreur serveur. Tentez de rafraîchir la page."
+    }], config))
   }
 }
 
 function* fromWatchFailDataActions(action) {
-  const patches = Array.isArray(action.errors)
-    ? action.errors
-    : [action.errors]
-  for (let patch of patches) {
-    yield put(assignErrors(patch))
+  const errors = [].concat(action.errors)
+
+  for (let error of errors) {
+    yield put(assignErrors(error))
   }
   if (action.config.handleFail) {
     const state = yield select(state => state)

@@ -1,11 +1,11 @@
 @import '~bulma/sass/utilities/initial-variables';
 
 // Responsive breakpoints
-$gap: 64px;
+$gap: 12px;
 $tablet: 769px;
-$desktop: 960px + (2 * $gap); // 1088px
-$widescreen: 1500px + (2 * $gap); // 1280px
-$fullhd: 1500px + (2 * $gap); // 1472px
+$desktop: 1000px + (2 * $gap); // 1088px
+$widescreen: $desktop;
+$fullhd: $desktop;
 
 // Colors
 $red: #e60039;
@@ -15,12 +15,15 @@ $blue: #0076ff;
 
 $primary: $red;
 
+$grey: #757575;
+
 $text: $black;
 $link: $text;
 $title-color: inherit;
 $subtitle-color: inherit;
 $text-strong: inherit;
 $success: $green;
+$input-color: $text;
 
 // Typography
 $family-sans-serif: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
@@ -31,25 +34,32 @@ $weight-semibold: 500;
 $weight-bold: 700;
 
 $font-size: 16px; // Single px-value. Use `rem` or `em` every elsewhere.
+// $button-font-size: 18px;
 
-$size-large: 2rem;
-$size-medium: 1.2rem;
-$size-normal: 1rem;
-$size-small: 0.8rem;
+$body-line-height: 1.1875em;
+$title-line-height: $body-line-height;
+$subtitle-line-height: 1.2em;
+// $button-line-height: 22px;
 
-$size-1: 2rem;
-$size-2: 1.5rem;
-$size-3: 1.25rem;
+$size-xlarge: 2.5rem; // 40px
+$size-large: 2rem; // 32px
+$size-medium: 1.25rem; // 20px
+$size-normal: 1rem; // 16px
+$size-small: 0.75rem; // 12px
+
+$size-1: 2rem; // 32px
+$size-2: 1.25rem; // 20px
+$size-3: 1.25rem; // 20px
 $size-4: 1.2rem;
 $size-5: 1.1rem;
 $size-6: 1rem;
 $size-7: 0.75rem;
 
-$body-line-height: initial;
-$subtitle-line-height: initial;
 
 // Forms
+$control-height: 2.25em; // !! Not a bulma variable !!
 $control-border-width: 2px;
+$control-radius: $control-height/2;
 $input-border-color: $grey-light;
 $input-focus-border-color: $primary;
 $input-hover-border-color: $grey-light;
@@ -73,8 +83,8 @@ $section-padding: 1rem 0;
 $page-padding: 4rem;
 $footer-height-padding: 1rem;
 
-$header-height: 3.25rem;
-$header-display-height: 10rem;
+$header-height: 3.375rem; // 54px
+$header-display-height: 9.375rem; // 150px
 $footer-height: 3.5rem;
 
 // Header
@@ -86,4 +96,4 @@ $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 $box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
 
 // Notifications
-$notification-padding: 1rem
+$notification-padding: 0.75rem

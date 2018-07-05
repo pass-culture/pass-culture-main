@@ -2,14 +2,12 @@ import React from 'react'
 import { Redirect } from 'react-router'
 
 import AccoutingPage from '../components/pages/AccountingPage'
-import BetaPage from '../components/pages/BetaPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import MediationsPage from '../components/pages/MediationsPage'
 import NotFoundPage from '../components/pages/NotFoundPage'
-import OccurencesPage from '../components/pages/OccurencesPage'
-import OffersPage from '../components/pages/OffersPage'
-import OfferPage from '../components/pages/OfferPage'
+import OccasionsPage from '../components/pages/OccasionsPage'
+import OccasionPage from '../components/pages/OccasionPage'
 import OffererPage from '../components/pages/OffererPage'
 import OfferersPage from '../components/pages/OfferersPage'
 import ProfilePage from '../components/pages/ProfilePage'
@@ -22,19 +20,13 @@ const routes = [
   {
     exact: true,
     path: '/',
-    render: () => <Redirect to="/beta" />,
+    render: () => <Redirect to="/connexion" />,
   },
   {
     exact: true,
     path: '/comptabilite',
     title: "Comptabilité",
     render: () => <AccoutingPage />,
-  },
-  {
-    exact: true,
-    path: '/beta',
-    title: "Bienvenue dans l'avant-première du Pass Culture",
-    render: () => <BetaPage />,
   },
   {
     exact: true,
@@ -82,53 +74,53 @@ const routes = [
     exact: true,
     path: '/structures/:offererId/lieux/:venueId/offres',
     title: 'Offres',
-    render: () => <OffersPage />,
+    render: () => <OccasionsPage />,
   },
   {
     exact: true,
     path: '/offres',
     title: 'Offres',
-    render: () => <OffersPage />,
+    render: () => <OccasionsPage />,
   },
   {
     exact: true,
     path: '/offres/:occasionId',
     title: 'Offre',
-    render: () => <OfferPage />,
+    render: () => <OccasionPage />,
   },
   {
     exact: true,
-    path: '/offres/:occasionPath/:occasionId',
+    path: '/offres/:occasionId/:feature',
     title: 'Offre',
-    render: () => <OfferPage />,
+    render: () => <OccasionPage />,
   },
   {
     exact: true,
-    path: '/structures/:offererId/offres/:occasionId',
-    title: 'Offres',
-    render: () => <OfferPage />,
-  },
-  {
-    exact: true,
-    path: '/structures/:offererId/lieux/:venueId/offres/:occasionId',
-    title: 'Offres',
-    render: () => <OfferPage />,
-  },
-  {
-    exact: true,
-    path: '/offres/:occasionPath/:occasionId/dates',
-    title: 'Dates',
-    render: () => <OccurencesPage />,
-  },
-  {
-    exact: true,
-    path: '/offres/:occasionPath/:occasionId/accroches/:mediationId',
+    path: '/offres/:occasionId/accroches/:mediationId',
     title: 'Accroche',
     render: () => <MediationPage />,
   },
   {
     exact: true,
-    path: '/offres/:occasionPath/:occasionId/accroches',
+    path: '/offres/:occasionId/:feature/:eventOccurenceId',
+    title: 'Offre',
+    render: () => <OccasionPage />,
+  },
+  {
+    exact: true,
+    path: '/structures/:offererId/offres/:occasionId',
+    title: 'Offres',
+    render: () => <OccasionPage />,
+  },
+  {
+    exact: true,
+    path: '/structures/:offererId/lieux/:venueId/offres/:occasionId',
+    title: 'Offres',
+    render: () => <OccasionPage />,
+  },
+  {
+    exact: true,
+    path: '/offres/:occasionId/accroches',
     title: 'Accroches',
     render: () => <MediationsPage />,
   },

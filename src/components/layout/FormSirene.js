@@ -125,7 +125,7 @@ class FormSirene extends Component {
   }
 
   render() {
-    return (
+    const input =
         <FormInput
           onChange={this.onChange}
           formatValue={this.formatValue}
@@ -133,7 +133,13 @@ class FormSirene extends Component {
           {...this.props}
           type='text'
         />
-      )
+    if (this.props.withDisplayName) {
+      return <div className='with-display-name'>
+        {input}
+        <div className='display-name'>{get(this.props, 'entity.name')}</div>
+      </div>
+    }
+    return input
   }
 }
 

@@ -4,9 +4,9 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
-import selectCurrentOccasion from '../../selectors/currentOccasion'
+import createOccasionSelector from '../../selectors/createOccasion'
 import { NEW } from '../../utils/config'
-import { pathToCollection } from '../../utils/translate'
+import { occasionNormalizer } from '../../utils/normalizers'
 
 const withCurrentOccasion = WrappedComponent => {
   class _withCurrentOccasion extends Component {
@@ -21,66 +21,50 @@ const withCurrentOccasion = WrappedComponent => {
       }
     }
 
-    handleRequestData = () => {
+    handleDataRequest = () => {
       const {
-        match: {
-          params: {
-            occasionId
-          }
-        },
+        occasion,
         requestData,
+        user,
       } = this.props
-      const { apiPath } = this.state
-
-      occasionId !== 'nouveau' && requestData(
+      const { apiPath, isNew } = this.state
+      user && !isNew  && !occasion && requestData(
         'GET',
         apiPath,
         {
           key: 'occasions',
-          normalizer: {
-            mediations: 'mediations',
-            occurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                venue: 'venues'
-              }
-            }
-          }
+          normalizer: occasionNormalizer
         }
       )
     }
 
     componentDidMount() {
-      this.props.user && this.handleRequestData()
+      this.handleDataRequest()
     }
 
     componentDidUpdate(prevProps) {
       const { user } = this.props
-      if (user && user !== prevProps.user) {
-        this.handleRequestData()
+      if (user && !prevProps.user) {
+        this.handleDataRequest()
       }
     }
 
     static getDerivedStateFromProps (nextProps) {
       const {
-        occasionId,
-        occasionPath
-      } = nextProps.match.params
+        occasion,
+        match: { params: { occasionId } },
+      } = nextProps
       const {
         id
-      } = nextProps
+      } = (occasion || {})
       const isNew = occasionId === 'nouveau'
-      const occasionCollection = pathToCollection(occasionPath)
-      const apiPath = isNew
-        ? `${occasionCollection}`
-        : `${occasionCollection}/${occasionId}`
-      const routePath = `/offres/${occasionPath}${isNew ? '' : `/${occasionId}`}`
+      const apiPath = `occasions${isNew ? '' : `/${occasionId}`}`
+      const routePath = `/offres${isNew ? 'nouveau' : `/${occasionId}`}`
       return {
         apiPath,
         isLoading: !(id || isNew),
         isNew,
         newMediationRoutePath: `${routePath}/accroches/nouveau`,
-        occasionCollection,
         occasionIdOrNew: isNew ? NEW : occasionId,
         routePath
       }
@@ -91,11 +75,13 @@ const withCurrentOccasion = WrappedComponent => {
     }
   }
 
+  const occasionSelector = createOccasionSelector()
+
   return compose(
     withRouter,
     connect(
       (state, ownProps) => ({
-        currentOccasion: selectCurrentOccasion(state, ownProps),
+        occasion: occasionSelector(state, ownProps.match.params.occasionId),
         user: state.user,
       }),
       { requestData }

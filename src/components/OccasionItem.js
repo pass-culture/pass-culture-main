@@ -4,24 +4,30 @@ import moment from 'moment'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
-import createSelectOccasionItem from '../selectors/occasionItem'
+import createEventSelector from '../selectors/createEvent'
+import createMaxDateSelector from '../selectors/createMaxDate'
+import createMediationsSelector from '../selectors/createMediations'
+import createOccurencesSelector from '../selectors/createOccurences'
+import createOffersSelector from '../selectors/createOffers'
+import createStockSelector from '../selectors/createStock'
+import createThingSelector from '../selectors/createThing'
+import createThumbUrlSelector from '../selectors/createThumbUrl'
+import createTypeSelector from '../selectors/createType'
+import createTypesSelector from '../selectors/createTypes'
+import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
-import { modelToPath } from '../utils/translate'
+
+
 
 class OccasionItem extends Component {
-
-  constructor () {
-    super()
-    this.state = {
-      path: null
-    }
-  }
 
   onDeactivateClick = event => {
     const {
@@ -34,7 +40,7 @@ class OccasionItem extends Component {
     } = (occasion || {})
     requestData(
       'PATCH',
-      `offers/${id}`,
+      `occasions/${id}`,
         {
           body: {
             occasion: {
@@ -42,14 +48,7 @@ class OccasionItem extends Component {
             }
           },
           key: 'occasions',
-          normalizer: {
-            occurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                venue: 'venues'
-              }
-            }
-          },
+          normalizer: occasionNormalizer,
           isMergingDatum: true,
           isMutatingDatum: true,
           isMutaginArray: false
@@ -57,63 +56,77 @@ class OccasionItem extends Component {
       )
   }
 
-  static getDerivedStateFromProps (nextProps) {
-    return {
-      path: `/offres/${modelToPath(get(nextProps, 'occasion.modelName'))}`
-    }
-  }
-
   render() {
     const {
-      occasionItem,
+      event,
+      location: { search },
+      maxDate,
+      mediations,
       occasion,
+      occurences,
+      stock,
+      thing,
+      thumbUrl,
+      type,
     } = this.props
     const {
-      createdAt,
-      eventType,
-      id,
-      isActive,
-      mediations,
-      name,
-      occurences,
-    } = (occasion || {})
-    const {
       available,
-      maxDate,
       groupSizeMin,
       groupSizeMax,
       priceMin,
       priceMax,
-      thumbUrl
-    } = (occasionItem || {})
-    const { path } = this.state
+    } = (stock || {})
+    const {
+      name,
+      createdAt,
+      isActive,
+    } = (event || thing || {})
+
     const mediationsLength = get(mediations, 'length')
+
     return (
       <li className={classnames('occasion-item', { active: isActive })}>
         <Thumb alt='offre' src={thumbUrl} />
         <div className="list-content">
-          <NavLink className='name' to={`${path}/${id}`} title={name}>
+          <NavLink className='name' to={`/offres/${occasion.id}${search}`} title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className='infos'>
-            {moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
-            <li className='is-uppercase'>{get(eventType, 'label')}</li>
-            <li className='has-text-primary'>{pluralize(get(occurences, 'length'), 'date')}</li>
+            {false && moment(createdAt).isAfter(moment().add(-1, 'days')) && <li><div className='recently-added'></div></li>}
+            <li className='is-uppercase'>{get(type, 'label') || (event ? 'Evénement' : 'Objet')}</li>
+            {event &&
+              <li>
+                <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates${search}`}>
+                  {pluralize(get(occurences, 'length'), 'dates')}
+                </NavLink>
+              </li>
+            }
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
-            {groupSizeMin > 0 && <li>{groupSizeMin === groupSizeMax ? groupSizeMin : `entre ${groupSizeMin} et ${groupSizeMax} personnes`}</li>}
-            {available > 0 && <li>restent {available}</li>}
-            <li>{priceMin === priceMax ? <Price value={priceMin} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
+            <li title={groupSizeMin > 0 ? (groupSizeMin === groupSizeMax ? `minimum ${pluralize(groupSizeMin, 'personnes')}` : `entre ${groupSizeMin} et ${groupSizeMax} personnes`) : undefined}>
+              {groupSizeMin === 0 && <div><Icon svg='picto-user' /> {'ou '} <Icon svg='picto-group' /></div>}
+              {groupSizeMin === 1 && <Icon svg='picto-user' />}
+              {groupSizeMin > 1 && <div><Icon svg='picto-group' />, <p>{groupSizeMin === groupSizeMax ? groupSizeMin : `${groupSizeMin} - ${groupSizeMax}`}</p></div>}
+            </li>
+            <li>{available ? `${pluralize('restent', available)} ${available}` : 'Places illimitées'} </li>
+            <li>{priceMin === priceMax ? <Price value={priceMin || 0} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`${path}/${id}${mediationsLength ? '' : '/accroches/nouveau'}`} className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
+              <NavLink  to={`offres/${occasion.id}${mediationsLength ? '' : `/accroches/nouveau${search}`}`}
+                className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
                 <span className='icon'><Icon svg='ico-stars' /></span>
                 <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
             </li>
             <li>
-              <button className='button is-secondary is-small' onClick={this.onDeactivateClick}>{isActive ? ('X Désactiver') : ('Activer')}</button>
-              <NavLink  to={`${path}/${id}`} className="button is-secondary is-small">
+              <button className='button is-secondary is-small'
+                onClick={this.onDeactivateClick}>
+                {isActive ? <span>
+                  <Icon svg='ico-close-r' />
+                  Désactiver
+                  </span> : ('Activer')}
+              </button>
+              <NavLink  to={`offres/${occasion.id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
               </NavLink>
             </li>
@@ -130,12 +143,39 @@ OccasionItem.defaultProps = {
 
 
 
-export default connect(
-  () => {
-    const selectOccasionItem = createSelectOccasionItem()
-    return (state, ownProps) => ({
-      occasionItem: selectOccasionItem(state, ownProps)
-    })
-  },
-  { requestData }
+export default compose(
+  withRouter,
+  connect(
+    () => {
+      const typesSelector = createTypesSelector()
+      const eventSelector = createEventSelector()
+      const thingSelector = createThingSelector()
+      const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
+      const mediationsSelector = createMediationsSelector()
+      const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
+
+      const occurencesSelector = createOccurencesSelector()
+      const offersSelector = createOffersSelector(occurencesSelector)
+
+      const maxDateSelector = createMaxDateSelector(occurencesSelector)
+      const stockSelector = createStockSelector(offersSelector)
+
+      return (state, ownProps) => {
+        const occasion = ownProps.occasion
+        const event = eventSelector(state, occasion.eventId)
+        const thing = thingSelector(state, occasion.thingId)
+        return {
+          event,
+          mediations: mediationsSelector(state, event, thing),
+          occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
+          maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
+          stock: stockSelector(state, occasion.venueId, occasion.eventId),
+          thing,
+          thumbUrl: thumbUrlSelector(state, event, thing),
+          type: typeSelector(state, occasion.eventId, occasion.thingId)
+        }
+      }
+    },
+    { requestData }
+  )
 )(OccasionItem)

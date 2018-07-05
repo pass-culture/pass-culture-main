@@ -1,38 +1,73 @@
 .sign-in-page, .sign-up-page {
+  position: relative;
+
+  .logo-side {
+    background-color: $primary;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 50%;
+    z-index: 1;
+    box-shadow: inset -10px 0 20px 0 rgba(0,0,0,0.1);
+
+    img {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      // left: 0;
+      right: 0;
+      margin: auto;
+      padding: 0 2rem;
+      width: 456px;
+      height: auto;
+      max-height: 100%;
+      max-width: 100%;
+    }
+    @media(max-width: $tablet) {
+      position: relative;
+      height: 100px;
+      img {
+        left: 0;
+        padding: 1rem 0;
+      }
+    }
+  }
 
   .page-content {
     padding: 0;
   }
 
   .columns {
-    height: 100%;
     margin: 0;
-
+    width: 100%;
     .column {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      // &.has-big-margin {
-      //   @media (min-width: $tablet) {
-      //     margin-top: 10rem;
+      padding: 0;
 
-      //     .hero {
-      //       margin-top: -3rem;
-      //     }
+
+      // &.logo-column {
+      //   background-color: $red;
+      //   font-size: 3rem;
+      //   text-align: center;
+      //   padding: 2.5rem;
+      //   @media(min-width: $tablet) {
+      //     text-align: right;
+      //     padding-right: 2rem;
       //   }
       // }
     }
   }
 
-  .logo-column {
-    background-color: $red;
-    color: $white;
-    font-size: 3rem;
-    padding: 2.5rem 1rem;
-    text-align: center;
+  .has-no-padding {
+    padding: 0;
   }
 
+
   .title, .subtitle {
+    color: $grey;
     font-style: italic;
     span {
       display: inline-block;
@@ -40,15 +75,18 @@
   }
 
   .subtitle {
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
   }
 
   label {
     margin-bottom: 0.5rem;
 
     h3 {
-      float: left;
       position: relative;
+      font-size: $size-3;
+      &.with-subtitle {
+        float: left;
+      }
     }
 
     p {
@@ -108,27 +146,31 @@
       font-weight: $weight-semibold;
     }
 
-    &.checkbox {
-      align-items: flex-start;
-      display: flex;
-      input {
-        margin-right: 0.5rem;
-        -webkit-appearance: none;
-        border-radius: $radius-small;
-        width: 1.5rem;
-        height: 1.5rem;
-        &:active, &:checked {
-          &:after {
-            content: '\2714';
-            font-size: 1.25rem;
-            position: absolute;
-            top: -5px;
-            left: 2px;
-            color: $primary;
-          }
-        }
-      }
+    // &.checkbox {
+    //   align-items: flex-start;
+    //   display: flex;
+    //   input {
+    //     margin-right: 0.5rem;
+    //     -webkit-appearance: none;
+    //     border-radius: $radius-small;
+    //     width: 1.5rem;
+    //     height: 1.5rem;
+    //     &:active, &:checked {
+    //       &:after {
+    //         content: '\2714';
+    //         font-size: 1.25rem;
+    //         position: absolute;
+    //         top: -5px;
+    //         left: 2px;
+    //         color: $primary;
+    //       }
+    //     }
+    //   }
 
+    // }
+
+    .siren {
+      width: 50%;
     }
 
   }

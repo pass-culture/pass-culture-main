@@ -52,6 +52,7 @@ class FormField extends Component {
       type,
       readOnly,
       required,
+      withDisplayName,
     } = this.props
 
     const inputId = id || `input_${collectionName}_${name}`
@@ -65,16 +66,17 @@ class FormField extends Component {
         input: type !== 'textarea' && !isSelect,
         textarea: type === 'textarea',
         'is-rounded': !isCheckbox,
-      }, inputClassName, className)}
+      }, inputClassName)}
       id={inputId}
       key={inputId}
       aria-describedby={`${inputId}-error`}
       readOnly={readOnly}
+      withDisplayName={withDisplayName}
     />
 
     if (!isCheckbox) {
       inputMarkup = (
-        <div className='control is-expanded' key={`control_${inputId}`}>
+        <div className='control' key={`control_${inputId}`}>
           {inputMarkup}
         </div>
       )

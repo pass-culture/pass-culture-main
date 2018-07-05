@@ -1,33 +1,47 @@
-tr.occurence-form {
-  td {
-    vertical-align: baseline;
-  }
-  input.input {
-    // max-width: 5rem;
-  }
+.occurence-manager {
 
-  .DateInput_input {
-    font-size: 1rem;
-    border: 2px solid $grey-light;
-    border-radius: 2rem;
-    font-size: $size-small;
-    padding: calc(0.375em - 2px) 1em;
-  }
+  .occurence-table-wrapper {
+    position: relative;
+    max-height: 60vh;
+    min-height: 375px;
+    overflow-y: auto;
 
-  .SingleDatePickerInput_calendarIcon {
-    position: absolute;
-    right: 0;
-    top: -0.2em;
-    img {
-      max-height: 1em;
+    table.occurence-table {
+      // width: 80vw;
+      thead, tbody {
+        // display: block;
+        width: 100%;
+        tr {
+          width: 100%;
+
+          @include dotted($primary, bottom);
+
+          td {
+            text-align: center;
+            border: none;
+            &:first-child {
+              width: 20%;
+            }
+          }
+          &.occurence-form {
+            td {
+              vertical-align: baseline;
+            }
+          }
+        }
+      }
+      thead {
+        tr {
+          td {
+            font-weight: $weight-bold;
+            vertical-align: middle;
+            padding: 1rem;
+          }
+        }
+      }
     }
-  }
 
-  .DateInput_fang {
-    margin-top: -1.5em;
-  }
-
-  .SingleDatePicker_picker {
-    margin-top: -1.5em;
   }
 }
+
+

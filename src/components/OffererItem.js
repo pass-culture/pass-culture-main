@@ -4,20 +4,19 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createSelectManagedOccasions from '../selectors/managedOccasions'
-import createSelectManagedVenues from '../selectors/managedVenues'
-
+import createVenuesSelector from '../selectors/createVenues'
+import { pluralize } from '../utils/string'
 
 const OffererItem = ({
-  managedOccasions,
-  managedVenues,
-  offerer
+  offerer,
+  venues,
 }) => {
   const {
     id,
     name,
-    isActive,
+    isValidated,
   } = (offerer || {})
+
   const showPath = `/structures/${id}`
   return (
     <li className="offerer-item">
@@ -29,48 +28,57 @@ const OffererItem = ({
         </p>
         <ul className='actions'>
           {
-            get(managedVenues, 'length') && (
-              <li>
-                <NavLink to={`/structures/${get(offerer, 'id')}/offres/nouveau`}
+            isValidated === false
+              ? (
+                <li className='is-italic'>
+                  En cours de validation : vous allez recevoir un e-mail.
+                </li>
+              )
+              : [
+              // J'ai déja ajouté Un lieu mais pas d'offres
+              venues.length
+                ? ([
+                  <li key={0}>
+                    <NavLink to={`/offres/nouveau?structure=${id}`}
+                      className='has-text-primary'>
+                      <Icon svg='ico-offres-r' />
+                      Nouvelle offre
+                    </NavLink>
+                  </li>,
+                  // J'ai au moins 1 offre
+                  offerer.nOccasions > 0 ? (
+                    <li key={1}>
+                      <NavLink to={`/offres?structure=${id}`} className='has-text-primary'>
+                        <Icon svg='ico-offres-r' />
+                        { pluralize(offerer.nOccasions, 'offres') }
+                      </NavLink>
+                    </li>
+                  ) : (
+                    <li key={2}>0 offre</li>
+                  )
+                ])
+                : (
+                  <li className='is-italic' key={0}>Créez un lieu pour pouvoir y associer des offres.</li>
+                ),
+              // J'ai ajouté un lieu
+              venues.length
+              ? (
+                  <li key={4}>
+                    <Icon svg='ico-venue' />
+                    { pluralize(venues.length, 'lieux')}
+                  </li>
+                )
+              : (
+                 // je n'ai pas encore ajouté de lieu
+                <li key={4}>
+                  <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
                   className='has-text-primary'>
-                  <Icon svg='ico-offres-r' /> Créer une offre
-                </NavLink>
-              </li>
-            )
+                    <Icon svg='ico-venue-r' /> Ajouter un lieu
+                  </NavLink>
+                </li>
+              )
+            ]
           }
-          <li>
-            {
-              get(managedOccasions, 'length')
-                ? (
-                  <NavLink to={`/offres?offererId=${id}`} className='has-text-primary'>
-                    <Icon svg='ico-offres-r' />
-                    {managedOccasions.length} offres
-                  </NavLink>
-                )
-                : (
-                  <p>
-                    0 offre
-                  </p>
-                )
-            }
-          </li>
-          <li>
-            {
-              get(managedVenues, 'length')
-                ? (
-                  <NavLink to={showPath}>
-                    <Icon svg='picto-structure' />
-                    {managedVenues.length} lieux
-                  </NavLink>
-                )
-                : (
-                  <p>
-                    0 lieu
-                  </p>
-                )
-            }
-          </li>
-          <li className='is-italic'>{isActive ? 'Activée' : 'En attente de validation'}</li>
         </ul>
       </div>
       <div className='caret'>
@@ -82,13 +90,12 @@ const OffererItem = ({
   )
 }
 
+const venuesSelector = createVenuesSelector()
+
 export default connect(
   () => {
-    const selectManagedVenues = createSelectManagedVenues()
-    const selectManagedOccasions = createSelectManagedOccasions(selectManagedVenues)
     return (state, ownProps) => ({
-      managedOccasions: selectManagedOccasions(state, ownProps),
-      managedVenues: selectManagedVenues(state, ownProps),
+      venues: venuesSelector(state, ownProps.offerer.id),
     })
   }
 ) (OffererItem)

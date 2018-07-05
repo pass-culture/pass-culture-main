@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { Component } from 'react'
-import { SingleDatePicker } from 'react-dates'
+import DatePicker from 'react-datepicker'
 import { connect } from 'react-redux'
 
 import Icon from './Icon'
@@ -9,13 +9,6 @@ import { NEW } from '../../utils/config'
 
 class FormDate extends Component {
 
-  constructor () {
-    super()
-    this.state = {
-      focused: false
-    }
-  }
-
   handleDateSelect = date => {
     const {
       collectionName,
@@ -23,40 +16,66 @@ class FormDate extends Component {
       mergeForm,
       name,
     } = this.props
-    mergeForm(collectionName, entityId, name, date)
+    date && mergeForm(collectionName, entityId, name, date)
+  }
+
+  componentDidMount() {
+    // fill automatically the form when it is a NEW POST action
+    const { entityId, defaultValue } = this.props
+    entityId === NEW && this.handleDateSelect(defaultValue)
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      defaultValue,
+      entityId
+    } = this.props
+    if (defaultValue && !defaultValue.isSame(prevProps.defaultValue, 'day')) {
+      entityId === NEW && this.handleDateSelect(defaultValue)
+    }
   }
 
   render () {
     const {
-      availableDates,
+      format,
+      highlightedDates,
       defaultValue,
+      readOnly,
+      showTimeSelect,
       value
     } = this.props
-    const { focused } = this.state
+    const resolvedValue = value || defaultValue
     return (
-      <div className="input-field date-picker">
-        <SingleDatePicker
-          customInputIcon={<Icon svg="ico-calendar" alt="calendrier" />}
-          customCloseIcon={<Icon svg='ico-close-b' alt="Fermer" />}
-          date={defaultValue || value}
-          displayFormat="LL"
-          focused={focused}
-          initialVisibleMonth={() => moment.min(availableDates || [])}
-          inputIconPosition="after"
-          isDayBlocked={date => date && availableDates &&
-            !availableDates.find(d => d.isSame(date, 'day'))
-          }
-          noBorder={true}
-          numberOfMonths={1}
-          onDateChange={this.handleDateSelect}
-          onFocusChange={({ focused }) => this.setState({ focused })}
-        />
+      <div className="date-picker">
+        {
+          readOnly
+            ? <span> {resolvedValue && resolvedValue.format(format)} </span>
+            :
+              (
+                [
+                  <DatePicker
+                    className='input is-rounded is-small'
+                    highlightDates={highlightedDates || []}
+                    minDate={moment()}
+                    onChange={this.handleDateSelect}
+                    selected={resolvedValue}
+                    showTimeSelect={showTimeSelect}
+                  />,
+                  <Icon
+                    alt='Horaires'
+                    className="input-icon"
+                    svg="ico-calendar"
+                  />
+                ]
+            )
+        }
       </div>
     )
   }
 }
 
 FormDate.defaultProps = {
+  format: 'DD/MM/YYYY',
   entityId: NEW
 }
 

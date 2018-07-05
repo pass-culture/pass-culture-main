@@ -2,7 +2,6 @@ import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import SwitchButton from './SwitchButton'
 import { removeErrors } from '../../reducers/errors'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
@@ -51,8 +50,6 @@ class FormInput extends Component {
     let mergedValue
     if (type === 'checkbox' || type === 'radio') {
       mergedValue = value ? (defaultValue || true) : false
-    } else if (type === 'switch') {
-      mergedValue = value
     } else if (type === 'number') {
       mergedValue = Number(value)
     } else {
@@ -65,7 +62,8 @@ class FormInput extends Component {
   componentDidMount() {
     // fill automatically the form when it is a NEW POST action
     const { entityId, defaultValue } = this.props
-    defaultValue && entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
+    typeof defaultValue !== 'undefined' && entityId === NEW &&
+      this.onMergeForm({ target: { value: defaultValue } })
   }
 
   componentDidUpdate (prevProps) {
@@ -73,7 +71,7 @@ class FormInput extends Component {
       defaultValue,
       entityId
     } = this.props
-    if (defaultValue !== prevProps.defaultValue) {
+    if (typeof defaultValue !== 'undefined' && defaultValue !== prevProps.defaultValue) {
       entityId === NEW && this.onMergeForm({ target: { value: defaultValue } })
     }
   }
@@ -95,30 +93,24 @@ class FormInput extends Component {
     const formatedValue = formatValue(
       localValue !== null
         ? localValue
-        : value || defaultValue || ''
+        : typeof value !== 'undefined'
+          ? value
+          : typeof defaultValue !== 'undefined'
+            ? defaultValue
+            : ''
     )
-    console.log('formatedValue', formatedValue)
     return (
-      type !== 'switch'
-      ? (
-        <input
-          readOnly={readOnly}
-          required={required}
-          autoComplete={autoComplete}
-          className={className || 'input'}
-          id={id}
-          onChange={this.onChange}
-          placeholder={placeholder}
-          type={type}
-          value={formatedValue}
-        />
-      )
-      : (
-        <SwitchButton {...this.props}
-          isInitialActive={defaultValue}
-          onClick={this.onChange}
-        />
-      )
+      <input
+        autoComplete={autoComplete}
+        className={className || 'input'}
+        id={id}
+        onChange={this.onChange}
+        placeholder={placeholder}
+        readOnly={readOnly}
+        required={required}
+        type={type}
+        value={formatedValue}
+      />
     )
   }
 }

@@ -7,15 +7,17 @@ import { put,
 import { resetData } from '../reducers/data'
 import { setUser } from '../reducers/user'
 
+function* fromWatchRequestSignActions(action) {
+  yield put(setUser(false)) // false while querying
+}
+
 function* fromWatchFailSignActions(action) {
-  // force to update by changing value null to false or false to null
-  const currentUser = yield select(state => state.user)
-  yield put(setUser(currentUser === false ? null : false))
+  yield put(setUser(null)) // null otherwise
 }
 
 function* fromWatchSuccessGetSignoutActions() {
   yield put(resetData())
-  yield put(setUser(false))
+  yield put(setUser(null))
 }
 
 function* fromWatchSuccessSignActions() {
@@ -35,14 +37,20 @@ function* fromWatchSuccessSignActions() {
 export function* watchUserActions() {
   yield takeEvery(
     ({ type }) =>
+      /REQUEST_DATA_POST_USERS\/SIGN(.*)/.test(type) ||
+      /REQUEST_DATA_GET_USERS\/CURRENT(.*)/.test(type),
+    fromWatchRequestSignActions
+  )
+  yield takeEvery(
+    ({ type }) =>
       /FAIL_DATA_POST_USERS\/SIGN(.*)/.test(type) ||
-      /FAIL_DATA_GET_USERS\/ME(.*)/.test(type),
+      /FAIL_DATA_GET_USERS\/CURRENT(.*)/.test(type),
     fromWatchFailSignActions
   )
   yield takeEvery(
     ({ type }) =>
       /SUCCESS_DATA_POST_USERS/.test(type) ||
-      /SUCCESS_DATA_GET_USERS\/ME(.*)/.test(type),
+      /SUCCESS_DATA_GET_USERS\/CURRENT(.*)/.test(type),
     fromWatchSuccessSignActions
   )
   yield takeEvery(

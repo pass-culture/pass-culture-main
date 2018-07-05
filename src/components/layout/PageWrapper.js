@@ -1,4 +1,5 @@
 import classnames from 'classnames'
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -7,9 +8,56 @@ import { compose } from 'redux'
 
 import Header from './Header'
 import Icon from './Icon'
-import { closeNotification } from '../../reducers/notification'
+import Loader from './Loader'
+import withLogin from '../hocs/withLogin'
+import { requestData } from '../../reducers/data'
+import { showNotification, closeNotification } from '../../reducers/notification'
+import { closeSplash } from '../../reducers/splash'
+
 
 class PageWrapper extends Component {
+
+  constructor () {
+    super()
+    this.state = {
+      loading: false,
+    }
+  }
+
+  static defaultProps = {
+    closeSplashTimeout: 2000,
+    Tag: 'main',
+  }
+
+  handleDataFail = (state, action) => {
+    this.setState({
+      loading: false,
+    })
+    this.props.showNotification({
+      type: 'danger',
+      text: get(action, 'errors.global', []).join('\n') || 'Erreur de chargement'
+    })
+  }
+
+  handleDataRequest = () => {
+    if (this.props.handleDataRequest) {
+      // possibility of the handleDataRequest to return
+      // false in orde to not trigger the loading
+      const loading = this.props.handleDataRequest(
+        this.handleDataSuccess,
+        this.handleDataFail
+      ) === false ? false : true
+      this.setState({
+        loading
+      })
+    }
+  }
+
+  handleDataSuccess = (state, action) => {
+    this.setState({
+      loading: false,
+    })
+  }
 
   handleHistoryBlock = () => {
     const {
@@ -38,19 +86,37 @@ class PageWrapper extends Component {
     )
   }
 
+  handleCloseSplash = () => {
+    const {
+      closeSplash,
+      closeSplashTimeout
+    } = this.props
+    this.closeSplashTimeout = setTimeout(closeSplash, closeSplashTimeout)
+  }
+
   componentDidMount () {
     this.handleHistoryBlock()
+    this.props.user && this.handleDataRequest()
+    this.handleCloseSplash()
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.blockers !== this.props.blockers) {
+    const blockersChanged = prevProps.blockers !== this.props.blockers
+    const userChanged = !prevProps.user && this.props.user // User just loaded
+    const searchChanged = this.props.location.search !== prevProps.location.search
+
+    if (blockersChanged) {
       this.handleHistoryBlock()
+    }
+    if (userChanged || searchChanged) {
+      this.handleDataRequest()
     }
   }
 
   componentWillUnmount() {
-      this.unblock && this.unblock()
-   }
+    this.unblock && this.unblock()
+    this.closeSplashTimeout && clearTimeout(this.closeSplashTimeout)
+  }
 
   render () {
     const {
@@ -62,14 +128,17 @@ class PageWrapper extends Component {
       redBg,
       fullscreen,
       children,
-      loading,
       notification,
       whiteHeader,
     } = this.props
+    const {
+      loading
+    } = this.state
     const footer = [].concat(children).find(e => e && e.type === 'footer')
     const content = []
       .concat(children)
       .filter(e => e && e.type !== 'header' && e.type !== 'footer')
+
     return [
       !fullscreen && <Header key='header' whiteHeader={whiteHeader} {...header} />,
       <Tag
@@ -86,22 +155,27 @@ class PageWrapper extends Component {
         key='page-wrapper'
       >
         { fullscreen ? content : (
-          <div className={classnames('page-content')}>
-            {notification && (
-              <div className={`notification is-${notification.type || 'info'}`}>
-                {notification.text}
-                <button className="button is-text is-small close" onClick={closeNotification}>
-                  OK
-                </button>
-              </div>
-            )}
-            <div className='after-notification-content'>
-              {backTo && (
-                <NavLink to={backTo.path} className='back-button has-text-primary'>
-                  <Icon svg='ico-back' />{` ${backTo.label}`}
-                </NavLink>
+          <div className='columns is-gapless'>
+            <div className='page-content column is-10 is-offset-1'>
+              {notification && (
+                <div className={`notification is-${notification.type || 'info'}`}>
+                  {notification.text}
+                  <button className="close" onClick={closeNotification}>
+                    OK
+                  </button>
+                </div>
               )}
-              {content}
+              <div className='after-notification-content'>
+                {backTo && (
+                  <NavLink to={backTo.path} className='back-button has-text-primary'>
+                    <Icon svg='ico-back' />{` ${backTo.label}`}
+                  </NavLink>
+                )}
+                <div className='pc-content'>
+                  {content}
+                </div>
+                {loading && <Loader />}
+              </div>
             </div>
           </div>
         )}
@@ -111,17 +185,20 @@ class PageWrapper extends Component {
   }
 }
 
-PageWrapper.defaultProps = {
-  Tag: 'main',
-}
-
 export default compose(
   withRouter,
+  withLogin(),
   connect(
     state => ({
       blockers: state.blockers,
-      notification: state.notification
+      notification: state.notification,
+      user: state.user,
     }),
-    { closeNotification }
+    {
+      closeNotification,
+      closeSplash,
+      requestData,
+      showNotification,
+    }
   )
 )(PageWrapper)

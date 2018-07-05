@@ -1,29 +1,29 @@
-import get from 'lodash.get'
 import React from 'react'
-import { connect } from 'react-redux'
+import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
-import createSelectVenueItem from '../selectors/venueItem'
 import Icon from './layout/Icon'
+import { pluralize } from '../utils/string'
 
 const VenueItem = ({
   venue,
-  venueItem
 }) => {
   const {
     address,
+    city,
     id,
     managingOffererId,
     name,
+    postalCode
   } = (venue || {})
-  const {
-    occasions
-  } = (venueItem || {})
+
+  console.log('address', venue)
+
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
     <li className="venue-item">
       <div className='picto'>
-        <Icon svg='picto-structure' />
+        <Icon svg='ico-venue' />
       </div>
       <div className="list-content">
         <p className="name">
@@ -31,28 +31,26 @@ const VenueItem = ({
         </p>
         <ul className='actions'>
           <li>
-            <NavLink to={`/structures/${managingOffererId}/lieux/${id}/offres/nouveau`} className='has-text-primary'>
+            <NavLink to={`/offres/nouveau?lieu=${id}`} className='has-text-primary'>
               <Icon svg='ico-offres-r' /> Créer une offre
             </NavLink>
           </li>
-          <li>
-            {
-              get(occasions, 'length')
-              ? (
-                <NavLink to={`/offres?venueId=${id}`} className='has-text-primary'>
+          {
+            venue.nOccasions > 0 ? (
+              <li>
+                <NavLink to={`/offres?lieu=${id}`} className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                   {occasions.length} offres
+                  { pluralize(venue.nOccasions, 'offres') }
                 </NavLink>
-              )
-              : (
-                <p>
-                  0 offre
-                </p>
-              )
-            }
-          </li>
+              </li>
+            ) : (
+              <li>0 offre</li>
+            )
+          }
           <li>
-            <p className="has-text-grey">{address}</p>
+            <Dotdotdot className="has-text-grey" clamp={2}>
+              {address} {postalCode} {city}
+            </Dotdotdot>
           </li>
         </ul>
       </div>
@@ -65,11 +63,4 @@ const VenueItem = ({
   )
 }
 
-export default connect(
-  () => {
-    const selectVenueItem = createSelectVenueItem()
-    return (state, ownProps) => ({
-      venueItem: selectVenueItem(state, ownProps)
-    })
-  }
-)(VenueItem)
+export default VenueItem

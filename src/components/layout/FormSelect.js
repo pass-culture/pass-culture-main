@@ -58,7 +58,7 @@ class FormSelect extends Component {
     return (
       <div className={classnames('select', {readonly: defaultReadOnly}, className)}>
         <select
-          readOnly={defaultReadOnly}
+          disabled={defaultReadOnly} // readonly doesn't exist on select
           onChange={this.onChange}
           value={value || defaultValue}
         >

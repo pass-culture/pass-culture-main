@@ -4,33 +4,24 @@ import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from '../layout/Icon'
-import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import OfferersList from '../OfferersList'
-import SearchInput from '../layout/SearchInput'
-import selectOfferers from '../../selectors/offerers'
+import OffererItem from '../OffererItem'
+import Search from '../layout/Search'
+import createOfferersSelector from '../../selectors/createOfferers'
+import { requestData } from '../../reducers/data'
 
 class OfferersPage extends Component {
 
-  componentDidMount () {
-    this.handleRequestData()
-  }
-
-  componentDidUpdate (prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.handleRequestData()
-    }
-  }
-
-  handleRequestData = () => {
+  handleDataRequest = (handleSuccess, handleFail) => {
     const {
       requestData,
-      user
     } = this.props
-    user && requestData(
+    requestData(
       'GET',
       'offerers',
       {
+        handleSuccess,
+        handleFail,
         normalizer: {
           managedVenues: {
             key: 'venues',
@@ -49,12 +40,13 @@ class OfferersPage extends Component {
   }
 
   render () {
+
     const {
         offerers
       } = this.props
     return (
-      <PageWrapper name="profile"
-        loading={!offerers}
+      <PageWrapper name="offerers"
+        handleDataRequest={this.handleDataRequest}
       >
         <h1 className="pc-title">
           Vos structures
@@ -67,8 +59,8 @@ class OfferersPage extends Component {
         <br />
         {false && (
           <nav className="level is-mobile">
-            <SearchInput
-              collectionNames={["offerers"]}
+            <Search
+              collectionName="offerers"
               config={{
                 isMergingArray: false,
                 key: 'searchedOfferers'
@@ -77,7 +69,10 @@ class OfferersPage extends Component {
             />
           </nav>
         )}
-        <OfferersList />
+        <ul className="pc-list offerers-list">
+          {offerers.map(o =>
+            <OffererItem key={o.id} offerer={o} />)}
+        </ul>
         <NavLink to={`/structures/nouveau`} className="button is-primary is-outlined">
           {false && <span className='icon'>
                     <Icon svg={'ico-guichet-w'} />
@@ -89,11 +84,13 @@ class OfferersPage extends Component {
   }
 }
 
+const offerersSelector = createOfferersSelector()
 
 export default compose(
-  withLogin({ isRequired: true }),
   connect(
     (state, ownProps) => ({
-      offerers: selectOfferers(state, ownProps)
-    }))
+      offerers: offerersSelector(state)
+    }), {
+      requestData,
+    })
 )(OfferersPage)

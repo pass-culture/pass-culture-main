@@ -8,37 +8,37 @@ import { compose } from 'redux'
 
 import { requestData } from '../../reducers/data'
 
+
 const withLogin = (config = {}) => WrappedComponent => {
   const { isRequired, redirectTo } = config
 
   class _withLogin extends Component {
-    componentWillMount = () => {
-      const { user, requestData } = this.props
-      if (!user) {
-        requestData('GET', `users/me`, { key: 'users' })
-      }
+
+    constructor(props) {
+      super(props)
+      this.isRequired = isRequired || Boolean(props.handleDataRequest)
+      this.redirectTo = redirectTo
     }
 
     componentDidMount = () => {
-      this.handleRedirect()
-    }
+      const {
+        history,
+        location,
+        user,
+        requestData
+      } = this.props
 
-    componentDidUpdate = prevProps => {
-      this.handleRedirect(prevProps)
-    }
-
-    handleRedirect = (prevProps={}) => {
-      const { history, location, user } = this.props
-      if (user && user !== prevProps.user) {
-        if (!prevProps.user && redirectTo && redirectTo !== location.pathname) {
-          history.push(redirectTo)
-        }
-      } else if (isRequired) {
-        if (user === false && prevProps.user === null) {
-          // CASE WHERE WE STILL HAVE A USER NULL
-          // SO WE FORCE THE SIGNING PUSH
-          history.push('/connexion')
-        }
+      if (user === null && this.isRequired) {
+        requestData('GET', `users/current`, {
+          key: 'users',
+          handleSuccess: () => {
+            if (this.redirectTo && this.redirectTo !== location.pathname)
+              history.push(this.redirectTo)
+          },
+          handleFail: () => {
+            history.push('/connexion')
+          }
+        })
       }
     }
 

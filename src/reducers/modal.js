@@ -6,8 +6,8 @@ export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
 // INITIAL STATE
 const initialState = {
   config: { fromDirection: 'right' },
-  ContentComponent: null,
   isActive: false,
+  $modal: null
 }
 
 // REDUCER
@@ -24,7 +24,7 @@ function modal(state = initialState, action) {
     case SHOW_MODAL:
       return Object.assign({}, state, {
         config: action.config,
-        ContentComponent: action.ContentComponent,
+        $modal: action.$modal,
         isActive: true,
       })
     default:
@@ -37,10 +37,10 @@ export function closeModal() {
   return { type: CLOSE_MODAL }
 }
 
-export function showModal(modalElement, config) {
+export function showModal($modal, config) {
   return {
     config,
-    ContentComponent: () => modalElement,
+    $modal,
     type: SHOW_MODAL,
   }
 }
