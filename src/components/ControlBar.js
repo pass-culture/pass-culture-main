@@ -1,5 +1,4 @@
 import get from 'lodash.get'
-import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -12,6 +11,7 @@ import selectBooking from '../selectors/booking'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
+import selectIsFinished from '../selectors/isFinished'
 import { requestData } from '../reducers/data'
 import { showModal } from '../reducers/modal'
 import { IS_DEXIE } from '../utils/config'
@@ -40,7 +40,7 @@ class ControlBar extends Component {
   }
 
   onClickJyVais = event => {
-    if (this.isFinished()) return
+    if (this.props.isFinished) return
     if (this.props.offer) {
       this.props.showModal(<Booking />, {
         fullscreen: true,
@@ -50,10 +50,6 @@ class ControlBar extends Component {
     } else {
       alert("Ce bouton vous permet d'effectuer une reservation")
     }
-  }
-
-  isFinished = () => {
-    return moment(get(this.props, 'offer.bookingLimitDatetime')) < moment() || get(this.props, 'offer.available', 1) <= 0
   }
 
   render() {
@@ -100,7 +96,7 @@ class ControlBar extends Component {
               {' Réservé'}
             </Link>
           ) : (
-            <Finishable finished={this.isFinished()}>
+            <Finishable finished={this.props.isFinished}>
               <button
                 className="button is-primary is-go is-medium"
                 onClick={this.onClickJyVais}
@@ -123,9 +119,10 @@ class ControlBar extends Component {
 export default connect(
   state => ({
     booking: selectBooking(state),
-    recommendation: selectCurrentRecommendation(state),
+    isFinished: selectIsFinished(state),
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
+    recommendation: selectCurrentRecommendation(state),
   }),
   {
     requestData,
