@@ -1,3 +1,31 @@
+.field-group {
+  display: table;
+  width: 100%;
+  .form-field.is-horizontal {
+    display: table-row;
+    .field-label, .field-body {
+      display: table-cell;
+      vertical-align: middle;
+      padding-bottom: 1rem;
+    }
+
+    .field-label {
+      padding-right: 1rem;
+      white-space:nowrap;
+    }
+
+    .field-body {
+      width: 100%;
+      .field:not(.is-expanded) {
+        input, .select {
+          width: auto;
+        }
+      }
+    }
+  }
+}
+
+
 label {
   &.required {
     *.can-be-required:after {
@@ -10,6 +38,38 @@ label {
 
 .required-legend {
   color: $violet;
+}
+
+textarea.textarea {
+  border-radius: $control-radius;
+}
+
+.field.checkbox {
+  align-items: flex-start;
+  display: flex;
+  input {
+    margin-right: 0.5rem;
+    background-image: url(/icons/checkbox.svg);
+    border: none;
+    background-repeat: no-repeat;
+    background-size: $body-line-height;
+    width: $body-line-height;
+    height: $body-line-height;
+    padding: 0;
+    border-radius: 0;
+    &:active, &:checked {
+      &:after {
+        content: '';
+        background-repeat: no-repeat;
+        background-image: url(/icons/checkbox-check-red.svg);
+        background-position: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
 }
 
 input.input, .select select, textarea.textarea {
@@ -47,5 +107,23 @@ input.input, .select select, textarea.textarea {
 ul.help {
   img {
     vertical-align: text-bottom;
+  }
+}
+
+
+.with-display-name {
+  input {
+    display: inline-block;
+    width: 50%;
+  }
+  .display-name {
+    display: inline-block;
+    width: 49%;
+    font-weight: $weight-semibold;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+    color: text;
   }
 }

@@ -10,10 +10,12 @@ import FormField from '../layout/FormField'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
+import Icon from '../layout/Icon'
 import { resetForm } from '../../reducers/form'
 import { closeModal, showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import createEventSelector from '../../selectors/createEvent'
+import createOccurencesSelector from '../../selectors/createOccurences'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
 import createProvidersSelector from '../../selectors/createProviders'
@@ -27,6 +29,9 @@ import { NEW } from '../../utils/config'
 import { getIsDisabled, optionify } from '../../utils/form'
 import { eventNormalizer } from '../../utils/normalizers'
 import { updateQueryString } from '../../utils/string'
+import { pluralize } from '../../utils/string'
+import MediationManager from '../MediationManager'
+
 
 const requiredEventAndThingFields = [
   'name',
@@ -198,6 +203,7 @@ class OccasionPage extends Component {
       isNew,
       location: { pathname, search },
       occasion,
+      occurences,
       occasionIdOrNew,
       offerer,
       offerers,
@@ -237,31 +243,66 @@ class OccasionPage extends Component {
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
           </p>
-          <FormField
-            collectionName='occasions'
-            defaultValue={name}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Titre de l'offre :" />}
-            name="name"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-          />
-          <FormField
-            collectionName='occasions'
-            defaultValue={get(type, 'value')}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Type :" />}
-            name="type"
-            options={(isReadOnly && !get(type, 'value') && []) || typeOptionsWithPlaceholder}
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-            type="select"
-          />
+          <div className='field-group'>
+            <FormField
+              collectionName='occasions'
+              defaultValue={name}
+              entityId={occasionIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="Titre de l'offre :" />}
+              name="name"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              collectionName='occasions'
+              defaultValue={get(type, 'value')}
+              entityId={occasionIdOrNew}
+              isHorizontal
+              label={<Label title="Type :" />}
+              name="type"
+              options={(isReadOnly && !get(type, 'value') && []) || typeOptionsWithPlaceholder}
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+              type="select"
+            />
+          </div>
+          {
+            !isNew && (
+              <div className='field'>
+                {
+                  event && (
+                    <div className='field form-field is-horizontal'>
+                      <div className='field-label'>
+                        <label className="label" htmlFor="input_occasions_name">
+                          <div className="subtitle">Dates :</div>
+                        </label>
+                      </div>
+                      <div className='field-body'>
+                        <div className='field'>
+                          <div className='nb-dates'>
+                            {pluralize(get(occurences, 'length'), 'date')}
+                          </div>
+                          <NavLink
+                            className='button is-primary is-outlined is-small'
+                            to={`${routePath}/dates`}
+                          >
+                            <span className='icon'><Icon svg='ico-calendar' /></span>
+                            <span>Gérer les dates et les prix</span>
+                          </NavLink>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+                <MediationManager
+                  occasion={occasion}
+                  routePath={routePath}
+                />
+              </div>
+            )}
         </div>
-
         {
           showAllForm && <OccasionForm
             event={event}
@@ -343,6 +384,7 @@ class OccasionPage extends Component {
 
 const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
+const occurencesSelector = createOccurencesSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
 const providersSelector = createProvidersSelector()
@@ -374,6 +416,7 @@ export default compose(
         thing: thingSelector(state, thingId),
         type: typeSelector(state, eventId, thingId, formLabel),
         typeOptions: typesSelector(state),
+
       }
 
       // CASE WHERE ALL IS DECIDED FROM THE SELECTS
@@ -421,6 +464,7 @@ export default compose(
         newState.venue = venueSelector(state, venueId)
         newState.venues = [newState.venue]
         newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+        newState.occurences = occurencesSelector(state, venueId, eventId)
         return newState
       }
       offererId = get(ownProps, 'occasion.offererId')
@@ -438,7 +482,6 @@ export default compose(
       if (get(newState.offerers, 'length') === 1) {
         newState.offerer = get(newState.offerers, '0')
       }
-
       return newState
     },
     {

@@ -1,0 +1,28 @@
+.button {
+  font-weight: $weight-bold;
+  font-size: $font-size;
+  line-height: $body-line-height;
+  border-radius: 1px;
+  &:not(.is-outlined) {
+    border-width: 0;
+  }
+  &.is-primary {
+    box-shadow: inset 0 -2px 0 1px rgba(153,0,38,0.6);
+  }
+
+  &.is-outlined {
+    box-shadow: none;
+  }
+
+  &.is-secondary {
+    background: none;
+    border-color: transparent;
+    color: $red;
+    text-decoration: none;
+    padding-left: 0;
+    padding-right: 0;
+    &.is-inversed {
+      color: $white;
+    }
+  }
+}

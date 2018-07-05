@@ -5,7 +5,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import MediationManager from './MediationManager'
 import OccurenceManager from './OccurenceManager'
 import Icon from './layout/Icon'
 import FormField from './layout/FormField'
@@ -100,41 +99,6 @@ class OccasionForm extends Component {
 
     return (
       <div>
-        {
-          !isNew && (
-            <div className='field'>
-            {
-              event && (
-                <div className='field form-field is-horizontal'>
-                  <div className='field-label'>
-                    <label className="label" htmlFor="input_occasions_name">
-                      <div className="subtitle">Dates :</div>
-                    </label>
-                  </div>
-                  <div className='field-body'>
-                    <div className='field'>
-                      <div className='nb-dates'>
-                        {pluralize(get(occurences, 'length'), 'date')}
-                      </div>
-                      <NavLink
-                        className='button is-primary is-outlined is-small'
-                        to={`${routePath}/dates`}
-                      >
-                        <span className='icon'><Icon svg='ico-calendar' /></span>
-                        <span>Gérer les dates et les prix</span>
-                      </NavLink>
-                    </div>
-                  </div>
-                </div>
-              )
-            }
-            <MediationManager
-              occasion={occasion}
-              routePath={routePath}
-            />
-          </div>
-          )
-        }
         <h2 className='pc-list-title'>
           Infos pratiques
         </h2>
@@ -160,152 +124,153 @@ class OccasionForm extends Component {
           />
           */
         }
-        <FormField
-          collectionName='occasions'
-          defaultValue={get(offerer, 'id')}
-          entityId={occasionIdOrNew}
-          isHorizontal
-          label={<Label title="Structure :" />}
-          name='offererId'
-          options={optionify(offerers, 'Sélectionnez une structure')}
-          readOnly={isReadOnly || !isNew}
-          required={!isReadOnly}
-          type="select"
-        />
-        {
-          offerer && get(venues, 'length') === 0
-            ? (
-              <p>
-                Il faut obligatoirement une structure avec un lieu.
-              </p>
-            )
-            :
-              get(venues, 'length') > 0 && <FormField
+        <div className='field-group'>
+          <FormField
+            collectionName='occasions'
+            defaultValue={get(offerer, 'id')}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Structure :" />}
+            name='offererId'
+            options={optionify(offerers, 'Sélectionnez une structure')}
+            readOnly={isReadOnly || !isNew}
+            required={!isReadOnly}
+            type="select"
+          />
+          {
+            offerer && get(venues, 'length') === 0
+              ? (
+                <p>
+                  Il faut obligatoirement une structure avec un lieu.
+                </p>
+              )
+              :
+                get(venues, 'length') > 0 && <FormField
+                  collectionName='occasions'
+                  defaultValue={get(venue, 'id')}
+                  entityId={occasionIdOrNew}
+                  isHorizontal
+                  label={<Label title="Lieu :" />}
+                  name='venueId'
+                  options={optionify(venues, 'Sélectionnez un lieu')}
+                  readOnly={isReadOnly || !isNew}
+                  required={!isReadOnly}
+                  type="select"
+                />
+          }
+          {
+            isEventType && (
+              <FormField
                 collectionName='occasions'
-                defaultValue={get(venue, 'id')}
+                defaultValue={durationMinutes}
                 entityId={occasionIdOrNew}
                 isHorizontal
-                label={<Label title="Lieu :" />}
-                name='venueId'
-                options={optionify(venues, 'Sélectionnez un lieu')}
-                readOnly={isReadOnly || !isNew}
+                label={<Label title="Durée en minutes :" />}
+                name="durationMinutes"
+                readOnly={isReadOnly}
                 required={!isReadOnly}
-                type="select"
+                type="number"
               />
-        }
-        {
-          isEventType && (
-            <FormField
-              collectionName='occasions'
-              defaultValue={durationMinutes}
-              entityId={occasionIdOrNew}
-              isHorizontal
-              label={<Label title="Durée (en minutes) :" />}
-              name="durationMinutes"
-              readOnly={isReadOnly}
-              required={!isReadOnly}
-              type="number"
-            />
-          )
-        }
-
+            )
+          }
+        </div>
         <h2 className='pc-list-title'>Infos artistiques</h2>
-        <FormField
-          collectionName='occasions'
-          defaultValue={description}
-          entityId={occasionIdOrNew}
-          isHorizontal
-          isExpanded
-          label={<Label title="Description :" />}
-          maxLength={750}
-          name="description"
-          readOnly={isReadOnly}
-          required={!isReadOnly}
-          type="textarea"
-        />
-        <FormField
-          collectionName='occasions'
-          defaultValue={author}
-          entityId={occasionIdOrNew}
-          isHorizontal
-          isExpanded
-          label={<Label title="Auteur :" />}
-          name="author"
-          readOnly={isReadOnly}
-        />
-        {
-          isEventType && [
-            <FormField
-              collectionName='occasions'
-              defaultValue={stageDirector}
-              entityId={occasionIdOrNew}
-              isHorizontal
-              isExpanded
-              key={0}
-              label={<Label title="Metteur en scène:" />}
-              name="stageDirector"
-              readOnly={isReadOnly}
-            />,
-            <FormField
-              collectionName='occasions'
-              defaultValue={performer}
-              entityId={occasionIdOrNew}
-              isHorizontal
-              isExpanded
-              key={1}
-              label={<Label title="Interprète:" />}
-              name="performer"
-              readOnly={isReadOnly}
-            />
-          ]
-        }
-
+        <div className='field-group'>
+          <FormField
+            collectionName='occasions'
+            defaultValue={description}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Description :" />}
+            maxLength={750}
+            name="description"
+            readOnly={isReadOnly}
+            required={!isReadOnly}
+            type="textarea"
+          />
+          <FormField
+            collectionName='occasions'
+            defaultValue={author}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Auteur :" />}
+            name="author"
+            readOnly={isReadOnly}
+          />
+          {
+            isEventType && [
+              <FormField
+                collectionName='occasions'
+                defaultValue={stageDirector}
+                entityId={occasionIdOrNew}
+                isHorizontal
+                isExpanded
+                key={0}
+                label={<Label title="Metteur en scène:" />}
+                name="stageDirector"
+                readOnly={isReadOnly}
+              />,
+              <FormField
+                collectionName='occasions'
+                defaultValue={performer}
+                entityId={occasionIdOrNew}
+                isHorizontal
+                isExpanded
+                key={1}
+                label={<Label title="Interprète:" />}
+                name="performer"
+                readOnly={isReadOnly}
+              />
+            ]
+          }
+        </div>
       { false && [
         <h2 className='pc-list-title'>Contact</h2>,
-        <FormField
-          collectionName='occasions'
-          defaultValue={contactName || get(user, 'publicName')}
-          entityId={occasionIdOrNew}
-          isHorizontal
-          isExpanded
-          label={<Label title="Nom du contact :" />}
-          name="contactName"
-          readOnly={isReadOnly}
-          required={!isReadOnly}
-        />,
-        <FormField
-          collectionName='occasions'
-          defaultValue={contactEmail || get(user, 'email')}
-          entityId={occasionIdOrNew}
-          isHorizontal
-          isExpanded
-          label={<Label title="Email de contact :" />}
-          name="contactEmail"
-          readOnly={isReadOnly}
-          required={!isReadOnly}
-          type="email"
-        />,
-        <FormField
-          collectionName='occasions'
-          defaultValue={contactPhone}
-          entityId={occasionIdOrNew}
-          isHorizontal
-          label={<Label title="Tel de contact :" />}
-          name="contactPhone"
-          readOnly={isReadOnly}
-        />,
-        ]}
-        {false && <FormField
-                    collectionName='occasions'
-                    defaultValue={mediaUrls}
-                    entityId={occasionIdOrNew}
-                    label={<Label title="Media URLs" />}
-                    name="mediaUrls"
-                    readOnly={isReadOnly}
-                    type="list"
-                  />}
-
-
+        <div className='field-group'>
+          <FormField
+            collectionName='occasions'
+            defaultValue={contactName || get(user, 'publicName')}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Nom du contact :" />}
+            name="contactName"
+            readOnly={isReadOnly}
+            required={!isReadOnly}
+          />,
+          <FormField
+            collectionName='occasions'
+            defaultValue={contactEmail || get(user, 'email')}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            isExpanded
+            label={<Label title="Email de contact :" />}
+            name="contactEmail"
+            readOnly={isReadOnly}
+            required={!isReadOnly}
+            type="email"
+          />,
+          <FormField
+            collectionName='occasions'
+            defaultValue={contactPhone}
+            entityId={occasionIdOrNew}
+            isHorizontal
+            label={<Label title="Tel de contact :" />}
+            name="contactPhone"
+            readOnly={isReadOnly}
+          /></div>,
+          ]}
+          {false && <FormField
+                      collectionName='occasions'
+                      defaultValue={mediaUrls}
+                      entityId={occasionIdOrNew}
+                      label={<Label title="Media URLs" />}
+                      name="mediaUrls"
+                      readOnly={isReadOnly}
+                      type="list"
+                    />}
       </div>
     )
   }

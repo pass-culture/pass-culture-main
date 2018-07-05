@@ -209,79 +209,83 @@ class VenuePage extends Component {
               Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
             </span>
           </h2>
-          <FormField
-            collectionName="venues"
-            defaultValue={siret}
-            entityId={venueIdOrNew}
-            isHorizontal
-            label={<Label title="SIRET :" />}
-            name="siret"
-            readOnly={isReadOnly}
-            sireType="siret"
-            type="sirene"
-          />
-          <FormField
-            collectionName="venues"
-            defaultValue={name}
-            entityId={venueIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Nom du lieu :" />}
-            name="name"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-          />
-          <FormField
-            collectionName="venues"
-            defaultValue={bookingEmail || get(user, 'email', '')}
-            entityId={venueIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="E-mail :" />}
-            name="bookingEmail"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-          />
+          <div className='field-group'>
+            <FormField
+              collectionName="venues"
+              defaultValue={siret}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="SIRET :" />}
+              name="siret"
+              readOnly={isReadOnly}
+              sireType="siret"
+              type="sirene"
+            />
+            <FormField
+              collectionName="venues"
+              defaultValue={name}
+              entityId={venueIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="Nom du lieu :" />}
+              name="name"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              collectionName="venues"
+              defaultValue={bookingEmail || get(user, 'email', '')}
+              entityId={venueIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="E-mail :" />}
+              name="bookingEmail"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+          </div>
         </div>
         <div className='section'>
           <h2 className='pc-list-title'>
             ADRESSE
           </h2>
-          <FormField
-            autoComplete="address"
-            collectionName="venues"
-            defaultValue={address || ''}
-            entityId={venueIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Numéro et voie :" />}
-            name="address"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-            type="address"
-          />
-          <FormField
-            autoComplete="postalCode"
-            collectionName="venues"
-            defaultValue={postalCode || ''}
-            entityId={venueIdOrNew}
-            isHorizontal
-            label={<Label title="Code Postal :" />}
-            name="postalCode"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-          />
-          <FormField
-            autoComplete="city"
-            collectionName="venues"
-            defaultValue={city || ''}
-            entityId={venueIdOrNew}
-            isHorizontal
-            label={<Label title="Ville :" />}
-            name="city"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-          />
+          <div className='field-group'>
+            <FormField
+              autoComplete="address"
+              collectionName="venues"
+              defaultValue={address || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="Numéro et voie :" />}
+              name="address"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+              type="address"
+            />
+            <FormField
+              autoComplete="postalCode"
+              collectionName="venues"
+              defaultValue={postalCode || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Code Postal :" />}
+              name="postalCode"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="city"
+              collectionName="venues"
+              defaultValue={city || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Ville :" />}
+              name="city"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+          </div>
         </div>
 
       <hr />

@@ -126,159 +126,161 @@ class OffererPage extends Component {
         </div>
 
         <div className='section'>
-          <FormField
-            autoComplete="siren"
-            collectionName="offerers"
-            defaultValue={siren}
-            entityId={offererIdOrNew}
-            label={<Label title="Siren :" />}
-            name="siren"
-            type="sirene"
-            sireType="siren"
-            readOnly={!isNew}
-            isHorizontal
-            required
-          />
+          <div className='field-group'>
+            <FormField
+              autoComplete="siren"
+              collectionName="offerers"
+              defaultValue={siren}
+              entityId={offererIdOrNew}
+              label={<Label title="Siren :" />}
+              name="siren"
+              type="sirene"
+              sireType="siren"
+              readOnly={!isNew}
+              isHorizontal
+              required
+            />
 
-          {isNew && fetchedName &&
-            <div>
-              <FormField
-                autoComplete="name"
-                collectionName="offerers"
-                defaultValue={name || ''}
-                entityId={offererIdOrNew}
-                label={<Label title="Désignation:" />}
-                name="name"
-                type="name"
-                isHorizontal
-                isExpanded
-                readOnly={isNew}
-              />
-              <FormField
-                autoComplete="address"
-                collectionName="offerers"
-                defaultValue={address || ''}
-                entityId={offererIdOrNew}
-                label={<Label title="Adresse du siège social :" />}
-                name="address"
-                type="address"
-                isHorizontal
-                isExpanded
-                readOnly={isNew}
-              />
-              <FormField
-                autoComplete="postalCode"
-                collectionName="offerers"
-                defaultValue={postalCode || ''}
-                entityId={offererIdOrNew}
-                label={<Label title="Code Postal :" />}
-                name="postalCode"
-                isHorizontal
-                readOnly={isNew}
-              />
-              <FormField
-                autoComplete="city"
-                collectionName="offerers"
-                defaultValue={city || ''}
-                entityId={offererIdOrNew}
-                label={<Label title="Ville :" />}
-                name="city"
-                isHorizontal
-                readOnly={isNew}
-              />
-              <FormField
-                autoComplete="email"
-                collectionName="offerers"
-                defaultValue={get(user, 'email', '')}
-                entityId={offererIdOrNew}
-                label={<Label title="Email de réservation :" />}
-                name="bookingEmail"
-                isHorizontal
-              />
-            </div>
-          }
-          { !isNew &&
-            ([
-              <FormField
-                autoComplete="name"
-                collectionName="offerers"
-                defaultValue={name || ''}
-                entityId={offererIdOrNew}
-                key={0}
-                label={<Label title="Désignation :" />}
-                name="name"
-                type="name"
-                readOnly={!isNew}
-                isHorizontal
-                isExpanded
-              />,
-              <FormField
-                autoComplete="address"
-                collectionName="offerers"
-                defaultValue={address || ''}
-                entityId={offererIdOrNew}
-                key={1}
-                label={<Label title="Siège social :" />}
-                name="address"
-                type="adress"
-                readOnly={!isNew}
-                isHorizontal
-                isExpanded
-              />
-            ])
-          }
-        </div>
-
-        {isNew ? (
-          <div>
-            <hr />
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-              <div className="control">
-                <NavLink
-                  className="button is-secondary is-medium"
-                  to='/structures' >
-                  Retour
-                </NavLink>
-              </div>
-              <div className="control">
-                <SubmitButton
-                  className="button is-primary is-medium"
-                  getBody={form => form.offerersById[offererIdOrNew]}
-                  getIsDisabled={form => {
-                    return isNew
-                      ? !get(form, `offerersById.${offererIdOrNew}.name`) ||
-                        !get(form, `offerersById.${offererIdOrNew}.address`)
-                      : !get(form, `offerersById.${offererIdOrNew}.name`) &&
-                        !get(form, `offerersById.${offererIdOrNew}.address`)
-                  }}
-                  handleSuccess={this.handleSuccessData}
-                  method={method}
-                  path={apiPath}
-                  storeKey="offerers"
-                  text="Valider"
+            {isNew && fetchedName &&
+              <div>
+                <FormField
+                  autoComplete="name"
+                  collectionName="offerers"
+                  defaultValue={name || ''}
+                  entityId={offererIdOrNew}
+                  label={<Label title="Désignation:" />}
+                  name="name"
+                  type="name"
+                  isHorizontal
+                  isExpanded
+                  readOnly={isNew}
+                />
+                <FormField
+                  autoComplete="address"
+                  collectionName="offerers"
+                  defaultValue={address || ''}
+                  entityId={offererIdOrNew}
+                  label={<Label title="Adresse du siège social :" />}
+                  name="address"
+                  type="address"
+                  isHorizontal
+                  isExpanded
+                  readOnly={isNew}
+                />
+                <FormField
+                  autoComplete="postalCode"
+                  collectionName="offerers"
+                  defaultValue={postalCode || ''}
+                  entityId={offererIdOrNew}
+                  label={<Label title="Code Postal :" />}
+                  name="postalCode"
+                  isHorizontal
+                  readOnly={isNew}
+                />
+                <FormField
+                  autoComplete="city"
+                  collectionName="offerers"
+                  defaultValue={city || ''}
+                  entityId={offererIdOrNew}
+                  label={<Label title="Ville :" />}
+                  name="city"
+                  isHorizontal
+                  readOnly={isNew}
+                />
+                <FormField
+                  autoComplete="email"
+                  collectionName="offerers"
+                  defaultValue={get(user, 'email', '')}
+                  entityId={offererIdOrNew}
+                  label={<Label title="Email de réservation :" />}
+                  name="bookingEmail"
+                  isHorizontal
                 />
               </div>
-            </div>
+            }
+            { !isNew &&
+              ([
+                <FormField
+                  autoComplete="name"
+                  collectionName="offerers"
+                  defaultValue={name || ''}
+                  entityId={offererIdOrNew}
+                  key={0}
+                  label={<Label title="Désignation :" />}
+                  name="name"
+                  type="name"
+                  readOnly={!isNew}
+                  isHorizontal
+                  isExpanded
+                />,
+                <FormField
+                  autoComplete="address"
+                  collectionName="offerers"
+                  defaultValue={address || ''}
+                  entityId={offererIdOrNew}
+                  key={1}
+                  label={<Label title="Siège social :" />}
+                  name="address"
+                  type="adress"
+                  readOnly={!isNew}
+                  isHorizontal
+                  isExpanded
+                />
+              ])
+            }
           </div>
-        ) : (
-          <div className='section'>
-            <h2 className='pc-list-title'>
-              LIEUX
-            </h2>
-            <ul className='pc-list venues-list'>
-              {
-                venues.map(v =>
-                  <VenueItem key={v.id} venue={v} />)
-              }
-            </ul>
-            <div className='has-text-centered'>
-              <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}
-                className="button is-secondary is-outlined">
-                + Ajouter un lieu
-              </NavLink>
+
+          {isNew ? (
+            <div>
+              <hr />
+              <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+                <div className="control">
+                  <NavLink
+                    className="button is-secondary is-medium"
+                    to='/structures' >
+                    Retour
+                  </NavLink>
+                </div>
+                <div className="control">
+                  <SubmitButton
+                    className="button is-primary is-medium"
+                    getBody={form => form.offerersById[offererIdOrNew]}
+                    getIsDisabled={form => {
+                      return isNew
+                        ? !get(form, `offerersById.${offererIdOrNew}.name`) ||
+                          !get(form, `offerersById.${offererIdOrNew}.address`)
+                        : !get(form, `offerersById.${offererIdOrNew}.name`) &&
+                          !get(form, `offerersById.${offererIdOrNew}.address`)
+                    }}
+                    handleSuccess={this.handleSuccessData}
+                    method={method}
+                    path={apiPath}
+                    storeKey="offerers"
+                    text="Valider"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className='section'>
+              <h2 className='pc-list-title'>
+                LIEUX
+              </h2>
+              <ul className='pc-list venues-list'>
+                {
+                  venues.map(v =>
+                    <VenueItem key={v.id} venue={v} />)
+                }
+              </ul>
+              <div className='has-text-centered'>
+                <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}
+                  className="button is-secondary is-outlined">
+                  + Ajouter un lieu
+                </NavLink>
+              </div>
+            </div>
+          )}
+        </div>
 
     </PageWrapper>
     )

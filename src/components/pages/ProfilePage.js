@@ -40,6 +40,7 @@ class ProfilePage extends Component {
           <h1 className='pc-title'>Profil</h1>
         </div>
         <div className='section'>
+          <div className='field-group'>
             <FormField
               collectionName='users'
               defaultValue={publicName}
@@ -59,43 +60,44 @@ class ProfilePage extends Component {
               readOnly // For now there is no check on whether the email already exists so it cannot be modified
               isHorizontal
             />
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-              <div className="control">
-                <SubmitButton
-                  getBody={form => (get(form, `usersById.${id}`))}
-                  getIsDisabled={form => {
-                    return !get(form, `usersById.${id}.publicName`) &&
-                      !get(form, `usersById.${id}.email`)
-                  }}
-                  className="button is-primary is-medium"
-                  method='PATCH'
-                  handleSuccess={this.handleSuccess}
-                  path='users/current'
-                  storeKey="occasions"
-                  text="Enregistrer"
-                />
-              </div>
-              <div className="control">
-                <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
-                  Retour
-                </NavLink>
-              </div>
+          </div>
+          <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+            <div className="control">
+              <SubmitButton
+                getBody={form => (get(form, `usersById.${id}`))}
+                getIsDisabled={form => {
+                  return !get(form, `usersById.${id}.publicName`) &&
+                    !get(form, `usersById.${id}.email`)
+                }}
+                className="button is-primary is-medium"
+                method='PATCH'
+                handleSuccess={this.handleSuccess}
+                path='users/current'
+                storeKey="occasions"
+                text="Enregistrer"
+              />
             </div>
-            <hr />
-            <h1 className='title has-text-centered'>Avatar</h1>
-            <div className='field'>
-              <UploadThumb
-                className='input'
-                image={apiUrl(thumbPath)}
-                collectionName='users'
-                storeKey='thumbedUser'
-                type='thumb'
-                entityId={id}
-                index={0}
-                width={250}
-                height={250}
-                borderRadius={250}
-               />
+            <div className="control">
+              <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
+                Retour
+              </NavLink>
+            </div>
+          </div>
+          <hr />
+          <h1 className='title has-text-centered'>Avatar</h1>
+          <div className='field'>
+            <UploadThumb
+              className='input'
+              image={apiUrl(thumbPath)}
+              collectionName='users'
+              storeKey='thumbedUser'
+              type='thumb'
+              entityId={id}
+              index={0}
+              width={250}
+              height={250}
+              borderRadius={250}
+             />
           </div>
         </div>
       </PageWrapper>
