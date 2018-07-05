@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import L from 'leaflet';
+import Autocomplete from 'react-autocomplete'
 
 import Icon from './Icon'
 import FormInput from './FormInput'
@@ -28,6 +29,7 @@ class FormGeo extends Component {
         lat: 43.60346942785451,
         lng: 1.4562785625457764,
       },
+      value: '',
     }
     this.refmarker = React.createRef()
   }
@@ -53,9 +55,59 @@ class FormGeo extends Component {
     })
   }
 
+  onChange = (e) => {
+    this.setState({
+      value: e.target.value
+    })
+  }
+
+  onSelect = (value) => {
+    this.setState({
+      value
+    })
+  }
+
   render() {
+    const {
+      className,
+      id,
+      readOnly,
+      required,
+      placeholder,
+    } = this.props
+
+    const {
+      value
+    } = this.state
+
+
+    const input = <Autocomplete
+
+        className={className || 'input'}
+        id={id}
+        onChange={this.onChange}
+        placeholder={placeholder}
+        readOnly={readOnly}
+        required={required}
+        type='text'
+        value={value}
+        getItemValue={value => value}
+        renderMenu={children => (
+          <div className="menu">
+            {children}
+          </div>
+        )}
+        renderItem={(item, isHighlighted) => (
+          <div
+            className={`item ${isHighlighted ? 'item-highlighted' : ''}`}
+            key={item}
+          >{item}</div>
+        )}
+        items={['hey', 'you', 'how', 'are', 'you?']}
+        onSelect={this.onSelect}
+      />
+
     if (!this.props.showMap) return input
-    const input = <FormInput {...this.props} type='text' />;
     const markerPosition = [this.state.marker.lat, this.state.marker.lng]
     const {
       lat, lng, zoom
