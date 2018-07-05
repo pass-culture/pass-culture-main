@@ -190,6 +190,14 @@ class VenuePage extends Component {
           </h1>
 
           {
+            isNew && (
+              <p className="subtitle">
+                Ajoutez un lieu où accéder à vos offres.
+              </p>
+            )
+          }
+
+          {
             get(offerer, 'id') && get(venue, 'id') && (
               <NavLink to={`/offres/nouveau?lieu=${venue.id}`}
                 className='button is-primary is-medium is-pulled-right cta'>

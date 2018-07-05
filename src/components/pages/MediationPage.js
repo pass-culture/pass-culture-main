@@ -60,16 +60,20 @@ class MediationPage extends Component {
       user
     } = this.props
     const isNew = mediationId === 'nouveau'
-    user && !isNew && requestData(
-      'GET',
-      `mediations/${mediationId}`,
-      {
-        handleSuccess,
-        handleFail,
-        key: 'mediations',
-        normalizer: mediationNormalizer
-      }
-    )
+    if (user && !isNew) {
+     requestData(
+        'GET',
+        `mediations/${mediationId}`,
+        {
+          handleSuccess,
+          handleFail,
+          key: 'mediations',
+          normalizer: mediationNormalizer
+        }
+      )
+      return
+    }
+    handleSuccess()
   }
 
   handleSuccessData = (state, action) => {

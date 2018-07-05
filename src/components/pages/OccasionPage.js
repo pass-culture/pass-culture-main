@@ -110,7 +110,6 @@ class OccasionPage extends Component {
                 onCloseClick: () => history.push('/structures')
               })
           }
-          handleSuccess(state, action)
         },
         handleFail,
         normalizer: { managedVenues: 'venues' }
@@ -119,9 +118,8 @@ class OccasionPage extends Component {
     providers.length === 0 && requestData('GET', 'providers')
     typeOptions.length === 0 && requestData('GET', 'types')
 
-    if (offerers.length && providers.length && typeOptions.length) {
-      return false
-    }
+    // prevent loading on this page
+    return false
   }
 
   handleFailData = (state, action) => {
