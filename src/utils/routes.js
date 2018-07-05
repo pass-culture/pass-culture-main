@@ -24,7 +24,14 @@ export const getDiscoveryPath = (offer, mediation = '') => {
       : typeof mediation === 'object'
         ? mediation.id
         : ''
-  return `/decouverte/${offerId}/${mediationId}`
+  const eventId = offer
+                  && typeof offer === 'object'
+                  && offer.eventId
+  let url = `/decouverte/${offerId}/${mediationId}`
+  if (eventId !== undefined) {
+    url += `#${eventId}`
+  }
+  return url
 }
 
 const routes = [

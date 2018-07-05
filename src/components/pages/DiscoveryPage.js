@@ -6,6 +6,8 @@ import { compose } from 'redux'
 import Deck from '../Deck'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
+import { requestData } from '../../reducers/data'
+import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
@@ -13,25 +15,33 @@ class DiscoveryPage extends Component {
     // ONLY TRIGGER AT MOUNT TIME
     // OR WHEN WE RECEIVED FRESH NON EMPTY DATA
     const props = nextProps || this.props
-    const { offerId, history, recommendations } = props
+    const { currentRecommendation, occasionId, mediationId, offerId, history, recommendations, requestData } = props
     if (
       offerId !== 'empty' ||
       (nextProps && !nextProps.recommendations) ||
       (offerId !== 'empty' || !recommendations || !recommendations.length)
     ) {
-      return
+      if (!currentRecommendation) {
+        let query = 'occasionType=Event'
+        if (mediationId) {
+          query += '&mediationId='+mediationId
+        }
+        query += '&occasionId='+occasionId
+        requestData('PUT', 'recommendations?'+query)
+      }
+     return
     }
 
     // THE BLOB HAS MAYBE A isAround VARIABLE
     // HELPING TO RETRIEVE THE AROUND
-    let currentRecommendation = recommendations.find(um => um.isAround)
-    if (!currentRecommendation) {
+    let targetRecommendation = recommendations.find(um => um.isAround)
+    if (!targetRecommendation) {
       // ELSE TAKE THE FIRST?
-      currentRecommendation = recommendations[0]
+      targetRecommendation = recommendations[0]
     }
 
     // NOW CHOOSE AN OFFER AMONG THE ONES
-    const recommendationOffers = currentRecommendation.recommendationOffers
+    const recommendationOffers = targetRecommendation.recommendationOffers
     const chosenOffer =
       recommendationOffers &&
       recommendationOffers[
@@ -39,7 +49,7 @@ class DiscoveryPage extends Component {
       ]
 
     // PUSH
-    const path = getDiscoveryPath(chosenOffer, currentRecommendation.mediation)
+    const path = getDiscoveryPath(chosenOffer, targetRecommendation.mediation)
     history.push(path)
   }
 
@@ -70,6 +80,8 @@ export default compose(
   withRouter,
   connect(state => ({
     backButton: state.router.location.search.indexOf('to=verso') > -1,
+    currentRecommendation: selectCurrentRecommendation(state),
+    occasionId: state.router.location.hash,
     recommendations: state.data.recommendations,
-  }))
+  }), { requestData })
 )(DiscoveryPage)
