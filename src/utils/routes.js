@@ -11,7 +11,7 @@ import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
 
-export const getDiscoveryPath = (offer, mediation = '') => {
+export const getDiscoveryPath = (offer, mediation = '', toVerso = false) => {
   const offerId =
     typeof offer === 'string'
       ? offer
@@ -29,6 +29,9 @@ export const getDiscoveryPath = (offer, mediation = '') => {
                   && offer.eventOccurence
                   && offer.eventOccurence.eventId
   let url = `/decouverte/${offerId}/${mediationId}`
+  if (toVerso) {
+    url += "?to=verso"
+  }
   if (eventId !== undefined) {
     url += `#${eventId}`
   }
