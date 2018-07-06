@@ -7,7 +7,7 @@ import OccurenceForm from './OccurenceForm'
 import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
-import createOfferSelector from '../selectors/createOffer'
+import offerSelector from '../selectors/offer'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
 
@@ -186,7 +186,6 @@ const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(
   () => {
-    const offerSelector = createOfferSelector()
     return (state, ownProps) => ({
       offer: offerSelector(state, get(ownProps, 'occurence.id')),
       tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))

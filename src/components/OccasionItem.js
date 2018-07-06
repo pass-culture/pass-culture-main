@@ -16,7 +16,6 @@ import eventSelector from '../selectors/event'
 import maxDateSelector from '../selectors/maxDate'
 import mediationsSelector from '../selectors/mediations'
 import occurencesSelector from '../selectors/occurences'
-import createOffersSelector from '../selectors/createOffers'
 import createStockSelector from '../selectors/createStock'
 import createThingSelector from '../selectors/createThing'
 import createThumbUrlSelector from '../selectors/createThumbUrl'
@@ -151,9 +150,8 @@ export default compose(
       const thingSelector = createThingSelector()
       const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
       const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
-      const offersSelector = createOffersSelector()
 
-      const stockSelector = createStockSelector(offersSelector)
+      const stockSelector = createStockSelector()
 
       return (state, ownProps) => {
         const occasion = ownProps.occasion

@@ -1,13 +1,14 @@
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
 import occurencesSelector from './occurences'
 
 export default () => createSelector(
   state => state.data.offers,
-  occurencesSelector,
+  (state, venueId, eventId) => occurencesSelector(state, venueId, eventId),
   (offers, occurences) => {
     return offers.filter(offer => {
       return occurences.some(occurence => offer.eventOccurenceId === occurence.id)
     })
-  }
+  },
+  (state, venueId, eventId) => `${venueId}/${eventId}`
 )
