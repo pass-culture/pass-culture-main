@@ -1,9 +1,9 @@
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
-import createOffersSelector from './createOffers'
+import offersSelector from './offers'
 
-export default (offersSelector=createOffersSelector()) => createSelector(
-  offersSelector,
+export default createCachedSelector(
+  (state, venueId, eventId) => offersSelector(state, venueId, eventId),
   offers => offers
     .reduce((aggreged, o) => {
       return o.offer && o.offer.reduce((subaggreged, offer) => {
@@ -29,5 +29,6 @@ export default (offersSelector=createOffersSelector()) => createSelector(
       groupSizeMax: 0,
       priceMin: 0,
       priceMax: 0,
-    })
+    }),
+  (state, venueId, eventId) => `${venueId}/${eventId}`
 )
