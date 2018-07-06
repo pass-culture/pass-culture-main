@@ -155,7 +155,9 @@ class VenuePage extends Component {
       name,
       postalCode,
       siret,
-      bookingEmail
+      bookingEmail,
+      latitude,
+      longitude,
     } = venue || {}
 
     const {
@@ -269,7 +271,9 @@ class VenuePage extends Component {
               name="address"
               readOnly={isReadOnly}
               required={!isReadOnly}
-              type="address"
+              type="geo"
+              latitude={latitude}
+              longitude={longitude}
             />
             <FormField
               autoComplete="postalCode"

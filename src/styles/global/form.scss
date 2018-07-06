@@ -5,13 +5,13 @@
     display: table-row;
     .field-label, .field-body {
       display: table-cell;
-      vertical-align: middle;
       padding-bottom: 1rem;
     }
 
     .field-label {
       padding-right: 1rem;
       white-space:nowrap;
+      vertical-align: top;
     }
 
     .field-body {
