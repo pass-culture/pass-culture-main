@@ -18,7 +18,7 @@ import mediationsSelector from '../selectors/mediations'
 import occurencesSelector from '../selectors/occurences'
 import stockSelector from '../selectors/stock'
 import thingSelector from '../selectors/thing'
-import createThumbUrlSelector from '../selectors/createThumbUrl'
+import thumbUrlSelector from '../selectors/thumbUrl'
 import typeSelector from '../selectors/type'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
@@ -145,21 +145,17 @@ export default compose(
   withRouter,
   connect(
     () => {
-      const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
-
       return (state, ownProps) => {
-        const occasion = ownProps.occasion
-        const event = eventSelector(state, occasion.eventId)
-        const thing = thingSelector(state, occasion.thingId)
+        const {eventId, thingId, venueId} = ownProps.occasion
         return {
-          event,
-          mediations: mediationsSelector(state, occasion.eventId, occasion.thingId),
-          occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
-          maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
-          stock: stockSelector(state, occasion.venueId, occasion.eventId),
-          thing,
-          thumbUrl: thumbUrlSelector(state, event, thing),
-          type: typeSelector(state, occasion.eventId, occasion.thingId)
+          event: eventSelector(state, eventId),
+          mediations: mediationsSelector(state, eventId, thingId),
+          occurences: occurencesSelector(state, venueId, eventId),
+          maxDate: maxDateSelector(state, venueId, eventId),
+          stock: stockSelector(state, venueId, eventId),
+          thing: thingSelector(state, thingId),
+          thumbUrl: thumbUrlSelector(state, eventId, thingId),
+          type: typeSelector(state, eventId, thingId)
         }
       }
     },
