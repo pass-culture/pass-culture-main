@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
-import L from 'leaflet';
+import L from 'leaflet'
 import Autocomplete from 'react-autocomplete'
+import classnames from 'classnames'
+import debounce from 'lodash.debounce'
 
 import Icon from './Icon'
 import FormInput from './FormInput'
@@ -21,8 +23,8 @@ const customIcon = new L.Icon({
 
 
 class FormGeo extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       draggable: true,
       marker: {
@@ -30,13 +32,24 @@ class FormGeo extends Component {
         lng: 1.4562785625457764,
       },
       value: '',
+      suggestions: [{
+        label: 'Sélectionnez l\'adresse lorsqu\'elle est proposée.',
+        placeholder: true,
+        id: 'placeholder',
+      }]
     }
     this.refmarker = React.createRef()
+    this.onDebouncedFetchSuggestions = debounce(
+      this.fetchSuggestions,
+      props.debounceTimeout
+    )
   }
 
   static defaultProps = {
+    debounceTimeout: 500,
     showMap: true,
-    initialPosition: {
+    maxSuggestions: 5,
+    initialPosition: { // Displays France
       lat: 46.98025235521883,
       lng: 1.9335937500000002,
       zoom: 5,
@@ -56,15 +69,36 @@ class FormGeo extends Component {
   }
 
   onChange = (e) => {
+    const value = e.target.value
     this.setState({
-      value: e.target.value
+      value,
     })
+    this.onDebouncedFetchSuggestions(value)
   }
 
   onSelect = (value) => {
     this.setState({
       value
     })
+  }
+
+  fetchSuggestions = value => {
+    fetch(`https://api-adresse.data.gouv.fr/search/?limit=${this.props.maxSuggestions}&q=${value}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        this.setState({
+          suggestions: data.features.map(f => ({
+            lat: f.geometry.coordinates[0],
+            lng: f.geometry.coordinates[1],
+            label: f.properties.label,
+            address: f.properties.name,
+            postalCode: f.properties.postcode,
+            city: f.properties.city,
+            id: f.properties.id,
+          }))
+        })
+      })
   }
 
   render() {
@@ -77,35 +111,43 @@ class FormGeo extends Component {
     } = this.props
 
     const {
-      value
+      suggestions,
+      value,
     } = this.state
 
 
     const input = <Autocomplete
-
-        className={className || 'input'}
-        id={id}
-        onChange={this.onChange}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        required={required}
-        type='text'
-        value={value}
-        getItemValue={value => value}
-        renderMenu={children => (
-          <div className="menu">
-            {children}
-          </div>
-        )}
-        renderItem={(item, isHighlighted) => (
-          <div
-            className={`item ${isHighlighted ? 'item-highlighted' : ''}`}
-            key={item}
-          >{item}</div>
-        )}
-        items={['hey', 'you', 'how', 'are', 'you?']}
-        onSelect={this.onSelect}
-      />
+      inputProps={{
+        className: className || 'input is-expanded',
+        id: id,
+        placeholder: placeholder,
+        readOnly: readOnly,
+        required: required,
+      }}
+      wrapperProps={{
+        className: 'input-wrapper'
+      }}
+      onChange={this.onChange}
+      value={value}
+      getItemValue={value => value.label}
+      renderMenu={children => (
+        <div className="menu">
+          {children}
+        </div>
+      )}
+      renderItem={({id, label, placeholder}, highlighted) => (
+        <div
+          className={classnames({
+            item: true,
+            highlighted,
+            placeholder,
+          })}
+          key={id}
+        >{label}</div>
+      )}
+      items={suggestions}
+      onSelect={this.onSelect}
+    />
 
     if (!this.props.showMap) return input
     const markerPosition = [this.state.marker.lat, this.state.marker.lng]
@@ -119,7 +161,7 @@ class FormGeo extends Component {
         <Map
           center={[lat, lng]}
           zoom={zoom}
-          className='input-map'
+          className='map'
           >
           <TileLayer
             // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -131,11 +173,6 @@ class FormGeo extends Component {
             position={markerPosition}
             icon={customIcon}
             ref={this.refmarker}>
-            <Popup minWidth={90}>
-              <span onClick={this.toggleDraggable}>
-                {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
-              </span>
-            </Popup>
           </Marker>
         </Map>
       </div>
