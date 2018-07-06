@@ -15,7 +15,7 @@ import Icon from '../layout/Icon'
 import { resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import createEventSelector from '../../selectors/createEvent'
+import eventSelector from '../../selectors/event'
 import createOccurencesSelector from '../../selectors/createOccurences'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
@@ -117,7 +117,7 @@ class OccasionPage extends Component {
     )
     providers.length === 0 && requestData('GET', 'providers')
     typeOptions.length === 0 && requestData('GET', 'types')
-    
+
     handleSuccess()
   }
 
@@ -378,7 +378,6 @@ class OccasionPage extends Component {
   }
 }
 
-const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const occurencesSelector = createOccurencesSelector()
 const offerersSelector = createOfferersSelector()

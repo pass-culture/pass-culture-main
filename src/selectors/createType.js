@@ -2,12 +2,12 @@ import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import createTypesSelector from './createTypes'
-import createEventSelector from './createEvent'
+import eventSelector from './event'
 import createThingSelector from './createThing'
 
 export default (
   typesSelector=createTypesSelector(),
-  eventSelector=createEventSelector(),
+  _,
   thingSelector=createThingSelector()
 ) => createSelector(
   typesSelector,

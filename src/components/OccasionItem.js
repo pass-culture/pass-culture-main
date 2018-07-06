@@ -12,7 +12,7 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
-import createEventSelector from '../selectors/createEvent'
+import eventSelector from '../selectors/event'
 import createMaxDateSelector from '../selectors/createMaxDate'
 import createMediationsSelector from '../selectors/createMediations'
 import createOccurencesSelector from '../selectors/createOccurences'
@@ -148,7 +148,6 @@ export default compose(
   connect(
     () => {
       const typesSelector = createTypesSelector()
-      const eventSelector = createEventSelector()
       const thingSelector = createThingSelector()
       const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
       const mediationsSelector = createMediationsSelector()

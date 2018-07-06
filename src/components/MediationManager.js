@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createEventSelector from '../selectors/createEvent'
+import eventSelector from '../selectors/vent'
 import createMediationSelector from '../selectors/createMediations'
 import createThingSelector from '../selectors/createThing'
 import { API_URL } from '../utils/config'
@@ -48,7 +48,6 @@ const MediationManager = ({
   )
 }
 
-const eventSelector = createEventSelector()
 const thingSelector = createThingSelector()
 const mediationsSelector = createMediationSelector()
 

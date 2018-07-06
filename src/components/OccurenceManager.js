@@ -7,7 +7,7 @@ import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
-import createEventSelector from '../selectors/createEvent'
+import eventSelector from '../selectors/event'
 import createProviderSelector from '../selectors/createProvider'
 import createTimezoneSelector from '../selectors/createTimezone'
 import { NEW } from '../utils/config'
@@ -221,7 +221,6 @@ class OccurenceManager extends Component {
   }
 }
 
-const eventSelector = createEventSelector()
 const providerSelector = createProviderSelector()
 const timezoneSelector = createTimezoneSelector()
 

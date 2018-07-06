@@ -7,7 +7,7 @@ import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
-import createEventSelector from '../selectors/createEvent'
+import eventSelector from '../selectors/event'
 import createOfferSelector from '../selectors/createOffer'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
@@ -375,7 +375,6 @@ class OccurenceForm extends Component {
   }
 }
 
-const eventSelector = createEventSelector()
 const offerSelector = createOfferSelector()
 const venueSelector = createVenueSelector()
 const occurencesSelector = createOccurencesSelector()
