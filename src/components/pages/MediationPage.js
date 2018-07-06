@@ -13,10 +13,9 @@ import { assignData } from '../../reducers/data'
 import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
 import mediationSelector from '../../selectors/mediation'
-import createMediationsSelector from '../../selectors/createMediations'
 import offererSelector from '../../selectors/offerer'
 import thingSelector from '../../selectors/thing'
-import createVenueSelector from '../../selectors/createVenue'
+import venueSelector from '../../selectors/venue'
 import { mediationNormalizer } from '../../utils/normalizers'
 
 
@@ -296,8 +295,6 @@ class MediationPage extends Component {
   }
 }
 
-const venueSelector = createVenueSelector()
-
 export default compose(
   withCurrentOccasion,
   connect(
@@ -306,7 +303,7 @@ export default compose(
         eventId,
         thingId,
         venueId,
-      } = get(ownProps, 'occasion', {})
+      } = ownProps.occasion || {}
       const venue = venueSelector(state, venueId)
       return {
         offerer: offererSelector(state, get(venue, 'managingOffererId')),

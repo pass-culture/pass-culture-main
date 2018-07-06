@@ -12,7 +12,7 @@ import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
 import providerSelector from '../selectors/provider'
 import providersSelector from '../selectors/providers'
-import createVenueProvidersSelector from '../selectors/createVenueProviders'
+import venueProvidersSelector from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
 import { optionify } from '../utils/form'
 
@@ -197,8 +197,6 @@ class ProviderManager extends Component {
       )
   }
 }
-
-const venueProvidersSelector = createVenueProvidersSelector()
 
 export default compose(
   withRouter,

@@ -14,7 +14,7 @@ import { requestData } from '../../reducers/data'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import offererSelector from '../../selectors/offerer'
-import createVenuesSelector from '../../selectors/createVenues'
+import venuesSelector from '../../selectors/venues'
 import { NEW } from '../../utils/config'
 import { offererNormalizer } from '../../utils/normalizers'
 
@@ -290,8 +290,6 @@ class OffererPage extends Component {
     )
   }
 }
-
-const venuesSelector = createVenuesSelector()
 
 export default compose(
   withRouter,

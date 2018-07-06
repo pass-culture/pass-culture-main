@@ -13,7 +13,7 @@ import { assignData, requestData } from '../../reducers/data'
 import occasionsSelector from '../../selectors/occasions'
 import offererSelector from '../../selectors/offerer'
 import searchSelector from '../../selectors/search'
-import createVenueSelector from '../../selectors/createVenue'
+import venueSelector from '../../selectors/venue'
 import { occasionNormalizer } from '../../utils/normalizers'
 import { objectToQueryString } from '../../utils/string'
 
@@ -193,9 +193,6 @@ class OccasionsPage extends Component {
     )
   }
 }
-
-
-const venueSelector = createVenueSelector()
 
 export default compose(
   withRouter,

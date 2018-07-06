@@ -24,8 +24,8 @@ import searchSelector from '../../selectors/search'
 import thingSelector from '../../selectors/thing'
 import typeSelector from '../../selectors/type'
 import typesSelector from '../../selectors/types'
-import createVenueSelector from '../../selectors/createVenue'
-import createVenuesSelector from '../../selectors/createVenues'
+import venueSelector from '../../selectors/venue'
+import venuesSelector from '../../selectors/venues'
 import { NEW } from '../../utils/config'
 import { getIsDisabled, optionify } from '../../utils/form'
 import { eventNormalizer } from '../../utils/normalizers'
@@ -377,9 +377,6 @@ class OccasionPage extends Component {
     )
   }
 }
-
-const venuesSelector = createVenuesSelector()
-const venueSelector = createVenueSelector(venuesSelector)
 
 export default compose(
   withCurrentOccasion,

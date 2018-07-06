@@ -10,7 +10,7 @@ import { mergeForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import offerSelector from '../selectors/offer'
 import timezoneSelector from '../selectors/timezone'
-import createVenueSelector from '../selectors/createVenue'
+import venueSelector from '../selectors/venue'
 import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
@@ -375,13 +375,10 @@ class OccurenceForm extends Component {
   }
 }
 
-const venueSelector = createVenueSelector()
-
 export default connect(
   (state, ownProps) => {
-    const eventId = get(ownProps, 'occasion.eventId')
+    const {eventId, venueId} = ownProps.occasion || {}
     const occurenceId = get(ownProps, 'occurence.id')
-    const venueId = get(ownProps, 'occasion.venueId')
     return {
       form: state.form,
       event: eventSelector(state, eventId),

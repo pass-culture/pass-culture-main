@@ -1,8 +1,6 @@
 import createCachedSelector from 're-reselect';
 
-import createVenuesSelector from './createVenues'
-
-const venuesSelector = createVenuesSelector()
+import venuesSelector from './venues'
 
 export default createCachedSelector(
   state => state.data.searchedOccasions || state.data.occasions,
