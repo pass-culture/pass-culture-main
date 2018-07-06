@@ -155,7 +155,9 @@ class VenuePage extends Component {
       name,
       postalCode,
       siret,
-      bookingEmail
+      bookingEmail,
+      latitude,
+      longitude,
     } = venue || {}
 
     const {
@@ -188,6 +190,14 @@ class VenuePage extends Component {
           <h1 className='pc-title'>
             Lieu
           </h1>
+
+          {
+            isNew && (
+              <p className="subtitle">
+                Ajoutez un lieu où accéder à vos offres.
+              </p>
+            )
+          }
 
           {
             get(offerer, 'id') && get(venue, 'id') && (
@@ -261,7 +271,9 @@ class VenuePage extends Component {
               name="address"
               readOnly={isReadOnly}
               required={!isReadOnly}
-              type="address"
+              type="geo"
+              latitude={latitude}
+              longitude={longitude}
             />
             <FormField
               autoComplete="postalCode"

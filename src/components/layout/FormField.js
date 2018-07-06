@@ -5,6 +5,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 import FormDate from './FormDate'
+import FormGeo from './FormGeo'
 import FormInput from './FormInput'
 import FormList from './FormList'
 import FormPassword from './FormPassword'
@@ -17,6 +18,7 @@ import { capitalize } from '../../utils/string'
 
 const FormComponentsByName = {
   FormDate,
+  FormGeo,
   FormInput,
   FormList,
   FormSearch,
@@ -40,6 +42,7 @@ class FormField extends Component {
     const {
       className,
       collectionName,
+      controlClassName,
       error,
       id,
       inputClassName,
@@ -76,7 +79,7 @@ class FormField extends Component {
 
     if (!isCheckbox) {
       inputMarkup = (
-        <div className='control' key={`control_${inputId}`}>
+        <div className={classnames('control', controlClassName)} key={`control_${inputId}`}>
           {inputMarkup}
         </div>
       )

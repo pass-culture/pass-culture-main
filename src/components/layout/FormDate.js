@@ -46,7 +46,7 @@ class FormDate extends Component {
     } = this.props
     const resolvedValue = value || defaultValue
     return (
-      <div className="date-picker">
+      <div className="input date-picker">
         {
           readOnly
             ? <span> {resolvedValue && resolvedValue.format(format)} </span>
@@ -54,7 +54,8 @@ class FormDate extends Component {
               (
                 [
                   <DatePicker
-                    className='input is-rounded is-small'
+                    className='is-rounded is-small date'
+                    key={0}
                     highlightDates={highlightedDates || []}
                     minDate={moment()}
                     onChange={this.handleDateSelect}
@@ -64,6 +65,7 @@ class FormDate extends Component {
                   <Icon
                     alt='Horaires'
                     className="input-icon"
+                    key={1}
                     svg="ico-calendar"
                   />
                 ]

@@ -53,16 +53,21 @@ class OffererPage extends Component {
       requestData,
     } = this.props
     const { isNew } = this.state
-    !isNew && requestData(
-      'GET',
-      `offerers/${offererId}`,
-      {
-        handleSuccess,
-        handleFail,
-        key: 'offerers',
-        normalizer: offererNormalizer
-      }
-    )
+    if (!isNew) {
+      requestData(
+        'GET',
+        `offerers/${offererId}`,
+        {
+          handleSuccess,
+          handleFail,
+          key: 'offerers',
+          normalizer: offererNormalizer
+        }
+      )
+      return
+    }
+    // prevent loading
+    handleSuccess()
   }
 
   handleSuccessData = () => {
@@ -132,7 +137,7 @@ class OffererPage extends Component {
               collectionName="offerers"
               defaultValue={siren}
               entityId={offererIdOrNew}
-              label={<Label title="Siren :" />}
+              label={<Label title="SIREN :" />}
               name="siren"
               type="sirene"
               sireType="siren"
@@ -148,7 +153,7 @@ class OffererPage extends Component {
                   collectionName="offerers"
                   defaultValue={name || ''}
                   entityId={offererIdOrNew}
-                  label={<Label title="Désignation:" />}
+                  label={<Label title="Dénomination:" />}
                   name="name"
                   type="name"
                   isHorizontal

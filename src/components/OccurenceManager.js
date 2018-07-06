@@ -2,7 +2,6 @@ import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { NavLink } from 'react-router-dom'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
@@ -125,9 +124,6 @@ class OccurenceManager extends Component {
     const {
       name
     } = (event || {})
-    const {
-      id
-    } = (occasion || {})
     const {
       params: { eventOccurenceId }
     } = match

@@ -2,17 +2,14 @@ import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import OccurenceManager from './OccurenceManager'
-import Icon from './layout/Icon'
 import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
 import createOccurencesSelector from '../selectors/createOccurences'
-import { pluralize } from '../utils/string'
 import { optionify } from '../utils/form'
 
 class OccasionForm extends Component {
@@ -24,7 +21,6 @@ class OccasionForm extends Component {
       match,
       occasion,
       occurences,
-      routePath,
       showModal
     } = this.props
     const { params: { feature } } = match
@@ -74,12 +70,9 @@ class OccasionForm extends Component {
       isEventType,
       isNew,
       isReadOnly,
-      occasion,
       occasionIdOrNew,
-      occurences,
       offerer,
       offerers,
-      routePath,
       thing,
       user,
       venue,
