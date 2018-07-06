@@ -1,9 +1,9 @@
 import createCachedSelector from 're-reselect';
 
-import createOccurencesSelector from './createOccurences'
+import occurencesSelector from './occurences'
 
 export default createCachedSelector(
-  createOccurencesSelector(),
+  (state, venueId, eventId) => occurencesSelector(state, venueId, eventId),
   occurences => {
     return occurences
       .reduce((max, d) => max &&

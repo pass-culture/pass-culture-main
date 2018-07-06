@@ -2,16 +2,16 @@ import createCachedSelector from 're-reselect';
 
 export default createCachedSelector(
   state => state.data.mediations,
-  (state, eventId, thingId) => eventId,
-  (state, eventId, thingId) => thingId,
-  (mediations, eventId, thingId) => {
-    if (eventId)
-      mediations = mediations.filter(m => m.eventId === eventId)
+  (state, optionalEventId, optionalThingId) => optionalEventId,
+  (state, optionalEventId, optionalThingId) => optionalThingId,
+  (mediations, optionalEventId, optionalThingId) => {
+    if (optionalEventId)
+      mediations = mediations.filter(m => m.eventId === optionalEventId)
 
-    if (thingId)
-      mediations = mediations.filter(m => m.thingId === thingId)
+    if (optionalThingId)
+      mediations = mediations.filter(m => m.thingId === optionalThingId)
 
     return mediations
   },
-  (state, eventId, thingId) => `${eventId}/${thingId}`
+  (state, optionalEventId, optionalThingId) => `${optionalEventId}/${optionalThingId}`
 )
