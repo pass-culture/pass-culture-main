@@ -13,7 +13,7 @@ import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
 import eventSelector from '../selectors/event'
-import createMaxDateSelector from '../selectors/createMaxDate'
+import maxDateSelector from '../selectors/maxDate'
 import createMediationsSelector from '../selectors/createMediations'
 import createOccurencesSelector from '../selectors/createOccurences'
 import createOffersSelector from '../selectors/createOffers'
@@ -156,7 +156,6 @@ export default compose(
       const occurencesSelector = createOccurencesSelector()
       const offersSelector = createOffersSelector(occurencesSelector)
 
-      const maxDateSelector = createMaxDateSelector(occurencesSelector)
       const stockSelector = createStockSelector(offersSelector)
 
       return (state, ownProps) => {
