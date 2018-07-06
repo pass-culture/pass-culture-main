@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
 const removedLocalClasses = [
   'SpreadsheetExpVenues',
@@ -9,9 +9,10 @@ const removedLocalClasses = [
   'TiteLiveBookDescriptions'
 ]
 
-export default () => createSelector(
+export default createCachedSelector(
   state => state.data.providers,
   providers => providers
     .filter(p => !removedLocalClasses.includes(p.localClass))
-    .sort((p1, p2) => p1.localClass - p2.localClass)
+    .sort((p1, p2) => p1.localClass - p2.localClass),
+  state => true
 )

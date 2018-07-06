@@ -10,8 +10,8 @@ import SubmitButton from './layout/SubmitButton'
 import VenueProviderItem from './VenueProviderItem'
 import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
-import createProviderSelector from '../selectors/createProvider'
-import createProvidersSelector from '../selectors/createProviders'
+import providerSelector from '../selectors/provider'
+import providersSelector from '../selectors/providers'
 import createVenueProvidersSelector from '../selectors/createVenueProviders'
 import { NEW } from '../utils/config'
 import { optionify } from '../utils/form'
@@ -198,8 +198,6 @@ class ProviderManager extends Component {
   }
 }
 
-const providersSelector = createProvidersSelector()
-const providerSelector = createProviderSelector(providersSelector)
 const venueProvidersSelector = createVenueProvidersSelector()
 
 export default compose(
