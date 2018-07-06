@@ -14,8 +14,7 @@ import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
 import mediationSelector from '../../selectors/mediation'
 import createMediationsSelector from '../../selectors/createMediations'
-import createOffererSelector from '../../selectors/createOfferer'
-import createOfferersSelector from '../../selectors/createOfferers'
+import offererSelector from '../../selectors/offerer'
 import createThingSelector from '../../selectors/createThing'
 import createVenueSelector from '../../selectors/createVenue'
 import { mediationNormalizer } from '../../utils/normalizers'
@@ -297,8 +296,6 @@ class MediationPage extends Component {
   }
 }
 
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
 const thingSelector = createThingSelector()
 const venueSelector = createVenueSelector()
 

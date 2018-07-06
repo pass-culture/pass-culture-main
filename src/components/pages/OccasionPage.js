@@ -17,8 +17,8 @@ import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
 import occurencesSelector from '../../selectors/occurences'
-import createOffererSelector from '../../selectors/createOfferer'
-import createOfferersSelector from '../../selectors/createOfferers'
+import offererSelector from '../../selectors/offerer'
+import offerersSelector from '../../selectors/offerers'
 import createProvidersSelector from '../../selectors/createProviders'
 import createSearchSelector from '../../selectors/createSearch'
 import createThingSelector from '../../selectors/createThing'
@@ -379,8 +379,6 @@ class OccasionPage extends Component {
 }
 
 const thingSelector = createThingSelector()
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
 const providersSelector = createProvidersSelector()
 const searchSelector = createSearchSelector()
 const typesSelector = createTypesSelector()

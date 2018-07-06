@@ -13,8 +13,7 @@ import SubmitButton from '../layout/SubmitButton'
 import { requestData } from '../../reducers/data'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
-import createOffererSelector from '../../selectors/createOfferer'
-import createOfferersSelector from '../../selectors/createOfferers'
+import offererSelector from '../../selectors/offerer'
 import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
 import { offererNormalizer } from '../../utils/normalizers'
@@ -292,8 +291,6 @@ class OffererPage extends Component {
   }
 }
 
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
 const venuesSelector = createVenuesSelector()
 
 export default compose(
@@ -304,7 +301,7 @@ export default compose(
       const offerer = offererSelector(state, offererId)
       const fetchedName = get(offerer, 'name') || get(state,   `form.offerersById.${NEW}.name`)
       return {
-        offerer: offererSelector(state, offererId),
+        offerer,
         venues: venuesSelector(state, offererId),
         user: state.user,
         fetchedName

@@ -11,7 +11,7 @@ import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import { assignData, requestData } from '../../reducers/data'
 import occasionsSelector from '../../selectors/occasions'
-import createOffererSelector from '../../selectors/createOfferer'
+import offererSelector from '../../selectors/offerer'
 import createSearchSelector from '../../selectors/createSearch'
 import createVenueSelector from '../../selectors/createVenue'
 import { occasionNormalizer } from '../../utils/normalizers'
@@ -195,7 +195,6 @@ class OccasionsPage extends Component {
 }
 
 
-const offererSelector = createOffererSelector()
 const searchSelector = createSearchSelector()
 const venueSelector = createVenueSelector()
 

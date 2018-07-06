@@ -1,11 +1,10 @@
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
-import createOfferersSelector from './createOfferers'
+import offerersSelector from './offerers'
 
-export default (offerersSelector=createOfferersSelector()) => createSelector(
-  offerersSelector,
+export default createCachedSelector(
+  (state) => offerersSelector(state),
   (state, offererId) => offererId,
-  (offerers, offererId) => {
-    return offerers.find(offerer => offerer.id === offererId)
-  }
+  (offerers, offererId) => offerers.find(offerer => offerer.id === offererId),
+  (state, offererId) => offererId
 )

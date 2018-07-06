@@ -7,7 +7,7 @@ import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import OffererItem from '../OffererItem'
 import Search from '../layout/Search'
-import createOfferersSelector from '../../selectors/createOfferers'
+import offerersSelector from '../../selectors/offerers'
 import { requestData } from '../../reducers/data'
 
 class OfferersPage extends Component {
@@ -83,8 +83,6 @@ class OfferersPage extends Component {
     )
   }
 }
-
-const offerersSelector = createOfferersSelector()
 
 export default compose(
   connect(
