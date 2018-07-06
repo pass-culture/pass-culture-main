@@ -10,7 +10,7 @@ import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import { assignData, requestData } from '../../reducers/data'
-import createOccasionsSelector from '../../selectors/createOccasions'
+import occasionsSelector from '../../selectors/occasions'
 import createOffererSelector from '../../selectors/createOfferer'
 import createSearchSelector from '../../selectors/createSearch'
 import createVenueSelector from '../../selectors/createVenue'
@@ -195,7 +195,6 @@ class OccasionsPage extends Component {
 }
 
 
-const occasionsSelector = createOccasionsSelector()
 const offererSelector = createOffererSelector()
 const searchSelector = createSearchSelector()
 const venueSelector = createVenueSelector()
