@@ -12,7 +12,7 @@ import { showModal } from '../../reducers/modal'
 import { assignData, requestData } from '../../reducers/data'
 import occasionsSelector from '../../selectors/occasions'
 import offererSelector from '../../selectors/offerer'
-import createSearchSelector from '../../selectors/createSearch'
+import searchSelector from '../../selectors/search'
 import createVenueSelector from '../../selectors/createVenue'
 import { occasionNormalizer } from '../../utils/normalizers'
 import { objectToQueryString } from '../../utils/string'
@@ -195,7 +195,6 @@ class OccasionsPage extends Component {
 }
 
 
-const searchSelector = createSearchSelector()
 const venueSelector = createVenueSelector()
 
 export default compose(

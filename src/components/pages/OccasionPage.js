@@ -20,7 +20,7 @@ import occurencesSelector from '../../selectors/occurences'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
-import createSearchSelector from '../../selectors/createSearch'
+import searchSelector from '../../selectors/search'
 import createThingSelector from '../../selectors/createThing'
 import createTypeSelector from '../../selectors/createType'
 import createTypesSelector from '../../selectors/createTypes'
@@ -379,7 +379,6 @@ class OccasionPage extends Component {
 }
 
 const thingSelector = createThingSelector()
-const searchSelector = createSearchSelector()
 const typesSelector = createTypesSelector()
 const typeSelector = createTypeSelector(
   typesSelector,
