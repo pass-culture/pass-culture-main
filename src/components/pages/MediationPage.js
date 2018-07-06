@@ -12,7 +12,7 @@ import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
 import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
-import createMediationSelector from '../../selectors/createMediation'
+import mediationSelector from '../../selectors/mediation'
 import createMediationsSelector from '../../selectors/createMediations'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
@@ -299,8 +299,6 @@ class MediationPage extends Component {
 
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
-const mediationsSelector = createMediationsSelector()
-const mediationSelector = createMediationSelector(mediationsSelector)
 const thingSelector = createThingSelector()
 const venueSelector = createVenueSelector()
 
