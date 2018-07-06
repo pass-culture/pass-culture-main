@@ -29,6 +29,7 @@ export default createCachedSelector(
       groupSizeMax: 0,
       priceMin: 0,
       priceMax: 0,
-    }),
-  (state, venueId, eventId) => `${venueId}/${eventId}`
+    })
+)(
+  (state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`
 )

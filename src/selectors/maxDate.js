@@ -9,6 +9,7 @@ export default createCachedSelector(
       .reduce((max, d) => max &&
         max.isAfter(d.beginningDatetimeMoment) ? max : d.beginningDatetimeMoment, null
       )
-  },
-  (state, venueId, eventId) => `${venueId}/${eventId}`
+  }
+)(
+  (state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`
 )

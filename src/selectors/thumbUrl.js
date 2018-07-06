@@ -14,6 +14,7 @@ export default createCachedSelector(
   (mediations, event, thing) =>
     get(mediations, '0')
       ? `${THUMBS_URL}/mediations/${mediations[0].id}`
-      : `${API_URL}${get(event || thing, 'thumbPath')}`,
-  (state, eventId, thingId) => `${eventId}/${thingId}`
+      : `${API_URL}${get(event || thing, 'thumbPath')}`
+)(
+  (state, eventId, thingId) => `${eventId || ''}/${thingId || ''}`
 )

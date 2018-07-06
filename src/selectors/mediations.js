@@ -12,6 +12,7 @@ export default createCachedSelector(
       mediations = mediations.filter(m => m.thingId === optionalThingId)
 
     return mediations
-  },
-  (state, optionalEventId, optionalThingId) => `${optionalEventId}/${optionalThingId}`
+  }
+)(
+  (state, optionalEventId, optionalThingId) => `${optionalEventId || ''}/${optionalThingId || ''}`
 )

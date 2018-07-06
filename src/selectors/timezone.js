@@ -14,6 +14,7 @@ export default createCachedSelector(
           default:
             return 'Europe/Paris'
       }
-  },
-  (state, venueId) => venueId
+  }
+)(
+  (state, venueId) => venueId || ''
 )

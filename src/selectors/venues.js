@@ -7,6 +7,7 @@ export default createCachedSelector(
     if (optionalOffererId)
       return venues.filter(v => v.managingOffererId === optionalOffererId)
     return venues
-  },
-  (state, optionalOffererId) => optionalOffererId
+  }
+)(
+  (state, optionalOffererId) => optionalOffererId || ''
 )

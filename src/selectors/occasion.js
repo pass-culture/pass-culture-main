@@ -7,6 +7,7 @@ export default createCachedSelector(
   (state, occasionId) => occasionId,
   (occasions, occasionId) => {
     return occasions.find(o => o.id === occasionId)
-  },
-  (state, occasionId) => occasionId
+  }
+)(
+  (state, occasionId) => occasionId || ''
 )

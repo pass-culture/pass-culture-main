@@ -6,6 +6,7 @@ export default createCachedSelector(
   (state) => providersSelector(state),
   (state, providerId) => providerId,
   (providers, providerId) => providers
-    .find(p => p.id === providerId),
-  (state, providerId) => providerId
+    .find(p => p.id === providerId)
+)(
+  (state, providerId) => providerId || ''
 )

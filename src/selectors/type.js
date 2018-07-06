@@ -36,6 +36,7 @@ export default createCachedSelector(
     }
     return type && types.find(t =>
       t.model === type.model && t.tag === type.tag)
-  },
-  (state, eventId, thingId, formLabel) => `${eventId}/${thingId}/${formLabel}`
+  }
+)(
+  (state, eventId, thingId, formLabel) => `${eventId || ''}/${thingId || ''}/${formLabel || ''}`
 )

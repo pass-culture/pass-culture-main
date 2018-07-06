@@ -7,6 +7,7 @@ export default createCachedSelector(
   (state, mediationId) => mediationId,
   (mediations, mediationId) => {
     return mediations.find(m => m.id === mediationId)
-  },
-  (state, mediationId) => mediationId,
+  }
+)(
+  (state, mediationId) => mediationId || ''
 )

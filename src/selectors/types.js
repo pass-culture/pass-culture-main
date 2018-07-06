@@ -7,6 +7,5 @@ export default createCachedSelector(
       return Object.assign({ model, tag }, t)
     })
     // FOR NOW REMOVE THE BOOK TYPES
-    .filter(t => t.model === 'EventType'),
-  state => true
-)
+    .filter(t => t.model === 'EventType')
+)(() => '')

@@ -18,7 +18,8 @@ export default createCachedSelector(
       .sort((o1,o2) =>
         o2.beginningDatetimeMoment - o1.beginningDatetimeMoment
       )
-  },
-  (state, venueId, eventId) => `${venueId}/${eventId}`
+  }
+)(
+  (state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`
 )
 
