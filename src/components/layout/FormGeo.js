@@ -30,11 +30,7 @@ class FormGeo extends Component {
       marker: null,
       position: props.initialPosition,
       value: '',
-      suggestions: [{
-        label: 'Sélectionnez l\'adresse lorsqu\'elle est proposée.',
-        placeholder: true,
-        id: 'placeholder',
-      }]
+      suggestions: null,
     }
     this.refmarker = React.createRef()
     this.onDebouncedFetchSuggestions = debounce(
@@ -44,9 +40,10 @@ class FormGeo extends Component {
   }
 
   static defaultProps = {
-    debounceTimeout: 500,
+    debounceTimeout: 300,
     showMap: true,
     maxSuggestions: 5,
+    placeholder: 'Sélectionnez l\'adresse lorsqu\'elle est proposée.',
     initialPosition: { // Displays France
       latitude: 46.98025235521883,
       longitude: 1.9335937500000002,
@@ -93,6 +90,10 @@ class FormGeo extends Component {
   }
 
   fetchSuggestions = value => {
+    if (value.split(/\s/).filter(v => v).length < 2) // start querying if more than 1 word
+      return this.setState({
+        suggestions: null,
+      })
     fetch(`https://api-adresse.data.gouv.fr/search/?limit=${this.props.maxSuggestions}&q=${value}`)
       .then(response => response.json())
       .then(data => {
@@ -126,6 +127,11 @@ class FormGeo extends Component {
       value,
     } = this.state
 
+    const defaultSuggestion = {
+      label: placeholder,
+      placeholder: true,
+      id: 'placeholder',
+      }
 
     const input = <Autocomplete
       inputProps={{
@@ -142,7 +148,7 @@ class FormGeo extends Component {
       value={value}
       getItemValue={value => value.label}
       renderMenu={children => (
-        <div className="menu">
+        <div className={classnames('menu', {empty: children.length === 0})}>
           {children}
         </div>
       )}
@@ -156,7 +162,7 @@ class FormGeo extends Component {
           key={id}
         >{label}</div>
       )}
-      items={suggestions}
+      items={[].concat(suggestions || defaultSuggestion)}
       onSelect={this.onSelect}
     />
 
