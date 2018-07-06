@@ -17,10 +17,9 @@ import maxDateSelector from '../selectors/maxDate'
 import mediationsSelector from '../selectors/mediations'
 import occurencesSelector from '../selectors/occurences'
 import stockSelector from '../selectors/stock'
-import createThingSelector from '../selectors/createThing'
+import thingSelector from '../selectors/thing'
 import createThumbUrlSelector from '../selectors/createThumbUrl'
-import createTypeSelector from '../selectors/createType'
-import createTypesSelector from '../selectors/createTypes'
+import typeSelector from '../selectors/type'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
@@ -146,9 +145,6 @@ export default compose(
   withRouter,
   connect(
     () => {
-      const typesSelector = createTypesSelector()
-      const thingSelector = createThingSelector()
-      const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
       const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
 
       return (state, ownProps) => {

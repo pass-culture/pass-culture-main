@@ -1,16 +1,12 @@
 import get from 'lodash.get'
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
-import createTypesSelector from './createTypes'
+import typesSelector from './types'
 import eventSelector from './event'
-import createThingSelector from './createThing'
+import thingSelector from './thing'
 
-export default (
-  typesSelector=createTypesSelector(),
-  _,
-  thingSelector=createThingSelector()
-) => createSelector(
-  typesSelector,
+export default createCachedSelector(
+  (state) => typesSelector(state),
   (state, eventId, thingId, formLabel) => eventSelector(state, eventId),
   (state, eventId, thingId, formLabel) => thingSelector(state, thingId),
   (state, eventId, thingId, formLabel) => formLabel,
@@ -40,5 +36,6 @@ export default (
     }
     return type && types.find(t =>
       t.model === type.model && t.tag === type.tag)
-  }
+  },
+  (state, eventId, thingId, formLabel) => `${eventId}/${thingId}/${formLabel}`
 )

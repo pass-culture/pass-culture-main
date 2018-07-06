@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 import Icon from './layout/Icon'
 import eventSelector from '../selectors/vent'
 import createMediationSelector from '../selectors/createMediations'
-import createThingSelector from '../selectors/createThing'
+import thingSelector from '../selectors/thing'
 import { API_URL } from '../utils/config'
 
 const mediationExplanation = `
@@ -48,7 +48,6 @@ const MediationManager = ({
   )
 }
 
-const thingSelector = createThingSelector()
 const mediationsSelector = createMediationSelector()
 
 export default connect(

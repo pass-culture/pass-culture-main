@@ -15,7 +15,7 @@ import eventSelector from '../../selectors/event'
 import mediationSelector from '../../selectors/mediation'
 import createMediationsSelector from '../../selectors/createMediations'
 import offererSelector from '../../selectors/offerer'
-import createThingSelector from '../../selectors/createThing'
+import thingSelector from '../../selectors/thing'
 import createVenueSelector from '../../selectors/createVenue'
 import { mediationNormalizer } from '../../utils/normalizers'
 
@@ -296,7 +296,6 @@ class MediationPage extends Component {
   }
 }
 
-const thingSelector = createThingSelector()
 const venueSelector = createVenueSelector()
 
 export default compose(

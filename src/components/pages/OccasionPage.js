@@ -21,9 +21,9 @@ import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
 import searchSelector from '../../selectors/search'
-import createThingSelector from '../../selectors/createThing'
-import createTypeSelector from '../../selectors/createType'
-import createTypesSelector from '../../selectors/createTypes'
+import thingSelector from '../../selectors/thing'
+import typeSelector from '../../selectors/type'
+import typesSelector from '../../selectors/types'
 import createVenueSelector from '../../selectors/createVenue'
 import createVenuesSelector from '../../selectors/createVenues'
 import { NEW } from '../../utils/config'
@@ -378,13 +378,6 @@ class OccasionPage extends Component {
   }
 }
 
-const thingSelector = createThingSelector()
-const typesSelector = createTypesSelector()
-const typeSelector = createTypeSelector(
-  typesSelector,
-  eventSelector,
-  thingSelector
-)
 const venuesSelector = createVenuesSelector()
 const venueSelector = createVenueSelector(venuesSelector)
 
