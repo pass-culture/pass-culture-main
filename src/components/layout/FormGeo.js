@@ -27,10 +27,8 @@ class FormGeo extends Component {
     super(props)
     this.state = {
       draggable: true,
-      marker: {
-        lat: 43.60346942785451,
-        lng: 1.4562785625457764,
-      },
+      marker: null,
+      position: props.initialPosition,
       value: '',
       suggestions: [{
         label: 'Sélectionnez l\'adresse lorsqu\'elle est proposée.',
@@ -50,8 +48,8 @@ class FormGeo extends Component {
     showMap: true,
     maxSuggestions: 5,
     initialPosition: { // Displays France
-      lat: 46.98025235521883,
-      lng: 1.9335937500000002,
+      latitude: 46.98025235521883,
+      longitude: 1.9335937500000002,
       zoom: 5,
     }
   }
@@ -61,10 +59,9 @@ class FormGeo extends Component {
   }
 
   updatePosition = () => {
-
-    const { lat, lng } = this.refmarker.current.leafletElement.getLatLng()
+    const { latitude, longitude } = this.refmarker.current.leafletElement.getLatLng()
     this.setState({
-      marker: { lat, lng },
+      marker: { latitude, longitude },
     })
   }
 
@@ -76,9 +73,19 @@ class FormGeo extends Component {
     this.onDebouncedFetchSuggestions(value)
   }
 
-  onSelect = (value) => {
+  onSelect = (value, item) => {
+    if (item.placeholder) return
     this.setState({
-      value
+      value,
+      position: {
+        latitude: item.latitude,
+        longitude: item.longitude,
+        zoom: 15,
+      },
+      marker: {
+        latitude: item.latitude,
+        longitude: item.longitude,
+      }
     })
   }
 
@@ -86,11 +93,10 @@ class FormGeo extends Component {
     fetch(`https://api-adresse.data.gouv.fr/search/?limit=${this.props.maxSuggestions}&q=${value}`)
       .then(response => response.json())
       .then(data => {
-        console.log(data)
         this.setState({
           suggestions: data.features.map(f => ({
-            lat: f.geometry.coordinates[0],
-            lng: f.geometry.coordinates[1],
+            latitude: f.geometry.coordinates[1],
+            longitude: f.geometry.coordinates[0],
             label: f.properties.label,
             address: f.properties.name,
             postalCode: f.properties.postcode,
@@ -111,6 +117,8 @@ class FormGeo extends Component {
     } = this.props
 
     const {
+      marker,
+      position,
       suggestions,
       value,
     } = this.state
@@ -118,11 +126,11 @@ class FormGeo extends Component {
 
     const input = <Autocomplete
       inputProps={{
-        className: className || 'input is-expanded',
-        id: id,
-        placeholder: placeholder,
-        readOnly: readOnly,
-        required: required,
+        className: className || 'input',
+        id,
+        placeholder,
+        readOnly,
+        required,
       }}
       wrapperProps={{
         className: 'input-wrapper'
@@ -150,16 +158,15 @@ class FormGeo extends Component {
     />
 
     if (!this.props.showMap) return input
-    const markerPosition = [this.state.marker.lat, this.state.marker.lng]
     const {
-      lat, lng, zoom
-    } = this.props.initialPosition
+      latitude, longitude, zoom
+    } = position
 
     return (
       <div className='form-geo'>
         {input}
         <Map
-          center={[lat, lng]}
+          center={[latitude, longitude]}
           zoom={zoom}
           className='map'
           >
@@ -167,13 +174,15 @@ class FormGeo extends Component {
             // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
           />
-          <Marker
-            draggable={this.state.draggable}
-            onDragend={this.updatePosition}
-            position={markerPosition}
-            icon={customIcon}
-            ref={this.refmarker}>
-          </Marker>
+          {marker &&
+            <Marker
+              draggable
+              onDragend={this.updatePosition}
+              position={[marker.latitude, marker.longitude]}
+              icon={customIcon}
+              ref={this.refmarker}>
+            </Marker>
+          }
         </Map>
       </div>
     )
