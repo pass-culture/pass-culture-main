@@ -59,9 +59,12 @@ class FormGeo extends Component {
   }
 
   updatePosition = () => {
-    const { latitude, longitude } = this.refmarker.current.leafletElement.getLatLng()
+    const { lat, lng } = this.refmarker.current.leafletElement.getLatLng()
     this.setState({
-      marker: { latitude, longitude },
+      marker: {
+        latitude: lat,
+        longitude: lng
+      },
     })
   }
 
