@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect'
 
-import createOccurencesSelector from './createOccurences'
+import occurencesSelector from './occurences'
 
-export default (occurencesSelector=createOccurencesSelector()) => createSelector(
+export default () => createSelector(
   state => state.data.offers,
   occurencesSelector,
   (offers, occurences) => {

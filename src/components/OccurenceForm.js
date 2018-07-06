@@ -11,7 +11,7 @@ import eventSelector from '../selectors/event'
 import createOfferSelector from '../selectors/createOffer'
 import createTimezoneSelector from '../selectors/createTimezone'
 import createVenueSelector from '../selectors/createVenue'
-import createOccurencesSelector from '../selectors/createOccurences'
+import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -377,7 +377,6 @@ class OccurenceForm extends Component {
 
 const offerSelector = createOfferSelector()
 const venueSelector = createVenueSelector()
-const occurencesSelector = createOccurencesSelector()
 const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(

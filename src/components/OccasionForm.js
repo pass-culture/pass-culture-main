@@ -9,7 +9,7 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
-import createOccurencesSelector from '../selectors/createOccurences'
+import occurencesSelector from '../selectors/occurences'
 import { optionify } from '../utils/form'
 
 class OccasionForm extends Component {
@@ -268,8 +268,6 @@ class OccasionForm extends Component {
     )
   }
 }
-
-const occurencesSelector = createOccurencesSelector()
 
 export default compose(
   withRouter,

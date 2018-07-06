@@ -16,7 +16,7 @@ import { resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
-import createOccurencesSelector from '../../selectors/createOccurences'
+import occurencesSelector from '../../selectors/occurences'
 import createOffererSelector from '../../selectors/createOfferer'
 import createOfferersSelector from '../../selectors/createOfferers'
 import createProvidersSelector from '../../selectors/createProviders'
@@ -379,7 +379,6 @@ class OccasionPage extends Component {
 }
 
 const thingSelector = createThingSelector()
-const occurencesSelector = createOccurencesSelector()
 const offerersSelector = createOfferersSelector()
 const offererSelector = createOffererSelector(offerersSelector)
 const providersSelector = createProvidersSelector()

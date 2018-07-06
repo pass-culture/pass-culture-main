@@ -1,7 +1,7 @@
 import moment from 'moment'
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
-const createOccurencesSelector = () => createSelector(
+export default createCachedSelector(
   state => state.data.eventOccurences,
   (state, venueId) => venueId,
   (state, venueId, eventId) => eventId,
@@ -11,14 +11,14 @@ const createOccurencesSelector = () => createSelector(
     if (eventId)
       eventOccurences = eventOccurences.filter(o => o.eventId === eventId)
     return eventOccurences
-      .map(o => Object.assign(o, {
+      .map(o => Object.assign({}, o, {
         beginningDatetimeMoment: moment(o.beginningDatetime),
         endDatetimeMoment: moment(o.endDatetime)
       }))
       .sort((o1,o2) =>
         o2.beginningDatetimeMoment - o1.beginningDatetimeMoment
       )
-  }
+  },
+  (state, venueId, eventId) => `${venueId}/${eventId}`
 )
 
-export default createOccurencesSelector

@@ -1,8 +1,6 @@
 import createCachedSelector from 're-reselect';
 
-import createOccasionsSelector from './createOccasions'
-
-const occasionsSelector = createOccasionsSelector()
+import occasionsSelector from './occasions'
 
 export default createCachedSelector(
   (state) => occasionsSelector(state),

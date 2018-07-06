@@ -15,7 +15,7 @@ import { requestData } from '../reducers/data'
 import eventSelector from '../selectors/event'
 import maxDateSelector from '../selectors/maxDate'
 import mediationsSelector from '../selectors/mediations'
-import createOccurencesSelector from '../selectors/createOccurences'
+import occurencesSelector from '../selectors/occurences'
 import createOffersSelector from '../selectors/createOffers'
 import createStockSelector from '../selectors/createStock'
 import createThingSelector from '../selectors/createThing'
@@ -151,9 +151,7 @@ export default compose(
       const thingSelector = createThingSelector()
       const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
       const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
-
-      const occurencesSelector = createOccurencesSelector()
-      const offersSelector = createOffersSelector(occurencesSelector)
+      const offersSelector = createOffersSelector()
 
       const stockSelector = createStockSelector(offersSelector)
 
