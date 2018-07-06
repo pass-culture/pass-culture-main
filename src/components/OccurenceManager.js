@@ -9,7 +9,7 @@ import { mergeForm } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
 import providerSelector from '../selectors/provider'
-import createTimezoneSelector from '../selectors/createTimezone'
+import timezoneSelector from '../selectors/timezone'
 import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
@@ -220,8 +220,6 @@ class OccurenceManager extends Component {
     )
   }
 }
-
-const timezoneSelector = createTimezoneSelector()
 
 export default connect(
   (state, ownProps) => {

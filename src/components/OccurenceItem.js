@@ -8,8 +8,7 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import { requestData } from '../reducers/data'
 import offerSelector from '../selectors/offer'
-import createTimezoneSelector from '../selectors/createTimezone'
-import createVenueSelector from '../selectors/createVenue'
+import timezoneSelector from '../selectors/timezone'
 
 class OccurenceItem extends Component {
 
@@ -179,10 +178,6 @@ class OccurenceItem extends Component {
     )
   }
 }
-
-const venueSelector = createVenueSelector()
-const timezoneSelector = createTimezoneSelector(venueSelector)
-
 
 export default connect(
   () => {

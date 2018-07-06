@@ -1,9 +1,9 @@
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
-import createVenueSelector from './createVenue'
+import venueSelector from './venue'
 
-export default (venueSelector=createVenueSelector()) => createSelector(
-  venueSelector,
+export default createCachedSelector(
+  (state, venueId) => venueSelector(state, venueId),
   venue => {
       if (!venue)
         return
@@ -14,5 +14,6 @@ export default (venueSelector=createVenueSelector()) => createSelector(
           default:
             return 'Europe/Paris'
       }
-  }
+  },
+  (state, venueId) => venueId
 )

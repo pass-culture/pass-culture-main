@@ -9,7 +9,7 @@ import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import offerSelector from '../selectors/offer'
-import createTimezoneSelector from '../selectors/createTimezone'
+import timezoneSelector from '../selectors/timezone'
 import createVenueSelector from '../selectors/createVenue'
 import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
@@ -376,7 +376,6 @@ class OccurenceForm extends Component {
 }
 
 const venueSelector = createVenueSelector()
-const timezoneSelector = createTimezoneSelector(venueSelector)
 
 export default connect(
   (state, ownProps) => {
