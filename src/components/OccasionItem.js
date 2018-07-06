@@ -14,7 +14,7 @@ import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
 import eventSelector from '../selectors/event'
 import maxDateSelector from '../selectors/maxDate'
-import createMediationsSelector from '../selectors/createMediations'
+import mediationsSelector from '../selectors/mediations'
 import createOccurencesSelector from '../selectors/createOccurences'
 import createOffersSelector from '../selectors/createOffers'
 import createStockSelector from '../selectors/createStock'
@@ -150,7 +150,6 @@ export default compose(
       const typesSelector = createTypesSelector()
       const thingSelector = createThingSelector()
       const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
-      const mediationsSelector = createMediationsSelector()
       const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
 
       const occurencesSelector = createOccurencesSelector()
@@ -164,7 +163,7 @@ export default compose(
         const thing = thingSelector(state, occasion.thingId)
         return {
           event,
-          mediations: mediationsSelector(state, event, thing),
+          mediations: mediationsSelector(state, occasion.eventId, occasion.thingId),
           occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
           maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
           stock: stockSelector(state, occasion.venueId, occasion.eventId),
