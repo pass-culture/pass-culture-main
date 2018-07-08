@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createVenuesSelector from '../selectors/createVenues'
+import venuesSelector from '../selectors/venues'
 import { pluralize } from '../utils/string'
 
 const OffererItem = ({
@@ -89,8 +89,6 @@ const OffererItem = ({
     </li>
   )
 }
-
-const venuesSelector = createVenuesSelector()
 
 export default connect(
   () => {

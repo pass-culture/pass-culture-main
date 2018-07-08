@@ -15,9 +15,8 @@ import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
-import createOffererSelector from '../../selectors/createOfferer'
-import createOfferersSelector from '../../selectors/createOfferers'
-import createVenueSelector from '../../selectors/createVenue'
+import offererSelector from '../../selectors/offerer'
+import venueSelector from '../../selectors/venue'
 import { NEW } from '../../utils/config'
 
 
@@ -357,10 +356,6 @@ class VenuePage extends Component {
     )
   }
 }
-
-const venueSelector = createVenueSelector()
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,

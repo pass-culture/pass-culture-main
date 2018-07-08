@@ -1,12 +1,10 @@
 import React, { Component } from 'react'
-import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
+import { Map, Marker, TileLayer } from 'react-leaflet'
 import L from 'leaflet'
 import Autocomplete from 'react-autocomplete'
 import classnames from 'classnames'
 import debounce from 'lodash.debounce'
 
-import Icon from './Icon'
-import FormInput from './FormInput'
 import { ROOT_PATH } from '../../utils/config'
 
 const customIcon = new L.Icon({
@@ -14,7 +12,6 @@ const customIcon = new L.Icon({
     iconRetinaUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
     iconSize: [21, 30],
     iconAnchor: [10, 30],
-    iconAnchor: null,
     popupAnchor: null,
     // shadowUrl: null,
     // shadowSize: null,

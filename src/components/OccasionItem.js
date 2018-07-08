@@ -12,16 +12,14 @@ import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import { requestData } from '../reducers/data'
-import createEventSelector from '../selectors/createEvent'
-import createMaxDateSelector from '../selectors/createMaxDate'
-import createMediationsSelector from '../selectors/createMediations'
-import createOccurencesSelector from '../selectors/createOccurences'
-import createOffersSelector from '../selectors/createOffers'
-import createStockSelector from '../selectors/createStock'
-import createThingSelector from '../selectors/createThing'
-import createThumbUrlSelector from '../selectors/createThumbUrl'
-import createTypeSelector from '../selectors/createType'
-import createTypesSelector from '../selectors/createTypes'
+import eventSelector from '../selectors/event'
+import maxDateSelector from '../selectors/maxDate'
+import mediationsSelector from '../selectors/mediations'
+import occurencesSelector from '../selectors/occurences'
+import stockSelector from '../selectors/stock'
+import thingSelector from '../selectors/thing'
+import thumbUrlSelector from '../selectors/thumbUrl'
+import typeSelector from '../selectors/type'
 import { occasionNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
@@ -147,32 +145,17 @@ export default compose(
   withRouter,
   connect(
     () => {
-      const typesSelector = createTypesSelector()
-      const eventSelector = createEventSelector()
-      const thingSelector = createThingSelector()
-      const typeSelector = createTypeSelector(typesSelector, eventSelector, thingSelector)
-      const mediationsSelector = createMediationsSelector()
-      const thumbUrlSelector = createThumbUrlSelector(mediationsSelector)
-
-      const occurencesSelector = createOccurencesSelector()
-      const offersSelector = createOffersSelector(occurencesSelector)
-
-      const maxDateSelector = createMaxDateSelector(occurencesSelector)
-      const stockSelector = createStockSelector(offersSelector)
-
       return (state, ownProps) => {
-        const occasion = ownProps.occasion
-        const event = eventSelector(state, occasion.eventId)
-        const thing = thingSelector(state, occasion.thingId)
+        const {eventId, thingId, venueId} = ownProps.occasion
         return {
-          event,
-          mediations: mediationsSelector(state, event, thing),
-          occurences: occurencesSelector(state, occasion.venueId, occasion.eventId),
-          maxDate: maxDateSelector(state, occasion.venueId, occasion.eventId),
-          stock: stockSelector(state, occasion.venueId, occasion.eventId),
-          thing,
-          thumbUrl: thumbUrlSelector(state, event, thing),
-          type: typeSelector(state, occasion.eventId, occasion.thingId)
+          event: eventSelector(state, eventId),
+          mediations: mediationsSelector(state, eventId, thingId),
+          occurences: occurencesSelector(state, venueId, eventId),
+          maxDate: maxDateSelector(state, venueId, eventId),
+          stock: stockSelector(state, venueId, eventId),
+          thing: thingSelector(state, thingId),
+          thumbUrl: thumbUrlSelector(state, eventId, thingId),
+          type: typeSelector(state, eventId, thingId)
         }
       }
     },

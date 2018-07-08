@@ -1,7 +1,9 @@
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
-export default () => createSelector(
+export default createCachedSelector(
   state => state.data.things,
   (state, thingId) => thingId,
   (things, thingId) => things.find(thing => thing.id === thingId)
+)(
+  (state, thingId) => thingId || ''
 )

@@ -15,17 +15,17 @@ import Icon from '../layout/Icon'
 import { resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
-import createEventSelector from '../../selectors/createEvent'
-import createOccurencesSelector from '../../selectors/createOccurences'
-import createOffererSelector from '../../selectors/createOfferer'
-import createOfferersSelector from '../../selectors/createOfferers'
-import createProvidersSelector from '../../selectors/createProviders'
-import createSearchSelector from '../../selectors/createSearch'
-import createThingSelector from '../../selectors/createThing'
-import createTypeSelector from '../../selectors/createType'
-import createTypesSelector from '../../selectors/createTypes'
-import createVenueSelector from '../../selectors/createVenue'
-import createVenuesSelector from '../../selectors/createVenues'
+import eventSelector from '../../selectors/event'
+import occurencesSelector from '../../selectors/occurences'
+import offererSelector from '../../selectors/offerer'
+import offerersSelector from '../../selectors/offerers'
+import providersSelector from '../../selectors/providers'
+import searchSelector from '../../selectors/search'
+import thingSelector from '../../selectors/thing'
+import typeSelector from '../../selectors/type'
+import typesSelector from '../../selectors/types'
+import venueSelector from '../../selectors/venue'
+import venuesSelector from '../../selectors/venues'
 import { NEW } from '../../utils/config'
 import { getIsDisabled, optionify } from '../../utils/form'
 import { eventNormalizer } from '../../utils/normalizers'
@@ -117,7 +117,7 @@ class OccasionPage extends Component {
     )
     providers.length === 0 && requestData('GET', 'providers')
     typeOptions.length === 0 && requestData('GET', 'types')
-    
+
     handleSuccess()
   }
 
@@ -377,22 +377,6 @@ class OccasionPage extends Component {
     )
   }
 }
-
-const eventSelector = createEventSelector()
-const thingSelector = createThingSelector()
-const occurencesSelector = createOccurencesSelector()
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
-const providersSelector = createProvidersSelector()
-const searchSelector = createSearchSelector()
-const typesSelector = createTypesSelector()
-const typeSelector = createTypeSelector(
-  typesSelector,
-  eventSelector,
-  thingSelector
-)
-const venuesSelector = createVenuesSelector()
-const venueSelector = createVenueSelector(venuesSelector)
 
 export default compose(
   withCurrentOccasion,

@@ -10,10 +10,10 @@ import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import { assignData, requestData } from '../../reducers/data'
-import createOccasionsSelector from '../../selectors/createOccasions'
-import createOffererSelector from '../../selectors/createOfferer'
-import createSearchSelector from '../../selectors/createSearch'
-import createVenueSelector from '../../selectors/createVenue'
+import occasionsSelector from '../../selectors/occasions'
+import offererSelector from '../../selectors/offerer'
+import searchSelector from '../../selectors/search'
+import venueSelector from '../../selectors/venue'
 import { occasionNormalizer } from '../../utils/normalizers'
 import { objectToQueryString } from '../../utils/string'
 
@@ -193,12 +193,6 @@ class OccasionsPage extends Component {
     )
   }
 }
-
-
-const occasionsSelector = createOccasionsSelector()
-const offererSelector = createOffererSelector()
-const searchSelector = createSearchSelector()
-const venueSelector = createVenueSelector()
 
 export default compose(
   withRouter,

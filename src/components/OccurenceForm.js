@@ -7,11 +7,11 @@ import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
-import createEventSelector from '../selectors/createEvent'
-import createOfferSelector from '../selectors/createOffer'
-import createTimezoneSelector from '../selectors/createTimezone'
-import createVenueSelector from '../selectors/createVenue'
-import createOccurencesSelector from '../selectors/createOccurences'
+import eventSelector from '../selectors/event'
+import offerSelector from '../selectors/offer'
+import timezoneSelector from '../selectors/timezone'
+import venueSelector from '../selectors/venue'
+import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -376,17 +376,10 @@ class OccurenceForm extends Component {
   }
 }
 
-const eventSelector = createEventSelector()
-const offerSelector = createOfferSelector()
-const venueSelector = createVenueSelector()
-const occurencesSelector = createOccurencesSelector()
-const timezoneSelector = createTimezoneSelector(venueSelector)
-
 export default connect(
   (state, ownProps) => {
-    const eventId = get(ownProps, 'occasion.eventId')
+    const {eventId, venueId} = ownProps.occasion || {}
     const occurenceId = get(ownProps, 'occurence.id')
-    const venueId = get(ownProps, 'occasion.venueId')
     return {
       form: state.form,
       event: eventSelector(state, eventId),
