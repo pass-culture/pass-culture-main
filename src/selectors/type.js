@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import createCachedSelector from 're-reselect';
+import createCachedSelector from 're-reselect'
 
 import typesSelector from './types'
 import eventSelector from './event'

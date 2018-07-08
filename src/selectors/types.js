@@ -1,6 +1,6 @@
-import createCachedSelector from 're-reselect';
+import { createSelector } from 'reselect'
 
-export default createCachedSelector(
+export default createSelector(
   state => state.data.types,
   types => types.map(t => {
       const [model, tag] = t.value.split('.')
@@ -8,4 +8,4 @@ export default createCachedSelector(
     })
     // FOR NOW REMOVE THE BOOK TYPES
     .filter(t => t.model === 'EventType')
-)(() => '')
+)

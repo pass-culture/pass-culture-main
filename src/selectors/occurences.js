@@ -1,5 +1,5 @@
 import moment from 'moment'
-import createCachedSelector from 're-reselect';
+import createCachedSelector from 're-reselect'
 
 export default createCachedSelector(
   state => state.data.eventOccurences,

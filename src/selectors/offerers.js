@@ -1,6 +1,6 @@
-import createCachedSelector from 're-reselect';
+import { createSelector } from 'reselect'
 
-export default createCachedSelector(
+export default createSelector(
   state => state.data.searchedOfferers || state.data.offerers,
   offerers => offerers
-)(() => '')
+)

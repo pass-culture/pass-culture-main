@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import createCachedSelector from 're-reselect';
+import createCachedSelector from 're-reselect'
 
 import { API_URL, THUMBS_URL } from '../utils/config'
 
