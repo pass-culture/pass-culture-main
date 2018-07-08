@@ -235,6 +235,7 @@ class OccurenceForm extends Component {
           <FormField
             className='is-small'
             collectionName="offers"
+            controlClassName='has-text-centered'
             defaultValue={0}
             entityId={offerIdOrNew}
             min={0}

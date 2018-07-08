@@ -114,6 +114,8 @@ class OffererPage extends Component {
       offererIdOrNew,
     } = this.state
 
+    console.log('isNew', isNew, 'fetchedName', fetchedName)
+
     return (
       <PageWrapper
         backTo={{label: 'Vos structures', path: '/structures'}}
@@ -139,99 +141,41 @@ class OffererPage extends Component {
               entityId={offererIdOrNew}
               label={<Label title="SIREN :" />}
               name="siren"
+              readOnly={!isNew}
               type="sirene"
               sireType="siren"
-              readOnly={!isNew}
               isHorizontal
               required
             />
-
-            {isNew && fetchedName &&
-              <div>
+            {
+              (name || fetchedName) && [
                 <FormField
                   autoComplete="name"
                   collectionName="offerers"
-                  defaultValue={name || ''}
+                  defaultValue={name}
                   entityId={offererIdOrNew}
-                  label={<Label title="Dénomination:" />}
-                  name="name"
-                  type="name"
                   isHorizontal
                   isExpanded
-                  readOnly={isNew}
-                />
-                <FormField
-                  autoComplete="address"
-                  collectionName="offerers"
-                  defaultValue={address || ''}
-                  entityId={offererIdOrNew}
-                  label={<Label title="Adresse du siège social :" />}
-                  name="address"
-                  type="address"
-                  isHorizontal
-                  isExpanded
-                  readOnly={isNew}
-                />
-                <FormField
-                  autoComplete="postalCode"
-                  collectionName="offerers"
-                  defaultValue={postalCode || ''}
-                  entityId={offererIdOrNew}
-                  label={<Label title="Code Postal :" />}
-                  name="postalCode"
-                  isHorizontal
-                  readOnly={isNew}
-                />
-                <FormField
-                  autoComplete="city"
-                  collectionName="offerers"
-                  defaultValue={city || ''}
-                  entityId={offererIdOrNew}
-                  label={<Label title="Ville :" />}
-                  name="city"
-                  isHorizontal
-                  readOnly={isNew}
-                />
-                <FormField
-                  autoComplete="email"
-                  collectionName="offerers"
-                  defaultValue={get(user, 'email', '')}
-                  entityId={offererIdOrNew}
-                  label={<Label title="Email de réservation :" />}
-                  name="bookingEmail"
-                  isHorizontal
-                />
-              </div>
-            }
-            { !isNew &&
-              ([
-                <FormField
-                  autoComplete="name"
-                  collectionName="offerers"
-                  defaultValue={name || ''}
-                  entityId={offererIdOrNew}
                   key={0}
                   label={<Label title="Désignation :" />}
                   name="name"
+                  readOnly
                   type="name"
-                  readOnly={!isNew}
-                  isHorizontal
-                  isExpanded
                 />,
                 <FormField
                   autoComplete="address"
                   collectionName="offerers"
-                  defaultValue={address || ''}
+                  defaultValue={address}
                   entityId={offererIdOrNew}
+                  isHorizontal
+                  isExpanded
                   key={1}
                   label={<Label title="Siège social :" />}
                   name="address"
+                  readOnly
                   type="adress"
-                  readOnly={!isNew}
-                  isHorizontal
-                  isExpanded
                 />
-              ])
+              ]
             }
           </div>
 
