@@ -69,8 +69,6 @@ class FormSirene extends Component {
       searching: true,
     })
 
-    console.log('ALORS')
-
     fetch(`https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${inputValue}`)
       .then(response => {
         this.setState({
@@ -93,7 +91,6 @@ class FormSirene extends Component {
 
         } else {
           response.json().then(body => {
-            console.log('BON')
             const dataPath = isSiren ? 'siege_social' : 'etablissement'
             const name =  get(body, `${dataPath}.l1_normalisee`) ||  get(body, `${dataPath}.l1_declaree`) || ''
             const sireneForm = {

@@ -113,9 +113,6 @@ class OffererPage extends Component {
       method,
       offererIdOrNew,
     } = this.state
-
-    console.log('isNew', isNew, 'fetchedName', fetchedName)
-
     return (
       <PageWrapper
         backTo={{label: 'Vos structures', path: '/structures'}}
