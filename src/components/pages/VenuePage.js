@@ -270,7 +270,6 @@ class VenuePage extends Component {
               name="address"
               readOnly={isReadOnly}
               required={!isReadOnly}
-              type="geo"
               latitude={latitude}
               longitude={longitude}
             />
