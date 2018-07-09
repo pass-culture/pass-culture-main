@@ -2,7 +2,9 @@ import classnames from 'classnames'
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Icon from './Icon'
 import SignoutButton from './SignoutButton'
@@ -18,9 +20,11 @@ class Header extends Component {
 
   render() {
     const {
+      location,
       name,
       whiteHeader
     } = this.props
+    const { search } = location
     const {
       showMobileMenu
     } = this.state
@@ -51,7 +55,7 @@ class Header extends Component {
                 </NavLink>
               }
               { !whiteHeader &&
-                <NavLink className="navbar-item" to={'/offres'} key={1}>
+                <NavLink className="navbar-item" to={`/offres${search}`} key={1}>
                   <span className='icon'><Icon svg={'ico-offres-w'} /></span>
                   <span>Vos offres</span>
                 </NavLink>
@@ -96,8 +100,11 @@ class Header extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    name: get(state, 'user.publicName')
-  })
+export default compose(
+  withRouter,
+  connect(
+    state => ({
+      name: get(state, 'user.publicName')
+    })
+  )
 )(Header)
