@@ -26,9 +26,9 @@ L'ordre est au choix du fournisseur mais ne doit pas varier entre deux requetes.
 "offset" représente le nombre d'entrées précedent celles qui sont présentées
 
 Dans une entrée,
--"available" est le stock disponible pour la référence "ref".
--"price" est le prix auquel on souhaite vendre ce stock. On peut avoir deux entrées pour une même référence si on souhaite vendre à deux prix différents. Par exemple pour faire un prix d'appel : 10€ pour les 10 premiers, 12€ ensuite. Le prix est optionnel pour les livres (prix unique).
--"validUntil" (optionnel) est la date au format 2012-04-23T18:25:43.511Z de fin de validité de l'offre (prix). Passé cette date, on considère que le stock est à zéro pour cette entrée.
+- "available" est le stock disponible pour la référence "ref".
+- "price" est le prix auquel on souhaite vendre ce stock. On peut avoir deux entrées pour une même référence si on souhaite vendre à deux prix différents. Par exemple pour faire un prix d'appel : 10€ pour les 10 premiers, 12€ ensuite. Le prix est optionnel pour les livres (prix unique).
+- "validUntil" (optionnel) est la date au format 2012-04-23T18:25:43.511Z de fin de validité de l'offre (prix). Passé cette date, on considère que le stock est à zéro pour cette entrée.
 
 + Request
 
