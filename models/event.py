@@ -48,6 +48,7 @@ db = app.db
 class Event(app.model.PcObject,
             db.Model,
             app.model.DeactivableMixin,
+            app.model.ExtraDataMixin,
             app.model.HasThumbMixin,
             app.model.ProvidableMixin
             ):
