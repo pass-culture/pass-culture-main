@@ -4,7 +4,6 @@ const inputUsersIdentifier = Selector('#input_users_identifier')
 const inputUsersPassword = Selector('#input_users_password')
 const inputUsersIdentifierError = Selector('#input_users_identifier-error')
 const inputUsersPasswordError = Selector('#input_users_password-error')
-// const signInButton  = Selector('.is-primary') //connexion
 const signInButton  = Selector('button') //connexion
 const signUpButton  = Selector('.is-secondary') // inscription
 
@@ -19,7 +18,7 @@ test("Je peux cliquer sur lien /inscription", async t => {
   await t.expect(location.pathname).eql('/inscription')
 })
 
-test("Lorsque l'un des deux champs est manquand, le bouton connexion est desactivé", async t => {
+test("Lorsque l'un des deux champs est manquant, le bouton connexion est desactivé", async t => {
     await t
     .typeText(inputUsersIdentifier, 'email@email.test')
     .wait(1000)

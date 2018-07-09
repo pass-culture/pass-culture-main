@@ -1,18 +1,24 @@
-import { Selector } from 'testcafe'
-import { ReactSelector, waitForReact } from 'testcafe-react-selectors'
+import { Selector, RequestLogger } from 'testcafe'
+
+const logger = RequestLogger('http://localhost/users', {
+  logResponseBody: true,
+  stringifyResponseBody: true,
+  logRequestBody: true,
+  stringifyRequestBody: true
+})
+
+const inputUsersPublicName = Selector('#input_users_publicName')
+const inputUsersEmail = Selector('#input_users_email')
+const inputUsersPassword = Selector('#input_users_password')
+const inputUsersContactOk = Selector('#input_users_contact_ok')
+const signUpButton = Selector('button')
+const signInButton = Selector('.is-secondary')
+const inputUsersEmailError = Selector('#input_users_email-error')
+const inputUsersPasswordError = Selector('#input_users_password-error')
+const inputUsersContactOkError = Selector('#input_users_contact_ok-error')
 
 fixture `SignupPage | Création d'un compte utilisateur`
     .page `http://localhost:3000/inscription`
-    .beforeEach(async () => {
-        await waitForReact()
-    });
-
-const nameInput = Selector('#input_users_publicName')
-const emailInput = Selector('#input_users_email')
-const passwordInput = Selector('#input_users_password')
-const userContactOk = Selector('#input_users_contact_ok')
-const signUpButton  = Selector('.is-primary')
-const signInButton  = Selector('.is-secondary')
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
 
@@ -22,25 +28,77 @@ test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test('Lorsque je remplis les champs et coche la checkbox, le bouton créer est activé', async t => {
+test("Lorsque l'un des champs obligatoire est manquant, le bouton creer est desactivé", async t => {
     await t
-    .typeText(nameInput, 'Public Name')
-    .typeText(emailInput, 'email@email.test')
-    .typeText(passwordInput, 'Pa$$word')
-    .click(userContactOk)
-    .expect(signInButton.visible).ok()
-    .click(signUpButton)
+    .typeText(inputUsersEmail, 'email@email.test')
+    .wait(1000)
+    .expect(signUpButton.hasAttribute('disabled')).ok()
 })
 
-test("lorsque le user est créé, l'utilisateur est redirigé vers la page /découverte", async t => {
-  // si réponse api ok, j'ai un user et pas d'erreurs > redirect vers /decouverte gérér par le hoc _withSign
+test.skip("Lorsque le user est créé, l'utilisateur est redirigé vers la page /découverte/empty", async t => {
+  await t
+  // TODO Comment créer un user à chaque test ?
+  .typeText(inputUsersPublicName, 'Public Name')
+  .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersPassword, 'password1234')
+  .click(inputUsersContactOk)
+  .wait(1000)
+  .click(signUpButton)
+  .wait(1000)
 
-  // const SignupPage = ReactSelector('SignupPage')
-  const SignupPage = ReactSelector('_withSign')
-  // l'ajout de withProps, il aime pas...
-  const component  = await SignupPage.getReact()
-  console.log('----- button ---- ', component.props)
-  await t.expect(component.props.match.path).eql('/inscription')
-  await t.expect(component.props.user).eql(null)
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/decouverte/empty')
+
+
+})
+
+fixture `SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
+    .page `http://localhost:3000/inscription`
+
+test
+.requestHooks(logger)
+('Case contact à cocher', async t => {
+  await t
+  .typeText(inputUsersPublicName, 'Public Name')
+  .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersPassword, 'password1234')
+  .wait(1000)
+  .click(signUpButton)
+  const errorMessage = logger.requests[0].response.body
+  const expected = {
+  "contact_ok": [
+    "Vous devez obligatoirement cocher cette case"
+  ]
+}
+  await t.expect(JSON.parse(errorMessage)).eql(expected)
+  await t.expect(inputUsersContactOkError.innerText).eql(' Vous devez obligatoirement cocher cette case\n')
+})
+
+test
+.requestHooks(logger)
+('E-mail déjà présent dans la base et mot de passe invalide', async t => {
+  await t
+
+  .typeText(inputUsersPublicName, 'Public Name')
+  .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersPassword, 'pas')
+  .wait(1000)
+  .click(inputUsersContactOk)
+  .wait(1000)
+  .click(signUpButton)
+  .wait(1000)
+  const errorMessage = logger.requests[0].response.body
+  const expected = {
+  "email": [
+    "Un compte li\u00e9 \u00e0 cet email existe d\u00e9j\u00e0"
+  ],
+  "password": [
+    "Vous devez saisir au moins 8 caract\u00e8res."
+  ]
+}
+
+  await t.expect(JSON.parse(errorMessage)).eql(expected)
+  await t.expect(inputUsersEmailError.innerText).eql(" Un compte lié à cet email existe déjà\n")
+  await t.expect(inputUsersPasswordError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
 
 })
