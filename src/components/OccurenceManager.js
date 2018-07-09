@@ -102,10 +102,7 @@ class OccurenceManager extends Component {
       id
     } = (occasion || {})
     if (eventOccurenceId === 'nouvelle' &&
-      (
-        eventOccurenceId !== get(prevProps, 'match.params.eventOccurenceId') ||
-        (id && get(prevProps, 'occasion.id'))
-      )
+      eventOccurenceId !== get(prevProps, 'match.params.eventOccurenceId')
     ) {
       this.handleNextData()
     }

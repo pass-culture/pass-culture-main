@@ -138,10 +138,10 @@ class OffererPage extends Component {
               isHorizontal
               label={<Label title="SIREN :" />}
               name="siren"
-              readOnly={!isNew || !siren}
+              readOnly={!isNew}
+              required
               sireType="siren"
               type="sirene"
-              required
             />
             {
               (name || fetchedName) && [

@@ -68,7 +68,6 @@ class OccurenceForm extends Component {
 
     const formDate = formOccurence.date
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    console.log('formDate', formDate, 'beginningDatetime', beginningDatetime)
     const bookingDate = formOccurence.bookingDate
       || (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
       || (formDate && formDate.clone().subtract(2, 'days'))
@@ -131,10 +130,9 @@ class OccurenceForm extends Component {
       if (Object.keys(formOffer).length) {
 
         if (formOffer.bookingDate) {
-          console.log('formOffer.bookingDate ICI', formOffer.bookingDate.format())
           formOffer.bookingLimitDatetime = formOffer.bookingDate
-            //.tz(tz)
-            //.utc()
+            .tz(tz)
+            .utc()
             .format()
         }
 
@@ -189,7 +187,6 @@ class OccurenceForm extends Component {
       storeKey,
       time
     } = this.state
-
 
     return (
       <tr className='occurence-form'>
@@ -316,10 +313,9 @@ class OccurenceForm extends Component {
                 const formOffer = get(form, `offersById.${offerIdOrNew}`)
 
                 if (formOffer.bookingDate) {
-                  console.log('formOffer.bookingDate QUOI', formOffer.bookingDate)
                   formOffer.bookingLimitDatetime = formOffer.bookingDate
-                    //.tz(tz)
-                    //.utc()
+                    .tz(tz)
+                    .utc()
                     .format()
                 }
 
