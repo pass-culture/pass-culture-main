@@ -19,23 +19,35 @@ Pass Culture s'identifie auprès des partenaires techniques via un certificat cl
 
 Les références renvoyées sont les EAN13 du code barre du produit. Le prix est optionnel pour les livres (prix unique).
 
+L'ordre est au choix du fournisseur mais ne doit pas varier entre deux requetes.
+
+"total" représente le nombre total d'entrées disponibles.
+"limit" indique le nombre d'entrées maximum retournées pour une requete. Il est inférieur ou égal au paramètre limit envoyé dans la requete (inférieur si le serveur souhaite limiter, égal sinon)
+"offset" représente le nombre d'entrées précedent celles qui sont présentées
+
 + Request
 
 + Response 200 (application/json)
 
     + Body
 
-            [
-              {
-                  "ref": "1978212345680",
-                  "available": 27,
-                  "price": 22.99
-              },
-              {
+            {
+              "total": 23,
+              "limit": 20,
+              "offset": 20,
+              "stocks":
+                [
+                  {
+                    "ref": "1978212345680",
+                    "available": 27,
+                    "price": 22.99
+                },
+                {
                   "ref": "1978212345682",
                   "available": 3
-              }
-            ]
+                }
+              ]
+            }
 
 + Response 400 (application/json)
 
