@@ -79,16 +79,19 @@ class OccasionForm extends Component {
       venues,
     } = this.props
     const {
-      author,
       contactName,
       contactEmail,
       contactPhone,
       description,
       durationMinutes,
-      mediaUrls,
-      performer,
-      stageDirector,
+      extraData,
+      mediaUrls
     } = (event || thing || {})
+    const {
+      author,
+      performer,
+      stageDirector
+    } = (extraData || {})
 
     return (
       <div>

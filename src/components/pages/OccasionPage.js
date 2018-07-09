@@ -40,6 +40,8 @@ const requiredEventAndThingFields = [
   'description',
   //'contactName',
   //'contactEmail',
+  'performer',
+  'stageDirector'
 ]
 
 const requiredEventFields = [
@@ -212,6 +214,7 @@ class OccasionPage extends Component {
       venues
     } = this.props
     const {
+      extraData,
       name
     } = (event || thing || {})
     const {
@@ -354,6 +357,12 @@ class OccasionPage extends Component {
                       if (occasionForm.type) {
                         occasionForm.type = occasionForm.type.split('.')[1]
                       }
+
+                      const { author, performer, stageDirector } = occasionForm
+                      occasionForm.extraData = Object.assign({
+                        author, performer, stageDirector
+                      }, extraData)
+
                       return occasionForm
                     }}
                     getIsDisabled={form => getIsDisabled(
