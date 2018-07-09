@@ -123,7 +123,8 @@ elif [[ "$CMD" == "ftp_mirrors" ]]; then
 elif [[ "$CMD" == "grep" ]]; then
   RUN='grep --exclude-dir ftp_mirrors --exclude-dir node_modules --exclude-dir build --exclude-dir postgres_data --exclude-dir .hypothesis -r "'"$*"'" .'
 elif [[ "$CMD" == "install" ]]; then
-  RUN='yarn global add concurrently;
+  RUN='cd $ROOT_PATH;
+			 yarn global add concurrently;
        git submodule init;
        git submodule update;
        git submodule foreach git checkout origin master;
