@@ -101,6 +101,13 @@ elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-p
 
   cat "public/_redirects" >> build/_redirects
 
+  GIT_VERSION=`git log -n 1 --pretty=format:%h`
+  git diff-index HEAD --quiet --exit-code 
+  if [[ "$?" -gt "0" ]]; then
+    GIT_VERSION="$GIT_VERSION*"
+  fi
+  sed -i -e "s/##VERSION##/"$GIT_VERSION"/" build/$JSPATH;
+
   netlify deploy -e "$ENV"
 
   delivery_date=`( date --version 2>/dev/null | grep -q GNU\  && date +'%F_%H-%M-%S%N' ) || ( which gdate &>/dev/null && gdate +'%F_%H-%M-%S%N' ) || ( which python &> /dev/null && python -c 'import datetime; print datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S%f")' ) || ( date +'%F_%H-%M-%S' )`
@@ -136,6 +143,9 @@ elif [[ "$CMD" == "install-geoip" ]]; then
 	 		 gzip -df GeoLite2-City.mmdb.gz;
 			 mkdir -f $ROOT_PATH/api/geoip/;
 			 mv GeoLite2-City.mmdb $ROOT_PATH/api/geoip/'
+elif [[ "$CMD" == "psql-file" ]]; then
+  COLUMNS=${COLUMNS:-''};
+  RUN='docker exec -t `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
 elif [[ "$CMD" == "psql" ]]; then
   COLUMNS=${COLUMNS:-''};
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
