@@ -23,11 +23,14 @@ Offer = app.model.Offer
 Recommendation = app.model.Recommendation
 Thing = app.model.Thing
 
+log = app.log
+
 
 def find_or_make_recommendation(user, occasion_type, occasion_id,
                                 mediation_id, from_user_id=None):
     query = Recommendation.query
-    print('(special) offer_id', occasion_id, 'mediation_id', mediation_id)
+    log.info('(special) offer_id=' + str(occasion_id)
+             + ' mediation_id=' + str(mediation_id))
     if not mediation_id and not (occasion_id and occasion_type):
         return None
     if mediation_id:
@@ -76,7 +79,8 @@ def put_recommendations():
                                                            request.args.get('occasionType'),
                                                            dehumanize(request.args.get('occasionId')),
                                                            dehumanize(request.args.get('mediationId')))
-    print('(special) requested_recommendation', requested_recommendation)
+    log.info('(special) requested_recommendation '
+             + str(requested_recommendation))
 
     # we get more read+unread recos than needed in case we can't make enough new recos
     query = Recommendation.query.outerjoin(Mediation)\
@@ -89,27 +93,25 @@ def put_recommendations():
                                   .order_by(func.random())\
                                   .limit(BLOB_SIZE)\
                                   .all()
-    #print('(unread recos)', unread_recos)
-    print('(unread reco) count', len(unread_recos))
+    log.info('(unread reco) count %i', len(unread_recos))
 
     read_recos = query.filter(Recommendation.dateRead != None)\
                       .order_by(func.random())\
                       .limit(BLOB_SIZE)\
                       .all()
-    #print('(read recos)', read_recos)
-    print('(read reco) count', len(read_recos))
+    log.info('(read reco) count %i', len(read_recos))
 
     needed_new_recos = BLOB_SIZE\
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER)\
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
-    print('(needed new recos) count', needed_new_recos)
+    log.info('(needed new recos) count %i', needed_new_recos)
 
     new_recos = create_recommendations(needed_new_recos,
                                        user=current_user)
 
-    print('(new recos)', [(reco, reco.mediation, reco.dateRead) for reco in new_recos])
-    print('(new reco) count', len(new_recos))
+    log.info('(new recos)'+str([(reco, reco.mediation, reco.dateRead) for reco in new_recos]))
+    log.info('(new reco) count %i', len(new_recos))
 
     recos = new_recos
 
@@ -135,7 +137,7 @@ def put_recommendations():
                                                        & (Recommendation.dateRead != None))\
                                                .count()
 
-    print('(all read recos) count', all_read_recos_count)
+    log.info('(all read recos) count %i', all_read_recos_count)
 
     if requested_recommendation:
         for i, reco in enumerate(recos):
@@ -149,7 +151,7 @@ def put_recommendations():
                                            & (Recommendation.user == current_user))\
                                    .order_by(Mediation.tutoIndex)\
                                    .all()
-        print('(tuto recos) count', len(tuto_recos))
+        log.info('(tuto recos) count %i', len(tuto_recos))
 
         tutos_read = 0
         for tuto_reco in tuto_recos:
@@ -160,9 +162,9 @@ def put_recommendations():
                         + [tuto_reco]\
                         + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
 
-    print('(recap reco) ',
-          [(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos],
-          len(recos))
+    log.info('(recap reco) '
+             + str([(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos])
+             + str(len(recos)))
 
     # FIXME: This is to support legacy code in the webapp
     # it should be removed once all requests from the webapp

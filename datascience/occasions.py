@@ -182,7 +182,7 @@ def get_occasions(limit=3, user=None, coords=None):
     if not user or not user.is_authenticated():
         return []
 
-    departement_codes = ['75', '78', '91', '94', '93', '95']\
+    departement_codes = ['29', '75', '78', '91', '94', '93', '95']\
                           if user.departementCode == '93'\
                           else [user.departementCode]
 

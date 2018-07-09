@@ -48,13 +48,7 @@ OCCASION_INCLUDES = [
                 "key": "occurences",
                 "sub_joins": [
                     {
-                        "key": "offer",
-                        #"sub_joins": [
-                        #    {
-                        #        "key": "offerer",
-                        #        "sub_joins": OFFERER_INCLUDES
-                        #    }
-                        #]
+                        "key": "offer"
                     },
                     'venue'
                 ]
@@ -66,13 +60,7 @@ OCCASION_INCLUDES = [
         "key": "thing",
         "sub_joins": [
             {
-                "key": "offer",
-                #"sub_joins": [
-                #    {
-                #        "key": "offerer",
-                #        "sub_joins": OFFERER_INCLUDES
-                #    }
-                #]
+                "key": "offer"
             },
             'venue',
             'mediations'
