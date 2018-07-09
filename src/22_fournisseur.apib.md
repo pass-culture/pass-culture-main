@@ -2,7 +2,9 @@
 
 Ceci décrit l'API à implémenter par les partenaires techniques de Pass Culture qui souhaitent fournir des stocks.
 
-Pass Culture s'identifie auprès des partenaires techniques via un certificat client SSL. La clé publique est publiée sur le site Pass Culture, et les partenaires sont prévnus à l'avance en cas de changement de clé via notre liste de diffusion email "partenaires techniques".
+Pass Culture s'identifie auprès des partenaires techniques via un certificat client SSL. La clé publique est publiée sur le site Pass Culture, et les partenaires sont prévenus à l'avance en cas de changement de clé via notre liste de diffusion email "partenaires techniques".
+
+** Statut actuel : ébauche pour discussions **
 
 #### Les Stocks [/stocks/{siret}]
 
