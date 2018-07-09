@@ -267,11 +267,12 @@ class VenuePage extends Component {
               isHorizontal
               isExpanded
               label={<Label title="Numéro et voie :" />}
+              latitude={latitude}
+              longitude={longitude}
               name="address"
               readOnly={isReadOnly}
               required={!isReadOnly}
-              latitude={latitude}
-              longitude={longitude}
+              type="geo"
             />
             <FormField
               autoComplete="postalCode"
@@ -292,6 +293,28 @@ class VenuePage extends Component {
               isHorizontal
               label={<Label title="Ville :" />}
               name="city"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="latitude"
+              collectionName="venues"
+              defaultValue={latitude || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Latitude :" />}
+              name="latitude"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="longitude"
+              collectionName="venues"
+              defaultValue={longitude || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Longitude :" />}
+              name="longitude"
               readOnly={isReadOnly}
               required={!isReadOnly}
             />
