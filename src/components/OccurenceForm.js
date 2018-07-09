@@ -68,7 +68,9 @@ class OccurenceForm extends Component {
 
     const formDate = formOccurence.date
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    const bookingDate = (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
+    console.log('formDate', formDate, 'beginningDatetime', beginningDatetime)
+    const bookingDate = formOccurence.bookingDate
+      || (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
       || (formDate && formDate.clone().subtract(2, 'days'))
     const filterBookingDate = date || formDate
     return {
@@ -129,9 +131,11 @@ class OccurenceForm extends Component {
       if (Object.keys(formOffer).length) {
 
         if (formOffer.bookingDate) {
-          console.log('formOffer.bookingDate ICI', formOffer.bookingDate)
+          console.log('formOffer.bookingDate ICI', formOffer.bookingDate.format())
           formOffer.bookingLimitDatetime = formOffer.bookingDate
-            .tz(tz).utc().format()
+            //.tz(tz)
+            //.utc()
+            .format()
         }
 
         const body = Object.assign({
@@ -315,7 +319,7 @@ class OccurenceForm extends Component {
                   console.log('formOffer.bookingDate QUOI', formOffer.bookingDate)
                   formOffer.bookingLimitDatetime = formOffer.bookingDate
                     //.tz(tz)
-                    .utc()
+                    //.utc()
                     .format()
                 }
 
@@ -334,7 +338,7 @@ class OccurenceForm extends Component {
               }
               const [hour, minute] = (eo.time || time).split(':')
               const beginningDatetime = (eo.date || date)
-                //.tz(tz)
+                .tz(tz)
                 .set({
                   hour,
                   minute

@@ -135,12 +135,12 @@ class OffererPage extends Component {
               collectionName="offerers"
               defaultValue={siren}
               entityId={offererIdOrNew}
+              isHorizontal
               label={<Label title="SIREN :" />}
               name="siren"
-              readOnly={!isNew}
-              type="sirene"
+              readOnly={!isNew || !siren}
               sireType="siren"
-              isHorizontal
+              type="sirene"
               required
             />
             {

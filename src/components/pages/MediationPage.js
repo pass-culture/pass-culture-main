@@ -279,7 +279,7 @@ class MediationPage extends Component {
                 formData.append('croppingRect[y]', croppingRect.y)
                 formData.append('croppingRect[width]', croppingRect.width)
                 formData.append('croppingRect[height]', croppingRect.height)
-                return formData;
+                return formData
               }}
               getIsDisabled={form => !image}
               handleSuccess={this.handleSuccessData}
