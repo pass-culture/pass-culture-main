@@ -70,13 +70,15 @@ class OccurenceForm extends Component {
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
     const bookingDate = (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
       || (formDate && formDate.clone().subtract(2, 'days'))
-    // console.log('HEIN', formDate, formDate.subtract(2, 'days'))
+    const filterBookingDate = date || formDate
     return {
       apiPath,
       bookingDate,
       date,
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
       eventOccurenceIdOrNew,
+      filterBookingDate,
+      formDate,
       highlightedDates: occurences &&
         occurences.map(o => moment(o.beginningDatetime)),
       isEmptyOccurenceForm,
@@ -167,6 +169,7 @@ class OccurenceForm extends Component {
       endTime,
       date,
       eventOccurenceIdOrNew,
+      filterBookingDate,
       highlightedDates,
       isEmptyOccurenceForm,
       isEventOccurenceFrozen,
@@ -175,6 +178,7 @@ class OccurenceForm extends Component {
       storeKey,
       time
     } = this.state
+
 
     return (
       <tr className='occurence-form'>
@@ -253,9 +257,9 @@ class OccurenceForm extends Component {
             controlClassName='has-text-centered'
             defaultValue={bookingDate}
             entityId={offerIdOrNew}
+            filterDate={date => filterBookingDate && date < filterBookingDate}
             format='DD/MM/YYYY'
-            min={0}
-            name="bookingDate"
+            name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             type="date"
           />

@@ -37,6 +37,7 @@ class FormDate extends Component {
 
   render () {
     const {
+      filterDate,
       format,
       highlightedDates,
       defaultValue,
@@ -55,6 +56,7 @@ class FormDate extends Component {
                 [
                   <DatePicker
                     className='is-rounded is-small date'
+                    filterDate={filterDate}
                     key={0}
                     highlightDates={highlightedDates || []}
                     minDate={moment()}

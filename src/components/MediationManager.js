@@ -48,7 +48,7 @@ const MediationManager = ({
 
 export default connect(
   (state, ownProps) => {
-    const {eventId, thingId} = ownProps.occasion
+    const { eventId, thingId } = (ownProps.occasion || {})
     return {
       mediations: mediationsSelector(state, eventId, thingId)
     }
