@@ -1,12 +1,12 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Icon from './layout/Icon'
-import { requestData } from '../reducers/data'
 
 class VenueProviderItem extends Component {
 

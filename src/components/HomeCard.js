@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import Icon from './layout/Icon'
 import { NavLink } from 'react-router-dom'
+
+import Icon from './layout/Icon'
 
 class HomeCard extends Component {
   render() {

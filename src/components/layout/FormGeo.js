@@ -1,13 +1,13 @@
 import classnames from 'classnames'
 import L from 'leaflet'
 import debounce from 'lodash.debounce'
+import { ROOT_PATH } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 import { connect } from 'react-redux'
 
 import { mergeForm } from '../../reducers/form'
-import { ROOT_PATH } from '../../utils/config'
 
 const customIcon = new L.Icon({
     iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,

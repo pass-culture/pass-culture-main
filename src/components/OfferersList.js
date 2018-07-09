@@ -1,8 +1,8 @@
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import OffererItem from './OffererItem'
-import { requestData } from '../reducers/data'
 import offerersSelector from '../selectors/offerers'
 
 class OfferersList extends Component {

@@ -1,12 +1,11 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
+import { removeErrors, NEW } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { removeErrors } from '../../reducers/errors'
 import { getFormValue, mergeForm } from '../../reducers/form'
-import { NEW } from '../../utils/config'
 
 class FormSelect extends Component {
 

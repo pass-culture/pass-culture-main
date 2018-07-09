@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
+const { version } = require('../package.json');
 
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')];
@@ -66,9 +67,6 @@ function getClientEnvironment(publicUrl) {
         return env;
       },
       {
-        // Helpful for quick testing the dexis sync
-        // system in a worker or not
-        HAS_WORKERS: process.env.HAS_WORKERS || false,
         // Determine which application it is
         IS_PRO: process.env.IS_PRO || false,
         // Useful for determining whether we’re running in production mode.
@@ -79,6 +77,8 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
+        // VERSION FOR API
+        VERSION: version
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

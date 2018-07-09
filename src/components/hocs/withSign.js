@@ -1,13 +1,12 @@
 // HOC THAT GATHERS COMMON TASK FOR SIGNIN AND SIGNUP PAGE
 // LIKE RESET DATA, FORM REDUCER / REDIRECT TO decouverte ON USER SUCCESS
+import { resetErrors } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { resetErrors } from '../../reducers/errors'
 import { resetForm } from '../../reducers/form'
-import { DEFAULT_TO } from '../../utils/config'
 
 const withSign = WrappedComponent => {
   class _withSign extends Component {
@@ -22,7 +21,7 @@ const withSign = WrappedComponent => {
         if (window.location.pathname === '/inscription') {
           history.push('/structures')
         } else {
-          history.push(DEFAULT_TO)
+          history.push('/offres')
         }
       }
     }
