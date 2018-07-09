@@ -12,8 +12,6 @@ import Loader from './Loader'
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
 import { showNotification, closeNotification } from '../../reducers/notification'
-import { closeSplash } from '../../reducers/splash'
-
 
 class PageWrapper extends Component {
 
@@ -25,7 +23,6 @@ class PageWrapper extends Component {
   }
 
   static defaultProps = {
-    closeSplashTimeout: 2000,
     Tag: 'main',
   }
 
@@ -86,18 +83,9 @@ class PageWrapper extends Component {
     )
   }
 
-  handleCloseSplash = () => {
-    const {
-      closeSplash,
-      closeSplashTimeout
-    } = this.props
-    this.closeSplashTimeout = setTimeout(closeSplash, closeSplashTimeout)
-  }
-
   componentDidMount () {
     this.handleHistoryBlock()
     this.props.user && this.handleDataRequest()
-    this.handleCloseSplash()
   }
 
   componentDidUpdate (prevProps) {
@@ -115,7 +103,6 @@ class PageWrapper extends Component {
 
   componentWillUnmount() {
     this.unblock && this.unblock()
-    this.closeSplashTimeout && clearTimeout(this.closeSplashTimeout)
   }
 
   render () {
@@ -196,7 +183,6 @@ export default compose(
     }),
     {
       closeNotification,
-      closeSplash,
       requestData,
       showNotification,
     }

@@ -107,7 +107,8 @@ class OccurenceForm extends Component {
       history,
       occasion,
       requestData,
-      venue
+      venue,
+      tz
     } = this.props
     const {
       id
@@ -122,15 +123,21 @@ class OccurenceForm extends Component {
     // ON A POST/PATCH EVENT OCCURENCE SUCCESS
     // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
-    const offerForm = get(form, `offersById.${offerIdOrNew}`) || {}
+    const formOffer = get(form, `offersById.${offerIdOrNew}`) || {}
     if (storeKey !== 'offers' && method !== 'DELETE') {
 
-      if (Object.keys(offerForm).length) {
+      if (Object.keys(formOffer).length) {
+
+        if (formOffer.bookingDate) {
+          console.log('formOffer.bookingDate ICI', formOffer.bookingDate)
+          formOffer.bookingLimitDatetime = formOffer.bookingDate
+            .tz(tz).utc().format()
+        }
 
         const body = Object.assign({
           eventOccurenceId: action.data.id,
           offererId: venue.managingOffererId,
-        }, offerForm)
+        }, formOffer)
 
         requestData(
           method,
@@ -259,7 +266,7 @@ class OccurenceForm extends Component {
             entityId={offerIdOrNew}
             filterDate={date => filterBookingDate && date < filterBookingDate}
             format='DD/MM/YYYY'
-            name="bookingLimitDatetime"
+            name="bookingDate"
             placeholder="Laissez vide si pas de limite"
             type="date"
           />
@@ -302,10 +309,20 @@ class OccurenceForm extends Component {
 
               // MAYBE WE CAN ONLY TOUCH ON THE OFFER
               if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
+                const formOffer = get(form, `offersById.${offerIdOrNew}`)
+
+                if (formOffer.bookingDate) {
+                  console.log('formOffer.bookingDate QUOI', formOffer.bookingDate)
+                  formOffer.bookingLimitDatetime = formOffer.bookingDate
+                    //.tz(tz)
+                    .utc()
+                    .format()
+                }
+
                 const body = Object.assign({
                     eventOccurenceId: id,
                     offererId: venue.managingOffererId
-                  }, get(form, `offersById.${offerIdOrNew}`))
+                  }, formOffer)
                 return body
               }
 
@@ -317,19 +334,17 @@ class OccurenceForm extends Component {
               }
               const [hour, minute] = (eo.time || time).split(':')
               const beginningDatetime = (eo.date || date)
-                .tz(tz)
+                //.tz(tz)
                 .set({
                   hour,
                   minute
                 })
-              //.tz(tz)
               const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()
                                                    .set({
                                                       hour: endHour,
                                                       minute: endMinute
                                                     })
-                                                    //.tz(tz)
               if (endDatetime < beginningDatetime) {
                 endDatetime.add(1, 'days')
               }
@@ -343,7 +358,7 @@ class OccurenceForm extends Component {
             getIsDisabled={form => {
               const isDisabledBecauseOffer = getIsDisabled(
                 get(form, `offersById.${offerIdOrNew}`),
-                ['available', 'bookingLimitDatetime', 'price'],
+                ['available', 'bookingDate', 'price'],
                 typeof offer === 'undefined'
               )
 
