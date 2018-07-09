@@ -27,7 +27,7 @@ def is_exportable(model_name):
     return not model_name == 'PcObject'\
            and isclass(app.model[model_name])\
            and issubclass(app.model[model_name], app.model.PcObject)
-           
+
 
 @app.route('/export/', methods=['GET'])
 def list_export_urls():
@@ -43,6 +43,7 @@ def clean_dict_for_export(model_name, dct):
         del(dct['password'])
         del(dct['id'])
     return dct
+
 
 @app.route('/export/<model_name>', methods=['GET'])
 def export_table(model_name):
@@ -67,7 +68,7 @@ def export_table(model_name):
     header = clean_dict_for_export(model_name, objects[0]._asdict()).keys()
     if model_name == 'User':
         header = list(filter(lambda h: h!='id' and h!='password', header))
-    writer = csv.DictWriter(csvfile, header)
+    writer = csv.DictWriter(csvfile, header, extrasaction='ignore')
     writer.writeheader()
     for obj in objects:
         dct = clean_dict_for_export(model_name, obj._asdict())
