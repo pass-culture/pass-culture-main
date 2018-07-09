@@ -42,7 +42,7 @@ class FormSirene extends Component {
   formatValue = v => {
     const value = removeWhitespaces(v)
     if (!value) {
-      return
+      return ''
     }
     const {sireType} = this.props
     const siren = value.substring(0, 9)
