@@ -12,12 +12,13 @@ from utils.rest import current_user,\
                        update
 
 
+RightsType = app.model.RightsType
 Venue = app.model.Venue
 
 
 @app.route('/venues', methods=['GET'])
 def list_venues():
-    return handle_rest_get_list(app.model.Venue)
+    return handle_rest_get_list(Venue)
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
@@ -39,7 +40,7 @@ def create_venue():
 @expect_json_data
 def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)
-    ensure_current_user_has_rights(app.model.RightsType.editor,
+    ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
     update(venue, request.json)
     app.model.PcObject.check_and_save(venue)

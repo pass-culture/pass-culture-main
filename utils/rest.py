@@ -124,6 +124,11 @@ def ensure_provider_can_update(obj):
 
 def ensure_current_user_has_rights(rights, offererId):
     if not current_user.hasRights(rights, offererId):
+        errors = ApiErrors()
+        errors.addError(
+            'global',
+            "Cette structure n'est pas enregistrée chez cet utilisateur."
+        )
         abort(403)
 
 def ensure_can_be_updated(model, id):

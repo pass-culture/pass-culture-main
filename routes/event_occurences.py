@@ -13,13 +13,14 @@ from utils.rest import delete,\
 
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
+RightsType = app.model.RightsType
 Offer = app.model.Offer
 Venue = app.model.Venue
 
 @app.route('/eventOccurences', methods=['GET'])
 @login_or_api_key_required
 def list_event_occurences():
-    return handle_rest_get_list(app.model.EventOccurence)
+    return handle_rest_get_list(EventOccurence)
 
 
 @app.route('/eventOccurences/<id>', methods=['GET'])
@@ -37,7 +38,7 @@ def create_event_occurence():
 
     eo = EventOccurence(from_dict=request.json)
     venue = load_or_404(Venue, request.json['venueId'])
-    ensure_current_user_has_rights(app.model.RightsType.editor,
+    ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
 
     app.model.PcObject.check_and_save(eo)
@@ -51,7 +52,7 @@ def edit_event_occurence(id):
 
     eo = ensure_can_be_updated(EventOccurence, id)
 
-    ensure_current_user_has_rights(app.model.RightsType.editor,
+    ensure_current_user_has_rights(RightsType.editor,
                                    eo.venue.managingOffererId)
     update(eo, request.json)
     #TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
@@ -65,6 +66,6 @@ def edit_event_occurence(id):
 @login_or_api_key_required
 def delete_event_occurence(id):
     eo = load_or_404(EventOccurence, id)
-    ensure_current_user_has_rights(app.model.RightsType.editor,
+    ensure_current_user_has_rights(RightsType.editor,
                                    eo.venue.managingOffererId)
     return delete(eo)
