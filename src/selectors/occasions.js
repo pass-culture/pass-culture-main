@@ -3,7 +3,7 @@ import createCachedSelector from 're-reselect'
 import venuesSelector from './venues'
 
 export default createCachedSelector(
-  state => state.data.searchedOccasions || state.data.occasions,
+  state => state.data.occasions,
   (state, offererId, venueId) => offererId && venuesSelector(state, offererId),
   (state, offererId, venueId) => venueId,
   (occasions, venues, venueId) => {
