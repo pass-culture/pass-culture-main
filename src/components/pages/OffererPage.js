@@ -93,7 +93,6 @@ class OffererPage extends Component {
   render () {
     const {
       offerer,
-      user,
       venues,
       fetchedName,
     } = this.props
@@ -102,8 +101,6 @@ class OffererPage extends Component {
       address,
       name,
       siren,
-      postalCode,
-      city,
     } = offerer || {}
 
     const {

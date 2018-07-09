@@ -34,14 +34,9 @@ import { pluralize, updateQueryString } from '../../utils/string'
 
 
 const requiredEventAndThingFields = [
-  'author',
   'name',
   'type',
-  'description',
-  //'contactName',
-  //'contactEmail',
-  'performer',
-  'stageDirector'
+  'description'
 ]
 
 const requiredEventFields = [

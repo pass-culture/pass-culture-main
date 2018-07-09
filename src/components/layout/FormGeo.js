@@ -6,7 +6,7 @@ import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 import { connect } from 'react-redux'
 
-import { getFormEntity, mergeForm } from '../../reducers/form'
+import { mergeForm } from '../../reducers/form'
 import { ROOT_PATH } from '../../utils/config'
 
 const customIcon = new L.Icon({
