@@ -55,14 +55,17 @@ def subtest_recos_with_params(params,
                               expected_status=200,
                               expected_mediation_id=None,
                               expected_occasion_type=None,
-                              expected_occasion_id=None):
+                              expected_occasion_id=None,
+                              is_tuto=False):
     r = req_with_auth().put(RECOMMENDATION_URL+'?'+params, json={})
     assert r.status_code == expected_status
     if expected_status == 200:
         recos = r.json()
         assert len(recos) <= BLOB_SIZE + (2 if expected_mediation_id is None
                                             else 3)
-        assert recos[1]['mediation']['tutoIndex'] is not None
+        assert len(list(filter(lambda reco: 'mediation' in reco and
+                                            reco['mediation']['tutoIndex'] is not None,
+                               recos))) == (1 if is_tuto else 0)
         check_recos(recos)
         return recos
 
@@ -116,7 +119,8 @@ def test_13_requesting_a_reco_with_bad_params_should_return_reponse_anyway():
     # occasionId correct and mediationId correct but not the same event
     subtest_recos_with_params('occasionType=event&occasionId=AQ&mediationId=AE',
                               expected_status=200,
-                              expected_mediation_id=dehumanize('AE')) # FIRST TUTO MEDIATION
+                              expected_mediation_id=dehumanize('AE'),
+                              is_tuto=True) 
     # occasionId correct and mediationId correct but not the same occasion type
     subtest_recos_with_params('occasionType=event&occasionId=A9&mediationId=AM',
                               expected_status=200,
