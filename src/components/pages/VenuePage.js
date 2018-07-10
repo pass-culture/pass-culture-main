@@ -214,8 +214,8 @@ class VenuePage extends Component {
             </h2>
             <div className='field-group'>
               <Field name='siret' label='SIRET' readOnly={isReadOnly} required />
-              <Field name='name' label='Nom du lieu' readOnly={isReadOnly} required={!isReadOnly} />
-              <Field name='bookingEmail' label='E-mail' readOnly={isReadOnly} required={!isReadOnly} />
+              <Field name='name' label='Nom du lieu' readOnly={isReadOnly} required />
+              <Field name='bookingEmail' label='E-mail' readOnly={isReadOnly} required />
             </div>
           </div>
           <div className='section'>
@@ -223,9 +223,9 @@ class VenuePage extends Component {
               ADRESSE
             </h2>
             <div className='field-group'>
-              <Field type="geo" name='address' label='Numéro et voie' readOnly={isReadOnly} required={!isReadOnly} isExpanded />
-              <Field name='postalCode' label='Code postal' readOnly={isReadOnly} required={!isReadOnly} />
-              <Field name='city' label='Ville' readOnly={isReadOnly} required={!isReadOnly} />
+              <Field type="geo" name='address' label='Numéro et voie' readOnly={isReadOnly} required isExpanded />
+              <Field name='postalCode' label='Code postal' readOnly={isReadOnly} required />
+              <Field name='city' label='Ville' readOnly={isReadOnly} required />
             </div>
           </div>
         <hr />

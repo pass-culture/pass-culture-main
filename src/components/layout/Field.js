@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import classnames from 'classnames'
 import { removeWhitespaces, formatSiren } from '../../utils/string'
 import Icon from './Icon'
+import { optionify } from '../../utils/form'
 
 class Field extends Component {
 
@@ -15,6 +16,7 @@ class Field extends Component {
   static defaultProps = {
     onChange: () => {},
     layout: 'horizontal',
+    size: 'normal',
   }
 
   static nameToInputType(name) {
@@ -68,15 +70,82 @@ class Field extends Component {
     this.props.onChange(this.props.name, storeValue(value))
   }
 
-  renderLayout = ($input, $label, error) => {
+  onInputChange = e => this.onChange(e.target.value)
+
+  renderInput = () => {
     const {
+      autoComplete,
+      id,
+      error,
+      label,
+      name,
+      onChange,
+      options,
+      placeholder,
+      readOnly,
+      required,
+      type,
+      value,
+    } = this.props
+
+    const actualType = type || this.constructor.nameToInputType(name)
+    const actualAutoComplete = autoComplete || this.constructor.nameToAutoComplete(name)
+    const actualRequired = required && !readOnly
+
+    switch(actualType) {
+      case 'select':
+        const actualReadOnly = readOnly || options.length === 1
+        const actualOptions = optionify(options, placeholder)
+        console.log(actualOptions)
+        return <div className={`select ${classnames({actualReadOnly})}`}>
+          <select
+            autoComplete={actualAutoComplete}
+            id={id}
+            onChange={this.onInputChange}
+            required={actualRequired}
+            disabled={actualReadOnly} // readonly doesn't exist on select
+            placeholder={placeholder}
+            value={this.state.value}
+          >
+            { actualOptions.filter(o => o).map(({ label, value }, index) =>
+              <option key={index} value={value}>
+                {label}
+              </option>
+            )}
+          </select>
+        </div>
+      default:
+        return <input
+          autoComplete={actualAutoComplete}
+          type={actualType}
+          id={id}
+          className='input'
+          onChange={this.onInputChange}
+          required={actualRequired}
+          readOnly={readOnly}
+          placeholder={placeholder}
+          value={this.state.value}
+        />
+    }
+  }
+
+  renderLayout() {
+    const {
+      error,
+      id,
+      label,
       layout,
       required,
+      readOnly,
+      size,
     } = this.props
+    const $input = this.renderInput()
     switch(layout) {
       case 'horizontal':
-        return <div className={`field is-horizontal ${classnames({required})}`}>
-          <div className='field-label'>{$label}</div>
+        return <div className={`field is-horizontal ${classnames({required, readOnly})}`}>
+          {label && <div className={`field-label is-${size}`}>
+            <label htmlFor={id} className='label'><span className='subtitle'>{label} :</span></label>
+          </div>}
           <div className='field-body'>{$input}</div>
           {error && <p className='help is-danger'>
             <Icon svg="picto-warning" alt="Warning" /> {error}
@@ -89,35 +158,7 @@ class Field extends Component {
   }
 
   render() {
-    const {
-      autoComplete,
-      id,
-      error,
-      label,
-      name,
-      onChange,
-      placeholder,
-      readOnly,
-      required,
-      type,
-      value,
-      wrapperClassName,
-    } = this.props
-    const $input = <input
-      autoComplete={autoComplete || this.constructor.nameToAutoComplete(name)}
-      className='input'
-      id={id}
-      onChange={e => this.onChange(e.target.value)}
-      type={type || this.constructor.nameToInputType(name)}
-      required={required}
-      readOnly={readOnly}
-      placeholder={placeholder}
-      value={this.state.value}
-    />
-
-    const $label = label ? <label htmlFor={id}>{label} :</label> : null
-
-    return this.renderLayout($input, $label, error)
+    return this.renderLayout()
   }
 }
 

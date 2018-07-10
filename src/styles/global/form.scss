@@ -2,7 +2,7 @@
   display: table;
   width: 100%;
   margin-bottom: 1rem;
-  .form-field.is-horizontal {
+  .field.is-horizontal {
     display: table-row;
     .field-label, .field-body {
       display: table-cell;
@@ -27,7 +27,7 @@
 }
 
 .field {
-  &.required {
+  &.required:not(.readOnly) {
     label {
       &:after {
         content: ' *';
@@ -81,7 +81,7 @@ input.input, .select select, textarea.textarea {
   }
 }
 
-.select.readonly {
+.select.readOnly {
   &:after {
     display: none !important;
   }
