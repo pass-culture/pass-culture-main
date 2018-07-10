@@ -6,6 +6,7 @@ from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
 from utils.attr_dict import AttrDict
+import utils.logger 
 
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence

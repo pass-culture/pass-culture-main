@@ -164,8 +164,11 @@ def get_occasions_by_type(occasion_type,
                           limit=3,
                           user=None,
                           coords=None,
-                          departement_codes=None):
+                          departement_codes=None,
+                          occasion_id=None):
     query = occasion_type.query
+    if occasion_id is not None:
+        query = query.filter_by(id=occasion_id)
     log.debug('(reco) all '+str(occasion_type)+'.count '+str(query.count()))
 
     query = departement_or_national_occasions(query, occasion_type, departement_codes)
@@ -182,7 +185,7 @@ def get_occasions(limit=3, user=None, coords=None):
     if not user or not user.is_authenticated():
         return []
 
-    departement_codes = ['29', '75', '78', '91', '94', '93', '95']\
+    departement_codes = ['75', '78', '91', '94', '93', '95']\
                           if user.departementCode == '93'\
                           else [user.departementCode]
 
@@ -203,3 +206,4 @@ def get_occasions(limit=3, user=None, coords=None):
 
 
 app.datascience.get_occasions = get_occasions
+app.datascience.get_occasions_by_type = get_occasions_by_type
