@@ -19,9 +19,6 @@ import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { NEW } from '../../utils/config'
 
-import Form from '../layout/Form'
-import Field from '../layout/Field'
-import Submit from '../layout/Submit'
 
 class VenuePage extends Component {
 
@@ -97,7 +94,7 @@ class VenuePage extends Component {
     }
   }
 
-  handleSuccess = (state, action) => {
+  handleSuccessData = (state, action) => {
     const {
       addBlockers,
       closeNotification,
@@ -214,71 +211,169 @@ class VenuePage extends Component {
 
         {!isNew && <ProviderManager venue={venue} />}
 
-        <Form name='venue' handleSuccess={this.handleSuccess} action={`/venues/${get(venue, 'id')}`} data={venue}>
-          <div className='section'>
-            <h2 className='pc-list-title'>
-              IDENTIFIANTS
-              <span className='is-pulled-right is-size-7 has-text-grey'>
-                Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
-              </span>
-            </h2>
-            <div className='field-group'>
-              <Field name='siret' label='SIRET' readOnly={isReadOnly} required />
-              <Field name='name' label='Nom du lieu' readOnly={isReadOnly} required={!isReadOnly} />
-              <Field name='bookingEmail' label='E-mail' readOnly={isReadOnly} required={!isReadOnly} />
-            </div>
+        <div className='section'>
+          <h2 className='pc-list-title'>
+            IDENTIFIANTS
+            <span className='is-pulled-right is-size-7 has-text-grey'>
+              Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
+            </span>
+          </h2>
+          <div className='field-group'>
+            <FormField
+              collectionName="venues"
+              defaultValue={siret}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="SIRET :" />}
+              name="siret"
+              readOnly={isReadOnly}
+              sireType="siret"
+              type="sirene"
+            />
+            <FormField
+              collectionName="venues"
+              defaultValue={name}
+              entityId={venueIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="Nom du lieu :" />}
+              name="name"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              collectionName="venues"
+              defaultValue={bookingEmail || get(user, 'email', '')}
+              entityId={venueIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="E-mail :" />}
+              name="bookingEmail"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
           </div>
-          <div className='section'>
-            <h2 className='pc-list-title'>
-              ADRESSE
-            </h2>
-            <div className='field-group'>
-              <Field type="geo" name='address' label='Numéro et voie' readOnly={isReadOnly} required={!isReadOnly} isExpanded />
-              <Field name='postalCode' label='Code postal' readOnly={isReadOnly} required={!isReadOnly} />
-              <Field name='city' label='Ville' readOnly={isReadOnly} required={!isReadOnly} />
-            </div>
+        </div>
+        <div className='section'>
+          <h2 className='pc-list-title'>
+            ADRESSE
+          </h2>
+          <div className='field-group'>
+            <FormField
+              autoComplete="address"
+              collectionName="venues"
+              defaultValue={address || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              isExpanded
+              label={<Label title="Numéro et voie :" />}
+              latitude={latitude}
+              longitude={longitude}
+              name="address"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+              type="geo"
+            />
+            <FormField
+              autoComplete="postalCode"
+              collectionName="venues"
+              defaultValue={postalCode || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Code Postal :" />}
+              name="postalCode"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="city"
+              collectionName="venues"
+              defaultValue={city || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Ville :" />}
+              name="city"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="latitude"
+              collectionName="venues"
+              defaultValue={latitude || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Latitude :" />}
+              name="latitude"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="longitude"
+              collectionName="venues"
+              defaultValue={longitude || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Longitude :" />}
+              name="longitude"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
           </div>
+        </div>
 
-        <hr />
-        <div className="field is-grouped is-grouped-centered"
-          style={{justifyContent: 'space-between'}}>
-          <div className="control">
-            {
-              isReadOnly
-                ? (
-                  <NavLink to={`${pathname}?modifie`} className='button is-secondary is-medium'>
-                    Modifier le lieu
-                  </NavLink>
-                )
-                : (
-                  <NavLink
-                    className="button is-secondary is-medium"
-                    to={`/structures/${offererId}`}>
-                    Annuler
-                  </NavLink>
-                )
-            }
-          </div>
-          <div className="control">
-            <div className="field is-grouped is-grouped-centered"
-              style={{justifyContent: 'space-between'}}>
-              <div className="control">
-                {
-                  isReadOnly
-                    ? (
-                      <NavLink to={routePath} className='button is-primary is-medium'>
-                        Terminer
-                      </NavLink>
-                    )
-                    : (
-                      <Submit className="button is-primary is-medium">{isNew ? 'Créer' : 'Valider'}</Submit>
-                    )
-                }
-              </div>
+      <hr />
+      <div className="field is-grouped is-grouped-centered"
+        style={{justifyContent: 'space-between'}}>
+        <div className="control">
+          {
+            isReadOnly
+              ? (
+                <NavLink to={`${pathname}?modifie`} className='button is-secondary is-medium'>
+                  Modifier le lieu
+                </NavLink>
+              )
+              : (
+                <NavLink
+                  className="button is-secondary is-medium"
+                  to={`/structures/${offererId}`}>
+                  Annuler
+                </NavLink>
+              )
+          }
+        </div>
+        <div className="control">
+          <div className="field is-grouped is-grouped-centered"
+            style={{justifyContent: 'space-between'}}>
+            <div className="control">
+              {
+                isReadOnly
+                  ? (
+                    <NavLink to={routePath} className='button is-primary is-medium'>
+                      Terminer
+                    </NavLink>
+                  )
+                  : (
+                    <SubmitButton
+                      className="button is-primary is-medium"
+                      getBody={form => Object.assign(
+                          {
+                            managingOffererId: offererId
+                          },
+                          get(form, `venuesById.${venueIdOrNew}`)
+                        )
+                      }
+                      handleSuccess={this.handleSuccessData}
+                      method={method}
+                      path={apiPath}
+                      storeKey="venues"
+                      text={isNew ? "Créer" : "Valider"}
+                    />
+                  )
+              }
             </div>
           </div>
         </div>
-      </Form>
+      </div>
     </PageWrapper>
     )
   }
