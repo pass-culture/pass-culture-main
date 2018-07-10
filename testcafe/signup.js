@@ -1,4 +1,4 @@
-import { Selector, RequestLogger } from 'testcafe'
+import { Selector, RequestLogger, RequestMock } from 'testcafe'
 
 const logger = RequestLogger('http://localhost/users', {
   logResponseBody: true,
@@ -76,6 +76,7 @@ test
 
 test
 .requestHooks(logger)
+
 ('E-mail déjà présent dans la base et mot de passe invalide', async t => {
   await t
 
@@ -87,18 +88,17 @@ test
   .wait(1000)
   .click(signUpButton)
   .wait(1000)
-  const errorMessage = logger.requests[0].response.body
-  const expected = {
-  "email": [
-    "Un compte li\u00e9 \u00e0 cet email existe d\u00e9j\u00e0"
-  ],
-  "password": [
-    "Vous devez saisir au moins 8 caract\u00e8res."
-  ]
-}
 
-  await t.expect(JSON.parse(errorMessage)).eql(expected)
-  await t.expect(inputUsersEmailError.innerText).eql(" Un compte lié à cet email existe déjà\n")
-  await t.expect(inputUsersPasswordError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
-
+    const errorMessage = logger.requests[0].response.body
+    const expected = {
+      "email": [
+        "Un compte li\u00e9 \u00e0 cet email existe d\u00e9j\u00e0"
+      ],
+      "password": [
+        "Vous devez saisir au moins 8 caract\u00e8res."
+      ]
+    }
+    await t.expect(JSON.parse(errorMessage)).eql(expected)
+    await t.expect(inputUsersEmailError.innerText).eql(" Un compte lié à cet email existe déjà\n")
+    await t.expect(inputUsersPasswordError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
 })
