@@ -125,7 +125,7 @@ class OffererPage extends Component {
 
         <Form name='offerer' className='section'
           action={`/offerers/${isNew ? '' : this.props.offerer.id}`}
-          data={this.props.offerer}
+          data={offerer}
           handleSuccess={this.handleSuccess} >
           <div className='field-group'>
             <Field name='siren' label='SIREN' required readOnly={!isNew} />
@@ -159,10 +159,7 @@ class OffererPage extends Component {
                 LIEUX
               </h2>
               <ul className='pc-list venues-list'>
-                {
-                  venues.map(v =>
-                    <VenueItem key={v.id} venue={v} />)
-                }
+                { venues.map(v => <VenueItem key={v.id} venue={v} />) }
               </ul>
               <div className='has-text-centered'>
                 <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}

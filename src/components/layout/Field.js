@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
+import classnames from 'classnames'
 import { removeWhitespaces, formatSiren } from '../../utils/string'
-
 import Icon from './Icon'
 
 class Field extends Component {
@@ -37,6 +37,7 @@ class Field extends Component {
   static nameToFormatter(name) {
     switch(name) {
       case 'siren':
+      case 'siret':
         return {
           displayValue: formatSiren,
           storeValue: removeWhitespaces,
@@ -67,10 +68,14 @@ class Field extends Component {
     this.props.onChange(this.props.name, storeValue(value))
   }
 
-  renderLayout($input, $label, error) {
-    switch(this.props.layout) {
+  renderLayout = ($input, $label, error) => {
+    const {
+      layout,
+      required,
+    } = this.props
+    switch(layout) {
       case 'horizontal':
-        return <div className='field is-horizontal'>
+        return <div className={`field is-horizontal ${classnames({required})}`}>
           <div className='field-label'>{$label}</div>
           <div className='field-body'>{$input}</div>
           {error && <p className='help is-danger'>
