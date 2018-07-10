@@ -107,6 +107,7 @@ class ProviderManager extends Component {
       venueProviders
     } = this.props
     const {
+      id,
       identifierDescription,
       identifierRegexp,
     } = (provider || {})
@@ -116,6 +117,8 @@ class ProviderManager extends Component {
     } = this.state
 
     const providerOptionsWithPlaceholder = optionify(providers, 'Source d\'importation')
+
+    console.log('provider', provider)
 
     return (
       <div className='section'>
@@ -151,6 +154,7 @@ class ProviderManager extends Component {
                 <div className='picto'><Icon svg='picto-db-default' /></div>
                 <FormField
                   collectionName="venueProviders"
+                  defaultValue={id}
                   name="providerId"
                   options={providerOptionsWithPlaceholder}
                   required
@@ -201,13 +205,24 @@ class ProviderManager extends Component {
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => ({
-      user: state.user,
-      providers: providersSelector(state),
-      provider: providerSelector(state,
-        get(state, `form.venueProvidersById.${NEW}.providerId`)),
-      venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
-    }),
+    (state, ownProps) => {
+      const providers = providersSelector(state)
+
+      let provider
+      if (providers.length === 1) {
+        provider = providers[0]
+      } else {
+        const providerId = get(state, `form.venueProvidersById.${NEW}.id`)
+        provider = providerSelector(state, providerId)
+      }
+
+      return {
+        provider,
+        providers,
+        user: state.user,
+        venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
+      }
+    },
     { mergeForm, requestData }
   )
 )(ProviderManager)

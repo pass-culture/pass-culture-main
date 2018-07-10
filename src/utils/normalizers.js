@@ -51,4 +51,8 @@ export const offererNormalizer = {
   }
 }
 
-export const venueNormalizer = {}
+export const venueNormalizer = {
+  managingOfferer: {
+    key: 'offerers'
+  }
+}

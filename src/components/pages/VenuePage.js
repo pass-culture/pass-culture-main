@@ -18,6 +18,7 @@ import { closeNotification, showNotification } from '../../reducers/notification
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { NEW } from '../../utils/config'
+import { venueNormalizer } from '../../utils/normalizers'
 
 
 class VenuePage extends Component {
@@ -62,33 +63,19 @@ class VenuePage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { offererId } },
+      match: { params: { offererId, venueId } },
       requestData,
       user
     } = this.props
     if (user) {
       requestData(
         'GET',
-        `offerers/${offererId}`,
-        {
-          key: 'offerers'
-        }
-      )
-      requestData(
-        'GET',
-        `offerers/${offererId}/venues`,
+        `venues/${venueId}`,
         {
           handleSuccess,
           handleFail,
           key: 'venues',
-          normalizer: {
-            eventOccurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                event: 'occasions'
-              }
-            }
-          }
+          normalizer: venueNormalizer
         }
       )
     }
