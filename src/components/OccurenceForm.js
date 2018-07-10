@@ -7,11 +7,11 @@ import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
 import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
-import createEventSelector from '../selectors/createEvent'
-import createOfferSelector from '../selectors/createOffer'
-import createTimezoneSelector from '../selectors/createTimezone'
-import createVenueSelector from '../selectors/createVenue'
-import createOccurencesSelector from '../selectors/createOccurences'
+import eventSelector from '../selectors/event'
+import offerSelector from '../selectors/offer'
+import timezoneSelector from '../selectors/timezone'
+import venueSelector from '../selectors/venue'
+import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
@@ -68,15 +68,18 @@ class OccurenceForm extends Component {
 
     const formDate = formOccurence.date
     const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    const bookingDate = (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
+    const bookingDate = formOccurence.bookingDate
+      || (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
       || (formDate && formDate.clone().subtract(2, 'days'))
-    // console.log('HEIN', formDate, formDate.subtract(2, 'days'))
+    const filterBookingDate = date || formDate
     return {
       apiPath,
       bookingDate,
       date,
       endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
       eventOccurenceIdOrNew,
+      filterBookingDate,
+      formDate,
       highlightedDates: occurences &&
         occurences.map(o => moment(o.beginningDatetime)),
       isEmptyOccurenceForm,
@@ -105,7 +108,8 @@ class OccurenceForm extends Component {
       history,
       occasion,
       requestData,
-      venue
+      venue,
+      tz
     } = this.props
     const {
       id
@@ -120,15 +124,22 @@ class OccurenceForm extends Component {
     // ON A POST/PATCH EVENT OCCURENCE SUCCESS
     // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
-    const offerForm = get(form, `offersById.${offerIdOrNew}`) || {}
+    const formOffer = get(form, `offersById.${offerIdOrNew}`) || {}
     if (storeKey !== 'offers' && method !== 'DELETE') {
 
-      if (Object.keys(offerForm).length) {
+      if (Object.keys(formOffer).length) {
+
+        if (formOffer.bookingDate) {
+          formOffer.bookingLimitDatetime = formOffer.bookingDate
+            .tz(tz)
+            .utc()
+            .format()
+        }
 
         const body = Object.assign({
           eventOccurenceId: action.data.id,
           offererId: venue.managingOffererId,
-        }, offerForm)
+        }, formOffer)
 
         requestData(
           method,
@@ -167,6 +178,7 @@ class OccurenceForm extends Component {
       endTime,
       date,
       eventOccurenceIdOrNew,
+      filterBookingDate,
       highlightedDates,
       isEmptyOccurenceForm,
       isEventOccurenceFrozen,
@@ -235,6 +247,7 @@ class OccurenceForm extends Component {
           <FormField
             className='is-small'
             collectionName="offers"
+            controlClassName='has-text-centered'
             defaultValue={0}
             entityId={offerIdOrNew}
             min={0}
@@ -252,8 +265,8 @@ class OccurenceForm extends Component {
             controlClassName='has-text-centered'
             defaultValue={bookingDate}
             entityId={offerIdOrNew}
+            filterDate={date => filterBookingDate && date < filterBookingDate}
             format='DD/MM/YYYY'
-            min={0}
             name="bookingDate"
             placeholder="Laissez vide si pas de limite"
             type="date"
@@ -297,10 +310,19 @@ class OccurenceForm extends Component {
 
               // MAYBE WE CAN ONLY TOUCH ON THE OFFER
               if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
+                const formOffer = get(form, `offersById.${offerIdOrNew}`)
+
+                if (formOffer.bookingDate) {
+                  formOffer.bookingLimitDatetime = formOffer.bookingDate
+                    .tz(tz)
+                    .utc()
+                    .format()
+                }
+
                 const body = Object.assign({
                     eventOccurenceId: id,
                     offererId: venue.managingOffererId
-                  }, get(form, `offersById.${offerIdOrNew}`))
+                  }, formOffer)
                 return body
               }
 
@@ -317,14 +339,12 @@ class OccurenceForm extends Component {
                   hour,
                   minute
                 })
-              //.tz(tz)
               const [endHour, endMinute] = (eo.endTime || endTime).split(':')
               const endDatetime = beginningDatetime.clone()
                                                    .set({
                                                       hour: endHour,
                                                       minute: endMinute
                                                     })
-                                                    //.tz(tz)
               if (endDatetime < beginningDatetime) {
                 endDatetime.add(1, 'days')
               }
@@ -338,7 +358,7 @@ class OccurenceForm extends Component {
             getIsDisabled={form => {
               const isDisabledBecauseOffer = getIsDisabled(
                 get(form, `offersById.${offerIdOrNew}`),
-                ['available', 'bookingLimitDatetime', 'price'],
+                ['available', 'bookingDate', 'price'],
                 typeof offer === 'undefined'
               )
 
@@ -375,17 +395,10 @@ class OccurenceForm extends Component {
   }
 }
 
-const eventSelector = createEventSelector()
-const offerSelector = createOfferSelector()
-const venueSelector = createVenueSelector()
-const occurencesSelector = createOccurencesSelector()
-const timezoneSelector = createTimezoneSelector(venueSelector)
-
 export default connect(
   (state, ownProps) => {
-    const eventId = get(ownProps, 'occasion.eventId')
+    const {eventId, venueId} = ownProps.occasion || {}
     const occurenceId = get(ownProps, 'occurence.id')
-    const venueId = get(ownProps, 'occasion.venueId')
     return {
       form: state.form,
       event: eventSelector(state, eventId),

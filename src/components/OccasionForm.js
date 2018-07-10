@@ -9,7 +9,7 @@ import FormField from './layout/FormField'
 import Label from './layout/Label'
 import { mergeForm } from '../reducers/form'
 import { closeModal, showModal } from '../reducers/modal'
-import createOccurencesSelector from '../selectors/createOccurences'
+import occurencesSelector from '../selectors/occurences'
 import { optionify } from '../utils/form'
 
 class OccasionForm extends Component {
@@ -79,16 +79,19 @@ class OccasionForm extends Component {
       venues,
     } = this.props
     const {
-      author,
       contactName,
       contactEmail,
       contactPhone,
       description,
       durationMinutes,
-      mediaUrls,
-      performer,
-      stageDirector,
+      extraData,
+      mediaUrls
     } = (event || thing || {})
+    const {
+      author,
+      performer,
+      stageDirector
+    } = (extraData || {})
 
     return (
       <div>
@@ -268,8 +271,6 @@ class OccasionForm extends Component {
     )
   }
 }
-
-const occurencesSelector = createOccurencesSelector()
 
 export default compose(
   withRouter,

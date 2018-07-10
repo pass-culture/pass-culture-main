@@ -23,17 +23,27 @@ class FormSirene extends Component {
   }
 
   onChange = e => {
-    const {sireType} = this.props
+    const {
+      collectionName,
+      entityId,
+      mergeForm,
+      sireType
+    } = this.props
     const value = removeWhitespaces(e.target.value)
     if (sireType === SIREN && value.length === 9) {
       this.fetchEntrepriseInfos(value)
     } else if (sireType === SIRET && value.length === 14) {
       this.fetchEntrepriseInfos(value)
+    } else if (value.length > 0) {
+      mergeForm(collectionName, entityId, 'name', null)
     }
   }
 
   formatValue = v => {
     const value = removeWhitespaces(v)
+    if (!value) {
+      return ''
+    }
     const {sireType} = this.props
     const siren = value.substring(0, 9)
     const nic = value.substring(9)
@@ -61,6 +71,7 @@ class FormSirene extends Component {
       localValue: inputValue,
       searching: true,
     })
+
     fetch(`https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${inputValue}`)
       .then(response => {
         this.setState({

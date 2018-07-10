@@ -5,9 +5,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import Icon from './layout/Icon'
-import createEventSelector from '../selectors/createEvent'
-import createMediationSelector from '../selectors/createMediations'
-import createThingSelector from '../selectors/createThing'
+import mediationsSelector from '../selectors/mediations'
 import { API_URL } from '../utils/config'
 
 const mediationExplanation = `
@@ -48,16 +46,11 @@ const MediationManager = ({
   )
 }
 
-const eventSelector = createEventSelector()
-const thingSelector = createThingSelector()
-const mediationsSelector = createMediationSelector()
-
 export default connect(
   (state, ownProps) => {
-    const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
-    const thing = thingSelector(state, get(ownProps, 'occasion.thingId'))
+    const { eventId, thingId } = (ownProps.occasion || {})
     return {
-      mediations: mediationsSelector(state, event, thing)
+      mediations: mediationsSelector(state, eventId, thingId)
     }
   }
 )(MediationManager)

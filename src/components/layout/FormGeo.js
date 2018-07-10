@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
-import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
-import L from 'leaflet'
-import Autocomplete from 'react-autocomplete'
 import classnames from 'classnames'
+import L from 'leaflet'
 import debounce from 'lodash.debounce'
+import React, { Component } from 'react'
+import Autocomplete from 'react-autocomplete'
+import { Map, Marker, TileLayer } from 'react-leaflet'
+import { connect } from 'react-redux'
 
-import Icon from './Icon'
-import FormInput from './FormInput'
+import { mergeForm } from '../../reducers/form'
 import { ROOT_PATH } from '../../utils/config'
 
 const customIcon = new L.Icon({
@@ -14,7 +14,6 @@ const customIcon = new L.Icon({
     iconRetinaUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
     iconSize: [21, 30],
     iconAnchor: [10, 30],
-    iconAnchor: null,
     popupAnchor: null,
     // shadowUrl: null,
     // shadowSize: null,
@@ -75,6 +74,11 @@ class FormGeo extends Component {
 
   onSelect = (value, item) => {
     if (item.placeholder) return
+    const {
+      collectionName,
+      entityId,
+      mergeForm
+    } = this.props
     this.setState({
       value,
       position: {
@@ -87,6 +91,7 @@ class FormGeo extends Component {
         longitude: item.longitude,
       }
     })
+    mergeForm(collectionName, entityId, item)
   }
 
   fetchSuggestions = value => {
@@ -131,9 +136,10 @@ class FormGeo extends Component {
       label: placeholder,
       placeholder: true,
       id: 'placeholder',
-      }
+    }
 
     const input = <Autocomplete
+      getItemValue={value => value.label}
       inputProps={{
         className: className || 'input',
         id,
@@ -141,17 +147,9 @@ class FormGeo extends Component {
         readOnly,
         required,
       }}
-      wrapperProps={{
-        className: 'input-wrapper'
-      }}
+      items={[].concat(suggestions || defaultSuggestion)}
       onChange={this.onChange}
-      value={value}
-      getItemValue={value => value.label}
-      renderMenu={children => (
-        <div className={classnames('menu', {empty: children.length === 0})}>
-          {children}
-        </div>
-      )}
+      onSelect={this.onSelect}
       renderItem={({id, label, placeholder}, highlighted) => (
         <div
           className={classnames({
@@ -162,8 +160,13 @@ class FormGeo extends Component {
           key={id}
         >{label}</div>
       )}
-      items={[].concat(suggestions || defaultSuggestion)}
-      onSelect={this.onSelect}
+      renderMenu={children => (
+        <div className={classnames('menu', {empty: children.length === 0})}>
+          {children}
+        </div>
+      )}
+      value={value}
+      wrapperProps={{ className: 'input-wrapper' }}
     />
 
     if (!this.props.showMap) return input
@@ -198,4 +201,7 @@ class FormGeo extends Component {
   }
 }
 
-export default FormGeo
+export default connect(
+  null,
+  { mergeForm }
+)(FormGeo)

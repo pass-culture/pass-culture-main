@@ -1,7 +1,7 @@
-import createOffererSelector from '../createOfferer'
+import offererSelector from '../offerer'
 import state from './mockState'
 
-describe('createOffererSelector', () => {
+describe('offererSelector', () => {
   it('should select the global state', () => {
     const expected = {
       "id": "AE",
@@ -28,7 +28,6 @@ describe('createOffererSelector', () => {
       ]
     }
     const offererId = "AE"
-    const selector = createOffererSelector()
-    expect(selector(state, offererId)).toEqual(expected)
+    expect(offererSelector(state, offererId)).toEqual(expected)
   })
 })

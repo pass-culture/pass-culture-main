@@ -11,13 +11,11 @@ import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { assignData } from '../../reducers/data'
 import { showNotification } from '../../reducers/notification'
-import createEventSelector from '../../selectors/createEvent'
-import createMediationSelector from '../../selectors/createMediation'
-import createMediationsSelector from '../../selectors/createMediations'
-import createOffererSelector from '../../selectors/createOfferer'
-import createOfferersSelector from '../../selectors/createOfferers'
-import createThingSelector from '../../selectors/createThing'
-import createVenueSelector from '../../selectors/createVenue'
+import eventSelector from '../../selectors/event'
+import mediationSelector from '../../selectors/mediation'
+import offererSelector from '../../selectors/offerer'
+import thingSelector from '../../selectors/thing'
+import venueSelector from '../../selectors/venue'
 import { mediationNormalizer } from '../../utils/normalizers'
 
 
@@ -281,7 +279,7 @@ class MediationPage extends Component {
                 formData.append('croppingRect[y]', croppingRect.y)
                 formData.append('croppingRect[width]', croppingRect.width)
                 formData.append('croppingRect[height]', croppingRect.height)
-                return formData;
+                return formData
               }}
               getIsDisabled={form => !image}
               handleSuccess={this.handleSuccessData}
@@ -297,14 +295,6 @@ class MediationPage extends Component {
   }
 }
 
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
-const eventSelector = createEventSelector()
-const mediationsSelector = createMediationsSelector()
-const mediationSelector = createMediationSelector(mediationsSelector)
-const thingSelector = createThingSelector()
-const venueSelector = createVenueSelector()
-
 export default compose(
   withCurrentOccasion,
   connect(
@@ -313,7 +303,7 @@ export default compose(
         eventId,
         thingId,
         venueId,
-      } = get(ownProps, 'occasion', {})
+      } = ownProps.occasion || {}
       const venue = venueSelector(state, venueId)
       return {
         offerer: offererSelector(state, get(venue, 'managingOffererId')),

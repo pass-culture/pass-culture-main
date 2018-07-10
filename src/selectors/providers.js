@@ -9,7 +9,7 @@ const removedLocalClasses = [
   'TiteLiveBookDescriptions'
 ]
 
-export default () => createSelector(
+export default createSelector(
   state => state.data.providers,
   providers => providers
     .filter(p => !removedLocalClasses.includes(p.localClass))

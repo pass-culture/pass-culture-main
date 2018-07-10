@@ -15,9 +15,8 @@ import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
-import createOffererSelector from '../../selectors/createOfferer'
-import createOfferersSelector from '../../selectors/createOfferers'
-import createVenueSelector from '../../selectors/createVenue'
+import offererSelector from '../../selectors/offerer'
+import venueSelector from '../../selectors/venue'
 import { NEW } from '../../utils/config'
 
 
@@ -268,12 +267,12 @@ class VenuePage extends Component {
               isHorizontal
               isExpanded
               label={<Label title="Numéro et voie :" />}
+              latitude={latitude}
+              longitude={longitude}
               name="address"
               readOnly={isReadOnly}
               required={!isReadOnly}
               type="geo"
-              latitude={latitude}
-              longitude={longitude}
             />
             <FormField
               autoComplete="postalCode"
@@ -294,6 +293,28 @@ class VenuePage extends Component {
               isHorizontal
               label={<Label title="Ville :" />}
               name="city"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="latitude"
+              collectionName="venues"
+              defaultValue={latitude || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Latitude :" />}
+              name="latitude"
+              readOnly={isReadOnly}
+              required={!isReadOnly}
+            />
+            <FormField
+              autoComplete="longitude"
+              collectionName="venues"
+              defaultValue={longitude || ''}
+              entityId={venueIdOrNew}
+              isHorizontal
+              label={<Label title="Longitude :" />}
+              name="longitude"
               readOnly={isReadOnly}
               required={!isReadOnly}
             />
@@ -357,10 +378,6 @@ class VenuePage extends Component {
     )
   }
 }
-
-const venueSelector = createVenueSelector()
-const offerersSelector = createOfferersSelector()
-const offererSelector = createOffererSelector(offerersSelector)
 
 export default compose(
   withRouter,

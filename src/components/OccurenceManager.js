@@ -7,9 +7,9 @@ import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
-import createEventSelector from '../selectors/createEvent'
-import createProviderSelector from '../selectors/createProvider'
-import createTimezoneSelector from '../selectors/createTimezone'
+import eventSelector from '../selectors/event'
+import providerSelector from '../selectors/provider'
+import timezoneSelector from '../selectors/timezone'
 import { NEW } from '../utils/config'
 
 class OccurenceManager extends Component {
@@ -102,10 +102,7 @@ class OccurenceManager extends Component {
       id
     } = (occasion || {})
     if (eventOccurenceId === 'nouvelle' &&
-      (
-        eventOccurenceId !== get(prevProps, 'match.params.eventOccurenceId') ||
-        (id && get(prevProps, 'occasion.id'))
-      )
+      eventOccurenceId !== get(prevProps, 'match.params.eventOccurenceId')
     ) {
       this.handleNextData()
     }
@@ -220,10 +217,6 @@ class OccurenceManager extends Component {
     )
   }
 }
-
-const eventSelector = createEventSelector()
-const providerSelector = createProviderSelector()
-const timezoneSelector = createTimezoneSelector()
 
 export default connect(
   (state, ownProps) => {
