@@ -124,7 +124,7 @@ class OffererPage extends Component {
         </div>
 
         <Form name='offerer' className='section'
-          action={`/offerers/${isNew ? '' : this.props.offerer.id}`}
+          action={`/offerers/${isNew ? '' : get(offerer, 'id')}`}
           data={offerer}
           handleSuccess={this.handleSuccess} >
           <div className='field-group'>

@@ -31,7 +31,9 @@ import { getIsDisabled, optionify } from '../../utils/form'
 import { eventNormalizer } from '../../utils/normalizers'
 import { pluralize, updateQueryString } from '../../utils/string'
 
-
+import Form from '../layout/Form'
+import Field from '../layout/Field'
+import Submit from '../layout/Submit'
 
 const requiredEventAndThingFields = [
   'name',
@@ -119,14 +121,14 @@ class OccasionPage extends Component {
     handleSuccess()
   }
 
-  handleFailData = (state, action) => {
+  handleFail = (state, action) => {
     this.props.showNotification({
       type: 'danger',
       text: 'Un problème est survenu lors de l\'enregistrement',
     })
   }
 
-  handleSuccessData = (state, action) => {
+  handleSuccess = (state, action) => {
     const {
       data,
       method
@@ -218,8 +220,10 @@ class OccasionPage extends Component {
       requiredFields
     } = this.state
 
-    const typeOptionsWithPlaceholder = optionify(typeOptions, 'Sélectionnez un type d\'offre', o => o)
+
     const showAllForm = type || !isNew
+
+    console.log(typeOptions)
 
     return (
       <PageWrapper
@@ -238,145 +242,85 @@ class OccasionPage extends Component {
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
           </p>
-          <div className='field-group'>
-            <FormField
-              collectionName='occasions'
-              defaultValue={name}
-              entityId={occasionIdOrNew}
-              isHorizontal
-              isExpanded
-              label={<Label title="Titre de l'offre :" />}
-              name="name"
-              readOnly={isReadOnly}
-              required={!isReadOnly}
-            />
-            <FormField
-              collectionName='occasions'
-              defaultValue={get(type, 'value')}
-              entityId={occasionIdOrNew}
-              isHorizontal
-              label={<Label title="Type :" />}
-              name="type"
-              options={(isReadOnly && !get(type, 'value') && []) || typeOptionsWithPlaceholder}
-              readOnly={isReadOnly}
-              required={!isReadOnly}
-              type="select"
-            />
-          </div>
-          {
-            !isNew && (
+          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={occasion}>
+            <div className='field-group'>
+              <Field name='name' label="Titre de l'offre" readOnly={isReadOnly} required isExpanded/>
+              <Field type='select' name='type' label='Type' readOnly={isReadOnly} required options={typeOptions.map(o => ({value: o.id, label: o.label}))} placeholder="Sélectionnez un type d'offre"/>
+            </div>
+            { !isNew && (
               <div className='field'>
-                {
-                  event && (
-                    <div className='field form-field is-horizontal'>
-                      <div className='field-label'>
-                        <label className="label" htmlFor="input_occasions_name">
-                          <div className="subtitle">Dates :</div>
-                        </label>
-                      </div>
-                      <div className='field-body'>
-                        <div className='field'>
-                          <div className='nb-dates'>
-                            {pluralize(get(occurences, 'length'), 'date')}
-                          </div>
-                          <NavLink
-                            className='button is-primary is-outlined is-small'
-                            to={`${routePath}/dates`}
-                          >
-                            <span className='icon'><Icon svg='ico-calendar' /></span>
-                            <span>Gérer les dates et les prix</span>
-                          </NavLink>
+                { event && (
+                  <div className='field form-field is-horizontal'>
+                    <div className='field-label'>
+                      <label className="label" htmlFor="input_occasions_name">
+                        <div className="subtitle">Dates :</div>
+                      </label>
+                    </div>
+                    <div className='field-body'>
+                      <div className='field'>
+                        <div className='nb-dates'>
+                          {pluralize(get(occurences, 'length'), 'date')}
                         </div>
+                        <NavLink
+                          className='button is-primary is-outlined is-small'
+                          to={`${routePath}/dates`}
+                        >
+                          <span className='icon'><Icon svg='ico-calendar' /></span>
+                          <span>Gérer les dates et les prix</span>
+                        </NavLink>
                       </div>
                     </div>
-                  )
-                }
+                  </div>
+                )}
                 <MediationManager
                   occasion={occasion}
                   routePath={routePath}
                 />
               </div>
             )}
-        </div>
-        {
-          showAllForm && <OccasionForm
-            event={event}
-            isNew={isNew}
-            occasion={occasion}
-            occasionIdOrNew={occasionIdOrNew}
-            offerer={offerer}
-            offerers={offerers}
-            routePath={routePath}
-            thing={thing}
-            venue={venue}
-            venues={venues}
-            {...this.state}
-          />
-        }
-
-        <hr />
-        <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-          <div className="control">
             {
-              isReadOnly
-                ? (
+              showAllForm && <OccasionForm
+                event={event}
+                isNew={isNew}
+                occasion={occasion}
+                occasionIdOrNew={occasionIdOrNew}
+                offerer={offerer}
+                offerers={offerers}
+                routePath={routePath}
+                thing={thing}
+                venue={venue}
+                venues={venues}
+                {...this.state}
+              />
+            }
+
+            <hr />
+            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+              <div className="control">
+                { isReadOnly ? (
                   <NavLink to={`${pathname}/modifie${search}`}
                     className='button is-secondary is-medium'>
                     Modifier l'offre
                   </NavLink>
-                )
-                : (
+                ) : (
                   <NavLink
                     className="button is-secondary is-medium"
                     to={`/offres${search}`}>
                     Annuler
                   </NavLink>
-                )
-            }
-          </div>
-          <div className="control">
-            {
-              isReadOnly
-                ? (
+                )}
+              </div>
+              <div className="control">
+                { isReadOnly ? (
                   <NavLink to={`/offres${search}`} className='button is-primary is-medium'>
                     Terminer
                   </NavLink>
-                )
-                : (
-                  <SubmitButton
-                    className="button is-primary is-medium"
-                    getBody={form => {
-                      const occasionForm = Object.assign({},
-                        get(form, `occasionsById.${occasionIdOrNew}`))
-                      // remove the EventType. ThingType.
-                      if (occasionForm.type) {
-                        occasionForm.type = occasionForm.type.split('.')[1]
-                      }
-
-                      const { author, performer, stageDirector } = occasionForm
-                      occasionForm.extraData = Object.assign({
-                        author, performer, stageDirector
-                      }, extraData)
-
-                      return occasionForm
-                    }}
-                    getIsDisabled={form => getIsDisabled(
-                        get(form, `occasionsById.${occasionIdOrNew}`),
-                        requiredFields,
-                        isNew
-                      )
-                    }
-                    handleSuccess={this.handleSuccessData}
-                    handleFail={this.handleFailData}
-                    normalizer={eventNormalizer}
-                    method={isNew ? 'POST' : 'PATCH'}
-                    path={apiPath}
-                    storeKey="events"
-                    text="Enregistrer"
-                  />
-                )
-              }
-          </div>
+                ) : (
+                  <Submit className="button is-primary is-medium">Enregistrer</Submit>
+                )}
+              </div>
+            </div>
+          </Form>
         </div>
       </PageWrapper>
     )
