@@ -6,7 +6,7 @@ from sqlalchemy.exc import InternalError
 
 from models.api_errors import ApiErrors
 from utils.includes import BOOKING_INCLUDES
-from utils.mailing import send_booking_recap_emails
+from utils.mailing import send_booking_recap_emails, send_booking_confirmation_email_to_user
 from utils.rest import expect_json_data
 from utils.token import random_token
 from utils.human_ids import dehumanize
@@ -82,6 +82,8 @@ def post_booking():
         else:
             raise ie
 
-    send_booking_recap_emails(app.model.Offer.query.get(new_booking.offerId),
-                              new_booking)
+    new_booking_offer = app.model.Offer.query.get(new_booking.offerId)
+    send_booking_recap_emails(new_booking_offer, new_booking)
+    send_booking_confirmation_email_to_user(new_booking_offer, new_booking)
+
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201

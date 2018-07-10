@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 
 from glob import glob
 from inspect import isclass
-from utils.human_ids import humanize
-from utils.test_utils import API_URL, req, req_with_auth
+
+from utils.human_ids import humanize, dehumanize
+from utils.test_utils import API_URL, req, req_with_auth, create_offer_for_booking_email_test
 
 
 def test_10_create_booking():
@@ -85,7 +86,7 @@ def test_13_create_booking_should_not_work_if_too_many_bookings(app):
     assert 'global' in r_create.json()
     assert 'quantité disponible' in r_create.json()['global'][0]
 
-    
+
 def test_14_create_booking_should_work_if_user_can_book():
     booking_json = {
         'offerId': humanize(2),
@@ -103,3 +104,5 @@ def test_15_create_booking_should_not_work_if_user_can_not_book():
     }
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
+
+
