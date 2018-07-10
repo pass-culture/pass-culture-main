@@ -1,8 +1,11 @@
 import { createSelector } from 'reselect'
 
 const removedLocalClasses = [
+  'OpenAgendaOffers',
+  'SpreadsheetExpThingOffers',
   'SpreadsheetExpVenues',
   'SpreadsheetExpOffers',
+  'SpreadsheetOffers',
   'TiteLiveOffers',
   'TiteLiveVenues',
   'TiteLiveThings',

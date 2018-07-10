@@ -118,8 +118,6 @@ class ProviderManager extends Component {
 
     const providerOptionsWithPlaceholder = optionify(providers, 'Source d\'importation')
 
-    console.log('provider', provider)
-
     return (
       <div className='section'>
         <h2 className='pc-list-title'>
@@ -212,7 +210,7 @@ export default compose(
       if (providers.length === 1) {
         provider = providers[0]
       } else {
-        const providerId = get(state, `form.venueProvidersById.${NEW}.id`)
+        const providerId = get(state, `form.venueProvidersById.${NEW}.providerId`)
         provider = providerSelector(state, providerId)
       }
 
