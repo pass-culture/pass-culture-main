@@ -39,7 +39,7 @@ def list_offerers():
 def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, id)
     offerer = load_or_404(Offerer, id)
-    return jsonify(offerer._asdict(includes=OFFERER_INCLUDES)), 200
+    return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 
 
 @app.route('/offerers', methods=['POST'])
