@@ -9,6 +9,7 @@ import { compose } from 'redux'
 import Icon from './layout/Icon'
 import eventsSelector from '../selectors/events'
 import thingsSelector from '../selectors/things'
+import { pluralize } from '../utils/string'
 
 class VenueProviderItem extends Component {
 
@@ -73,7 +74,7 @@ class VenueProviderItem extends Component {
                 <NavLink key={0} to={`/offres?structure=${get(venue, 'id')}`}
                   className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                  {nOccasions} offres
+                  {nOccasions} {pluralize(nOccasions, 'offres')}
                 </NavLink>
               )
               : (
