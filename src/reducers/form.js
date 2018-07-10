@@ -59,10 +59,11 @@ const form = (state = initialState, action) => {
 }
 
 // ACTION CREATORS
-export const newMergeForm = (name, values) => ({
+export const newMergeForm = (name, values, options) => ({
   type: NEW_MERGE_FORM,
   name,
   values,
+  options,
 })
 
 export const mergeForm = (collectionName, id, nameOrObject, value, parentValue) => ({

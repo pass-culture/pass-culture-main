@@ -17,6 +17,10 @@ import { showNotification } from '../../reducers/notification'
 
 import { apiUrl } from '../../utils/config'
 
+import Form from '../layout/Form'
+import Field from '../layout/Field'
+import Submit from '../layout/Submit'
+
 class ProfilePage extends Component {
 
   handleSuccess = () => {
@@ -42,73 +46,35 @@ class ProfilePage extends Component {
         <div className='section'>
           <h1 className='pc-title'>Profil</h1>
         </div>
-        <div className='section'>
-          <Form name='editProfile' action='users/me' data={this.props.user} handleSuccess={this.handleSuccess}>
-            <div className='field'>
-              <Field name='publicName' type='text' label='Nom' required />
+        <Form className='section' name='editProfile' action='users/me' data={this.props.user} handleSuccess={this.handleSuccess}>
+          <div className='field-group'>
+            <Field name='publicName' label='Nom' required />
+            <Field name='email' label='Email' required readOnly />
+          </div>
+          <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+            <div className="control">
+              <Submit className='button is-primary is-medium'>Enregistrer</Submit>
             </div>
             <div className='field'>
               <Field name='email' type='email' label='Email' required />
             </div>
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
-              <div className="control">
-                <Submit className='button is-primary is-medium'>Enregistrer</Submit>
-              </div>
-              <div className="control">
-                <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
-                  Retour
-                </NavLink>
-              </div>
-            </div>
-            {false && <FormField
-                          collectionName='users'
-                          defaultValue={publicName}
-                          entityId={id}
-                          label={<Label title="Nom :" />}
-                          name="publicName"
-                          required
-                          isHorizontal
-                        />}
-                        {false && <FormField
-                          collectionName='users'
-                          defaultValue={email}
-                          entityId={id}
-                          label={<Label title="Email :" />}
-                          name="email"
-                          required
-                          readOnly // For now there is no check on whether the email already exists so it cannot be modified
-                          isHorizontal
-                        />}
-                {false && <SubmitButton
-                                  getBody={form => (get(form, `usersById.${id}`))}
-                                  getIsDisabled={form => {
-                                    return !get(form, `usersById.${id}.publicName`) &&
-                                      !get(form, `usersById.${id}.email`)
-                                  }}
-                                  className="button is-primary is-medium"
-                                  method='PATCH'
-                                  handleSuccess={this.handleSuccess}
-                                  path='users/me'
-                                  storeKey="occasions"
-                                  text="Enregistrer"
-                                />}
-          </Form>
-          <hr />
-          <h1 className='title has-text-centered'>Avatar</h1>
-          <div className='field'>
-            <UploadThumb
-              className='input'
-              image={apiUrl(thumbPath)}
-              collectionName='users'
-              storeKey='thumbedUser'
-              type='thumb'
-              entityId={id}
-              index={0}
-              width={250}
-              height={250}
-              borderRadius={250}
-             />
           </div>
+        </Form>
+        <hr />
+        <h1 className='title has-text-centered'>Avatar</h1>
+        <div className='field'>
+          <UploadThumb
+            className='input'
+            image={apiUrl(thumbPath)}
+            collectionName='users'
+            storeKey='thumbedUser'
+            type='thumb'
+            entityId={id}
+            index={0}
+            width={250}
+            height={250}
+            borderRadius={250}
+           />
         </div>
       </PageWrapper>
     )

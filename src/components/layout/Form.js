@@ -49,6 +49,8 @@ class Form extends Component {
       handleFail,
       handleSuccess,
     } = this.props
+
+    console.log('should submit')
     // TODO: plug this
     // requestData(this.state.method, action, {
     //   add,
@@ -104,6 +106,7 @@ class Form extends Component {
           },
           getTitle: () => {
             const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
+            if (missingFields.length === 0) return
             return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => f.props.label.toLowerCase()).join(', ')}`
           }
         })
