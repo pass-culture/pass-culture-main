@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import { removeWhitespaces, formatSiren } from '../../utils/string'
 
 import Icon from './Icon'
 
@@ -13,10 +14,39 @@ class Field extends Component {
 
   static defaultProps = {
     onChange: () => {},
+    layout: 'horizontal',
   }
 
-  static typeToAutoComplete(type) {
-    return type
+  static nameToInputType(name) {
+    switch(name) {
+      case 'siren':
+        return 'text'
+      default:
+        return 'text'
+    }
+
+  }
+
+  static nameToAutoComplete(name) {
+    switch(name) {
+      default:
+        return name
+    }
+  }
+
+  static nameToFormatter(name) {
+    switch(name) {
+      case 'siren':
+        return {
+          displayValue: formatSiren,
+          storeValue: removeWhitespaces,
+        }
+      default:
+        return {
+          displayValue: v => v,
+          storeValue: v => v,
+        }
+    }
   }
 
   componentDidMount() {
@@ -30,12 +60,28 @@ class Field extends Component {
   }
 
   onChange = value => {
+    const {displayValue, storeValue} = this.constructor.nameToFormatter(this.props.name)
     this.setState({
-      value,
+      value: displayValue(value),
     })
-    this.props.onChange(this.props.name, value)
+    this.props.onChange(this.props.name, storeValue(value))
   }
 
+  renderLayout($input, $label, error) {
+    switch(this.props.layout) {
+      case 'horizontal':
+        return <div className='field is-horizontal'>
+          <div className='field-label'>{$label}</div>
+          <div className='field-body'>{$input}</div>
+          {error && <p className='help is-danger'>
+            <Icon svg="picto-warning" alt="Warning" /> {error}
+          </p>}
+        </div>
+      default:
+        return $input
+    }
+    return $input
+  }
 
   render() {
     const {
@@ -43,6 +89,7 @@ class Field extends Component {
       id,
       error,
       label,
+      name,
       onChange,
       placeholder,
       readOnly,
@@ -52,35 +99,20 @@ class Field extends Component {
       wrapperClassName,
     } = this.props
     const $input = <input
-      autoComplete={autoComplete || this.constructor.typeToAutoComplete(type)}
+      autoComplete={autoComplete || this.constructor.nameToAutoComplete(name)}
       className='input'
       id={id}
       onChange={e => this.onChange(e.target.value)}
-      type={type}
+      type={type || this.constructor.nameToInputType(name)}
       required={required}
       readOnly={readOnly}
       placeholder={placeholder}
       value={this.state.value}
     />
-    const $error = error ?
-    <ul
-      id={`${id}-error`}
-      className={'help is-danger'}
-    >
-      <p>
-       <Icon svg="picto-warning" alt="Warning" /> {error}
-      </p>
-    </ul> : null
 
     const $label = label ? <label htmlFor={id}>{label} :</label> : null
 
-    return (
-      <div className={wrapperClassName}>
-        {$label}
-        {$input}
-        {$error}
-      </div>
-    );
+    return this.renderLayout($input, $label, error)
   }
 }
 
