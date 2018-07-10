@@ -105,7 +105,7 @@ class OccasionItem extends Component {
               {groupSizeMin === 1 && <Icon svg='picto-user' />}
               {groupSizeMin > 1 && <div><Icon svg='picto-group' />, <p>{groupSizeMin === groupSizeMax ? groupSizeMin : `${groupSizeMin} - ${groupSizeMax}`}</p></div>}
             </li>
-            <li>{available ? `${pluralize('restent', available)} ${available}` : '0 place'} </li>
+            <li>{available ? `encore ${available} places` : '0 place'} </li>
             <li>{priceMin === priceMax ? <Price value={priceMin || 0} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
           </ul>
           <ul className='actions'>

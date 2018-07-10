@@ -9,6 +9,7 @@
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
     "babel-loader": "7.1.2",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^3.1.0",
     "babel-runtime": "6.26.0",
     "bulma": "^0.7.1",
@@ -85,6 +86,7 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
+    "postinstall": "cd node_modules && ln -sf ../../shared pass-culture-shared",
     "test": "node scripts/test.js --env=jsdom",
     "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
   },
