@@ -10,11 +10,6 @@ from utils.test_utils import API_URL, req, req_with_auth
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
-def test_10_put_recommendations_should_work_only_when_logged_in():
-    r = req.put(RECOMMENDATION_URL)
-    assert r.status_code == 401
-
-
 def check_recos(recos):
     # ensure we have no duplicate mediations
     ids = list(filter(lambda id: id != None,
@@ -70,6 +65,11 @@ def subtest_recos_with_params(params,
         return recos
 
 
+def test_10_put_recommendations_should_work_only_when_logged_in():
+    r = req.put(RECOMMENDATION_URL)
+    assert r.status_code == 401
+
+
 def test_11_put_recommendations_should_return_a_list_of_recos():
     recos1 = subtest_initial_recos()
     assert len(list(filter(lambda reco: 'mediation' in reco and
@@ -96,13 +96,13 @@ def test_12_if_i_request_a_specific_reco_it_should_be_first():
                               expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # No occasionId but mediationId and occasionType
-    subtest_recos_with_params('occasionType=event&mediationId=AE',
+    subtest_recos_with_params('occasionType=event&mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
                               expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # No occasionId, no occasionType, but mediationId
-    subtest_recos_with_params('mediationId=AE',
+    subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
                               expected_occasion_type='event',

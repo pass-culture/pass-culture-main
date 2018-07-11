@@ -31,7 +31,7 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
     if isinstance(occasion_type, str):
         occasion_type = occasion_type.lower()
     query = Recommendation.query
-    log.info('(special) offer_id=' + str(occasion_id)
+    log.info('(special) occasion_id=' + str(occasion_id)
              + ' mediation_id=' + str(mediation_id))
     if not mediation_id and not (occasion_id and occasion_type):
         return None
@@ -39,9 +39,9 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
         filter = (Recommendation.mediationId == mediation_id)
     elif occasion_id and occasion_type:
         if occasion_type == 'thing':
-            filter = (Recommendation.thingId == mediation_id)
+            filter = (Recommendation.thingId == occasion_id)
         elif occasion_type == 'event':
-            filter = (Recommendation.eventId == mediation_id)
+            filter = (Recommendation.eventId == occasion_id)
         else:
             ae = ApiErrors()
             ae.addError('occasion_type',
@@ -53,10 +53,10 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
         if mediation_id:
             return None
         elif occasion_type == 'thing':
-            occasion = Thing.query.get(occasion_id)
+            occasion = Thing.query.filter_by(id=occasion_id).first()
         elif occasion_type == 'event':
-            occasion = Event.query.get(occasion_id)
-        mediation = Mediation.query.get(mediation_id)
+            occasion = Event.query.filter_by(id=occasion_id).first()
+        mediation = Mediation.query.filter_by(id=mediation_id).first()
         requested_recommendation = create_recommendation(user, occasion, mediation=mediation)
 
     return requested_recommendation
@@ -149,7 +149,8 @@ def put_recommendations():
                 recos = recos[:i]+recos[i+1:]
                 break
         recos = [requested_recommendation] + recos
-    elif request.args.get('occasionId') is None:
+    elif request.args.get('occasionId') is None\
+         and request.args.get('mediationId') is None:
         tuto_recos = Recommendation.query.join(Mediation)\
                                    .filter((Mediation.tutoIndex != None)
                                            & (Recommendation.user == current_user))\
