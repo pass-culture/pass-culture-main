@@ -305,7 +305,7 @@ class OccasionPage extends Component {
                 <h2 className='pc-list-title'>Infos artistiques</h2>
                 <div className='field-group'>
                   <Field type='textarea' name='description' label='Description' maxLength={750} required isExpanded />
-                  <Field name='author' label='Auteur' isExpanded />
+                  <Field name='author' label='Auteur' isExpanded/>
                   {
                     isEventType && [
                       <Field key={0} name='stageDirector' label='Metteur en scène' isExpanded />,
