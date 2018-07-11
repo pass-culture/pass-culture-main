@@ -65,7 +65,7 @@ const routes = [
   {
     exact: true,
     path: '/decouverte',
-    render: () => <Redirect to="/decouverte/empty" />,
+    render: () => <DiscoveryPage />,
   },
   {
     exact: true,

@@ -44,7 +44,7 @@ function registerValidSW(swUrl) {
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
-              if (window.location.pathname === '/decouverte/empty' ||
+              if (window.location.pathname === '/decouverte' ||
                   window.location.pathname === '/' ||
                   window.confirm("Une nouvelle version a été téléchargée. Redémarrer pour l'utiliser ?")) {
                 window.location.reload();

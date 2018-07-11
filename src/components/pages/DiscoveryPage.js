@@ -11,35 +11,25 @@ import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
-  handleSetRedirectTo(nextProps) {
-    // ONLY TRIGGER AT MOUNT TIME
-    // OR WHEN WE RECEIVED FRESH NON EMPTY DATA
-    const props = nextProps || this.props
-    const { currentRecommendation, occasionId, mediationId, offerId, history, recommendations, requestData } = props
-    if (
-      offerId !== 'empty' ||
-      (nextProps && !nextProps.recommendations) ||
-      (offerId !== 'empty' || !recommendations || !recommendations.length)
-    ) {
-      if (!currentRecommendation) {
-        let query = 'occasionType=Event'
+  ensureRecommendation(props) {
+    const { currentRecommendation, occasionId, mediationId, requestData } = props
+    if (!currentRecommendation) {
+        let query = 'occasionType=event'
         if (mediationId) {
           query += '&mediationId='+mediationId
         }
         query += '&occasionId='+occasionId
         requestData('PUT', 'recommendations?'+query)
-      }
-     return
     }
+  }
 
-    // THE BLOB HAS MAYBE A isAround VARIABLE
-    // HELPING TO RETRIEVE THE AROUND
-    let targetRecommendation = recommendations.find(um => um.isAround)
-    if (!targetRecommendation) {
-      // ELSE TAKE THE FIRST?
-      targetRecommendation = recommendations[0]
-    }
+  handleRedirectFromLoading(props) {
+    const { history, mediationId, offerId, recommendations } = props
+    if (!recommendations || (recommendations.length == 0) || mediationId || offerId)
+      return
 
+    const targetRecommendation = recommendations[0]
+    console.log("TARGET RECO", targetRecommendation)
     // NOW CHOOSE AN OFFER AMONG THE ONES
     const recommendationOffers = targetRecommendation.recommendationOffers
     const chosenOffer =
@@ -54,11 +44,16 @@ class DiscoveryPage extends Component {
   }
 
   componentWillMount() {
-    this.handleSetRedirectTo()
+    const { offerId } = this.props
+    this.handleRedirectFromLoading(this.props)
+    offerId && this.ensureRecommendation(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.handleSetRedirectTo(nextProps)
+    this.handleRedirectFromLoading(nextProps)
+    if (nextProps.offerId && nextProps.offerId !== this.props.offerId) {
+      this.ensureRecommendation(nextProps)
+    }
   }
 
   render() {
