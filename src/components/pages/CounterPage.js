@@ -1,7 +1,8 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
-import FormField from '../layout/FormField'
+import Icon from '../layout/Icon'
+// import FormField from '../layout/FormField'
 import PageWrapper from '../layout/PageWrapper'
 
 const CounterPage = ({}) => {
@@ -9,6 +10,8 @@ const CounterPage = ({}) => {
     <PageWrapper
       name='counter'
     >
+      {
+      /*
       <div className='section hero'>
         <h1 className="pc-title">Guichet</h1>
         <p className="subtitle">
@@ -33,6 +36,21 @@ const CounterPage = ({}) => {
         to='/offres'>
         Terminer
       </NavLink>
+      */
+      }
+
+      <h1>
+        <strong>Page en cours de construction</strong>
+      </h1>
+      <footer>
+        <Link
+          to="/accueil"
+          className="button is-secondary has-text-weight-light is-italic"
+        >
+          Revenir à l'accueil
+          <Icon svg="ico-next" />
+        </Link>
+      </footer>
 
     </PageWrapper>
   )
