@@ -63,6 +63,7 @@ def subtest_recos_with_params(params,
         check_recos(recos)
         return recos
 
+
 def test_10_put_recommendations_should_work_only_when_logged_in():
     r = req.put(RECOMMENDATION_URL)
     assert r.status_code == 401
@@ -151,6 +152,14 @@ def test_14_actual_errors_should_generate_a_400():
     # invalid (not dehumanizable) mediationId with invalid (not dehumanizable) occasionId
     #subtest_recos_with_params('occasionType=event&occasionId=00&mediationId=00',
     #                          expected_status=400)
+
+
+#def test_15_if_i_request_a_specific_reco_with_singleReco_it_should_be_single():
+#    r = req_with_auth().put(RECOMMENDATION_URL+'?occasionType=event&occasionId=AE&singleReco=true', json={})
+#    assert r.status_code == 200
+#    recos = r.json()
+#    assert len(recos) == 1
+#    assert recos[0]['mediation']['eventId'] == 'AE'
 
 
 def test_16_once_marked_as_read_tutos_should_not_come_back():

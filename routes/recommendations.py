@@ -100,7 +100,8 @@ def put_recommendations():
     log.info('(special) requested_recommendation '
              + str(requested_recommendation))
 
-#    if request.args.get('occasionId') is not None\
+#    if (request.args.get('occasionId') is not None
+#        or request.args.get('mediationId') is not None)\
 #       and request.args.get('singleReco') is not None\
 #       and request.args.get('singleReco').lower == 'true':
 #        if requested_recommendation:
