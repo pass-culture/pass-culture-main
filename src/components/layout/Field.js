@@ -77,7 +77,7 @@ class Field extends Component {
     const {
       autoComplete,
       id,
-      error,
+      errors,
       label,
       name,
       onChange,
@@ -146,7 +146,7 @@ class Field extends Component {
 
   renderLayout() {
     const {
-      error,
+      errors,
       id,
       label,
       layout,
@@ -165,9 +165,9 @@ class Field extends Component {
           </div>}
           <div className='field-body'>
             {$input}
-            {error && <p className='help is-danger'>
-              <Icon svg="picto-warning" alt="Warning" /> {error}
-            </p>}
+            {errors.map(e => <p className='help is-danger'>
+              <Icon svg="picto-warning" alt="Warning" /> {e}
+            </p>)}
           </div>
         </div>
       default:
