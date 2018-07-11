@@ -52,7 +52,7 @@ def create_offerer():
         offerer.generate_validation_token()
         user_offerer = offerer.give_rights(current_user,
                                            app.model.RightsType.admin)
-    app.model.PcObject.check_and_save(offerer, user_offerer)
+        app.model.PcObject.check_and_save(offerer, user_offerer)
     maybe_send_offerer_validation_email(current_user, offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 201
 

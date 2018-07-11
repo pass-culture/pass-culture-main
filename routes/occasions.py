@@ -90,18 +90,12 @@ def get_occasion(id):
 @expect_json_data
 def post_occasion():
     ocas = Occasion()
-    venue = Venue.query.filter_by(id=dehumanize(request.json['venueId']))\
-                       .first_or_404()
+    venue = load_or_404(Venue, request.json['venueId'])
     ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
     update(ocas, request.json)
     app.model.PcObject.check_and_save(ocas)
-    return jsonify(
-        ocas._asdict(
-            include=OCCASION_INCLUDES,
-            has_dehumanized_id=True
-        )
-    ), 201
+    return jsonify(ocas._asdict(include=OCCASION_INCLUDES)), 201
 
 @app.route('/occasions/<id>', methods=['DELETE'])
 @login_or_api_key_required
