@@ -2,6 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router'
 
 import AccoutingPage from '../components/pages/AccountingPage'
+import CounterPage from '../components/pages/CounterPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import MediationsPage from '../components/pages/MediationsPage'
@@ -33,6 +34,12 @@ const routes = [
     path: '/connexion',
     title: 'Connexion',
     render: () => <SigninPage />,
+  },
+  {
+    exact: true,
+    path: '/guichet',
+    title: 'Guichet',
+    render: () => <CounterPage />,
   },
   {
     exact: true,
