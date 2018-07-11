@@ -34,8 +34,10 @@ def pick_random_occasions_given_blob_size(recos, limit=BLOB_SIZE):
 
 def find_or_make_recommendation(user, occasion_type, occasion_id,
                                 mediation_id, from_user_id=None):
+    if isinstance(occasion_type, str):
+        occasion_type = occasion_type.lower()
     query = Recommendation.query
-    log.info('(special) offer_id=' + str(occasion_id)
+    log.info('(special) occasion_id=' + str(occasion_id)
              + ' mediation_id=' + str(mediation_id))
     if not mediation_id and not (occasion_id and occasion_type):
         return None
@@ -43,9 +45,9 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
         filter = (Recommendation.mediationId == mediation_id)
     elif occasion_id and occasion_type:
         if occasion_type == 'thing':
-            filter = (Recommendation.thingId == mediation_id)
+            filter = (Recommendation.thingId == occasion_id)
         elif occasion_type == 'event':
-            filter = (Recommendation.eventId == mediation_id)
+            filter = (Recommendation.eventId == occasion_id)
         else:
             ae = ApiErrors()
             ae.addError('occasion_type',
@@ -57,10 +59,10 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
         if mediation_id:
             return None
         elif occasion_type == 'thing':
-            occasion = Thing.query.get(occasion_id)
+            occasion = Thing.query.filter_by(id=occasion_id).first()
         elif occasion_type == 'event':
-            occasion = Event.query.get(occasion_id)
-        mediation = Mediation.query.get(mediation_id)
+            occasion = Event.query.filter_by(id=occasion_id).first()
+        mediation = Mediation.query.filter_by(id=mediation_id).first()
         requested_recommendation = create_recommendation(user, occasion, mediation=mediation)
 
     return requested_recommendation
@@ -97,6 +99,14 @@ def put_recommendations():
 
     log.info('(special) requested_recommendation '
              + str(requested_recommendation))
+
+#    if request.args.get('occasionId') is not None\
+#       and request.args.get('singleReco') is not None\
+#       and request.args.get('singleReco').lower == 'true':
+#        if requested_recommendation:
+#            return jsonify(dictify_recos()), 200
+#        else:
+#            return "", 404
 
     # we get more read+unread recos than needed in case we can't make enough new recos
 
@@ -155,20 +165,15 @@ def put_recommendations():
         read_recos = read_recos[nb_new_read:]
 
     shuffle(recos)
-
-    all_read_recos_count = Recommendation.query.filter((Recommendation.user == current_user)
-                                                       & (filter_already_read))\
-                                               .count()
-
-    log.info('(all read recos) count %i', all_read_recos_count)
-
+    
     if requested_recommendation:
         for i, reco in enumerate(recos):
             if reco.id == requested_recommendation.id:
                 recos = recos[:i]+recos[i+1:]
                 break
         recos = [requested_recommendation] + recos
-    else:
+    elif request.args.get('occasionId') is None\
+         and request.args.get('mediationId') is None:
         tuto_recos = Recommendation.query.join(Mediation)\
                                    .filter((Mediation.tutoIndex != None)
                                            & (Recommendation.user == current_user)
@@ -190,6 +195,10 @@ def put_recommendations():
              + str([(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos])
              + str(len(recos)))
 
+    return jsonify(dictify_recos(recos)), 200
+
+
+def dictify_recos(recos):
     # FIXME: This is to support legacy code in the webapp
     # it should be removed once all requests from the webapp
     # have an app version header, which will mean that all
@@ -224,6 +233,4 @@ def put_recommendations():
              recos[index].mediation.tutoIndex is not None:
             reco['recommendationOffers'] = []
 
-    # RETURN
-    print(jsonify(dict_recos))
-    return jsonify(dict_recos), 200
+    return dict_recos

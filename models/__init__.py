@@ -7,7 +7,9 @@ from sqlalchemy.exc import ProgrammingError
 from utils.attr_dict import AttrDict
 from utils.config import IS_DEV
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pass_culture:passq@postgres/pass_culture'
+import os
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #app.config['SQLALCHEMY_ECHO'] = IS_DEV
 app.db = SQLAlchemy(app)

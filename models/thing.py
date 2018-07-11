@@ -37,11 +37,11 @@ app.model.ThingType = ThingType
 
 
 class Thing(app.model.PcObject,
-           db.Model,
-           app.model.DeactivableMixin,
-           app.model.HasThumbMixin,
-           app.model.ProvidableMixin,
-           app.model.ExtraDataMixin):
+            db.Model,
+            app.model.DeactivableMixin,
+            app.model.HasThumbMixin,
+            app.model.ProvidableMixin,
+            app.model.ExtraDataMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,

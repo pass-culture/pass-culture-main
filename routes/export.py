@@ -27,7 +27,7 @@ def is_exportable(model_name):
     return not model_name == 'PcObject'\
            and isclass(app.model[model_name])\
            and issubclass(app.model[model_name], app.model.PcObject)
-           
+
 
 @app.route('/export/', methods=['GET'])
 def list_export_urls():
@@ -36,6 +36,13 @@ def list_export_urls():
                                       +'?token='+request.args.get('token')
                       for model_name in filter(is_exportable,
                                                app.model.keys())])
+
+
+def clean_dict_for_export(model_name, dct):
+    if model_name == 'User':
+        del(dct['password'])
+        del(dct['id'])
+    return dct
 
 
 @app.route('/export/<model_name>', methods=['GET'])
@@ -53,17 +60,18 @@ def export_table(model_name):
         return jsonify(ae.errors), 400
 
     objects = model.query.all()
+
+    if len(objects) == 0:
+        return "", 200
+
     csvfile = StringIO()
-    header = objects[0]._asdict().keys()
+    header = clean_dict_for_export(model_name, objects[0]._asdict()).keys()
     if model_name == 'User':
         header = list(filter(lambda h: h!='id' and h!='password', header))
-    writer = csv.DictWriter(csvfile, header)
+    writer = csv.DictWriter(csvfile, header, extrasaction='ignore')
     writer.writeheader()
     for obj in objects:
-        dct = obj._asdict()
-        if model_name == 'User':
-            del(dct['password'])
-            del(dct['id'])
+        dct = clean_dict_for_export(model_name, obj._asdict())
         writer.writerow(dct)
     csvfile.seek(0)
     mem = BytesIO()

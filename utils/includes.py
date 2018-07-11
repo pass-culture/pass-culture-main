@@ -174,11 +174,17 @@ VENUE_INCLUDES = [
         "sub_joins": ["event"]
     },
     {
+        "key": "managingOfferer"
+    },
+    {
         "key": 'venueProviders',
         "resolve": (lambda element, filters: element['provider']),
         "sub_joins": ["provider"]
     },
-    "offers"
+    {
+        "key": "offers",
+        "sub_joins": ["thing"]
+    }
 ]
 
 VENUE_PROVIDER_INCLUDES = [
