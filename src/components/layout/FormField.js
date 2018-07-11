@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 
+import FormBooking from './FormBooking'
 import FormDate from './FormDate'
 import FormGeo from './FormGeo'
 import FormInput from './FormInput'
@@ -17,6 +18,7 @@ import Icon from './Icon'
 import { capitalize } from '../../utils/string'
 
 const FormComponentsByName = {
+  FormBooking,
   FormDate,
   FormGeo,
   FormInput,
