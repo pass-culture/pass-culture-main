@@ -26,6 +26,12 @@ Thing = app.model.Thing
 log = app.log
 
 
+def pick_random_occasions_given_blob_size(recos, limit=BLOB_SIZE):
+    return recos.order_by(func.random()) \
+        .limit(limit) \
+        .all()
+
+
 def find_or_make_recommendation(user, occasion_type, occasion_id,
                                 mediation_id, from_user_id=None):
     query = Recommendation.query
@@ -71,34 +77,49 @@ def patch_recommendation(recommendationId):
     return jsonify(recommendation._asdict()), 200
 
 
+
+
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
 def put_recommendations():
+    if 'seenRecommendationIds' in request.json.keys():
+        humanized_seen_recommendationIds = request.json['seenRecommendationIds'] or []
+        seen_recommendationIds = list(map(dehumanize, humanized_seen_recommendationIds))
+    else:
+        seen_recommendationIds = []
     requested_recommendation = find_or_make_recommendation(current_user,
                                                            request.args.get('occasionType'),
                                                            dehumanize(request.args.get('occasionId')),
                                                            dehumanize(request.args.get('mediationId')))
+
+    print('requested req', requested_recommendation)
+
     log.info('(special) requested_recommendation '
              + str(requested_recommendation))
 
     # we get more read+unread recos than needed in case we can't make enough new recos
+
+    filter_not_seen_occasion = ~Recommendation.id.in_(seen_recommendationIds)
+
     query = Recommendation.query.outerjoin(Mediation)\
                                 .filter((Recommendation.user == current_user)
+                                        & (filter_not_seen_occasion)
                                         & (Mediation.tutoIndex == None)
                                         & ((Recommendation.validUntilDate == None)
                                            | (Recommendation.validUntilDate > datetime.utcnow())))
 
-    unread_recos = query.filter(Recommendation.dateRead == None)\
-                                  .order_by(func.random())\
-                                  .limit(BLOB_SIZE)\
-                                  .all()
+    filter_already_read = Recommendation.dateRead != None
+
+    unread_recos = query.filter(~filter_already_read)
+    unread_recos = pick_random_occasions_given_blob_size(unread_recos)
+
     log.info('(unread reco) count %i', len(unread_recos))
 
-    read_recos = query.filter(Recommendation.dateRead != None)\
-                      .order_by(func.random())\
-                      .limit(BLOB_SIZE)\
-                      .all()
+
+    read_recos = query.filter(filter_already_read)
+    read_recos = pick_random_occasions_given_blob_size(read_recos)
+
     log.info('(read reco) count %i', len(read_recos))
 
     needed_new_recos = BLOB_SIZE\
@@ -108,7 +129,9 @@ def put_recommendations():
     log.info('(needed new recos) count %i', needed_new_recos)
 
     new_recos = create_recommendations(needed_new_recos,
-                                       user=current_user)
+                                       user=current_user,
+                                       seen_recommendationIds=seen_recommendationIds
+                                       )
 
     log.info('(new recos)'+str([(reco, reco.mediation, reco.dateRead) for reco in new_recos]))
     log.info('(new reco) count %i', len(new_recos))
@@ -134,7 +157,7 @@ def put_recommendations():
     shuffle(recos)
 
     all_read_recos_count = Recommendation.query.filter((Recommendation.user == current_user)
-                                                       & (Recommendation.dateRead != None))\
+                                                       & (filter_already_read))\
                                                .count()
 
     log.info('(all read recos) count %i', all_read_recos_count)
@@ -148,7 +171,8 @@ def put_recommendations():
     else:
         tuto_recos = Recommendation.query.join(Mediation)\
                                    .filter((Mediation.tutoIndex != None)
-                                           & (Recommendation.user == current_user))\
+                                           & (Recommendation.user == current_user)
+                                           & filter_not_seen_occasion)\
                                    .order_by(Mediation.tutoIndex)\
                                    .all()
         log.info('(tuto recos) count %i', len(tuto_recos))
@@ -174,8 +198,6 @@ def put_recommendations():
 
     dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATION_INCLUDES),
                           recos))
-    seen_occasionIds = request.json['seenOccasionIds'] or []
-    dict_recos = [reco for reco in dict_recos if reco['id'] not in seen_occasionIds]
 
     for index, reco in enumerate(dict_recos):
         rbs = []
@@ -203,4 +225,5 @@ def put_recommendations():
             reco['recommendationOffers'] = []
 
     # RETURN
+    print(jsonify(dict_recos))
     return jsonify(dict_recos), 200
