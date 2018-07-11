@@ -2,16 +2,29 @@ import os
 from datetime import datetime
 from pathlib import Path, PurePath
 
-#import swiftclient
-#
-#user = 'account_name:username'  # TODO (get from secrets)
-#key = 'your_api_key'
-#
-#def swift_con:
-#    return swiftclient.Connection(user=user,
-#                                  key=key,
-#                                  authurl='https://objects.dreamhost.com/auth'
-#                                 )
+from utils.human_ids import humanize
+
+import swiftclient
+
+user = 'XMwGKZEFQcg6'  # TODO (get from secrets)
+key = 'hqq8byXHkf4zCYv3gy7FeC7WNVy48VHv'
+auth_url = 'https://auth.cloud.ovh.net/v2.0/'
+tenant_name = '4754281319661209'
+options = {
+    'region_name': 'GRA3'
+}
+auth_version = '2'
+container_name = 'storage-pc-dev'
+
+
+def swift_con():
+    return swiftclient.Connection(user=user,
+                                  key=key,
+                                  authurl=auth_url,
+                                  os_options=options,
+                                  tenant_name=tenant_name,
+                                  auth_version=auth_version)
+
 
 STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__)))\
               / '..' / 'static' / 'object_store_data'
@@ -35,10 +48,10 @@ def store_public_object(bucket, id, blob, content_type):
     newFile.write(blob)
     newTypeFile = open(str(local_path(bucket, id))+".type", "w")
     newTypeFile.write(content_type)
-#    swift_con().put_object(bucket,
-#                           id,
-#                           contents=blob,
-#                           content_type=content_type)
+    swift_con().put_object(container_name,
+                          id,
+                          contents=blob,
+                          content_type=content_type)
 
 
 def delete_public_object(bucket, id):
