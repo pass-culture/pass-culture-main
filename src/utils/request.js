@@ -62,7 +62,7 @@ export async function fetchData(method, path, config = {}) {
   }
 
   // fetch
-  const result = await fetch(`${API_URL}/${path}`, init)
+  const result = await fetch(`${API_URL}/${path.replace(/^\//, '')}`, init)
 
 
   // check
