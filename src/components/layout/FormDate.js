@@ -1,3 +1,4 @@
+import { NEW } from 'pass-culture-shared'
 import moment from 'moment'
 import React, { Component } from 'react'
 import DatePicker from 'react-datepicker'
@@ -5,7 +6,6 @@ import { connect } from 'react-redux'
 
 import Icon from './Icon'
 import { getFormValue, mergeForm } from '../../reducers/form'
-import { NEW } from '../../utils/config'
 
 class FormDate extends Component {
 

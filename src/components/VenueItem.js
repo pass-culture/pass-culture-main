@@ -17,8 +17,6 @@ const VenueItem = ({
     postalCode
   } = (venue || {})
 
-  console.log('address', venue)
-
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
     <li className="venue-item">

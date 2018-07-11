@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
@@ -11,13 +12,13 @@ import Icon from '../layout/Icon'
 import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import { requestData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { NEW } from '../../utils/config'
+import { venueNormalizer } from '../../utils/normalizers'
 
 import Form from '../layout/Form'
 import Field from '../layout/Field'
@@ -72,28 +73,12 @@ class VenuePage extends Component {
     if (user) {
       requestData(
         'GET',
-        `offerers/${offererId}`,
-        {
-          handleSuccess,
-          handleFail,
-          key: 'offerers'
-        }
-      )
-      venueId !== 'nouveau' && requestData(
-        'GET',
-        `offerers/${offererId}/venues/${venueId}`,
+        `venues/${venueId}`,
         {
           handleSuccess,
           handleFail,
           key: 'venues',
-          normalizer: {
-            eventOccurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                event: 'occasions'
-              }
-            }
-          }
+          normalizer: venueNormalizer
         }
       )
     }

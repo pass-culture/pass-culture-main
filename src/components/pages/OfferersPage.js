@@ -1,3 +1,4 @@
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -8,7 +9,6 @@ import PageWrapper from '../layout/PageWrapper'
 import OffererItem from '../OffererItem'
 import Search from '../layout/Search'
 import offerersSelector from '../../selectors/offerers'
-import { requestData } from '../../reducers/data'
 
 class OfferersPage extends Component {
 

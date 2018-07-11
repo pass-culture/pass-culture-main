@@ -1,10 +1,10 @@
 import moment from 'moment'
+import { resetData } from 'pass-culture-shared'
 import { put,
   select,
   takeEvery
 } from 'redux-saga/effects'
 
-import { resetData } from '../reducers/data'
 import { setUser } from '../reducers/user'
 
 function* fromWatchRequestSignActions(action) {

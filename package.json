@@ -9,6 +9,7 @@
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
     "babel-loader": "7.1.2",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^3.1.0",
     "babel-runtime": "6.26.0",
     "bulma": "^0.7.1",
@@ -86,8 +87,9 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom",
-    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
+    "postinstall": "cd node_modules && ln -sf ../../shared pass-culture-shared",
+    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'",
+    "test": "node scripts/jesttest.js --env=jsdom"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -141,8 +143,12 @@
   },
   "homepage": ".",
   "devDependencies": {
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-15": "^1.0.5",
+    "enzyme-adapter-react-16": "^1.1.1",
     "husky": "^0.14.3",
     "lint-staged": "^7.0.4",
-    "prettier": "1.12.1"
+    "prettier": "1.12.1",
+    "react-test-renderer": "^16.4.1"
   }
 }

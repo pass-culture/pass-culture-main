@@ -1,17 +1,16 @@
 import get from 'lodash.get'
-import { assignErrors, removeErrors,  NEW } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
+
+import { assignErrors, removeErrors } from '../../reducers/errors'
 import { getFormEntity, mergeForm } from '../../reducers/form'
+import { NEW } from '../../utils/config'
 import { capitalize, removeWhitespaces } from '../../utils/string'
 
-const SIRET = 'siret'
-const SIREN = 'siren'
-
-class FormSirene extends Component {
+class FormBooking extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -21,36 +20,19 @@ class FormSirene extends Component {
   }
 
   onChange = e => {
-    const {
-      collectionName,
-      entityId,
-      mergeForm,
-      sireType
-    } = this.props
+    const {sireType} = this.props
     const value = removeWhitespaces(e.target.value)
-    if (sireType === SIREN && value.length === 9) {
-      this.fetchEntrepriseInfos(value)
-    } else if (sireType === SIRET && value.length === 14) {
-      this.fetchEntrepriseInfos(value)
-    } else if (value.length > 0) {
-      mergeForm(collectionName, entityId, 'name', null)
+    if (value.length === 9) {
+      this.fetchBookingInfos(value)
     }
   }
 
   formatValue = v => {
     const value = removeWhitespaces(v)
-    if (!value) {
-      return ''
-    }
-    const {sireType} = this.props
-    const siren = value.substring(0, 9)
-    const nic = value.substring(9)
-    const formattedSiren = (siren.match(/.{1,3}/g) || []).join(' ')
-    if (sireType === SIREN) return formattedSiren
-    return `${formattedSiren} ${nic}`
+    return value.substring(0, 9)
   }
 
-  fetchEntrepriseInfos = inputValue => {
+  fetchBookingInfos = inputValue => {
     if (!inputValue) {
       return
     }
@@ -63,13 +45,13 @@ class FormSirene extends Component {
       sireType,
     } = this.props
 
-    const isSiren = sireType === SIREN
-
     this.setState({
       localValue: inputValue,
       searching: true,
     })
 
+    // requestData()
+    /*
     fetch(`https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${inputValue}`)
       .then(response => {
         this.setState({
@@ -108,6 +90,7 @@ class FormSirene extends Component {
         }
       })
       .catch((e) => { console.log('erreur', e)})
+    */
   }
 
   onMergeForm = event => {
@@ -134,33 +117,28 @@ class FormSirene extends Component {
   }
 
   render() {
-    const input =
-        <FormInput
-          onChange={this.onChange}
-          formatValue={this.formatValue}
-          storeValue={removeWhitespaces}
-          {...this.props}
-          type='text'
-        />
-    if (this.props.withDisplayName) {
-      return <div className='with-display-name'>
-        {input}
-        <div className='display-name'>{get(this.props, 'entity.name')}</div>
-      </div>
-    }
-    return input
+    return (
+      <FormInput
+        onChange={this.onChange}
+        formatValue={this.formatValue}
+        storeValue={removeWhitespaces}
+        {...this.props}
+        type='text'
+      />
+    )
   }
 }
 
-FormSirene.defaultProps = {
+FormBooking.defaultProps = {
   entityId: NEW,
 }
 
-FormSirene.propTypes = {
-  sireType: PropTypes.string.isRequired,
+FormBooking.propTypes = {
 }
 
 export default connect(
-  (state, ownProps) => ({ entity: getFormEntity(state, ownProps) }),
+  (state, ownProps) => ({
+    entity: getFormEntity(state, ownProps)
+  }),
   { assignErrors, mergeForm, removeErrors }
-)(FormSirene)
+)(FormBooking)

@@ -1,11 +1,11 @@
 import get from 'lodash.get'
 import moment from 'moment'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import FormField from './layout/FormField'
 import SubmitButton from './layout/SubmitButton'
-import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import offerSelector from '../selectors/offer'

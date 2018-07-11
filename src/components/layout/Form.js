@@ -4,9 +4,10 @@ import debounce from 'lodash.debounce'
 import get from 'lodash.get'
 import set from 'lodash.set'
 
+import { requestData } from 'pass-culture-shared'
+
 import { newMergeForm } from '../../reducers/form'
 import { removeErrors } from '../../reducers/errors'
-import { requestData } from '../../reducers/data'
 
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'

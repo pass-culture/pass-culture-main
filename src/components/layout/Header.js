@@ -48,12 +48,10 @@ class Header extends Component {
             'is-active': showMobileMenu
           })}>
             <div className="navbar-end">
-              { false &&
-                <NavLink className="navbar-item" to={'/guichet'} key={0}>
-                  <span className='icon'><Icon svg={'ico-guichet-w'} /></span>,
-                  <span>Guichet</span>
-                </NavLink>
-              }
+              <NavLink className="navbar-item" to={'/guichet'} key={0}>
+                <span className='icon'><Icon svg={'ico-guichet-w'} /></span>
+                <span>Guichet</span>
+              </NavLink>
               { !whiteHeader &&
                 <NavLink className="navbar-item" to={`/offres${search}`} key={1}>
                   <span className='icon'><Icon svg={'ico-offres-w'} /></span>

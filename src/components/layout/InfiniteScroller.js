@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
 import classnames from 'classnames'
+import React, { Component } from 'react'
 
 import Loader from './Loader'
 

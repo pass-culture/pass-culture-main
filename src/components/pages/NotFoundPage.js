@@ -13,7 +13,7 @@ const NotFoundPage = () => {
       <p>Cette page n'a pas pu être affichée.</p>
       <footer>
         <Link
-          to="/"
+          to="/accueil"
           className="button is-secondary is-inversed has-text-weight-light is-italic"
         >
           Revenir à l'accueil
