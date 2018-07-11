@@ -1,10 +1,10 @@
 import classnames from 'classnames'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux'
 
-import { requestData } from '../../reducers/data'
 import { NEW } from '../../utils/config'
 
 class UploadThumb extends Component {

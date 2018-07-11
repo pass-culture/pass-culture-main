@@ -1,9 +1,9 @@
 import classnames from 'classnames'
+import { assignData } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
 
 import SubmitButton from './SubmitButton'
-import { assignData } from '../../reducers/data'
 
 const List = ({
   className,

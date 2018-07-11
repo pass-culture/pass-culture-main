@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -8,7 +9,6 @@ import FormField from './layout/FormField'
 import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
 import VenueProviderItem from './VenueProviderItem'
-import { requestData } from '../reducers/data'
 import { mergeForm } from '../reducers/form'
 import providerSelector from '../selectors/provider'
 import providersSelector from '../selectors/providers'
@@ -107,6 +107,7 @@ class ProviderManager extends Component {
       venueProviders
     } = this.props
     const {
+      id,
       identifierDescription,
       identifierRegexp,
     } = (provider || {})
@@ -151,6 +152,7 @@ class ProviderManager extends Component {
                 <div className='picto'><Icon svg='picto-db-default' /></div>
                 <FormField
                   collectionName="venueProviders"
+                  defaultValue={id}
                   name="providerId"
                   options={providerOptionsWithPlaceholder}
                   required
@@ -201,13 +203,24 @@ class ProviderManager extends Component {
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => ({
-      user: state.user,
-      providers: providersSelector(state),
-      provider: providerSelector(state,
-        get(state, `form.venueProvidersById.${NEW}.providerId`)),
-      venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
-    }),
+    (state, ownProps) => {
+      const providers = providersSelector(state)
+
+      let provider
+      if (providers.length === 1) {
+        provider = providers[0]
+      } else {
+        const providerId = get(state, `form.venueProvidersById.${NEW}.providerId`)
+        provider = providerSelector(state, providerId)
+      }
+
+      return {
+        provider,
+        providers,
+        user: state.user,
+        venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
+      }
+    },
     { mergeForm, requestData }
   )
 )(ProviderManager)

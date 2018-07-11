@@ -1,10 +1,9 @@
+import { NEW, removeErrors } from 'pass-culture-shared'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { removeErrors } from '../../reducers/errors'
 import { getFormValue, mergeForm } from '../../reducers/form'
-import { NEW } from '../../utils/config'
 
 class FormInput extends Component {
   constructor(props) {

@@ -98,9 +98,6 @@ class OccurenceManager extends Component {
       match: { params: { eventOccurenceId } },
       occasion
     } = this.props
-    const {
-      id
-    } = (occasion || {})
     if (eventOccurenceId === 'nouvelle' &&
       eventOccurenceId !== get(prevProps, 'match.params.eventOccurenceId')
     ) {

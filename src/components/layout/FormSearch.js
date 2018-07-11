@@ -1,18 +1,18 @@
 import debounce from 'lodash.debounce'
+import {
+  AND,
+  NEW,
+  SEARCH,
+  requestData
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestData } from '../../reducers/data'
 import {
   getFormCollection,
   mergeForm,
   removeForm
 } from '../../reducers/form'
-import {
-  AND,
-  NEW,
-  SEARCH
-} from '../../utils/config'
 
 class FormSearch extends Component {
   constructor(props) {

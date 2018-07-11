@@ -1,12 +1,12 @@
 import get from 'lodash.get'
 import moment from 'moment'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import OccurenceForm from './OccurenceForm'
 import Price from './Price'
 import Icon from './layout/Icon'
-import { requestData } from '../reducers/data'
 import offerSelector from '../selectors/offer'
 import timezoneSelector from '../selectors/timezone'
 

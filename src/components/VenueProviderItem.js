@@ -1,12 +1,15 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Icon from './layout/Icon'
-import { requestData } from '../reducers/data'
+import eventsSelector from '../selectors/events'
+import thingsSelector from '../selectors/things'
+import { pluralize } from '../utils/string'
 
 class VenueProviderItem extends Component {
 
@@ -37,16 +40,18 @@ class VenueProviderItem extends Component {
 
   render () {
     const {
+      events,
+      things,
       venue,
       venueProvider
     } = this.props
     const {
       isActive,
       lastSyncDate,
-      occasions,
       provider,
       venueIdAtOfferProvider
     } = (venueProvider || {})
+    const nOccasions = (events || []).concat(things).length
 
     return (
       <li className={classnames('is-disabled')}>
@@ -64,12 +69,12 @@ class VenueProviderItem extends Component {
         {
           lastSyncDate
           ? [
-            get(occasions, 'length')
+            nOccasions
               ? (
                 <NavLink key={0} to={`/offres?structure=${get(venue, 'id')}`}
                   className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                  {occasions.length} offres
+                  {nOccasions} {pluralize(nOccasions, 'offres')}
                 </NavLink>
               )
               : (
@@ -101,7 +106,10 @@ class VenueProviderItem extends Component {
 
 export default compose(
   connect(
-    null,
+    (state, ownProps) => ({
+      events: eventsSelector(state, ownProps.venueProvider.providerId),
+      things: thingsSelector(state, ownProps.venueProvider.providerId),
+    }),
     { requestData }
   )
 )(VenueProviderItem)

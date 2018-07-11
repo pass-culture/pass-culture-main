@@ -1,9 +1,9 @@
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { requestData } from '../../reducers/data'
 import occasionSelector from '../../selectors/occasion'
 import { NEW } from '../../utils/config'
 import { occasionNormalizer } from '../../utils/normalizers'

@@ -1,13 +1,11 @@
 import get from 'lodash.get'
+import { assignErrors, removeErrors,  NEW } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import FormInput from './FormInput'
-
-import { assignErrors, removeErrors } from '../../reducers/errors'
 import { getFormEntity, mergeForm } from '../../reducers/form'
-import { NEW } from '../../utils/config'
 import { capitalize, removeWhitespaces } from '../../utils/string'
 
 const SIRET = 'siret'

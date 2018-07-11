@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'
@@ -11,7 +12,6 @@ import { compose } from 'redux'
 import Price from './Price'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
-import { requestData } from '../reducers/data'
 import eventSelector from '../selectors/event'
 import maxDateSelector from '../selectors/maxDate'
 import mediationsSelector from '../selectors/mediations'
@@ -105,7 +105,7 @@ class OccasionItem extends Component {
               {groupSizeMin === 1 && <Icon svg='picto-user' />}
               {groupSizeMin > 1 && <div><Icon svg='picto-group' />, <p>{groupSizeMin === groupSizeMax ? groupSizeMin : `${groupSizeMin} - ${groupSizeMax}`}</p></div>}
             </li>
-            <li>{available ? `${pluralize('restent', available)} ${available}` : '0 place'} </li>
+            <li>{available ? `encore ${available} places` : '0 place'} </li>
             <li>{priceMin === priceMax ? <Price value={priceMin || 0} /> : (<span><Price value={priceMin} /> - <Price value={priceMax} /></span>)}</li>
           </ul>
           <ul className='actions'>
