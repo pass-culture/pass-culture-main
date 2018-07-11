@@ -147,31 +147,26 @@ class OccurenceManager extends Component {
               </tr>
             </thead>
             <tbody>
-              {
-                eventOccurenceId === 'nouvelle'
-                  ? (
-                    <OccurenceForm
-                      history={history}
-                      occasion={occasion}
-                    />
-                  ) : (
-                  <tr><td colSpan='10'>
-                    {
-                      provider
-                        ? (
-                          <i>
-                            Il n'est pas possible d'ajouter ni de supprimer de dates pour cet événement {provider.name}
-                          </i>
-                        )
-                        : (
-                          <button className='button is-secondary' onClick={this.onAddClick}>
-                            + Ajouter un horaire
-                          </button>
-                        )
-                    }
-                  </td></tr>
-                )
-              }
+              { eventOccurenceId === 'nouvelle' ? (
+                <OccurenceForm
+                  history={history}
+                  occasion={occasion}
+                />
+              ) : (
+                <tr>
+                  <td colSpan='10'>
+                    { provider ? (
+                      <i>
+                        Il n'est pas possible d'ajouter ni de supprimer de dates pour cet événement {provider.name}
+                      </i>
+                    ) : (
+                      <button className='button is-secondary' onClick={this.onAddClick}>
+                        + Ajouter un horaire
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              )}
               {
                 occurences && occurences.map(o =>
                   <OccurenceItem
