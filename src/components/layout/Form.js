@@ -99,11 +99,12 @@ class Form extends Component {
         }
         const formValue = get(formData || {}, c.props.name)
         const storeValue = get(storeData || {}, c.props.name)
+
         return React.cloneElement(c, {
           id: `${name}-${c.props.name}`,
           onChange: this.updateFormValue,
           value: (typeof formValue === 'string') ? formValue : storeValue || '',
-          error: get(formErrors || {}, c.props.name),
+          errors: [].concat(formErrors).filter(e => get(e, c.props.name)).map(e => get(e, c.props.name)),
           readOnly: c.props.readOnly || readOnly,
         })
       } else if (c.type.displayName === 'Submit') {

@@ -32,7 +32,7 @@ const form = (state = initialState, action) => {
       console.log(action)
       return deepMerge(state, {
         [action.name]: {
-          errors: action.values,
+          errors: [].concat(action.values),
         }
       })
     case REMOVE_FORM:
