@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { connect } from 'react-redux'
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
+import set from 'lodash.set'
 
 import { newMergeForm } from '../../reducers/form'
 import { removeErrors } from '../../reducers/errors'
@@ -82,8 +83,10 @@ class Form extends Component {
       data: storeData,
       method,
       name,
+      readOnly,
     } = this.props
     let requiredFields = []
+
     return recursiveMap(children, c => {
       if (c.type.displayName === 'Field') {
         if (c.props.required) {
@@ -96,6 +99,7 @@ class Form extends Component {
           onChange: this.updateFormValue,
           value: (typeof formValue === 'string') ? formValue : storeValue || '',
           error: get(formErrors || {}, c.props.name),
+          readOnly: c.props.readOnly || readOnly,
         })
       } else if (c.type.displayName === 'Submit') {
         return React.cloneElement(c, {

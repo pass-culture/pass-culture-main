@@ -12,6 +12,10 @@ import { closeModal, showModal } from '../reducers/modal'
 import occurencesSelector from '../selectors/occurences'
 import { optionify } from '../utils/form'
 
+import Form from './layout/Form'
+import Field from './layout/Field'
+import Submit from './layout/Submit'
+
 class OccasionForm extends Component {
 
   handleShowOccurencesModal = () => {
@@ -70,7 +74,6 @@ class OccasionForm extends Component {
       isEventType,
       isNew,
       isReadOnly,
-      occasionIdOrNew,
       offerer,
       offerers,
       thing,
@@ -98,41 +101,8 @@ class OccasionForm extends Component {
         <h2 className='pc-list-title'>
           Infos pratiques
         </h2>
-        {
-          /*
-          <FormField
-            collectionName='occasions'
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Prix:" />}
-            name="price"
-            readOnly={isReadOnly}
-          />
-          <FormField
-            className='column'
-            collectionName='occasions'
-            entityId={occasionIdOrNew}
-            inputClassName='input is-rounded'
-            label={<Label title="Gratuit" />}
-            name="isForFree"
-            readOnly={isReadOnly}
-            type="checkbox"
-          />
-          */
-        }
         <div className='field-group'>
-          <FormField
-            collectionName='occasions'
-            defaultValue={get(offerer, 'id')}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Structure :" />}
-            name='offererId'
-            options={optionify(offerers, 'Sélectionnez une structure')}
-            readOnly={isReadOnly || !isNew}
-            required={!isReadOnly}
-            type="select"
-          />
+          <Field type='select' name='offererId' label='Structure' required options={offerers} placeholder="Sélectionnez une structure"/>
           {
             offerer && get(venues, 'length') === 0
               ? (
@@ -141,132 +111,25 @@ class OccasionForm extends Component {
                 </p>
               )
               :
-                get(venues, 'length') > 0 && <FormField
-                  collectionName='occasions'
-                  defaultValue={get(venue, 'id')}
-                  entityId={occasionIdOrNew}
-                  isHorizontal
-                  label={<Label title="Lieu :" />}
-                  name='venueId'
-                  options={optionify(venues, 'Sélectionnez un lieu')}
-                  readOnly={isReadOnly || !isNew}
-                  required={!isReadOnly}
-                  type="select"
-                />
+                get(venues, 'length') > 0 && <Field type='select' name='venueId' label='Lieu' required options={venues} placeholder='Sélectionnez un lieu' />
           }
           {
             isEventType && (
-              <FormField
-                collectionName='occasions'
-                defaultValue={durationMinutes}
-                entityId={occasionIdOrNew}
-                isHorizontal
-                label={<Label title="Durée en minutes :" />}
-                name="durationMinutes"
-                readOnly={isReadOnly}
-                required={!isReadOnly}
-                type="number"
-              />
+              <Field type='number' name='durationMinutes' label='Durée en minutes' required />
             )
           }
         </div>
         <h2 className='pc-list-title'>Infos artistiques</h2>
         <div className='field-group'>
-          <FormField
-            collectionName='occasions'
-            defaultValue={description}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Description :" />}
-            maxLength={750}
-            name="description"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-            type="textarea"
-          />
-          <FormField
-            collectionName='occasions'
-            defaultValue={author}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Auteur :" />}
-            name="author"
-            readOnly={isReadOnly}
-          />
+          <Field type='textarea' name='description' label='Description' maxLength={750} required isExpanded />
+          <Field name='author' label='Auteur' isExpanded />
           {
             isEventType && [
-              <FormField
-                collectionName='occasions'
-                defaultValue={stageDirector}
-                entityId={occasionIdOrNew}
-                isHorizontal
-                isExpanded
-                key={0}
-                label={<Label title="Metteur en scène:" />}
-                name="stageDirector"
-                readOnly={isReadOnly}
-              />,
-              <FormField
-                collectionName='occasions'
-                defaultValue={performer}
-                entityId={occasionIdOrNew}
-                isHorizontal
-                isExpanded
-                key={1}
-                label={<Label title="Interprète:" />}
-                name="performer"
-                readOnly={isReadOnly}
-              />
+              <Field key={0} name='stageDirector' label='Metteur en scène' isExpanded />,
+              <Field key={1} name='performer' label='Interprète' isExpanded />
             ]
           }
         </div>
-      { false && [
-        <h2 className='pc-list-title'>Contact</h2>,
-        <div className='field-group'>
-          <FormField
-            collectionName='occasions'
-            defaultValue={contactName || get(user, 'publicName')}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Nom du contact :" />}
-            name="contactName"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-          />,
-          <FormField
-            collectionName='occasions'
-            defaultValue={contactEmail || get(user, 'email')}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            isExpanded
-            label={<Label title="Email de contact :" />}
-            name="contactEmail"
-            readOnly={isReadOnly}
-            required={!isReadOnly}
-            type="email"
-          />,
-          <FormField
-            collectionName='occasions'
-            defaultValue={contactPhone}
-            entityId={occasionIdOrNew}
-            isHorizontal
-            label={<Label title="Tel de contact :" />}
-            name="contactPhone"
-            readOnly={isReadOnly}
-          /></div>,
-          ]}
-          {false && <FormField
-                      collectionName='occasions'
-                      defaultValue={mediaUrls}
-                      entityId={occasionIdOrNew}
-                      label={<Label title="Media URLs" />}
-                      name="mediaUrls"
-                      readOnly={isReadOnly}
-                      type="list"
-                    />}
       </div>
     )
   }

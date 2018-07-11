@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import set from 'lodash.set'
 import { DELETE, NEW } from '../utils/config'
 
 import {deepMerge} from '../utils/object'
@@ -21,9 +22,12 @@ const form = (state = initialState, action) => {
       delete collection[action.id]
       return Object.assign({}, state, { [collectionKey]: collection })
     case NEW_MERGE_FORM:
+      const newValue = Object.keys(action.values).reduce((result, k) => {
+        return set(result, k, action.values[k])
+      }, {})
       return deepMerge(state, {
         [action.name]: {
-          data: action.values
+          data: newValue
         }
       })
     case MERGE_FORM:
