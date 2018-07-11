@@ -33,11 +33,8 @@ class Field extends Component {
 
   }
 
-  static nameToAutoComplete(name) {
-    switch(name) {
-      default:
-        return name
-    }
+  static nameToAutoComplete(type, name) {
+    return type || name
   }
 
   static nameToFormatter(name) {
@@ -95,7 +92,7 @@ class Field extends Component {
     } = this.props
 
     const actualType = type || this.constructor.nameToInputType(name)
-    const actualAutoComplete = autoComplete || this.constructor.nameToAutoComplete(name)
+    const actualAutoComplete = autoComplete || this.constructor.nameToAutoComplete(type, name)
     const actualRequired = required && !readOnly
 
     // console.log(name, actualType, this.state.value)
@@ -156,18 +153,22 @@ class Field extends Component {
       required,
       readOnly,
       size,
+      type,
     } = this.props
     const $input = this.renderInput()
+    if (type === 'hidden') return $input
     switch(layout) {
       case 'horizontal':
         return <div className={`field is-horizontal ${classnames({required, readOnly})}`}>
           {label && <div className={`field-label is-${size}`}>
             <label htmlFor={id} className='label'><span className='subtitle'>{label} :</span></label>
           </div>}
-          <div className='field-body'>{$input}</div>
-          {error && <p className='help is-danger'>
-            <Icon svg="picto-warning" alt="Warning" /> {error}
-          </p>}
+          <div className='field-body'>
+            {$input}
+            {error && <p className='help is-danger'>
+              <Icon svg="picto-warning" alt="Warning" /> {error}
+            </p>}
+          </div>
         </div>
       default:
         return $input

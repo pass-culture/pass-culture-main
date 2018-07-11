@@ -65,7 +65,7 @@ class VenuePage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { offererId } },
+      match: { params: { offererId, venueId } },
       requestData,
       user
     } = this.props
@@ -74,12 +74,14 @@ class VenuePage extends Component {
         'GET',
         `offerers/${offererId}`,
         {
+          handleSuccess,
+          handleFail,
           key: 'offerers'
         }
       )
-      requestData(
+      venueId !== 'nouveau' && requestData(
         'GET',
-        `offerers/${offererId}/venues`,
+        `offerers/${offererId}/venues/${venueId}`,
         {
           handleSuccess,
           handleFail,
@@ -173,6 +175,8 @@ class VenuePage extends Component {
       venueName
     } = this.state
 
+    const formData = Object.assign({}, venue, {managingOffererId: offererId, bookingEmail: get(user, 'email')})
+
     return (
       <PageWrapper
         backTo={{
@@ -214,7 +218,8 @@ class VenuePage extends Component {
 
         {!isNew && <ProviderManager venue={venue} />}
 
-        <Form name='venue' handleSuccess={this.handleSuccess} action={`/venues/${get(venue, 'id')}`} data={venue}>
+        <Form name='venue' handleSuccess={this.handleSuccess} action={`/venues/${get(venue, 'id', '')}`} data={formData}>
+          <Field type='hidden' name='managingOffererId' />
           <div className='section'>
             <h2 className='pc-list-title'>
               IDENTIFIANTS
@@ -225,7 +230,7 @@ class VenuePage extends Component {
             <div className='field-group'>
               <Field name='siret' label='SIRET' readOnly={isReadOnly} required />
               <Field name='name' label='Nom du lieu' readOnly={isReadOnly} required />
-              <Field name='bookingEmail' label='E-mail' readOnly={isReadOnly} required />
+              <Field type='email' name='bookingEmail' label='E-mail' readOnly={isReadOnly} required />
             </div>
           </div>
           <div className='section'>

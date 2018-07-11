@@ -12,15 +12,13 @@ const MERGE_FORM = 'MERGE_FORM'
 const NEW_MERGE_FORM = 'NEW_MERGE_FORM'
 const REMOVE_FORM = 'REMOVE_FORM'
 const RESET_FORM = 'RESET_FORM'
+const NEW_ERROR_FORM = 'NEW_ERROR_FORM'
 
 // REDUCER
 const form = (state = initialState, action) => {
   const collectionKey = `${action.collectionName}ById`
   const collection = Object.assign({}, state[collectionKey])
   switch (action.type) {
-    case REMOVE_FORM:
-      delete collection[action.id]
-      return Object.assign({}, state, { [collectionKey]: collection })
     case NEW_MERGE_FORM:
       const newValue = Object.keys(action.values).reduce((result, k) => {
         return set(result, k, action.values[k])
@@ -30,6 +28,16 @@ const form = (state = initialState, action) => {
           data: newValue
         }
       })
+    case NEW_ERROR_FORM:
+      console.log(action)
+      return deepMerge(state, {
+        [action.name]: {
+          errors: action.values,
+        }
+      })
+    case REMOVE_FORM:
+      delete collection[action.id]
+      return Object.assign({}, state, { [collectionKey]: collection })
     case MERGE_FORM:
       const entity = Object.assign({}, collection[action.id])
       if (typeof action.nameOrObject === 'object' && !action.value) {
@@ -68,6 +76,12 @@ export const newMergeForm = (name, values, options) => ({
   name,
   values,
   options,
+})
+
+export const newErrorForm = (name, values) => ({
+  type: NEW_ERROR_FORM,
+  name,
+  values,
 })
 
 export const mergeForm = (collectionName, id, nameOrObject, value, parentValue) => ({

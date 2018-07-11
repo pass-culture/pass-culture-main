@@ -6,6 +6,7 @@ import set from 'lodash.set'
 
 import { newMergeForm } from '../../reducers/form'
 import { removeErrors } from '../../reducers/errors'
+import { requestData } from '../../reducers/data'
 
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
@@ -31,7 +32,7 @@ class Form extends Component {
 
   static getDerivedStateFromProps = (props, prevState) => {
     return {
-      method: props.method || get(props, 'storeData.id') ? 'PATCH' : 'PUT',
+      method: props.method || get(props, 'formData.id') ? 'PATCH' : 'POST',
     }
   }
 
@@ -47,23 +48,27 @@ class Form extends Component {
     e.preventDefault()
     const {
       action,
+      formData,
       handleFail,
       handleSuccess,
+      name,
+      requestData,
     } = this.props
 
     console.log('should submit')
     // TODO: plug this
-    // requestData(this.state.method, action, {
-    //   add,
-    //   body,
-    //   getOptimistState,
-    //   getSuccessState,
-    //   handleFail,
-    //   handleSuccess,
-    //   key: storeKey,
-    //   requestId: submitRequestId,
-    //   encode: body instanceof FormData ? 'multipart/form-data' : null,
-    // })
+    requestData(this.state.method, action, {
+      body: formData,
+      // add,
+      // getOptimistState,
+      // getSuccessState,
+      // key: storeKey,
+      // requestId: submitRequestId,
+      formName: name,
+      handleFail,
+      handleSuccess,
+      encode: formData instanceof FormData ? 'multipart/form-data' : null,
+    })
   }
 
   updateFormValue = (key, value) => {
@@ -142,5 +147,5 @@ export default connect(
     formData: get(state, `form.${ownProps.name}.data`),
     formErrors: get(state, `form.${ownProps.name}.errors`),
   }),
-  { newMergeForm, removeErrors }
+  { newMergeForm, removeErrors, requestData }
 )(Form)
