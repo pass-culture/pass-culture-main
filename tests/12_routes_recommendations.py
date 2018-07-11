@@ -29,7 +29,7 @@ def check_recos(recos):
 
 
 def subtest_initial_recos():
-    r = req_with_auth().put(RECOMMENDATION_URL, json={})
+    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenOccasionIds': []})
     assert r.status_code == 200
     recos = r.json()
     assert len(recos) == BLOB_SIZE + 2
@@ -53,6 +53,7 @@ def subtest_recos_with_params(params,
                               expected_occasion_id=None,
                               is_tuto=False):
     r = req_with_auth().put(RECOMMENDATION_URL+'?'+params, json={})
+   
     assert r.status_code == expected_status
     if expected_status == 200:
         recos = r.json()
@@ -154,40 +155,18 @@ def test_14_actual_errors_should_generate_a_400():
     #subtest_recos_with_params('occasionType=event&occasionId=00&mediationId=00',
     #                          expected_status=400)
 
-
-def test_16_once_marked_as_read_tutos_should_not_come_back():
+def test_15_put_recommendations_should_not_return_already_seen_recos():
     r = req_with_auth().put(RECOMMENDATION_URL, json={})
     assert r.status_code == 200
     recos_before = r.json()
-    assert recos_before[0]['mediation']['tutoIndex'] == 0
-    assert recos_before[1]['mediation']['tutoIndex'] == 1
-    r_update = req_with_auth().patch(API_URL + '/recommendations/' + recos_before[0]['id'],
-                                     json={'dateRead': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')})
-    assert r_update.status_code == 200
+    seen_recommendations = recos_before[:20]
+    seen_recommendations_ids = list(map(lambda x: x['id'], seen_recommendations))
 
-    r = req_with_auth().put(RECOMMENDATION_URL, json={})
+    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': seen_recommendations_ids})
     assert r.status_code == 200
     recos_after = r.json()
-    assert recos_after[0]['mediation']['tutoIndex'] == 1
-    assert 'mediation' not in recos_after[1]\
-           or recos_after[1]['mediation']['tutoIndex'] is None
 
+    recos_after_id = [reco['id'] for reco in recos_after]
 
-def test_17_put_recommendations_should_return_more_recos():
-    r = req_with_auth().put(RECOMMENDATION_URL, json={})
-    assert r.status_code == 200
-    recos = r.json()
-    # ensure we still have no duplicates
-    ids = list(map(lambda reco: reco['id'], recos))
-    assert len(list(filter(lambda v: v > 1, Counter(ids).values()))) == 0
-
-
-def test_18_patch_recommendations_should_return_is_clicked_true():
-    r = req_with_auth().put(RECOMMENDATION_URL, json={})
-    assert r.status_code == 200
-    recos = r.json()
-    recoId = recos[0]['id']
-    r_update = req_with_auth().patch(API_URL + '/recommendations/' + recoId,
-                                     json={'isClicked': True})
-    assert r_update.status_code == 200
-    assert r_update.json()['isClicked']
+    intersection_between_seen_and_recommended = set(seen_recommendations_ids).intersection(set(recos_after_id))
+    assert len(intersection_between_seen_and_recommended) == 0
