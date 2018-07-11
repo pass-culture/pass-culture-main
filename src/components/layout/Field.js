@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import classnames from 'classnames'
+import get from 'lodash.get'
 import { removeWhitespaces, formatSiren } from '../../utils/string'
 import Icon from './Icon'
 import { optionify } from '../../utils/form'
+import Textarea from 'react-autosize-textarea'
 
 class Field extends Component {
 
@@ -17,6 +19,8 @@ class Field extends Component {
     onChange: () => {},
     layout: 'horizontal',
     size: 'normal',
+    optionValue: 'id',
+    optionLabel: 'name',
   }
 
   static nameToInputType(name) {
@@ -46,7 +50,7 @@ class Field extends Component {
         }
       default:
         return {
-          displayValue: v => v,
+          displayValue: v => (v || ''),
           storeValue: v => v,
         }
     }
@@ -81,6 +85,8 @@ class Field extends Component {
       name,
       onChange,
       options,
+      optionLabel,
+      optionValue,
       placeholder,
       readOnly,
       required,
@@ -92,11 +98,12 @@ class Field extends Component {
     const actualAutoComplete = autoComplete || this.constructor.nameToAutoComplete(name)
     const actualRequired = required && !readOnly
 
+    // console.log(name, actualType, this.state.value)
+
     switch(actualType) {
       case 'select':
         const actualReadOnly = readOnly || options.length === 1
-        const actualOptions = optionify(options, placeholder)
-        console.log(actualOptions)
+        const actualOptions = optionify(options.map(o => ({label: get(o, optionLabel), value: get(o, optionValue)})), placeholder)
         return <div className={`select ${classnames({actualReadOnly})}`}>
           <select
             autoComplete={actualAutoComplete}
@@ -114,6 +121,17 @@ class Field extends Component {
             )}
           </select>
         </div>
+      case 'textarea':
+        return <Textarea
+          autoComplete={actualAutoComplete}
+          id={id}
+          placeholder={placeholder}
+          value={this.state.value}
+          onChange={this.onInputChange}
+          required={actualRequired}
+          readOnly={readOnly}
+          className='textarea'
+        />
       default:
         return <input
           autoComplete={actualAutoComplete}

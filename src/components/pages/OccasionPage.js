@@ -50,7 +50,8 @@ class OccasionPage extends Component {
     super()
     this.state = {
       isReadOnly: true,
-      hasNoVenue: false
+      hasNoVenue: false,
+      isEventType: false,
     }
   }
 
@@ -217,13 +218,15 @@ class OccasionPage extends Component {
     const {
       apiPath,
       isReadOnly,
-      requiredFields
+      isEventType,
+      requiredFields,
     } = this.state
 
 
     const showAllForm = type || !isNew
 
-    console.log(typeOptions)
+    const formData = Object.assign({}, occasion, event || thing)
+    // console.log(formData)
 
     return (
       <PageWrapper
@@ -242,10 +245,10 @@ class OccasionPage extends Component {
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
           </p>
-          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={occasion}>
+          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={formData} readOnly={isReadOnly}>
             <div className='field-group'>
-              <Field name='name' label="Titre de l'offre" readOnly={isReadOnly} required isExpanded/>
-              <Field type='select' name='type' label='Type' readOnly={isReadOnly} required options={typeOptions.map(o => ({value: o.id, label: o.label}))} placeholder="Sélectionnez un type d'offre"/>
+              <Field name='name' label="Titre de l'offre" required isExpanded/>
+              <Field type='select' name='type' label='Type' required options={typeOptions} placeholder="Sélectionnez un type d'offre" optionLabel='label'/>
             </div>
             { !isNew && (
               <div className='field'>
@@ -278,20 +281,41 @@ class OccasionPage extends Component {
                 />
               </div>
             )}
-            {
-              showAllForm && <OccasionForm
-                event={event}
-                isNew={isNew}
-                occasion={occasion}
-                occasionIdOrNew={occasionIdOrNew}
-                offerer={offerer}
-                offerers={offerers}
-                routePath={routePath}
-                thing={thing}
-                venue={venue}
-                venues={venues}
-                {...this.state}
-              />
+            { showAllForm &&
+              <div>
+                <h2 className='pc-list-title'>
+                  Infos pratiques
+                </h2>
+                <div className='field-group'>
+                  <Field type='select' name='offererId' label='Structure' required options={offerers} placeholder="Sélectionnez une structure"/>
+                  {
+                    offerer && get(venues, 'length') === 0
+                      ? (
+                        <p>
+                          Il faut obligatoirement une structure avec un lieu.
+                        </p>
+                      )
+                      :
+                        get(venues, 'length') > 0 && <Field type='select' name='venueId' label='Lieu' required options={venues} placeholder='Sélectionnez un lieu' />
+                  }
+                  {
+                    isEventType && (
+                      <Field type='number' name='durationMinutes' label='Durée en minutes' required />
+                    )
+                  }
+                </div>
+                <h2 className='pc-list-title'>Infos artistiques</h2>
+                <div className='field-group'>
+                  <Field type='textarea' name='description' label='Description' maxLength={750} required isExpanded />
+                  <Field name='author' label='Auteur' isExpanded />
+                  {
+                    isEventType && [
+                      <Field key={0} name='stageDirector' label='Metteur en scène' isExpanded />,
+                      <Field key={1} name='performer' label='Interprète' isExpanded />
+                    ]
+                  }
+                </div>
+              </div>
             }
 
             <hr />
