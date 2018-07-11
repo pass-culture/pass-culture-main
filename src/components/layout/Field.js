@@ -146,6 +146,7 @@ class Field extends Component {
     const {
       errors,
       id,
+      isExpanded,
       label,
       layout,
       required,
@@ -154,6 +155,7 @@ class Field extends Component {
       type,
     } = this.props
     const $input = this.renderInput()
+
     if (type === 'hidden') return $input
     switch(layout) {
       case 'horizontal':
@@ -162,7 +164,9 @@ class Field extends Component {
             <label htmlFor={id} className='label'><span className='subtitle'>{label} :</span></label>
           </div>}
           <div className='field-body'>
-            {$input}
+            <div className={`field ${classnames({'is-expanded': isExpanded})}`}>
+              {$input}
+            </div>
             {errors.map(e => <p className='help is-danger'>
               <Icon svg="picto-warning" alt="Warning" /> {e}
             </p>)}
