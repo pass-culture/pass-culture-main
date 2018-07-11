@@ -48,6 +48,7 @@ def get_offerer(id):
 def create_offerer():
     offerer = app.model.Offerer()
     update(offerer, request.json)
+    app.model.PcObject.check_and_save(offerer)
     if not current_user.isAdmin:
         offerer.generate_validation_token()
         user_offerer = offerer.give_rights(current_user,
