@@ -29,7 +29,7 @@ def check_recos(recos):
 
 
 def subtest_initial_recos():
-    r = req_with_auth().put(RECOMMENDATION_URL, json={})
+    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenOccasionIds': []})
     assert r.status_code == 200
     recos = r.json()
     assert len(recos) == BLOB_SIZE + 2
@@ -40,7 +40,6 @@ def subtest_initial_recos():
     assert len(list(filter(lambda reco: 'mediation' in reco and
                                         reco['mediation']['tutoIndex'] is not None,
                            recos))) == 2
-
 
     check_recos(recos)
     return recos
@@ -63,7 +62,6 @@ def subtest_recos_with_params(params,
                                recos))) == (1 if is_tuto else 0)
         check_recos(recos)
         return recos
-
 
 def test_10_put_recommendations_should_work_only_when_logged_in():
     r = req.put(RECOMMENDATION_URL)
@@ -191,3 +189,20 @@ def test_18_patch_recommendations_should_return_is_clicked_true():
                                      json={'isClicked': True})
     assert r_update.status_code == 200
     assert r_update.json()['isClicked']
+
+
+def test_19_put_recommendations_should_not_return_already_seen_recos():
+    r = req_with_auth().put(RECOMMENDATION_URL, json={})
+    assert r.status_code == 200
+    recos_before = r.json()
+    seen_recommendations = recos_before[:20]
+    seen_recommendations_ids = list(map(lambda x: x['id'], seen_recommendations))
+
+    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': seen_recommendations_ids})
+    assert r.status_code == 200
+    recos_after = r.json()
+    recos_after_id = [reco['id'] for reco in recos_after]
+
+    intersection_between_seen_and_recommended = set(seen_recommendations_ids).intersection(set(recos_after_id))
+    assert len(intersection_between_seen_and_recommended) == 0
+
