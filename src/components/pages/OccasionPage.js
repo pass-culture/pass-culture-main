@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import MediationManager from '../MediationManager'
+import OccurenceManager from '../OccurenceManager'
 import OccasionForm from '../OccasionForm'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import FormField from '../layout/FormField'
@@ -168,8 +169,43 @@ class OccasionPage extends Component {
     }
   }
 
-  componentDidUpdate () {
+  handleShowOccurencesModal = () => {
     const {
+      history,
+      location,
+      match,
+      occasion,
+      occurences,
+      showModal
+    } = this.props
+    const { params: { feature } } = match
+    if (feature !== 'dates') {
+      return
+    }
+    showModal(
+      <OccurenceManager
+        history={history}
+        location={location}
+        match={match}
+        occasion={occasion}
+        occurences={occurences}
+      />,
+      {
+        isUnclosable: true
+      }
+    )
+  }
+
+  componentDidMount() {
+    this.handleShowOccurencesModal()
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      match: { params: { feature } },
+      location: { pathname },
+      occasion,
+      occurences,
       history,
       offerer,
       search,
@@ -177,6 +213,7 @@ class OccasionPage extends Component {
     } = this.props
     const { offererId, venueId } = this.props
 
+    // IMHO not necessary: here I'd consider the query string as a inital value, but then we let the form handle the data, don't we?
     if (venue && venueId && venue.id !== venueId) {
       history.push({
         search: updateQueryString(search, { venueId })
@@ -187,6 +224,17 @@ class OccasionPage extends Component {
       history.push({
         search: updateQueryString(search, { offererId })
       })
+    }
+
+    if (feature === 'dates') {
+      if (
+        !get(prevProps, 'match.params.feature') ||
+        prevProps.occasion !== occasion ||
+        prevProps.occurences !== occurences ||
+        prevProps.location.pathname !== pathname
+      ) {
+        this.handleShowOccurencesModal()
+      }
     }
   }
 
