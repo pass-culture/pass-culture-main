@@ -81,7 +81,7 @@ input.input, .select select, textarea.textarea {
   }
 }
 
-.select.readOnly {
+.select.readonly {
   &:after {
     display: none !important;
   }

@@ -32,7 +32,7 @@ class Form extends Component {
 
   static getDerivedStateFromProps = (props, prevState) => {
     return {
-      method: props.method || get(props, 'formData.id') ? 'PATCH' : 'POST',
+      method: props.method || get(props, 'data.id') ? 'PATCH' : 'POST',
     }
   }
 
@@ -54,16 +54,8 @@ class Form extends Component {
       name,
       requestData,
     } = this.props
-
-    console.log('should submit')
-    // TODO: plug this
     requestData(this.state.method, action, {
       body: formData,
-      // add,
-      // getOptimistState,
-      // getSuccessState,
-      // key: storeKey,
-      // requestId: submitRequestId,
       formName: name,
       handleFail,
       handleSuccess,
@@ -103,7 +95,7 @@ class Form extends Component {
         return React.cloneElement(c, {
           id: `${name}-${c.props.name}`,
           onChange: this.updateFormValue,
-          value: (typeof formValue === 'string') ? formValue : storeValue || '',
+          value: formValue || storeValue || '',
           errors: [].concat(formErrors).filter(e => get(e, c.props.name)).map(e => get(e, c.props.name)),
           readOnly: c.props.readOnly || readOnly,
         })

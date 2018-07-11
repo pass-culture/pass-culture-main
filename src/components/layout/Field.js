@@ -95,13 +95,11 @@ class Field extends Component {
     const actualAutoComplete = autoComplete || this.constructor.nameToAutoComplete(type, name)
     const actualRequired = required && !readOnly
 
-    // console.log(name, actualType, this.state.value)
-
     switch(actualType) {
       case 'select':
         const actualReadOnly = readOnly || options.length === 1
         const actualOptions = optionify(options.map(o => ({label: get(o, optionLabel), value: get(o, optionValue)})), placeholder)
-        return <div className={`select ${classnames({actualReadOnly})}`}>
+        return <div className={`select ${classnames({readonly: actualReadOnly})}`}>
           <select
             autoComplete={actualAutoComplete}
             id={id}
