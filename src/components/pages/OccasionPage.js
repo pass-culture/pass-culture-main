@@ -225,8 +225,7 @@ class OccasionPage extends Component {
 
     const showAllForm = type || !isNew
 
-    const formData = Object.assign({}, occasion, event || thing)
-    // console.log(formData)
+    const formData = Object.assign({}, event || thing, venue, occasion)
 
     return (
       <PageWrapper
@@ -287,22 +286,21 @@ class OccasionPage extends Component {
                   Infos pratiques
                 </h2>
                 <div className='field-group'>
-                  <Field type='select' name='offererId' label='Structure' required options={offerers} placeholder="Sélectionnez une structure"/>
-                  {
-                    offerer && get(venues, 'length') === 0
-                      ? (
-                        <p>
+                  <Field type='select' name='managingOffererId' label='Structure' required options={offerers} placeholder="Sélectionnez une structure" debug/>
+                  { offerer && get(venues, 'length') === 0 ? (
+                    <div className='field is-horizontal'>
+                      <div className='field-label'></div>
+                      <div className='field-body'>
+                        <p className='help is-danger'>
                           Il faut obligatoirement une structure avec un lieu.
                         </p>
-                      )
-                      :
-                        get(venues, 'length') > 0 && <Field type='select' name='venueId' label='Lieu' required options={venues} placeholder='Sélectionnez un lieu' />
-                  }
-                  {
-                    isEventType && (
-                      <Field type='number' name='durationMinutes' label='Durée en minutes' required />
-                    )
-                  }
+                      </div>
+                    </div>
+                    ) :
+                    get(venues, 'length') > 0 && <Field type='select' name='venueId' label='Lieu' required options={venues} placeholder='Sélectionnez un lieu' /> }
+                  { isEventType && (
+                    <Field type='number' name='durationMinutes' label='Durée en minutes' required />
+                  )}
                 </div>
                 <h2 className='pc-list-title'>Infos artistiques</h2>
                 <div className='field-group'>
@@ -355,87 +353,127 @@ export default compose(
   withCurrentOccasion,
   connect(
     (state, ownProps) => {
-      const eventId = get(ownProps, 'occasion.eventId')
-      const occasionId = get(ownProps, 'occasion.id') || NEW
-      const thingId = get(ownProps, 'occasion.thingId')
-      const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
       const search = searchSelector(state, ownProps.location.search)
+      const occasionId = get(ownProps, 'occasion.id') || NEW
 
-      const newState = {
-        event: eventSelector(state, eventId),
-        offerers: offerersSelector(state),
-        providers: providersSelector(state),
+      const providers = providersSelector(state)
+
+      const eventId = get(ownProps, 'occasion.eventId')
+      const event = eventSelector(state, eventId)
+
+      const thingId = get(ownProps, 'occasion.thingId')
+      const thing = thingSelector(state, thingId)
+
+      const typeOptions = typesSelector(state)
+      const typeName = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
+      const type = typeSelector(state, eventId, thingId, typeName)
+
+      const occurences = occurencesSelector(state, venueId, eventId)
+
+      let offererId = get(state, 'form.occasion.data.managingOffererId') || search.offererId
+
+      const venues = venuesSelector(state, offererId)
+      const venueId = get(state, 'form.occasion.data.venueId') || search.venueId || get(event, 'venueId') || get(thing, 'venueId')
+      const venue = venueSelector(state, venueId)
+
+      offererId = offererId || get(venue, 'managingOffererId')
+
+      const offerers = offerersSelector(state)
+      const offerer = offererSelector(state, offererId)
+
+      return {
         search,
-        thing: thingSelector(state, thingId),
-        type: typeSelector(state, eventId, thingId, formLabel),
-        typeOptions: typesSelector(state),
-
+        providers,
+        event,
+        thing,
+        occurences,
+        venues,
+        venue,
+        offerers,
+        offerer,
+        typeOptions,
+        type,
       }
 
-      // CASE WHERE ALL IS DECIDED FROM THE SELECTS
-      let offererId = get(state, `form.occasionsById.${occasionId}.offererId`)
-      if (offererId) {
-        newState.offerer = offererSelector(state, offererId)
-        newState.venues = venuesSelector(state, offererId)
-        if (get(newState.venues, 'length') === 1) {
-          newState.venue = get(newState.venues, '0')
-        }
-        return newState
-      }
 
-      let venueId = get(state, `form.occasionsById.${occasionId}.venueId`)
-      if (venueId) {
-        newState.venue = venueSelector(state, venueId)
-        newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
-        newState.venues = venuesSelector(state, offererId)
-        return newState
-      }
+      // return {
+      //   event: eventSelector(state, eventId),
+      //   thing: thingSelector(state, thingId),
+      //   offerers: offerersSelector(state),
+      //   providers: providersSelector(state),
+      //   search,
+      //   typeOptions: typesSelector(state),
+      //   type: typeSelector(state, eventId, thingId, typeName),
 
-      // CASE WHERE ALL IS DECIDED FROM THE SEARCH
-      venueId = search.venueId
-      if (venueId) {
-        newState.venue = venueSelector(state, venueId)
-        newState.venues = [newState.venue]
-        newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
-        newState.offerers = [newState.offerer]
-        return newState
-      }
-      offererId = search.offererId
-      if (offererId) {
-        newState.offerer = offererSelector(state, offererId)
-        newState.offerers = [newState.offerer]
-        newState.venues = venuesSelector(state, offererId)
-        if (get(newState.venues, 'length') === 1) {
-          newState.venue = get(newState.venues, '0')
-        }
-        return newState
-      }
+      // }
 
-      // CASE WHERE ALL IS DECIDED FROM THE OCCASION
-      venueId = get(ownProps, 'occasion.venueId')
-      if (venueId) {
-        newState.venue = venueSelector(state, venueId)
-        newState.venues = [newState.venue]
-        newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
-        newState.occurences = occurencesSelector(state, venueId, eventId)
-        return newState
-      }
-      offererId = get(ownProps, 'occasion.offererId')
-      if (offererId) {
-        newState.offerer = offererSelector(state, offererId)
-        newState.venues = venuesSelector(state, offererId)
-        if (get(newState.venues, 'length') === 1) {
-          newState.venue = get(newState.venues, '0')
-        }
-        return newState
-      }
+      // const formLabel = get(state, `form.occasionsById.${occasionId}.type`)
 
-      // CASE WHERE WE DON T KNOW YET
-      // BUT MAYBE WE HAVE ONLY ONE OFFERER
-      if (get(newState.offerers, 'length') === 1) {
-        newState.offerer = get(newState.offerers, '0')
-      }
-      return newState
+
+      // // CASE WHERE ALL IS DECIDED FROM THE SELECTS
+      // let offererId = get(state, `form.occasionsById.${occasionId}.offererId`)
+      // if (offererId) {
+      //   newState.offerer = offererSelector(state, offererId)
+      //   newState.venues = venuesSelector(state, offererId)
+      //   if (get(newState.venues, 'length') === 1) {
+      //     newState.venue = get(newState.venues, '0')
+      //   }
+      //   return newState
+      // }
+
+      // let venueId = get(state, `form.occasionsById.${occasionId}.venueId`)
+      // if (venueId) {
+      //   newState.venue = venueSelector(state, venueId)
+      //   newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+      //   newState.venues = venuesSelector(state, offererId)
+      //   return newState
+      // }
+
+      // // CASE WHERE ALL IS DECIDED FROM THE SEARCH
+      // venueId = search.venueId
+      // if (venueId) {
+      //   newState.venue = venueSelector(state, venueId)
+      //   newState.venues = [newState.venue]
+      //   newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+      //   newState.offerers = [newState.offerer]
+      //   return newState
+      // }
+      // offererId = search.offererId
+      // if (offererId) {
+      //   newState.offerer = offererSelector(state, offererId)
+      //   newState.offerers = [newState.offerer]
+      //   newState.venues = venuesSelector(state, offererId)
+      //   if (get(newState.venues, 'length') === 1) {
+      //     newState.venue = get(newState.venues, '0')
+      //   }
+      //   return newState
+      // }
+
+      // // CASE WHERE ALL IS DECIDED FROM THE OCCASION
+      // venueId = get(ownProps, 'occasion.venueId')
+      // if (venueId) {
+      //   newState.venue = venueSelector(state, venueId)
+      //   newState.venues = [newState.venue]
+      //   newState.offerer = offererSelector(state, get(newState.venue, 'managingOffererId'))
+      //   newState.occurences = occurencesSelector(state, venueId, eventId)
+      //   return newState
+      // }
+      // offererId = get(ownProps, 'occasion.offererId')
+      // if (offererId) {
+      //   newState.offerer = offererSelector(state, offererId)
+      //   newState.venues = venuesSelector(state, offererId)
+      //   if (get(newState.venues, 'length') === 1) {
+      //     newState.venue = get(newState.venues, '0')
+      //   }
+      //   return newState
+      // }
+
+      // // CASE WHERE WE DON T KNOW YET
+      // // BUT MAYBE WE HAVE ONLY ONE OFFERER
+      // if (get(newState.offerers, 'length') === 1) {
+      //   newState.offerer = get(newState.offerers, '0')
+      // }
+      // return newState
     },
     {
       resetForm,

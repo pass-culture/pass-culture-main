@@ -12,7 +12,7 @@ export function optionify(
   placeholder,
 ) {
   const collectionWithPlaceholder = collection.length > 1
-    ? [{label: placeholder}].concat(collection)
+    ? [{label: placeholder, value: ''}].concat(collection)
     : collection
   return collectionWithPlaceholder
 }
