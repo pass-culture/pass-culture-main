@@ -11,7 +11,7 @@ import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
-  ensureRecommendation(props) {
+  ensureRecommendations(props) {
     const { currentRecommendation, occasionId, mediationId, requestData } = props
     if (!currentRecommendation) {
         let query = 'occasionType=event'
@@ -46,13 +46,13 @@ class DiscoveryPage extends Component {
   componentWillMount() {
     const { offerId } = this.props
     this.handleRedirectFromLoading(this.props)
-    offerId && this.ensureRecommendation(this.props)
+    this.ensureRecommendations(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
     this.handleRedirectFromLoading(nextProps)
     if (nextProps.offerId && nextProps.offerId !== this.props.offerId) {
-      this.ensureRecommendation(nextProps)
+      this.ensureRecommendations(nextProps)
     }
   }
 
