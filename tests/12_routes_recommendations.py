@@ -10,11 +10,6 @@ from utils.test_utils import API_URL, req, req_with_auth
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
-def test_10_put_recommendations_should_work_only_when_logged_in():
-    r = req.put(RECOMMENDATION_URL)
-    assert r.status_code == 401
-
-
 def check_recos(recos):
     # ensure we have no duplicate mediations
     ids = list(filter(lambda id: id != None,
@@ -55,16 +50,24 @@ def subtest_recos_with_params(params,
                               expected_status=200,
                               expected_mediation_id=None,
                               expected_occasion_type=None,
-                              expected_occasion_id=None):
+                              expected_occasion_id=None,
+                              is_tuto=False):
     r = req_with_auth().put(RECOMMENDATION_URL+'?'+params, json={})
     assert r.status_code == expected_status
     if expected_status == 200:
         recos = r.json()
         assert len(recos) <= BLOB_SIZE + (2 if expected_mediation_id is None
                                             else 3)
-        assert recos[1]['mediation']['tutoIndex'] is not None
+        assert len(list(filter(lambda reco: 'mediation' in reco and
+                                            reco['mediation']['tutoIndex'] is not None,
+                               recos))) == (1 if is_tuto else 0)
         check_recos(recos)
         return recos
+
+
+def test_10_put_recommendations_should_work_only_when_logged_in():
+    r = req.put(RECOMMENDATION_URL)
+    assert r.status_code == 401
 
 
 def test_11_put_recommendations_should_return_a_list_of_recos():
@@ -93,13 +96,13 @@ def test_12_if_i_request_a_specific_reco_it_should_be_first():
                               expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # No occasionId but mediationId and occasionType
-    subtest_recos_with_params('occasionType=event&mediationId=AE',
+    subtest_recos_with_params('occasionType=event&mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
                               expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # No occasionId, no occasionType, but mediationId
-    subtest_recos_with_params('mediationId=AE',
+    subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
                               expected_occasion_type='event',
@@ -116,7 +119,8 @@ def test_13_requesting_a_reco_with_bad_params_should_return_reponse_anyway():
     # occasionId correct and mediationId correct but not the same event
     subtest_recos_with_params('occasionType=event&occasionId=AQ&mediationId=AE',
                               expected_status=200,
-                              expected_mediation_id=dehumanize('AE')) # FIRST TUTO MEDIATION
+                              expected_mediation_id=dehumanize('AE'),
+                              is_tuto=True) 
     # occasionId correct and mediationId correct but not the same occasion type
     subtest_recos_with_params('occasionType=event&occasionId=A9&mediationId=AM',
                               expected_status=200,
