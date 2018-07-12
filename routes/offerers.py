@@ -36,7 +36,7 @@ def list_offerers():
 @app.route('/offerers/<id>', methods=['GET'])
 @login_required
 def get_offerer(id):
-    ensure_current_user_has_rights(RightsType.editor, id)
+    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
     offerer = load_or_404(Offerer, id)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 
