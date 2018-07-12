@@ -14,11 +14,16 @@ class DiscoveryPage extends Component {
   ensureRecommendations(props) {
     const { currentRecommendation, occasionId, mediationId, requestData } = props
     if (!currentRecommendation) {
-        let query = 'occasionType=event'
+        let query = ''
+        if (mediationId || occasionId) {
+          query += 'occasionType=event'
+        }
         if (mediationId) {
           query += '&mediationId='+mediationId
         }
-        query += '&occasionId='+occasionId
+        if (occasionId) {
+          query += '&occasionId='+occasionId
+        }
         requestData('PUT', 'recommendations?'+query)
     }
   }
