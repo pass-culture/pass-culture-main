@@ -27,13 +27,11 @@
 }
 
 .field {
-  &.required:not(.readOnly) {
-    label {
-      &:after {
-        content: ' *';
-        color: $violet;
-        display: inline;
-      }
+  .required:not(.readOnly) {
+    &:after {
+      content: ' *';
+      color: $violet;
+      display: inline;
     }
   }
   &.checkbox {

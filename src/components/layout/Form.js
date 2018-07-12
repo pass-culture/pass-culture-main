@@ -31,13 +31,13 @@ class Form extends Component {
     formData: {},
     formErrors: {},
     debounceTimeout: 500,
-    formatData: () => {},
+    formatData: data => data,
   }
 
   static propTypes = {
     name: PropTypes.string.isRequired,
-    data: PropTypes.object.isRequired,
     action : PropTypes.string.isRequired,
+    data: PropTypes.object,
   }
 
   static getDerivedStateFromProps = (props, prevState) => {
@@ -65,6 +65,7 @@ class Form extends Component {
       name,
       requestData,
     } = this.props
+
     requestData(this.state.method, action, {
       body: formatData(formData),
       formName: name,

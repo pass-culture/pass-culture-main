@@ -13,6 +13,10 @@ import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { NEW } from '../../utils/config'
 
+import Form from '../layout/Form'
+import Field from '../layout/Field'
+import Submit from '../layout/Submit'
+
 const Label = ({ subtitle, title, inline }) => (
   <div className={inline && 'inline'}>
     <h3 className={`can-be-required ${subtitle ? 'with-subtitle' : ''}`}>{title}</h3>
@@ -20,18 +24,18 @@ const Label = ({ subtitle, title, inline }) => (
   </div>
 )
 
-const requiredFields = [
-  'address',
-  'contact_ok',
-  'email',
-  'latitude',
-  'longitude',
-  'name',
-  'password',
-  'postalCode',
-  'publicName',
-  'siren'
-]
+// const requiredFields = [
+//   'address',
+//   'contact_ok',
+//   'email',
+//   'latitude',
+//   'longitude',
+//   'name',
+//   'password',
+//   'postalCode',
+//   'publicName',
+//   'siren'
+// ]
 
 const SignupPage = ({
   addBlockers,
@@ -55,116 +59,66 @@ const SignupPage = ({
                 <h2 className='subtitle is-2'>
                   Merci de renseigner tous les champs marqués d'un <span className='required-legend'>*</span>.
                 </h2>
-                <form>
-                  <FormField
-                    autoComplete="email"
-                    collectionName="users"
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="Adresse e-mail"
-                        subtitle="... pour se connecter et récupérer son mot de passe en cas d'oubli :"
-                      />
-                    }
-                    name="email"
+                <Form
+                  name='sign-up'
+                  action='/users'
+                  layout='sign-in-up'
+                  handleSuccess={() => {
+                    showNotification({
+                      text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
+                      type: 'success'
+                    })
+                  }}>
+                  <Field
+                    name='email'
+                    label='Adresse e-mail'
+                    sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
                     placeholder="nom@exemple.fr"
                     required
-                    type="email"
                   />
-                  <FormField
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="Identifiant"
-                        subtitle="... vu par les autres utilisateurs :"
-                      />
-                    }
+                  <Field
+                    name='publicName'
+                    label='Identifiant'
+                    sublabel='vu par les autres utilisateurs'
+                    placeholder='Mon nom ou pseudo'
+                    autoComplete='name'
                     required
-                    collectionName="users"
-                    name="publicName"
-                    autoComplete="name"
-                    placeholder="Mon nom ou pseudo"
-                    type="text"
                   />
-                  <FormField
-                    autoComplete="new-password"
-                    collectionName="users"
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="Mot de passe"
-                        subtitle="... pour se connecter :"
-                      />
-                    }
-                    name="password"
+                  <Field
+                    name='password'
+                    label='Mot de passe'
+                    sublabel='pour se connecter'
                     placeholder="Mon mot de passe"
+                    autoComplete="new-password"
                     required
-                    type="password"
                   />
-                  <FormField
-                    autoComplete="siren"
-                    collectionName="users"
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="SIREN"
-                        subtitle="... de la structure à rattacher :"
-                      />
-                    }
-                    name="siren"
+                  <Field
+                    name='siren'
+                    label='SIREN'
+                    sublabel='de la structure à rattacher'
                     placeholder="123 456 789"
+                    fetchedName={sirenName || ''}
                     required
-                    sireType="siren"
-                    type="sirene"
-                    withDisplayName
                   />
-                  <FormField
-                    collectionName="users"
-                    label={
-                      <span>
-                        Je souhaite recevoir les actualités du Pass Culture.
-                      </span>
-                    }
+                  <Field
                     name="newsletter_ok"
-                    required
                     type="checkbox"
+                    label='Je souhaite recevoir les actualités du Pass Culture.'
                   />
-                  <FormField
-                    collectionName="users"
-                    label={
-                      <span className='can-be-required'>
-                        J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture.
-                      </span>
-                    }
+                  <Field
                     name="contact_ok"
-                    required
                     type="checkbox"
+                    label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
+                    required
                   />
                   <div className="errors">{errors}</div>
                   <div className='field buttons-field'>
                     <NavLink to="/connexion" className="button is-secondary">
                       J'ai déjà un compte
                     </NavLink>
-                    <SubmitButton
-                      className="button is-primary is-outlined"
-                      getBody={form => form.usersById[NEW]}
-                      getIsDisabled={form =>
-                        requiredFields.filter(k =>
-                          !get(form, `usersById.${NEW}.${k}`)
-                        ).length > 0
-                      }
-                      handleSuccess={() => {
-                        showNotification({
-                          text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
-                          type: 'success'
-                        })
-                      }}
-                      path="users"
-                      storeKey="users"
-                      text="Créer"
-                    />
+                    <Submit className="button is-primary is-outlined">Créer</Submit>
                   </div>
-                </form>
+                </Form>
               </div>
             </section>
 
@@ -179,7 +133,7 @@ export default compose(
   withSign,
   connect(
     state => ({
-      sirenName: get(state, `form.usersById.${NEW}.name`)
+      sirenName: get(state, `form.sign-up.data.name`)
     }),
     {
       addBlockers,

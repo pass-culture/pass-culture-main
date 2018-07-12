@@ -16,6 +16,7 @@ class Field extends Component {
     super(props)
     this.state = {
       value: '',
+      isPasswordHidden: true,
     }
   }
 
@@ -34,12 +35,16 @@ class Field extends Component {
 
   static guessInputType(name) {
     switch(name) {
+      case 'email':
+        return 'email'
+      case 'password':
+        return 'password'
       case 'time':
         return 'time'
       case 'date':
         return 'date'
       case 'siren':
-        return 'text'
+        return 'siren'
       case 'price':
         return 'number'
       default:
@@ -65,12 +70,12 @@ class Field extends Component {
     }
   }
 
-  static getDerivedStateFromProps({name, type, required, readonly}) {
+  static getDerivedStateFromProps({autoComplete, name, type, required, readonly}) {
     type = type || Field.guessInputType(name) // Would be cleaner to use `this` instead of `Field` but doesn't work :(
     return {
       required: required && !readonly,
       type,
-      autoComplete: Field.guessAutoComplete(name, type),
+      autoComplete: autoComplete || Field.guessAutoComplete(name, type),
       ...Field.guessFormatters(name, type),
     }
   }
@@ -95,6 +100,13 @@ class Field extends Component {
     this.props.onChange(this.props.name, storeValue(value))
   }
 
+  toggleHidden = e => {
+    e.preventDefault()
+    this.setState({
+      isPasswordHidden: !this.state.isPasswordHidden
+    })
+  }
+
   onInputChange = e => this.onChange(e.target.value)
 
   renderInput = () => {
@@ -116,44 +128,70 @@ class Field extends Component {
       value,
     } = this.state
 
+    const commonProps = {
+      'aria-describedby': `${id}-error`,
+      autoComplete,
+      id,
+      name,
+      onChange: this.onInputChange,
+      placeholder,
+      readOnly,
+      required,
+      value,
+    }
 
     switch(type) {
       case 'date':
-        console.log(this.props.highlightDates)
         return readOnly ? (
           <span> {value && value.format(this.props.dateFormat)} </span>
           ) : (
           <div className={`input is-${size} date-picker`}>
             <DatePicker
-              key={0}
               className='date'
               filterDate={this.props.filterDate}
               highlightDates={this.props.highlightedDates || []}
               minDate={this.props.minDate || moment()}
               onChange={this.onChange}
               selected={value ? moment(value) : null}
-            />,
+            />
             <Icon
-              key={1}
               alt='Horaires'
               className="input-icon"
               svg="ico-calendar"
             />
           </div>
         )
+
+      case 'password':
+        if (this.props.noPasswordToggler) break;
+        return <div className="field has-addons password">
+          <div className="control is-expanded">
+            <input {...commonProps} className={`input is-${size}`} type={this.state.isPasswordHidden ? 'password' : 'text'} />
+          </div>
+          <div className="control">
+            <button className="button is-rounded is-medium" onClick={this.toggleHidden}>
+              <Icon svg={this.state.isPasswordHidden ? 'ico-eye close' : 'ico-eye'} />
+              &nbsp;
+            </button>
+          </div>
+        </div>
+
+      case 'siren':
+      case 'siret':
+        if (typeof this.props.fetchedName !== 'string') break;
+        return <div className='with-display-name'>
+          <input {...commonProps} className={`input is-${size}`} />
+          <div className='display-name'>{this.props.fetchedName}</div>
+        </div>
+
       case 'select':
         const actualReadOnly = readOnly || this.props.options.length === 1
         const actualOptions = optionify(this.props.options.map(o => ({label: get(o, optionLabel), value: get(o, optionValue)})), placeholder)
         return <div className={`select is-${size} ${classnames({readonly: actualReadOnly})}`}>
           <select
-            autoComplete={autoComplete}
+            {...commonProps}
             disabled={actualReadOnly} // readonly doesn't exist on select
-            id={id}
-            name={name}
-            onChange={this.onInputChange}
-            placeholder={placeholder}
-            required={required}
-            value={value}          >
+            >
             { actualOptions.filter(o => o).map(({ label, value }, index) =>
               <option key={index} value={value}>
                 {label}
@@ -161,33 +199,23 @@ class Field extends Component {
             )}
           </select>
         </div>
+
+      case 'checkbox':
+        return <label
+          className={`${classnames({required})}`}
+          htmlFor={id}
+        >
+          <input {...commonProps} type='checkbox' className='input'  />
+          {this.props.label}
+        </label>
+
       case 'textarea':
-        return <Textarea
-          autoComplete={autoComplete}
-          className={`textarea is-${size}`}
-          id={id}
-          name={name}
-          onChange={this.onInputChange}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          required={required}
-          value={value}
-        />
+        return <Textarea {...commonProps} className={`textarea is-${size}`} />
+
       default:
-        return <input
-          autoComplete={autoComplete}
-          className={`input is-${size}`}
-          id={id}
-          name={name}
-          onChange={this.onInputChange}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          required={required}
-          type={type}
-          value={value}
-          min={this.props.min || 0}
-        />
+        break;
     }
+    return <input {...commonProps} type={type} className={`input is-${size}`} min={type === 'number' ? this.props.min || 0 : null} />
   }
 
   renderLayout() {
@@ -201,6 +229,9 @@ class Field extends Component {
       readOnly,
       size,
     } = this.props
+    const {
+      type
+    } = this.state
     const $input = this.renderInput()
 
     if (this.state.type === 'hidden') return $input
@@ -214,12 +245,29 @@ class Field extends Component {
             <div className={`field ${classnames({'is-expanded': isExpanded})}`}>
               {$input}
             </div>
-            {errors.map(e => <p className='help is-danger'>
+            {errors.map(e => <p className='help is-danger' id={`${id}-error`}>
               <Icon svg="picto-warning" alt="Warning" /> {e}
             </p>)}
           </div>
         </div>
-
+      case 'sign-in-up':
+        if (type === 'checkbox') {
+          return <div className='field checkbox'>{$input}</div>
+        } else {
+          const {sublabel} = this.props
+          return <div className="field">
+            {label && <label className='label' htmlFor={id}>
+              <h3 className={classnames({required, 'with-subtitle': sublabel})}>{label}</h3>
+              {sublabel && <p>... {sublabel} :</p>}
+            </label>}
+            <div className="control">
+              {$input}
+            </div>
+            <ul className="help is-danger" id={`${id}-error`}>
+              {errors.map(e => <li><Icon svg="picto-warning" alt="Warning" /> {e}</li>)}
+            </ul>
+          </div>
+        }
       default:
         return $input
     }
