@@ -15,6 +15,11 @@ import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
 import { getIsDisabled } from '../utils/form'
 
+import Form from './layout/Form'
+import Field from './layout/Field'
+import Submit from './layout/Submit'
+
+
 class OccurenceForm extends Component {
 
   constructor () {
@@ -189,114 +194,34 @@ class OccurenceForm extends Component {
     } = this.state
 
     return (
-      <tr className='occurence-form'>
+      <Form
+        name='occurence'
+        TagName='tr'
+        className='occurence-form'
+        action={apiPath}
+        handleSuccess={this.handleSuccessData}
+        data={this.state}
+        readOnly={isEventOccurenceFrozen}
+        layout='input-only'
+      >
         <td>
-          <FormField
-            className='is-small'
-            collectionName="eventOccurences"
-            controlClassName='has-text-centered'
-            defaultValue={date}
-            entityId={eventOccurenceIdOrNew}
-            format='DD/MM/YYYY'
-            highlightedDates={highlightedDates}
-            name="date"
-            readOnly={isEventOccurenceFrozen}
-            required
-            type="date"
-          />
+          <Field name='date' required highlightedDates={highlightedDates} title='Date' />
         </td>
         <td>
-          <FormField
-            className='is-small'
-            collectionName="eventOccurences"
-            defaultValue={time}
-            entityId={eventOccurenceIdOrNew}
-            name="time"
-            readOnly={isEventOccurenceFrozen}
-            required
-            type="time"
-          />
+          <Field name='time' required title='Heure' />
         </td>
         <td>
-          <FormField
-            className='is-small'
-            collectionName="eventOccurences"
-            defaultValue={endTime}
-            entityId={eventOccurenceIdOrNew}
-            name="endTime"
-            readOnly={isEventOccurenceFrozen}
-            required
-            type="time"
-          />
+          <Field type='time' name='endTime' required title='Heure de fin' />
         </td>
         <td title='Vide si gratuit'>
-          {
-            false &&
-              <FormField
-                className='is-small'
-                collectionName="offers"
-                defaultValue={price}
-                entityId={offerIdOrNew}
-                min={0}
-                name="price"
-                placeholder='Vide si gratuit'
-                required
-                type="number"
-              />
-          }
-          <FormField
-            className='is-small'
-            collectionName="offers"
-            controlClassName='has-text-centered'
-            defaultValue={0}
-            entityId={offerIdOrNew}
-            min={0}
-            name="price"
-            placeholder='Gratuit'
-            readOnly
-            required
-            type="number"
-          />
+          <Field name="price" required placeholder='Gratuit' title='Prix' />
         </td>
         <td title='Laissez vide si pas de limite'>
-          <FormField
-            className='is-small'
-            collectionName="offers"
-            controlClassName='has-text-centered'
-            defaultValue={bookingDate}
-            entityId={offerIdOrNew}
-            filterDate={date => filterBookingDate && date < filterBookingDate}
-            format='DD/MM/YYYY'
-            name="bookingDate"
-            placeholder="Laissez vide si pas de limite"
-            type="date"
-          />
+          <Field name='bookingDate' type='date' filterDate={date => filterBookingDate && date < filterBookingDate} placeholder="Laissez vide si pas de limite"/>
         </td>
         <td title='Laissez vide si pas de limite'>
-          <FormField
-            className='is-small'
-            collectionName="offers"
-            defaultValue={available || 0}
-            entityId={offerIdOrNew}
-            min={0}
-            name="available"
-            type="number"
-          />
+          <Field name='available' type='number' title='Places disponibles' />
         </td>
-        {
-          false && <td>
-            <FormField
-              className='is-small'
-              collectionName="offers"
-              defaultValue={pmrGroupSize}
-              entityId={offerIdOrNew}
-              min={0}
-              name="pmrGroupSize"
-              placeholder="Laissez vide si pas de limite"
-              type="number"
-            />
-          </td>
-        }
         <td>
           <button
             className="button is-secondary is-small"
@@ -304,93 +229,87 @@ class OccurenceForm extends Component {
           >Annuler</button>
         </td>
         <td>
-          <SubmitButton
-            className="button is-primary is-small"
-            getBody={form => {
+          <Submit className="button is-primary is-small"
+            // getBody={form => {
 
-              // MAYBE WE CAN ONLY TOUCH ON THE OFFER
-              if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
-                const formOffer = get(form, `offersById.${offerIdOrNew}`)
+            //   // MAYBE WE CAN ONLY TOUCH ON THE OFFER
+            //   if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
+            //     const formOffer = get(form, `offersById.${offerIdOrNew}`)
 
-                if (formOffer.bookingDate) {
-                  formOffer.bookingLimitDatetime = formOffer.bookingDate
-                    .tz(tz)
-                    .utc()
-                    .format()
-                }
+            //     if (formOffer.bookingDate) {
+            //       formOffer.bookingLimitDatetime = formOffer.bookingDate
+            //         .tz(tz)
+            //         .utc()
+            //         .format()
+            //     }
 
-                const body = Object.assign({
-                    eventOccurenceId: id,
-                    offererId: venue.managingOffererId
-                  }, formOffer)
-                return body
-              }
+            //     const body = Object.assign({
+            //         eventOccurenceId: id,
+            //         offererId: venue.managingOffererId
+            //       }, formOffer)
+            //     return body
+            //   }
 
-              // ELSE IT IS AN OCCURENCE FORM
-              const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
-              if (!eo) {
-                console.warn('weird eo form is empty')
-                return
-              }
-              const [hour, minute] = (eo.time || time).split(':')
-              const beginningDatetime = (eo.date || date)
-                .tz(tz)
-                .set({
-                  hour,
-                  minute
-                })
-              const [endHour, endMinute] = (eo.endTime || endTime).split(':')
-              const endDatetime = beginningDatetime.clone()
-                                                   .set({
-                                                      hour: endHour,
-                                                      minute: endMinute
-                                                    })
-              if (endDatetime < beginningDatetime) {
-                endDatetime.add(1, 'days')
-              }
-              return Object.assign({}, eo, {
-                beginningDatetime: beginningDatetime.utc().format(),
-                endDatetime: endDatetime.utc().format(),
-                eventId: get(event, 'id'),
-                venueId: get(venue, 'id'),
-              })
-            }}
-            getIsDisabled={form => {
-              const isDisabledBecauseOffer = getIsDisabled(
-                get(form, `offersById.${offerIdOrNew}`),
-                ['available', 'bookingDate', 'price'],
-                typeof offer === 'undefined'
-              )
+            //   // ELSE IT IS AN OCCURENCE FORM
+            //   const eo = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`)
+            //   if (!eo) {
+            //     console.warn('weird eo form is empty')
+            //     return
+            //   }
+            //   const [hour, minute] = (eo.time || time).split(':')
+            //   const beginningDatetime = (eo.date || date)
+            //     .tz(tz)
+            //     .set({
+            //       hour,
+            //       minute
+            //     })
+            //   const [endHour, endMinute] = (eo.endTime || endTime).split(':')
+            //   const endDatetime = beginningDatetime.clone()
+            //                                        .set({
+            //                                           hour: endHour,
+            //                                           minute: endMinute
+            //                                         })
+            //   if (endDatetime < beginningDatetime) {
+            //     endDatetime.add(1, 'days')
+            //   }
+            //   return Object.assign({}, eo, {
+            //     beginningDatetime: beginningDatetime.utc().format(),
+            //     endDatetime: endDatetime.utc().format(),
+            //     eventId: get(event, 'id'),
+            //     venueId: get(venue, 'id'),
+            //   })
+            // }}
+            // getIsDisabled={form => {
+            //   const isDisabledBecauseOffer = getIsDisabled(
+            //     get(form, `offersById.${offerIdOrNew}`),
+            //     ['available', 'bookingDate', 'price'],
+            //     typeof offer === 'undefined'
+            //   )
 
-              if (isEventOccurenceFrozen) {
-                return isDisabledBecauseOffer
-              }
+            //   if (isEventOccurenceFrozen) {
+            //     return isDisabledBecauseOffer
+            //   }
 
 
-              if (isDisabledBecauseOffer) {
+            //   if (isDisabledBecauseOffer) {
 
-                const isDisabledBecauseEventOccurence = getIsDisabled(
-                  get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
-                  ['date', 'endTime', 'time',],
-                  typeof occurence === 'undefined'
-                )
+            //     const isDisabledBecauseEventOccurence = getIsDisabled(
+            //       get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`),
+            //       ['date', 'endTime', 'time',],
+            //       typeof occurence === 'undefined'
+            //     )
 
-                return isDisabledBecauseEventOccurence
-              }
+            //     return isDisabledBecauseEventOccurence
+            //   }
 
-              return false
-            }}
-            handleSuccess={this.handleSuccessData}
-            method={method}
-            path={apiPath}
-            storeKey={storeKey}
-            text="Valider"
+            //   return false
+            // }}
           >
-            Enregistrer
-          </SubmitButton>
+            Valider
+          </Submit>
         </td>
         <td></td>
-      </tr>
+      </Form>
     )
   }
 }

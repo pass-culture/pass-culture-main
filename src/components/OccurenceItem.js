@@ -149,8 +149,6 @@ class OccurenceItem extends Component {
         <td><Price value={price} /></td>
         <td>{bookingDate}</td>
         <td>{available}</td>
-        {false && (<td>{groupSize}</td>)}
-        {false && (<td>{pmrGroupSize}</td>)}
         <td>
           {
             !provider && (
