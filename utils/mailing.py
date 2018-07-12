@@ -155,13 +155,17 @@ def maybe_send_offerer_validation_email(user, *objects_to_validate):
         classes_to_validate.append(obj.__class__.__name__)
         if isinstance(obj, app.model.UserOfferer):
             email_html += "<h3>Nouveau Rattachement : </h3>"
+            email_html += "<h4>Utilisateur: </h4>"
+            email_html += "<pre>"+pformat(vars(obj.user))+"</pre>"
+            email_html += "<h4>Structure: </h4>"
+            email_html += "<pre>"+pformat(vars(obj.offerer))+"</pre>"
         elif isinstance(obj, app.model.Offerer):
             email_html += "<h3>Nouvelle Structure : </h3>"
+            email_html += "<pre>"+pformat(vars(obj))+"</pre>"
         else:
             raise ValueError("Unexpected object type in"
                              + " maybe_send_pro_validation_email : "
                              + obj.__class__.__name__)
-        email_html += "<pre>"+pformat(vars(obj))+"</pre>"
         if isinstance(obj, app.model.Offerer):
             email_html += "<h4>Infos API entreprise : </h4>"
             api_entreprise = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/"+obj.siren, verify=False)  # FIXME: add root cerficate on docker image ?
