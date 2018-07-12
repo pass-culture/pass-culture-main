@@ -10,6 +10,7 @@ import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
 import selectCurrentSource from '../selectors/currentSource'
+import selectBooking from '../selectors/booking'
 import selectCurrentThumbUrl from '../selectors/currentThumbUrl'
 import selectTimezone from '../selectors/currentTimezone'
 import selectVenue from '../selectors/currentVenue'
@@ -18,6 +19,7 @@ import { navigationLink } from '../utils/geolocation'
 class OfferInfo extends Component {
   render() {
     const {
+      booking,
       distance,
       offer,
       offerer,
@@ -28,21 +30,36 @@ class OfferInfo extends Component {
       venue,
     } = this.props
 
+    const NOW = moment()
+
+    const mediatedOccurences = get(recommendation, 'mediatedOccurences', [])
+    const whenBookedOccurence = booking && mediatedOccurences
+                                               .filter(o => booking.offerId === o.offer[0].id)[0]
+    const whenBooked = whenBookedOccurence && whenBookedOccurence.beginningDatetime
+    const bookableOccurences = mediatedOccurences.filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW)
+                                                             && (!whenBookedOccurence || whenBookedOccurence.id !== o.id))
+
+    console.log("booking", booking)
     const infos = {
       image: thumbUrl,
       description: get(source, 'description'),
       what: get(source, 'description')
         ? ''
-        : get(offer, 'eventOccurence.event.description'), // TODO: add what when set in API
-      when: get(recommendation, 'mediatedOccurences', []).map(
-        o => o.beginningDatetime
-      ),
+        : get(offer, 'eventOccurence.event.description'),
+      when: bookableOccurences
+               .map(o => o.beginningDatetime)
+               .sort()
+               .slice(0,7)
+               .concat(whenBooked ? [whenBooked] : [])
+               .sort(),
       where: {
         name: get(venue, 'name'),
         address: get(venue, 'address') + ',' + (get(venue, 'postalCode') || '')
                                        + ',' + (get(venue, 'city') || ''),
       },
     }
+
+    console.log("INFOS.WHEN", infos.when)
 
     return (
       <div className="offer-info">
@@ -67,14 +84,17 @@ class OfferInfo extends Component {
           <div>
             <h3>Quand ?</h3>
             <ul className="dates-info">
+              {infos.when.len === 0 && <li>Plus de dates disponibles :(</li>}
               {infos.when.map(
                 (occurence, index) =>
-                  index < 7 && (
+                  (
                     <li key={index}>
                       <Capitalize>{moment(occurence).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
+                      {occurence === whenBooked && ' (réservé)'}
                     </li>
                   )
               )}
+              {bookableOccurences.length > 7 && <li>Clicker sur "j'y vais" pour voir plus de dates.</li>}
             </ul>
           </div>
         )}
@@ -103,6 +123,7 @@ class OfferInfo extends Component {
 }
 
 export default connect(state => ({
+  booking: selectBooking(state),
   distance: selectDistance(state),
   offer: selectCurrentOffer(state),
   offerer: selectCurrentOfferer(state),

@@ -30,7 +30,7 @@ class DiscoveryPage extends Component {
 
   handleRedirectFromLoading(props) {
     const { history, mediationId, offerId, recommendations } = props
-    if (!recommendations || (recommendations.length == 0) || mediationId || offerId)
+    if (!recommendations || (recommendations.length === 0) || mediationId || offerId)
       return
 
     const targetRecommendation = recommendations[0]
@@ -49,7 +49,6 @@ class DiscoveryPage extends Component {
   }
 
   componentWillMount() {
-    const { offerId } = this.props
     this.handleRedirectFromLoading(this.props)
     this.ensureRecommendations(this.props)
   }
