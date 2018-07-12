@@ -7,7 +7,7 @@ const inputUsersPasswordError = Selector('#input_users_password-error')
 const signInButton  = Selector('button') //connexion
 const signUpButton  = Selector('.is-secondary') // inscription
 
-fixture `SignupPage | Se connecter en tant qu'utilisateur`
+fixture `SignInPage | Se connecter en tant qu'utilisateur`
     .page `http://localhost:3000/connexion`
 
 test("Je peux cliquer sur lien /inscription", async t => {
