@@ -68,7 +68,7 @@ Dans une entrée,
     + Body
 
             {
-                "errors": [ { "siret": "Siret invalide" }, { "after" : "Entrée non trouvée" } ]
+                "errors": { "siret": [ "Siret invalide" ], "after" : [ "Entrée non trouvée" ] }
             }
 
 
@@ -77,5 +77,5 @@ Dans une entrée,
     + Body
 
             {
-                "errors": [ { "siret": "Siret inexistant" } ]
+                "errors": { "siret": [ "Siret inexistant" ] }
             }
