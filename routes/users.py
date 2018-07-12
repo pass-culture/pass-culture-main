@@ -6,12 +6,13 @@ from flask_login import current_user, login_required, logout_user, login_user
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-from utils.includes import USER_INCLUDES
-from utils.mailing import maybe_send_offerer_validation_email
-from utils.rest import expect_json_data,\
-                       login_or_api_key_required
-
 from models.api_errors import ApiErrors
+from utils.includes import USER_INCLUDES
+from utils.mailing import maybe_send_offerer_validation_email,\
+                          subscribe_newsletter
+from utils.rest import expect_json_data,\
+                       expect_json_data,\
+                       login_or_api_key_required
 
 
 def make_user_query():
@@ -138,5 +139,7 @@ def signup():
         maybe_send_offerer_validation_email(new_user, offerer, user_offerer)
     else:
         app.model.PcObject.check_and_save(new_user)
+    if request.json.get('contact_ok'):
+        subscribe_newsletter(new_user)
     login_user(new_user)
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201

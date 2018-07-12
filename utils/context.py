@@ -4,6 +4,7 @@ def with_app_context(app):
         import models
         import datascience
         import routes
+        import utils.mailing
         from utils.printer import get
 
         # ADAPT SQL ALCHEMY TO INSERT APP CONTEXT INSIDE QUERY
@@ -19,6 +20,8 @@ def with_app_context(app):
         app.get = call_with_app_context(get)
         app.datascience.get_occasions = call_with_app_context(app.datascience.get_occasions)
         app.datascience.get_occasions_by_type = call_with_app_context(app.datascience.get_occasions_by_type)
+        app.get_contact = call_with_app_context(app.get_contact)
+        app.subscribe_newsletter = call_with_app_context(app.subscribe_newsletter)
         def model_with_app_context(model):
             if not hasattr(model, 'query'):
                 return

@@ -6,9 +6,8 @@ import os
 from pprint import pformat
 import requests
 
-from utils.config import API_URL
+from utils.config import API_URL, ENV, IS_DEV, IS_STAGING
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
-from utils.config import ENV, IS_DEV, IS_STAGING
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
@@ -23,6 +22,7 @@ if MAILJET_API_SECRET is None or MAILJET_API_SECRET=='':
     raise ValueError("Missing environment variable MAILJET_API_SECRET")
 client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET),
               version='v3')
+app.mailjet_client = client
 app.mailjet = client.send.create
 
 
@@ -231,3 +231,39 @@ def make_user_booking_recap_email(offer, booking, is_cancellation=False):
              'Html-part': email_html,
            }
 
+def get_contact(user):
+    return app.mailjet_client.contact.get(user.email).json()['Data'][0]
+
+def subscribe_newsletter(user):
+
+    if IS_DEV or IS_STAGING:
+        print("Subscription in DEV or STAGING mode is disabled")
+        return
+
+    try:
+        contact = get_contact(user)
+    except:
+        contact_data = {
+            'Email': user.email,
+            'Name': user.publicName
+        }
+        contact_json = app.mailjet_client.contact.create(data=contact_data).json()
+        contact = contact_json['Data'][0]
+
+    #('Pass Culture - Liste de diffusion', 1795144)
+    contact_lists_data = {
+        "ContactsLists": [
+            {
+                "Action": "addnoforce",
+                "ListID": 1795144
+            }
+        ]
+    }
+
+    return app.mailjet_client.contact_managecontactslists.create(
+        id=contact['ID'],
+        data=contact_lists_data
+    ).json()
+
+app.get_contact = get_contact
+app.subscribe_newsletter = subscribe_newsletter
