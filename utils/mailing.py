@@ -57,11 +57,12 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
         offer.bookingRecapSent = datetime.utcnow()
         app.model.PcObject.check_and_save(offer)
 
+
 def send_booking_confirmation_email_to_user(offer, booking, is_cancellation=False):
 
     email = make_user_booking_recap_email(offer, booking, is_cancellation)
 
-    recipients = [booking.user.email, 'passculture@beta.gouv.fr']
+    recipients = [booking.user.email]
 
     if IS_DEV or IS_STAGING:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV)\
