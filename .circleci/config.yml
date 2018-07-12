@@ -23,6 +23,12 @@ jobs: # a collection of steps
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
+      - run:
+          name: Running API
+          command: |
+            . venv/bin/activate
+            python app.py
+          background: true
       - run: # run tests
           command: |
             . venv/bin/activate
