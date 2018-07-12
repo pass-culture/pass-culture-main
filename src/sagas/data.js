@@ -5,11 +5,9 @@ import { newErrorForm } from '../reducers/form'
 import { assignErrors } from '../reducers/errors'
 import { fetchData } from '../utils/request'
 
-
 function* fromWatchRequestDataActions(action) {
   // UNPACK
   const {
-    name,
     method,
     path,
     config
