@@ -63,7 +63,7 @@ trig_ddl = DDL("""
          AND ((SELECT "available" FROM offer WHERE id=NEW."offerId")
               < (SELECT COUNT(*) FROM booking WHERE "offerId"=NEW."offerId")) THEN
           RAISE EXCEPTION 'Offer has too many bookings'
-                USING HINT = 'Number of bookings cannot exeed "offer.available"';
+                USING HINT = 'Number of bookings cannot exceed "offer.available"';
       END IF;
       RETURN NEW;
     END;

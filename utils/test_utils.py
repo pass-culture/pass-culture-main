@@ -52,3 +52,12 @@ def create_offer_for_booking_email_test(app):
     offer.thing = None
     offer.isActive = True
     return offer
+
+def create_offerer_for_booking_email_test(app):
+    offerer = app.model.Offerer()
+    offerer.isActive = 't'
+    offerer.address = '123 rue test'
+    offerer.postalCode = '93000'
+    offerer.city = 'Test city'
+    offerer.name = 'Test offerer'
+    return offerer

@@ -1,7 +1,40 @@
 from utils.test_utils import create_offer_for_booking_email_test, \
-    create_user_for_booking_email_test, create_booking_for_booking_email_test
+    create_user_for_booking_email_test, create_booking_for_booking_email_test, create_offerer_for_booking_email_test
 
 from utils.config import ENV, IS_DEV, IS_STAGING
+
+SUBJECT_USER_BOOKING_CONFIRMATION_EMAIL = \
+    'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+
+
+HTML_USER_BOOKING_CONFIRMATION_EMAIL = '<html><body>' + \
+           '<p>Cher Test,</p>' + \
+           '<p>Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00.</p>' + \
+           '<p>Cordialement,</p>' + \
+           '<p>L\'équipe pass culture</p>' + \
+           '</body></html>'
+
+SUBJECT_USER_BOOKING_CANCELLATION_EMAIL = \
+    'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+
+HTML_USER_BOOKING_CANCELLATION_EMAIL = '<html><body>' + \
+           '<p>Cher Test,</p>' + \
+           '<p>Votre annulation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00 a bien été prise en compte.</p>' + \
+           '<p>Cordialement,</p>' + \
+           '<p>L\'équipe pass culture</p>' + \
+           '</body></html>'
+
+SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL =\
+    '[Reservations] Nouvelle reservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
+    '<html><body>' + \
+    '<p>Cher partenaire Pass Culture,</p>' + \
+    '<p>Test (test@email.com) vient de faire une nouvelle réservation</p>' + \
+    '<p>Voici le récapitulatif des réservations à ce jour (total 0)' + \
+    ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
+    ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
+    '<p>Aucune réservation</p>' + \
+    '</body></html>'
 
 
 def test_01_make_user_booking_recap_email_should_have_standard_subject(app):
@@ -17,9 +50,7 @@ def test_01_make_user_booking_recap_email_should_have_standard_subject(app):
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=False)
     # Then
-    assert recap_email['Subject'] == \
-           'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
-
+    assert recap_email['Subject'] == SUBJECT_USER_BOOKING_CONFIRMATION_EMAIL
 
 
 
@@ -36,12 +67,7 @@ def test_02_make_user_booking_recap_email_should_have_standard_body(app):
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=False)
     # Then
-    assert recap_email['Html-part'] == '<html><body>' + \
-           '<p>Cher Test,</p>' + \
-           '<p>Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00.</p>' + \
-           '<p>Cordialement,</p>' + \
-           '<p>L\'équipe pass culture</p>' + \
-           '</body></html>'
+    assert recap_email['Html-part'] == HTML_USER_BOOKING_CONFIRMATION_EMAIL
 
 def test_03_make_user_booking_recap_email_should_have_standard_subject_cancellation(app):
     # Given
@@ -56,8 +82,8 @@ def test_03_make_user_booking_recap_email_should_have_standard_subject_cancellat
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=True)
     # Then
-    assert recap_email['Subject'] == \
-           'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+    assert recap_email['Subject'] == SUBJECT_USER_BOOKING_CANCELLATION_EMAIL
+
 
 
 def test_04_make_user_booking_recap_email_should_have_standard_body_cancellation(app):
@@ -73,12 +99,7 @@ def test_04_make_user_booking_recap_email_should_have_standard_body_cancellation
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=True)
     # Then
-    assert recap_email['Html-part'] == '<html><body>' + \
-           '<p>Cher Test,</p>' + \
-           '<p>Votre annulation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00 a bien été prise en compte.</p>' + \
-           '<p>Cordialement,</p>' + \
-           '<p>L\'équipe pass culture</p>' + \
-           '</body></html>'
+    assert recap_email['Html-part'] == HTML_USER_BOOKING_CANCELLATION_EMAIL
 
 
 def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app, mocker):
@@ -92,12 +113,7 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
     mocked_mailjet = mocker.patch.object(app, 'mailjet', autospec=True)
     type(mocked_mailjet.return_value).status_code = 200
 
-    mail_html = '<html><body>' + \
-           '<p>Cher Test,</p>' + \
-           '<p>Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00.</p>' + \
-           '<p>Cordialement,</p>' + \
-           '<p>L\'équipe pass culture</p>' + \
-           '</body></html>'
+    mail_html = HTML_USER_BOOKING_CONFIRMATION_EMAIL
 
     if IS_DEV or IS_STAGING:
         beginning_email = '<p>This is a test (ENV={}). In production, email would have been sent to : '.format(ENV) \
@@ -112,7 +128,7 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
       "FromName": 'Pass Culture',
       'FromEmail': 'passculture@beta.gouv.fr',
       'To': recipients,
-      'Subject': 'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00',
+      'Subject': SUBJECT_USER_BOOKING_CONFIRMATION_EMAIL,
       'Html-part': mail_html
     }
 
@@ -121,3 +137,41 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
     # Then
     mocked_mailjet.assert_called_once_with(data=expected_email)
+
+
+def test_06_booking_recap_email_html_should_have_place_and_structure(app):
+    # Given
+    from utils.mailing import make_booking_recap_email
+
+    offer = create_offer_for_booking_email_test(app)
+
+    user = create_user_for_booking_email_test(app)
+
+    booking = create_booking_for_booking_email_test(app, user)
+
+    offerer = create_offerer_for_booking_email_test(app)
+
+    # When
+    recap_email = make_booking_recap_email(offer, booking, offerer)
+
+    # Then
+    assert recap_email['Html-part'] == HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL
+
+
+def test_07_booking_recap_email_subject_should_have_defined_structure(app):
+    # Given
+    from utils.mailing import make_booking_recap_email
+
+    offer = create_offer_for_booking_email_test(app)
+
+    user = create_user_for_booking_email_test(app)
+
+    booking = create_booking_for_booking_email_test(app, user)
+
+    offerer = create_offerer_for_booking_email_test(app)
+
+    # When
+    recap_email = make_booking_recap_email(offer, booking, offerer)
+
+    # Then
+    assert recap_email['Subject'] == SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL

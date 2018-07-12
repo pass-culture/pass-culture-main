@@ -26,11 +26,11 @@ app.mailjet_client = client
 app.mailjet = client.send.create
 
 
-def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
+def send_booking_recap_emails(offer, booking=None, offerer=None, is_cancellation=False):
     if booking is None and len(offer.bookings)==0:
         print("Not sending recap for  "+offer+" as it has no bookings")
 
-    email = make_booking_recap_email(offer, booking, is_cancellation)
+    email = make_booking_recap_email(offer, booking, offerer, is_cancellation)
 
     if offer.venue:
         venue = offer.venue
@@ -78,32 +78,45 @@ def send_booking_confirmation_email_to_user(offer, booking, is_cancellation=Fals
         raise Exception("Email send failed: "+pformat(vars(mailjet_result)))
 
 
-def make_booking_recap_email(offer, booking=None, is_cancellation=False):
+def _get_offerer_description(offerer):
+    return ', proposé par {} (Adresse : {}, {} {}).'.format(offerer.name,
+                                                                   offerer.address,
+                                                                   offerer.postalCode,
+                                                                   offerer.city)
+
+
+def make_booking_recap_email(offer, booking=None, offerer=None, is_cancellation=False):
     email_html = '<html><body>'
     email_html += '<p>Cher partenaire Pass Culture,</p>'
 
-    description = _get_offer_description(offer)
+    offer_description = _get_offer_description(offer)
+    offerer_description = _get_offerer_description(offerer)
 
     email_subject = '[Reservations] '
     if booking is not None:
         user = booking.user
         email_html += '<p>%s (%s)' % (user.publicName, user.email)
         if is_cancellation:
-            email_subject += 'Annulation pour ' + description
+            email_subject += 'Annulation pour ' + offer_description
             email_html += ' vient d\'annuler sa réservation'
         else:
-            email_subject += 'Nouvelle reservation pour ' + description
+            email_subject += 'Nouvelle reservation pour ' + offer_description
             email_html += ' vient de faire une nouvelle réservation'
         email_html += '</p>'
     else:
-        email_subject += 'Récapitulatif pour ' + description
+        email_subject += 'Récapitulatif pour ' + offer_description
 
     if offer.bookingLimitDatetime is not None:
         if offer.bookingLimitDatetime < datetime.utcnow():
             email_html += '<p>Voici le récapitulatif final des réservations (total '
         else:
             email_html += '<p>Voici le récapitulatif des réservations à ce jour (total '
-        email_html += '%s) pour %s</p>' % (len(offer.bookings), description)
+        email_html += '%s) pour %s' % (len(offer.bookings), offer_description)
+
+        if offerer is not None:
+            email_html += offerer_description
+
+        email_html += '</p>'
 
         if len(offer.bookings) > 0:
             email_html += '<table>'
@@ -123,6 +136,9 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
 
     email_html += '</body></html>'
 
+    print(email_html)
+    print(email_subject)
+
     return {
              'FromName': 'Pass Culture',
              'FromEmail': 'passculture@beta.gouv.fr',
@@ -136,10 +152,12 @@ def _get_offer_description(offer):
         date_in_utc = offer.eventOccurence.beginningDatetime
         date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
                                                    offer.eventOccurence.venue.departementCode)
-        description = '%s le %s' % (offer.eventOccurence.event.name,
-                                    format_datetime(date_in_tz))
+        description = '{} le {}'.format(offer.eventOccurence.event.name,
+                                         format_datetime(date_in_tz))
     elif offer.thing:
-        description = '%s (Ref: %s)' % (offer.thing.name, offer.thing.idAtProviders)
+        description = '{} (Ref: {})'.format(offer.thing.name,
+                                             offer.thing.idAtProviders)
+
     return description
 
 
@@ -209,7 +227,7 @@ def send_dev_email(subject, html_text):
         raise Exception("Email send failed: "+pformat(vars(mailjet_result)))
 
 
-def make_user_booking_recap_email(offer, booking, is_cancellation=False):
+def make_user_booking_recap_email(offer, booking, offerer=None, is_cancellation=False):
 
     user = booking.user
     offer_description = _get_offer_description(offer)
