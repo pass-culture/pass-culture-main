@@ -67,8 +67,15 @@ Dans une entrée,
 
     + Body
 
-            [
-              {
-                 "text": "Siret invalide"
-              }
-            ]
+            {
+                "errors": [ { "siret": "Siret invalide" }, { "after" : "Entrée non trouvée" } ]
+            }
+
+
++ Response 404 (application/json)
+
+    + Body
+
+            {
+                "errors": [ { "siret": "Siret inexistant" } ]
+            }
