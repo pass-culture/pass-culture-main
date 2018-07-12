@@ -32,7 +32,7 @@ def subtest_initial_recos():
     r = req_with_auth().put(RECOMMENDATION_URL, json={'seenOccasionIds': []})
     assert r.status_code == 200
     recos = r.json()
-    assert len(recos) == BLOB_SIZE + 2
+    assert len(recos) == 49
 
     assert recos[0]['mediation']['tutoIndex'] == 0
     assert recos[1]['mediation']['tutoIndex'] == 1

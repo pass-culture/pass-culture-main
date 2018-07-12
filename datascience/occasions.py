@@ -47,9 +47,7 @@ def roundrobin(*iterables):
 def make_score_tuples(occasions, departement_codes):
     if len(occasions) == 0:
         return []
-    sort_function = score_event if isinstance(occasions[0], Event)\
-                                else score_thing
-    scored_occasions = list(map(lambda e: (e, sort_function(e, departement_codes)),
+    scored_occasions = list(map(lambda e: (e, score_occasion(e, departement_codes)),
                                 occasions))
     log.debug(lambda: '(reco) scored occasions'+str([(se[0], se[1]) for se in scored_occasions]))
     return scored_occasions
@@ -62,13 +60,29 @@ def sort_by_score(score_tuples):
                            reverse=True)))
 
 
-def score_event(event, departement_codes):
+def score_occasion(occasion, departement_codes):
+    common_score = 0
+
+    if len(occasion.mediations) > 0:
+        common_score += 20
+    elif occasion.thumbCount == 0:
+        # we don't want to recommend occasions that have neither their own
+        # image nor a mediation
+        return None
+
+    # a bit of randomness so we don't always return the same occasions
+    common_score += randint(0, 10)
+
+    if isinstance(occasion, Event):
+        specific_score = specific_score_event(occasion, departement_codes)
+    else:
+        specific_score = specific_score_thing(occasion, departement_codes)
+
+    return common_score + specific_score
+
+
+def specific_score_event(event, departement_codes):
     score = 0
-
-    app.db.session.query(Mediation.query.filter(Mediation.event == event).exists())
-
-    if len(event.mediations) > 0:
-        score += 20
 
     next_occurence = EventOccurence.query.filter((EventOccurence.event == event) &
                                                  (EventOccurence.beginningDatetime > datetime.utcnow())).first()
@@ -79,23 +93,11 @@ def score_event(event, departement_codes):
     # it gets one more point for each day closer it is to now
     score += max(0, 10 - (next_occurence.beginningDatetime - datetime.utcnow()).days)
 
-    # a bit of randomness so we don't always return the same events
-    score += randint(0, 10)
-
     return score
 
 
-def score_thing(thing, departement_codes):
+def specific_score_thing(thing, departement_codes):
     score = 0
-
-    app.db.session.query(Mediation.query.filter(Mediation.thing == thing).exists())
-
-    if len(thing.mediations) > 0:
-        score += 20
-
-    # a bit of randomness so we don't always return the same things
-    score += randint(0, 10)
-
     return score
 
 
