@@ -34,7 +34,6 @@ class DiscoveryPage extends Component {
       return
 
     const targetRecommendation = recommendations[0]
-    console.log("TARGET RECO", targetRecommendation)
     // NOW CHOOSE AN OFFER AMONG THE ONES
     const recommendationOffers = targetRecommendation.recommendationOffers
     const chosenOffer =
