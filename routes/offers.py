@@ -13,8 +13,7 @@ from utils.rest import delete,\
                        expect_json_data,\
                        handle_rest_get_list,\
                        load_or_404,\
-                       login_or_api_key_required,\
-                       update
+                       login_or_api_key_required
 from utils.search import get_ts_queries, LANGUAGE
 
 Event = app.model.Event
@@ -121,7 +120,7 @@ def edit_offer(offer_id):
     query = Offer.query.filter_by(id=dehumanize(offer_id))
     offer = query.first_or_404()
     ensure_provider_can_update(offer)
-    update(offer, updated_offer_dict)
+    offer.populateFromDict(updated_offer_dict)
     try:
         app.model.PcObject.check_and_save(offer)
     except InternalError as ie:

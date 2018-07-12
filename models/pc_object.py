@@ -181,13 +181,13 @@ class PcObject():
         if apiErrors.errors:
             raise apiErrors
 
-    def populateFromDict(self, dct):
+    def populateFromDict(self, dct, skipped_keys=[]):
         data = dct.copy()
         if data.__contains__('id'):
                 del data['id']
         cols = self.__class__.__table__.columns._data
         for key in data.keys():
-            if key=='deleted':
+            if (key=='deleted') or (key in skipped_keys):
                 continue
             if cols.__contains__(key):
                 col = cols[key]

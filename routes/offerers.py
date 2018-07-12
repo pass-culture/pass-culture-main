@@ -9,8 +9,7 @@ from utils.rest import ensure_current_user_has_rights,\
                        expect_json_data,\
                        handle_rest_get_list,\
                        load_or_404,\
-                       login_or_api_key_required,\
-                       update
+                       login_or_api_key_required
 
 Offerer = app.model.Offerer
 RightsType = app.model.RightsType
@@ -47,7 +46,7 @@ def get_offerer(id):
 @expect_json_data
 def create_offerer():
     offerer = app.model.Offerer()
-    update(offerer, request.json)
+    offerer.populateFromDict(request.json)
     app.model.PcObject.check_and_save(offerer)
     if not current_user.isAdmin:
         offerer.generate_validation_token()
@@ -64,6 +63,6 @@ def create_offerer():
 def patch_offerer(offererId):
     offerer = app.model.Offerer\
                        .query.filter_by(id=dehumanize(offererId))
-    update(offerer, request.json)
+    offerer.populateFromDict(request.json, skipped_keys=['validationToken'])
     app.model.PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200

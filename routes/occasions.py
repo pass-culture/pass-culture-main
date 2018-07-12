@@ -9,8 +9,7 @@ from utils.rest import delete,\
                        expect_json_data,\
                        handle_rest_get_list,\
                        load_or_404,\
-                       login_or_api_key_required,\
-                       update
+                       login_or_api_key_required
 from utils.search import get_search_filter
 
 
@@ -30,13 +29,13 @@ def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = EventOccurence()
     event_occurence.event = occasion
     event_occurence.venue = venue
-    update(event_occurence, json, **{ "skipped_keys": ['offer']})
+    event_occurence.populateFromDict(json, skipped_keys=['offer'])
     app.model.PcObject.check_and_save(event_occurence)
 
     offer = Offer()
     offer.eventOccurence = event_occurence
     offer.offerer = offerer
-    update(offer, json['offer'][0])
+    offer.populateFromDict(json['offer'][0])
     app.model.PcObject.check_and_save(offer)
 
 
@@ -93,7 +92,7 @@ def post_occasion():
     venue = load_or_404(Venue, request.json['venueId'])
     ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
-    update(ocas, request.json)
+    ocas.populateFromDict(request.json)
     app.model.PcObject.check_and_save(ocas)
     return jsonify(ocas._asdict(include=OCCASION_INCLUDES)), 201
 

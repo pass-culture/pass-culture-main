@@ -47,21 +47,6 @@ def expect_json_data(f):
     return wrapper
 
 
-def update(obj, new_properties, **kwargs):
-    skipped_keys = kwargs.get('skipped_keys', [])
-    for (key, value) in new_properties.items():
-        if key in skipped_keys:
-            continue
-        elif key == 'id':
-            continue
-        elif key == 'validationToken':
-            continue
-        elif key.endswith('Id'):
-            setattr(obj, key, dehumanize(value))
-        else:
-            setattr(obj, key, value)
-
-
 def add_table_if_missing(sql_identifier, modelClass):
     if sql_identifier.find('.') == -1:
         return '"'+dashify(modelClass.__name__)+'".'+sql_identifier
@@ -131,6 +116,7 @@ def ensure_current_user_has_rights(rights, offererId):
         )
         abort(403)
 
+
 def ensure_can_be_updated(model, id):
     element = load_or_404(model, id)
     if element.lastProvider:
@@ -141,6 +127,7 @@ def ensure_can_be_updated(model, id):
         )
         raise errors
     return element
+
 
 def feed(entity, json, keys):
     for key in keys:

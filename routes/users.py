@@ -8,8 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email
-from utils.rest import update,\
-                       expect_json_data,\
+from utils.rest import expect_json_data,\
                        login_or_api_key_required
 
 from models.api_errors import ApiErrors
@@ -36,7 +35,7 @@ def get_profile():
 @login_or_api_key_required
 @expect_json_data
 def patch_profile():
-    update(current_user, request.json)
+    current_user.populateFromDict(request.json)
     app.model.PcObject.check_and_save(current_user)
     return jsonify(current_user._asdict(include=USER_INCLUDES)), 200
 
@@ -125,7 +124,7 @@ def signup():
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
             offerer = app.model.Offerer()
-            update(offerer, request.json)
+            offerer.populateFromDict(request.json)
             offerer.generate_validation_token()
             user_offerer = offerer.give_rights(new_user,
                                                app.model.RightsType.admin)

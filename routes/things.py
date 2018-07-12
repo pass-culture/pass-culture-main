@@ -7,8 +7,7 @@ from utils.includes import THING_INCLUDES
 from utils.rest import expect_json_data,\
                        load_or_404,\
                        login_or_api_key_required,\
-                       handle_rest_get_list,\
-                       update
+                       handle_rest_get_list
 
 Occasion = app.model.Occasion
 Thing = app.model.Thing
@@ -34,7 +33,7 @@ def list_things():
 @expect_json_data
 def post_thing():
     thing = Thing()
-    update(thing, request.json)
+    thing.populateFromDict(request.json)
     ocas = Occasion()
     ocas.venue = request.json['venueId']
     ocas.thing = thing
@@ -51,7 +50,7 @@ def post_thing():
 @expect_json_data
 def patch_thing(id):
     thing = load_or_404(Thing, id)
-    update(thing, request.json)
+    thing.populateFromDict(request.json)
     app.model.PcObject.check_and_save(thing)
     return jsonify(
         thing._asdict(

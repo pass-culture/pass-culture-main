@@ -5,8 +5,7 @@ from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data,\
                        load_or_404,\
-                       login_or_api_key_required,\
-                       update
+                       login_or_api_key_required
 
 Event = app.model.Event
 Occasion = app.model.Occasion
@@ -26,7 +25,7 @@ def get_event(id):
 @expect_json_data
 def post_event():
     event = Event()
-    update(event, request.json)
+    event.populateFromDict(request.json)
     ocas = Occasion()
     ocas.venueId = dehumanize(request.json['venueId'])
     ocas.event = event
@@ -41,7 +40,7 @@ def post_event():
 @expect_json_data
 def patch_event(id):
     event = load_or_404(Event, id)
-    update(event, request.json)
+    event.populateFromDict(request.json)
     app.model.PcObject.check_and_save(event)
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)

@@ -8,8 +8,7 @@ from utils.rest import delete,\
                        expect_json_data,\
                        load_or_404,\
                        login_or_api_key_required,\
-                       handle_rest_get_list,\
-                       update
+                       handle_rest_get_list
 
 Event = app.model.Event
 EventOccurence = app.model.EventOccurence
@@ -54,7 +53,7 @@ def edit_event_occurence(id):
 
     ensure_current_user_has_rights(RightsType.editor,
                                    eo.venue.managingOffererId)
-    update(eo, request.json)
+    eo.populateFromDict(request.json)
     #TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
     #TODO: Interdire la modification d'évenements passés
     app.model.PcObject.check_and_save(eo)

@@ -10,8 +10,7 @@ from utils.includes import VENUE_PROVIDER_INCLUDES
 from utils.rest import delete, expect_json_data,\
                        ensure_current_user_has_rights,\
                        load_or_404,\
-                       login_or_api_key_required,\
-                       update
+                       login_or_api_key_required
 
 VenueProvider = app.model.VenueProvider
 Provider = app.model.Provider
@@ -91,7 +90,7 @@ def create_venue_provider():
 @expect_json_data
 def edit_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
-    update(vp, request.json)
+    vp.populateFromDict(request.json)
     app.model.PcObject.check_and_save(vp)
     return jsonify(vp._asdict()), 200
 

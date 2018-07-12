@@ -8,8 +8,7 @@ from utils.rest import current_user,\
                        ensure_current_user_has_rights,\
                        expect_json_data,\
                        load_or_404,\
-                       handle_rest_get_list,\
-                       update
+                       handle_rest_get_list
 
 
 RightsType = app.model.RightsType
@@ -42,6 +41,6 @@ def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
-    update(venue, request.json)
+    venue.populateFromDict(request.json)
     app.model.PcObject.check_and_save(venue)
     return jsonify(venue._asdict(include=VENUE_INCLUDES)), 200

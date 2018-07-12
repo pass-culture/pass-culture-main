@@ -14,8 +14,7 @@ from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
 from utils.human_ids import dehumanize, humanize
 from utils.includes import RECOMMENDATION_INCLUDES,\
                            RECOMMENDATION_OFFER_INCLUDES
-from utils.rest import expect_json_data,\
-                       update
+from utils.rest import expect_json_data
 
 Event = app.model.Event
 Mediation = app.model.Mediation
@@ -74,7 +73,7 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
 def patch_recommendation(recommendationId):
     query = Recommendation.query.filter_by(id=dehumanize(recommendationId))
     recommendation = query.first_or_404()
-    update(recommendation, request.json)
+    recommendation.populateFromDict(request.json)
     app.model.PcObject.check_and_save(recommendation)
     return jsonify(recommendation._asdict()), 200
 
