@@ -15,7 +15,7 @@ def test_11_create_venue_provider(app):
     openagenda_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
     vp_data = {'providerId': humanize(openagenda_provider.id),
                'venueId': 'A9',
-               'venueIdAtOfferProvider': '49050769'}
+               'venueIdAtOfferProvider': '86585975'}
     r_create = req_with_auth().post(API_URL + '/venueProviders',
                                     json=vp_data)
     assert r_create.status_code == 201
