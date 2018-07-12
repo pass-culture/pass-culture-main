@@ -14,11 +14,9 @@ from utils.rest import expect_json_data,\
 from models.api_errors import ApiErrors
 
 
-
 def make_user_query():
     query = app.model.User.query
     return query
-
 
 Offerer = app.model.Offerer
 User = app.model.User

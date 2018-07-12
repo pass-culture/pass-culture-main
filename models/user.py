@@ -12,7 +12,7 @@ class User(app.model.PcObject,
            app.model.HasThumbMixin,
            app.model.NeedsValidationMixin
            ):
-    email = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.Binary(60), nullable=False)
 
     publicName = db.Column(db.String(30), nullable=False)
