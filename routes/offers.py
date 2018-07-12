@@ -126,9 +126,15 @@ def edit_offer(offer_id):
     except InternalError as ie:
         if 'check_offer' in str(ie.orig):
             ae = ApiErrors()
-            ae.addError('available', 'la quantité pour cette offre'
-                                     + ' ne peut pas être inférieure'
-                                     + ' au nombre de réservations existantes.')
+
+            if 'available_too_low' in str(ie.orig):
+                ae.addError('available', 'la quantité pour cette offre'
+                                         + ' ne peut pas être inférieure'
+                                         + ' au nombre de réservations existantes.')
+            elif 'bookingLimitDatetime_too_late' in str(ie.orig):
+                ae.addError('bookingLimitDatetime', 'la date limite de réservation'
+                            + ' pour cette offre est postérieure à la date'
+                            + ' de début de l\'évènement')
             return jsonify(ae.errors), 400
         else:
             raise ie

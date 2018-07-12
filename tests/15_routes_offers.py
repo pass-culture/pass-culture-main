@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import desc
 
 from utils.human_ids import humanize
@@ -74,3 +74,39 @@ def test_14_update_offer_available_should_check_bookings(app):
                                      json={'available': 0})
     assert r_update.status_code == 400
     assert 'available' in r_update.json()
+
+
+def test_15_should_not_create_offer_if_event_occurence_before_booking_limit_datetime(app):
+    #Given
+    from models.pc_object import serialize
+    event_occurence = app.model.EventOccurence()
+    event_occurence.beginningDatetime = datetime.utcnow() + timedelta(days=10)
+    event_occurence.endDatetime = event_occurence.beginningDatetime + timedelta(days=1)
+    event_occurence.eventId = 1
+    event_occurence.accessibility = bytes([0])
+    app.model.PcObject.check_and_save(event_occurence)
+
+    event_occurence_id = event_occurence.id
+
+    offer = app.model.Offer()
+    offer.eventOccurence = event_occurence
+    offer.offererId = 11
+    offer.thingId = 11
+    offer.eventOccurenceId = event_occurence_id
+    offer.price = 0
+    offer.available = 5
+    offer.bookingLimitDatetime = event_occurence.beginningDatetime - timedelta(days=1)
+
+    app.model.PcObject.check_and_save(offer)
+
+    offerId = offer.id
+
+    serialized_date = serialize(event_occurence.beginningDatetime + timedelta(days=1))
+
+    #When
+    r_update = req_with_auth().patch(API_URL + '/offers/'+humanize(offerId),
+                                     json={'bookingLimitDatetime': serialized_date})
+
+    #Then
+    assert r_update.status_code == 400
+    assert 'bookingLimitDatetime' in r_update.json()

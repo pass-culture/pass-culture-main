@@ -114,9 +114,17 @@ trig_ddl = DDL("""
     BEGIN
       IF NOT NEW.available IS NULL AND
       ((SELECT COUNT(*) FROM booking WHERE "offerId"=NEW.id) > NEW.available) THEN
-        RAISE EXCEPTION 'Available too low'
+        RAISE EXCEPTION 'available_too_low'
               USING HINT = 'offer.available cannot be lower than number of bookings';
       END IF;
+      
+      IF NOT NEW."bookingLimitDatetime" IS NULL AND
+      (NEW."bookingLimitDatetime" > (SELECT "beginningDatetime" FROM event_occurence WHERE id=NEW."eventOccurenceId")) THEN
+      
+      RAISE EXCEPTION 'bookingLimitDatetime_too_late'
+      USING HINT = 'offer.bookingLimitDatetime after event_occurence.beginningDatetime';
+      END IF;      
+            
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
