@@ -203,6 +203,7 @@ class OccurenceForm extends Component {
         data={this.state}
         readOnly={isEventOccurenceFrozen}
         layout='input-only'
+        size="small"
       >
         <td>
           <Field name='date' required highlightedDates={highlightedDates} title='Date' />
