@@ -247,7 +247,7 @@ class Booking extends Component {
             <div className="section finished">
               <Icon svg="picto-echec" alt='Echec de réservation' />
               <p>Une erreur est survenue lors de la réservation :</p>
-              {error && <p><Capitalize>{error}</Capitalize></p>}
+              {error && <p><Capitalize>{Object.values(error).map(messages => messages.join(";")).join(";")}</Capitalize></p>}
             </div>
           )}
           <ul className="bottom-bar">
@@ -308,6 +308,7 @@ class Booking extends Component {
 export default connect(
   state => ({
     booking: selectBooking(state),
+    error: get(state.data, 'errors'),
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
     recommendation: selectCurrentRecommendation(state),
