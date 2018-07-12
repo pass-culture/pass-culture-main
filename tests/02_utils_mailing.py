@@ -39,6 +39,39 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '<tr><td>Test</td><td>test@email.com</td><td>None</td></tr></table>' +\
     '</body></html>'
 
+SUBJECT_USER_BOOKING_CONFIRMATION_EMAIL = \
+    'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+
+
+HTML_USER_BOOKING_CONFIRMATION_EMAIL = '<html><body>' + \
+           '<p>Cher Test,</p>' + \
+           '<p>Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00.</p>' + \
+           '<p>Cordialement,</p>' + \
+           '<p>L\'équipe pass culture</p>' + \
+           '</body></html>'
+
+SUBJECT_USER_BOOKING_CANCELLATION_EMAIL = \
+    'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+
+HTML_USER_BOOKING_CANCELLATION_EMAIL = '<html><body>' + \
+           '<p>Cher Test,</p>' + \
+           '<p>Votre annulation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00 a bien été prise en compte.</p>' + \
+           '<p>Cordialement,</p>' + \
+           '<p>L\'équipe pass culture</p>' + \
+           '</body></html>'
+
+SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL =\
+    '[Reservations] Nouvelle reservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
+    '<html><body>' + \
+    '<p>Cher partenaire Pass Culture,</p>' + \
+    '<p>Test (test@email.com) vient de faire une nouvelle réservation</p>' + \
+    '<p>Voici le récapitulatif des réservations à ce jour (total 0)' + \
+    ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
+    ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
+    '<p>Aucune réservation</p>' + \
+    '</body></html>'
+
 
 def test_01_make_user_booking_recap_email_should_have_standard_subject(app):
     # Given
