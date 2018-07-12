@@ -23,10 +23,11 @@
               width: 20%;
             }
           }
-          &.occurence-form {
-            td {
-              vertical-align: baseline;
-            }
+        }
+        form.occurence-form {
+          display: table-row;
+          td {
+            vertical-align: baseline;
           }
         }
       }

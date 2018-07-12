@@ -1,15 +1,19 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types';
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { removeWhitespaces, formatSiren } from '../../utils/string'
 import Icon from './Icon'
 import { optionify } from '../../utils/form'
 import Textarea from 'react-autosize-textarea'
+import DatePicker from 'react-datepicker'
+import moment from 'moment'
+
 
 class Field extends Component {
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       value: '',
     }
@@ -17,41 +21,59 @@ class Field extends Component {
 
   static defaultProps = {
     onChange: () => {},
+    dateFormat: 'DD/MM/YYYY',
     layout: 'horizontal',
     size: 'normal',
     optionValue: 'id',
     optionLabel: 'name',
   }
 
-  static nameToInputType(name) {
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+  }
+
+  static guessInputType(name) {
     switch(name) {
+      case 'time':
+        return 'time'
+      case 'date':
+        return 'date'
       case 'siren':
         return 'text'
+      case 'price':
+        return 'number'
       default:
         return 'text'
     }
 
   }
 
-  static nameToAutoComplete(type, name) {
+  static guessAutoComplete(name, type) {
     return type || name
   }
 
-  static nameToFormatter(name) {
-    switch(name) {
-      case 'siren':
-      case 'siret':
-        return {
-          displayValue: formatSiren,
-          storeValue: removeWhitespaces,
-        }
-      default:
-        return {
-          displayValue: v => (v || ''),
-          storeValue: v => v,
-        }
+  static guessFormatters(name, type) {
+    if (name === 'siren' || name === 'siret') {
+      return {
+        displayValue: formatSiren,
+        storeValue: removeWhitespaces,
+      }
+    }
+    return {
+      displayValue: v => (v || ''),
+      storeValue: v => v,
     }
   }
+
+  static getDerivedStateFromProps({name, type}) {
+    type = type || Field.guessInputType(name) // Would be cleaner to use `this` instead of `Field` but doesn't work :(
+    return {
+      type,
+      autoComplete: Field.guessAutoComplete(name, type),
+      ...Field.guessFormatters(name, type),
+    }
+  }
+
 
   componentDidMount() {
     this.onChange(this.props.value)
@@ -64,7 +86,8 @@ class Field extends Component {
   }
 
   onChange = value => {
-    const {displayValue, storeValue} = this.constructor.nameToFormatter(this.props.name)
+    if (!value) return
+    const {displayValue, storeValue} = this.state
     this.setState({
       value: displayValue(value),
     })
@@ -75,40 +98,62 @@ class Field extends Component {
 
   renderInput = () => {
     const {
-      autoComplete,
       id,
-      errors,
-      label,
       name,
       onChange,
-      options,
       optionLabel,
       optionValue,
       placeholder,
       readOnly,
       required,
-      type,
-      value,
     } = this.props
 
-    const actualType = type || this.constructor.nameToInputType(name)
-    const actualAutoComplete = autoComplete || this.constructor.nameToAutoComplete(type, name)
+    const {
+      autoComplete,
+      type,
+      value,
+    } = this.state
+
     const actualRequired = required && !readOnly
 
-    switch(actualType) {
+    switch(type) {
+      case 'date':
+        console.log(this.props.highlightDates)
+        return <div className="input date-picker">
+          { readOnly ?
+            <span> {value && value.format(this.props.dateFormat)} </span>
+          : ([
+              <DatePicker
+                key={0}
+                className='date'
+                filterDate={this.props.filterDate}
+                highlightDates={this.props.highlightedDates || []}
+                minDate={this.props.minDate || moment()}
+                onChange={this.onChange}
+                selected={value ? moment(value) : null}
+              />,
+              <Icon
+                key={1}
+                alt='Horaires'
+                className="input-icon"
+                svg="ico-calendar"
+              />
+            ])
+          }
+        </div>
       case 'select':
-        const actualReadOnly = readOnly || options.length === 1
-        const actualOptions = optionify(options.map(o => ({label: get(o, optionLabel), value: get(o, optionValue)})), placeholder)
+        const actualReadOnly = readOnly || this.props.options.length === 1
+        const actualOptions = optionify(this.props.options.map(o => ({label: get(o, optionLabel), value: get(o, optionValue)})), placeholder)
         return <div className={`select ${classnames({readonly: actualReadOnly})}`}>
           <select
-            autoComplete={actualAutoComplete}
-            id={id}
-            onChange={this.onInputChange}
-            required={actualRequired}
+            autoComplete={autoComplete}
             disabled={actualReadOnly} // readonly doesn't exist on select
+            id={id}
+            name={name}
+            onChange={this.onInputChange}
             placeholder={placeholder}
-            value={this.state.value}
-          >
+            required={actualRequired}
+            value={value}          >
             { actualOptions.filter(o => o).map(({ label, value }, index) =>
               <option key={index} value={value}>
                 {label}
@@ -118,26 +163,29 @@ class Field extends Component {
         </div>
       case 'textarea':
         return <Textarea
-          autoComplete={actualAutoComplete}
-          id={id}
-          placeholder={placeholder}
-          value={this.state.value}
-          onChange={this.onInputChange}
-          required={actualRequired}
-          readOnly={readOnly}
+          autoComplete={autoComplete}
           className='textarea'
+          id={id}
+          name={name}
+          onChange={this.onInputChange}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          required={actualRequired}
+          value={value}
         />
       default:
         return <input
-          autoComplete={actualAutoComplete}
-          type={actualType}
-          id={id}
+          autoComplete={autoComplete}
           className='input'
+          id={id}
+          name={name}
           onChange={this.onInputChange}
-          required={actualRequired}
-          readOnly={readOnly}
           placeholder={placeholder}
-          value={this.state.value}
+          readOnly={readOnly}
+          required={actualRequired}
+          type={type}
+          value={value}
+          min={this.props.min || 0}
         />
     }
   }
@@ -152,11 +200,10 @@ class Field extends Component {
       required,
       readOnly,
       size,
-      type,
     } = this.props
     const $input = this.renderInput()
 
-    if (type === 'hidden') return $input
+    if (this.state.type === 'hidden') return $input
     switch(layout) {
       case 'horizontal':
         return <div className={`field is-horizontal ${classnames({required, readOnly})}`}>
@@ -172,6 +219,7 @@ class Field extends Component {
             </p>)}
           </div>
         </div>
+
       default:
         return $input
     }

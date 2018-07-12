@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
@@ -26,9 +27,17 @@ class Form extends Component {
   }
 
   static defaultProps = {
+    TagName: 'form',
     formData: {},
     formErrors: {},
     debounceTimeout: 500,
+    formatData: () => {},
+  }
+
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    data: PropTypes.object.isRequired,
+    action : PropTypes.string.isRequired,
   }
 
   static getDerivedStateFromProps = (props, prevState) => {
@@ -50,13 +59,14 @@ class Form extends Component {
     const {
       action,
       formData,
+      formatData,
       handleFail,
       handleSuccess,
       name,
       requestData,
     } = this.props
     requestData(this.state.method, action, {
-      body: formData,
+      body: formatData(formData),
       formName: name,
       handleFail,
       handleSuccess,
@@ -79,6 +89,7 @@ class Form extends Component {
       formData,
       formErrors,
       data: storeData,
+      layout,
       method,
       name,
       readOnly,
@@ -99,6 +110,7 @@ class Form extends Component {
           value: formValue || storeValue || '',
           errors: [].concat(formErrors).filter(e => get(e, c.props.name)).map(e => get(e, c.props.name)),
           readOnly: c.props.readOnly || readOnly,
+          layout,
         })
       } else if (c.type.displayName === 'Submit') {
         return React.cloneElement(c, {
@@ -110,7 +122,7 @@ class Form extends Component {
           getTitle: () => {
             const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
             if (missingFields.length === 0) return
-            return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => f.props.label.toLowerCase()).join(', ')}`
+            return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => (f.props.label || f.props.title).toLowerCase()).join(', ')}`
           }
         })
       }
@@ -121,16 +133,16 @@ class Form extends Component {
   render() {
     const {
       action,
-      data: storeData,
       name,
+      TagName,
     } = this.props
     const {
       method
     } = this.state
     return (
-      <form id={name} method={method} action={action} onSubmit={this.onSubmit}>
+      <TagName id={name} method={method} action={action} onSubmit={this.onSubmit}>
         {this.childrenWithProps()}
-      </form>
+      </TagName>
     )
   }
 

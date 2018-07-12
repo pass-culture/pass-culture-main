@@ -140,8 +140,6 @@ class OccurenceManager extends Component {
                 <td>Prix</td>
                 <td>Date Limite de Réservation</td>
                 <td>Places (total)</td>
-                {false && <td>Taille groupe</td>}
-                {false && <td>Dont (PMR)</td>}
                 <td>Supprimer</td>
                 <td>Modifier</td>
               </tr>
@@ -191,8 +189,6 @@ class OccurenceManager extends Component {
                   <td>Prix</td>
                   <td>Date Limite de Réservation</td>
                   <td>Places (total)</td>
-                  {false && <td>Taille groupe</td>}
-                  {false && <td>Dont PMR</td>}
                   <td>Supprimer</td>
                   <td>Modifier</td>
                 </tr>
