@@ -101,19 +101,19 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
     if IS_DEV or IS_STAGING:
         beginning_email = '<p>This is a test (ENV={}). In production, email would have been sent to : '.format(ENV) \
-                + 'test@email.com, passculture@beta.gouv.fr</p>'
+                + 'test@email.com</p>'
         recipients = 'passculture-dev@beta.gouv.fr'
         mail_html = beginning_email + mail_html
     else:
-        recipients = 'test@email.com, passculture@beta.gouv.fr'
+        recipients = 'test@email.com'
 
 
     expected_email = {
-    "FromName": 'Pass Culture',
-    'FromEmail': 'passculture@beta.gouv.fr',
-    'To': recipients,
-    'Subject': 'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00',
-    'Html-part': mail_html
+      "FromName": 'Pass Culture',
+      'FromEmail': 'passculture@beta.gouv.fr',
+      'To': recipients,
+      'Subject': 'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00',
+      'Html-part': mail_html
     }
 
     # When
