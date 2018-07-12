@@ -138,6 +138,9 @@ def make_booking_recap_email(offer, booking=None, offerer=None, is_cancellation=
 
     email_html += '</body></html>'
 
+    print(email_html)
+    print(email_subject)
+
     return {
              'FromName': 'Pass Culture',
              'FromEmail': 'passculture@beta.gouv.fr',

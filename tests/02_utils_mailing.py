@@ -120,6 +120,7 @@ def test_02_make_user_booking_event_recap_email_should_have_standard_body(app):
     # Then
     assert recap_email['Html-part'] == HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL
 
+
 def test_03_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
     # Given
     from utils.mailing import make_user_booking_recap_email
@@ -133,7 +134,6 @@ def test_03_make_user_booking_event_recap_email_should_have_standard_subject_can
     recap_email = make_user_booking_recap_email(offer, booking, offerer, is_cancellation=True)
     # Then
     assert recap_email['Subject'] == SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL
-
 
 
 def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
@@ -172,7 +172,6 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
         mail_html = beginning_email + mail_html
     else:
         recipients = 'test@email.com'
-
 
     expected_email = {
       "FromName": 'Pass Culture',
