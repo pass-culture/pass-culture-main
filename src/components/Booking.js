@@ -70,7 +70,10 @@ class Booking extends Component {
       []
     )
     const { tz } = this.props
-    const availableDates = mediatedOccurences.map(o => moment(o.beginningDatetime).tz(tz))
+    const NOW = moment()
+    const availableDates = mediatedOccurences
+                                   .filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW))
+                                   .map(o => moment(o.beginningDatetime).tz(tz))
     const availableMediatedOccurences = []
     const availableHours = availableDates.filter((d, index) => {
       const isFiltered = d.isSame(selectedDate || this.state.date, 'day')

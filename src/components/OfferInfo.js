@@ -39,6 +39,7 @@ class OfferInfo extends Component {
     const bookableOccurences = mediatedOccurences.filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW)
                                                              && (!whenBookedOccurence || whenBookedOccurence.id !== o.id))
 
+    console.log("mediatedOccurences", mediatedOccurences)
     console.log("booking", booking)
     const infos = {
       image: thumbUrl,
@@ -58,8 +59,6 @@ class OfferInfo extends Component {
                                        + ',' + (get(venue, 'city') || ''),
       },
     }
-
-    console.log("INFOS.WHEN", infos.when)
 
     return (
       <div className="offer-info">
