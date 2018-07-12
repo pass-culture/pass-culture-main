@@ -92,6 +92,7 @@ class Form extends Component {
       method,
       name,
       readOnly,
+      size,
     } = this.props
     let requiredFields = []
 
@@ -110,6 +111,7 @@ class Form extends Component {
           errors: [].concat(formErrors).filter(e => get(e, c.props.name)).map(e => get(e, c.props.name)),
           readOnly: c.props.readOnly || readOnly,
           layout,
+          size,
         })
       } else if (c.type.displayName === 'Submit') {
         return React.cloneElement(c, {

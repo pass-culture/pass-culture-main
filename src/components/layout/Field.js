@@ -65,9 +65,10 @@ class Field extends Component {
     }
   }
 
-  static getDerivedStateFromProps({name, type}) {
+  static getDerivedStateFromProps({name, type, required, readonly}) {
     type = type || Field.guessInputType(name) // Would be cleaner to use `this` instead of `Field` but doesn't work :(
     return {
+      required: required && !readonly,
       type,
       autoComplete: Field.guessAutoComplete(name, type),
       ...Field.guessFormatters(name, type),
@@ -105,46 +106,45 @@ class Field extends Component {
       optionValue,
       placeholder,
       readOnly,
-      required,
+      size,
     } = this.props
 
     const {
       autoComplete,
+      required,
       type,
       value,
     } = this.state
 
-    const actualRequired = required && !readOnly
 
     switch(type) {
       case 'date':
         console.log(this.props.highlightDates)
-        return <div className="input date-picker">
-          { readOnly ?
-            <span> {value && value.format(this.props.dateFormat)} </span>
-          : ([
-              <DatePicker
-                key={0}
-                className='date'
-                filterDate={this.props.filterDate}
-                highlightDates={this.props.highlightedDates || []}
-                minDate={this.props.minDate || moment()}
-                onChange={this.onChange}
-                selected={value ? moment(value) : null}
-              />,
-              <Icon
-                key={1}
-                alt='Horaires'
-                className="input-icon"
-                svg="ico-calendar"
-              />
-            ])
-          }
-        </div>
+        return readOnly ? (
+          <span> {value && value.format(this.props.dateFormat)} </span>
+          ) : (
+          <div className={`input is-${size} date-picker`}>
+            <DatePicker
+              key={0}
+              className='date'
+              filterDate={this.props.filterDate}
+              highlightDates={this.props.highlightedDates || []}
+              minDate={this.props.minDate || moment()}
+              onChange={this.onChange}
+              selected={value ? moment(value) : null}
+            />,
+            <Icon
+              key={1}
+              alt='Horaires'
+              className="input-icon"
+              svg="ico-calendar"
+            />
+          </div>
+        )
       case 'select':
         const actualReadOnly = readOnly || this.props.options.length === 1
         const actualOptions = optionify(this.props.options.map(o => ({label: get(o, optionLabel), value: get(o, optionValue)})), placeholder)
-        return <div className={`select ${classnames({readonly: actualReadOnly})}`}>
+        return <div className={`select is-${size} ${classnames({readonly: actualReadOnly})}`}>
           <select
             autoComplete={autoComplete}
             disabled={actualReadOnly} // readonly doesn't exist on select
@@ -152,7 +152,7 @@ class Field extends Component {
             name={name}
             onChange={this.onInputChange}
             placeholder={placeholder}
-            required={actualRequired}
+            required={required}
             value={value}          >
             { actualOptions.filter(o => o).map(({ label, value }, index) =>
               <option key={index} value={value}>
@@ -164,25 +164,25 @@ class Field extends Component {
       case 'textarea':
         return <Textarea
           autoComplete={autoComplete}
-          className='textarea'
+          className={`textarea is-${size}`}
           id={id}
           name={name}
           onChange={this.onInputChange}
           placeholder={placeholder}
           readOnly={readOnly}
-          required={actualRequired}
+          required={required}
           value={value}
         />
       default:
         return <input
           autoComplete={autoComplete}
-          className='input'
+          className={`input is-${size}`}
           id={id}
           name={name}
           onChange={this.onInputChange}
           placeholder={placeholder}
           readOnly={readOnly}
-          required={actualRequired}
+          required={required}
           type={type}
           value={value}
           min={this.props.min || 0}
