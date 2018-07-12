@@ -1,0 +1,29 @@
+# Python CircleCI 2.0 configuration file
+version: 2
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
+    working_directory: ~/pass-culture-api-ci # directory where steps will run
+    docker: # run the steps with Docker
+      - image: circleci/python:3.6.1 # ...with this image as the primary container; this is where all `steps` will run
+      - image: circleci/postgres:9.6.2 # database image for service container available at `localhost:<port>`
+    environment: # environment variables for database
+      POSTGRES_USER: pass_culture_user
+      POSTGRES_PASSWORD: pass_culture_pass
+      POSTGRES_DB: pass_culture
+    steps: # a collection of executable commands
+      - checkout # special step to check out source code to the working directory
+      - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run: # install and activate virtual environment with pip
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache: # special step to save dependency cache
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run: # run tests
+          command: |
+            . venv/bin/activate
+            pytest tests/*
