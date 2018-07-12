@@ -114,7 +114,7 @@ class Form extends Component {
           size,
         })
       } else if (c.type.displayName === 'Submit') {
-        return React.cloneElement(c, {
+        return React.cloneElement(c, Object.assign({
           name,
           isDisabled: () => {
             const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
@@ -125,7 +125,11 @@ class Form extends Component {
             if (missingFields.length === 0) return
             return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => (f.props.label || f.props.title).toLowerCase()).join(', ')}`
           }
-        })
+        }, this.props.TagName !== 'form' ? {
+          // If not a real form, need to mimic the submit behavior
+          onClick: this.onSubmit,
+          type: 'button',
+        } : {}))
       }
       return c
     })

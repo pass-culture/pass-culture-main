@@ -11,8 +11,10 @@ class Submit extends Component {
       className,
       getTitle,
       isDisabled,
+      type,
+      onClick
     } = this.props
-    return <button type='submit' title={getTitle()} disabled={isDisabled()} className={className}>{children}</button>
+    return <button onClick={onClick} type={type} title={getTitle()} disabled={isDisabled()} className={className}>{children}</button>
   }
 }
 
@@ -21,6 +23,7 @@ Submit.defaultProps = {
   requiredFields: [],
   isDisabled: () => true,
   getTitle: () => null,
+  type: 'submit',
 }
 
 export default Submit
