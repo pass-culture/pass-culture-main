@@ -4,9 +4,17 @@ Ceci décrit l'API à implémenter par les partenaires techniques de Pass Cultur
 
 Pass Culture s'identifie auprès des partenaires techniques via un certificat client SSL. La clé publique est publiée sur le site Pass Culture, et les partenaires sont prévenus à l'avance en cas de changement de clé via notre liste de diffusion email "partenaires techniques".
 
-**Statut actuel : ébauche, pour discussions**
+**Statut actuel : protype, pour implémentations pilotes**
 
 #### Les Stocks [/stocks/{siret}]
+
+Cette API est apellée immédiatement lorsqu'un offreur culturel vous choisit comme fournisseur dans le portail, puis une fois par nuit et par offreur vous ayant choisi par la suite.
+
+Règles de mise à jour des données dans Pass Culture:
+- Si la requête reçoit une réponse, on écrase toutes les données précédentes
+- Si pas de retour on essaye une seconde fois, puis une alerte vous est envoyé par mail
+- Si pas de retour après 2 jours, on efface toutes les données (tous les stocks à 0), mais les appels continuent.
+
 
 + Parameters
 
