@@ -14,6 +14,7 @@ class Submit extends Component {
       children,
       getTitle,
       getDisabled,
+      requiredFields,
       ...otherProps,
     } = this.props
     return <button {...otherProps} title={getTitle()} disabled={getDisabled()}>{children}</button>

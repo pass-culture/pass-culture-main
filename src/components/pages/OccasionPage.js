@@ -20,7 +20,6 @@ import providersSelector from '../../selectors/providers'
 import searchSelector from '../../selectors/search'
 import thingSelector from '../../selectors/thing'
 import typeSelector from '../../selectors/type'
-import typesSelector from '../../selectors/types'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
 // import { eventNormalizer } from '../../utils/normalizers'
@@ -29,16 +28,6 @@ import { pluralize, updateQueryString } from '../../utils/string'
 import Form from '../layout/Form'
 import Field from '../layout/Field'
 import Submit from '../layout/Submit'
-
-const requiredEventAndThingFields = [
-  'name',
-  'type',
-  'description'
-]
-
-const requiredEventFields = [
-  'durationMinutes',
-]
 
 class OccasionPage extends Component {
   constructor () {
@@ -61,25 +50,19 @@ class OccasionPage extends Component {
       eventId,
       thingId
     } = (occasion || {})
+
     const isEdit = feature === 'modifie'
-    const isEventType = eventId || get(type, 'model') === 'EventType'
+    const isEventType = (get(type, 'type') === 'Event') || eventId
     const isReadOnly = !isNew && !isEdit
 
     const apiPath = isEventType
-      ? `events${eventId ? `/${eventId}` : ''}`
-      : `things${thingId ? `/${thingId}` : ''}`
-
-    let requiredFields = requiredEventAndThingFields
-
-    if (isEventType) {
-      requiredFields = requiredFields.concat(requiredEventFields)
-    }
+      ? `events/${eventId || ''}`
+      : `things/${thingId || ''}`
 
     return {
       apiPath,
       isEventType,
       isReadOnly,
-      requiredFields
     }
   }
 
@@ -90,7 +73,7 @@ class OccasionPage extends Component {
       providers,
       requestData,
       showModal,
-      typeOptions,
+      types,
     } = this.props
     offerers.length === 0 && requestData(
       'GET',
@@ -112,7 +95,7 @@ class OccasionPage extends Component {
       }
     )
     providers.length === 0 && requestData('GET', 'providers')
-    typeOptions.length === 0 && requestData('GET', 'types')
+    types.length === 0 && requestData('GET', 'types')
 
     handleSuccess()
   }
@@ -248,7 +231,7 @@ class OccasionPage extends Component {
       routePath,
       thing,
       type,
-      typeOptions,
+      types,
       venue,
       venues
     } = this.props
@@ -261,7 +244,7 @@ class OccasionPage extends Component {
 
     const showAllForm = type || !isNew
 
-    const formData = Object.assign({}, event || thing, venue, occasion)
+    const formData = Object.assign({}, isEventType ? event : thing, venue, occasion)
 
     return (
       <PageWrapper
@@ -283,7 +266,7 @@ class OccasionPage extends Component {
           <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={formData} readOnly={isReadOnly}>
             <div className='field-group'>
               <Field name='name' label="Titre de l'offre" required isExpanded/>
-              <Field type='select' name='type' label='Type' required options={typeOptions} placeholder="Sélectionnez un type d'offre" optionLabel='label'/>
+              <Field type='select' name='type' label='Type' required options={types} placeholder="Sélectionnez un type d'offre" optionLabel='label'/>
             </div>
             { !isNew && (
               <div className='field'>
@@ -399,9 +382,9 @@ export default compose(
       const thingId = get(ownProps, 'occasion.thingId')
       const thing = thingSelector(state, thingId)
 
-      const typeOptions = typesSelector(state)
-      const typeName = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
-      const type = typeSelector(state, eventId, thingId, typeName)
+      const typeId = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
+
+      const type = typeSelector(state, typeId)
 
       let offererId = get(state, 'form.occasion.data.managingOffererId') || search.offererId
 
@@ -426,7 +409,7 @@ export default compose(
         venue,
         offerers,
         offerer,
-        typeOptions,
+        types: state.data.types,
         type,
       }
     },
