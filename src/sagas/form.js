@@ -1,8 +1,8 @@
-import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { call, put, takeEvery } from 'redux-saga/effects'
 
 import { newMergeForm } from '../reducers/form'
 import { assignErrors } from '../reducers/errors'
-import { capitalize, removeWhitespaces } from '../utils/string'
+import { capitalize } from '../utils/string'
 import get from 'lodash.get'
 
 const SIRET = 'siret'

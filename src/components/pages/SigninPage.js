@@ -1,21 +1,13 @@
-import get from 'lodash.get'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 import PageWrapper from '../layout/PageWrapper'
-import FormField from '../layout/FormField'
 import Logo from '../layout/Logo'
-import SubmitButton from '../layout/SubmitButton'
 import withSign from '../hocs/withSign'
-import { NEW } from '../../utils/config'
 
 import Form from '../layout/Form'
 import Field from '../layout/Field'
 import Submit from '../layout/Submit'
-
-const Label = ({ title }) => {
-  return <h3>{title}</h3>
-}
 
 const SigninPage = ({ errors }) => {
   return (

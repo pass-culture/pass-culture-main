@@ -1,5 +1,5 @@
-import get from 'lodash.get'
-import PropTypes from 'prop-types'
+// import get from 'lodash.get'
+// import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -8,7 +8,10 @@ import FormInput from './FormInput'
 import { assignErrors, removeErrors } from '../../reducers/errors'
 import { getFormEntity, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
-import { capitalize, removeWhitespaces } from '../../utils/string'
+import {
+  // capitalize,
+  removeWhitespaces
+} from '../../utils/string'
 
 class FormBooking extends Component {
   constructor(props) {
@@ -20,7 +23,7 @@ class FormBooking extends Component {
   }
 
   onChange = e => {
-    const {sireType} = this.props
+    // const {sireType} = this.props
     const value = removeWhitespaces(e.target.value)
     if (value.length === 9) {
       this.fetchBookingInfos(value)
@@ -37,13 +40,13 @@ class FormBooking extends Component {
       return
     }
     inputValue = removeWhitespaces(inputValue)
-    const {
-      assignErrors,
-      collectionName,
-      entityId,
-      mergeForm,
-      sireType,
-    } = this.props
+    // const {
+    //   assignErrors,
+    //   collectionName,
+    //   entityId,
+    //   mergeForm,
+    //   sireType,
+    // } = this.props
 
     this.setState({
       localValue: inputValue,

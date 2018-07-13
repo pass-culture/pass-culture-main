@@ -7,11 +7,8 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
-import FormField from '../layout/FormField'
 import Icon from '../layout/Icon'
-import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
@@ -66,7 +63,7 @@ class VenuePage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { offererId, venueId } },
+      match: { params: { venueId } },
       requestData,
       user
     } = this.props
@@ -140,24 +137,10 @@ class VenuePage extends Component {
     } = this.props
 
     const {
-      address,
-      city,
-      name,
-      postalCode,
-      siret,
-      bookingEmail,
-      latitude,
-      longitude,
-    } = venue || {}
-
-    const {
-      apiPath,
       offererName,
       isNew,
       isReadOnly,
-      method,
       routePath,
-      venueIdOrNew,
       venueName
     } = this.state
 

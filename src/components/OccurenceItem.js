@@ -118,8 +118,6 @@ class OccurenceItem extends Component {
     } = this.props
     const {
       available,
-      groupSize,
-      pmrGroupSize,
       price
     } = (offer || {})
 

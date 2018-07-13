@@ -5,23 +5,16 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import PageWrapper from '../layout/PageWrapper'
-import FormField from '../layout/FormField'
 import Logo from '../layout/Logo'
-import SubmitButton from '../layout/SubmitButton'
 import withSign from '../hocs/withSign'
-import { addBlockers, removeBlockers } from '../../reducers/blockers'
-import { closeNotification, showNotification } from '../../reducers/notification'
-import { NEW } from '../../utils/config'
+import { showNotification } from '../../reducers/notification'
 
 import Form from '../layout/Form'
 import Field from '../layout/Field'
 import Submit from '../layout/Submit'
 
 const SignupPage = ({
-  addBlockers,
-  closeNotification,
   errors,
-  removeBlockers,
   sirenName,
   showNotification
 }) => {
@@ -116,10 +109,7 @@ export default compose(
       sirenName: get(state, `form.sign-up.data.name`)
     }),
     {
-      addBlockers,
-      closeNotification,
-      removeBlockers,
-      showNotification
+      showNotification,
     }
   )
 )(SignupPage)

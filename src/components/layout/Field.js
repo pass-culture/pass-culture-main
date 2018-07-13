@@ -266,7 +266,7 @@ class Field extends Component {
           </div>
         }
       default:
-        return $input
+        break
     }
     return $input
   }
