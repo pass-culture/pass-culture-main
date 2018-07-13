@@ -45,7 +45,7 @@ class Form extends Component {
   }
 
   onMergeForm = () => {
-    this.props.removeErrors()
+    // this.props.removeErrors()
     this.props.newMergeForm(this.props.name, this.state.editedValues)
     this.setState({
       editedValues: {},
@@ -78,9 +78,11 @@ class Form extends Component {
   updateFormValue = (key, value) => {
     this.setState({
       editedValues: Object.assign(this.state.editedValues, {[key]: value})
-    }, () => {
-      this.onDebouncedMergeForm()
     })
+    // Using debounce makes it fail when fields depends on each other (venue and offerer in OccasionForm)
+    // TODO: find a fix
+    // this.onDebouncedMergeForm()
+    this.onMergeForm()
   }
 
   childrenWithProps = () => {
