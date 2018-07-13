@@ -113,9 +113,6 @@ class Field extends Component {
     const {
       id,
       name,
-      onChange,
-      optionLabel,
-      optionValue,
       placeholder,
       readOnly,
       size,
@@ -186,7 +183,7 @@ class Field extends Component {
 
       case 'select':
         const actualReadOnly = readOnly || this.props.options.length === 1
-        const actualOptions = optionify(this.props.options.map(o => ({label: get(o, optionLabel), value: get(o, optionValue)})), placeholder)
+        const actualOptions = optionify(this.props.options.map(o => ({label: get(o, this.props.optionLabel), value: get(o, this.props.optionValue)})), placeholder)
         return <div className={`select is-${size} ${classnames({readonly: actualReadOnly})}`}>
           <select
             {...commonProps}
