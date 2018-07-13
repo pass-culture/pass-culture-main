@@ -5,7 +5,7 @@ import Icon from '../layout/Icon'
 // import FormField from '../layout/FormField'
 import PageWrapper from '../layout/PageWrapper'
 
-const CounterPage = ({}) => {
+const CounterPage = () => {
   return (
     <PageWrapper
       name='counter'

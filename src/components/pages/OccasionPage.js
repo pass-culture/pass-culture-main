@@ -6,12 +6,8 @@ import { compose } from 'redux'
 
 import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
-import OccasionForm from '../OccasionForm'
 import withCurrentOccasion from '../hocs/withCurrentOccasion'
-import FormField from '../layout/FormField'
-import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import Icon from '../layout/Icon'
 import { resetForm } from '../../reducers/form'
 import { showModal } from '../../reducers/modal'
@@ -27,9 +23,7 @@ import typeSelector from '../../selectors/type'
 import typesSelector from '../../selectors/types'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
-import { NEW } from '../../utils/config'
-import { getIsDisabled, optionify } from '../../utils/form'
-import { eventNormalizer } from '../../utils/normalizers'
+// import { eventNormalizer } from '../../utils/normalizers'
 import { pluralize, updateQueryString } from '../../utils/string'
 
 import Form from '../layout/Form'
@@ -249,7 +243,6 @@ class OccasionPage extends Component {
       location: { pathname, search },
       occasion,
       occurences,
-      occasionIdOrNew,
       offerer,
       offerers,
       routePath,
@@ -260,14 +253,9 @@ class OccasionPage extends Component {
       venues
     } = this.props
     const {
-      extraData,
-      name
-    } = (event || thing || {})
-    const {
       apiPath,
       isReadOnly,
       isEventType,
-      requiredFields,
     } = this.state
 
 
@@ -402,7 +390,6 @@ export default compose(
   connect(
     (state, ownProps) => {
       const search = searchSelector(state, ownProps.location.search)
-      const occasionId = get(ownProps, 'occasion.id') || NEW
 
       const providers = providersSelector(state)
 
@@ -416,8 +403,6 @@ export default compose(
       const typeName = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
       const type = typeSelector(state, eventId, thingId, typeName)
 
-      const occurences = occurencesSelector(state, venueId, eventId)
-
       let offererId = get(state, 'form.occasion.data.managingOffererId') || search.offererId
 
       const venues = venuesSelector(state, offererId)
@@ -428,6 +413,8 @@ export default compose(
 
       const offerers = offerersSelector(state)
       const offerer = offererSelector(state, offererId)
+
+      const occurences = occurencesSelector(state, venueId, eventId)
 
       return {
         search,

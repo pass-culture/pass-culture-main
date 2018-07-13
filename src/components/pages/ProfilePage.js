@@ -2,14 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
-import get from 'lodash.get'
 
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import UploadThumb from '../layout/UploadThumb'
-import Label from '../layout/Label'
-import FormField from '../layout/FormField'
-import SubmitButton from '../layout/SubmitButton'
 import { showNotification } from '../../reducers/notification'
 
 import { apiUrl } from '../../utils/config'
@@ -33,8 +29,6 @@ class ProfilePage extends Component {
   render() {
     const {
       id,
-      publicName,
-      email,
       thumbPath,
     } = this.props.user || {}
 

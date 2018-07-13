@@ -1,29 +1,23 @@
 import React, {Component} from 'react'
-import { connect } from 'react-redux'
-
-import get from 'lodash.get'
 
 class Submit extends Component {
+
+  static defaultProps = {
+    requiredFields: [],
+    getDisabled: () => true,
+    getTitle: () => null,
+    type: 'submit',
+  }
 
   render () {
     const {
       children,
-      className,
       getTitle,
-      isDisabled,
-      type,
-      onClick
+      getDisabled,
+      ...otherProps,
     } = this.props
-    return <button onClick={onClick} type={type} title={getTitle()} disabled={isDisabled()} className={className}>{children}</button>
+    return <button {...otherProps} title={getTitle()} disabled={getDisabled()}>{children}</button>
   }
-}
-
-
-Submit.defaultProps = {
-  requiredFields: [],
-  isDisabled: () => true,
-  getTitle: () => null,
-  type: 'submit',
 }
 
 export default Submit

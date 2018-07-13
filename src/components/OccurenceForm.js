@@ -4,8 +4,6 @@ import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import FormField from './layout/FormField'
-import SubmitButton from './layout/SubmitButton'
 import { mergeForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import offerSelector from '../selectors/offer'
@@ -13,7 +11,6 @@ import timezoneSelector from '../selectors/timezone'
 import venueSelector from '../selectors/venue'
 import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
-import { getIsDisabled } from '../utils/form'
 
 import Form from './layout/Form'
 import Field from './layout/Field'
@@ -163,34 +160,10 @@ class OccurenceForm extends Component {
 
   render () {
     const {
-      event,
-      occurence,
-      offer,
-      venue,
-      tz,
-    } = this.props
-    const {
-      id,
-    } = occurence || {}
-    const {
-      price,
-      available,
-      pmrGroupSize
-    } = (offer || {})
-    const {
       apiPath,
-      bookingDate,
-      endTime,
-      date,
-      eventOccurenceIdOrNew,
       filterBookingDate,
       highlightedDates,
-      isEmptyOccurenceForm,
       isEventOccurenceFrozen,
-      method,
-      offerIdOrNew,
-      storeKey,
-      time
     } = this.state
 
     return (

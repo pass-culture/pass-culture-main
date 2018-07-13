@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
-import set from 'lodash.set'
 
 import { requestData } from 'pass-culture-shared'
 
@@ -87,13 +86,11 @@ class Form extends Component {
 
   childrenWithProps = () => {
     const {
-      action,
       children,
       formData,
       formErrors,
       data: storeData,
       layout,
-      method,
       name,
       readOnly,
       size,
@@ -120,7 +117,7 @@ class Form extends Component {
       } else if (c.type.displayName === 'Submit') {
         return React.cloneElement(c, Object.assign({
           name,
-          isDisabled: () => {
+          getDisabled: () => {
             const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
             return missingFields.length > 0
           },
