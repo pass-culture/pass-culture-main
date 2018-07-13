@@ -63,6 +63,7 @@ class Form extends Component {
       handleSuccess,
       name,
       requestData,
+      storePath,
     } = this.props
 
     requestData(this.state.method, action, {
@@ -70,6 +71,7 @@ class Form extends Component {
       formName: name,
       handleFail,
       handleSuccess,
+      key: storePath, // key is a reserved prop name
       encode: formData instanceof FormData ? 'multipart/form-data' : null,
     })
   }

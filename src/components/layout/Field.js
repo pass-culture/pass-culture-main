@@ -245,7 +245,7 @@ class Field extends Component {
             <div className={`field ${classnames({'is-expanded': isExpanded})}`}>
               {$input}
             </div>
-            {errors.map(e => <p className='help is-danger' id={`${id}-error`}>
+            {errors.map((e, i) => <p className='help is-danger' id={`${id}-error`} key={i}>
               <Icon svg="picto-warning" alt="Warning" /> {e}
             </p>)}
           </div>
@@ -264,7 +264,7 @@ class Field extends Component {
               {$input}
             </div>
             <ul className="help is-danger" id={`${id}-error`}>
-              {errors.map(e => <li><Icon svg="picto-warning" alt="Warning" /> {e}</li>)}
+              {errors.map((e, i) => <li key={i}><Icon svg="picto-warning" alt="Warning" /> {e}</li>)}
             </ul>
           </div>
         }
