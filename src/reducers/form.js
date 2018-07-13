@@ -29,7 +29,6 @@ const form = (state = initialState, action) => {
         }
       })
     case NEW_ERROR_FORM:
-      console.log(action)
       return deepMerge(state, {
         [action.name]: {
           errors: [].concat(action.values),

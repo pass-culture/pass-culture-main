@@ -86,13 +86,16 @@ class Field extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    if (this.props.debug) {
+      console.log(this.props.value, prevProps.value)
+    }
     if (prevProps.value !== this.props.value) {
       this.onChange(this.props.value)
     }
   }
 
   onChange = value => {
-    if (!value) return
+    // if (!value) return
     const {displayValue, storeValue} = this.state
     this.setState({
       value: displayValue(value),
