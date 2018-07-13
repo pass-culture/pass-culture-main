@@ -59,9 +59,6 @@ class OccasionPage extends Component {
     const apiPath = isEventType
       ? `events/${eventId || ''}`
       : `things/${thingId || ''}`
-
-      console.log(isEventType, apiPath)
-
     return {
       apiPath,
       isEventType,
@@ -247,8 +244,6 @@ class OccasionPage extends Component {
     const showAllForm = type || !isNew
 
     const formData = Object.assign({}, isEventType ? event : thing, {offererId: get(venue, 'managingOffererId')})
-
-    console.log(formData)
 
     return (
       <PageWrapper

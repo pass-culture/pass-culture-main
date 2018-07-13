@@ -9,7 +9,6 @@ import Textarea from 'react-autosize-textarea'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
 
-
 class Field extends Component {
 
   constructor(props) {
@@ -64,6 +63,12 @@ class Field extends Component {
         storeValue: removeWhitespaces,
       }
     }
+    if (type === 'number') {
+      return {
+        displayValue: v => v || '',
+        storeValue: v => parseInt(v) || '',
+      }
+    }
     return {
       displayValue: v => (v || ''),
       storeValue: v => v,
@@ -86,21 +91,19 @@ class Field extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.debug) {
-      console.log(this.props.value, prevProps.value)
-    }
     if (prevProps.value !== this.props.value) {
       this.onChange(this.props.value)
     }
   }
 
-  onChange = value => {
+  onChange = (value) => {
     // if (!value) return
     const {displayValue, storeValue} = this.state
     this.setState({
       value: displayValue(value),
+    }, () => {
+      this.props.onChange(this.props.name, storeValue(value))
     })
-    this.props.onChange(this.props.name, storeValue(value))
   }
 
   toggleHidden = e => {
@@ -110,7 +113,7 @@ class Field extends Component {
     })
   }
 
-  onInputChange = e => this.onChange(e.target.value)
+  onInputChange = e => this.onChange(e.target.value, false)
 
   renderInput = () => {
     const {
