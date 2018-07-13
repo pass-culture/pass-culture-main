@@ -40,14 +40,12 @@ class Form extends Component {
   }
 
   static getDerivedStateFromProps = (props, prevState) => {
-    console.log(get(props, 'data.id'))
     return {
       method: props.method || get(props, 'data.id') ? 'PATCH' : 'POST',
     }
   }
 
   onMergeForm = () => {
-    console.log(Object.keys(this.state.editedValues).join('-'))
     this.props.removeErrors()
     this.props.newMergeForm(this.props.name, this.state.editedValues)
     this.setState({
