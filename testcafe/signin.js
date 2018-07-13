@@ -11,7 +11,7 @@ const signUpButton  = Selector('.is-secondary') // inscription
 const errorMessages  = Selector('.errors') // inscription
 
 
-fixture `SignInPage | Se connecter en tant qu'utilisateur`
+fixture `SignInPage | Se connecter en tant qu'utilisateur·ice`
     .page `${BROWSER_ROOT_URL+'connexion'}`
 
 test("Je peux cliquer sur lien Créer un compte", async t => {
@@ -41,7 +41,6 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /offres sans erre
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres')
 })
-
 
 test("J'ai un compte Identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
 
@@ -73,7 +72,6 @@ test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste su
   await t.expect(location.pathname).eql('/connexion')
 })
 
-//Authentification nécessaire div class="errors"
 test
   .page `${BROWSER_ROOT_URL+'offres'}`
   ("Lorsque j'accède à une page sans être connecté·e, je suis redirigé·e vers la page connexion", async t => {
@@ -81,6 +79,6 @@ test
     await t
     const location = await t.eval(() => window.location)
     await t.expect(location.pathname).eql('/connexion')
-      await t.expect(errorMessages.innerText).eql('Authentification nécessaire')
+    await t.expect(errorMessages.innerText).eql('Authentification nécessaire')
 
 })

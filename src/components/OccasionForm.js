@@ -136,7 +136,7 @@ class OccasionForm extends Component {
           {
             offerer && get(venues, 'length') === 0
               ? (
-                <p>
+                <p className="errors">
                   Il faut obligatoirement une structure avec un lieu.
                 </p>
               )
