@@ -241,10 +241,7 @@ class OccasionPage extends Component {
       isEventType,
     } = this.state
 
-
     const showAllForm = type || !isNew
-
-    const formData = Object.assign({}, isEventType ? event : thing, venue, occasion)
 
     return (
       <PageWrapper
@@ -263,7 +260,7 @@ class OccasionPage extends Component {
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
           </p>
-          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={formData} readOnly={isReadOnly}>
+          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={isEventType ? event : thing} readOnly={isReadOnly}>
             <div className='field-group'>
               <Field name='name' label="Titre de l'offre" required isExpanded/>
               <Field type='select' name='type' label='Type' required options={types} placeholder="Sélectionnez un type d'offre" optionLabel='label'/>
