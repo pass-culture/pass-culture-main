@@ -237,9 +237,9 @@ class Field extends Component {
     if (this.state.type === 'hidden') return $input
     switch(layout) {
       case 'horizontal':
-        return <div className={`field is-horizontal ${classnames({required, readOnly})}`}>
+        return <div className='field is-horizontal'>
           {label && <div className={`field-label is-${size}`}>
-            <label htmlFor={id} className='label'><span className='subtitle'>{label} :</span></label>
+            <label htmlFor={id} className='label'><span className={`subtitle ${classnames({required, readOnly})}`}>{label} :</span></label>
           </div>}
           <div className='field-body'>
             <div className={`field ${classnames({'is-expanded': isExpanded})}`}>

@@ -1,10 +1,11 @@
 import createCachedSelector from 're-reselect'
 
+import typesSelector from './types'
+
 export default createCachedSelector(
-  (state) => state.data.types,
-  (state, typeId) => typeId,
-  // eslint-disable-next-line eqeqeq
-  (types, typeId) => types.find(t => t.id == typeId) // id can be a string
+  (state) => typesSelector(state),
+  (state, value) => value,
+  (types, value) => types.find(t => t.value === value)
 )(
-  (state, typeId) => (typeId || '')
+  (state, value) => (value || '')
 )
