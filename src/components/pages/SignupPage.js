@@ -17,26 +17,6 @@ import Form from '../layout/Form'
 import Field from '../layout/Field'
 import Submit from '../layout/Submit'
 
-const Label = ({ subtitle, title, inline }) => (
-  <div className={inline && 'inline'}>
-    <h3 className={`can-be-required ${subtitle ? 'with-subtitle' : ''}`}>{title}</h3>
-    <p>{subtitle}</p>
-  </div>
-)
-
-// const requiredFields = [
-//   'address',
-//   'contact_ok',
-//   'email',
-//   'latitude',
-//   'longitude',
-//   'name',
-//   'password',
-//   'postalCode',
-//   'publicName',
-//   'siren'
-// ]
-
 const SignupPage = ({
   addBlockers,
   closeNotification,
