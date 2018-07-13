@@ -59,6 +59,8 @@ class OccasionPage extends Component {
       ? `events/${eventId || ''}`
       : `things/${thingId || ''}`
 
+      console.log(isEventType, apiPath)
+
     return {
       apiPath,
       isEventType,
@@ -191,17 +193,17 @@ class OccasionPage extends Component {
     const { offererId, venueId } = this.props
 
     // IMHO not necessary: here I'd consider the query string as a inital value, but then we let the form handle the data, don't we?
-    if (venue && venueId && venue.id !== venueId) {
-      history.push({
-        search: updateQueryString(search, { venueId })
-      })
-      return
-    }
-    if (offerer && offererId && offerer.id !== offererId) {
-      history.push({
-        search: updateQueryString(search, { offererId })
-      })
-    }
+    // if (venue && venueId && venue.id !== venueId) {
+    //   history.push({
+    //     search: updateQueryString(search, { venueId })
+    //   })
+    //   return
+    // }
+    // if (offerer && offererId && offerer.id !== offererId) {
+    //   history.push({
+    //     search: updateQueryString(search, { offererId })
+    //   })
+    // }
 
     if (feature === 'dates') {
       if (
@@ -243,6 +245,10 @@ class OccasionPage extends Component {
 
     const showAllForm = type || !isNew
 
+    const formData = Object.assign({}, isEventType ? event : thing, {offererId: get(venue, 'managingOffererId')})
+
+    console.log(formData)
+
     return (
       <PageWrapper
         backTo={{path: `/offres${search}`, label: 'Vos offres'}}
@@ -260,10 +266,10 @@ class OccasionPage extends Component {
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
           </p>
-          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={isEventType ? event : thing} readOnly={isReadOnly}>
+          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={formData} readOnly={isReadOnly}>
             <div className='field-group'>
               <Field name='name' label="Titre de l'offre" required isExpanded/>
-              <Field type='select' name='type' label='Type' required options={types} placeholder="Sélectionnez un type d'offre" optionLabel='label'/>
+              <Field type='select' name='type' label='Type' required options={types} placeholder="Sélectionnez un type d'offre" optionLabel='label' optionValue='value'/>
             </div>
             { !isNew && (
               <div className='field'>
@@ -302,7 +308,7 @@ class OccasionPage extends Component {
                   Infos pratiques
                 </h2>
                 <div className='field-group'>
-                  <Field type='select' name='managingOffererId' label='Structure' required options={offerers} placeholder="Sélectionnez une structure" debug/>
+                  <Field type='select' name='offererId' label='Structure' required options={offerers} placeholder="Sélectionnez une structure" debug/>
                   { offerer && get(venues, 'length') === 0 ? (
                     <div className='field is-horizontal'>
                       <div className='field-label'></div>
@@ -379,11 +385,11 @@ export default compose(
       const thingId = get(ownProps, 'occasion.thingId')
       const thing = thingSelector(state, thingId)
 
-      const typeId = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
+      const typeValue = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
 
-      const type = typeSelector(state, typeId)
+      const type = typeSelector(state, typeValue)
 
-      let offererId = get(state, 'form.occasion.data.managingOffererId') || search.offererId
+      let offererId = get(state, 'form.occasion.data.offererId') || search.offererId
 
       const venues = venuesSelector(state, offererId)
       const venueId = get(state, 'form.occasion.data.venueId') || search.venueId || get(event, 'venueId') || get(thing, 'venueId')
