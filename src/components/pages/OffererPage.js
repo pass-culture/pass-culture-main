@@ -7,10 +7,7 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
 import VenueItem from '../VenueItem'
-import FormField from '../layout/FormField'
-import Label from '../layout/Label'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import offererSelector from '../../selectors/offerer'
@@ -102,10 +99,7 @@ class OffererPage extends Component {
     } = this.props
 
     const {
-      apiPath,
       isNew,
-      method,
-      offererIdOrNew,
     } = this.state
     return (
       <PageWrapper
@@ -162,7 +156,7 @@ class OffererPage extends Component {
                 { venues.map(v => <VenueItem key={v.id} venue={v} />) }
               </ul>
               <div className='has-text-centered'>
-                <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}
+                <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
                   className="button is-secondary is-outlined">
                   + Ajouter un lieu
                 </NavLink>
