@@ -19,6 +19,7 @@ import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
 import searchSelector from '../../selectors/search'
 import thingSelector from '../../selectors/thing'
+import typesSelector from '../../selectors/types'
 import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
@@ -385,6 +386,8 @@ export default compose(
       const thingId = get(ownProps, 'occasion.thingId')
       const thing = thingSelector(state, thingId)
 
+      const types = typesSelector(state)
+
       const typeValue = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
 
       const type = typeSelector(state, typeValue)
@@ -412,7 +415,7 @@ export default compose(
         venue,
         offerers,
         offerer,
-        types: state.data.types,
+        types,
         type,
       }
     },
