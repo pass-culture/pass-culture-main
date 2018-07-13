@@ -34,7 +34,7 @@ const SigninPage = ({ errors }) => {
                   <span className="has-text-weight-normal">du Pass Culture pro.</span>
                 </h1>
                 <h2 className='subtitle is-2'>Et merci de votre participation pour nous aider à l'améliorer !</h2>
-                <Form name='sign-in' action='/users/signin' layout='sign-in-up'>
+                <Form name='sign-in' action='users/signin' storePath='users' layout='sign-in-up'>
                   <Field name='identifier' type='email' label='Adresse e-mail' placeholder="Identifiant (email)" />
                   <Field name='password' autoComplete="current-password" label='Mot de passe' placeholder='Mot de passe' />
                   <div className="errors">{errors}</div>
