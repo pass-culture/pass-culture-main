@@ -49,7 +49,7 @@ def create_user_for_booking_email_test(app):
     return user
 
 
-def create_offer_for_booking_email_test(app):
+def create_event_offer_for_booking_email_test(app):
     offer = Offer()
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     offer.eventOccurence = EventOccurence()
@@ -61,6 +61,20 @@ def create_offer_for_booking_email_test(app):
     offer.thing = None
     offer.isActive = True
     return offer
+
+
+
+def create_thing_offer_for_booking_email_test(app):
+    offer = app.model.Offer()
+    offer.eventOccurence = None
+    offer.thing = app.model.Thing()
+    offer.thing.type = 'Book'
+    offer.thing.name = 'Test Book'
+    offer.thing.mediaUrls = 'test/urls'
+    offer.thing.idAtProviders = '12345'
+    offer.isActive = True
+    return offer
+
 
 def create_offerer_for_booking_email_test(app):
     offerer = Offerer()
