@@ -1,5 +1,6 @@
 """ offers """
 from flask import current_app as app, jsonify, request
+from pprint import pformat
 from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
@@ -135,6 +136,8 @@ def edit_offer(offer_id):
                 ae.addError('bookingLimitDatetime', 'la date limite de réservation'
                             + ' pour cette offre est postérieure à la date'
                             + ' de début de l\'évènement')
+            else:
+                app.log.error("Unexpected error in patch offers: "+pformat(ie))
             return jsonify(ae.errors), 400
         else:
             raise ie
