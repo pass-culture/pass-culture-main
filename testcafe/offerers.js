@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import regularOfferer from './helpers/roles'
+import { regularOfferer } from './helpers/roles'
 
 const pageTitle = Selector('h1')
 const createOfferButton = Selector('a.button.is-primary')

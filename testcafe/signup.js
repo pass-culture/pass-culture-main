@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import BROWSER_ROOT_URL from './helpers/config'
+import { BROWSER_ROOT_URL } from './helpers/config'
 
 const logger = RequestLogger('http://localhost/users', {
   logResponseBody: true,

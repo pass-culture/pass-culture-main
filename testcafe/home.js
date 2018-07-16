@@ -1,4 +1,4 @@
-import BROWSER_ROOT_URL from './helpers/config'
+import { BROWSER_ROOT_URL } from './helpers/config'
 
 fixture `HomePage | Arrivée d'un nouvel utilisateur à la racine`
     .page `${BROWSER_ROOT_URL}`
