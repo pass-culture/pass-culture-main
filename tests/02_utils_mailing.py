@@ -30,10 +30,11 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '<html><body>' + \
     '<p>Cher partenaire Pass Culture,</p>' + \
     '<p>Test (test@email.com) vient de faire une nouvelle réservation</p>' + \
-    '<p>Voici le récapitulatif des réservations à ce jour (total 0)' + \
+    '<p>Voici le récapitulatif des réservations à ce jour (total 1)' + \
     ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
     ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
-    '<p>Aucune réservation</p>' + \
+    '<table><tr><th>Nom ou pseudo</th><th>Email</th><th>Code réservation</th></tr>' +\
+    '<tr><td>Test</td><td>test@email.com</td><td>None</td></tr></table>' +\
     '</body></html>'
 
 
@@ -45,7 +46,7 @@ def test_01_make_user_booking_recap_email_should_have_standard_subject(app):
 
     user = create_user_for_booking_email_test(app)
 
-    booking = create_booking_for_booking_email_test(app, user)
+    booking = create_booking_for_booking_email_test(app, user, offer)
 
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=False)
@@ -62,7 +63,7 @@ def test_02_make_user_booking_recap_email_should_have_standard_body(app):
 
     user = create_user_for_booking_email_test(app)
 
-    booking = create_booking_for_booking_email_test(app, user)
+    booking = create_booking_for_booking_email_test(app, user, offer)
 
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=False)
@@ -77,7 +78,7 @@ def test_03_make_user_booking_recap_email_should_have_standard_subject_cancellat
 
     user = create_user_for_booking_email_test(app)
 
-    booking = create_booking_for_booking_email_test(app, user)
+    booking = create_booking_for_booking_email_test(app, user, offer)
 
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=True)
@@ -94,7 +95,7 @@ def test_04_make_user_booking_recap_email_should_have_standard_body_cancellation
 
     user = create_user_for_booking_email_test(app)
 
-    booking = create_booking_for_booking_email_test(app, user)
+    booking = create_booking_for_booking_email_test(app, user, offer)
 
     # When
     recap_email = make_user_booking_recap_email(offer, booking, is_cancellation=True)
@@ -108,7 +109,7 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
     offer = create_offer_for_booking_email_test(app)
     user = create_user_for_booking_email_test(app)
-    booking = create_booking_for_booking_email_test(app, user)
+    booking = create_booking_for_booking_email_test(app, user, offer)
 
     mocked_mailjet = mocker.patch.object(app, 'mailjet', autospec=True)
     type(mocked_mailjet.return_value).status_code = 200
@@ -147,7 +148,7 @@ def test_06_booking_recap_email_html_should_have_place_and_structure(app):
 
     user = create_user_for_booking_email_test(app)
 
-    booking = create_booking_for_booking_email_test(app, user)
+    booking = create_booking_for_booking_email_test(app, user, offer)
 
     offerer = create_offerer_for_booking_email_test(app)
 
@@ -166,7 +167,7 @@ def test_07_booking_recap_email_subject_should_have_defined_structure(app):
 
     user = create_user_for_booking_email_test(app)
 
-    booking = create_booking_for_booking_email_test(app, user)
+    booking = create_booking_for_booking_email_test(app, user, offer)
 
     offerer = create_offerer_for_booking_email_test(app)
 

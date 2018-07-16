@@ -27,9 +27,10 @@ def req_with_auth(email=None, password=None):
     return r
 
 
-def create_booking_for_booking_email_test(app, user):
+def create_booking_for_booking_email_test(app, user, offer):
     booking = app.model.Booking()
     booking.user = user
+    offer.bookings = [booking]
     return booking
 
 
