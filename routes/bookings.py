@@ -83,7 +83,8 @@ def post_booking():
             raise ie
 
     new_booking_offer = app.model.Offer.query.get(new_booking.offerId)
-    send_booking_recap_emails(new_booking_offer, new_booking)
+    new_offerer = app.model.Offerer.query.get(new_booking_offer.offererId)
+    send_booking_recap_emails(new_booking_offer, new_booking, new_offerer)
     send_booking_confirmation_email_to_user(new_booking_offer, new_booking)
 
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201
