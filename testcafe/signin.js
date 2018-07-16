@@ -1,6 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { BROWSER_ROOT_URL } from './helpers/config'
+import { offererUser } from './helpers/users'
 
 const inputUsersIdentifier = Selector('#input_users_identifier')
 const inputUsersPassword = Selector('#input_users_password')
@@ -31,8 +32,8 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est desacti
 test("J'ai un compte valide, je suis redirigé·e vers la page /offres sans erreurs", async t => {
 
   await t
-  .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
-  .typeText(inputUsersPassword, 'pctestcafe')
+  .typeText(inputUsersIdentifier, offererUser.email)
+  .typeText(inputUsersPassword, offererUser.password)
   .wait(1000)
   .click(signInButton)
   .wait(1000)
@@ -59,7 +60,7 @@ test("J'ai un compte Identifiant invalide, je vois un messages d'erreur et je re
 test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
 
   await t
-  .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
+  .typeText(inputUsersIdentifier, offererUser.email)
   .typeText(inputUsersPassword, 'Pa$$word')
   .wait(1000)
   .click(signInButton)

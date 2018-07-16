@@ -1,13 +1,12 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import { newMergeForm } from '../../reducers/form'
 import { removeErrors } from '../../reducers/errors'
-import { requestData } from '../../reducers/data'
-
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
 

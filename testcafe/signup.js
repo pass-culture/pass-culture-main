@@ -1,6 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { BROWSER_ROOT_URL } from './helpers/config'
+import { offererUser } from './helpers/users'
 
 const logger = RequestLogger('http://localhost/users', {
   logResponseBody: true,
@@ -45,9 +46,9 @@ test("Lorsqu'un·e utilisateur·ice est créé, iel est redirigé·e vers la pag
     await t
     // TODO Comment créer un user à chaque test ?
     .typeText(inputUsersPublicName, 'Public Name')
-    .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
-    .typeText(inputUsersPassword, 'pctestcafe')
-    .typeText(inputUsersSiren, '492475033')
+    .typeText(inputUsersEmail, offererUser.email)
+    .typeText(inputUsersPassword, offererUser.password)
+    .typeText(inputUsersSiren, offererUser.siren)
     .click(inputUsersContactOk)
     .click(inputUsersNewsletterOk)
     .wait(1000)
