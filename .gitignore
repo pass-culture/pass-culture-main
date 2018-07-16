@@ -108,3 +108,5 @@ static/object_store_data
 
 # env
 dev_env_file
+
+private.tar.gz
