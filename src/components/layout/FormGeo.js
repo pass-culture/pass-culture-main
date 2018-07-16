@@ -7,7 +7,7 @@ import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 import { connect } from 'react-redux'
 
-import { mergeForm } from '../../reducers/form'
+import { getFormValue, mergeForm } from '../../reducers/form'
 
 const customIcon = new L.Icon({
     iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
@@ -165,7 +165,7 @@ class FormGeo extends Component {
           {children}
         </div>
       )}
-      value={value}
+      value={this.props.value || value}
       wrapperProps={{ className: 'input-wrapper' }}
     />
 
@@ -202,6 +202,6 @@ class FormGeo extends Component {
 }
 
 export default connect(
-  null,
+  (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
   { mergeForm }
 )(FormGeo)
