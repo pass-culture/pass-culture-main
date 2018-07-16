@@ -67,10 +67,11 @@ class VenuePage extends Component {
       requestData,
       user
     } = this.props
+    const { apiPath } = this.state
     if (user) {
       requestData(
         'GET',
-        `venues/${venueId}`,
+        apiPath,
         {
           handleSuccess,
           handleFail,
@@ -156,6 +157,8 @@ class VenuePage extends Component {
       venueIdOrNew,
       venueName
     } = this.state
+
+    console.log('address', address)
 
     return (
       <PageWrapper
@@ -249,7 +252,7 @@ class VenuePage extends Component {
             <FormField
               autoComplete="address"
               collectionName="venues"
-              defaultValue={address || ''}
+              defaultValue={address}
               entityId={venueIdOrNew}
               isHorizontal
               isExpanded
@@ -264,7 +267,7 @@ class VenuePage extends Component {
             <FormField
               autoComplete="postalCode"
               collectionName="venues"
-              defaultValue={postalCode || ''}
+              defaultValue={postalCode}
               entityId={venueIdOrNew}
               isHorizontal
               label={<Label title="Code Postal :" />}
@@ -275,7 +278,7 @@ class VenuePage extends Component {
             <FormField
               autoComplete="city"
               collectionName="venues"
-              defaultValue={city || ''}
+              defaultValue={city}
               entityId={venueIdOrNew}
               isHorizontal
               label={<Label title="Ville :" />}
@@ -286,7 +289,7 @@ class VenuePage extends Component {
             <FormField
               autoComplete="latitude"
               collectionName="venues"
-              defaultValue={latitude || ''}
+              defaultValue={latitude}
               entityId={venueIdOrNew}
               isHorizontal
               label={<Label title="Latitude :" />}
@@ -297,7 +300,7 @@ class VenuePage extends Component {
             <FormField
               autoComplete="longitude"
               collectionName="venues"
-              defaultValue={longitude || ''}
+              defaultValue={longitude}
               entityId={venueIdOrNew}
               isHorizontal
               label={<Label title="Longitude :" />}

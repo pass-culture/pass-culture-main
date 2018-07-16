@@ -1,6 +1,5 @@
 import { Selector } from 'testcafe'
 
-import { BROWSER_ROOT_URL } from './helpers/config'
 import { regularOfferer } from './helpers/roles'
 
 const navbarLink = Selector('a.navbar-link')
