@@ -2,8 +2,6 @@ import { Selector } from 'testcafe'
 
 import BROWSER_ROOT_URL from './helpers/config'
 
-const { PC_TEST_CAFE_PWD } = process.env
-
 const inputUsersIdentifier = Selector('#input_users_identifier')
 const inputUsersPassword = Selector('#input_users_password')
 const inputUsersIdentifierError = Selector('#input_users_identifier-error')
@@ -34,7 +32,7 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /offres sans erre
 
   await t
   .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
-  .typeText(inputUsersPassword, PC_TEST_CAFE_PWD)
+  .typeText(inputUsersPassword, 'pctestcafe')
   .wait(1000)
   .click(signInButton)
   .wait(1000)

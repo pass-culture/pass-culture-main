@@ -2,8 +2,6 @@ import { Selector } from 'testcafe'
 
 import BROWSER_ROOT_URL from './helpers/config'
 
-const { PC_TEST_CAFE_PWD } = process.env
-
 const logger = RequestLogger('http://localhost/users', {
   logResponseBody: true,
   stringifyResponseBody: true,
@@ -48,7 +46,7 @@ test("Lorsqu'un·e utilisateur·ice est créé, iel est redirigé·e vers la pag
     // TODO Comment créer un user à chaque test ?
     .typeText(inputUsersPublicName, 'Public Name')
     .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
-    .typeText(inputUsersPassword, PC_TEST_CAFE_PWD)
+    .typeText(inputUsersPassword, 'pctestcafe')
     .typeText(inputUsersSiren, '492475033')
     .click(inputUsersContactOk)
     .click(inputUsersNewsletterOk)
@@ -71,7 +69,7 @@ test("Lorsqu'un·e utilisateur·ice est créé, iel est redirigé·e vers la pag
 //   await t
 //   .typeText(inputUsersPublicName, 'Public Name')
 //   .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
-//   .typeText(inputUsersPassword, PC_TEST_CAFE_PWD)
+//   .typeText(inputUsersPassword, 'pctestcafe')
 //   // .typeText(inputUsersSiren, '492475033')
 //   .click(inputUsersContactOk)
 //   // .click(inputUsersNewsletterOk)
