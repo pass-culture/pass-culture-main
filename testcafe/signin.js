@@ -2,6 +2,8 @@ import { Selector } from 'testcafe'
 
 import BROWSER_ROOT_URL from './helpers/config'
 
+const { PC_TEST_CAFE_PWD } = process.env
+
 const inputUsersIdentifier = Selector('#input_users_identifier')
 const inputUsersPassword = Selector('#input_users_password')
 const inputUsersIdentifierError = Selector('#input_users_identifier-error')
@@ -15,7 +17,6 @@ fixture `SignInPage | Se connecter en tant qu'utilisateur·ice`
     .page `${BROWSER_ROOT_URL+'connexion'}`
 
 test("Je peux cliquer sur lien Créer un compte", async t => {
-
   await t
   .click(signUpButton)
   const location = await t.eval(() => window.location)
@@ -23,17 +24,17 @@ test("Je peux cliquer sur lien Créer un compte", async t => {
 })
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est desactivé", async t => {
-    await t
+  await t
     .typeText(inputUsersIdentifier, 'email@email.test')
     .wait(1000)
-    await t.expect(signInButton.hasAttribute('disabled')).ok()
+  await t.expect(signInButton.hasAttribute('disabled')).ok()
 })
 
 test("J'ai un compte valide, je suis redirigé·e vers la page /offres sans erreurs", async t => {
 
   await t
-  .typeText(inputUsersIdentifier, 'testcafe_user@btmx.fr')
-  .typeText(inputUsersPassword, 'password1234')
+  .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
+  .typeText(inputUsersPassword, PC_TEST_CAFE_PWD)
   .wait(1000)
   .click(signInButton)
   .wait(1000)
@@ -60,7 +61,7 @@ test("J'ai un compte Identifiant invalide, je vois un messages d'erreur et je re
 test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
 
   await t
-  .typeText(inputUsersIdentifier, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'Pa$$word')
   .wait(1000)
   .click(signInButton)
@@ -75,10 +76,8 @@ test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste su
 test
   .page `${BROWSER_ROOT_URL+'offres'}`
   ("Lorsque j'accède à une page sans être connecté·e, je suis redirigé·e vers la page connexion", async t => {
-
     await t
     const location = await t.eval(() => window.location)
     await t.expect(location.pathname).eql('/connexion')
     await t.expect(errorMessages.innerText).eql('Authentification nécessaire')
-
 })

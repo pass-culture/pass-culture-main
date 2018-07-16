@@ -1,6 +1,8 @@
-import { Selector, RequestLogger } from 'testcafe'
+import { Selector } from 'testcafe'
 
 import BROWSER_ROOT_URL from './helpers/config'
+
+const { PC_TEST_CAFE_PWD } = process.env
 
 const logger = RequestLogger('http://localhost/users', {
   logResponseBody: true,
@@ -41,27 +43,23 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
     await t.expect(signUpButton.hasAttribute('disabled')).ok()
 })
 
-test.skip
-.requestHooks(logger)
-("Lorsqu'un·e utilisateur·ice est créé, iel est redirigé·e vers la page /structures", async t => {
-  await t
-  // TODO Comment créer un user à chaque test ?
-  .typeText(inputUsersPublicName, 'Public Name')
-  .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
-  .typeText(inputUsersPassword, 'password1234')
-  .typeText(inputUsersSiren, '492475033')
-  .click(inputUsersContactOk)
-  .click(inputUsersNewsletterOk)
-  .wait(1000)
-  .click(signUpButton)
-  .wait(1000)
-  const apiResponse = logger.requests[0].response
-  await t.expect(apiResponse.statusCode).eql(201)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures')
-})
+test("Lorsqu'un·e utilisateur·ice est créé, iel est redirigé·e vers la page /structures", async t => {
+    await t
+    // TODO Comment créer un user à chaque test ?
+    .typeText(inputUsersPublicName, 'Public Name')
+    .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
+    .typeText(inputUsersPassword, PC_TEST_CAFE_PWD)
+    .typeText(inputUsersSiren, '492475033')
+    .click(inputUsersContactOk)
+    .click(inputUsersNewsletterOk)
+    .wait(1000)
+    .click(signUpButton)
+    .wait(1000)
+    const location = await t.eval(() => window.location)
+    await t.expect(location.pathname).eql('/structures')
+  })
 
-// TODO je ne peux pas tester les réponses api en erreur à ce stade car le bouton créer est désactiver.
+// TODO je ne peux pas tester les réponses api en erreur à ce stade car le bouton créer est désactivé.
 // BUG entre le logger et le mock https://github.com/DevExpress/testcafe/issues/2516
 
 // fixture `SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
@@ -72,8 +70,8 @@ test.skip
 // ('Case contact à cocher', async t => {
 //   await t
 //   .typeText(inputUsersPublicName, 'Public Name')
-//   .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
-//   .typeText(inputUsersPassword, 'password1234')
+//   .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
+//   .typeText(inputUsersPassword, PC_TEST_CAFE_PWD)
 //   // .typeText(inputUsersSiren, '492475033')
 //   .click(inputUsersContactOk)
 //   // .click(inputUsersNewsletterOk)
@@ -96,7 +94,7 @@ test.skip
 //   await t
 //
 //   .typeText(inputUsersPublicName, 'Public Name')
-//   .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
+//   .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
 //   .typeText(inputUsersPassword, 'pas')
 //   .wait(1000)
 //   .click(inputUsersContactOk)
