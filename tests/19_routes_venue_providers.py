@@ -31,7 +31,7 @@ def test_11_create_venue_provider(app):
         assert r_check.status_code == 200
         read_json = r_check.json()
         tries += 1
-        sleep(1)
+        sleep(2)
 
 
 def test_12_edit_venue_provider():
