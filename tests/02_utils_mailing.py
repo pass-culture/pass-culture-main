@@ -1,29 +1,47 @@
 from utils.config import IS_DEV, IS_STAGING, ENV
+
 from utils.test_utils import create_event_offer_for_booking_email_test, \
     create_thing_offer_for_booking_email_test
 
 from utils.test_utils import create_user_for_booking_email_test, create_booking_for_booking_email_test, create_offerer_for_booking_email_test
 
-SUBJECT_USER_BOOKING_CONFIRMATION_EMAIL = \
+SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
 
 
-HTML_USER_BOOKING_CONFIRMATION_EMAIL = '<html><body>' + \
+HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = '<html><body>' + \
            '<p>Cher Test,</p>' + \
-           '<p>Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00.</p>' + \
+           '<p>Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
+           ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
            '<p>Cordialement,</p>' + \
            '<p>L\'équipe pass culture</p>' + \
            '</body></html>'
 
-SUBJECT_USER_BOOKING_CANCELLATION_EMAIL = \
+SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL = \
+    'Confirmation de votre commande pour Test Book'
+
+HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL = '<html><body>' + \
+           '<p>Cher Test,</p>' + \
+           '<p>Nous vous confirmons votre commande pour Test Book (Ref: 12345),' + \
+           ' proposé par Test offerer.</p>' + \
+           '<p>Cordialement,</p>' + \
+           '<p>L\'équipe pass culture</p>' + \
+           '</body></html>'
+
+
+SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL = \
     'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
 
-HTML_USER_BOOKING_CANCELLATION_EMAIL = '<html><body>' + \
+HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL = '<html><body>' + \
            '<p>Cher Test,</p>' + \
-           '<p>Votre annulation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00 a bien été prise en compte.</p>' + \
+           '<p>Votre annulation pour Mains, sorts et papiers, ' + \
+           'proposé par Test offerer ' + \
+           'le 20 juillet 2019 à 14:00, ' + \
+           'a bien été prise en compte.</p>' + \
            '<p>Cordialement,</p>' + \
            '<p>L\'équipe pass culture</p>' + \
            '</body></html>'
+
 
 SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL =\
     '[Reservations] Nouvelle reservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'

@@ -242,6 +242,7 @@ def make_user_booking_recap_email(offer, booking, offerer, is_cancellation=False
              'Html-part': email_html,
            }
 
+
 def get_contact(user):
     return app.mailjet_client.contact.get(user.email).json()['Data'][0]
 
@@ -278,6 +279,7 @@ def subscribe_newsletter(user):
 
 app.get_contact = get_contact
 app.subscribe_newsletter = subscribe_newsletter
+
 
 def _generate_reservation_email_html_subject(user, offer, offerer):
     offer_description = _get_offer_description(offer)
@@ -318,4 +320,3 @@ def _get_event_datetime(offer):
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
                                                offer.eventOccurence.venue.departementCode)
     return date_in_tz
-
