@@ -1,25 +1,23 @@
 import os
 from datetime import datetime
 from pathlib import Path, PurePath
+from utils.config import IS_DEV
 
 from utils.human_ids import humanize
 
 import swiftclient
 
 
-user = os.environ.get('OVH_USER')
-key = os.environ.get('OVH_PASSWORD')
-container_name = os.environ.get('OVH_BUCKET_NAME')
-
-tenant_name = '4754281319661209'
-auth_url = 'https://auth.cloud.ovh.net/v2.0/'
-options = {
-    'region_name': 'GRA3'
-}
-auth_version = '2'
-
-
 def swift_con():
+    user = os.environ.get('OVH_USER')
+    key = os.environ.get('OVH_PASSWORD')
+
+    tenant_name = '4754281319661209'
+    auth_url = 'https://auth.cloud.ovh.net/v2.0/'
+    options = {
+        'region_name': 'GRA3'
+    }
+    auth_version = '2'
     return swiftclient.Connection(user=user,
                                   key=key,
                                   authurl=auth_url,
@@ -50,12 +48,15 @@ def store_public_object(bucket, id, blob, content_type):
     newFile.write(blob)
     newTypeFile = open(str(local_path(bucket, id))+".type", "w")
     newTypeFile.write(content_type)
-    # we want to store data with a special path
-    storage_path = 'storage/thumbs/' + id
-    swift_con().put_object(container_name,
-                           storage_path,
-                           contents=blob,
-                           content_type=content_type)
+
+    if not IS_DEV:
+        container_name = os.environ.get('OVH_BUCKET_NAME')
+        # we want to store data with a special path
+        storage_path = 'storage/thumbs/' + id
+        swift_con().put_object(container_name,
+                               storage_path,
+                               contents=blob,
+                               content_type=content_type)
 
 
 def delete_public_object(bucket, id):
