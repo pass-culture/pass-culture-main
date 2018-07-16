@@ -30,7 +30,7 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est desacti
 test("J'ai un compte valide, je suis redirigé vers la page /decouverte sans erreurs", async t => {
 
   await t
-  .typeText(inputUsersIdentifier, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'password1234')
   .wait(1000)
   .click(signInButton)
@@ -58,7 +58,7 @@ test("J'ai un compte Identifiant invalide, je vois un messages d'erreur et je re
 test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
 
   await t
-  .typeText(inputUsersIdentifier, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'Pa$$word')
   .wait(1000)
   .click(signInButton)

@@ -41,9 +41,9 @@ test.skip("Lorsque le user est créé, l'utilisateur est redirigé vers la page 
   await t
   // TODO Comment créer un user à chaque test ?
   .typeText(inputUsersPublicName, 'Public Name')
-  .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'password1234')
-  .clic(inputUsersContactOk)
+  await t.click(inputUsersContactOk)
   .click(signUpButton)
   .wait(1000)
 
@@ -60,7 +60,7 @@ test
 ('Case contact à cocher', async t => {
   await t
   .typeText(inputUsersPublicName, 'Public Name')
-  .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'password1234')
   .wait(1000)
   .click(signUpButton)
@@ -81,24 +81,23 @@ test
   await t
 
   .typeText(inputUsersPublicName, 'Public Name')
-  .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
+  .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'pas')
   .wait(1000)
   .click(inputUsersContactOk)
   .wait(1000)
   .click(signUpButton)
   .wait(1000)
-
-    const errorMessage = logger.requests[0].response.body
-    const expected = {
-      "email": [
-        "Un compte li\u00e9 \u00e0 cet email existe d\u00e9j\u00e0"
-      ],
-      "password": [
-        "Vous devez saisir au moins 8 caract\u00e8res."
-      ]
-    }
-    await t.expect(JSON.parse(errorMessage)).eql(expected)
-    await t.expect(inputUsersEmailError.innerText).eql(" Un compte lié à cet email existe déjà\n")
-    await t.expect(inputUsersPasswordError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
+  const errorMessage = logger.requests[0].response.body
+  const expected = {
+    "email": [
+      "Un compte li\u00e9 \u00e0 cet email existe d\u00e9j\u00e0"
+    ],
+    "password": [
+      "Vous devez saisir au moins 8 caract\u00e8res."
+    ]
+  }
+  await t.expect(JSON.parse(errorMessage)).eql(expected)
+  await t.expect(inputUsersEmailError.innerText).eql(" Un compte lié à cet email existe déjà\n")
+  await t.expect(inputUsersPasswordError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
 })
