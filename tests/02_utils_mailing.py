@@ -66,10 +66,11 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '<html><body>' + \
     '<p>Cher partenaire Pass Culture,</p>' + \
     '<p>Test (test@email.com) vient de faire une nouvelle réservation</p>' + \
-    '<p>Voici le récapitulatif des réservations à ce jour (total 0)' + \
+    '<p>Voici le récapitulatif des réservations à ce jour (total 1)' + \
     ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
     ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
-    '<p>Aucune réservation</p>' + \
+    '<table><tr><th>Nom ou pseudo</th><th>Email</th><th>Code réservation</th></tr>' +\
+    '<tr><td>Test</td><td>test@email.com</td><td>None</td></tr></table>' +\
     '</body></html>'
 
 
