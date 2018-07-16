@@ -93,12 +93,12 @@
     "testcafe": "^0.20.4"
   },
   "scripts": {
-    "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "postinstall": "cd node_modules && ln -sf ../../shared pass-culture-shared",
     "test": "node scripts/test.js --env=jsdom",
     "testcafe": "testcafe 'chrome:headless' testcafe",
-    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
+    "postinstall": "cd node_modules && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile",
+    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'",
+    "start": "node scripts/start.js"
   },
   "jest": {
     "collectCoverageFrom": [
