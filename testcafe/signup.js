@@ -1,8 +1,8 @@
-import { Selector, RequestLogger, RequestMock } from 'testcafe'
+import { Selector, RequestLogger } from 'testcafe'
 
 import BROWSER_ROOT_URL from './helpers/config'
 
-const logger = RequestLogger(BROWSER_ROOT_URL+'users', {
+const logger = RequestLogger('http://localhost/users', {
   logResponseBody: true,
   stringifyResponseBody: true,
   logRequestBody: true,
@@ -43,14 +43,12 @@ test.skip("Lorsque le user est créé, l'utilisateur est redirigé vers la page 
   .typeText(inputUsersPublicName, 'Public Name')
   .typeText(inputUsersEmail, 'testcafe_user@btmx.fr')
   .typeText(inputUsersPassword, 'password1234')
-  .click(inputUsersContactOk)
-  .wait(1000)
+  .clic(inputUsersContactOk)
   .click(signUpButton)
   .wait(1000)
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/decouverte/empty')
-
 
 })
 

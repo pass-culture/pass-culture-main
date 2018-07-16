@@ -29,11 +29,11 @@ fixture `Découverte | Après connexion | Les offres sont en cours de chargement
        .useRole(regularUser)
     })
 
-    test("L'utilisateur est redirigé vers la page /decouverte/empty", async t =>
+    test("L'utilisateur est redirigé vers la page /decouverte", async t =>
     {
       await t
       const location = await t.eval(() => window.location)
-      await t.expect(location.pathname).eql('/decouverte/empty')
+      await t.expect(location.pathname).eql('/decouverte')
     })
 
     test("L'utilisateur est informé du fait que les offres sont en cours de chargement", async t => {
