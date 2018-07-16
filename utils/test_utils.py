@@ -39,6 +39,7 @@ def req_with_auth(email=None, password=None):
 def create_booking_for_booking_email_test(user, offer):
     booking = Booking()
     booking.user = user
+    booking.token = '56789'
     offer.bookings = [booking]
     return booking
 

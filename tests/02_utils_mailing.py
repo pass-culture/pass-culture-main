@@ -15,6 +15,7 @@ HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = '<html><body>' + \
            '<p>Cher Test,</p>' + \
            '<p>Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
            ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
+           '<p>Votre code de réservation est le 56789.</p>' + \
            '<p>Cordialement,</p>' + \
            '<p>L\'équipe pass culture</p>' + \
            '</body></html>'
@@ -26,6 +27,7 @@ HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL = '<html><body>' + \
            '<p>Cher Test,</p>' + \
            '<p>Nous vous confirmons votre commande pour Test Book (Ref: 12345),' + \
            ' proposé par Test offerer.</p>' + \
+           '<p>Votre code de réservation est le 56789.</p>' + \
            '<p>Cordialement,</p>' + \
            '<p>L\'équipe pass culture</p>' + \
            '</body></html>'
@@ -61,12 +63,12 @@ SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL =\
 HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '<html><body>' + \
     '<p>Cher partenaire Pass Culture,</p>' + \
-    '<p>Test (test@email.com) vient de faire une nouvelle réservation</p>' + \
+    '<p>Test (test@email.com) vient de faire une nouvelle réservation.</p>' + \
     '<p>Voici le récapitulatif des réservations à ce jour (total 1)' + \
     ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
     ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
     '<table><tr><th>Nom ou pseudo</th><th>Email</th><th>Code réservation</th></tr>' +\
-    '<tr><td>Test</td><td>test@email.com</td><td>None</td></tr></table>' +\
+    '<tr><td>Test</td><td>test@email.com</td><td>56789</td></tr></table>' +\
     '</body></html>'
 
 

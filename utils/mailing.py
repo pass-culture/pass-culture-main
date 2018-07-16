@@ -24,7 +24,6 @@ if MAILJET_API_SECRET is None or MAILJET_API_SECRET == '':
     raise ValueError("Missing environment variable MAILJET_API_SECRET")
 
 
-
 def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
     if booking is None and len(offer.bookings)==0:
         print("Not sending recap for  "+offer+" as it has no bookings")
@@ -100,8 +99,7 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
             email_html += ' vient d\'annuler sa réservation'
         else:
             email_subject += 'Nouvelle reservation pour ' + offer_description
-            email_html += ' vient de faire une nouvelle réservation'
-        email_html += '</p>'
+            email_html += ' vient de faire une nouvelle réservation.</p>'
     else:
         email_subject += 'Récapitulatif pour ' + offer_description
 
@@ -115,10 +113,8 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
         if venue is not None:
             email_html += venue_description
 
-        email_html += '</p>'
-
         if len(offer.bookings) > 0:
-            email_html += '<table>'
+            email_html += '</p><table>'
             email_html += '<tr><th>Nom ou pseudo</th>' \
                           + '<th>Email</th>' \
                           + '<th>Code réservation</th>' \
@@ -229,8 +225,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
         email_html, email_subject = _generate_cancellation_email_html_and_subject(user,
                                                                                   offer)
     else:
-        email_html, email_subject = _generate_reservation_email_html_subject(user,
-                                                                             offer)
+        email_html, email_subject = _generate_reservation_email_html_subject(booking)
 
     return {
         'FromName': 'Pass Culture',
@@ -282,7 +277,9 @@ def subscribe_newsletter(user):
     ).json()
 
 
-def _generate_reservation_email_html_subject(user, offer):
+def _generate_reservation_email_html_subject(booking):
+    offer = booking.offer
+    user = booking.user
     venue = _get_offer_venue(offer)
     offer_description = _get_offer_description(offer)
     email_html = '<html><body><p>Cher {},</p>'.format(user.publicName)
@@ -299,7 +296,8 @@ def _generate_reservation_email_html_subject(user, offer):
         email_html += ' proposé par {}.'.format(venue.name)
     else:
         email_html += _get_venue_description(venue)
-    email_html += '</p><p>Cordialement,</p><p>L\'équipe pass culture</p></body></html>'
+    email_html += '</p><p>Votre code de réservation est le {}.</p>'.format(booking.token)
+    email_html += '<p>Cordialement,</p><p>L\'équipe pass culture</p></body></html>'
     return email_html, email_subject
 
 
