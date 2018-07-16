@@ -1,6 +1,8 @@
 import { Selector, RequestLogger, RequestMock } from 'testcafe'
 
-const logger = RequestLogger('http://localhost/users', {
+import BROWSER_ROOT_URL from './helpers/config'
+
+const logger = RequestLogger(BROWSER_ROOT_URL+'users', {
   logResponseBody: true,
   stringifyResponseBody: true,
   logRequestBody: true,
@@ -18,7 +20,7 @@ const inputUsersPasswordError = Selector('#input_users_password-error')
 const inputUsersContactOkError = Selector('#input_users_contact_ok-error')
 
 fixture `SignupPage | Création d'un compte utilisateur`
-    .page `http://localhost:3000/inscription`
+    .page `${BROWSER_ROOT_URL+'inscription'}`
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
 
@@ -53,7 +55,7 @@ test.skip("Lorsque le user est créé, l'utilisateur est redirigé vers la page 
 })
 
 fixture `SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
-    .page `http://localhost:3000/inscription`
+  .page `${BROWSER_ROOT_URL+'inscription'}`
 
 test
 .requestHooks(logger)

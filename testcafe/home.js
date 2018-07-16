@@ -1,7 +1,9 @@
 import { Selector } from 'testcafe'
 
+import BROWSER_ROOT_URL from './helpers/config'
+
 fixture `BetaPage | Arrivée d'un nouvel utilisateur à la racine de la webapp`
-    .page `http://localhost:3000/`
+    .page `${BROWSER_ROOT_URL}`
 
 test('Le nouvel utilisateur est redirigé vers /beta', async t => {
     await t

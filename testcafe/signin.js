@@ -1,5 +1,7 @@
 import { Selector } from 'testcafe'
 
+import BROWSER_ROOT_URL from './helpers/config'
+
 const inputUsersIdentifier = Selector('#input_users_identifier')
 const inputUsersPassword = Selector('#input_users_password')
 const inputUsersIdentifierError = Selector('#input_users_identifier-error')
@@ -8,7 +10,7 @@ const signInButton  = Selector('button') //connexion
 const signUpButton  = Selector('.is-secondary') // inscription
 
 fixture `SignInPage | Se connecter en tant qu'utilisateur`
-    .page `http://localhost:3000/connexion`
+    .page `${BROWSER_ROOT_URL+'connexion'}`
 
 test("Je peux cliquer sur lien /inscription", async t => {
 
@@ -32,10 +34,9 @@ test("J'ai un compte valide, je suis redirigé vers la page /decouverte sans err
   .typeText(inputUsersPassword, 'password1234')
   .wait(1000)
   .click(signInButton)
-  .wait(1000)
 
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/decouverte/empty')
+  await t.expect(location.pathname).eql('/decouverte')
 })
 
 

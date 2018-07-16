@@ -1,7 +1,9 @@
-import { Selector, RequestMock, RequestLogger } from 'testcafe'
+import { Selector, RequestLogger } from 'testcafe'
+
+import BROWSER_ROOT_URL from './helpers/config'
 import regularUser from './helpers/roles'
 
-const logger = RequestLogger('http://localhost/recommendations?occasionType=Event&occasionId=', {
+const logger = RequestLogger(BROWSER_ROOT_URL+'recommendations?occasionType=Event&occasionId=', {
     logResponseBody: true,
     stringifyResponseBody: true,
     logRequestBody: true,
@@ -10,7 +12,7 @@ const logger = RequestLogger('http://localhost/recommendations?occasionType=Even
 
 
 fixture `Découverte | Utilisateur non loggé`
-.page `http://localhost:3000/decouverte`
+.page `${BROWSER_ROOT_URL+'decouverte'}`
 
   test.skip("L'utilisateur est redirigé vers la page /beta", async t =>
   {
@@ -20,7 +22,7 @@ fixture `Découverte | Utilisateur non loggé`
   })
 
 fixture `Découverte | Après connexion | Les offres sont en cours de chargement`
-    .page `http://localhost:3000/`
+    .page `${BROWSER_ROOT_URL}`
 
      .beforeEach( async t => {
        await t
@@ -48,7 +50,7 @@ const profileButton = Selector('button')
 const profileModal= Selector('.modal-dialog')
 
 fixture `Modale Profil`
-  .page `http://localhost:3000/decouverte/empty`
+  .page `${BROWSER_ROOT_URL+'decouverte/empty'}`
     .requestHooks(logger)
 
   test.skip("Lorsque l'utilisateur clique sur l'icone profil, la modale s'affiche", async t => {
