@@ -4,14 +4,14 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import Form from '../layout/Form'
+import Field from '../layout/Field'
+import Submit from '../layout/Submit'
 import PageWrapper from '../layout/PageWrapper'
 import Logo from '../layout/Logo'
 import withSign from '../hocs/withSign'
 import { showNotification } from '../../reducers/notification'
 
-import Form from '../layout/Form'
-import Field from '../layout/Field'
-import Submit from '../layout/Submit'
 
 const SignupPage = ({
   errors,
@@ -70,7 +70,7 @@ const SignupPage = ({
                     label='SIREN'
                     sublabel='de la structure à rattacher'
                     placeholder="123 456 789"
-                    fetchedName={sirenName || ''}
+                    fetchedName={sirenName}
                     required
                   />
                   <Field

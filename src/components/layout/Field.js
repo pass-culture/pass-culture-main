@@ -1,13 +1,15 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types';
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { removeWhitespaces, formatSiren } from '../../utils/string'
-import Icon from './Icon'
-import { optionify } from '../../utils/form'
+import moment from 'moment'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
 import Textarea from 'react-autosize-textarea'
 import DatePicker from 'react-datepicker'
-import moment from 'moment'
+
+import Icon from './Icon'
+import { optionify } from '../../utils/form'
+import { removeWhitespaces, formatSiren } from '../../utils/string'
+
 
 class Field extends Component {
 
@@ -63,6 +65,12 @@ class Field extends Component {
         storeValue: removeWhitespaces,
       }
     }
+    if (type === 'checkbox') {
+      return {
+        displayValue: v => v,
+        storeValue: v => v,
+      }
+    }
     if (type === 'number') {
       return {
         displayValue: v => v || '',
@@ -70,7 +78,7 @@ class Field extends Component {
       }
     }
     return {
-      displayValue: v => (v || ''),
+      displayValue: v => v || '',
       storeValue: v => v,
     }
   }
@@ -97,8 +105,12 @@ class Field extends Component {
   }
 
   onChange = (value) => {
-    // if (!value) return
-    const {displayValue, storeValue} = this.state
+    const { displayValue, storeValue } = this.state
+
+    if (value === this.props.value) {
+      return
+    }
+
     this.setState({
       value: displayValue(value),
     }, () => {
@@ -113,7 +125,13 @@ class Field extends Component {
     })
   }
 
-  onInputChange = e => this.onChange(e.target.value, false)
+  onInputChange = e => {
+    let value = e.target.value
+    if (this.props.type === 'checkbox') {
+      value = value === '' ? true : !value
+    }
+    this.onChange(value, false)
+  }
 
   renderInput = () => {
     const {
