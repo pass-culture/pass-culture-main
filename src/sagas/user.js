@@ -41,7 +41,7 @@ function* fromWatchSuccessSignActions() {
     // then it just sync the redux with the dexie state
     // else it asks for a dexie push pull to also feed
     // the dexie with the backend
-    worker.postMessage({ key: 'dexie-signin', state: { user } })
+    //worker.postMessage({ key: 'dexie-signin', state: { user } })
   } else if (!user) {
     yield put(setUser(false))
   }

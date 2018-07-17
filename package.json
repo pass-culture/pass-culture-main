@@ -35,7 +35,6 @@
     "history": "^4.7.2",
     "html-webpack-plugin": "2.29.0",
     "indexeddbshim": "^3.6.2",
-    "jest": "20.0.4",
     "lodash.debounce": "^4.0.8",
     "lodash.flatten": "^4.4.0",
     "lodash.get": "^4.4.2",
@@ -75,7 +74,6 @@
     "sass-loader": "^7.0.1",
     "style-loader": "0.19.0",
     "sw-precache-webpack-plugin": "0.11.4",
-    "testcafe": "^0.18.6",
     "typeface-barlow": "^0.0.54",
     "url-loader": "0.6.2",
     "util.promisify": "^1.0.0",
@@ -85,6 +83,15 @@
     "whatwg-fetch": "2.0.3",
     "worker-loader": "^1.1.1"
   },
+  "devDependencies": {
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "husky": "^0.14.3",
+    "jest": "20.0.4",
+    "lint-staged": "^7.0.4",
+    "prettier": "1.12.1",
+    "testcafe": "^0.20.4"
+  },
   "scripts": {
     "start": "node scripts/start.js",
     "pgbuild": "yarn build && node scripts/pgbuild.js",
@@ -92,6 +99,7 @@
     "build": "node scripts/build.js",
     "ngrok": "ngrok start -config=./ngrok.yml --all",
     "test": "node scripts/test.js --env=jsdom",
+    "testcafe": "testcafe 'chrome:headless' testcafe",
     "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
   },
   "jest": {
@@ -103,6 +111,7 @@
     ],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
+      "<rootDir>/testcafe/**/*.{js,jsx,mjs}",
       "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
     ],
     "testEnvironment": "node",
@@ -144,10 +153,5 @@
       "pre-commit": "yarn prettier"
     }
   },
-  "homepage": ".",
-  "devDependencies": {
-    "husky": "^0.14.3",
-    "lint-staged": "^7.0.4",
-    "prettier": "1.12.1"
-  }
+  "homepage": "."
 }

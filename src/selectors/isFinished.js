@@ -8,7 +8,6 @@ export default createSelector(
   selectCurrentRecommendation,
   function (recommendation) {
     const offers = get(recommendation, 'recommendationOffers', [])
-    console.log("OFFERS", offers)
     const now = moment()
     return offers.every(o => moment(o.bookingLimitDatetime).isBefore(now)) // FIXME: also check that nbooking < available
   })

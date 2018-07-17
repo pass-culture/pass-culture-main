@@ -70,7 +70,10 @@ class Booking extends Component {
       []
     )
     const { tz } = this.props
-    const availableDates = mediatedOccurences.map(o => moment(o.beginningDatetime).tz(tz))
+    const NOW = moment()
+    const availableDates = mediatedOccurences
+                                   .filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW))
+                                   .map(o => moment(o.beginningDatetime).tz(tz))
     const availableMediatedOccurences = []
     const availableHours = availableDates.filter((d, index) => {
       const isFiltered = d.isSame(selectedDate || this.state.date, 'day')
@@ -244,7 +247,7 @@ class Booking extends Component {
             <div className="section finished">
               <Icon svg="picto-echec" alt='Echec de réservation' />
               <p>Une erreur est survenue lors de la réservation :</p>
-              {error && <p><Capitalize>{error}</Capitalize></p>}
+              {error && <p><Capitalize>{Object.values(error).map(messages => messages.join(";")).join(";")}</Capitalize></p>}
             </div>
           )}
           <ul className="bottom-bar">
@@ -305,6 +308,7 @@ class Booking extends Component {
 export default connect(
   state => ({
     booking: selectBooking(state),
+    error: get(state.data, 'errors'),
     offer: selectCurrentOffer(state),
     offerer: selectCurrentOfferer(state),
     recommendation: selectCurrentRecommendation(state),
