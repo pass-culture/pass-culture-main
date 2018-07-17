@@ -4,15 +4,13 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
-import PageWrapper from '../layout/PageWrapper'
-import UploadThumb from '../layout/UploadThumb'
-import { showNotification } from '../../reducers/notification'
-
-import { apiUrl } from '../../utils/config'
-
 import Form from '../layout/Form'
 import Field from '../layout/Field'
 import Submit from '../layout/Submit'
+import PageWrapper from '../layout/PageWrapper'
+import UploadThumb from '../layout/UploadThumb'
+import { showNotification } from '../../reducers/notification'
+import { apiUrl } from '../../utils/config'
 
 class ProfilePage extends Component {
 
@@ -46,10 +44,8 @@ class ProfilePage extends Component {
             <div className="control">
               <Submit className='button is-primary is-medium'>Enregistrer</Submit>
             </div>
-            <div className="control">
-              <NavLink to='/accueil' className="button is-primary is-outlined is-medium">
-                Retour
-              </NavLink>
+            <div className='field'>
+              <Field name='email' type='email' label='Email' required />
             </div>
           </div>
         </Form>

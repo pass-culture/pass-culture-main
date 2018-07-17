@@ -63,6 +63,12 @@ class Field extends Component {
         storeValue: removeWhitespaces,
       }
     }
+    if (type === 'checkbox') {
+      return {
+        displayValue: v => v,
+        storeValue: v => v,
+      }
+    }
     if (type === 'number') {
       return {
         displayValue: v => v || '',
@@ -97,8 +103,11 @@ class Field extends Component {
   }
 
   onChange = (value) => {
-    // if (!value) return
-    const {displayValue, storeValue} = this.state
+    const { displayValue, storeValue } = this.state
+
+    if (value === this.props.value) {
+      return
+    }
     this.setState({
       value: displayValue(value),
     }, () => {
@@ -113,7 +122,13 @@ class Field extends Component {
     })
   }
 
-  onInputChange = e => this.onChange(e.target.value, false)
+  onInputChange = e => {
+    let value = e.target.value
+    if (this.props.type === 'checkbox') {
+      value = value === '' ? true : !value
+    }
+    this.onChange(value)
+  }
 
   renderInput = () => {
     const {

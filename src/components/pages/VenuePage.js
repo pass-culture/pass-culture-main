@@ -67,10 +67,11 @@ class VenuePage extends Component {
       requestData,
       user
     } = this.props
+    const { apiPath } = this.state
     if (user) {
       requestData(
         'GET',
-        `venues/${venueId}`,
+        apiPath,
         {
           handleSuccess,
           handleFail,
@@ -144,7 +145,6 @@ class VenuePage extends Component {
     } = this.state
 
     const formData = Object.assign({}, venue, {managingOffererId: offererId, bookingEmail: get(user, 'email')})
-
     return (
       <PageWrapper
         backTo={{
@@ -211,7 +211,10 @@ class VenuePage extends Component {
               <Field name='city' label='Ville' readOnly={isReadOnly} required />
             </div>
           </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 306db51c14735fabdcaf9ea178d8dedff55ca46a
         <hr />
         <div className="field is-grouped is-grouped-centered"
           style={{justifyContent: 'space-between'}}>
