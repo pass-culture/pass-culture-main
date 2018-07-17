@@ -1,8 +1,12 @@
-""" provider """
-from flask import current_app as app
-from sqlalchemy.dialects.postgresql import CHAR
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
+from models.provider import Provider
+from models.venue_provider import VenueProvider
 
-db = app.db
+""" provider """
+from sqlalchemy.dialects.postgresql import CHAR
+import sqlalchemy as db
+
 
 
 class Provider(PcObject,
@@ -35,6 +39,3 @@ class Provider(PcObject,
         return Provider.query\
                        .filter_by(localClass=name)\
                        .first()
-
-
-Provider = Provider

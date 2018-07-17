@@ -1,3 +1,5 @@
+from models.pc_object import PcObject
+
 """ user mediations routes """
 import csv
 import os

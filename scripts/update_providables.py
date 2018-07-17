@@ -1,6 +1,14 @@
-from flask import current_app as app
-from pprint import pprint
 import traceback
+from pprint import pprint
+
+from flask import current_app as app
+
+from models.event import Event
+from models.offer import Offer
+from models.offerer import Offerer
+from models.thing import Thing
+from models.venue import Venue
+from models.venue_provider import VenueProvider
 
 
 def do_update(provider, limit):

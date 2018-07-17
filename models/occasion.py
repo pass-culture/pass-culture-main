@@ -1,10 +1,9 @@
-""" occasion model """
-from datetime import datetime, timedelta
-from flask import current_app as app
-from sqlalchemy import event, DDL
-from sqlalchemy.ext.hybrid import hybrid_property
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 
-db = app.db
+""" occasion model """
+from datetime import datetime
+import sqlalchemy as db
 
 
 class Occasion(PcObject,
@@ -23,7 +22,7 @@ class Occasion(PcObject,
                         db.ForeignKey("thing.id"),
                         nullable=True)
 
-    thing = db.relationship(lambda: Thing,
+    thing = db.relationship('Thing',
                             foreign_keys=[thingId],
                             backref='occasions')
 
@@ -34,7 +33,7 @@ class Occasion(PcObject,
                                            name='check_occasion_has_thing_xor_event'),
                         nullable=True)
 
-    event = db.relationship(lambda: Event,
+    event = db.relationship('Event',
                             foreign_keys=[eventId],
                             backref='occasions')
 
@@ -43,8 +42,6 @@ class Occasion(PcObject,
                         nullable=True,
                         index=True)
 
-    venue = db.relationship(lambda: Venue,
+    venue = db.relationship('Venue',
                             foreign_keys=[venueId],
                             backref='occasions')
-
-Occasion = Occasion

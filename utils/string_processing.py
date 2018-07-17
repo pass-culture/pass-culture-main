@@ -1,11 +1,12 @@
 # coding=utf-8
-from datetime import datetime, timedelta
-from dateparser import parse
-import inflect
-from nltk import edit_distance
-from operator import itemgetter
-from psycopg2.extras import DateTimeRange
 import re
+from datetime import datetime, timedelta
+from operator import itemgetter
+
+import inflect
+from dateparser import parse
+from nltk import edit_distance
+from psycopg2.extras import DateTimeRange
 
 DAY_FORMAT = "%Y-%m-%d"
 SCHEDULE_FORMAT = "%H:%M:%S.%f"

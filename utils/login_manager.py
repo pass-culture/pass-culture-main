@@ -1,6 +1,8 @@
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, jsonify
 from flask_login import LoginManager, login_user
+
 from models.api_errors import ApiErrors
+from models.user import User
 
 app.login_manager = LoginManager()
 app.login_manager.init_app(app)

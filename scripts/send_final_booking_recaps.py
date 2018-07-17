@@ -1,8 +1,11 @@
-from datetime import datetime
-from flask import current_app as app
-from pprint import pprint
 import traceback
+from datetime import datetime
+from pprint import pprint
 
+from flask import current_app as app
+
+from models.event_occurence import EventOccurence
+from models.offer import Offer
 from utils.mailing import send_booking_recap_emails
 
 EventOccurence = EventOccurence

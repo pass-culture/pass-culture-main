@@ -1,7 +1,7 @@
-from datetime import datetime
-from dateutil import tz
-from babel.dates import get_timezone, format_datetime as babel_format_datetime
 from math import floor
+
+from babel.dates import format_datetime as babel_format_datetime
+from dateutil import tz
 
 from utils.string_processing import parse_timedelta
 

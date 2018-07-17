@@ -1,3 +1,8 @@
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user import User
+from models.user_offerer import UserOfferer
+
 """ offerers """
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required

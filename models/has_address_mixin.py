@@ -1,9 +1,9 @@
-from flask import current_app as app
 import re
+
+import sqlalchemy as db
 
 from models.api_errors import ApiErrors
 
-db = app.db
 
 # TODO: turn this into a custom type "Adress" ?
 
@@ -21,5 +21,3 @@ class HasAddressMixin(object):
            and not re.match('^\d[AB0-9]\d{3,4}$', self.postalCode):
             errors.addError('postalCode', 'Ce code postal est invalide')
         return errors
-
-HasAddressMixin = HasAddressMixin

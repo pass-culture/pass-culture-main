@@ -1,6 +1,8 @@
+import re
+
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.sql.expression import cast
-import re
+
 
 # from http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#postgresql-array-of-enum
 

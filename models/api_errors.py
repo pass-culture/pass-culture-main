@@ -1,5 +1,4 @@
 # coding=utf-8
-from flask import current_app as app
 
 
 class ApiErrors(Exception):
@@ -53,5 +52,3 @@ class ApiErrors(Exception):
             raise self
 
     status_code = None
-
-ApiErrors = ApiErrors

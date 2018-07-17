@@ -1,8 +1,9 @@
 from datetime import datetime
-from flask import current_app as app
+
+import sqlalchemy as db
 from sqlalchemy.ext.declarative import declared_attr
 
-db = app.db
+from models.versioned_mixin import VersionedMixin
 
 
 class ProvidableMixin(VersionedMixin):
@@ -15,7 +16,7 @@ class ProvidableMixin(VersionedMixin):
 
     @declared_attr
     def lastProvider(cls):
-        return db.relationship(lambda: Provider,
+        return db.relationship('Provider',
                                foreign_keys=[cls.lastProviderId])
 
     idAtProviders = db.Column(db.String(70),
@@ -27,6 +28,3 @@ class ProvidableMixin(VersionedMixin):
     dateModifiedAtLastProvider = db.Column(db.DateTime,
                                            nullable=True,
                                            default=datetime.utcnow)
-
-
-ProvidableMixin = ProvidableMixin

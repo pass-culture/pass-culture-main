@@ -1,9 +1,9 @@
+from models.pc_object import PcObject
+
 """ recommendation model """
 from datetime import datetime
-from flask import current_app as app
 from sqlalchemy.sql import expression
-
-db = app.db
+import sqlalchemy as db
 
 
 class Recommendation(PcObject, db.Model):
@@ -17,7 +17,7 @@ class Recommendation(PcObject, db.Model):
                        nullable=False,
                        index=True)
 
-    user = db.relationship(lambda: User,
+    user = db.relationship('User',
                            foreign_keys=[userId],
                            backref='recommendations')
 
@@ -26,7 +26,7 @@ class Recommendation(PcObject, db.Model):
                             index=True,
                             nullable=True) # NULL for recommendation created directly from a thing or an event
 
-    mediation = db.relationship(lambda: Mediation,
+    mediation = db.relationship('Mediation',
                                 foreign_keys=[mediationId],
                                 backref='recommendations')
 
@@ -35,7 +35,7 @@ class Recommendation(PcObject, db.Model):
                         index=True,
                         nullable=True) # NULL for recommendation created from a mediation or an event
 
-    thing = db.relationship(lambda: Thing,
+    thing = db.relationship('Thing',
                             foreign_keys=[thingId],
                             backref='recommendations')
 
@@ -48,7 +48,7 @@ class Recommendation(PcObject, db.Model):
                         index=True,
                         nullable=True) # NULL for recommendation created a mediation or an offer
 
-    event = db.relationship(lambda: Event,
+    event = db.relationship('Event',
                             foreign_keys=[eventId],
                             backref='recommendations')
 
@@ -59,7 +59,7 @@ class Recommendation(PcObject, db.Model):
                                           db.ForeignKey('event_occurence.id'),
                                           nullable=True)
 
-    inviteforEventOccurence = db.relationship(lambda: EventOccurence,
+    inviteforEventOccurence = db.relationship('EventOccurence',
                                               foreign_keys=[inviteforEventOccurenceId],
                                               backref='inviteRecommendations')
 
@@ -140,5 +140,3 @@ class Recommendation(PcObject, db.Model):
         return sorted(occurences,
                       key=lambda o: o.beginningDatetime,
                       reverse=True)
-
-Recommendation = Recommendation

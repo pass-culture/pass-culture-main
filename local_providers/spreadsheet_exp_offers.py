@@ -1,3 +1,12 @@
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.local_provider import LocalProvider
+from models.mediation import Mediation
+from models.occasion import Occasion
+from models.offer import Offer
+from models.offerer import Offerer
+from models.venue import Venue
+
 """ spreadsheet exp offers"""
 from datetime import datetime, timedelta
 import dateparser

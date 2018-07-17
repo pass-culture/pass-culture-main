@@ -1,3 +1,9 @@
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.offer import Offer
+from models.pc_object import PcObject
+from models.venue import Venue
+
 """ event_occurences """
 from flask import current_app as app, jsonify, request
 

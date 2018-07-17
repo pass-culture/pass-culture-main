@@ -1,3 +1,5 @@
+from models.pc_object import PcObject
+
 """ sandbox script """
 #https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
 # -*- coding: utf-8 -*-

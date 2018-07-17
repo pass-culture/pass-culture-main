@@ -11,6 +11,3 @@ class VersionedMixin(object):
         return Activity.query.filter(text("table_name='"+self.__tablename__
                                           + "' AND cast(changed_data->>'id' AS INT) = " + str(self.id)))\
                              .order_by(app.db.desc(Activity.id))
-
-
-VersionedMixin = VersionedMixin

@@ -1,8 +1,11 @@
-from datetime import datetime, timedelta, timezone
-from sqlalchemy import desc
+from datetime import datetime, timedelta
 
+from models.booking import Booking
+from models.event_occurence import EventOccurence
+from models.offer import Offer
+from models.pc_object import PcObject
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req, req_with_auth
+from utils.test_utils import API_URL, req_with_auth
 from utils.token import random_token
 
 

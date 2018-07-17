@@ -1,9 +1,9 @@
+from models.pc_object import PcObject
+
 """ provider_event model """
 import enum
 from datetime import datetime
-from flask import current_app as app
-
-db = app.db
+import sqlalchemy as db
 
 
 class LocalProviderEventType(enum.Enum):
@@ -16,9 +16,6 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-LocalProviderEventType = LocalProviderEventType
-
-
 class LocalProviderEvent(PcObject,
                          db.Model):
 
@@ -29,7 +26,7 @@ class LocalProviderEvent(PcObject,
     providerId = db.Column(db.BigInteger,
                            db.ForeignKey("provider.id"),
                            nullable=False)
-    provider = db.relationship(lambda: Provider,
+    provider = db.relationship('Provider',
                                foreign_keys=[providerId])
 
     date = db.Column(db.DateTime,
@@ -42,5 +39,3 @@ class LocalProviderEvent(PcObject,
     payload = db.Column(db.String(50),
                         nullable=True)
 
-
-LocalProviderEvent = LocalProviderEvent

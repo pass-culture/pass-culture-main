@@ -1,10 +1,17 @@
-from datetime import datetime
-from flask import current_app as app
 import os
-import pandas as pd
-from pathlib import Path
 import re
+from datetime import datetime
+from pathlib import Path
 from zipfile import ZipFile
+
+import pandas as pd
+from flask import current_app as app
+
+from models.local_provider import LocalProvider
+from models.occasion import Occasion
+from models.offer import Offer
+from models.thing import Thing
+from models.venue import Venue
 
 DATE_FORMAT = "%d/%m/%Y"
 DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"

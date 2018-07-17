@@ -1,5 +1,6 @@
-import inspect
 from flask import current_app as app
+
+from models.provider import Provider
 from utils.attr_dict import AttrDict
 
 app.local_providers = AttrDict()

@@ -1,10 +1,6 @@
 """ search """
-from flask import current_app as app
-from flask_login import current_user
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
-
-from utils.string_processing import inflect_engine
 
 AND = '_and_'
 LANGUAGE = 'french'

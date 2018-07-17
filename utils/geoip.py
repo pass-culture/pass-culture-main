@@ -1,7 +1,8 @@
 """geoip"""
+import os
+
 import geoip2.database
 import geoip2.errors
-import os
 
 DB_FILE_LOCATION = os.getcwd() + '/geoip/GeoLite2-City.mmdb'
 

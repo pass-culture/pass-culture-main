@@ -1,7 +1,6 @@
 """ pc_object """
 from collections import OrderedDict
 from datetime import datetime
-from dateutil import tz
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 from pprint import pprint
@@ -10,9 +9,8 @@ from sqlalchemy import CHAR
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
-from models.has_thumb_mixin import HasThumbMixin
 from utils.human_ids import dehumanize, humanize
-from utils.string_processing import inflect_engine
+import sqlalchemy as db
 
 
 def serialize(value, **options):
@@ -67,14 +65,6 @@ class PcObject():
                 result[key] = list(value)
             else:
                 result[key] = serialize(value, **options)
-        if issubclass(self.__class__, HasThumbMixin) and self.thumbCount > 0:
-            # If multiple thumbs, make this an array of paths, mapped over the index
-            result['thumbPath'] = (
-                '/storage/thumbs/' +
-                inflect_engine.plural_noun(self.__table__.name) +
-                '/' +
-                str(result['id'])
-            )
         # add the model name
         result['modelName'] = self.__class__.__name__
         if options\

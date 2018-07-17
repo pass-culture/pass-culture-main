@@ -1,17 +1,16 @@
-from colorthief import ColorThief
-from flask import current_app as app
 import io
-from PIL import Image
+
 import requests
-import tempfile
+import sqlalchemy as db
+from PIL import Image
+from colorthief import ColorThief
 
+from models.pc_object import PcObject
 from utils.human_ids import humanize
-from utils.object_storage import delete_public_object,\
-                                 get_public_object_date,\
-                                 store_public_object
+from utils.object_storage import delete_public_object, \
+    get_public_object_date, \
+    store_public_object
 from utils.string_processing import inflect_engine
-
-db = app.db
 
 IDEAL_THUMB_WIDTH = 600
 
@@ -88,6 +87,3 @@ class HasThumbMixin(object):
                             "image/" + (image_type or "jpeg"))
         self.thumbCount = max(index+1, self.thumbCount or 0)
         PcObject.check_and_save(self)
-
-
-HasThumbMixin = HasThumbMixin

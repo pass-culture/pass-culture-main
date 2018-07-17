@@ -1,5 +1,9 @@
-from flask import current_app as app
 import random
+
+from flask import current_app as app
+
+from models.event import Event
+from models.offer import Offer
 
 Event = Event
 Offer = Offer

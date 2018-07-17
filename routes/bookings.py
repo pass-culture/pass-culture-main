@@ -1,3 +1,7 @@
+from models.offer import Offer
+from models.offerer import Offerer
+from models.pc_object import PcObject
+
 """ bookings routes """
 from datetime import datetime
 

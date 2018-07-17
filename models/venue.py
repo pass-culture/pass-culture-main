@@ -1,14 +1,19 @@
+from models.has_address_mixin import HasAddressMixin
+from models.has_thumb_mixin import HasThumbMixin
+from models.occasion import Occasion
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
+from models.venue import Venue
+
 """ venue """
-from flask import current_app as app
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.event import listens_for
-
+import sqlalchemy as db
 from utils.search import create_tsvector
-
-db = app.db
 
 
 class Venue(PcObject,
@@ -28,7 +33,7 @@ class Venue(PcObject,
 
     longitude = db.Column(db.Numeric(8, 5), nullable=True)
 
-    venueProviders = db.relationship(lambda: VenueProvider,
+    venueProviders = db.relationship('VenueProvider',
                                      back_populates="venue")
 
     managingOffererId = db.Column(db.BigInteger,
@@ -36,7 +41,7 @@ class Venue(PcObject,
                                   nullable=False,
                                   index=True)
 
-    managingOfferer = db.relationship(lambda: Offerer,
+    managingOfferer = db.relationship('Offerer',
                                       foreign_keys=[managingOffererId],
                                       backref='managedVenues')
 
@@ -95,6 +100,3 @@ Venue.__table_args__ = (
         postgresql_using='gin'
     ),
 )
-
-
-Venue = Venue

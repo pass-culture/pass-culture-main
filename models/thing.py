@@ -1,15 +1,17 @@
 import enum
-from flask import current_app as app
+
+import sqlalchemy as db
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import ARRAY, TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
-from sqlalchemy.dialects.postgresql import JSON
 
-from utils.schema_org import make_schema_org_hierarchy_and_enum
+from models.deactivable_mixin import DeactivableMixin
+from models.extra_data_mixin import ExtraDataMixin
+from models.has_thumb_mixin import HasThumbMixin
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 from utils.search import create_tsvector
-
-db = app.db
 
 
 class BookFormat(enum.Enum):
@@ -17,9 +19,6 @@ class BookFormat(enum.Enum):
     EBook = "EBook"
     Hardcover = "Hardcover"
     Paperback = "Paperback"
-
-
-BookFormat = BookFormat
 
 
 class ThingType(enum.Enum):
@@ -31,9 +30,6 @@ class ThingType(enum.Enum):
 #    Bluray = "Bluray"
 #    DVD = "DVD"
 #    VOD = "VOD"
-
-
-ThingType = ThingType
 
 
 class Thing(PcObject,
@@ -78,6 +74,3 @@ Thing.__table_args__ = (
         postgresql_using='gin'
     ),
 )
-
-
-Thing = Thing

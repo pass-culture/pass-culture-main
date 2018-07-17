@@ -5,6 +5,8 @@ import simplejson as json
 from flask import current_app as app, jsonify
 from sqlalchemy.exc import IntegrityError
 
+from models.api_errors import ApiErrors
+
 
 @app.errorhandler(ApiErrors)
 def restize_api_errors(e):

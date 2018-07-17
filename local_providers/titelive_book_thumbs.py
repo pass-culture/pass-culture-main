@@ -1,9 +1,13 @@
-from datetime import datetime
-from flask import current_app as app
 import os
-from pathlib import Path, PurePath
 import re
+from datetime import datetime
+from pathlib import Path, PurePath
 from zipfile import ZipFile
+
+from flask import current_app as app
+
+from models.local_provider import LocalProvider
+from models.thing import Thing
 
 LocalProviderEventType = LocalProviderEventType
 Thing = Thing

@@ -1,13 +1,19 @@
+import sys
+import traceback
 from abc import abstractproperty
 from collections import Iterator
 from datetime import datetime, timedelta
-from postgresql_audit.flask import versioning_manager
 from pprint import pprint
-from flask import current_app as app
-from sqlalchemy import text
-import sys
-import traceback
 
+from flask import current_app as app
+from postgresql_audit.flask import versioning_manager
+from sqlalchemy import text
+
+from models.event import Event
+from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
+from models.pc_object import PcObject
+from models.provider import Provider
+from models.thing import Thing
 from utils.human_ids import humanize
 from utils.string_processing import inflect_engine
 
@@ -19,21 +25,14 @@ def read_json_date(date):
 
 
 class ProvidableInfo(object):
-    def type():
+    def type(self):
         pass
 
-    def idAtProviders():
+    def idAtProviders(self):
         pass
 
-    def dateModifiedAtProvider():
+    def dateModifiedAtProvider(self):
         pass
-
-
-ProvidableInfo = ProvidableInfo
-
-
-LocalProviderEvent = LocalProviderEvent
-LocalProviderEventType = LocalProviderEventType
 
 
 class LocalProvider(Iterator):
@@ -50,11 +49,11 @@ class LocalProvider(Iterator):
         self.dbObject = Provider.getByClassName(self.__class__.__name__)
 
     @abstractproperty
-    def canCreate():
+    def canCreate(self):
         pass
 
     @abstractproperty
-    def help():
+    def help(self):
         pass
 
     def getDeactivatedObjectIds(self):
@@ -70,19 +69,19 @@ class LocalProvider(Iterator):
         return []
 
     @abstractproperty
-    def identifierDescription():
+    def identifierDescription(self):
         pass
 
     @abstractproperty
-    def identifierRegexp():
+    def identifierRegexp(self):
         pass
 
     @abstractproperty
-    def name():
+    def name(self):
         pass
 
     @abstractproperty
-    def objectType():
+    def objectTypes(self):
         pass
 
     def latestActivityDate(self):
@@ -294,5 +293,3 @@ class LocalProvider(Iterator):
         if self.venueProvider is not None:
             self.venueProvider.lastSyncDate = datetime.utcnow()
             PcObject.check_and_save(self.venueProvider)
-
-LocalProvider = LocalProvider

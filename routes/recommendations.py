@@ -1,3 +1,10 @@
+from models.event import Event
+from models.mediation import Mediation
+from models.offer import Offer
+from models.pc_object import PcObject
+from models.recommendation import Recommendation
+from models.thing import Thing
+
 """ user mediations routes """
 from datetime import datetime
 from random import shuffle

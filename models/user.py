@@ -1,10 +1,13 @@
+from models.needs_validation_mixin import NeedsValidationMixin
+from models.pc_object import PcObject
+from models.user import User
+from models.user_offerer import UserOfferer, RightsType
+
 """User model"""
 import bcrypt
 from datetime import datetime
-from flask import current_app as app
 from sqlalchemy.sql import expression
-import secrets
-db = app.db
+import sqlalchemy as db
 
 
 class User(PcObject,
@@ -17,7 +20,7 @@ class User(PcObject,
 
     publicName = db.Column(db.String(30), nullable=False)
 
-    offerers = db.relationship(lambda: Offerer,
+    offerers = db.relationship('Offerer',
                                secondary='user_offerer')
 
     dateCreated = db.Column(db.DateTime,
@@ -83,7 +86,6 @@ class User(PcObject,
     def hasRights(self, rights, offererId):
         if self.isAdmin:
             return True
-        RightsType = RightsType
         if rights == RightsType.editor:
             compatible_rights = [RightsType.editor, RightsType.admin]
         else:
@@ -92,6 +94,3 @@ class User(PcObject,
                   .filter((UserOfferer.offererId == offererId) &
                           (UserOfferer.rights.in_(compatible_rights)))\
                   .first() is not None
-
-
-User = User

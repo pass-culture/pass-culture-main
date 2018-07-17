@@ -1,6 +1,8 @@
-from flask import current_app as app
+import sqlalchemy as db
 
-db = app.db
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 
 
 class VenueProvider(PcObject,
@@ -12,14 +14,14 @@ class VenueProvider(PcObject,
                         db.ForeignKey('venue.id'),
                         nullable=False,
                         index=True)
-    venue = db.relationship(lambda: Venue,
+    venue = db.relationship('Venue',
                             back_populates="venueProviders",
                             foreign_keys=[venueId])
 
     providerId = db.Column(db.BigInteger,
                            db.ForeignKey('provider.id'),
                            nullable=False)
-    provider = db.relationship(lambda: Provider,
+    provider = db.relationship('Provider',
                                back_populates="venueProviders",
                                foreign_keys=[providerId])
 
@@ -27,6 +29,3 @@ class VenueProvider(PcObject,
 
     lastSyncDate = db.Column(db.DateTime,
                              nullable=True)
-
-
-VenueProvider = VenueProvider

@@ -1,10 +1,9 @@
+from models.pc_object import PcObject
+
+
 def with_app_context(app):
     with app.app_context():
         # IMPORT
-        import models
-        import datascience
-        import routes
-        import utils.mailing
         from utils.printer import get
 
         # ADAPT SQL ALCHEMY TO INSERT APP CONTEXT INSIDE QUERY

@@ -1,3 +1,6 @@
+from models.pc_object import PcObject
+from models.venue import Venue
+
 """ venues """
 from flask import current_app as app, jsonify, request
 

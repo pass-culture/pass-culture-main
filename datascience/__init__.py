@@ -1,12 +1,18 @@
+from models.pc_object import PcObject
+from models.event_occurence import EventOccurence
+from models.mediation import Mediation
+from models.offer import Offer
+from models.pc_object import PcObject
+from models.recommendation import Recommendation
+from models.thing import Thing
+
 """ recommendations """
 from datetime import datetime, timedelta
-from random import randint
 from flask import current_app as app
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
 from utils.attr_dict import AttrDict
-import utils.logger 
 
 Event = Event
 EventOccurence = EventOccurence

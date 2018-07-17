@@ -1,7 +1,5 @@
-from flask import current_app as app
+import sqlalchemy as db
 from sqlalchemy.sql import expression
-
-db = app.db
 
 
 class DeactivableMixin(object):
@@ -13,5 +11,3 @@ class DeactivableMixin(object):
     @property
     def queryActive(self):
         return self.query.filter_by(isActive=True)
-
-DeactivableMixin = DeactivableMixin

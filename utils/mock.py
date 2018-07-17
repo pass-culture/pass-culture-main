@@ -1,6 +1,5 @@
-from flask import current_app
-from pathlib import Path
 import os
+from pathlib import Path
 
 from utils.human_ids import humanize
 from utils.object_storage import store_public_object

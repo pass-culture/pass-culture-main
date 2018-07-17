@@ -1,3 +1,7 @@
+from models.local_provider import LocalProvider
+from models.offerer import Offerer
+from models.venue import Venue
+
 """ spreadsheet exp venues """
 from datetime import datetime
 from pathlib import Path

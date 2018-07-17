@@ -1,8 +1,10 @@
-""" event occurence """
-from flask import current_app as app
-from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy as db
 
-db = app.db
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
+
+""" event occurence """
 
 
 class EventOccurence(PcObject,
@@ -21,7 +23,7 @@ class EventOccurence(PcObject,
                         index=True,
                         nullable=False)
 
-    event = db.relationship(lambda: Event,
+    event = db.relationship('Event',
                             foreign_keys=[eventId],
                             backref='occurences')
 
@@ -30,7 +32,7 @@ class EventOccurence(PcObject,
                         index=True,
                         nullable=True)
 
-    venue = db.relationship(lambda: Venue,
+    venue = db.relationship('Venue',
                             foreign_keys=[venueId],
                             backref='eventOccurences')
 
@@ -48,5 +50,3 @@ class EventOccurence(PcObject,
     @property
     def offer(self):
         return self.offers
-
-EventOccurence = EventOccurence

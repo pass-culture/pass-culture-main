@@ -1,14 +1,13 @@
+from models.has_thumb_mixin import HasThumbMixin
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
+
 """ mediation model """
 from datetime import datetime
-from flask import current_app as app
 import os
 from pathlib import Path
-from sqlalchemy import event
-from sqlalchemy.orm import mapper
-import time
 
-
-db = app.db
+import sqlalchemy as db
 
 
 class Mediation(PcObject,
@@ -33,7 +32,7 @@ class Mediation(PcObject,
                          db.ForeignKey("user.id"),
                          nullable=True)
 
-    author = db.relationship(lambda: User,
+    author = db.relationship('User',
                              foreign_keys=[authorId],
                              backref='mediations')
 
@@ -41,7 +40,7 @@ class Mediation(PcObject,
                           db.ForeignKey("offerer.id"),
                           nullable=True)
 
-    offerer = db.relationship(lambda: Offerer,
+    offerer = db.relationship('Offerer',
                               foreign_keys=[offererId],
                               backref='mediations')
 
@@ -50,7 +49,7 @@ class Mediation(PcObject,
                         index=True,
                         nullable=True)
 
-    event = db.relationship(lambda: Event,
+    event = db.relationship('Event',
                             foreign_keys=[eventId],
                             backref='mediations')
 
@@ -59,7 +58,7 @@ class Mediation(PcObject,
                         index=True,
                         nullable=True)
 
-    thing = db.relationship(lambda: Thing,
+    thing = db.relationship('Thing',
                             foreign_keys=[thingId],
                             backref='mediations')
 
@@ -109,8 +108,3 @@ def upsertTutoMediation(index, has_back=False):
 def upsertTutoMediations():
     upsertTutoMediation(0)
     upsertTutoMediation(1, True)
-
-
-Mediation.upsertTutoMediations = upsertTutoMediations
-
-Mediation = Mediation

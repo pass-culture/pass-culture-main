@@ -1,3 +1,8 @@
+from models.offer import Offer
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user_offerer import UserOfferer
+
 """ mailing """
 from datetime import datetime
 from flask import current_app as app

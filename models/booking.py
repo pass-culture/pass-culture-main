@@ -1,13 +1,16 @@
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
+from models.versioned_mixin import VersionedMixin
+
 """ booking model """
 from datetime import datetime
-from flask import current_app as app
 from sqlalchemy import event, DDL
-
-db = app.db
+from flask_sqlalchemy import Model
+import sqlalchemy as db
 
 
 class Booking(PcObject,
-              db.Model,
+              Model,
               DeactivableMixin,
               VersionedMixin):
 
@@ -22,7 +25,7 @@ class Booking(PcObject,
     recommendationId = db.Column(db.BigInteger,
                                 db.ForeignKey("recommendation.id"))
 
-    recommendation = db.relationship(lambda: Recommendation,
+    recommendation = db.orm.relationship('Recommendation',
                                      foreign_keys=[recommendationId],
                                      backref='bookings')
 
@@ -31,7 +34,7 @@ class Booking(PcObject,
                         index=True,
                         nullable=True)
 
-    offer = db.relationship(lambda: Offer,
+    offer = db.orm.relationship('Offer',
                             foreign_keys=[offerId],
                             backref='bookings')
 
@@ -48,7 +51,7 @@ class Booking(PcObject,
                        index=True,
                        nullable=False)
 
-    user = db.relationship(lambda: User,
+    user = db.orm.relationship('User',
                            foreign_keys=[userId],
                            backref='userBookings')
 
@@ -58,8 +61,6 @@ class Booking(PcObject,
         if offer.thingId:
             return None
         return offer.eventOccurence.beginningDatetime
-
-Booking = Booking
 
 trig_ddl = DDL("""
     CREATE OR REPLACE FUNCTION check_booking()

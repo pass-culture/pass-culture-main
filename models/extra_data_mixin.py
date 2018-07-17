@@ -1,11 +1,6 @@
-from flask import current_app as app
+import sqlalchemy as db
 from sqlalchemy.dialects.postgresql import JSON
-
-db = app.db
 
 
 class ExtraDataMixin(object):
     extraData = db.Column(JSON)
-
-
-ExtraDataMixin = ExtraDataMixin

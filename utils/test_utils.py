@@ -1,9 +1,17 @@
-import requests as req
 import json
+from datetime import datetime, timedelta, timezone
 from os import path
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
 
+import requests as req
+
+from models.booking import Booking
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.offer import Offer
+from models.offerer import Offerer
+from models.user import User
+from models.venue import Venue
 
 API_URL = "http://localhost:5000"
 

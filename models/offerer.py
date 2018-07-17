@@ -1,15 +1,22 @@
+from models.deactivable_mixin import DeactivableMixin
+from models.has_address_mixin import HasAddressMixin
+from models.has_thumb_mixin import HasThumbMixin
+from models.needs_validation_mixin import NeedsValidationMixin
+from models.occasion import Occasion
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
+from models.user_offerer import UserOfferer
+
 """ offerer """
 from datetime import datetime
-from flask import current_app as app
-from luhn import verify as verify_luhn
 from sqlalchemy import Index
 from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
 from utils.search import create_tsvector
-
-db = app.db
+import sqlalchemy as db
 
 
 class Offerer(PcObject,
@@ -27,7 +34,7 @@ class Offerer(PcObject,
 
     name = db.Column(db.String(140), nullable=False)
 
-    users = db.relationship(lambda: User,
+    users = db.relationship('User',
                             secondary='user_offerer')
 
     siren = db.Column(db.String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
@@ -69,5 +76,3 @@ Offerer.__table_args__ = (
         postgresql_using='gin'
     ),
 )
-
-Offerer = Offerer

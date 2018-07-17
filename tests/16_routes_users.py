@@ -1,5 +1,7 @@
+from models.offerer import Offerer
+from models.user import User
+from models.user_offerer import UserOfferer
 from utils.test_utils import API_URL, req, req_with_auth
-
 
 BASE_DATA = {
               'email': 'toto@btmx.fr',

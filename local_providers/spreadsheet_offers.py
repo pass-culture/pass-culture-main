@@ -1,11 +1,14 @@
-from datetime import datetime
-from flask import current_app as app
-from os import path
-from pandas import read_excel, Series
 import re
-import sys
+from datetime import datetime
+from os import path
 from zipfile import ZipFile
 
+from flask import current_app as app
+from pandas import read_excel
+
+from models.event import Event
+from models.local_provider import LocalProvider
+from models.offer import Offer
 from utils.human_ids import humanize
 from utils.object_storage import local_path
 from utils.string_processing import get_date_time_range, get_matched_string_index, get_price_value, read_date

@@ -1,15 +1,14 @@
 import enum
-from flask import current_app as app
 
-db = app.db
+import sqlalchemy as db
+
+from models.needs_validation_mixin import NeedsValidationMixin
+from models.pc_object import PcObject
 
 
 class RightsType(enum.Enum):
     admin = "admin"
     editor = "editor"
-
-
-RightsType = RightsType
 
 
 class UserOfferer(PcObject,
@@ -19,7 +18,7 @@ class UserOfferer(PcObject,
                        db.ForeignKey('user.id'),
                        primary_key=True)
 
-    user = db.relationship(lambda: User,
+    user = db.relationship('User',
                            foreign_keys=[userId],
                            backref=db.backref("UserOfferers"))
 
@@ -27,11 +26,8 @@ class UserOfferer(PcObject,
                           db.ForeignKey('offerer.id'),
                           primary_key=True)
 
-    offerer = db.relationship(lambda: Offerer,
+    offerer = db.relationship('Offerer',
                               foreign_keys=[offererId],
                               backref=db.backref("UserOfferers"))
 
     rights = db.Column(db.Enum(RightsType))
-
-
-UserOfferer = UserOfferer

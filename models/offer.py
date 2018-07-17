@@ -1,10 +1,13 @@
+from models.deactivable_mixin import DeactivableMixin
+from models.event_occurence import EventOccurence
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
+
 """ offer model """
 from datetime import datetime, timedelta
-from flask import current_app as app
 from sqlalchemy import event, DDL
 from sqlalchemy.ext.hybrid import hybrid_property
-
-db = app.db
+import sqlalchemy as db
 
 
 class Offer(PcObject,
@@ -29,7 +32,7 @@ class Offer(PcObject,
                                  index=True,
                                  nullable=True)
 
-    eventOccurence = db.relationship(lambda: EventOccurence,
+    eventOccurence = db.relationship('EventOccurence',
                                      foreign_keys=[eventOccurenceId],
                                      backref='offers')
 
@@ -38,7 +41,7 @@ class Offer(PcObject,
                         index=True,
                         nullable=True)
 
-    thing = db.relationship(lambda: Thing,
+    thing = db.relationship('Thing',
                             foreign_keys=[thingId],
                             backref='offers')
 
@@ -50,7 +53,7 @@ class Offer(PcObject,
                         index=True,
                         nullable=True)
 
-    venue = db.relationship(lambda: Venue,
+    venue = db.relationship('Venue',
                             foreign_keys=[venueId],
                             backref='offers')
 
@@ -59,7 +62,7 @@ class Offer(PcObject,
                           index=True,
                           nullable=False)
 
-    offerer = db.relationship(lambda: Offerer,
+    offerer = db.relationship('Offerer',
                               foreign_keys=[offererId],
                               backref='offers')
 
@@ -89,8 +92,6 @@ class Offer(PcObject,
     def object(self):
         return self.thing or self.eventOccurence
         
-
-Offer = Offer
 
 
 @event.listens_for(Offer, 'before_insert')

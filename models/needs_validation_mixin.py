@@ -1,8 +1,8 @@
 import secrets
 
-from flask import current_app as app
+import sqlalchemy as db
 
-db = app.db
+from models.needs_validation_mixin import NeedsValidationMixin
 
 
 class NeedsValidationMixin(object):
@@ -20,7 +20,3 @@ class NeedsValidationMixin(object):
     @property
     def isValidated(self):
         return (self.validationToken is None)
-
-
-
-NeedsValidationMixin = NeedsValidationMixin
