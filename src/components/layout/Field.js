@@ -91,9 +91,18 @@ class Field extends Component {
     }
   }
 
+  handleUniqueSelectOption = () {
+    if (this.props.type === 'select') {
+      const { options, optionValue } = this.props
+      if (options && options.length === 1) {
+        this.onChange(options[0][optionValue])
+      }
+    }
+  }
 
   componentDidMount() {
     this.onChange(this.props.value)
+    this.handleUniqueSelectOption()
   }
 
   componentDidUpdate(prevProps) {
@@ -101,15 +110,8 @@ class Field extends Component {
       this.onChange(this.props.value)
     }
 
-    if (this.props.type === 'select') {
-      const { options, optionValue } = this.props
-      if (
-        options &&
-        options.length === 1 &&
-        prevProps.options !== options
-      ) {
-        this.onChange(options[0][optionValue])
-      }
+    if (prevProps.options !== this.props.options) {
+      this.handleUniqueSelectOption()
     }
   }
 

@@ -121,6 +121,7 @@ class Form extends Component {
           name,
           getDisabled: () => {
             const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
+            console.log('JE', missingFields, requiredFields)
             return missingFields.length > 0
           },
           getTitle: () => {
