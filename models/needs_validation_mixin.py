@@ -1,14 +1,11 @@
+""" needs validation mixin """
 import secrets
-
-import sqlalchemy as db
-
-from models.needs_validation_mixin import NeedsValidationMixin
-
+from sqlalchemy import Column, String
 
 class NeedsValidationMixin(object):
-    validationToken = db.Column(db.String(27),
-                                unique=True,
-                                nullable=True)
+    validationToken = Column(String(27),
+                             unique=True,
+                             nullable=True)
 
     def generate_validation_token(self):
         self.validationToken = secrets.token_urlsafe(20)

@@ -1,22 +1,17 @@
+""" offerer """
+from datetime import datetime
+from flask_sqlalchemy import Model
+from sqlalchemy import BigInteger, Column, DateTime, String
+from sqlalchemy.orm import relationship
+
 from models.deactivable_mixin import DeactivableMixin
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.occasion import Occasion
-from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.user_offerer import UserOfferer
-
-""" offerer """
-from datetime import datetime
-from sqlalchemy import Index
-from sqlalchemy.dialects.postgresql import TEXT
-from sqlalchemy.sql.expression import cast
-from sqlalchemy.sql.functions import coalesce
-
-from utils.search import create_tsvector
-import sqlalchemy as db
 
 
 class Offerer(PcObject,
@@ -25,19 +20,20 @@ class Offerer(PcObject,
               ProvidableMixin,
               NeedsValidationMixin,
               DeactivableMixin,
-              db.Model):
-    id = db.Column(db.BigInteger, primary_key=True)
+              Model):
 
-    dateCreated = db.Column(db.DateTime,
-                            nullable=False,
-                            default=datetime.utcnow)
+    id = Column(BigInteger, primary_key=True)
 
-    name = db.Column(db.String(140), nullable=False)
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
 
-    users = db.relationship('User',
-                            secondary='user_offerer')
+    name = Column(String(140), nullable=False)
 
-    siren = db.Column(db.String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
+    users = relationship('User',
+                         secondary='user_offerer')
+
+    siren = Column(String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     def give_rights(self, user, rights):
         if user:
@@ -61,18 +57,3 @@ class Offerer(PcObject,
         return Occasion.query\
                   .filter(Occasion.venueId.in_(list(map(lambda v: v.id,
                                                                   self.managedVenues)))).count()
-
-
-Offerer.__ts_vector__ = create_tsvector(
-    cast(coalesce(Offerer.name, ''), TEXT),
-    cast(coalesce(Offerer.address, ''), TEXT),
-    cast(coalesce(Offerer.siren, ''), TEXT)
-)
-
-Offerer.__table_args__ = (
-    Index(
-        'idx_offerer_fts',
-        Offerer.__ts_vector__,
-        postgresql_using='gin'
-    ),
-)

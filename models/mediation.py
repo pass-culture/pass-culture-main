@@ -3,7 +3,13 @@ from datetime import datetime
 import os
 from pathlib import Path
 from flask_sqlalchemy import Model
-from sqlalchemy import Column, BigInteger, DateTime, ForeignKey, Integer, Text
+from sqlalchemy import Column,\
+                       BigInteger,\
+                       CheckConstraint,\
+                       DateTime,\
+                       ForeignKey,\
+                       Integer,\
+                       Text
 from sqlalchemy.orm import relationship
 
 from models.has_thumb_mixin import HasThumbMixin
@@ -68,11 +74,11 @@ class Mediation(PcObject,
 
 
 Mediation.__table_args__ = (
-    db.CheckConstraint('"thumbCount" <= 2',
+    CheckConstraint('"thumbCount" <= 2',
                        name='check_mediation_has_max_2_thumbs'),
-    db.CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
+    CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
                        name='check_mediation_has_thumb_or_text'),
-    db.CheckConstraint('"eventId" IS NOT NULL OR thingId IS NOT NULL'
+    CheckConstraint('"eventId" IS NOT NULL OR thingId IS NOT NULL'
                        + ' OR tutoIndex IS NOT NULL',
                        name='check_mediation_has_event_or_thing_or_tutoIndex'),
 )

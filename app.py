@@ -20,6 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 PcObject.db = SQLAlchemy(app)
 
 import utils.events
+import utils.ts_vectors
 
 print("PcObject.db.Model", PcObject.db.Model)
 

@@ -1,13 +1,12 @@
+""" local provider """
 import sys
 import traceback
 from abc import abstractproperty
 from collections import Iterator
 from datetime import datetime, timedelta
 from pprint import pprint
-
-from flask import current_app as app
-from postgresql_audit.flask import versioning_manager
 from sqlalchemy import text
+from postgresql_audit.flask import versioning_manager
 
 from models.event import Event
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
@@ -93,7 +92,7 @@ class LocalProvider(Iterator):
                         + " OR NOT changed_data->>'dateModifiedAtLastProvider'"
                                + " = old_data->>'dateModifiedAtLastProvider')")
         latest_activity = Activity.query.filter(sql)\
-                                        .order_by(app.db.desc(Activity.id))\
+                                        .order_by(PcObject.db.desc(Activity.id))\
                                         .limit(1)\
                                         .one_or_none()
         if latest_activity is None:
@@ -148,7 +147,7 @@ class LocalProvider(Iterator):
             pprint(vars(e))
 
     def existingObjectOrNone(self, providable_info):
-        with app.db.session.no_autoflush:
+        with PcObject.db.session.no_autoflush:
             query = providable_info.type.query.filter_by(
                 idAtProviders=providable_info.idAtProviders
             )
@@ -202,8 +201,8 @@ class LocalProvider(Iterator):
         pe.type = eventType
         pe.payload = str(eventPayload)
         pe.provider = self.dbObject
-        app.db.session.add(pe)
-        app.db.session.commit()
+        PcObject.db.session.add(pe)
+        PcObject.db.session.commit()
 
     def updateObjects(self, limit=None):
         """Update venue's objects with this provider."""
@@ -211,7 +210,7 @@ class LocalProvider(Iterator):
             if not self.venueProvider.isActive:
                 print("VenueProvider is not active. Stopping")
                 return
-            app.db.session.add(self.venueProvider)  # FIXME: we should not need this
+            PcObject.db.session.add(self.venueProvider)  # FIXME: we should not need this
         providerName = self.__class__.__name__
         if not self.dbObject.isActive:
             print("Provider "+providerName+" is inactive")
@@ -263,22 +262,22 @@ class LocalProvider(Iterator):
                         self.handleThumb(pc_obj)
                 self.checkedObjects += 1
 
-            app.db.session.close()
+            PcObject.db.session.close()
             if self.venueProvider is not None:
-                app.db.session.add(self.venueProvider)
-            app.db.session.add(self.dbObject)
+                PcObject.db.session.add(self.venueProvider)
+            PcObject.db.session.add(self.dbObject)
 
             if limit is not None and\
                self.checkedObjects >= limit:
                 break
 
-        #with app.db.session.no_autoflush:
+        #with PcObject.db.session.no_autoflush:
         #    update = sa.update(self.objectType)\
         #               .where((self.objectType.provider == self.offerer.provider) &\
         #                      ~self.objectType.idAtProviders.in_(self.getDeactivatedObjectIds()))\
         #               .values({'deactivated': True})
-        #    app.db.session.execute(update)
-        #app.db.session.commit()
+        #    PcObject.db.session.execute(update)
+        #PcObject.db.session.commit()
 
         print("  Checked " + str(self.checkedObjects) + " objects")
         print("  Created " + str(self.createdObjects) + " objects")

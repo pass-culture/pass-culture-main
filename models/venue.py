@@ -1,53 +1,49 @@
+""" venue """
+from flask_sqlalchemy import Model
+from sqlalchemy.event import listens_for
+from sqlalchemy import BigInteger, Column, ForeignKey, Numeric, String
+from sqlalchemy.orm import relationship
+
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.occasion import Occasion
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
-from models.venue import Venue
-
-""" venue """
-from sqlalchemy import Index
-from sqlalchemy.dialects.postgresql import TEXT
-from sqlalchemy.sql.expression import cast
-from sqlalchemy.sql.functions import coalesce
-from sqlalchemy.event import listens_for
-import sqlalchemy as db
-from utils.search import create_tsvector
-
 
 class Venue(PcObject,
             HasThumbMixin,
             HasAddressMixin,
             ProvidableMixin,
-            db.Model):
-    id = db.Column(db.BigInteger, primary_key=True)
+            Model):
 
-    name = db.Column(db.String(140), nullable=False)
+    id = Column(BigInteger, primary_key=True)
 
-    siret = db.Column(db.String(14), nullable=True, unique=True)
+    name = Column(String(140), nullable=False)
 
-    departementCode = db.Column(db.String(3), nullable=False, index=True)
+    siret = Column(String(14), nullable=True, unique=True)
 
-    latitude = db.Column(db.Numeric(8, 5), nullable=True)
+    departementCode = Column(String(3), nullable=False, index=True)
 
-    longitude = db.Column(db.Numeric(8, 5), nullable=True)
+    latitude = Column(Numeric(8, 5), nullable=True)
 
-    venueProviders = db.relationship('VenueProvider',
-                                     back_populates="venue")
+    longitude = Column(Numeric(8, 5), nullable=True)
 
-    managingOffererId = db.Column(db.BigInteger,
-                                  db.ForeignKey("offerer.id"),
-                                  nullable=False,
-                                  index=True)
+    venueProviders = relationship('VenueProvider',
+                                  back_populates="venue")
 
-    managingOfferer = db.relationship('Offerer',
-                                      foreign_keys=[managingOffererId],
-                                      backref='managedVenues')
+    managingOffererId = Column(BigInteger,
+                               ForeignKey("offerer.id"),
+                               nullable=False,
+                               index=True)
 
-    bookingEmail = db.Column(db.String(120), nullable=False)
+    managingOfferer = relationship('Offerer',
+                                   foreign_keys=[managingOffererId],
+                                   backref='managedVenues')
 
-    #openingHours = db.Column(ARRAY(TIME))
+    bookingEmail = Column(String(120), nullable=False)
+
+    #openingHours = Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
     # means open monday 9 to 18 and tuesday 9 to 19, closed wednesday,
     # open thursday 9 to 18, closed the rest of the week
@@ -84,19 +80,3 @@ def before_insert(mapper, connect, self):
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
     self.store_department_code()
-
-
-Venue.__ts_vector__ = create_tsvector(
-    cast(coalesce(Venue.name, ''), TEXT),
-    cast(coalesce(Venue.address, ''), TEXT),
-    cast(coalesce(Venue.siret, ''), TEXT)
-)
-
-
-Venue.__table_args__ = (
-    Index(
-        'idx_venue_fts',
-        Venue.__ts_vector__,
-        postgresql_using='gin'
-    ),
-)

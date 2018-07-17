@@ -1,6 +1,12 @@
+""" providable mixin """
 from datetime import datetime
-
-import sqlalchemy as db
+from sqlalchemy import BigInteger,\
+                       CheckConstraint,\
+                       Column,\
+                       DateTime,\
+                       ForeignKey,\
+                       String
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
 from models.versioned_mixin import VersionedMixin
@@ -10,21 +16,21 @@ class ProvidableMixin(VersionedMixin):
 
     @declared_attr
     def lastProviderId(cls):
-        return db.Column(db.BigInteger,
-                         db.ForeignKey("provider.id"),
-                         nullable=True)
+        return Column(BigInteger,
+                      ForeignKey("provider.id"),
+                      nullable=True)
 
     @declared_attr
     def lastProvider(cls):
-        return db.relationship('Provider',
-                               foreign_keys=[cls.lastProviderId])
+        return relationship('Provider',
+                            foreign_keys=[cls.lastProviderId])
 
-    idAtProviders = db.Column(db.String(70),
-                              db.CheckConstraint('"lastProviderId" IS NULL OR "idAtProviders" IS NOT NULL',
+    idAtProviders = Column(String(70),
+                           CheckConstraint('"lastProviderId" IS NULL OR "idAtProviders" IS NOT NULL',
                                                  name='check_providable_with_provider_has_idatproviders'),
-                              nullable=True,
-                              unique=True)
+                           nullable=True,
+                           unique=True)
 
-    dateModifiedAtLastProvider = db.Column(db.DateTime,
-                                           nullable=True,
-                                           default=datetime.utcnow)
+    dateModifiedAtLastProvider = Column(DateTime,
+                                        nullable=True,
+                                        default=datetime.utcnow)

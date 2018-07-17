@@ -1,25 +1,25 @@
+""" has thumb mixin """
 import io
-
 import requests
-import sqlalchemy as db
+from sqlalchemy import Binary, CheckConstraint, Column, Integer
 from PIL import Image
 from colorthief import ColorThief
 
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.object_storage import delete_public_object, \
-    get_public_object_date, \
-    store_public_object
+                                 get_public_object_date, \
+                                 store_public_object
 from utils.string_processing import inflect_engine
 
 IDEAL_THUMB_WIDTH = 600
 
 
 class HasThumbMixin(object):
-    thumbCount = db.Column(db.Integer(), nullable=False, default=0)
-    firstThumbDominantColor = db.Column(db.Binary(3),
-                                        db.CheckConstraint('"thumbCount"=0 OR "firstThumbDominantColor" IS NOT NULL',
-                                                           name='check_thumb_has_dominant_color'),
+    thumbCount = Column(Integer(), nullable=False, default=0)
+    firstThumbDominantColor = Column(Binary(3),
+                                     CheckConstraint('"thumbCount"=0 OR "firstThumbDominantColor" IS NOT NULL',
+                                        name='check_thumb_has_dominant_color'),
                                         nullable=True)
 
     def delete_thumb(self, index):

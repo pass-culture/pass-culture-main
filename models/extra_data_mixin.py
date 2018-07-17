@@ -1,6 +1,7 @@
-import sqlalchemy as db
+""" extra data mixin """
+from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import JSON
 
 
 class ExtraDataMixin(object):
-    extraData = db.Column(JSON)
+    extraData = Column(JSON)

@@ -2,15 +2,13 @@
 from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-from enum import Enum
 from pprint import pprint
 from psycopg2.extras import DateTimeRange
-from sqlalchemy import CHAR
+from sqlalchemy import CHAR, BigInteger, Column, Enum, Float, Integer, String
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize, humanize
-import sqlalchemy as db
 
 
 def serialize(value, **options):
@@ -34,9 +32,9 @@ def serialize(value, **options):
 
 
 class PcObject():
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
     db = None
 
     def __init__(self, **options):
@@ -136,7 +134,7 @@ class PcObject():
         for key in data.keys():
             col = data[key]
             val = getattr(self, key)
-            if not isinstance(col, db.Column):
+            if not isinstance(col, Column):
                 continue
             if not col.nullable\
                and not col.foreign_keys\
@@ -146,11 +144,11 @@ class PcObject():
                 errors.addError(key, 'Cette information est obligatoire')
             if val is None:
                 continue
-            if (isinstance(col.type, db.String) or isinstance(col.type, CHAR))\
-               and not isinstance(col.type, db.Enum)\
+            if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
+               and not isinstance(col.type, Enum)\
                and not isinstance(val, str):
                 errors.addError(key, 'doit être une chaîne de caractères')
-            if (isinstance(col.type, db.String) or isinstance(col.type, CHAR))\
+            if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
                and isinstance(val, str)\
                and col.type.length\
                and len(val)>col.type.length:
@@ -158,10 +156,10 @@ class PcObject():
                                 'Vous devez saisir moins de '
                                       + str(col.type.length)
                                       + ' caractères')
-            if isinstance(col.type, db.Integer)\
+            if isinstance(col.type, Integer)\
                and not isinstance(val, int):
                 errors.addError(key, 'doit être un entier')
-            if isinstance(col.type, db.Float)\
+            if isinstance(col.type, Float)\
                and not isinstance(val, float):
                 errors.addError(key, 'doit être un nombre')
         return errors
@@ -185,14 +183,14 @@ class PcObject():
                     value = dehumanize(data.get(key))
                 else:
                     value = data.get(key)
-                if isinstance(value, str) and isinstance(col.type, db.Integer):
+                if isinstance(value, str) and isinstance(col.type, Integer):
                     try:
                         setattr(self, key, Decimal(value))
                     except InvalidOperation as io:
                         raise TypeError('Invalid value for %s: %r' % (key, value),
                                         'integer',
                                         key)
-                elif isinstance(value, str) and (isinstance(col.type, db.Float) or isinstance(col.type, db.Numeric)):
+                elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type, db.Numeric)):
                     try:
                         setattr(self, key, Decimal(value))
                     except InvalidOperation as io:
@@ -222,4 +220,3 @@ class PcObject():
                else str(self.id) + "/" + humanize(self.id)
         return '<%s #%s>' % (self.__class__.__name__,
                              id)
-

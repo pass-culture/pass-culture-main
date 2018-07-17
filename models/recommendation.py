@@ -1,32 +1,40 @@
-from models.pc_object import PcObject
-
 """ recommendation model """
 from datetime import datetime
+from flask_sqlalchemy import Model
 from sqlalchemy.sql import expression
-import sqlalchemy as db
+from sqlalchemy import BigInteger,\
+                       Boolean,\
+                       CheckConstraint,\
+                       Column,\
+                       DateTime,\
+                       ForeignKey,\
+                       String
+from sqlalchemy.orm import relationship
+
+from models.pc_object import PcObject
 
 
-class Recommendation(PcObject, db.Model):
+class Recommendation(PcObject, Model):
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
-    userId = db.Column(db.BigInteger,
-                       db.ForeignKey('user.id'),
-                       nullable=False,
-                       index=True)
+    userId = Column(BigInteger,
+                    ForeignKey('user.id'),
+                    nullable=False,
+                    index=True)
 
-    user = db.relationship('User',
-                           foreign_keys=[userId],
-                           backref='recommendations')
+    user = relationship('User',
+                        foreign_keys=[userId],
+                        backref='recommendations')
 
-    mediationId = db.Column(db.BigInteger,
-                            db.ForeignKey('mediation.id'),
-                            index=True,
-                            nullable=True) # NULL for recommendation created directly from a thing or an event
+    mediationId = Column(BigInteger,
+                         ForeignKey('mediation.id'),
+                         index=True,
+                         nullable=True) # NULL for recommendation created directly from a thing or an event
 
-    mediation = db.relationship('Mediation',
+    mediation = relationship('Mediation',
                                 foreign_keys=[mediationId],
                                 backref='recommendations')
 
@@ -94,6 +102,10 @@ class Recommendation(PcObject, db.Model):
                         server_default=expression.false(),
                         default=False)
 
+    isFirst = Column(Boolean,
+                     nullable=False,
+                     server_default=expression.false(),
+                     default=False)
 
     @property
     def mediatedOffers(self, as_query=False):

@@ -1,10 +1,11 @@
-from models.pc_object import PcObject
-
 """ provider_event model """
 import enum
 from datetime import datetime
-import sqlalchemy as db
+from flask_sqlalchemy import Model
+from sqlalchemy import BigInteger, Column, DateTime, Enum, ForeignKey, String
+from sqlalchemy.orm import relationship
 
+from models.pc_object import PcObject
 
 class LocalProviderEventType(enum.Enum):
     SyncError = "SyncError"
@@ -17,25 +18,25 @@ class LocalProviderEventType(enum.Enum):
 
 
 class LocalProviderEvent(PcObject,
-                         db.Model):
+                         Model):
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
-    providerId = db.Column(db.BigInteger,
-                           db.ForeignKey("provider.id"),
-                           nullable=False)
-    provider = db.relationship('Provider',
-                               foreign_keys=[providerId])
+    providerId = Column(BigInteger,
+                        ForeignKey("provider.id"),
+                        nullable=False)
 
-    date = db.Column(db.DateTime,
-                     nullable=False,
-                     default=datetime.utcnow)
+    provider = relationship('Provider',
+                            foreign_keys=[providerId])
 
-    type = db.Column(db.Enum(LocalProviderEventType),
-                     nullable=False)
+    date = Column(DateTime,
+                  nullable=False,
+                  default=datetime.utcnow)
 
-    payload = db.Column(db.String(50),
-                        nullable=True)
+    type = Column(Enum(LocalProviderEventType),
+                  nullable=False)
 
+    payload = Column(String(50),
+                     nullable=True)

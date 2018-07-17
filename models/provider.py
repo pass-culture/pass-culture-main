@@ -1,39 +1,44 @@
+""" provider """
+from flask_sqlalchemy import Model
+from sqlalchemy import BigInteger,\
+                       CheckConstraint,\
+                       Column,\
+                       DateTime,\
+                       String
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import CHAR
+
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
-from models.provider import Provider
 from models.venue_provider import VenueProvider
-
-""" provider """
-from sqlalchemy.dialects.postgresql import CHAR
-import sqlalchemy as db
-
 
 
 class Provider(PcObject,
                DeactivableMixin,
-               db.Model):
-    id = db.Column(db.BigInteger,
-                   primary_key=True)
+               Model):
 
-    name = db.Column(db.String(60),
-                     nullable=False)
+    id = Column(BigInteger,
+                primary_key=True)
 
-    localClass = db.Column(db.String(30),
-                           db.CheckConstraint('("localClass" IS NOT NULL AND "apiKey" IS NULL)'
+    name = Column(String(60),
+                  nullable=False)
+
+    localClass = Column(String(30),
+                        CheckConstraint('("localClass" IS NOT NULL AND "apiKey" IS NULL)'
                                               + 'OR ("localClass" IS NULL AND "apiKey" IS NOT NULL)',
                                               name='check_provider_has_localclass_or_apikey'),
                            nullable=True,
                            unique=True)
 
-    venueProviders = db.relationship(VenueProvider,
-                                     back_populates="provider",
-                                     foreign_keys=[VenueProvider.providerId])
+    venueProviders = relationship(VenueProvider,
+                                  back_populates="provider",
+                                  foreign_keys=[VenueProvider.providerId])
 
-    apiKey = db.Column(CHAR(32),
-                       nullable=True)
+    apiKey = Column(CHAR(32),
+                    nullable=True)
 
-    apiKeyGenerationDate = db.Column(db.DateTime,
-                                     nullable=True)
+    apiKeyGenerationDate = Column(DateTime,
+                                  nullable=True)
 
     def getByClassName(name):
         return Provider.query\

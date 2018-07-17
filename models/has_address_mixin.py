@@ -1,6 +1,5 @@
 import re
-
-import sqlalchemy as db
+from sqlalchemy import Column, String
 
 from models.api_errors import ApiErrors
 
@@ -9,11 +8,11 @@ from models.api_errors import ApiErrors
 
 
 class HasAddressMixin(object):
-    address = db.Column(db.String(200), nullable=False)
+    address = Column(String(200), nullable=False)
 
-    postalCode = db.Column(db.String(6), nullable=False)
+    postalCode = Column(String(6), nullable=False)
 
-    city = db.Column(db.String(50), nullable=False)
+    city = Column(String(50), nullable=False)
 
     def errors(self):
         errors = ApiErrors()

@@ -1,97 +1,102 @@
+""" offer """
+from datetime import datetime, timedelta
+from flask_sqlalchemy import Model
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import BigInteger,\
+                       CheckConstraint,\
+                       Column,\
+                       DateTime,\
+                       ForeignKey,\
+                       Integer,\
+                       Numeric
+from sqlalchemy.orm import relationship
+
 from models.deactivable_mixin import DeactivableMixin
 from models.event_occurence import EventOccurence
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
-""" offer model """
-from datetime import datetime, timedelta
-from sqlalchemy import event, DDL
-from sqlalchemy.ext.hybrid import hybrid_property
-import sqlalchemy as db
-
-
 class Offer(PcObject,
-            db.Model,
+            Model,
             DeactivableMixin,
             ProvidableMixin):
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
     # an offer is either linked to a thing or to an eventOccurence
 
-    dateModified = db.Column(db.DateTime,
-                             nullable=False,
-                             default=datetime.utcnow)
+    dateModified = Column(DateTime,
+                          nullable=False,
+                          default=datetime.utcnow)
 
-    eventOccurenceId = db.Column(db.BigInteger,
-                                 db.ForeignKey("event_occurence.id"),
-                                 db.CheckConstraint('"eventOccurenceId" IS NOT NULL OR "thingId" IS NOT NULL',
+    eventOccurenceId = Column(BigInteger,
+                              ForeignKey("event_occurence.id"),
+                              CheckConstraint('"eventOccurenceId" IS NOT NULL OR "thingId" IS NOT NULL',
                                                     name='check_offer_has_event_occurence_or_thing'),
-                                 index=True,
-                                 nullable=True)
+                              index=True,
+                              nullable=True)
 
-    eventOccurence = db.relationship('EventOccurence',
-                                     foreign_keys=[eventOccurenceId],
-                                     backref='offers')
+    eventOccurence = relationship('EventOccurence',
+                                  foreign_keys=[eventOccurenceId],
+                                  backref='offers')
 
-    thingId = db.Column(db.BigInteger,
-                        db.ForeignKey("thing.id"),
-                        index=True,
-                        nullable=True)
+    thingId = Column(BigInteger,
+                     ForeignKey("thing.id"),
+                     index=True,
+                     nullable=True)
 
-    thing = db.relationship('Thing',
-                            foreign_keys=[thingId],
-                            backref='offers')
+    thing = relationship('Thing',
+                         foreign_keys=[thingId],
+                         backref='offers')
 
-    venueId = db.Column(db.BigInteger,
-                        db.ForeignKey("venue.id"),
-                        db.CheckConstraint('("venueId" IS NOT NULL AND "eventOccurenceId" IS NULL)'
+    venueId = Column(BigInteger,
+                     ForeignKey("venue.id"),
+                     CheckConstraint('("venueId" IS NOT NULL AND "eventOccurenceId" IS NULL)'
                                            + 'OR ("venueId" IS NULL AND "eventOccurenceId" IS NOT NULL)',
                                            name='check_offer_has_venue_xor_event_occurence'),
                         index=True,
                         nullable=True)
 
-    venue = db.relationship('Venue',
-                            foreign_keys=[venueId],
-                            backref='offers')
+    venue = relationship('Venue',
+                         foreign_keys=[venueId],
+                         backref='offers')
 
-    offererId = db.Column(db.BigInteger,
-                          db.ForeignKey("offerer.id"),
-                          index=True,
-                          nullable=False)
+    offererId = Column(BigInteger,
+                       ForeignKey("offerer.id"),
+                       index=True,
+                       nullable=False)
 
-    offerer = db.relationship('Offerer',
-                              foreign_keys=[offererId],
-                              backref='offers')
+    offerer = relationship('Offerer',
+                           foreign_keys=[offererId],
+                           backref='offers')
 
-    price = db.Column(db.Numeric(10, 2),
-                      nullable=False)
+    price = Column(Numeric(10, 2),
+                   nullable=False)
 
-    available = db.Column(db.Integer,
-                          index=True,
-                          nullable=True)
+    available = Column(Integer,
+                       index=True,
+                       nullable=True)
 
     # TODO: add pmr
-    #pmrGroupSize = db.Column(db.Integer,
+    #pmrGroupSize = Column(db.Integer,
     #                         nullable=False,
     #                         default=1)
 
-    groupSize = db.Column(db.Integer,
-                          nullable=False,
-                          default=1)
+    groupSize = Column(Integer,
+                       nullable=False,
+                       default=1)
 
-    bookingLimitDatetime = db.Column(db.DateTime,
-                                     nullable=True)
+    bookingLimitDatetime = Column(DateTime,
+                                  nullable=True)
 
-    bookingRecapSent = db.Column(db.DateTime,
-                                 nullable=True)
+    bookingRecapSent = Column(DateTime,
+                              nullable=True)
 
     @hybrid_property
     def object(self):
         return self.thing or self.eventOccurence
-        
 
 
 @event.listens_for(Offer, 'before_insert')
