@@ -2,22 +2,21 @@ import get from 'lodash.get'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
-import { withRouter } from 'react-router'
 
 import VenueItem from '../VenueItem'
+import Form from '../layout/Form'
+import Field from '../layout/Field'
 import PageWrapper from '../layout/PageWrapper'
+import Submit from '../layout/Submit'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import { resetForm } from '../../reducers/form'
 import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'
 import { NEW } from '../../utils/config'
 import { offererNormalizer } from '../../utils/normalizers'
-
-import Form from '../layout/Form'
-import Field from '../layout/Field'
-import Submit from '../layout/Submit'
 
 
 class OffererPage extends Component {

@@ -71,8 +71,8 @@ class Field extends Component {
     }
     if (type === 'number') {
       return {
-        displayValue: v => v || '',
-        storeValue: v => parseInt(v) || '',
+        displayValue: v => (v || ''),
+        storeValue: v => (parseInt(v) || ''),
       }
     }
     return {
@@ -105,7 +105,8 @@ class Field extends Component {
   onChange = (value) => {
     const { displayValue, storeValue } = this.state
 
-    if (value === this.props.value) {
+    // console.log('value', value, 'this.state.value', this.state.value)
+    if (this.state.value !== '' && value === this.props.value) {
       return
     }
     this.setState({
