@@ -1,29 +1,48 @@
-import React from 'react'
+import React, {Component} from 'react'
 import { optionify } from '../../../utils/form'
 import get from 'lodash.get'
 import classnames from 'classnames'
 
 
-const SelectInput = props => {
+class SelectInput extends Component {
 
-  const onChange = e => props.onChange(e.target.value)
+  componentDidMount() {
+    this.handleUniqueSelectOption()
+  }
 
-  const actualReadOnly = props.readOnly || props.options.length === 1
-  const actualOptions = optionify(props.options.map(o => ({label: get(o, props.optionLabel), value: get(o, props.optionValue)})), props.placeholder)
+  componentDidUpdate(prevProps) {
+    if (prevProps.options !== this.props.options) {
+      this.handleUniqueSelectOption()
+    }
+  }
 
-  return <div className={`select is-${props.size} ${classnames({readonly: props.actualReadOnly})}`}>
-    <select
-      {...props}
-      onChange={onChange}
-      disabled={props.actualReadOnly} // readonly doesn't exist on select
-      >
-      { actualOptions.filter(o => o).map(({ label, value }, index) =>
-        <option key={index} value={value}>
-          {label}
-        </option>
-      )}
-    </select>
-  </div>
+  render() {
+    const onChange = e => this.props.onChange(e.target.value)
+
+    const handleUniqueSelectOption = () => {
+      const { options, optionValue } = this.props
+      if (options && options.length === 1) {
+        onChange(options[0][optionValue])
+      }
+    }
+
+    const actualReadOnly = this.props.readOnly || this.props.options.length === 1
+    const actualOptions = optionify(this.props.options.map(o => ({label: get(o, this.props.optionLabel), value: get(o, this.props.optionValue)})), this.props.placeholder)
+
+    return <div className={`select is-${this.props.size} ${classnames({readonly: this.props.actualReadOnly})}`}>
+      <select
+        {...this.props}
+        onChange={onChange}
+        disabled={this.props.actualReadOnly} // readonly doesn't exist on select
+        >
+        { actualOptions.filter(o => o).map(({ label, value }, index) =>
+          <option key={index} value={value}>
+            {label}
+          </option>
+        )}
+      </select>
+    </div>
+  }
 }
 
 SelectInput.defaultProps = {

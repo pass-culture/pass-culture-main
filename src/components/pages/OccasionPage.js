@@ -243,7 +243,10 @@ class OccasionPage extends Component {
 
     const showAllForm = type || !isNew
 
-    const formData = Object.assign({}, isEventType ? event : thing, {offererId: get(venue, 'managingOffererId')})
+    const formData = Object.assign(
+      { offererId: get(venue, 'managingOffererId') },
+      isEventType ? event : thing
+    )
 
     return (
       <PageWrapper
@@ -262,10 +265,26 @@ class OccasionPage extends Component {
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
           </p>
-          <Form name='occasion' handleSuccess={this.handleSuccess} handleFail={this.handleFail} action={apiPath} data={formData} readOnly={isReadOnly}>
+          <Form
+            action={apiPath}
+            data={formData}
+            name='occasion'
+            handleSuccess={this.handleSuccess}
+            handleFail={this.handleFail}
+            readOnly={isReadOnly}
+          >
             <div className='field-group'>
               <Field name='name' label="Titre de l'offre" required isExpanded/>
-              <Field type='select' name='type' label='Type' required options={types} placeholder="Sélectionnez un type d'offre" optionLabel='label' optionValue='value'/>
+              <Field
+                type='select'
+                label='Type'
+                name='type'
+                optionLabel='label'
+                optionValue='value'
+                options={types}
+                placeholder="Sélectionnez un type d'offre"
+                required
+              />
             </div>
             { !isNew && (
               <div className='field'>
@@ -304,18 +323,36 @@ class OccasionPage extends Component {
                   Infos pratiques
                 </h2>
                 <div className='field-group'>
-                  <Field type='select' name='offererId' label='Structure' required options={offerers} placeholder="Sélectionnez une structure" debug/>
-                  { offerer && get(venues, 'length') === 0 ? (
-                    <div className='field is-horizontal'>
-                      <div className='field-label'></div>
-                      <div className='field-body'>
-                        <p className='help is-danger'>
-                          Il faut obligatoirement une structure avec un lieu.
-                        </p>
-                      </div>
-                    </div>
-                    ) :
-                    get(venues, 'length') > 0 && <Field type='select' name='venueId' label='Lieu' required options={venues} placeholder='Sélectionnez un lieu' /> }
+                  <Field
+                    debug
+                    label='Structure'
+                    name='offererId'
+                    options={offerers}
+                    placeholder="Sélectionnez une structure"
+                    required
+                    type='select' />
+                  {
+                    offerer && get(venues, 'length') === 0
+                      ? (
+                        <div className='field is-horizontal'>
+                          <div className='field-label'></div>
+                          <div className='field-body'>
+                            <p className='help is-danger'>
+                              Il faut obligatoirement une structure avec un lieu.
+                            </p>
+                          </div>
+                        </div>
+                      )
+                      : get(venues, 'length') > 0 && (
+                        <Field
+                          label='Lieu'
+                          name='venueId'
+                          options={venues}
+                          placeholder='Sélectionnez un lieu'
+                          required
+                          type='select' />
+                      )
+                  }
                   { isEventType && (
                     <Field type='number' name='durationMinutes' label='Durée en minutes' required />
                   )}
