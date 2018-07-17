@@ -4,17 +4,20 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-#TODO:
+#TODO: improve script by getting parameters from template file maybe ?
+#TODO: set all env var from a single file ?
 
 if [ "$1" == "-h" ]; then
-    echo "$(basename "$0") [-h] [-n s1 -r s2 -u s3 -d s4 -b i1] -- program to create new project on Scalingo
+    echo "$(basename "$0") [-h] [-n s1 -r s2 -u s3 -d s4 -b i1 -j -k s4 s5] -- program to create new project on Scalingo
 where:
     -h  show this help text
     -n  new Scalingo project name (required)
     -r  set the remote target for the project (default: scalingo)
     -u  set the custom domain name (optional)
     -d  set database plan size (default: free)
-    -b  set number of backends to deploy (default: 1)"
+    -b  set number of backends to deploy (default: 1)
+    -j  set the env var MAILJET_API_SECRET (required)
+    -k  set the env var MAILJET_API_KEY (required)"
     exit 0
 fi
 
@@ -59,7 +62,6 @@ else
   NB_BACKENDS=${NB_BACKENDS:-'1'}
 fi
 
-
 # CREATE NEW PROJECT ON SCALINGO
 echo "Creating new app on Scalingo..."
 if [ "$APP_REMOTE" = "" ]; then
@@ -71,6 +73,24 @@ fi
 # ADD DATABASE PLUGIN
 echo "Add Postgresql addon to app..."
 scalingo -a "$APP_NAME" addons-add postgresql "$DATABASE_SIZE"
+
+# GET MAILJET_API_SECRET
+if [[ $# -gt 1 ]] && [[ "$1" == "-j" ]]; then
+  scalingo -a "$APP_NAME" env-set MAILJET_API_SECRET="$2"
+  shift 2
+else
+  echo "You must provide a # GET MAILJET_API_SECRET."
+  exit 1
+fi
+
+# GET MAILJET_API_KEY
+if [[ $# -gt 1 ]] && [[ "$1" == "-k" ]]; then
+  scalingo -a "$APP_NAME" env-set MAILJET_API_KEY="$2"
+  shift 2
+else
+  echo "You must provide a MAILJET_API_KEY."
+  exit 1
+fi
 
 # DEPLOY CURRENT GIT BRANCH TO SCALINGO
 readonly GIT_LOCAL_BRANCH_NAME=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
