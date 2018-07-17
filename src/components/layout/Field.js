@@ -91,7 +91,7 @@ class Field extends Component {
     }
   }
 
-  handleUniqueSelectOption = () {
+  handleUniqueSelectOption = () => {
     if (this.props.type === 'select') {
       const { options, optionValue } = this.props
       if (options && options.length === 1) {
