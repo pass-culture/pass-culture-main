@@ -66,7 +66,9 @@ class Form extends Component {
       storePath,
     } = this.props
 
-    requestData(this.state.method, action, {
+    requestData(
+      this.state.method,
+      action.replace(/^\//g, ''), {
       body: formatData(formData),
       formName: name,
       handleFail,
