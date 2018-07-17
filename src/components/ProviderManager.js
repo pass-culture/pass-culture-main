@@ -102,6 +102,7 @@ class ProviderManager extends Component {
 
   render () {
     const {
+      formData,
       provider,
       providers,
       venue,
@@ -141,9 +142,11 @@ class ProviderManager extends Component {
                 <Form
                   action='/venueProviders'
                   className='level'
-                  name='venueProvider'
+                  data={Object.assign({ venueId: get(venue, 'id') }, formData)}
                   handleSuccess={this.handleSuccess}
+                  name='venueProvider'
                 >
+                  <Field type='hidden' name='venueId' />
                   {
                     withError && (
                       <p className={
@@ -219,6 +222,7 @@ export default compose(
       }
 
       return {
+        formData: get(state, 'form.venueProvider.data'),
         provider,
         providers,
         user: state.user,
