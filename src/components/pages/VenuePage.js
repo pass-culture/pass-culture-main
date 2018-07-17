@@ -7,8 +7,11 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
+import Form from '../layout/Form'
+import Field from '../layout/Field'
 import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
+import Submit from '../layout/Submit'
 import { resetForm } from '../../reducers/form'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
@@ -17,9 +20,6 @@ import venueSelector from '../../selectors/venue'
 import { NEW } from '../../utils/config'
 import { venueNormalizer } from '../../utils/normalizers'
 
-import Form from '../layout/Form'
-import Field from '../layout/Field'
-import Submit from '../layout/Submit'
 
 class VenuePage extends Component {
 
