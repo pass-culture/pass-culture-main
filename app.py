@@ -3,9 +3,9 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from postgresql_audit.flask import versioning_manager
 from sqlalchemy.exc import ProgrammingError
-import sqlalchemy as sa
+from sqlalchemy import orm
+from postgresql_audit.flask import versioning_manager
 
 from models.mediation import Mediation
 from models.pc_object import PcObject
@@ -19,9 +19,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 PcObject.db = SQLAlchemy(app)
 
+import utils.events
+
+print("PcObject.db.Model", PcObject.db.Model)
+
 versioning_manager.init(PcObject.db.Model)
 
-sa.orm.configure_mappers()
+orm.configure_mappers()
 # FIXME: This is seriously ugly... (based on https://github.com/kvesteri/postgresql-audit/issues/21)
 try:
     versioning_manager.transaction_cls.__table__.create(PcObject.db.session.get_bind())

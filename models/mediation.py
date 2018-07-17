@@ -1,70 +1,70 @@
-from models.has_thumb_mixin import HasThumbMixin
-from models.pc_object import PcObject
-from models.providable_mixin import ProvidableMixin
-
 """ mediation model """
 from datetime import datetime
 import os
 from pathlib import Path
+from flask_sqlalchemy import Model
+from sqlalchemy import Column, BigInteger, DateTime, ForeignKey, Integer, Text
+from sqlalchemy.orm import relationship
 
-import sqlalchemy as db
+from models.has_thumb_mixin import HasThumbMixin
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 
 
 class Mediation(PcObject,
-                db.Model,
+                Model,
                 HasThumbMixin,
-                ProvidableMixin
-                ):
+                ProvidableMixin):
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
-    frontText = db.Column(db.Text, nullable=True)
+    frontText = Column(Text, nullable=True)
 
-    backText = db.Column(db.Text, nullable=True)
+    backText = Column(Text, nullable=True)
 
-    dateCreated = db.Column(db.DateTime,
-                            nullable=False,
-                            default=datetime.utcnow)
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
 
-    authorId = db.Column(db.BigInteger,
-                         db.ForeignKey("user.id"),
-                         nullable=True)
+    authorId = Column(BigInteger,
+                      ForeignKey("user.id"),
+                      nullable=True)
 
-    author = db.relationship('User',
-                             foreign_keys=[authorId],
-                             backref='mediations')
+    author = relationship('User',
+                          foreign_keys=[authorId],
+                          backref='mediations')
 
-    offererId = db.Column(db.BigInteger,
-                          db.ForeignKey("offerer.id"),
-                          nullable=True)
+    offererId = Column(BigInteger,
+                       ForeignKey("offerer.id"),
+                       nullable=True)
 
-    offerer = db.relationship('Offerer',
-                              foreign_keys=[offererId],
-                              backref='mediations')
+    offerer = relationship('Offerer',
+                           foreign_keys=[offererId],
+                           backref='mediations')
 
-    eventId = db.Column(db.BigInteger,
-                        db.ForeignKey("event.id"),
-                        index=True,
-                        nullable=True)
+    eventId = Column(BigInteger,
+                     ForeignKey("event.id"),
+                     index=True,
+                     nullable=True)
 
-    event = db.relationship('Event',
-                            foreign_keys=[eventId],
-                            backref='mediations')
+    event = relationship('Event',
+                         foreign_keys=[eventId],
+                         backref='mediations')
 
-    thingId = db.Column(db.BigInteger,
-                        db.ForeignKey("thing.id"),
-                        index=True,
-                        nullable=True)
+    thingId = Column(BigInteger,
+                     ForeignKey("thing.id"),
+                     index=True,
+                     nullable=True)
 
-    thing = db.relationship('Thing',
-                            foreign_keys=[thingId],
-                            backref='mediations')
+    thing = relationship('Thing',
+                         foreign_keys=[thingId],
+                         backref='mediations')
 
-    tutoIndex = db.Column(db.Integer,
-                          nullable=True,
-                          index=True)
+    tutoIndex = Column(Integer,
+                       nullable=True,
+                       index=True)
 
 
 Mediation.__table_args__ = (

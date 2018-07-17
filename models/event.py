@@ -1,7 +1,15 @@
+""" model event """
 from enum import Enum
-
+from flask_sqlalchemy import Model
 import sqlalchemy as db
-from sqlalchemy import Index
+from sqlalchemy import Binary,\
+                       BigInteger,\
+                       Boolean,\
+                       Column,\
+                       Index,\
+                       Integer,\
+                       String,\
+                       Text
 from sqlalchemy.dialects.postgresql import ARRAY, TEXT
 from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
@@ -49,50 +57,50 @@ EventType = EventType
 
 
 class Event(PcObject,
-            db.Model,
+            Model,
             DeactivableMixin,
             ExtraDataMixin,
             HasThumbMixin,
             ProvidableMixin
-            ):
-    id = db.Column(db.BigInteger,
-                   primary_key=True)
+           ):
+    id = Column(BigInteger,
+                primary_key=True)
 
-    type = db.Column(db.String(50),
-                     nullable=True)
+    type = Column(String(50),
+                  nullable=True)
 
-    name = db.Column(db.String(140), nullable=False)
+    name = Column(String(140), nullable=False)
 
-    description = db.Column(db.Text, nullable=True)
+    description = Column(Text, nullable=True)
 
-    conditions = db.Column(db.String(120),
+    conditions = Column(String(120),
                            nullable=True)
 
-    ageMin = db.Column(db.Integer,
-                       nullable=True)
-    ageMax = db.Column(db.Integer,
-                       nullable=True)
+    ageMin = Column(Integer,
+                    nullable=True)
+    ageMax = Column(Integer,
+                    nullable=True)
     #TODO (from schema.org)
     #doorTime (datetime)
     #eventStatus
     #isAccessibleForFree (boolean)
     #typicalAgeRange → = $ageMin-$ageMax
 
-    accessibility = db.Column(db.Binary(1),
-                              nullable=False,
-                              default=bytes([0]))
+    accessibility = Column(Binary(1),
+                           nullable=False,
+                           default=bytes([0]))
 
-    mediaUrls = db.Column(ARRAY(db.String(220)),
-                          nullable=False,
-                          default=[])
+    mediaUrls = Column(ARRAY(String(220)),
+                       nullable=False,
+                       default=[])
 
-    durationMinutes = db.Column(db.Integer,
-                                nullable=False)
+    durationMinutes = Column(Integer,
+                             nullable=False)
 
-    isNational = db.Column(db.Boolean,
-                           server_default=false(),
-                           default=False,
-                           nullable=False)
+    isNational = Column(Boolean,
+                        server_default=false(),
+                        default=False,
+                        nullable=False)
 
 
 Event.__ts_vector__ = create_tsvector(
