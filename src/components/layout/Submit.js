@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 
 class Submit extends Component {
 
@@ -17,7 +17,11 @@ class Submit extends Component {
       requiredFields,
       ...otherProps,
     } = this.props
-    return <button {...otherProps} title={getTitle()} disabled={getDisabled()}>{children}</button>
+    return (
+      <button {...otherProps} title={getTitle()} disabled={getDisabled()}>
+        {children}
+      </button>
+    )
   }
 }
 

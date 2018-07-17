@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const childProcess = require('child_process')
+const fs =  require('fs')
 const program = require('commander')
 const env = require('node-env-file')
 const path =  require('path')

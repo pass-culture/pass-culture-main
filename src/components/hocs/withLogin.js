@@ -1,6 +1,3 @@
-// POSSIBLE HOC FOR ALL OTHER THE PAGE THAN SIGNIN AND SIGNUP
-// withLogin ASK FOR A CONNECTED USER, IF NOT IT REDIRECTS TO SIGNING PAGE
-// ON USER SUCCESS IT CAN ALSO REDIRECT TO A SPECIFIC PATH
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'

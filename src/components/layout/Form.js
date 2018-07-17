@@ -1,14 +1,12 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
-
 import { requestData } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import { connect } from 'react-redux'
 
 import { newMergeForm } from '../../reducers/form'
 import { removeErrors } from '../../reducers/errors'
-
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
 
@@ -66,7 +64,9 @@ class Form extends Component {
       storePath,
     } = this.props
 
-    requestData(this.state.method, action, {
+    requestData(
+      this.state.method,
+      action.replace(/^\//g, ''), {
       body: formatData(formData),
       formName: name,
       handleFail,

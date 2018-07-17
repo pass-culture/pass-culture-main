@@ -71,8 +71,8 @@ class Field extends Component {
     }
     if (type === 'number') {
       return {
-        displayValue: v => v || '',
-        storeValue: v => parseInt(v, 10) || '',
+        displayValue: v => (v || ''),
+        storeValue: v => (parseInt(v, 10) || ''),
       }
     }
     return {
