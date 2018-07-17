@@ -1,16 +1,18 @@
 import get from 'lodash.get'
+import uniq from 'lodash.uniq'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Icon from './layout/Icon'
 import Capitalize from './utils/Capitalize'
+import selectBookings from '../selectors/bookings'
 import selectDistance from '../selectors/distance'
+import selectCurrentEventOrThingId from '../selectors/currentEventOrThingId'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
 import selectCurrentSource from '../selectors/currentSource'
-import selectBooking from '../selectors/booking'
 import selectCurrentThumbUrl from '../selectors/currentThumbUrl'
 import selectTimezone from '../selectors/currentTimezone'
 import selectVenue from '../selectors/currentVenue'
@@ -19,7 +21,7 @@ import { navigationLink } from '../utils/geolocation'
 class OfferInfo extends Component {
   render() {
     const {
-      booking,
+      bookings,
       distance,
       offer,
       offerer,
@@ -33,11 +35,10 @@ class OfferInfo extends Component {
     const NOW = moment()
 
     const mediatedOccurences = get(recommendation, 'mediatedOccurences', [])
-    const whenBookedOccurence = booking && mediatedOccurences
-                                               .filter(o => booking.offerId === o.offer[0].id)[0]
-    const whenBooked = whenBookedOccurence && whenBookedOccurence.beginningDatetime
+    const bookedDates = bookings.map(b => get(b, 'offer.eventOccurence.beginningDatetime'))
+    const bookedOfferIds = bookings.map(b => b.offerId)
     const bookableOccurences = mediatedOccurences.filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW)
-                                                             && (!whenBookedOccurence || whenBookedOccurence.id !== o.id))
+                                                             && ! (o.id in bookedOfferIds))
 
     const infos = {
       image: thumbUrl,
@@ -45,18 +46,20 @@ class OfferInfo extends Component {
       what: get(source, 'description')
         ? ''
         : get(offer, 'eventOccurence.event.description'),
-      when: bookableOccurences
-               .map(o => o.beginningDatetime)
-               .sort()
-               .slice(0,7)
-               .concat(whenBooked ? [whenBooked] : [])
-               .sort(),
+      when: uniq(bookableOccurences
+                 .map(o => o.beginningDatetime)
+                 .sort()
+                 .slice(0,7)
+                 .concat(bookedDates)
+                 .sort()),
       where: {
         name: get(venue, 'name'),
         address: get(venue, 'address') + ',' + (get(venue, 'postalCode') || '')
                                        + ',' + (get(venue, 'city') || ''),
       },
     }
+
+    console.log("WHEN", infos.when)
 
     return (
       <div className="offer-info">
@@ -87,7 +90,7 @@ class OfferInfo extends Component {
                   (
                     <li key={index}>
                       <Capitalize>{tz && moment(occurence).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
-                      {occurence === whenBooked && ' (réservé)'}
+                      {bookedDates.indexOf(occurence)>-1 && ' (réservé)'}
                     </li>
                   )
               )}
@@ -119,14 +122,17 @@ class OfferInfo extends Component {
   }
 }
 
-export default connect(state => ({
-  booking: selectBooking(state),
-  distance: selectDistance(state),
-  offer: selectCurrentOffer(state),
-  offerer: selectCurrentOfferer(state),
-  source: selectCurrentSource(state),
-  thumbUrl: selectCurrentThumbUrl(state),
-  recommendation: selectCurrentRecommendation(state),
-  venue: selectVenue(state),
-  tz: selectTimezone(state),
-}))(OfferInfo)
+export default connect(function (state) {
+  const eventOrThingId = selectCurrentEventOrThingId(state)
+  return {
+      bookings: selectBookings(state, eventOrThingId),
+      distance: selectDistance(state),
+      offer: selectCurrentOffer(state),
+      offerer: selectCurrentOfferer(state),
+      source: selectCurrentSource(state),
+      thumbUrl: selectCurrentThumbUrl(state),
+      recommendation: selectCurrentRecommendation(state),
+      venue: selectVenue(state),
+      tz: selectTimezone(state),
+    }
+})(OfferInfo)

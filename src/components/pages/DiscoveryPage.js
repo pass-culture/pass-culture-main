@@ -7,24 +7,26 @@ import Deck from '../Deck'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
 import { requestData } from '../../reducers/data'
+import selectCurrentEventOrThingId from '../../selectors/currentEventOrThingId'
 import selectCurrentRecommendation from '../../selectors/currentRecommendation'
+import { recommendationNormalizer } from '../../utils/normalizers'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
   ensureRecommendations(props) {
-    const { currentRecommendation, occasionId, mediationId, requestData } = props
+    const { currentRecommendation, eventOrThingId, mediationId, requestData } = props
     if (!currentRecommendation) {
         let query = ''
-        if (mediationId || occasionId) {
+        if (mediationId || eventOrThingId) {
           query += 'occasionType=event'
         }
         if (mediationId) {
           query += '&mediationId='+mediationId
         }
-        if (occasionId) {
-          query += '&occasionId='+occasionId
+        if (eventOrThingId) {
+          query += '&occasionId='+eventOrThingId
         }
-        requestData('PUT', 'recommendations?'+query)
+        requestData('PUT', 'recommendations?'+query, { normalizer: recommendationNormalizer })
     }
   }
 
@@ -79,7 +81,7 @@ export default compose(
   connect(state => ({
     backButton: state.router.location.search.indexOf('to=verso') > -1,
     currentRecommendation: selectCurrentRecommendation(state),
-    occasionId: state.router.location.hash && state.router.location.hash.substr(1),
+    eventOrThingId: selectCurrentEventOrThingId(state),
     recommendations: state.data.recommendations,
   }), { requestData })
 )(DiscoveryPage)

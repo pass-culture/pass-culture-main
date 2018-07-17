@@ -5,7 +5,7 @@ export const REMOVE_DATA_ERROR = 'REMOVE_DATA_ERROR'
 export const RESET_DATA = 'RESET_DATA'
 
 // INITIAL STATE
-const initialState = { referenceDate: null, isOptimist: false }
+const initialState = { bookings: [], referenceDate: null, isOptimist: false }
 
 // REDUCER
 const data = (state = initialState, action) => {

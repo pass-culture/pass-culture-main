@@ -7,7 +7,8 @@ import Price from './Price'
 import Booking from './Booking'
 import Finishable from './layout/Finishable'
 import Icon from './layout/Icon'
-import selectBooking from '../selectors/booking'
+import selectBookings from '../selectors/bookings'
+import selectCurrentEventOrThingId from '../selectors/currentEventOrThingId'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
@@ -54,7 +55,7 @@ class ControlBar extends Component {
 
   render() {
     const {
-      booking,
+      bookings,
       offer,
       offerer,
       recommendation
@@ -87,7 +88,7 @@ class ControlBar extends Component {
           </button>
         </li>
         <li>
-          {booking ? (
+          {bookings.length > 0 ? (
             <Link
               to="/reservations"
               className="button is-primary is-go is-medium"
@@ -117,13 +118,16 @@ class ControlBar extends Component {
 }
 
 export default connect(
-  state => ({
-    booking: selectBooking(state),
-    isFinished: selectIsFinished(state),
-    offer: selectCurrentOffer(state),
-    offerer: selectCurrentOfferer(state),
-    recommendation: selectCurrentRecommendation(state),
-  }),
+  function (state) {
+    const eventOrThingId = selectCurrentEventOrThingId(state)
+    return {
+      bookings: selectBookings(state, eventOrThingId),
+      isFinished: selectIsFinished(state),
+      offer: selectCurrentOffer(state),
+      offerer: selectCurrentOfferer(state),
+      recommendation: selectCurrentRecommendation(state),
+    }
+  },
   {
     requestData,
     showModal,
