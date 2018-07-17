@@ -6,7 +6,6 @@ export default createSelector(
   (bookings, eventOrThingId) => {
     return bookings.filter(function (booking) {
         const offer = booking.offer
-        console.log("offer", offer)
         if (offer.thingId) {
           return offer.thingId === eventOrThingId
         } else {

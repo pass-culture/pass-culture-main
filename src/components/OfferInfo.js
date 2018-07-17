@@ -59,8 +59,6 @@ class OfferInfo extends Component {
       },
     }
 
-    console.log("WHEN", infos.when)
-
     return (
       <div className="offer-info">
         {offerer && (
