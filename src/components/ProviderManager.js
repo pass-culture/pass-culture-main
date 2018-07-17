@@ -5,9 +5,10 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import FormField from './layout/FormField'
+import Field from './layout/Field'
+import Form from './layout/Form'
 import Icon from './layout/Icon'
-import SubmitButton from './layout/SubmitButton'
+import Submit from './layout/Submit'
 import VenueProviderItem from './VenueProviderItem'
 import { mergeForm } from '../reducers/form'
 import providerSelector from '../selectors/provider'
@@ -71,7 +72,7 @@ class ProviderManager extends Component {
     )
   }
 
-  handleSuccessData = () => {
+  handleSuccess = () => {
     const {
       history,
       match: { params: { offererId, venueId } }
@@ -116,10 +117,8 @@ class ProviderManager extends Component {
       withError
     } = this.state
 
-    const providerOptionsWithPlaceholder = optionify(providers, 'Source d\'importation')
-
     return (
-      <div className='section'>
+      <div className='provider-manager section'>
         <h2 className='pc-list-title'>
           IMPORTATIONS D'OFFRES
           <span className='is-pulled-right is-size-7 has-text-grey'>
@@ -139,52 +138,57 @@ class ProviderManager extends Component {
           {
             isNew && (
               <li>
-                {
-                  withError && (
-                    <p className={
-                      withError ? 'has-text-weight-bold has-text-danger' : ''
-                    }>
-                      Il faut un identifiant ou celui-ci existe déjà
-                    </p>
-                  )
-                }
-
-                <div className='picto'><Icon svg='picto-db-default' /></div>
-                <FormField
-                  collectionName="venueProviders"
-                  defaultValue={id}
-                  name="providerId"
-                  options={providerOptionsWithPlaceholder}
-                  required
-                  type="select"
-                  size="small"
-                />
-                {
-                  provider && identifierRegexp && (
-                    <FormField
-                      collectionName="venueProviders"
-                      name="venueIdAtOfferProvider"
-                      placeholder="identifiant"
+                <Form
+                  action='/venueProviders'
+                  className='level'
+                  name='venueProvider'
+                  handleSuccess={this.handleSuccess}
+                >
+                  {
+                    withError && (
+                      <p className={
+                        withError ? 'has-text-weight-bold has-text-danger' : ''
+                      }>
+                        Il faut un identifiant ou celui-ci existe déjà
+                      </p>
+                    )
+                  }
+                  <div className='level-left'>
+                    <div className='field picto level-item'>
+                      <Icon svg='picto-db-default' />
+                    </div>
+                    <Field
+                      name='providerId'
+                      options={providers}
+                      optionValue='id'
+                      placeholder="Source d\'importation"
+                      required
                       size="small"
-                      title={identifierDescription}
+                      type="select"
                     />
-                  )
-                }
-                {
-                  provider && (
-                    <SubmitButton
-                      className="button is-secondary"
-                      getBody={form => get(form, `venueProvidersById.${NEW}`)}
-                      getIsDisabled={form =>
-                        !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-                      handleSuccess={this.handleSuccessData}
-                      method="POST"
-                      path="venueProviders"
-                      storeKey="venueProviders"
-                      text="Importer"
-                    />
-                  )
-                }
+                    {
+                      provider && identifierRegexp && (
+                        <Field
+                          name="venueIdAtOfferProvider"
+                          placeholder="identifiant"
+                          required
+                          size="small"
+                          title={identifierDescription}
+                        />
+                      )
+                    }
+                  </div>
+                  {
+                    provider && (
+                      <div className='field level-item level-right'>
+                        <Submit className="button is-secondary">
+                          Importer
+                        </Submit>
+                      </div>
+                    )
+                  }
+                  <div />
+                </Form>
               </li>
             )
           }

@@ -100,15 +100,26 @@ class Field extends Component {
     if (prevProps.value !== this.props.value) {
       this.onChange(this.props.value)
     }
+
+    if (this.props.type === 'select') {
+      const { options, optionValue } = this.props
+      if (
+        options &&
+        options.length === 1 &&
+        prevProps.options !== options
+      ) {
+        this.onChange(options[0][optionValue])
+      }
+    }
   }
 
   onChange = (value) => {
     const { displayValue, storeValue } = this.state
 
-    // console.log('value', value, 'this.state.value', this.state.value)
     if (this.state.value !== '' && value === this.props.value) {
       return
     }
+
     this.setState({
       value: displayValue(value),
     }, () => {
@@ -161,15 +172,21 @@ class Field extends Component {
 
     switch(type) {
       case 'date':
+        const {
+          dateFormat,
+          filterDate,
+          highlightedDates,
+          minDate
+        } = this.props
         return readOnly ? (
-          <span> {value && value.format(this.props.dateFormat)} </span>
+          <span> {value && value.format(dateFormat)} </span>
           ) : (
           <div className={`input is-${size} date-picker`}>
             <DatePicker
               className='date'
-              filterDate={this.props.filterDate}
-              highlightDates={this.props.highlightedDates || []}
-              minDate={this.props.minDate || moment()}
+              filterDate={filterDate}
+              highlightDates={highlightedDates || []}
+              minDate={minDate || moment()}
               onChange={this.onChange}
               selected={value ? moment(value) : null}
             />
@@ -182,14 +199,15 @@ class Field extends Component {
         )
 
       case 'password':
+        const { isPasswordHidden } = this.state
         if (this.props.noPasswordToggler) break;
         return <div className="field has-addons password">
           <div className="control is-expanded">
-            <input {...commonProps} className={`input is-${size}`} type={this.state.isPasswordHidden ? 'password' : 'text'} />
+            <input {...commonProps} className={`input is-${size}`} type={isPasswordHidden ? 'password' : 'text'} />
           </div>
           <div className="control">
             <button className="button is-rounded is-medium" onClick={this.toggleHidden}>
-              <Icon svg={this.state.isPasswordHidden ? 'ico-eye close' : 'ico-eye'} />
+              <Icon svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'} />
               &nbsp;
             </button>
           </div>
@@ -204,8 +222,21 @@ class Field extends Component {
         </div>
 
       case 'select':
-        const actualReadOnly = readOnly || this.props.options.length === 1
-        const actualOptions = optionify(this.props.options.map(o => ({label: get(o, this.props.optionLabel), value: get(o, this.props.optionValue)})), placeholder)
+        const {
+          optionLabel,
+          options,
+          optionValue
+        } = this.props
+        const actualReadOnly = readOnly || options.length === 1
+        const actualOptions = optionify(
+          options.map(o =>
+            ({
+              label: get(o, optionLabel),
+              value: get(o, optionValue)
+            })
+          ),
+          placeholder
+        )
         return <div className={`select is-${size} ${classnames({readonly: actualReadOnly})}`}>
           <select
             {...commonProps}

@@ -126,7 +126,7 @@ class Form extends Component {
           getTitle: () => {
             const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
             if (missingFields.length === 0) return
-            return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => (f.props.label || f.props.title).toLowerCase()).join(', ')}`
+            return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => (f.props.label || f.props.title || '').toLowerCase()).join(', ')}`
           }
         }, this.props.TagName !== 'form' ? {
           // If not a real form, need to mimic the submit behavior
@@ -141,6 +141,7 @@ class Form extends Component {
   render() {
     const {
       action,
+      className,
       name,
       TagName,
     } = this.props
@@ -148,7 +149,13 @@ class Form extends Component {
       method
     } = this.state
     return (
-      <TagName id={name} method={method} action={action} onSubmit={this.onSubmit}>
+      <TagName
+        action={action}
+        className={className}
+        id={name}
+        method={method}
+        onSubmit={this.onSubmit}
+      >
         {this.childrenWithProps()}
       </TagName>
     )
