@@ -1,9 +1,9 @@
+""" user offerers """
 from flask import current_app as app, jsonify, request
 
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer
 
-UserOfferer = UserOfferer
 
 @app.route('/userOfferers', methods=['POST'])
 def create_user_offerer():

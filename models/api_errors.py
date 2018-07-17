@@ -1,3 +1,4 @@
+""" api errors """
 # coding=utf-8
 
 

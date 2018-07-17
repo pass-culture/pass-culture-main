@@ -3,14 +3,10 @@ import re
 from datetime import datetime
 from pathlib import Path, PurePath
 from zipfile import ZipFile
-
 from flask import current_app as app
 
 from models.local_provider import LocalProvider
 from models.thing import Thing
-
-LocalProviderEventType = LocalProviderEventType
-Thing = Thing
 
 
 DATE_REGEXP = re.compile('livres_tl(\d+).zip')

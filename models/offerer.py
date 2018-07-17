@@ -1,9 +1,16 @@
 """ offerer """
 from datetime import datetime
-from flask_sqlalchemy import Model
-from sqlalchemy import BigInteger, Column, DateTime, String
+from sqlalchemy import BigInteger,\
+                       Column,\
+                       DateTime,\
+                       Index,\
+                       String,\
+                       TEXT
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import cast
+from sqlalchemy.sql.functions import coalesce
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -12,6 +19,7 @@ from models.occasion import Occasion
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.user_offerer import UserOfferer
+from utils.search import create_tsvector
 
 
 class Offerer(PcObject,
@@ -57,3 +65,17 @@ class Offerer(PcObject,
         return Occasion.query\
                   .filter(Occasion.venueId.in_(list(map(lambda v: v.id,
                                                                   self.managedVenues)))).count()
+
+Offerer.__ts_vector__ = create_tsvector(
+    cast(coalesce(Offerer.name, ''), TEXT),
+    cast(coalesce(Offerer.address, ''), TEXT),
+    cast(coalesce(Offerer.siren, ''), TEXT)
+)
+
+Offerer.__table_args__ = (
+    Index(
+        'idx_offerer_fts',
+        Offerer.__ts_vector__,
+        postgresql_using='gin'
+    ),
+)

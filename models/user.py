@@ -1,11 +1,11 @@
 """User model"""
 from datetime import datetime
-from flask_sqlalchemy import Model
 from sqlalchemy.sql import expression
 from sqlalchemy.orm import relationship
 from sqlalchemy import Binary, Boolean, Column, DateTime, String
 import bcrypt
 
+from models.db import Model
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject

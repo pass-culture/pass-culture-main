@@ -1,5 +1,4 @@
 """ event occurence """
-from flask_sqlalchemy import Model
 from sqlalchemy import Binary,\
                        BigInteger,\
                        Column,\
@@ -8,6 +7,7 @@ from sqlalchemy import Binary,\
                        ForeignKey
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.event import EventType
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject

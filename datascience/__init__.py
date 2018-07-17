@@ -1,29 +1,19 @@
-from models.pc_object import PcObject
-from models.event_occurence import EventOccurence
-from models.mediation import Mediation
-from models.offer import Offer
-from models.pc_object import PcObject
-from models.recommendation import Recommendation
-from models.thing import Thing
-
 """ recommendations """
 from datetime import datetime, timedelta
 from flask import current_app as app
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
+from models.event_occurence import EventOccurence
+from models.mediation import Mediation
+from models.offer import Offer
+from models.pc_object import PcObject
+from models.recommendation import Recommendation
+from models.thing import Thing
 from utils.attr_dict import AttrDict
-
-Event = Event
-EventOccurence = EventOccurence
-Mediation = Mediation
-Offer = Offer
-Recommendation = Recommendation
-Thing = Thing
 
 app.datascience = AttrDict()
 from datascience.occasions import get_occasions
-
 
 def create_recommendation(user, occasion, mediation=None):
 

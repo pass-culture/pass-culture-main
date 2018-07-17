@@ -29,13 +29,6 @@ def file_date(filename):
                          + filename)
     return int(match.group(1))
 
-
-BookFormat = BookFormat
-Thing = Thing
-ThingType = ThingType
-LocalProviderEventType = LocalProviderEventType
-
-
 class TiteLiveThings(LocalProvider):
 
     help = ""

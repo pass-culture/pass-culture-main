@@ -1,5 +1,4 @@
 from pprint import pformat
-
 from flask import current_app as app, request
 
 from utils.mailing import send_dev_email

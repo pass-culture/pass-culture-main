@@ -1,6 +1,5 @@
 """ thing model """
 import enum
-from flask_sqlalchemy import Model
 from sqlalchemy import BigInteger,\
                        CheckConstraint,\
                        Column,\
@@ -8,12 +7,16 @@ from sqlalchemy import BigInteger,\
                        String,\
                        Text
 from sqlalchemy.dialects.postgresql import ARRAY, TEXT
+from sqlalchemy.sql.expression import cast
+from sqlalchemy.sql.functions import coalesce
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from utils.search import create_tsvector
 
 
 class BookFormat(enum.Enum):
@@ -61,3 +64,17 @@ class Thing(PcObject,
     mediaUrls = Column(ARRAY(String(120)),
                           nullable=False,
                           default=[])
+
+Thing.__ts_vector__ = create_tsvector(
+    cast(coalesce(Thing.name, ''), TEXT),
+    coalesce(Thing.extraData['author'].cast(TEXT), ''),
+    coalesce(Thing.extraData['byArtist'].cast(TEXT), ''),
+)
+
+Thing.__table_args__ = (
+    Index(
+        'idx_thing_fts',
+        Thing.__ts_vector__,
+        postgresql_using='gin'
+    ),
+)

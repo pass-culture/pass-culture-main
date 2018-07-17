@@ -1,12 +1,11 @@
-from models.offerer import Offerer
-from models.pc_object import PcObject
-from models.user import User
-from models.user_offerer import UserOfferer
-
 """ offerers """
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user import User
+from models.user_offerer import UserOfferer
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email
@@ -15,11 +14,6 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-
-Offerer = Offerer
-RightsType = RightsType
-UserOfferer = UserOfferer
-
 
 def check_offerer_user(query):
     return query.filter(

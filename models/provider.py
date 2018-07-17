@@ -1,5 +1,4 @@
 """ provider """
-from flask_sqlalchemy import Model
 from sqlalchemy import BigInteger,\
                        CheckConstraint,\
                        Column,\
@@ -8,6 +7,7 @@ from sqlalchemy import BigInteger,\
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import CHAR
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.venue_provider import VenueProvider

@@ -1,19 +1,16 @@
-from models.event import Event
-from models.occasion import Occasion
-from models.pc_object import PcObject
+
 
 """events"""
 from flask import current_app as app, jsonify, request
 
+from models.event import Event
+from models.occasion import Occasion
+from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data, \
     load_or_404, \
     login_or_api_key_required
-
-Event = Event
-Occasion = Occasion
-
 
 @app.route('/events/<id>', methods=['GET'])
 @login_or_api_key_required

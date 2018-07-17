@@ -1,12 +1,3 @@
-from models.event import Event
-from models.event_occurence import EventOccurence
-from models.mediation import Mediation
-from models.offer import Offer
-from models.offerer import Offerer
-from models.pc_object import PcObject
-from models.thing import Thing
-from models.venue import Venue
-
 """ offers """
 from pprint import pformat
 
@@ -15,6 +6,14 @@ from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
 from models.api_errors import ApiErrors
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.mediation import Mediation
+from models.offer import Offer
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.thing import Thing
+from models.venue import Venue
 from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
@@ -26,14 +25,6 @@ from utils.rest import delete, \
     load_or_404, \
     login_or_api_key_required
 from utils.search import get_ts_queries, LANGUAGE
-
-Event = Event
-EventOccurence = EventOccurence
-Mediation = Mediation
-Offer = Offer
-Offerer = Offerer
-Thing = Thing
-Venue = Venue
 
 search_models = [
     #Order is important

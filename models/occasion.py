@@ -1,9 +1,9 @@
 """ occasion model """
 from datetime import datetime
-from flask_sqlalchemy import Model
 from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 

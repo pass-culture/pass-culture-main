@@ -1,13 +1,11 @@
-from models.pc_object import PcObject
-from models.provider import Provider
-from models.venue_provider import VenueProvider
-
 """ venue providers """
 import subprocess
-
 from flask import current_app as app, jsonify, request
 
 from models.api_errors import ApiErrors
+from models.pc_object import PcObject
+from models.provider import Provider
+from models.venue_provider import VenueProvider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
@@ -16,8 +14,6 @@ from utils.rest import delete, expect_json_data, \
     load_or_404, \
     login_or_api_key_required
 
-VenueProvider = VenueProvider
-Provider = Provider
 
 @app.route('/venueProviders', methods=['GET'])
 @login_or_api_key_required

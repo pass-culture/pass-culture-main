@@ -1,18 +1,13 @@
-from models.pc_object import PcObject
-from models.venue import Venue
-
 """ venues """
 from flask import current_app as app, jsonify, request
 
+from models.pc_object import PcObject
+from models.venue import Venue
 from utils.includes import VENUE_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404, \
     handle_rest_get_list
-
-RightsType = RightsType
-Venue = Venue
-
 
 @app.route('/venues', methods=['GET'])
 def list_venues():

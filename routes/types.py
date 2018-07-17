@@ -1,8 +1,8 @@
 """types"""
 from flask import current_app as app, jsonify
 
-EventType = EventType
-ThingType = ThingType
+from models.event import EventType
+from models.thing import ThingType
 
 @app.route('/types', methods=['GET'])
 def list_types():

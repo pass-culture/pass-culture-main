@@ -3,7 +3,6 @@ import re
 from datetime import datetime
 from os import path
 from pathlib import Path
-
 from flask import current_app as app
 from pandas import read_csv
 
@@ -26,12 +25,6 @@ def read_date(date):
 def is_filled(info):
     info = str(info)
     return info != 'nan' and info.replace(' ', '') != ''
-
-
-Mediation = Mediation
-Offer = Offer
-Thing = Thing
-ThingType = ThingType
 
 
 class SpreadsheetExpThingOffers(LocalProvider):

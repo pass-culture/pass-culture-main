@@ -1,12 +1,11 @@
+""" event_occurences """
+from flask import current_app as app, jsonify, request
+
 from models.event import Event
 from models.event_occurence import EventOccurence
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.venue import Venue
-
-""" event_occurences """
-from flask import current_app as app, jsonify, request
-
 from utils.includes import EVENT_OCCURENCE_INCLUDES
 from utils.rest import delete, \
     ensure_current_user_has_rights, \
@@ -15,12 +14,6 @@ from utils.rest import delete, \
     load_or_404, \
     login_or_api_key_required, \
     handle_rest_get_list
-
-Event = Event
-EventOccurence = EventOccurence
-RightsType = RightsType
-Offer = Offer
-Venue = Venue
 
 @app.route('/eventOccurences', methods=['GET'])
 @login_or_api_key_required

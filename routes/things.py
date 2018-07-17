@@ -1,19 +1,15 @@
-from models.occasion import Occasion
-from models.pc_object import PcObject
-from models.thing import Thing
-
 """ things """
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
+from models.occasion import Occasion
+from models.pc_object import PcObject
+from models.thing import Thing
 from utils.includes import THING_INCLUDES
 from utils.rest import expect_json_data, \
     load_or_404, \
     login_or_api_key_required, \
     handle_rest_get_list
-
-Occasion = Occasion
-Thing = Thing
 
 
 @app.route('/things/<ofType>:<identifier>', methods=['GET'])

@@ -4,10 +4,18 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pprint import pprint
 from psycopg2.extras import DateTimeRange
-from sqlalchemy import CHAR, BigInteger, Column, Enum, Float, Integer, String
+from sqlalchemy import CHAR,\
+                       BigInteger,\
+                       Column,\
+                       Enum,\
+                       Float,\
+                       Integer,\
+                       Numeric,\
+                       String
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
+from models.db import db
 from utils.human_ids import dehumanize, humanize
 
 
@@ -35,7 +43,6 @@ class PcObject():
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
-    db = None
 
     def __init__(self, **options):
         if options and 'from_dict' in options and options['from_dict']:
@@ -190,7 +197,7 @@ class PcObject():
                         raise TypeError('Invalid value for %s: %r' % (key, value),
                                         'integer',
                                         key)
-                elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type, db.Numeric)):
+                elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type,Numeric)):
                     try:
                         setattr(self, key, Decimal(value))
                     except InvalidOperation as io:

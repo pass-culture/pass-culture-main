@@ -1,8 +1,8 @@
 """ venue provider """
-from flask_sqlalchemy import Model
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin

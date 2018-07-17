@@ -2,7 +2,6 @@
 from datetime import datetime
 import os
 from pathlib import Path
-from flask_sqlalchemy import Model
 from sqlalchemy import Column,\
                        BigInteger,\
                        CheckConstraint,\
@@ -12,6 +11,7 @@ from sqlalchemy import Column,\
                        Text
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin

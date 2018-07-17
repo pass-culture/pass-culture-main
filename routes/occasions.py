@@ -1,3 +1,7 @@
+"""occasions"""
+from flask import current_app as app, jsonify, request
+from flask_login import current_user
+
 from models.event import Event
 from models.event_occurence import EventOccurence
 from models.occasion import Occasion
@@ -7,11 +11,6 @@ from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import UserOfferer
 from models.venue import Venue
-
-"""occasions"""
-from flask import current_app as app, jsonify, request
-from flask_login import current_user
-
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES
 from utils.rest import delete, \
@@ -21,18 +20,6 @@ from utils.rest import delete, \
     load_or_404, \
     login_or_api_key_required
 from utils.search import get_search_filter
-
-Event = Event
-EventOccurence = EventOccurence
-Occasion = Occasion
-Offer = Offer
-Offerer = Offerer
-RightsType = RightsType
-Thing = Thing
-UserOfferer = UserOfferer
-Venue = Venue
-
-
 
 def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = EventOccurence()

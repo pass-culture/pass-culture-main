@@ -1,16 +1,13 @@
-from models.mediation import Mediation
-from models.pc_object import PcObject
-
 """ mediations """
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from models.api_errors import ApiErrors
+from models.mediation import Mediation
+from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.rest import delete, ensure_current_user_has_rights, load_or_404
 
-Mediation = Mediation
-RightsType = RightsType
 
 ALLOWED_EXTENSIONS = set(['jpg', 'png', 'jpeg', 'gif'])
 

@@ -1,9 +1,9 @@
 """ user offerer """
 import enum
-from flask_sqlalchemy import Model
 from sqlalchemy import BigInteger, Column, Enum, ForeignKey
 from sqlalchemy.orm import backref, relationship
 
+from models.db import Model
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 

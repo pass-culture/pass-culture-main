@@ -1,3 +1,11 @@
+""" recommendations offers """
+from datetime import datetime
+from flask import current_app as app
+from itertools import cycle, islice
+from random import randint
+from sqlalchemy import func
+from sqlalchemy.orm import aliased
+
 from models.booking import Booking
 from models.event import Event
 from models.event_occurence import EventOccurence
@@ -8,27 +16,7 @@ from models.recommendation import Recommendation
 from models.thing import Thing
 from models.venue import Venue
 
-""" recommendations offers """
-from datetime import datetime
-from flask import current_app as app
-from itertools import cycle, islice
-from random import randint
-from sqlalchemy import func
-from sqlalchemy.orm import aliased
-
-Booking = Booking
-Event = Event
-EventOccurence = EventOccurence
-Mediation = Mediation
-Offer = Offer
-Offerer = Offerer
-Recommendation = Recommendation
-Thing = Thing
-Venue = Venue
-
 log = app.log
-
-
 
 # --- SCORING ---
 

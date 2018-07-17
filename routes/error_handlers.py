@@ -1,6 +1,5 @@
 import re
 import traceback
-
 import simplejson as json
 from flask import current_app as app, jsonify
 from sqlalchemy.exc import IntegrityError

@@ -1,7 +1,7 @@
-from models.provider import Provider
-
 """providers"""
 from flask import current_app as app, jsonify
+
+from models.provider import Provider
 
 @app.route('/providers', methods=['GET'])
 def list_providers():

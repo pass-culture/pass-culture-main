@@ -1,10 +1,10 @@
+""" OA events """
 import email.utils as eut
 import json
 import math
 import os
 from datetime import datetime
 from pathlib import Path
-
 import requests
 from flask import current_app as app
 
@@ -93,12 +93,12 @@ class OpenAgendaEvents(LocalProvider):
         if self.venueLocationUid is not None and\
            self.oa_event['location']['uid'] != self.venueLocationUid:
             return self.__next__()
-        
+
         p_info_event = ProvidableInfo()
         p_info_event.type = Event
         p_info_event.idAtProviders = str(self.oa_event['uid'])
         p_info_event.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
-        
+
         p_info_occasion = ProvidableInfo()
         p_info_occasion.type = Occasion
         p_info_occasion.idAtProviders = str(self.oa_event['uid'])

@@ -1,4 +1,5 @@
 from flask import current_app as app
+import logging
 
 from utils.attr_dict import AttrDict
 from utils.config import LOG_LEVEL

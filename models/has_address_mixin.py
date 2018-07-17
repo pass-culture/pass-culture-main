@@ -1,3 +1,4 @@
+""" has address mixin """
 import re
 from sqlalchemy import Column, String
 

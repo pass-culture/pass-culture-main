@@ -1,15 +1,24 @@
 """ venue """
-from flask_sqlalchemy import Model
 from sqlalchemy.event import listens_for
-from sqlalchemy import BigInteger, Column, ForeignKey, Numeric, String
+from sqlalchemy import BigInteger,\
+                       Column,\
+                       ForeignKey,\
+                       Index,\
+                       Numeric,\
+                       String,\
+                       TEXT
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import cast
+from sqlalchemy.sql.functions import coalesce
 
+from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.occasion import Occasion
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from utils.search import create_tsvector
 
 class Venue(PcObject,
             HasThumbMixin,
@@ -80,3 +89,18 @@ def before_insert(mapper, connect, self):
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
     self.store_department_code()
+
+Venue.__ts_vector__ = create_tsvector(
+    cast(coalesce(Venue.name, ''), TEXT),
+    cast(coalesce(Venue.address, ''), TEXT),
+    cast(coalesce(Venue.siret, ''), TEXT)
+)
+
+
+Venue.__table_args__ = (
+    Index(
+        'idx_venue_fts',
+        Venue.__ts_vector__,
+        postgresql_using='gin'
+    ),
+)

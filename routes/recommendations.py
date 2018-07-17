@@ -1,10 +1,3 @@
-from models.event import Event
-from models.mediation import Mediation
-from models.offer import Offer
-from models.pc_object import PcObject
-from models.recommendation import Recommendation
-from models.thing import Thing
-
 """ user mediations routes """
 from datetime import datetime
 from random import shuffle
@@ -19,13 +12,18 @@ from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES,\
                            RECOMMENDATION_INCLUDES,\
                            RECOMMENDATION_OFFER_INCLUDES
+from models.event import Event
+from models.mediation import Mediation
+from models.offer import Offer
+from models.pc_object import PcObject
+from models.recommendation import Recommendation
+from models.thing import Thing
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, \
     BLOB_UNREAD_NUMBER
 from utils.rest import expect_json_data
 
 
 log = app.log
-
 
 def pick_random_occasions_given_blob_size(recos, limit=BLOB_SIZE):
     return recos.order_by(func.random()) \

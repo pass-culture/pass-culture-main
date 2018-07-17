@@ -1,6 +1,5 @@
 """ recommendation model """
 from datetime import datetime
-from flask_sqlalchemy import Model
 from sqlalchemy.sql import expression
 from sqlalchemy import BigInteger,\
                        Boolean,\
@@ -11,6 +10,7 @@ from sqlalchemy import BigInteger,\
                        String
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.pc_object import PcObject
 
 

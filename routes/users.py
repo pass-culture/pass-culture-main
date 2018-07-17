@@ -1,18 +1,16 @@
-from models.offerer import Offerer
-from models.pc_object import PcObject
-from models.user import User
-
 """users routes"""
 from os import path
 import os, json
 from pathlib import Path
-
 import gspread
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 from oauth2client.service_account import ServiceAccountCredentials
 
 from models.api_errors import ApiErrors
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user import User
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email, \
     subscribe_newsletter
@@ -23,10 +21,6 @@ from utils.rest import expect_json_data, \
 def make_user_query():
     query = User.query
     return query
-
-Offerer = Offerer
-User = User
-
 
 @app.route("/users/current", methods=["GET"])
 @login_required

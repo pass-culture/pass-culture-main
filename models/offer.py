@@ -1,16 +1,18 @@
 """ offer """
 from datetime import datetime, timedelta
-from flask_sqlalchemy import Model
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import BigInteger,\
                        CheckConstraint,\
                        Column,\
                        DateTime,\
+                       DDL,\
+                       event,\
                        ForeignKey,\
                        Integer,\
-                       Numeric
+                       Numeric    
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.event_occurence import EventOccurence
 from models.pc_object import PcObject
@@ -98,7 +100,10 @@ class Offer(PcObject,
     def object(self):
         return self.thing or self.eventOccurence
 
+<<<<<<< 1c3a6546a0e93cc08348f8f5ea3331e956f6e3e3
 
+=======
+>>>>>>> fixed import of models in routes
 @event.listens_for(Offer, 'before_insert')
 def page_defaults(mapper, configuration, target):
     # `bookingLimitDatetime` defaults to midnight before `beginningDatetime`
@@ -124,6 +129,7 @@ trig_ddl = DDL("""
         RAISE EXCEPTION 'available_too_low'
               USING HINT = 'offer.available cannot be lower than number of bookings';
       END IF;
+<<<<<<< 1c3a6546a0e93cc08348f8f5ea3331e956f6e3e3
       
       IF NOT NEW."bookingLimitDatetime" IS NULL AND
       (NEW."bookingLimitDatetime" > (SELECT "beginningDatetime" FROM event_occurence WHERE id=NEW."eventOccurenceId")) THEN
@@ -132,6 +138,16 @@ trig_ddl = DDL("""
       USING HINT = 'offer.bookingLimitDatetime after event_occurence.beginningDatetime';
       END IF;      
             
+=======
+
+      IF NOT NEW."bookingLimitDatetime" IS NULL AND
+      (NEW."bookingLimitDatetime" > (SELECT "beginningDatetime" FROM event_occurence WHERE id=NEW."eventOccurenceId")) THEN
+
+      RAISE EXCEPTION 'bookingLimitDatetime_too_late'
+      USING HINT = 'offer.bookingLimitDatetime after event_occurence.beginningDatetime';
+      END IF;
+
+>>>>>>> fixed import of models in routes
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;

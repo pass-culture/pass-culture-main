@@ -1,21 +1,25 @@
 """ model event """
 from enum import Enum
-from flask_sqlalchemy import Model
 from sqlalchemy import Binary,\
                        BigInteger,\
                        Boolean,\
                        Column,\
+                       Index,\
                        Integer,\
                        String,\
-                       Text
+                       Text,\
+                       TEXT
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.sql.expression import false
+from sqlalchemy.sql.expression import cast, false
+from sqlalchemy.sql.functions import coalesce
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from utils.search import create_tsvector
 
 class Accessibility(Enum):
     HEARING_IMPAIRED = 1
@@ -96,3 +100,15 @@ class Event(PcObject,
                         server_default=false(),
                         default=False,
                         nullable=False)
+
+Event.__ts_vector__ = create_tsvector(
+    cast(coalesce(Event.name, ''), TEXT)
+)
+
+Event.__table_args__ = (
+    Index(
+        'idx_event_fts',
+        Event.__ts_vector__,
+        postgresql_using='gin'
+    ),
+)

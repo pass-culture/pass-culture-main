@@ -1,16 +1,16 @@
 """ booking model """
 from datetime import datetime
-from flask_sqlalchemy import Model
 from sqlalchemy import BigInteger,\
-                      Column,\
-                      DateTime,\
-                      DDL,\
-                      event,\
-                      ForeignKey,\
-                      Integer,\
-                      String
+                       Column,\
+                       DateTime,\
+                       DDL,\
+                       event,\
+                       ForeignKey,\
+                       Integer,\
+                       String
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
@@ -63,3 +63,25 @@ class Booking(PcObject,
     user = relationship('User',
                         foreign_keys=[userId],
                         backref='userBookings')
+
+trig_ddl = DDL("""
+    CREATE OR REPLACE FUNCTION check_booking()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      IF EXISTS (SELECT "available" FROM offer WHERE id=NEW."offerId" AND "available" IS NOT NULL)
+         AND ((SELECT "available" FROM offer WHERE id=NEW."offerId")
+              < (SELECT COUNT(*) FROM booking WHERE "offerId"=NEW."offerId")) THEN
+          RAISE EXCEPTION 'Offer has too many bookings'
+                USING HINT = 'Number of bookings cannot exceed "offer.available"';
+      END IF;
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
+    ON booking
+    FOR EACH ROW EXECUTE PROCEDURE check_booking()
+    """)
+event.listen(Booking.__table__,
+             'after_create',
+             trig_ddl)
