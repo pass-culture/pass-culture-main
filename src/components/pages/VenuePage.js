@@ -186,7 +186,7 @@ class VenuePage extends Component {
 
         {!isNew && <ProviderManager venue={venue} />}
 
-        <Form name='venue' handleSuccess={this.handleSuccess} action={`/venues/${get(venue, 'id', '')}`} data={formData}>
+        <Form name='venue' handleSuccess={this.handleSuccess} action={`/venues/${get(venue, 'id', '')}`} data={formData} readOnly={isReadOnly}>
           <Field type='hidden' name='managingOffererId' />
           <div className='section'>
             <h2 className='pc-list-title'>
@@ -196,9 +196,9 @@ class VenuePage extends Component {
               </span>
             </h2>
             <div className='field-group'>
-              <Field name='siret' label='SIRET' readOnly={isReadOnly} required />
-              <Field name='name' label='Nom du lieu' readOnly={isReadOnly} required />
-              <Field type='email' name='bookingEmail' label='E-mail' readOnly={isReadOnly} required />
+              <Field name='siret' label='SIRET' required />
+              <Field name='name' label='Nom du lieu' required />
+              <Field type='email' name='bookingEmail' label='E-mail' required />
             </div>
           </div>
           <div className='section'>
@@ -206,9 +206,9 @@ class VenuePage extends Component {
               ADRESSE
             </h2>
             <div className='field-group'>
-              <Field type="geo" name='address' label='Numéro et voie' readOnly={isReadOnly} required isExpanded />
-              <Field name='postalCode' label='Code postal' readOnly={isReadOnly} required />
-              <Field name='city' label='Ville' readOnly={isReadOnly} required />
+              <Field type="geo" name='address' label='Numéro et voie' required isExpanded withMap />
+              <Field name='postalCode' label='Code postal' required />
+              <Field name='city' label='Ville' required />
             </div>
           </div>
         <hr />

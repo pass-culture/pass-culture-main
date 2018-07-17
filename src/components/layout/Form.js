@@ -77,8 +77,9 @@ class Form extends Component {
   }
 
   updateFormValue = (key, value) => {
+    const newEditedValues = typeof key === 'object' ? key : {[key]: value}
     this.setState({
-      editedValues: Object.assign(this.state.editedValues, {[key]: value})
+      editedValues: Object.assign(this.state.editedValues, newEditedValues)
     })
     // Using debounce makes it fail when fields depends on each other (venue and offerer in OccasionForm)
     // TODO: find a fix

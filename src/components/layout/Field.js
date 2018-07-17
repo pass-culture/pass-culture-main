@@ -2,12 +2,31 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types';
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { removeWhitespaces, formatSiren } from '../../utils/string'
 import Icon from './Icon'
-import { optionify } from '../../utils/form'
 import Textarea from 'react-autosize-textarea'
-import DatePicker from 'react-datepicker'
-import moment from 'moment'
+
+import CheckboxInput from './form/CheckboxInput'
+import DateInput from './form/DateInput'
+import GeoInput from './form/GeoInput'
+import HiddenInput from './form/HiddenInput'
+import NumberInput from './form/NumberInput'
+import PasswordInput from './form/PasswordInput'
+import SelectInput from './form/SelectInput'
+import SirenInput from './form/SirenInput'
+import TextareaInput from './form/TextareaInput'
+import TextInput from './form/TextInput'
+
+const inputByTypes = {
+  date: DateInput,
+  email: TextInput,
+  geo: GeoInput,
+  hidden: HiddenInput,
+  password: PasswordInput,
+  siren: SirenInput,
+  siret: SirenInput,
+  checkbox: CheckboxInput,
+  text: TextInput,
+}
 
 class Field extends Component {
 
@@ -15,17 +34,14 @@ class Field extends Component {
     super(props)
     this.state = {
       value: '',
-      isPasswordHidden: true,
     }
   }
 
   static defaultProps = {
-    onChange: () => {},
-    dateFormat: 'DD/MM/YYYY',
     layout: 'horizontal',
     size: 'normal',
-    optionValue: 'id',
-    optionLabel: 'name',
+    displayValue: v => (v || ''),
+    storeValue: v => v,
   }
 
   static propTypes = {
@@ -49,48 +65,22 @@ class Field extends Component {
       default:
         return 'text'
     }
-
   }
 
   static guessAutoComplete(name, type) {
     return type || name
   }
 
-  static guessFormatters(name, type) {
-    if (name === 'siren' || name === 'siret') {
-      return {
-        displayValue: formatSiren,
-        storeValue: removeWhitespaces,
-      }
-    }
-    if (type === 'checkbox') {
-      return {
-        displayValue: v => v,
-        storeValue: v => Boolean(v),
-      }
-    }
-    if (type === 'number') {
-      return {
-        displayValue: v => (v || ''),
-        storeValue: v => (parseInt(v, 10) || ''),
-      }
-    }
-    return {
-      displayValue: v => (v || ''),
-      storeValue: v => v,
-    }
-  }
-
-  static getDerivedStateFromProps({autoComplete, name, type, required, readonly}) {
+  static getDerivedStateFromProps({autoComplete, name, type, required, readonly, value}) {
     type = type || Field.guessInputType(name) // Would be cleaner to use `this` instead of `Field` but doesn't work :(
+
     return {
       required: required && !readonly,
       type,
       autoComplete: autoComplete || Field.guessAutoComplete(name, type),
-      ...Field.guessFormatters(name, type),
+      value,
     }
   }
-
 
   componentDidMount() {
     this.onChange(this.props.value)
@@ -100,25 +90,15 @@ class Field extends Component {
     if (prevProps.value !== this.props.value) {
       this.onChange(this.props.value)
     }
-
-    if (this.props.type === 'select') {
-      const { options, optionValue } = this.props
-      if (
-        options &&
-        options.length === 1 &&
-        prevProps.options !== options
-      ) {
-        this.onChange(options[0][optionValue])
-      }
-    }
   }
 
   onChange = (value) => {
-    if (this.state.value !== '' && value === this.props.value) {
-      return
-    }
+    console.log(value, this.props.value)
+    if (value === this.props.value) return
 
-    const { displayValue, storeValue } = this.state
+    const InputComponent = inputByTypes[this.state.type]
+    const displayValue = InputComponent.displayValue || this.props.displayValue
+    const storeValue = InputComponent.storeValue || this.props.storeValue
 
     this.setState({
       value: displayValue(value),
@@ -127,24 +107,7 @@ class Field extends Component {
     })
   }
 
-  toggleHidden = e => {
-    e.preventDefault()
-    this.setState({
-      isPasswordHidden: !this.state.isPasswordHidden
-    })
-  }
-
-  onInputChange = e => this.onChange(this.props.type === 'checkbox' ? e.target.checked : e.target.value)
-
   renderInput = () => {
-    const {
-      id,
-      name,
-      placeholder,
-      readOnly,
-      size,
-    } = this.props
-
     const {
       autoComplete,
       required,
@@ -152,114 +115,20 @@ class Field extends Component {
       value,
     } = this.state
 
-    const commonProps = {
-      'aria-describedby': `${id}-error`,
+    const inputProps = Object.assign({
+      'aria-describedby': `${this.props.id}-error`,
       autoComplete,
-      id,
-      name,
-      onChange: this.onInputChange,
-      placeholder,
-      readOnly,
+      onChange: this.onChange,
       required,
+      type,
       value,
-    }
+    }, this.props)
 
-    switch(type) {
-      case 'date':
-        const {
-          dateFormat,
-          filterDate,
-          highlightedDates,
-          minDate
-        } = this.props
-        return readOnly ? (
-          <span> {value && value.format(dateFormat)} </span>
-          ) : (
-          <div className={`input is-${size} date-picker`}>
-            <DatePicker
-              className='date'
-              filterDate={filterDate}
-              highlightDates={highlightedDates || []}
-              minDate={minDate || moment()}
-              onChange={this.onChange}
-              selected={value ? moment(value) : null}
-            />
-            <Icon
-              alt='Horaires'
-              className="input-icon"
-              svg="ico-calendar"
-            />
-          </div>
-        )
+    const InputComponent = inputByTypes[type]
 
-      case 'password':
-        const { isPasswordHidden } = this.state
-        if (this.props.noPasswordToggler) break;
-        return <div className="field has-addons password">
-          <div className="control is-expanded">
-            <input {...commonProps} className={`input is-${size}`} type={isPasswordHidden ? 'password' : 'text'} />
-          </div>
-          <div className="control">
-            <button className="button is-rounded is-medium" onClick={this.toggleHidden}>
-              <Icon svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'} />
-              &nbsp;
-            </button>
-          </div>
-        </div>
+    if (!InputComponent) console.error('Component not found', this.props.name, type)
 
-      case 'siren':
-      case 'siret':
-        if (typeof this.props.fetchedName !== 'string') break;
-        return <div className='with-display-name'>
-          <input {...commonProps} className={`input is-${size}`} />
-          <div className='display-name'>{this.props.fetchedName}</div>
-        </div>
-
-      case 'select':
-        const {
-          optionLabel,
-          options,
-          optionValue
-        } = this.props
-        const actualReadOnly = readOnly || options.length === 1
-        const actualOptions = optionify(
-          options.map(o =>
-            ({
-              label: get(o, optionLabel),
-              value: get(o, optionValue)
-            })
-          ),
-          placeholder
-        )
-        return <div className={`select is-${size} ${classnames({readonly: actualReadOnly})}`}>
-          <select
-            {...commonProps}
-            disabled={actualReadOnly} // readonly doesn't exist on select
-            >
-            { actualOptions.filter(o => o).map(({ label, value }, index) =>
-              <option key={index} value={value}>
-                {label}
-              </option>
-            )}
-          </select>
-        </div>
-
-      case 'checkbox':
-        return <label
-          className={`${classnames({required})}`}
-          htmlFor={id}
-        >
-          <input {...commonProps} type='checkbox' className='input'  />
-          {this.props.label}
-        </label>
-
-      case 'textarea':
-        return <Textarea {...commonProps} className={`textarea is-${size}`} />
-
-      default:
-        break;
-    }
-    return <input {...commonProps} type={type} className={`input is-${size}`} min={type === 'number' ? this.props.min || 0 : null} />
+    return <InputComponent {...inputProps} className={`input is-${this.props.size}`} />
   }
 
   renderLayout() {
