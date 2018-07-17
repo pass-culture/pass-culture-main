@@ -29,11 +29,11 @@ class ProvidableInfo(object):
         pass
 
 
-app.model.ProvidableInfo = ProvidableInfo
+ProvidableInfo = ProvidableInfo
 
 
-LocalProviderEvent = app.model.LocalProviderEvent
-LocalProviderEventType = app.model.LocalProviderEventType
+LocalProviderEvent = LocalProviderEvent
+LocalProviderEventType = LocalProviderEventType
 
 
 class LocalProvider(Iterator):
@@ -47,7 +47,7 @@ class LocalProvider(Iterator):
         self.updatedThumbs = 0
         self.checkedThumbs = 0
         self.erroredThumbs = 0
-        self.dbObject = app.model.Provider.getByClassName(self.__class__.__name__)
+        self.dbObject = Provider.getByClassName(self.__class__.__name__)
 
     @abstractproperty
     def canCreate():
@@ -139,7 +139,7 @@ class LocalProvider(Iterator):
                     else:
                         self.createdThumbs += 1
             if need_save:
-                app.model.PcObject.check_and_save(obj)
+                PcObject.check_and_save(obj)
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
@@ -178,8 +178,8 @@ class LocalProvider(Iterator):
         try:
             self.updateObject(obj)
             # FIXME: keep this until we make type an ENUM again
-            if isinstance(obj, app.model.Thing)\
-               or isinstance(obj, app.model.Event):
+            if isinstance(obj, Thing)\
+               or isinstance(obj, Event):
                 type_elems = str(obj.type).split('.')
                 if len(type_elems) == 2:
                     obj.type = type_elems[1]
@@ -189,7 +189,7 @@ class LocalProvider(Iterator):
             obj.lastProvider = self.dbObject
             if self.venueProvider is not None:
                 obj.venue = self.venueProvider.venue
-            app.model.PcObject.check_and_save(obj)
+            PcObject.check_and_save(obj)
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             print('ERROR during updateObject: '
@@ -230,7 +230,7 @@ class LocalProvider(Iterator):
         else:
             print("")
         for providable_infos in self:
-            if isinstance(providable_infos, app.model.ProvidableInfo)\
+            if isinstance(providable_infos, ProvidableInfo)\
                or providable_infos is None:
                 providable_infos = [providable_infos]
             self.providables = []
@@ -293,6 +293,6 @@ class LocalProvider(Iterator):
         self.logEvent(LocalProviderEventType.SyncEnd)
         if self.venueProvider is not None:
             self.venueProvider.lastSyncDate = datetime.utcnow()
-            app.model.PcObject.check_and_save(self.venueProvider)
+            PcObject.check_and_save(self.venueProvider)
 
-app.model.LocalProvider = LocalProvider
+LocalProvider = LocalProvider

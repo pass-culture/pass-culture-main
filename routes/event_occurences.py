@@ -2,19 +2,19 @@
 from flask import current_app as app, jsonify, request
 
 from utils.includes import EVENT_OCCURENCE_INCLUDES
-from utils.rest import delete,\
-                       ensure_current_user_has_rights,\
-                       ensure_can_be_updated,\
-                       expect_json_data,\
-                       load_or_404,\
-                       login_or_api_key_required,\
-                       handle_rest_get_list
+from utils.rest import delete, \
+    ensure_current_user_has_rights, \
+    ensure_can_be_updated, \
+    expect_json_data, \
+    load_or_404, \
+    login_or_api_key_required, \
+    handle_rest_get_list
 
-Event = app.model.Event
-EventOccurence = app.model.EventOccurence
-RightsType = app.model.RightsType
-Offer = app.model.Offer
-Venue = app.model.Venue
+Event = Event
+EventOccurence = EventOccurence
+RightsType = RightsType
+Offer = Offer
+Venue = Venue
 
 @app.route('/eventOccurences', methods=['GET'])
 @login_or_api_key_required
@@ -40,7 +40,7 @@ def create_event_occurence():
     ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
 
-    app.model.PcObject.check_and_save(eo)
+    PcObject.check_and_save(eo)
     return jsonify(eo._asdict(include=EVENT_OCCURENCE_INCLUDES)), 201
 
 
@@ -56,7 +56,7 @@ def edit_event_occurence(id):
     eo.populateFromDict(request.json)
     #TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
     #TODO: Interdire la modification d'évenements passés
-    app.model.PcObject.check_and_save(eo)
+    PcObject.check_and_save(eo)
 
     return jsonify(eo._asdict(include=EVENT_OCCURENCE_INCLUDES)), 200
 

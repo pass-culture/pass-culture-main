@@ -4,7 +4,7 @@ from models.api_errors import ApiErrors
 
 app.login_manager = LoginManager()
 app.login_manager.init_app(app)
-User = app.model.User
+User = User
 
 app.config['REMEMBER_COOKIE_DURATION'] = 365 * 24 * 3600
 

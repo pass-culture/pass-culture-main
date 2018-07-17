@@ -40,17 +40,17 @@ class EventType(Enum):
     FreeVisit         = "Visite libre : Exposition, Musée, Monument..."
 
 
-app.model.EventType = EventType
+EventType = EventType
 
 db = app.db
 
 
-class Event(app.model.PcObject,
+class Event(PcObject,
             db.Model,
-            app.model.DeactivableMixin,
-            app.model.ExtraDataMixin,
-            app.model.HasThumbMixin,
-            app.model.ProvidableMixin
+            DeactivableMixin,
+            ExtraDataMixin,
+            HasThumbMixin,
+            ProvidableMixin
             ):
     id = db.Column(db.BigInteger,
                    primary_key=True)
@@ -105,4 +105,4 @@ Event.__table_args__ = (
 )
 
 
-app.model.Event = Event
+Event = Event

@@ -5,15 +5,14 @@ from dateutil import tz
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 from pprint import pprint
-from flask import current_app as app, request
 from psycopg2.extras import DateTimeRange
+from sqlalchemy import CHAR
 from sqlalchemy.orm.collections import InstrumentedList
 
-
+from models.api_errors import ApiErrors
+from models.has_thumb_mixin import HasThumbMixin
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import inflect_engine
-
-db = app.db
 
 
 def serialize(value, **options):
@@ -40,6 +39,7 @@ class PcObject():
     id = db.Column(db.BigInteger,
                    primary_key=True,
                    autoincrement=True)
+    db = None
 
     def __init__(self, **options):
         if options and 'from_dict' in options and options['from_dict']:
@@ -67,7 +67,7 @@ class PcObject():
                 result[key] = list(value)
             else:
                 result[key] = serialize(value, **options)
-        if issubclass(self.__class__, app.model.HasThumbMixin) and self.thumbCount > 0:
+        if issubclass(self.__class__, HasThumbMixin) and self.thumbCount > 0:
             # If multiple thumbs, make this an array of paths, mapped over the index
             result['thumbPath'] = (
                 '/storage/thumbs/' +
@@ -141,7 +141,7 @@ class PcObject():
         pprint(vars(self))
 
     def errors(self):
-        errors = app.model.ApiErrors()
+        errors = ApiErrors()
         data = self.__class__.__table__.columns._data
         for key in data.keys():
             col = data[key]
@@ -156,11 +156,11 @@ class PcObject():
                 errors.addError(key, 'Cette information est obligatoire')
             if val is None:
                 continue
-            if (isinstance(col.type, db.String) or isinstance(col.type, db.CHAR))\
+            if (isinstance(col.type, db.String) or isinstance(col.type, CHAR))\
                and not isinstance(col.type, db.Enum)\
                and not isinstance(val, str):
                 errors.addError(key, 'doit être une chaîne de caractères')
-            if (isinstance(col.type, db.String) or isinstance(col.type, db.CHAR))\
+            if (isinstance(col.type, db.String) or isinstance(col.type, CHAR))\
                and isinstance(val, str)\
                and col.type.length\
                and len(val)>col.type.length:
@@ -218,10 +218,6 @@ class PcObject():
             raise ValueError('Objects to save need to be passed as arguments'
                              + ' to check_and_save')
         for obj in objects:
-            if isinstance(obj, app.model.ProvidableMixin)\
-                and request\
-                and hasattr(request, 'provider'):
-                obj.lastProvider = request.provider
             obj.abortIfErrors()
             db.session.add(obj)
         db.session.commit()
@@ -237,4 +233,3 @@ class PcObject():
         return '<%s #%s>' % (self.__class__.__name__,
                              id)
 
-app.model.PcObject = PcObject

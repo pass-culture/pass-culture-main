@@ -8,12 +8,12 @@ from sqlalchemy.sql.expression import func
 from utils.attr_dict import AttrDict
 import utils.logger 
 
-Event = app.model.Event
-EventOccurence = app.model.EventOccurence
-Mediation = app.model.Mediation
-Offer = app.model.Offer
-Recommendation = app.model.Recommendation
-Thing = app.model.Thing
+Event = Event
+EventOccurence = EventOccurence
+Mediation = Mediation
+Offer = Offer
+Recommendation = Recommendation
+Thing = Thing
 
 app.datascience = AttrDict()
 from datascience.occasions import get_occasions
@@ -63,7 +63,7 @@ def create_recommendation(user, occasion, mediation=None):
         recommendation.validUntilDate = min(recommendation.validUntilDate,
                                             last_offer.bookingLimitDatetime - timedelta(minutes=1))
 
-    app.model.PcObject.check_and_save(recommendation)
+    PcObject.check_and_save(recommendation)
     return recommendation
 
 
@@ -96,4 +96,4 @@ def insert_tuto_mediation(user, tuto_mediation):
     recommendation.user = user
     recommendation.mediation = tuto_mediation
     recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
-    app.model.PcObject.check_and_save(recommendation)
+    PcObject.check_and_save(recommendation)

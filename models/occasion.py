@@ -7,9 +7,9 @@ from sqlalchemy.ext.hybrid import hybrid_property
 db = app.db
 
 
-class Occasion(app.model.PcObject,
+class Occasion(PcObject,
                db.Model,
-               app.model.ProvidableMixin):
+               ProvidableMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -23,7 +23,7 @@ class Occasion(app.model.PcObject,
                         db.ForeignKey("thing.id"),
                         nullable=True)
 
-    thing = db.relationship(lambda: app.model.Thing,
+    thing = db.relationship(lambda: Thing,
                             foreign_keys=[thingId],
                             backref='occasions')
 
@@ -34,7 +34,7 @@ class Occasion(app.model.PcObject,
                                            name='check_occasion_has_thing_xor_event'),
                         nullable=True)
 
-    event = db.relationship(lambda: app.model.Event,
+    event = db.relationship(lambda: Event,
                             foreign_keys=[eventId],
                             backref='occasions')
 
@@ -43,8 +43,8 @@ class Occasion(app.model.PcObject,
                         nullable=True,
                         index=True)
 
-    venue = db.relationship(lambda: app.model.Venue,
+    venue = db.relationship(lambda: Venue,
                             foreign_keys=[venueId],
                             backref='occasions')
 
-app.model.Occasion = Occasion
+Occasion = Occasion

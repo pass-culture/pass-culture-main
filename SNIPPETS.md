@@ -5,7 +5,7 @@ pc python
 ```
 
 ```bash
-app.datascience.get_occasions_by_type(app.model.Event, occasion_id=381)
+app.datascience.get_occasions_by_type(Event, occasion_id=381)
 ```
 
 ```bash
@@ -19,5 +19,5 @@ departement_codes = ['75', '78', '91', '94', '93', '95']\
 ```
 
 ```bash
-app.datascience.get_occasions_by_type(app.model.Event, occasion_id=381, user=user, departement_codes=departement_codes)
+app.datascience.get_occasions_by_type(Event, occasion_id=381, user=user, departement_codes=departement_codes)
 ```

@@ -1,9 +1,10 @@
 """ user mediations routes """
 import csv
+import os
 from inspect import isclass
 from io import BytesIO, StringIO
+
 from flask import current_app as app, jsonify, request, send_file
-import os
 
 from models.api_errors import ApiErrors
 
@@ -26,7 +27,7 @@ def check_token():
 def is_exportable(model_name):
     return not model_name == 'PcObject'\
            and isclass(app.model[model_name])\
-           and issubclass(app.model[model_name], app.model.PcObject)
+           and issubclass(app.model[model_name], PcObject)
 
 
 @app.route('/export/', methods=['GET'])
@@ -35,7 +36,7 @@ def list_export_urls():
     return "\n".join([request.host_url+'export/'+model_name
                                       +'?token='+request.args.get('token')
                       for model_name in filter(is_exportable,
-                                               app.model.keys())])
+                                               keys())])
 
 
 def clean_dict_for_export(model_name, dct):

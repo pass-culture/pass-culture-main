@@ -12,7 +12,7 @@ def test_10_delete_venue_provider():
 
 
 def test_11_create_venue_provider(app):
-    openagenda_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
+    openagenda_provider = Provider.getByClassName('OpenAgendaEvents')
     vp_data = {'providerId': humanize(openagenda_provider.id),
                'venueId': 'A9',
                'venueIdAtOfferProvider': '86585975'}

@@ -18,12 +18,12 @@ def read_datetime(date):
     return datetime.strptime(date, DATETIME_FORMAT)
 
 
-Occasion = app.model.Occasion
-Offer = app.model.Offer
-Thing = app.model.Thing
+Occasion = Occasion
+Offer = Offer
+Thing = Thing
 
 
-class TiteLiveOffers(app.model.LocalProvider):
+class TiteLiveOffers(LocalProvider):
 
     help = ""
     identifierDescription = "Code Titelive de la librairie"
@@ -89,7 +89,7 @@ class TiteLiveOffers(app.model.LocalProvider):
             return None
         self.thing = thing
 
-        self.venue = app.model.Venue.query\
+        self.venue = Venue.query\
                                     .filter_by(idAtProviders=str(line[1]))\
                                     .one_or_none()
 
@@ -111,13 +111,13 @@ class TiteLiveOffers(app.model.LocalProvider):
 
         self.price = thing.extraData['prix_livre']
 
-        p_info_occasion = app.model.ProvidableInfo()
+        p_info_occasion = ProvidableInfo()
         p_info_occasion.type = Occasion
         self.idAtProviders = str(line[1])+':'+str(line[2])
         p_info_occasion.idAtProviders = self.idAtProviders
         p_info_occasion.dateModifiedAtProvider = self.dateModified
 
-        p_info_offer = app.model.ProvidableInfo()
+        p_info_offer = ProvidableInfo()
         p_info_offer.type = Offer
         self.idAtProviders = str(line[1])+':'+str(line[2])
         p_info_offer.idAtProviders = self.idAtProviders

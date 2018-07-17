@@ -14,11 +14,11 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 image_extension_regex = re.compile(r'jpg|JPG|png|PNG')
 thumb_target_keys = ['Titre', 'Artiste']
 
-Event = app.model.Event
-Offer = app.model.Offer
+Event = Event
+Offer = Offer
 
 
-class SpreadsheetOffers(app.model.LocalProvider):
+class SpreadsheetOffers(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Nom de la librairie"
     identifierRegexp = "^\w+$"
@@ -91,12 +91,12 @@ class SpreadsheetOffers(app.model.LocalProvider):
 
         self.index = self.index + 1
 
-        p_info_event = app.model.ProvidableInfo()
+        p_info_event = ProvidableInfo()
         p_info_event.type = Event
         p_info_event.idAtProviders = str(self.dateModified + '-' + str(self.index))
         p_info_event.dateModifiedAtProvider = read_date(self.dateModified)
 
-        p_info_offer = app.model.ProvidableInfo()
+        p_info_offer = ProvidableInfo()
         p_info_offer.type = Offer
         p_info_offer.idAtProviders = str(self.dateModified + '-' + str(self.index))
         p_info_offer.dateModifiedAtProvider = read_date(self.dateModified)

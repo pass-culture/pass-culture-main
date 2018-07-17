@@ -7,10 +7,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 db = app.db
 
 
-class Offer(app.model.PcObject,
+class Offer(PcObject,
             db.Model,
-            app.model.DeactivableMixin,
-            app.model.ProvidableMixin):
+            DeactivableMixin,
+            ProvidableMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -29,7 +29,7 @@ class Offer(app.model.PcObject,
                                  index=True,
                                  nullable=True)
 
-    eventOccurence = db.relationship(lambda: app.model.EventOccurence,
+    eventOccurence = db.relationship(lambda: EventOccurence,
                                      foreign_keys=[eventOccurenceId],
                                      backref='offers')
 
@@ -38,7 +38,7 @@ class Offer(app.model.PcObject,
                         index=True,
                         nullable=True)
 
-    thing = db.relationship(lambda: app.model.Thing,
+    thing = db.relationship(lambda: Thing,
                             foreign_keys=[thingId],
                             backref='offers')
 
@@ -50,7 +50,7 @@ class Offer(app.model.PcObject,
                         index=True,
                         nullable=True)
 
-    venue = db.relationship(lambda: app.model.Venue,
+    venue = db.relationship(lambda: Venue,
                             foreign_keys=[venueId],
                             backref='offers')
 
@@ -59,7 +59,7 @@ class Offer(app.model.PcObject,
                           index=True,
                           nullable=False)
 
-    offerer = db.relationship(lambda: app.model.Offerer,
+    offerer = db.relationship(lambda: Offerer,
                               foreign_keys=[offererId],
                               backref='offers')
 
@@ -90,7 +90,7 @@ class Offer(app.model.PcObject,
         return self.thing or self.eventOccurence
         
 
-app.model.Offer = Offer
+Offer = Offer
 
 
 @event.listens_for(Offer, 'before_insert')
@@ -100,7 +100,7 @@ def page_defaults(mapper, configuration, target):
     if target.eventOccurenceId and not target.bookingLimitDatetime:
         eventOccurence = target.eventOccurence
         if eventOccurence is None:
-            eventOccurence = app.model.EventOccurence\
+            eventOccurence = EventOccurence\
                                       .query\
                                       .filter_by(id=target.eventOccurenceId)\
                                       .first_or_404()

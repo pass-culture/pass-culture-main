@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declared_attr
 db = app.db
 
 
-class ProvidableMixin(app.model.VersionedMixin):
+class ProvidableMixin(VersionedMixin):
 
     @declared_attr
     def lastProviderId(cls):
@@ -15,7 +15,7 @@ class ProvidableMixin(app.model.VersionedMixin):
 
     @declared_attr
     def lastProvider(cls):
-        return db.relationship(lambda: app.model.Provider,
+        return db.relationship(lambda: Provider,
                                foreign_keys=[cls.lastProviderId])
 
     idAtProviders = db.Column(db.String(70),
@@ -29,4 +29,4 @@ class ProvidableMixin(app.model.VersionedMixin):
                                            default=datetime.utcnow)
 
 
-app.model.ProvidableMixin = ProvidableMixin
+ProvidableMixin = ProvidableMixin

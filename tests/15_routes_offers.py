@@ -52,23 +52,23 @@ def test_13_search_offers_by_author():
 
 
 def test_14_update_offer_available_should_check_bookings(app):
-    offer = app.model.Offer()
+    offer = Offer()
     offer.venueId = 1
     offer.offererId = 1
     offer.thingId = 1
     offer.price = 0
     offer.available = 1
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-    app.model.PcObject.check_and_save(offer)
+    PcObject.check_and_save(offer)
 
     offerId = offer.id
 
-    booking = app.model.Booking()
+    booking = Booking()
     booking.offerId = offerId
     booking.recommendationId = 1
     booking.token = random_token()
     booking.userId = 1
-    app.model.PcObject.check_and_save(booking)
+    PcObject.check_and_save(booking)
 
     r_update = req_with_auth().patch(API_URL + '/offers/'+humanize(offerId),
                                      json={'available': 0})
@@ -79,16 +79,16 @@ def test_14_update_offer_available_should_check_bookings(app):
 def test_15_should_not_create_offer_if_event_occurence_before_booking_limit_datetime(app):
     #Given
     from models.pc_object import serialize
-    event_occurence = app.model.EventOccurence()
+    event_occurence = EventOccurence()
     event_occurence.beginningDatetime = datetime.utcnow() + timedelta(days=10)
     event_occurence.endDatetime = event_occurence.beginningDatetime + timedelta(days=1)
     event_occurence.eventId = 1
     event_occurence.accessibility = bytes([0])
-    app.model.PcObject.check_and_save(event_occurence)
+    PcObject.check_and_save(event_occurence)
 
     event_occurence_id = event_occurence.id
 
-    offer = app.model.Offer()
+    offer = Offer()
     offer.eventOccurence = event_occurence
     offer.offererId = 11
     offer.thingId = 11
@@ -97,7 +97,7 @@ def test_15_should_not_create_offer_if_event_occurence_before_booking_limit_date
     offer.available = 5
     offer.bookingLimitDatetime = event_occurence.beginningDatetime - timedelta(days=1)
 
-    app.model.PcObject.check_and_save(offer)
+    PcObject.check_and_save(offer)
 
     offerId = offer.id
 

@@ -6,7 +6,7 @@ from sqlalchemy.sql import expression
 db = app.db
 
 
-class Recommendation(app.model.PcObject, db.Model):
+class Recommendation(PcObject, db.Model):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -17,7 +17,7 @@ class Recommendation(app.model.PcObject, db.Model):
                        nullable=False,
                        index=True)
 
-    user = db.relationship(lambda: app.model.User,
+    user = db.relationship(lambda: User,
                            foreign_keys=[userId],
                            backref='recommendations')
 
@@ -26,7 +26,7 @@ class Recommendation(app.model.PcObject, db.Model):
                             index=True,
                             nullable=True) # NULL for recommendation created directly from a thing or an event
 
-    mediation = db.relationship(lambda: app.model.Mediation,
+    mediation = db.relationship(lambda: Mediation,
                                 foreign_keys=[mediationId],
                                 backref='recommendations')
 
@@ -35,7 +35,7 @@ class Recommendation(app.model.PcObject, db.Model):
                         index=True,
                         nullable=True) # NULL for recommendation created from a mediation or an event
 
-    thing = db.relationship(lambda: app.model.Thing,
+    thing = db.relationship(lambda: Thing,
                             foreign_keys=[thingId],
                             backref='recommendations')
 
@@ -48,7 +48,7 @@ class Recommendation(app.model.PcObject, db.Model):
                         index=True,
                         nullable=True) # NULL for recommendation created a mediation or an offer
 
-    event = db.relationship(lambda: app.model.Event,
+    event = db.relationship(lambda: Event,
                             foreign_keys=[eventId],
                             backref='recommendations')
 
@@ -59,7 +59,7 @@ class Recommendation(app.model.PcObject, db.Model):
                                           db.ForeignKey('event_occurence.id'),
                                           nullable=True)
 
-    inviteforEventOccurence = db.relationship(lambda: app.model.EventOccurence,
+    inviteforEventOccurence = db.relationship(lambda: EventOccurence,
                                               foreign_keys=[inviteforEventOccurenceId],
                                               backref='inviteRecommendations')
 
@@ -141,4 +141,4 @@ class Recommendation(app.model.PcObject, db.Model):
                       key=lambda o: o.beginningDatetime,
                       reverse=True)
 
-app.model.Recommendation = Recommendation
+Recommendation = Recommendation

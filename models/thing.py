@@ -19,7 +19,7 @@ class BookFormat(enum.Enum):
     Paperback = "Paperback"
 
 
-app.model.BookFormat = BookFormat
+BookFormat = BookFormat
 
 
 class ThingType(enum.Enum):
@@ -33,15 +33,15 @@ class ThingType(enum.Enum):
 #    VOD = "VOD"
 
 
-app.model.ThingType = ThingType
+ThingType = ThingType
 
 
-class Thing(app.model.PcObject,
+class Thing(PcObject,
             db.Model,
-            app.model.DeactivableMixin,
-            app.model.HasThumbMixin,
-            app.model.ProvidableMixin,
-            app.model.ExtraDataMixin):
+            DeactivableMixin,
+            HasThumbMixin,
+            ProvidableMixin,
+            ExtraDataMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -80,4 +80,4 @@ Thing.__table_args__ = (
 )
 
 
-app.model.Thing = Thing
+Thing = Thing

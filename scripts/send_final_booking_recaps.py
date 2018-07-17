@@ -5,8 +5,8 @@ import traceback
 
 from utils.mailing import send_booking_recap_emails
 
-EventOccurence = app.model.EventOccurence
-Offer = app.model.Offer
+EventOccurence = EventOccurence
+Offer = Offer
 
 
 @app.manager.command

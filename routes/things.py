@@ -1,16 +1,15 @@
 """ things """
 import simplejson as json
 from flask import current_app as app, jsonify, request
-from flask_login import current_user
 
 from utils.includes import THING_INCLUDES
-from utils.rest import expect_json_data,\
-                       load_or_404,\
-                       login_or_api_key_required,\
-                       handle_rest_get_list
+from utils.rest import expect_json_data, \
+    load_or_404, \
+    login_or_api_key_required, \
+    handle_rest_get_list
 
-Occasion = app.model.Occasion
-Thing = app.model.Thing
+Occasion = Occasion
+Thing = Thing
 
 
 @app.route('/things/<ofType>:<identifier>', methods=['GET'])
@@ -37,7 +36,7 @@ def post_thing():
     ocas = Occasion()
     ocas.venue = request.json['venueId']
     ocas.thing = thing
-    app.model.PcObject.check_and_save(thing, ocas)
+    PcObject.check_and_save(thing, ocas)
     return jsonify(thing._asdict(
         include=THING_INCLUDES,
         has_dehumanized_id=True,
@@ -51,7 +50,7 @@ def post_thing():
 def patch_thing(id):
     thing = load_or_404(Thing, id)
     thing.populateFromDict(request.json)
-    app.model.PcObject.check_and_save(thing)
+    PcObject.check_and_save(thing)
     return jsonify(
         thing._asdict(
             include=THING_INCLUDES,

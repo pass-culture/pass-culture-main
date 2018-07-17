@@ -11,10 +11,10 @@ from utils.search import create_tsvector
 db = app.db
 
 
-class Venue(app.model.PcObject,
-            app.model.HasThumbMixin,
-            app.model.HasAddressMixin,
-            app.model.ProvidableMixin,
+class Venue(PcObject,
+            HasThumbMixin,
+            HasAddressMixin,
+            ProvidableMixin,
             db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
 
@@ -28,7 +28,7 @@ class Venue(app.model.PcObject,
 
     longitude = db.Column(db.Numeric(8, 5), nullable=True)
 
-    venueProviders = db.relationship(lambda: app.model.VenueProvider,
+    venueProviders = db.relationship(lambda: VenueProvider,
                                      back_populates="venue")
 
     managingOffererId = db.Column(db.BigInteger,
@@ -36,7 +36,7 @@ class Venue(app.model.PcObject,
                                   nullable=False,
                                   index=True)
 
-    managingOfferer = db.relationship(lambda: app.model.Offerer,
+    managingOfferer = db.relationship(lambda: Offerer,
                                       foreign_keys=[managingOffererId],
                                       backref='managedVenues')
 
@@ -57,7 +57,7 @@ class Venue(app.model.PcObject,
             errors.addError('siret', 'Ce code SIRET est invalide : '+self.siret)
         if self.managingOffererId is not None:
             if self.managingOfferer is None:
-                managingOfferer = app.model.Offerer.query\
+                managingOfferer = Offerer.query\
                                       .filter_by(id=self.managingOffererId).first()
             else:
                 managingOfferer = self.managingOfferer
@@ -69,7 +69,7 @@ class Venue(app.model.PcObject,
 
     @property
     def nOccasions(self):
-        return app.model.Occasion.query.filter_by(venue=self).count()
+        return Occasion.query.filter_by(venue=self).count()
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
@@ -97,4 +97,4 @@ Venue.__table_args__ = (
 )
 
 
-app.model.Venue = Venue
+Venue = Venue

@@ -7,17 +7,17 @@ import secrets
 db = app.db
 
 
-class User(app.model.PcObject,
+class User(PcObject,
            db.Model,
-           app.model.HasThumbMixin,
-           app.model.NeedsValidationMixin
+           HasThumbMixin,
+           NeedsValidationMixin
            ):
     email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.Binary(60), nullable=False)
 
     publicName = db.Column(db.String(30), nullable=False)
 
-    offerers = db.relationship(lambda: app.model.Offerer,
+    offerers = db.relationship(lambda: Offerer,
                                secondary='user_offerer')
 
     dateCreated = db.Column(db.DateTime,
@@ -83,15 +83,15 @@ class User(app.model.PcObject,
     def hasRights(self, rights, offererId):
         if self.isAdmin:
             return True
-        RightsType = app.model.RightsType
+        RightsType = RightsType
         if rights == RightsType.editor:
             compatible_rights = [RightsType.editor, RightsType.admin]
         else:
             compatible_rights = [rights]
-        return app.model.UserOfferer.query\
-                  .filter((app.model.UserOfferer.offererId == offererId) &
-                          (app.model.UserOfferer.rights.in_(compatible_rights)))\
+        return UserOfferer.query\
+                  .filter((UserOfferer.offererId == offererId) &
+                          (UserOfferer.rights.in_(compatible_rights)))\
                   .first() is not None
 
 
-app.model.User = User
+User = User

@@ -13,15 +13,15 @@ from utils.content import get_mediation, get_source
 from utils.distance import distance
 from utils.includes import RECOMMENDATION_INCLUDES
 
-Booking = app.model.Booking
-Event = app.model.Event
-EventOccurence = app.model.EventOccurence
-Mediation = app.model.Mediation
-Offer = app.model.Offer
-Offerer = app.model.Offerer
-Recommendation = app.model.Recommendation
-Thing = app.model.Thing
-Venue = app.model.Venue
+Booking = Booking
+Event = Event
+EventOccurence = EventOccurence
+Mediation = Mediation
+Offer = Offer
+Offerer = Offerer
+Recommendation = Recommendation
+Thing = Thing
+Venue = Venue
 
 log = app.log
 

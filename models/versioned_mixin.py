@@ -13,4 +13,4 @@ class VersionedMixin(object):
                              .order_by(app.db.desc(Activity.id))
 
 
-app.model.VersionedMixin = VersionedMixin
+VersionedMixin = VersionedMixin

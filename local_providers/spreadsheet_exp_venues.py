@@ -19,11 +19,11 @@ def is_filled(info):
     return info.lower() != 'nan' and info.replace(' ', '') != ''
 
 
-Venue = app.model.Venue
-Offerer = app.model.Offerer
+Venue = Venue
+Offerer = Offerer
 
 
-class SpreadsheetExpVenues(app.model.LocalProvider):
+class SpreadsheetExpVenues(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
@@ -53,12 +53,12 @@ class SpreadsheetExpVenues(app.model.LocalProvider):
             print('Invalid email in "Email contact" column, skipping line')
             self.__next__()
 
-        p_info_offerer = app.model.ProvidableInfo()
+        p_info_offerer = ProvidableInfo()
         p_info_offerer.type = Offerer
         p_info_offerer.idAtProviders = str(self.line['Ref Lieu'])
         p_info_offerer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
-        p_info_venue = app.model.ProvidableInfo()
+        p_info_venue = ProvidableInfo()
         p_info_venue.type = Venue
         p_info_venue.idAtProviders = str(self.line['Ref Lieu'])
         p_info_venue.dateModifiedAtProvider = read_date(self.line['Date MAJ'])

@@ -3,23 +3,23 @@ from flask import current_app as app
 db = app.db
 
 
-class VenueProvider(app.model.PcObject,
-                    app.model.ProvidableMixin,
-                    app.model.DeactivableMixin,
+class VenueProvider(PcObject,
+                    ProvidableMixin,
+                    DeactivableMixin,
                     db.Model):
 
     venueId = db.Column(db.BigInteger,
                         db.ForeignKey('venue.id'),
                         nullable=False,
                         index=True)
-    venue = db.relationship(lambda: app.model.Venue,
+    venue = db.relationship(lambda: Venue,
                             back_populates="venueProviders",
                             foreign_keys=[venueId])
 
     providerId = db.Column(db.BigInteger,
                            db.ForeignKey('provider.id'),
                            nullable=False)
-    provider = db.relationship(lambda: app.model.Provider,
+    provider = db.relationship(lambda: Provider,
                                back_populates="venueProviders",
                                foreign_keys=[providerId])
 
@@ -29,4 +29,4 @@ class VenueProvider(app.model.PcObject,
                              nullable=True)
 
 
-app.model.VenueProvider = VenueProvider
+VenueProvider = VenueProvider

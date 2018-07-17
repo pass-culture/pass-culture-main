@@ -39,7 +39,7 @@ def do_update(provider, limit):
 def update_providables(provider, venue, venueProvider, limit, type, mock=False):
 
     if venueProvider is not None:
-        venueProviderObj = app.model.VenueProvider.query\
+        venueProviderObj = VenueProvider.query\
                                                   .filter_by(id=venueProvider)\
                                                   .first()
         provider_class = app.local_providers[venueProviderObj.provider.localClass]
@@ -49,11 +49,11 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
     # order matters ! An item appears later in this list
     # if it requires items named before it
     # For instance, Offers require Events or Things
-    PROVIDABLE_TYPES = [app.model.Offerer,
-                        app.model.Venue,
-                        app.model.Event,
-                        app.model.Thing,
-                        app.model.Offer]
+    PROVIDABLE_TYPES = [Offerer,
+                        Venue,
+                        Event,
+                        Thing,
+                        Offer]
     if not venue:
         for providable_type in [app.model[type.capitalize()]]\
                                if type else PROVIDABLE_TYPES:
@@ -68,7 +68,7 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
                     providerObj = provider_type(None, mock=mock)
                     do_update(providerObj, limit)
 
-    venueProviderQuery = app.model.VenueProvider.query
+    venueProviderQuery = VenueProvider.query
     venueProviderObjs = venueProviderQuery.filter_by(id=int(venue))\
                   if venue\
                   else venueProviderQuery.all()

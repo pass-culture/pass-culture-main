@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify
 
 @app.route('/providers', methods=['GET'])
 def list_providers():
-    providers = app.model.Provider\
+    providers = Provider\
                          .query.filter_by(isActive=True)\
                          .all()
     result = []

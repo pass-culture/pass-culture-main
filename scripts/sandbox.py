@@ -21,7 +21,7 @@ def sandbox():
 
 
 def do_sandbox():
-    check_and_save = app.model.PcObject.check_and_save
+    check_and_save = PcObject.check_and_save
     model = app.model
 
     json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'users.json'

@@ -5,8 +5,8 @@ from pathlib import Path, PurePath
 import re
 from zipfile import ZipFile
 
-LocalProviderEventType = app.model.LocalProviderEventType
-Thing = app.model.Thing
+LocalProviderEventType = LocalProviderEventType
+Thing = Thing
 
 
 DATE_REGEXP = re.compile('livres_tl(\d+).zip')
@@ -24,7 +24,7 @@ def file_date(filename_or_zipfile):
     return int(match.group(1))
 
 
-class TiteLiveBookThumbs(app.model.LocalProvider):
+class TiteLiveBookThumbs(LocalProvider):
 
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire"\
@@ -78,7 +78,7 @@ class TiteLiveBookThumbs(app.model.LocalProvider):
             self.open_next_file()
             self.thumb_zipinfo = self.thumb_zipinfos.__next__()
 
-        p_info = app.model.ProvidableInfo()
+        p_info = ProvidableInfo()
         p_info.type = Thing
         p_info.dateModifiedAtProvider = None
         path = PurePath(self.thumb_zipinfo.filename)

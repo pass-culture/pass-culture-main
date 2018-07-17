@@ -6,10 +6,10 @@ from sqlalchemy import event, DDL
 db = app.db
 
 
-class Booking(app.model.PcObject,
+class Booking(PcObject,
               db.Model,
-              app.model.DeactivableMixin,
-              app.model.VersionedMixin):
+              DeactivableMixin,
+              VersionedMixin):
 
     id = db.Column(db.BigInteger,
                    primary_key=True,
@@ -22,7 +22,7 @@ class Booking(app.model.PcObject,
     recommendationId = db.Column(db.BigInteger,
                                 db.ForeignKey("recommendation.id"))
 
-    recommendation = db.relationship(lambda: app.model.Recommendation,
+    recommendation = db.relationship(lambda: Recommendation,
                                      foreign_keys=[recommendationId],
                                      backref='bookings')
 
@@ -31,7 +31,7 @@ class Booking(app.model.PcObject,
                         index=True,
                         nullable=True)
 
-    offer = db.relationship(lambda: app.model.Offer,
+    offer = db.relationship(lambda: Offer,
                             foreign_keys=[offerId],
                             backref='bookings')
 
@@ -48,7 +48,7 @@ class Booking(app.model.PcObject,
                        index=True,
                        nullable=False)
 
-    user = db.relationship(lambda: app.model.User,
+    user = db.relationship(lambda: User,
                            foreign_keys=[userId],
                            backref='userBookings')
 
@@ -59,7 +59,7 @@ class Booking(app.model.PcObject,
             return None
         return offer.eventOccurence.beginningDatetime
 
-app.model.Booking = Booking
+Booking = Booking
 
 trig_ddl = DDL("""
     CREATE OR REPLACE FUNCTION check_booking()

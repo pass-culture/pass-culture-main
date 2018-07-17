@@ -8,4 +8,4 @@ class ExtraDataMixin(object):
     extraData = db.Column(JSON)
 
 
-app.model.ExtraDataMixin = ExtraDataMixin
+ExtraDataMixin = ExtraDataMixin

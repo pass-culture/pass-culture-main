@@ -28,13 +28,13 @@ def file_date(filename):
     return int(match.group(1))
 
 
-BookFormat = app.model.BookFormat
-Thing = app.model.Thing
-ThingType = app.model.ThingType
-LocalProviderEventType = app.model.LocalProviderEventType
+BookFormat = BookFormat
+Thing = Thing
+ThingType = ThingType
+LocalProviderEventType = LocalProviderEventType
 
 
-class TiteLiveThings(app.model.LocalProvider):
+class TiteLiveThings(LocalProvider):
 
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire"\
@@ -223,7 +223,7 @@ class TiteLiveThings(app.model.LocalProvider):
             print(" WARNING: Unknown tl_type: "+tl_type)
             return None
 
-        p_info = app.model.ProvidableInfo()
+        p_info = ProvidableInfo()
         p_info.type = Thing
         p_info.idAtProviders = infos['ean13']
         p_info.dateModifiedAtProvider = read_date(infos['date_updated'])

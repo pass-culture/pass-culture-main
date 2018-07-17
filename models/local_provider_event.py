@@ -16,10 +16,10 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-app.model.LocalProviderEventType = LocalProviderEventType
+LocalProviderEventType = LocalProviderEventType
 
 
-class LocalProviderEvent(app.model.PcObject,
+class LocalProviderEvent(PcObject,
                          db.Model):
 
     id = db.Column(db.BigInteger,
@@ -29,18 +29,18 @@ class LocalProviderEvent(app.model.PcObject,
     providerId = db.Column(db.BigInteger,
                            db.ForeignKey("provider.id"),
                            nullable=False)
-    provider = db.relationship(lambda: app.model.Provider,
+    provider = db.relationship(lambda: Provider,
                                foreign_keys=[providerId])
 
     date = db.Column(db.DateTime,
                      nullable=False,
                      default=datetime.utcnow)
 
-    type = db.Column(db.Enum(app.model.LocalProviderEventType),
+    type = db.Column(db.Enum(LocalProviderEventType),
                      nullable=False)
 
     payload = db.Column(db.String(50),
                         nullable=True)
 
 
-app.model.LocalProviderEvent = LocalProviderEvent
+LocalProviderEvent = LocalProviderEvent

@@ -14,4 +14,4 @@ class DeactivableMixin(object):
     def queryActive(self):
         return self.query.filter_by(isActive=True)
 
-app.model.DeactivableMixin = DeactivableMixin
+DeactivableMixin = DeactivableMixin

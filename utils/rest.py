@@ -11,7 +11,7 @@ from utils.string_processing import dashify
 
 def get_provider_from_api_key():
     if 'apikey' in request.headers:
-        Provider = app.model.Provider
+        Provider = Provider
         return Provider.query\
                        .filter_by(apiKey=request.headers['apikey'])\
                        .first()

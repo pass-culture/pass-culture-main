@@ -22,4 +22,4 @@ class HasAddressMixin(object):
             errors.addError('postalCode', 'Ce code postal est invalide')
         return errors
 
-app.model.HasAddressMixin = HasAddressMixin
+HasAddressMixin = HasAddressMixin

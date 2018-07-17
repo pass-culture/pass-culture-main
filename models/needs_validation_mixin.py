@@ -23,4 +23,4 @@ class NeedsValidationMixin(object):
 
 
 
-app.model.NeedsValidationMixin = NeedsValidationMixin
+NeedsValidationMixin = NeedsValidationMixin

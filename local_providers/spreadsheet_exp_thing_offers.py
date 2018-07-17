@@ -23,13 +23,13 @@ def is_filled(info):
     return info != 'nan' and info.replace(' ', '') != ''
 
 
-Mediation = app.model.Mediation
-Offer = app.model.Offer
-Thing = app.model.Thing
-ThingType = app.model.ThingType
+Mediation = Mediation
+Offer = Offer
+Thing = Thing
+ThingType = ThingType
 
 
-class SpreadsheetExpThingOffers(app.model.LocalProvider):
+class SpreadsheetExpThingOffers(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
@@ -57,7 +57,7 @@ class SpreadsheetExpThingOffers(app.model.LocalProvider):
 
         venueIdAtProviders = str(int(self.line['Ref Lieu']))
 
-        self.venue = app.model.Venue.query\
+        self.venue = Venue.query\
                                     .filter_by(idAtProviders=venueIdAtProviders)\
                                     .one_or_none()
 
@@ -66,7 +66,7 @@ class SpreadsheetExpThingOffers(app.model.LocalProvider):
                   + ' not found, skipping line')
             self.__next__()
 
-        self.offerer = app.model.Offerer.query\
+        self.offerer = Offerer.query\
                                         .filter_by(idAtProviders=venueIdAtProviders)\
                                         .one_or_none()
 
@@ -79,14 +79,14 @@ class SpreadsheetExpThingOffers(app.model.LocalProvider):
 
         providables = []
 
-        p_info_thing = app.model.ProvidableInfo()
+        p_info_thing = ProvidableInfo()
         p_info_thing.type = Thing
         p_info_thing.idAtProviders = str(self.line['Ref Objet'])
         p_info_thing.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
         providables.append(p_info_thing)
 
-        p_info_offer = app.model.ProvidableInfo()
+        p_info_offer = ProvidableInfo()
         p_info_offer.type = Offer
         p_info_offer.idAtProviders = str(self.line['Ref Objet'])
         p_info_offer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
@@ -95,7 +95,7 @@ class SpreadsheetExpThingOffers(app.model.LocalProvider):
 
         if is_filled(self.line['Lien Image Accroche']) or\
            is_filled(self.line['Texte Accroche']):
-            p_info_med = app.model.ProvidableInfo()
+            p_info_med = ProvidableInfo()
             p_info_med.type = Mediation
             p_info_med.idAtProviders = str(self.line['Ref Objet'])
             p_info_med.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
@@ -106,7 +106,7 @@ class SpreadsheetExpThingOffers(app.model.LocalProvider):
 
     def updateObject(self, obj):
         if not isinstance(obj, Thing) and self.thing is None:
-            self.thing = Thing.query.filter_by(idAtProviders=obj.idAtProviders, lastProviderId=app.model.Provider.getByClassName(self.__class__.__name__).id).first()
+            self.thing = Thing.query.filter_by(idAtProviders=obj.idAtProviders, lastProviderId=Provider.getByClassName(self.__class__.__name__).id).first()
         if isinstance(obj, Thing):
             obj.name = self.line['Titre']
             obj.extraData = {'author': self.line['Auteur']}

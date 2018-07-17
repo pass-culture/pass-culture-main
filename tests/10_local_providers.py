@@ -14,7 +14,7 @@ savedCounts = {}
 def saveCounts(app):
     for modelName in app.model:
         if isclass(app.model[modelName])\
-           and issubclass(app.model[modelName], app.model.PcObject)\
+           and issubclass(app.model[modelName], PcObject)\
            and modelName != "PcObject":
             savedCounts[modelName] = app.model[modelName].query.count()
 
@@ -30,7 +30,7 @@ def assertCreatedCounts(app, **counts):
 
 def assertEmptyDb(app):
     for modelName in app.model:
-        if isinstance(app.model[modelName], app.model.PcObject):
+        if isinstance(app.model[modelName], PcObject):
             if modelName == 'Mediation':
                 assert app.model[modelName].query.count() == 2
             else:
@@ -41,7 +41,7 @@ def assertEmptyDb(app):
 def provider_test(app, provider, venueProvider, **counts):
     providerObj = provider(venueProvider, mock=True)
     providerObj.dbObject.isActive = True
-    app.model.PcObject.check_and_save(providerObj.dbObject)
+    PcObject.check_and_save(providerObj.dbObject)
     saveCounts(app)
     providerObj.updateObjects()
     for countName in ['updatedObjects',
@@ -72,13 +72,13 @@ def test_10_titelive_venues_provider(app):
                   erroredThumbs=0,
                   Venue=2,
                   Offerer=2)
-    provider = app.model.Provider.getByClassName('TiteLiveOffers')
-    for vp in app.model.VenueProvider.query\
+    provider = Provider.getByClassName('TiteLiveOffers')
+    for vp in VenueProvider.query\
                                      .filter_by(provider=provider)\
                                      .all():
         assert not vp.isActive
         vp.isActive = True
-        app.model.PcObject.check_and_save(vp)
+        PcObject.check_and_save(vp)
 
 
 def test_11_titelive_things_provider(app):
@@ -111,7 +111,7 @@ def test_12_titelive_thing_thumbs_provider(app):
                   erroredThumbs=0,
                   Thing=0
                   )
-    assert app.db.session.query(func.sum(app.model.Thing.thumbCount))\
+    assert app.db.session.query(func.sum(Thing.thumbCount))\
                          .scalar() == 92
 
 
@@ -132,7 +132,7 @@ def test_13_titelive_thing_desc_provider(app):
 
 
 def test_14_titelive_offer_provider(app):
-    venueProvider = app.model.VenueProvider.query\
+    venueProvider = VenueProvider.query\
                           .filter_by(venueIdAtOfferProvider='2949')\
                           .one_or_none()
     assert venueProvider is not None
@@ -151,7 +151,7 @@ def test_14_titelive_offer_provider(app):
                   Offer=185
                   )
 
-    venueProvider = app.model.VenueProvider.query\
+    venueProvider = VenueProvider.query\
                           .filter_by(venueIdAtOfferProvider='2921')\
                           .one_or_none()
     assert venueProvider is not None
@@ -209,14 +209,14 @@ def test_15_spreadsheet_exp_offers_provider(app):
 
 
 def test_16_openagenda_events_provider(app):
-    oa_provider = app.model.Provider.getByClassName('OpenAgendaEvents')
-    venueProvider = app.model.VenueProvider()
+    oa_provider = Provider.getByClassName('OpenAgendaEvents')
+    venueProvider = VenueProvider()
     venueProvider.venueId = dehumanize('AE')
     venueProvider.provider = oa_provider
     venueProvider.isActive = True
     venueProvider.venueIdAtOfferProvider = '49050769'
-    app.model.PcObject.check_and_save(venueProvider)
-    venueProvider = app.model.VenueProvider.query\
+    PcObject.check_and_save(venueProvider)
+    venueProvider = VenueProvider.query\
                              .filter_by(venueIdAtOfferProvider='49050769')\
                              .one_or_none()
     provider_test(app,

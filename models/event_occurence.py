@@ -5,15 +5,15 @@ from sqlalchemy.ext.hybrid import hybrid_property
 db = app.db
 
 
-class EventOccurence(app.model.PcObject,
+class EventOccurence(PcObject,
                      db.Model,
-                     app.model.DeactivableMixin,
-                     app.model.ProvidableMixin
+                     DeactivableMixin,
+                     ProvidableMixin
                     ):
     id = db.Column(db.BigInteger,
                    primary_key=True)
 
-    type = db.Column(db.Enum(app.model.EventType),
+    type = db.Column(db.Enum(EventType),
                      nullable=True)
 
     eventId = db.Column(db.BigInteger,
@@ -21,7 +21,7 @@ class EventOccurence(app.model.PcObject,
                         index=True,
                         nullable=False)
 
-    event = db.relationship(lambda: app.model.Event,
+    event = db.relationship(lambda: Event,
                             foreign_keys=[eventId],
                             backref='occurences')
 
@@ -30,7 +30,7 @@ class EventOccurence(app.model.PcObject,
                         index=True,
                         nullable=True)
 
-    venue = db.relationship(lambda: app.model.Venue,
+    venue = db.relationship(lambda: Venue,
                             foreign_keys=[venueId],
                             backref='eventOccurences')
 
@@ -49,4 +49,4 @@ class EventOccurence(app.model.PcObject,
     def offer(self):
         return self.offers
 
-app.model.EventOccurence = EventOccurence
+EventOccurence = EventOccurence

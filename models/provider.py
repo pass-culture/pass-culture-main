@@ -5,8 +5,8 @@ from sqlalchemy.dialects.postgresql import CHAR
 db = app.db
 
 
-class Provider(app.model.PcObject,
-               app.model.DeactivableMixin,
+class Provider(PcObject,
+               DeactivableMixin,
                db.Model):
     id = db.Column(db.BigInteger,
                    primary_key=True)
@@ -21,9 +21,9 @@ class Provider(app.model.PcObject,
                            nullable=True,
                            unique=True)
 
-    venueProviders = db.relationship(app.model.VenueProvider,
+    venueProviders = db.relationship(VenueProvider,
                                      back_populates="provider",
-                                     foreign_keys=[app.model.VenueProvider.providerId])
+                                     foreign_keys=[VenueProvider.providerId])
 
     apiKey = db.Column(CHAR(32),
                        nullable=True)
@@ -37,4 +37,4 @@ class Provider(app.model.PcObject,
                        .first()
 
 
-app.model.Provider = Provider
+Provider = Provider

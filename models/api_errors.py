@@ -54,4 +54,4 @@ class ApiErrors(Exception):
 
     status_code = None
 
-app.model.ApiErrors = ApiErrors
+ApiErrors = ApiErrors

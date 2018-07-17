@@ -11,10 +11,10 @@ import time
 db = app.db
 
 
-class Mediation(app.model.PcObject,
+class Mediation(PcObject,
                 db.Model,
-                app.model.HasThumbMixin,
-                app.model.ProvidableMixin
+                HasThumbMixin,
+                ProvidableMixin
                 ):
 
     id = db.Column(db.BigInteger,
@@ -33,7 +33,7 @@ class Mediation(app.model.PcObject,
                          db.ForeignKey("user.id"),
                          nullable=True)
 
-    author = db.relationship(lambda: app.model.User,
+    author = db.relationship(lambda: User,
                              foreign_keys=[authorId],
                              backref='mediations')
 
@@ -41,7 +41,7 @@ class Mediation(app.model.PcObject,
                           db.ForeignKey("offerer.id"),
                           nullable=True)
 
-    offerer = db.relationship(lambda: app.model.Offerer,
+    offerer = db.relationship(lambda: Offerer,
                               foreign_keys=[offererId],
                               backref='mediations')
 
@@ -50,7 +50,7 @@ class Mediation(app.model.PcObject,
                         index=True,
                         nullable=True)
 
-    event = db.relationship(lambda: app.model.Event,
+    event = db.relationship(lambda: Event,
                             foreign_keys=[eventId],
                             backref='mediations')
 
@@ -59,7 +59,7 @@ class Mediation(app.model.PcObject,
                         index=True,
                         nullable=True)
 
-    thing = db.relationship(lambda: app.model.Thing,
+    thing = db.relationship(lambda: Thing,
                             foreign_keys=[thingId],
                             backref='mediations')
 
@@ -88,7 +88,7 @@ def upsertTutoMediation(index, has_back=False):
                                         .first()
     mediation = existing_mediation or Mediation()
     mediation.tutoIndex = index
-    app.model.PcObject.check_and_save(mediation)
+    PcObject.check_and_save(mediation)
 
     with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
         mediation.save_thumb(f.read(),
@@ -103,7 +103,7 @@ def upsertTutoMediation(index, has_back=False):
                                  no_convert=True,
                                  image_type='png')
 
-    app.model.PcObject.check_and_save(mediation)
+    PcObject.check_and_save(mediation)
 
 
 def upsertTutoMediations():
@@ -113,4 +113,4 @@ def upsertTutoMediations():
 
 Mediation.upsertTutoMediations = upsertTutoMediations
 
-app.model.Mediation = Mediation
+Mediation = Mediation

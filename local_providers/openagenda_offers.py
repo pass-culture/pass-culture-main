@@ -1,8 +1,8 @@
 from flask import current_app as app
 import random
 
-Event = app.model.Event
-Offer = app.model.Offer
+Event = Event
+Offer = Offer
 
 
 class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
@@ -12,8 +12,8 @@ class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
     def __next__(self):
         p_info_event = super().__next__()
 
-        p_info_offer = app.model.ProvidableInfo()
-        p_info_offer.type = app.model.Offer
+        p_info_offer = ProvidableInfo()
+        p_info_offer.type = Offer
         p_info_offer.idAtProviders = p_info_event.idAtProviders
         p_info_offer.dateModifiedAtProvider = p_info_event.dateModifiedAtProvider
 

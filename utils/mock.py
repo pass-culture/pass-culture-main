@@ -27,4 +27,4 @@ def set_from_mock(folder, obj, thumb_id):
                                 collection_name + '/' + humanize(obj.id),
                                 file.read(),
                                 mimes_by_folder[folder])
-    current_app.model.PcObject.check_and_save(obj)
+    current_PcObject.check_and_save(obj)
