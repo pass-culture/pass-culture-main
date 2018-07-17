@@ -188,7 +188,7 @@ class OccurenceForm extends Component {
           <Field type='time' name='endTime' required title='Heure de fin' />
         </td>
         <td title='Vide si gratuit'>
-          <Field name="price" required placeholder='Gratuit' title='Prix' />
+          <Field name="price" placeholder='Gratuit' title='Prix' />
         </td>
         <td title='Laissez vide si pas de limite'>
           <Field name='bookingDate' type='date' filterDate={date => filterBookingDate && date < filterBookingDate} placeholder="Laissez vide si pas de limite"/>
