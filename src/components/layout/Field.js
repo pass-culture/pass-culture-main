@@ -66,13 +66,13 @@ class Field extends Component {
     if (type === 'checkbox') {
       return {
         displayValue: v => v,
-        storeValue: v => v,
+        storeValue: v => Boolean(v),
       }
     }
     if (type === 'number') {
       return {
         displayValue: v => v || '',
-        storeValue: v => parseInt(v) || '',
+        storeValue: v => parseInt(v, 10) || '',
       }
     }
     return {
@@ -103,11 +103,11 @@ class Field extends Component {
   }
 
   onChange = (value) => {
-    const { displayValue, storeValue } = this.state
-
     if (value === this.props.value) {
       return
     }
+    const { displayValue, storeValue } = this.state
+
     this.setState({
       value: displayValue(value),
     }, () => {
@@ -122,13 +122,7 @@ class Field extends Component {
     })
   }
 
-  onInputChange = e => {
-    let value = e.target.value
-    if (this.props.type === 'checkbox') {
-      value = value === '' ? true : !value
-    }
-    this.onChange(value)
-  }
+  onInputChange = e => this.onChange(this.props.type === 'checkbox' ? e.target.checked : e.target.value)
 
   renderInput = () => {
     const {
