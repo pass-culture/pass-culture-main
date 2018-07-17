@@ -1,5 +1,6 @@
 """users routes"""
 from os import path
+import os
 from pathlib import Path
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
@@ -68,8 +69,12 @@ def signup():
     if 'email' in request.json:
         scope = ['https://spreadsheets.google.com/feeds',
                 'https://www.googleapis.com/auth/drive']
-        key_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'private' / 'google_key.json'
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(key_path, scope)
+
+        if "PC_GOOGLE_KEY" in os.environ:
+            credentials = ServiceAccountCredentials.from_json(os.environ.get("PC_GOOGLE_KEY"))
+        else:
+            key_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'private' / 'google_key.json'
+            credentials = ServiceAccountCredentials.from_json_keyfile_name(key_path, scope)
 
         gc = gspread.authorize(credentials)
 
