@@ -103,7 +103,12 @@ C'est tout le framework du Pass Culture!
 
   Pour tester la navigation du site web
   ```bash
-    ./pc -e production testcafe -b firefox
+    ./pc -e production testcafe-webapp -b firefox
+  ```
+
+  Exemple d'une commande test en dev sur chrome pour un fichier test particulier:
+  ```bash
+    ./pc testcafe-pro -b chrome:headless -f signup.js
   ```
 
 ### Emuler avec Cordova

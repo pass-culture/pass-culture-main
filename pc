@@ -102,7 +102,7 @@ elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-p
   cat "public/_redirects" >> build/_redirects
 
   GIT_VERSION=`git log -n 1 --pretty=format:%h`
-  git diff-index HEAD --quiet --exit-code 
+  git diff-index HEAD --quiet --exit-code
   if [[ "$?" -gt "0" ]]; then
     GIT_VERSION="$GIT_VERSION*"
   fi
@@ -230,8 +230,19 @@ elif [[ "$CMD" == "test-backend" ]]; then
   else
      RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest '"$*"'"'
   fi
-elif [[ "$CMD" == "testcafe" ]]; then
-  RUN='cd "$ROOT_PATH"/webapp && ./scripts/pc.js testcafe '"$*"
+elif [[ "$CMD" == "testcafe-webapp" ]] || [[ "$CMD" == "testcafe-pro" ]]; then
+	if [[ "$CMD" == "testcafe-webapp"  ]]; then
+		APP_PATH=$ROOT_PATH/webapp
+	else
+		APP_PATH=$ROOT_PATH/pro
+	fi
+	if [[ $# == 0 ]]; then
+    confirm "Warning: your database will be wiped. Is this OK ?"
+     "$ROOT_PATH"/pc -e $ENV reset-all-db
+		RUN='cd $APP_PATH && ./scripts/pc.js testcafe'
+	else
+  	RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
+	fi
 elif [[ "$CMD" == "update-mocks" ]]; then
   RUN='cd "$ROOT_PATH";
        cd api/mock/spreadsheet_exp;
@@ -250,6 +261,8 @@ else
 	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
 	elif [[ "$ENV" == "staging" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture-staging.beta.gouv.fr bash
+	elif [[ "$ENV" == "wordpress" ]]; then
+		ssh debian@passculture.beta.gouv.fr
 	else
 		echo $RUN
 	  eval $RUN
