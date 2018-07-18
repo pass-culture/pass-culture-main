@@ -20,14 +20,14 @@ test("Je peux cliquer sur lien /inscription", async t => {
   await t.expect(location.pathname).eql('/inscription')
 })
 
-test("Lorsque l'un des deux champs est manquant, le bouton connexion est desactivé", async t => {
+test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
     await t
     .typeText(inputUsersIdentifier, 'email@email.test')
     .wait(1000)
     .expect(signInButton.hasAttribute('disabled')).ok()
 })
 
-test("J'ai un compte valide, je suis redirigé vers la page /decouverte sans erreurs", async t => {
+test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans erreurs", async t => {
 
   await t
   .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
@@ -40,7 +40,7 @@ test("J'ai un compte valide, je suis redirigé vers la page /decouverte sans err
 })
 
 
-test("J'ai un compte Identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
 
   await t
   .typeText(inputUsersIdentifier, 'email@email.test')

@@ -1,6 +1,5 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import 'moment-timezone'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 

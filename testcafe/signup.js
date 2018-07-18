@@ -30,7 +30,7 @@ test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("Lorsque l'un des champs obligatoire est manquant, le bouton creer est desactivé", async t => {
+test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
     await t
     .typeText(inputUsersEmail, 'email@email.test')
     .wait(1000)
