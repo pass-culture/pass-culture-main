@@ -5,8 +5,9 @@ from pathlib import Path
 
 from flask import current_app as app
 
-from models.local_provider import LocalProvider
-from models.thing import Thing
+from models.local_provider import LocalProvider, ProvidableInfo
+from models.local_provider_event import LocalProviderEventType
+from models.thing import Thing, ThingType, BookFormat
 from utils.string_processing import trim_with_elipsis
 
 DATE_FORMAT = "%d/%m/%Y"

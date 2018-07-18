@@ -2,6 +2,7 @@ import random
 from flask import current_app as app
 
 from models.event import Event
+from models.local_provider import ProvidableInfo
 from models.offer import Offer
 
 class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
@@ -9,7 +10,7 @@ class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
     objectType = Offer
 
     def __next__(self):
-        p_info_event = super().__next__()
+        p_info_event = super().__next__
 
         p_info_offer = ProvidableInfo()
         p_info_offer.type = Offer

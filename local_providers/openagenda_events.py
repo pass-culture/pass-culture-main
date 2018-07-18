@@ -10,7 +10,7 @@ from flask import current_app as app
 
 from models.event import Event
 from models.event_occurence import EventOccurence
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.occasion import Occasion
 from models.venue import Venue
 
@@ -61,6 +61,7 @@ class OpenAgendaEvents(LocalProvider):
         self.data = None
         self.venueLocationUid = None
 
+    @property
     def __next__(self):
         self.index = self.index + 1
 
@@ -87,7 +88,7 @@ class OpenAgendaEvents(LocalProvider):
 
         if self.venueLocationUid is not None and\
            self.oa_event['location']['uid'] != self.venueLocationUid:
-            return self.__next__()
+            return self.__next__
 
         p_info_event = ProvidableInfo()
         p_info_event.type = Event

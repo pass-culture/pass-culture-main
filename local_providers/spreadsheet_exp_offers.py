@@ -9,7 +9,7 @@ import re
 
 from models.event import Event
 from models.event_occurence import EventOccurence
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.mediation import Mediation
 from models.occasion import Occasion
 from models.offer import Offer
@@ -49,7 +49,7 @@ class SpreadsheetExpOffers(LocalProvider):
         self.mock = mock
 
     def __next__(self):
-        self.line = self.lines.__next__()[1]
+        self.line = self.lines.__next__[1]
 
         for field in ['Date MAJ', 'Description', 'Horaires', 'Ref Lieu', 'Ref Évènement', 'Durée', 'Places Par Horaire']:
             while not is_filled(self.line[field]):

@@ -6,7 +6,7 @@ from flask import current_app as app
 from pandas import read_excel
 
 from models.event import Event
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.offer import Offer
 from utils.human_ids import humanize
 from utils.object_storage import local_path

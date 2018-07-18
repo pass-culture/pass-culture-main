@@ -6,7 +6,7 @@ from zipfile import ZipFile
 import pandas as pd
 from flask import current_app as app
 
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.occasion import Occasion
 from models.offer import Offer
 from models.thing import Thing

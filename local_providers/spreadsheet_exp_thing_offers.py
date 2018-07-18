@@ -5,12 +5,12 @@ from pathlib import Path
 from flask import current_app as app
 from pandas import read_csv
 
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.mediation import Mediation
 from models.offer import Offer
 from models.offerer import Offerer
 from models.provider import Provider
-from models.thing import Thing
+from models.thing import Thing, ThingType
 from models.venue import Venue
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
@@ -45,7 +45,7 @@ class SpreadsheetExpThingOffers(LocalProvider):
         self.mock = mock
 
     def __next__(self):
-        self.line = self.lines.__next__()[1]
+        self.line = self.lines.__next__[1]
 
         for field in ['Ref Objet', 'Ref Lieu', 'Titre', 'Auteur', 'Type', 'Stock', 'Lien Image Accroche', 'Description', 'Date MAJ']:
             while not is_filled(self.line[field]):

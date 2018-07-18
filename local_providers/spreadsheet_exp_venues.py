@@ -6,7 +6,7 @@ from flask import current_app as app
 from pandas import read_csv
 import re
 
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.offerer import Offerer
 from models.venue import Venue
 
@@ -42,7 +42,7 @@ class SpreadsheetExpVenues(LocalProvider):
         self.mock = mock
 
     def __next__(self):
-        self.line = self.lines.__next__()[1]
+        self.line = self.lines.__next__[1]
 
         for field in ['Date MAJ', 'Email contact', 'Latitude', 'Longitude', 'Nom', 'Adresse', 'Ref Lieu', 'Département']:
             while not is_filled(self.line[field]):

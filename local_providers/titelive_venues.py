@@ -7,7 +7,7 @@ from pathlib import Path
 from zipfile import ZipFile
 from flask import current_app as app
 
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.offerer import Offerer
 from models.provider import Provider
 from models.venue import Venue
