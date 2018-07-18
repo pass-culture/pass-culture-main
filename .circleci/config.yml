@@ -40,4 +40,6 @@ jobs:
       # run functional tests!
       - run:
           name: Running tests
-          command: yarn testcafe
+          command: |
+            export API_URL='https://api.passculture-dev.beta.gouv.fr'
+            yarn testcafe
