@@ -15,7 +15,6 @@ import providerSelector from '../selectors/provider'
 import providersSelector from '../selectors/providers'
 import venueProvidersSelector from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
-import { optionify } from '../utils/form'
 
 class ProviderManager extends Component {
 
@@ -109,7 +108,6 @@ class ProviderManager extends Component {
       venueProviders
     } = this.props
     const {
-      id,
       identifierDescription,
       identifierRegexp,
     } = (provider || {})

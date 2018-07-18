@@ -6,7 +6,6 @@ import React, {Component} from 'react'
 import { connect } from 'react-redux'
 
 import { newMergeForm, newRemoveErrorForm } from '../../reducers/form'
-import { removeErrors } from '../../reducers/errors'
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
 
@@ -91,7 +90,7 @@ class Form extends Component {
   }
 
   onMergeForm = () => {
-    this.props.newRemoveErrorForm()
+    this.props.newRemoveErrorForm(this.props.name)
     this.props.newMergeForm(this.props.name, this.state.editedValues)
     this.setState({
       editedValues: {},

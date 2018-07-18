@@ -63,7 +63,6 @@ class VenuePage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { venueId } },
       requestData,
       user
     } = this.props
