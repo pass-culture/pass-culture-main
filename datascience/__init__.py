@@ -4,6 +4,7 @@ from flask import current_app as app
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
+from models.db import db
 from models.event_occurence import EventOccurence
 from models.mediation import Mediation
 from models.offer import Offer
@@ -30,7 +31,7 @@ def create_recommendation(user, occasion, mediation=None):
             query = Mediation.query.filter_by(thing=occasion)
         else:
             query = Mediation.query.filter_by(event=occasion)
-        with app.db.session.no_autoflush:
+        with db.session.no_autoflush:
             random_mediation = query.order_by(func.random())\
                                     .first()
         if random_mediation:

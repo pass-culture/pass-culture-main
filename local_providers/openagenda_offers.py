@@ -1,6 +1,7 @@
 import random
 from flask import current_app as app
 
+from models.db import db
 from models.event import Event
 from models.local_provider import ProvidableInfo
 from models.offer import Offer
@@ -27,7 +28,7 @@ class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
         return offer
 
     def getDeactivatedObjectIds(self):
-        return app.db.session.query(Offer.idAtProvider)\
+        return db.session.query(Offer.idAtProvider)\
                              .filter(Offer.provider == self.venue.provider,
                                      Offer.venue == self.venue,
                                      ~Offer.idAtProvider.in_(self.seen_uids))

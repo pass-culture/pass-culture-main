@@ -9,7 +9,7 @@ from models.offer import Offer
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.thing import Thing
-from models.user_offerer import UserOfferer
+from models.user_offerer import UserOfferer, RightsType
 from models.venue import Venue
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES

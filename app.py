@@ -27,6 +27,9 @@ with app.app_context():
     import local_providers
     import routes
 
+    app.model = {}
+    for model_name in models.__all__:
+        app.model[model_name] = getattr(models, model_name)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

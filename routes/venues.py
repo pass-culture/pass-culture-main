@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 
 from models.pc_object import PcObject
+from models.user_offerer import RightsType
 from models.venue import Venue
 from utils.includes import VENUE_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \

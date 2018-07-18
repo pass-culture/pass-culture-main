@@ -5,6 +5,7 @@ from flask import current_app as app, jsonify, request
 from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 from models.provider import Provider
+from models.user_offerer import RightsType
 from models.venue_provider import VenueProvider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize

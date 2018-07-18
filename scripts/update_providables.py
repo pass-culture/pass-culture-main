@@ -3,6 +3,7 @@ from pprint import pprint
 
 from flask import current_app as app
 
+from models.db import db
 from models.event import Event
 from models.offer import Offer
 from models.offerer import Offerer
@@ -83,7 +84,7 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
     for providable_type in [app.model[type.capitalize()]]\
                            if type else PROVIDABLE_TYPES:
         for venueProviderObj in venueProviderObjs:
-            app.db.session.add(venueProviderObj)
+            db.session.add(venueProviderObj)
             provider_name = venueProviderObj.provider.localClass
             if provider_name is None:
                 continue

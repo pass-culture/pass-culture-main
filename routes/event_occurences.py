@@ -5,6 +5,7 @@ from models.event import Event
 from models.event_occurence import EventOccurence
 from models.offer import Offer
 from models.pc_object import PcObject
+from models.user_offerer import RightsType
 from models.venue import Venue
 from utils.includes import EVENT_OCCURENCE_INCLUDES
 from utils.rest import delete, \

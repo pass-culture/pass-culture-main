@@ -18,6 +18,7 @@ app.manager = Manager(create_app)
 
 with app.app_context():
     import scripts
+    import local_providers
 
 if __name__ == "__main__":
     app.manager.run()

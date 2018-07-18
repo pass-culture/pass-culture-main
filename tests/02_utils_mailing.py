@@ -1,3 +1,4 @@
+from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.test_utils import create_offer_for_booking_email_test, \
     create_user_for_booking_email_test, create_booking_for_booking_email_test, create_offerer_for_booking_email_test
 

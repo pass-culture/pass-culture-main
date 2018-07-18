@@ -4,6 +4,7 @@ from glob import glob
 
 from sqlalchemy import func
 
+from models.db import db
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.thing import Thing
@@ -39,6 +40,8 @@ def assertEmptyDb(app):
                 assert app.model[modelName].query.count() == 2
             else:
                 assert app.model[modelName].query.count() == 0
+
+def assert_created_thumbs():
     assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
 
@@ -63,6 +66,7 @@ def provider_test(app, provider, venueProvider, **counts):
 
 def test_10_titelive_venues_provider(app):
     assertEmptyDb(app)
+    assert_created_thumbs()
     provider_test(app,
                   app.local_providers.TiteLiveVenues,
                   None,
@@ -115,7 +119,7 @@ def test_12_titelive_thing_thumbs_provider(app):
                   erroredThumbs=0,
                   Thing=0
                   )
-    assert app.db.session.query(func.sum(Thing.thumbCount))\
+    assert db.session.query(func.sum(Thing.thumbCount))\
                          .scalar() == 92
 
 

@@ -8,6 +8,7 @@ from pathlib import Path
 import requests
 from flask import current_app as app
 
+from models.db import db
 from models.event import Event
 from models.event_occurence import EventOccurence
 from models.local_provider import LocalProvider, ProvidableInfo
@@ -61,7 +62,6 @@ class OpenAgendaEvents(LocalProvider):
         self.data = None
         self.venueLocationUid = None
 
-    @property
     def __next__(self):
         self.index = self.index + 1
 
@@ -88,7 +88,7 @@ class OpenAgendaEvents(LocalProvider):
 
         if self.venueLocationUid is not None and\
            self.oa_event['location']['uid'] != self.venueLocationUid:
-            return self.__next__
+            return self.__next__()
 
         p_info_event = ProvidableInfo()
         p_info_event.type = Event
@@ -117,7 +117,7 @@ class OpenAgendaEvents(LocalProvider):
         return [p_info_event , p_info_occasion] + p_info_eos
 
     def getDeactivatedObjectIds(self):
-        return app.db.session.query(Event.idAtProviders)\
+        return db.session.query(Event.idAtProviders)\
                              .filter(Event.provider == 'OpenAgenda',
                                      Event.venue == self.venue,
                                      ~Event.idAtProviders.in_(self.seen_uids))

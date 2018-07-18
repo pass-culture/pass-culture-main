@@ -5,7 +5,7 @@ from pathlib import Path, PurePath
 from zipfile import ZipFile
 from flask import current_app as app
 
-from models.local_provider import LocalProvider
+from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing
 

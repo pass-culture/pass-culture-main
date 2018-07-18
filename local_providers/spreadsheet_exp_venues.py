@@ -42,7 +42,7 @@ class SpreadsheetExpVenues(LocalProvider):
         self.mock = mock
 
     def __next__(self):
-        self.line = self.lines.__next__[1]
+        self.line = self.lines.__next__()[1]
 
         for field in ['Date MAJ', 'Email contact', 'Latitude', 'Longitude', 'Nom', 'Adresse', 'Ref Lieu', 'Département']:
             while not is_filled(self.line[field]):

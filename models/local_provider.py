@@ -1,13 +1,14 @@
 """ local provider """
 import sys
 import traceback
-from abc import abstractproperty
+from abc import abstractproperty, abstractmethod
 from collections import Iterator
 from datetime import datetime, timedelta
 from pprint import pprint
 from sqlalchemy import text
 from postgresql_audit.flask import versioning_manager
 
+from models.db import db
 from models.event import Event
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
 from models.pc_object import PcObject
@@ -47,11 +48,13 @@ class LocalProvider(Iterator):
         self.erroredThumbs = 0
         self.dbObject = Provider.getByClassName(self.__class__.__name__)
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def canCreate(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def help(self):
         pass
 
@@ -67,20 +70,24 @@ class LocalProvider(Iterator):
     def getObjectThumbDates(self, obj):
         return []
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def identifierDescription(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def identifierRegexp(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def name(self):
         pass
 
-    @abstractproperty
-    def objectTypes(self):
+    @property
+    @abstractmethod
+    def objectType(self):
         pass
 
     def latestActivityDate(self):
@@ -92,7 +99,7 @@ class LocalProvider(Iterator):
                         + " OR NOT changed_data->>'dateModifiedAtLastProvider'"
                                + " = old_data->>'dateModifiedAtLastProvider')")
         latest_activity = Activity.query.filter(sql)\
-                                        .order_by(PcObject.db.desc(Activity.id))\
+                                        .order_by(db.desc(Activity.id))\
                                         .limit(1)\
                                         .one_or_none()
         if latest_activity is None:
@@ -147,7 +154,7 @@ class LocalProvider(Iterator):
             pprint(vars(e))
 
     def existingObjectOrNone(self, providable_info):
-        with PcObject.db.session.no_autoflush:
+        with db.session.no_autoflush:
             query = providable_info.type.query.filter_by(
                 idAtProviders=providable_info.idAtProviders
             )
@@ -201,8 +208,8 @@ class LocalProvider(Iterator):
         pe.type = eventType
         pe.payload = str(eventPayload)
         pe.provider = self.dbObject
-        PcObject.db.session.add(pe)
-        PcObject.db.session.commit()
+        db.session.add(pe)
+        db.session.commit()
 
     def updateObjects(self, limit=None):
         """Update venue's objects with this provider."""
@@ -210,7 +217,7 @@ class LocalProvider(Iterator):
             if not self.venueProvider.isActive:
                 print("VenueProvider is not active. Stopping")
                 return
-            PcObject.db.session.add(self.venueProvider)  # FIXME: we should not need this
+            db.session.add(self.venueProvider)  # FIXME: we should not need this
         providerName = self.__class__.__name__
         if not self.dbObject.isActive:
             print("Provider "+providerName+" is inactive")
@@ -262,22 +269,22 @@ class LocalProvider(Iterator):
                         self.handleThumb(pc_obj)
                 self.checkedObjects += 1
 
-            PcObject.db.session.close()
+            db.session.close()
             if self.venueProvider is not None:
-                PcObject.db.session.add(self.venueProvider)
-            PcObject.db.session.add(self.dbObject)
+                db.session.add(self.venueProvider)
+            db.session.add(self.dbObject)
 
             if limit is not None and\
                self.checkedObjects >= limit:
                 break
 
-        #with PcObject.db.session.no_autoflush:
+        #with db.session.no_autoflush:
         #    update = sa.update(self.objectType)\
         #               .where((self.objectType.provider == self.offerer.provider) &\
         #                      ~self.objectType.idAtProviders.in_(self.getDeactivatedObjectIds()))\
         #               .values({'deactivated': True})
-        #    PcObject.db.session.execute(update)
-        #PcObject.db.session.commit()
+        #    db.session.execute(update)
+        #db.session.commit()
 
         print("  Checked " + str(self.checkedObjects) + " objects")
         print("  Created " + str(self.createdObjects) + " objects")

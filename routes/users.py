@@ -11,6 +11,7 @@ from models.api_errors import ApiErrors
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user import User
+from models.user_offerer import RightsType
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email, \
     subscribe_newsletter
