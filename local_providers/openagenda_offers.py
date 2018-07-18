@@ -1,13 +1,8 @@
 import random
-
 from flask import current_app as app
 
 from models.event import Event
 from models.offer import Offer
-
-Event = Event
-Offer = Offer
-
 
 class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
     name = "Open Agenda Offers"

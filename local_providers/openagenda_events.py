@@ -39,11 +39,6 @@ def read_date(date):
     return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 
-Event = Event
-EventOccurence = EventOccurence
-Occasion = Occasion
-
-
 class OpenAgendaEvents(LocalProvider):
     help = ""
     identifierDescription = "Identifiant de l'agenda (ex: 80942872). Il se trouve à la fin de l'adresse web de votre agenda."

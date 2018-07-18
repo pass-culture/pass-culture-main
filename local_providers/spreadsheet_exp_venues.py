@@ -1,7 +1,3 @@
-from models.local_provider import LocalProvider
-from models.offerer import Offerer
-from models.venue import Venue
-
 """ spreadsheet exp venues """
 from datetime import datetime
 from pathlib import Path
@@ -9,6 +5,10 @@ from os import path
 from flask import current_app as app
 from pandas import read_csv
 import re
+
+from models.local_provider import LocalProvider
+from models.offerer import Offerer
+from models.venue import Venue
 
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
@@ -21,10 +21,6 @@ def read_date(date):
 def is_filled(info):
     info = str(info)
     return info.lower() != 'nan' and info.replace(' ', '') != ''
-
-
-Venue = Venue
-Offerer = Offerer
 
 
 class SpreadsheetExpVenues(LocalProvider):

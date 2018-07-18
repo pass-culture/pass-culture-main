@@ -3,7 +3,6 @@ import re
 from datetime import datetime
 from pathlib import Path
 from zipfile import ZipFile
-
 import pandas as pd
 from flask import current_app as app
 
@@ -23,12 +22,6 @@ def read_date(date):
 
 def read_datetime(date):
     return datetime.strptime(date, DATETIME_FORMAT)
-
-
-Occasion = Occasion
-Offer = Offer
-Thing = Thing
-
 
 class TiteLiveOffers(LocalProvider):
 

@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 from os import path
 from zipfile import ZipFile
-
 from flask import current_app as app
 from pandas import read_excel
 
@@ -16,9 +15,6 @@ from utils.string_processing import get_date_time_range, get_matched_string_inde
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 image_extension_regex = re.compile(r'jpg|JPG|png|PNG')
 thumb_target_keys = ['Titre', 'Artiste']
-
-Event = Event
-Offer = Offer
 
 
 class SpreadsheetOffers(LocalProvider):

@@ -16,9 +16,6 @@ import local_providers.titelive_books
 import local_providers.titelive_book_descriptions
 import local_providers.titelive_book_thumbs
 
-# Ensure all providers are referenced in database
-Provider = Provider
-
 for name in app.local_providers.keys():
     provider = app.local_providers[name]
     db_provider = Provider.getByClassName(name)

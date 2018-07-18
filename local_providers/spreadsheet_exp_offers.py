@@ -1,12 +1,3 @@
-from models.event import Event
-from models.event_occurence import EventOccurence
-from models.local_provider import LocalProvider
-from models.mediation import Mediation
-from models.occasion import Occasion
-from models.offer import Offer
-from models.offerer import Offerer
-from models.venue import Venue
-
 """ spreadsheet exp offers"""
 from datetime import datetime, timedelta
 import dateparser
@@ -16,6 +7,14 @@ from pandas import read_csv
 from pathlib import Path
 import re
 
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.local_provider import LocalProvider
+from models.mediation import Mediation
+from models.occasion import Occasion
+from models.offer import Offer
+from models.offerer import Offerer
+from models.venue import Venue
 from utils.date import get_dept_timezone, format_duration
 
 
@@ -30,14 +29,6 @@ def read_date(date):
 def is_filled(info):
     info = str(info)
     return info != 'nan' and info.replace(' ', '') != ''
-
-
-Event = Event
-EventOccurence = EventOccurence
-Mediation = Mediation
-Occasion = Occasion
-Offer = Offer
-
 
 class SpreadsheetExpOffers(LocalProvider):
     help = "Pas d'aide pour le moment"
