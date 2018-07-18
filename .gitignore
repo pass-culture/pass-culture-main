@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/testcafe/screenshots/
 
 # production
 /build

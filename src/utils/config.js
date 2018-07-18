@@ -18,7 +18,6 @@ export const IS_DEXIE = Boolean(window.indexedDB ||
 export const IS_DEXIE = false
 
 export const IS_DEV = NODE_ENV === 'development'
-export const IS_STG = /-staging/.test(document.location.host)
 export const IS_PROD = !IS_DEV
 
 export const NEW = '_new_'

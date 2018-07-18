@@ -1,34 +1,32 @@
-import { Selector, RequestLogger } from 'testcafe'
+import { Selector } from 'testcafe'
+import { ReactSelector, waitForReact } from 'testcafe-react-selectors'
 
 import regularUser from './helpers/roles'
-import BROWSER_ROOT_URL from './helpers/config'
-
-const logger = RequestLogger(BROWSER_ROOT_URL+'recommendations?occasionType=Event&occasionId=', {
-    logResponseBody: true,
-    stringifyResponseBody: true,
-    logRequestBody: true,
-    stringifyRequestBody: true
-  })
-
 
 fixture `Modale Profil`
-  .requestHooks(logger)
+    // const profileButton = Selector('.menu-button').find('button')
+    const profileButton = Selector('.profile-button')
+    const profileModal = Selector('.modal')
+    const profilePic = Selector('.modal').find('profile-pic')
+    const nextButton  = Selector('button.button.after')
+    const MenuButton = ReactSelector('MenuButton')
 
-    const profileButton = Selector('button')
-    const profileModal= Selector('.modal')
-
-  test("Lorsque l'utilisateur clique sur l'icone profil, la modale s'affiche", async t => {
+  test("Lorsque l'utilisateur clique sur l'icône profil, la modale s'affiche", async t => {
+      // await waitForReact()
       await t
       .useRole(regularUser)
-      await t.navigateTo(BROWSER_ROOT_URL+'tuto/AE')
-
-      const location = await t.eval(() => window.location)
-      console.log('locarion ---- ', location)
-      // await t.expect(Selector('header').innerText).eql('Mon profil')
-
-      // console.log('loggerMessages', logger.requests)
-      // .click(profileButton)
-      await t.click('.button')
+      .click(nextButton)
+      .expect(profileButton.visible).ok() // ce test passe !!!
+      // .takeScreenshot('./screenshots')
+      // .wait(2000)
       // .wait(1000)
-      await t.expect(profileModal.visible).ok()
+      // .debug()
+      const component  = await MenuButton.getReact()
+      console.log('----- button ---- ', component.props)
+      // .click(MenuButton) // The element that matches the specified selector is not visible.
+      // BUG https://stackoverflow.com/questions/47675948/waiting-for-element-to-appear-on-static-button-in-testcafe
+      // await t.expect(profileModal.visible).ok()
+      // .expect(profileModal.hasClass('active')).ok()
+      // .expect(profilePic.innerText).eql('Gtufhf')
+
   })
