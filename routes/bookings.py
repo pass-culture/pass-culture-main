@@ -1,13 +1,13 @@
 """ bookings routes """
 from datetime import datetime
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from sqlalchemy.exc import InternalError
 
-from models import Booking
+from models import Booking, Venue
 from models.api_errors import ApiErrors
 from models.offer import Offer
-from models.offerer import Offerer
 from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES
@@ -84,8 +84,8 @@ def post_booking():
             raise ie
 
     new_booking_offer = Offer.query.get(new_booking.offerId)
-    new_offerer = Offerer.query.get(new_booking_offer.offererId)
-    send_booking_recap_emails(new_booking_offer, new_booking, new_offerer)
-    send_booking_confirmation_email_to_user(new_booking_offer, new_booking)
+    new_venue = Venue.query.get(new_booking_offer.venueId)
+    send_booking_recap_emails(new_booking_offer, new_booking, new_venue)
+    send_booking_confirmation_email_to_user(new_booking_offer, new_booking, new_venue)
 
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201
