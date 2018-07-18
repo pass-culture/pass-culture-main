@@ -1,5 +1,6 @@
 """ api errors """
 # coding=utf-8
+import json
 
 
 class ApiErrors(Exception):
@@ -51,5 +52,9 @@ class ApiErrors(Exception):
     def maybeRaise(self):
         if len(self.errors)>0:
             raise self
+
+    def __str__(self):
+        if self.errors:
+            return json.dumps(self.errors, indent=2)
 
     status_code = None

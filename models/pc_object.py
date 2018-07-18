@@ -174,17 +174,17 @@ class PcObject():
     def abortIfErrors(self):
         apiErrors = self.errors()
         if apiErrors.errors:
-            print(apiErrors.errors)
             raise apiErrors
 
     def populateFromDict(self, dct, skipped_keys=[]):
         data = dct.copy()
         if data.__contains__('id'):
-                del data['id']
+            del data['id']
         cols = self.__class__.__table__.columns._data
         for key in data.keys():
             if (key=='deleted') or (key in skipped_keys):
                 continue
+
             if cols.__contains__(key):
                 col = cols[key]
                 if key.endswith('Id'):
@@ -216,6 +216,11 @@ class PcObject():
         for obj in objects:
             obj.abortIfErrors()
             db.session.add(obj)
+        db.session.commit()
+
+    def save(self):
+        self.abortIfErrors()
+        db.session.add(self)
         db.session.commit()
 
     def soft_delete(self):

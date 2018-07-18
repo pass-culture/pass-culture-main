@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from flask import current_app as app
 
-from utils.includes import includes
+import utils.includes
 from utils.string_processing import get_camel_string, inflect_engine
 
 
@@ -26,7 +26,7 @@ def get(collection_name, filter = None, resolve = None, **kwargs):
     model_name = get_camel_string(inflect_engine.singular_noun(collection_name, 1))
     model = app.model[model_name[0].upper() + model_name[1:]]
     query = model.query.filter() if filter is None else model.query.filter(filter)
-    include = includes.get(collection_name)
+    include = getattr(includes, model_name[0].upper() + model_name[1:] + '_INCLUDES')
     return listify(query, include, resolve, **kwargs)
     #[resolve(obj._asdict(include=include, **kwargs)) for obj in query]
 
