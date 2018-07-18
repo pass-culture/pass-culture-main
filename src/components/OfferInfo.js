@@ -86,7 +86,7 @@ class OfferInfo extends Component {
                 (occurence, index) =>
                   (
                     <li key={index}>
-                      <Capitalize>{moment(occurence).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
+                      <Capitalize>{tz && moment(occurence).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
                       {occurence === whenBooked && ' (réservé)'}
                     </li>
                   )

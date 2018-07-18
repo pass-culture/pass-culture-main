@@ -1,18 +1,20 @@
-import { Selector, RequestMock, RequestLogger } from 'testcafe'
+import { Selector } from 'testcafe'
+
+import BROWSER_ROOT_URL from './helpers/config'
 import regularUser from './helpers/roles'
 
-const logger = RequestLogger('http://localhost/recommendations?occasionType=Event&occasionId=', {
-    logResponseBody: true,
-    stringifyResponseBody: true,
-    logRequestBody: true,
-    stringifyRequestBody: true
-  })
+  const nextButton  = Selector('button.button.after')
+  const showVerso  = Selector('button.button.to-recto')
+  const versoDiv  = Selector('div.verso')
+  const clueDiv  = Selector('div.clue')
+  const closeButton  = Selector('.close-button')
+  const spanPrice  = Selector('.price')
+  const draggableImage = Selector('.react-draggable')
 
+fixture `Découverte | Je ne suis pas connecté·e`
+.page `${BROWSER_ROOT_URL+'decouverte'}`
 
-fixture `Découverte | Utilisateur non loggé`
-.page `http://localhost:3000/decouverte`
-
-  test.skip("L'utilisateur est redirigé vers la page /beta", async t =>
+  test("Je suis redirigé vers la page /connexion", async t =>
   {
     await t
     const location = await t.eval(() => window.location)
@@ -20,42 +22,66 @@ fixture `Découverte | Utilisateur non loggé`
   })
 
 fixture `Découverte | Après connexion | Les offres sont en cours de chargement`
-    .page `http://localhost:3000/`
 
      .beforeEach( async t => {
        await t
        .useRole(regularUser)
     })
 
-    test("L'utilisateur est redirigé vers la page /decouverte/empty", async t =>
-    {
+    test("Je suis informé·e du fait que les offres sont en cours de chargement", async t => {
       await t
-      const location = await t.eval(() => window.location)
-      await t.expect(location.pathname).eql('/decouverte/empty')
+      .expect(Selector('.loading').innerText).eql('\nchargement des offres\n')
     })
 
-    test("L'utilisateur est informé du fait que les offres sont en cours de chargement", async t => {
-	   await t
-     .expect(Selector('.loading').innerText).eql('\nchargement des offres\n')
-     })
-
-fixture `Découverte | Après connexion | Les offres sont chargées`
-// TODO en attente d'un bug fix
-// Lorsque les offres sont chargées, redirection vers /decouverte/tuto/AE
-
-
-const profileButton = Selector('button')
-const profileModal= Selector('.modal-dialog')
-
-fixture `Modale Profil`
-  .page `http://localhost:3000/decouverte/empty`
-    .requestHooks(logger)
-
-  test.skip("Lorsque l'utilisateur clique sur l'icone profil, la modale s'affiche", async t => {
+    test("Je suis redirigé·e vers la première page de tutoriel /decouverte/tuto/AE", async t =>
+    {
       await t
-      .useRole(regularUser)
+      // test instable, reste par moment sur decouverte... Voir si location ne garderait pas la valeur du précédant test...
+      const location = await t.eval(() => window.location)
+      await t.expect(location.pathname).eql('/decouverte/tuto/AE')
+    })
 
-      console.log('loggerMessages', logger.requests)
-      .click(profileButton)
-      await t.expect(profileModal.visible).ok()
+    test('Lorsque je clique sur la flêche suivante, je vois la page suivante du tutoriel', async t => {
+      await t
+      .click(nextButton)
+      .wait(1000)
+      const location = await t.eval(() => window.location)
+      await t.expect(location.pathname).eql('/decouverte/tuto/A9')
+    })
+
+    test('Lorsque je clique sur la flêche vers le haut, je vois le verso de la recommendation et je peux la fermer', async t => {
+      await t
+      .navigateTo(BROWSER_ROOT_URL+'decouverte/tuto/A9')
+      .wait(1000)
+      await t.expect(clueDiv.visible).ok()
+      .click(showVerso)
+      .wait(1000)
+      .expect(versoDiv.hasClass('flipped')).ok()
+      .click(closeButton)
+      .expect(versoDiv.hasClass('flipped')).notOk()
+    })
+
+fixture `Découverte | Après connexion | Recommandations`
+    .beforeEach( async t => {
+    await t
+    .useRole(regularUser)
+    .navigateTo(BROWSER_ROOT_URL+'decouverte/AH7Q/AU#AM')
   })
+
+  test.skip("Je vois les informations de l'accroche du recto", async t => {
+    await t
+    // TODO
+  })
+
+  test("Je vois le verso des cartes lorsque je fais glisser la carte vers le haut", async t => {
+    await t
+    .navigateTo(BROWSER_ROOT_URL+'decouverte/AH7Q/AU')
+    .wait(500)
+    .click(showVerso)
+    .wait(500)
+    await t.expect(versoDiv.find('h1').innerText).eql('Vhils')
+    await t.expect(versoDiv.find('h2').innerText).eql('LE CENTQUATRE-PARIS')
+    // TODO
+  })
+
+// TODO tester le drag des images https://devexpress.github.io/testcafe/documentation/test-api/actions/drag-element.html
