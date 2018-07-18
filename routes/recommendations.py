@@ -77,7 +77,7 @@ def patch_recommendation(recommendationId):
     recommendation = query.first_or_404()
     recommendation.populateFromDict(request.json)
     app.model.PcObject.check_and_save(recommendation)
-    return jsonify(recommendation._asdict()), 200
+    return jsonify(dictify_reco(recommendation)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -199,41 +199,36 @@ def put_recommendations():
              + str([(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos])
              + str(len(recos)))
 
-    return jsonify(dictify_recos(recos)), 200
+    return jsonify(list(map(dictify_reco, recos))), 200
 
 
-def dictify_recos(recos):
+def dictify_reco(reco):
 
-    dict_recos = []
-    for reco in recos:
-        dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
-        dict_reco['bookings'] = list(map(lambda b: b._asdict(include=BOOKING_INCLUDES),
-                                         reco.mediatedOffersQuery
-                                             .join(Booking)
-                                             .filter(Booking.user == current_user)
-                                             .with_entities(Booking)
-                                             .all()))
-        dict_recos.append(dict_reco)
-
+    dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
+    dict_reco['bookings'] = list(map(lambda b: b._asdict(include=BOOKING_INCLUDES),
+                                     reco.mediatedOffersQuery
+                                         .join(Booking)
+                                         .filter(Booking.user == current_user)
+                                         .with_entities(Booking)
+                                         .all()))
     # FIXME: This is to support legacy code in the webapp
     # it should be cleaned up and the app adapted
 
-    for index, reco in enumerate(dict_recos):
-        if recos[index].event is not None or\
-           (recos[index].mediation is not None and
-            recos[index].mediation.event is not None):
-            if recos[index].event is not None:
-                occurences = recos[index].event.occurences
-            else:
-                occurences = recos[index].mediation.event.occurences
-            ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
-                           filter(lambda eo: len(eo.offers) > 0,
-                                  occurences)))
-            reco['recommendationOffers'] = sorted(ros,
-                                                  key=lambda ro: ro['bookingLimitDatetime'],
-                                                  reverse=True)
-        elif recos[index].mediation and\
-             recos[index].mediation.tutoIndex is not None:
-            reco['recommendationOffers'] = []
+    if reco.event is not None or\
+       (reco.mediation is not None and
+        reco.mediation.event is not None):
+        if reco.event is not None:
+            occurences = reco.event.occurences
+        else:
+            occurences = reco.mediation.event.occurences
+        ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
+                       filter(lambda eo: len(eo.offers) > 0,
+                              occurences)))
+        dict_reco['recommendationOffers'] = sorted(ros,
+                                                   key=lambda ro: ro['bookingLimitDatetime'],
+                                                   reverse=True)
+    elif reco.mediation and\
+         reco.mediation.tutoIndex is not None:
+        dict_reco['recommendationOffers'] = []
 
-    return dict_recos
+    return dict_reco
