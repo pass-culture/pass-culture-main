@@ -88,6 +88,7 @@ class Offer(app.model.PcObject,
     @hybrid_property
     def object(self):
         return self.thing or self.eventOccurence
+        
 
 app.model.Offer = Offer
 

@@ -133,16 +133,6 @@ RECOMMENDATION_INCLUDES = [
             "event",
             "thing"
         ]
-    },
-    "bookings",
-    {
-        "key": "recommendationBookings",
-        "resolve": (lambda element, filters: element['booking']),
-        "sub_joins": [
-            {
-                "key": "booking"
-            }
-        ]
     }
 ]
 
@@ -155,12 +145,15 @@ RECOMMENDATION_OFFER_INCLUDES =  [
 
 BOOKING_INCLUDES = [
     {
-        "key": "recommendation",
-        "sub_joins": RECOMMENDATION_INCLUDES
-    },
-    {
         "key": "offer",
-        "sub_joins": OFFER_INCLUDES
+        "sub_joins": 
+            [
+                {
+                    "key": "eventOccurence",
+                    "sub_joins": ["venue"]
+                },
+                "venue"
+            ]
     }
 ]
 
@@ -190,17 +183,3 @@ VENUE_INCLUDES = [
 VENUE_PROVIDER_INCLUDES = [
     "provider"
 ]
-
-includes = {
-    'bookings': BOOKING_INCLUDES,
-    'events': EVENT_INCLUDES,
-    'eventOccurences': EVENT_OCCURENCE_INCLUDES,
-    'occasions': OCCASION_INCLUDES,
-    'offerers': OFFERER_INCLUDES,
-    'offers': OFFER_INCLUDES,
-    'recommendations': RECOMMENDATION_INCLUDES,
-    'things': THING_INCLUDES,
-    'users': USER_INCLUDES,
-    'venues': VENUE_INCLUDES,
-    'venueProviders': VENUE_PROVIDER_INCLUDES
-}

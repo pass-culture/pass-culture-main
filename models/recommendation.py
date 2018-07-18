@@ -94,10 +94,29 @@ class Recommendation(app.model.PcObject, db.Model):
                         server_default=expression.false(),
                         default=False)
 
+
     @property
-    def mediatedOffers(self):
-        #TODO
-        pass
+    def mediatedOffers(self, as_query=False):
+        "Returns the offers that correspond to this recommendation\
+         if there is a mediation, only offers from the author of the\
+         mediation are considered (offerers don't want to advertise\
+         for each other)."
+        return self.mediatedOffersQuery.all()
+
+    @property
+    def mediatedOffersQuery(self):
+        EventOccurence = app.model.EventOccurence
+        query = app.model.Offer.query
+        reco_or_mediation = self
+        if self.mediation is not None:
+            reco_or_mediation = self.mediation
+            query = query.filter_by(offererId=self.mediation.offererId)
+        if self.thingId is not None:
+            query = query.filter_by(thingId=reco_or_mediation.thingId)
+        elif self.eventId is not None:
+            query = query.join(EventOccurence)\
+                         .filter(EventOccurence.eventId == reco_or_mediation.eventId)
+        return query
         
     # FIXME: This is to support legacy code in the webapp
     # it should be removed once all requests from the webapp

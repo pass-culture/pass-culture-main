@@ -52,6 +52,12 @@ class Booking(app.model.PcObject,
                            foreign_keys=[userId],
                            backref='userBookings')
 
+    @property
+    def eventOccurenceBeginningDatetime(self):
+        offer = self.offer
+        if offer.thingId:
+            return None
+        return offer.eventOccurence.beginningDatetime
 
 app.model.Booking = Booking
 

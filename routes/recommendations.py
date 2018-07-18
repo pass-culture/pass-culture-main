@@ -12,10 +12,12 @@ from utils.rest import expect_json_data
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
                          BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize, humanize
-from utils.includes import RECOMMENDATION_INCLUDES,\
+from utils.includes import BOOKING_INCLUDES,\
+                           RECOMMENDATION_INCLUDES,\
                            RECOMMENDATION_OFFER_INCLUDES
 from utils.rest import expect_json_data
 
+Booking = app.model.Booking
 Event = app.model.Event
 Mediation = app.model.Mediation
 Offer = app.model.Offer
@@ -76,8 +78,6 @@ def patch_recommendation(recommendationId):
     recommendation.populateFromDict(request.json)
     app.model.PcObject.check_and_save(recommendation)
     return jsonify(recommendation._asdict()), 200
-
-
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -203,23 +203,22 @@ def put_recommendations():
 
 
 def dictify_recos(recos):
-    # FIXME: This is to support legacy code in the webapp
-    # it should be removed once all requests from the webapp
-    # have an app version header, which will mean that all
-    # clients (or at least those who do use the app) have
-    # a recent version of the app
 
-    dict_recos = list(map(lambda r: r._asdict(include=RECOMMENDATION_INCLUDES),
-                          recos))
+    dict_recos = []
+    for reco in recos:
+        dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
+        dict_reco['bookings'] = list(map(lambda b: b._asdict(include=BOOKING_INCLUDES),
+                                         reco.mediatedOffersQuery
+                                             .join(Booking)
+                                             .filter(Booking.user == current_user)
+                                             .with_entities(Booking)
+                                             .all()))
+        dict_recos.append(dict_reco)
+
+    # FIXME: This is to support legacy code in the webapp
+    # it should be cleaned up and the app adapted
 
     for index, reco in enumerate(dict_recos):
-        rbs = []
-        for b in recos[index].bookings:
-            rb = {}
-            rb['booking'] = b
-            rbs.append(rb)
-        reco['recommendationBookings'] = rbs
-
         if recos[index].event is not None or\
            (recos[index].mediation is not None and
             recos[index].mediation.event is not None):
