@@ -31,5 +31,12 @@ jobs:
       # run unit tests!
       #- run: yarn test
 
+      # Start server for testcafe
+      - run:
+          name: Running API
+          command: yarn start
+
       # run functional tests!
-      - run: yarn testcafe
+      - run:
+          name: Running tests
+          command: yarn testcafe
