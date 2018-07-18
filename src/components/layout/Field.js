@@ -62,7 +62,7 @@ class Field extends Component {
 
     const InputComponent = this.props.InputComponent
 
-    return <InputComponent {...inputProps} className={`input is-${this.props.size}`} />
+    return <InputComponent {...inputProps} />
   }
 
   renderLayout() {

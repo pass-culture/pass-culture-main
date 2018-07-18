@@ -32,7 +32,13 @@ class SelectInput extends Component {
 
     return <div className={`select is-${this.props.size} ${classnames({readonly: actualReadOnly})}`}>
       <select
-        {...this.props}
+        aria-describedby={this.props['aria-describedby']}
+        autoComplete={this.props.autoComplete}
+        id={this.props.id}
+        name={this.props.name}
+        required={this.props.required}
+        type={this.props.type}
+        value={this.props.value}
         onChange={this.onChange}
         disabled={actualReadOnly} // readonly doesn't exist on select
         >
