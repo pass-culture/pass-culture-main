@@ -19,6 +19,7 @@ import SelectInput from './form/SelectInput'
 import SirenInput from './form/SirenInput'
 import TextareaInput from './form/TextareaInput'
 import TextInput from './form/TextInput'
+import TimeInput from './form/TimeInput'
 
 const inputByTypes = {
   date: DateInput,
@@ -33,6 +34,7 @@ const inputByTypes = {
   checkbox: CheckboxInput,
   text: TextInput,
   textarea: TextareaInput,
+  time: TimeInput,
 }
 
 

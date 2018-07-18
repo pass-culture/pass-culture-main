@@ -10,6 +10,7 @@ const BasicInput = props => {
     name={props.name}
     onChange={props.onChange}
     required={props.required}
+    readOnly={props.readOnly}
     type={props.type}
     value={props.value}
   />

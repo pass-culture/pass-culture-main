@@ -24,10 +24,16 @@
             }
           }
         }
-        form.occurence-form {
+        .occurence-form {
           display: table-row;
           td {
             vertical-align: baseline;
+            .input {
+              min-width: 75px;
+              &.date-picker {
+                min-width: 100px;
+              }
+            }
           }
         }
       }

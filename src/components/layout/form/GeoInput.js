@@ -166,6 +166,7 @@ class GeoInput extends Component {
       items={[].concat(suggestions || defaultSuggestion)}
       onChange={this.onTextChange}
       onSelect={this.onSelect}
+      readOnly={readOnly}
       renderItem={({id, label, placeholder}, highlighted) => (
         <div
           className={classnames({

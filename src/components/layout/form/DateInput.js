@@ -6,23 +6,36 @@ import Icon from '../Icon'
 
 const DateInput = props => {
 
+  const onChange = date => {
+    console.log(date)
+    props.onChange({[props.name]: date})
+  }
+
+  console.log(moment)
+  console.log(props.value)
+
   return props.readOnly ? (
     <span> {props.value && props.value.format(props.dateFormat)} </span>
     ) : (
     <div className={`input is-${props.size} date-picker`}>
-      <DatePicker
-        className='date'
-        filterDate={props.filterDate}
-        highlightDates={props.highlightedDates || []}
-        minDate={props.minDate || moment()}
-        onChange={props.onChange}
-        selected={props.value ? moment(props.value) : null}
-      />
-      <Icon
-        alt='Horaires'
-        className="input-icon"
-        svg="ico-calendar"
-      />
+      <span>
+        <DatePicker
+          className='date'
+          filterDate={props.filterDate}
+          highlightDates={props.highlightedDates || []}
+          minDate={props.minDate || moment()}
+          onChange={onChange}
+          readOnly={props.readOnly}
+          selected={props.value ? moment(props.value) : null}
+        />
+      </span>
+      <span className='icon'>
+        <Icon
+          alt='Horaires'
+          className="input-icon"
+          svg="ico-calendar"
+        />
+      </span>
     </div>
   )
 }

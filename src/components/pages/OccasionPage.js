@@ -24,7 +24,10 @@ import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
 // import { eventNormalizer } from '../../utils/normalizers'
-import { pluralize, updateQueryString } from '../../utils/string'
+import {
+  pluralize,
+  // updateQueryString,
+} from '../../utils/string'
 
 import Form from '../layout/Form'
 import Field from '../layout/Field'
@@ -183,12 +186,13 @@ class OccasionPage extends Component {
       location: { pathname },
       occasion,
       occurences,
-      history,
-      offerer,
-      search,
-      venue
+      // history,
+      // offerer,
+      // search,
+      // venue
+      // offererId,
+      // venueId,
     } = this.props
-    const { offererId, venueId } = this.props
 
     // IMHO not necessary: here I'd consider the query string as a inital value, but then we let the form handle the data, don't we?
     // if (venue && venueId && venue.id !== venueId) {
@@ -256,11 +260,7 @@ class OccasionPage extends Component {
       >
         <div className='section'>
           <h1 className='pc-title'>
-            {
-              isNew
-                ? "Ajouter une"
-                : "Détails de l'"
-            } offre
+            { isNew ? "Ajouter une offre" : "Détails de l'offre" }
           </h1>
           <p className='subtitle'>
             Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
@@ -375,14 +375,14 @@ class OccasionPage extends Component {
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 { isReadOnly ? (
-                  <NavLink to={`${pathname}/modifie${search}`}
+                  <NavLink to={`/offres/${get(occasion, 'id')}/modifie${search}`}
                     className='button is-secondary is-medium'>
                     Modifier l'offre
                   </NavLink>
                 ) : (
                   <NavLink
                     className="button is-secondary is-medium"
-                    to={`/offres${search}`}>
+                    to={`/offres/${get(occasion, 'id')}${search}`}>
                     Annuler
                   </NavLink>
                 )}

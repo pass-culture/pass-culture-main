@@ -15,6 +15,7 @@ const TextareaInput = props => {
     type={props.type}
     value={props.value}
     onChange={onChange}
+    readOnly={props.readOnly}
   />
 }
 
