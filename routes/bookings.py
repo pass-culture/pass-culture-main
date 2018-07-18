@@ -84,8 +84,7 @@ def post_booking():
             raise ie
 
     new_booking_offer = Offer.query.get(new_booking.offerId)
-    new_venue = Venue.query.get(new_booking_offer.venueId)
-    send_booking_recap_emails(new_booking_offer, new_booking, new_venue)
-    send_booking_confirmation_email_to_user(new_booking_offer, new_booking, new_venue)
+    send_booking_recap_emails(new_booking_offer, new_booking)
+    send_booking_confirmation_email_to_user(new_booking)
 
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201
