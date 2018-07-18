@@ -1,4 +1,3 @@
-import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Icon from '../Icon'
 

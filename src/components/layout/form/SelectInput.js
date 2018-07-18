@@ -16,15 +16,16 @@ class SelectInput extends Component {
     }
   }
 
-  render() {
-    const onChange = e => this.props.onChange(e.target.value)
-
-    const handleUniqueSelectOption = () => {
-      const { options, optionValue } = this.props
-      if (options && options.length === 1) {
-        onChange(options[0][optionValue])
-      }
+  handleUniqueSelectOption = () => {
+    const { options, optionValue } = this.props
+    if (options && options.length === 1) {
+      this.props.onChange(options[0][optionValue])
     }
+  }
+
+  onChange = e => this.props.onChange(e.target.value)
+
+  render() {
 
     const actualReadOnly = this.props.readOnly || this.props.options.length === 1
     const actualOptions = optionify(this.props.options.map(o => ({label: get(o, this.props.optionLabel), value: get(o, this.props.optionValue)})), this.props.placeholder)
@@ -32,7 +33,7 @@ class SelectInput extends Component {
     return <div className={`select is-${this.props.size} ${classnames({readonly: this.props.actualReadOnly})}`}>
       <select
         {...this.props}
-        onChange={onChange}
+        onChange={this.onChange}
         disabled={this.props.actualReadOnly} // readonly doesn't exist on select
         >
         { actualOptions.filter(o => o).map(({ label, value }, index) =>
