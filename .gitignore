@@ -98,6 +98,7 @@ postgres_data
 # Secret
 private
 secret.py
+private.tar.gz
 
 # Store
 static/object_store_data
@@ -109,4 +110,5 @@ static/object_store_data
 # env
 dev_env_file
 
-private.tar.gz
+# IntelliJ IDEA / PyCharm
+.idea/
