@@ -1,5 +1,3 @@
-from models.pc_object import PcObject
-
 """ sandbox script """
 #https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
 # -*- coding: utf-8 -*-
@@ -9,6 +7,8 @@ from flask import current_app as app
 import json
 from os import path
 from pathlib import Path
+
+from models.pc_object import PcObject
 from utils.mock import set_from_mock
 
 
