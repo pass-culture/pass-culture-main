@@ -5,7 +5,6 @@ import { ROOT_PATH } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
-import { connect } from 'react-redux'
 
 const customIcon = new L.Icon({
     iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
@@ -69,11 +68,6 @@ class GeoInput extends Component {
 
   onSelect = (value, item) => {
     if (item.placeholder) return
-    const {
-      collectionName,
-      entityId,
-      mergeForm
-    } = this.props
     this.setState({
       value,
       position: {
@@ -138,6 +132,7 @@ class GeoInput extends Component {
     console.log(this.props.value)
 
     const input = <Autocomplete
+      autocomplete='street-address'
       getItemValue={value => value.label}
       inputProps={{
         className: className || 'input',

@@ -1,9 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types';
 import classnames from 'classnames'
-import get from 'lodash.get'
 import Icon from './Icon'
-import Textarea from 'react-autosize-textarea'
 
 import CheckboxInput from './form/CheckboxInput'
 import DateInput from './form/DateInput'
@@ -21,11 +19,14 @@ const inputByTypes = {
   email: TextInput,
   geo: GeoInput,
   hidden: HiddenInput,
+  number: NumberInput,
   password: PasswordInput,
+  select: SelectInput,
   siren: SirenInput,
   siret: SirenInput,
   checkbox: CheckboxInput,
   text: TextInput,
+  textarea: TextareaInput,
 }
 
 class Field extends Component {

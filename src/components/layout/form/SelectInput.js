@@ -30,11 +30,11 @@ class SelectInput extends Component {
     const actualReadOnly = this.props.readOnly || this.props.options.length === 1
     const actualOptions = optionify(this.props.options.map(o => ({label: get(o, this.props.optionLabel), value: get(o, this.props.optionValue)})), this.props.placeholder)
 
-    return <div className={`select is-${this.props.size} ${classnames({readonly: this.props.actualReadOnly})}`}>
+    return <div className={`select is-${this.props.size} ${classnames({readonly: actualReadOnly})}`}>
       <select
         {...this.props}
         onChange={this.onChange}
-        disabled={this.props.actualReadOnly} // readonly doesn't exist on select
+        disabled={actualReadOnly} // readonly doesn't exist on select
         >
         { actualOptions.filter(o => o).map(({ label, value }, index) =>
           <option key={index} value={value}>
