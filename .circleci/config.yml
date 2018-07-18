@@ -33,8 +33,9 @@ jobs:
 
       # Start server for testcafe
       - run:
-          name: Running API
+          name: Running Webapp
           command: yarn start
+          background: true
 
       # run functional tests!
       - run:
