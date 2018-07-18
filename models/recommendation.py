@@ -10,6 +10,7 @@ from sqlalchemy import BigInteger,\
                        String
 from sqlalchemy.orm import relationship
 
+from models import Offer, EventOccurence
 from models.db import Model
 from models.pc_object import PcObject
 
@@ -117,8 +118,7 @@ class Recommendation(PcObject, Model):
 
     @property
     def mediatedOffersQuery(self):
-        EventOccurence = app.model.EventOccurence
-        query = app.model.Offer.query
+        query = Offer.query
         reco_or_mediation = self
         if self.mediation is not None:
             reco_or_mediation = self.mediation

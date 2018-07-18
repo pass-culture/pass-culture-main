@@ -1,13 +1,13 @@
 """ booking model """
 from datetime import datetime
-from sqlalchemy import BigInteger,\
-                       Column,\
-                       DateTime,\
-                       DDL,\
-                       event,\
-                       ForeignKey,\
-                       Integer,\
-                       String
+from sqlalchemy import BigInteger, \
+    Column, \
+    DateTime, \
+    DDL, \
+    event, \
+    ForeignKey, \
+    Integer, \
+    String
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -15,11 +15,11 @@ from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
 
+
 class Booking(PcObject,
               Model,
               DeactivableMixin,
               VersionedMixin):
-
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -48,12 +48,9 @@ class Booking(PcObject,
                       nullable=False,
                       default=1)
 
-    @property
-    def eventOccurenceBeginningDatetime(self):
-        offer = self.offer
-        if offer.thingId:
-            return None
-        return offer.eventOccurence.beginningDatetime
+    token = Column(String(6),
+                   unique=True,
+                   nullable=False)
 
     userId = Column(BigInteger,
                     ForeignKey('user.id'),
@@ -63,6 +60,14 @@ class Booking(PcObject,
     user = relationship('User',
                         foreign_keys=[userId],
                         backref='userBookings')
+
+    @property
+    def eventOccurenceBeginningDatetime(self):
+        offer = self.offer
+        if offer.thingId:
+            return None
+        return offer.eventOccurence.beginningDatetime
+
 
 trig_ddl = DDL("""
     CREATE OR REPLACE FUNCTION check_booking()

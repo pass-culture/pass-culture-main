@@ -1,5 +1,6 @@
 from flask import current_app as app
 
+from models.db import db
 from models.provider import Provider
 from utils.attr_dict import AttrDict
 
@@ -25,5 +26,5 @@ for name in app.local_providers.keys():
         p.name = provider.name
         p.localClass = name
         p.isActive = False
-        app.db.session.add(p)
-        app.db.session.commit()
+        db.session.add(p)
+        db.session.commit()

@@ -7,6 +7,7 @@ from flask_login import current_user, login_required
 from sqlalchemy.sql.expression import func
 
 from datascience import create_recommendation, create_recommendations
+from models import Booking
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES,\
