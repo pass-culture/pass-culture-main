@@ -70,7 +70,7 @@ function getClientEnvironment(publicUrl) {
         // system in a worker or not
         HAS_WORKERS: process.env.HAS_WORKERS || false,
         // Helpful for debugging android in dev
-        NGROK_API_URL: process.env.NGROK_API_URL,
+        API_URL: process.env.API_URL,
         // Useful for determining whether we’re running in production mode.
         // Most importantly, it switches React into the correct mode.
         NODE_ENV: process.env.NODE_ENV || 'development',

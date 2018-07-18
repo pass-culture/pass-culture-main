@@ -34,8 +34,7 @@ jobs:
       # Start server for testcafe
       - run:
           name: Running Webapp
-          command: |
-            echo $API_URL
+          command:
             yarn start
           background: true
 
