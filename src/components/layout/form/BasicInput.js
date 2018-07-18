@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 
 const BasicInput = props => {
 
@@ -16,11 +15,5 @@ const BasicInput = props => {
   />
 }
 
-BasicInput.propTypes = {
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-}
 export default BasicInput
 

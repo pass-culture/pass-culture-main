@@ -207,8 +207,8 @@ class VenuePage extends Component {
             </h2>
             <div className='field-group'>
               <Field type="geo" name='address' label='Numéro et voie' required isExpanded withMap />
-              <Field name='postalCode' label='Code postal' required />
-              <Field name='city' label='Ville' required />
+              <Field name='postalCode' label='Code postal' autocomplete='postal-code' required />
+              <Field name='city' label='Ville' autocomplete='address-level2' required />
             </div>
           </div>
         <hr />

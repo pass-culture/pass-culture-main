@@ -4,9 +4,11 @@ import BasicInput from './BasicInput'
 
 const SirenInput = props => {
 
-  const onInputChange = e => props.onChange(e.target.value)
+  const onInputChange = e => props.onChange(removeWhitespaces(e.target.value))
 
-  const input = <BasicInput {...props} type='text' onChange={onInputChange} />
+  console.log('youpi', props.value)
+
+  const input = <BasicInput {...props} type='text' onChange={onInputChange} value={formatSiren(props.value)} />
 
   if (typeof props.fetchedName !== 'string') return input
   return <div className='with-display-name'>
@@ -15,8 +17,8 @@ const SirenInput = props => {
   </div>
 }
 
-SirenInput.displayValue = formatSiren
-SirenInput.storeValue = removeWhitespaces
+// SirenInput.displayValue = formatSiren
+// SirenInput.storeValue = removeWhitespaces
 
 export default SirenInput
 

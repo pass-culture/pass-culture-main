@@ -37,11 +37,30 @@ class GeoInput extends Component {
     showMap: true,
     maxSuggestions: 5,
     placeholder: 'Sélectionnez l\'adresse lorsqu\'elle est proposée.',
-    initialPosition: { // Displays France
+    zoom: 15,
+    defaultInitialPosition: { // Displays France
       latitude: 46.98025235521883,
       longitude: 1.9335937500000002,
       zoom: 5,
     }
+  }
+
+  static extraFormData = ['latitude', 'longitude']
+
+  static getDerivedStateFromProps = (newProps, currentState) => {
+    return Object.assign({}, currentState, {
+      position: {
+        latitude: newProps.latitude || newProps.defaultInitialPosition.latitude,
+        longitude: newProps.longitude || newProps.defaultInitialPosition.longitude,
+        zoom: newProps.latitude && newProps.longitude ? newProps.zoom : newProps.defaultInitialPosition.zoom
+      }
+    }, newProps.latitude && newProps.longitude ? {
+      suggestions: [],
+      marker: {
+        latitude: newProps.latitude,
+        longitude: newProps.longitude,
+      }
+    } : null)
   }
 
   toggleDraggable = () => {
@@ -56,14 +75,19 @@ class GeoInput extends Component {
         longitude: lng
       },
     })
+    this.props.onChange({
+      latitude: lat,
+      longitude: lng,
+    })
   }
 
-  onChange = (e) => {
+  onTextChange = (e) => {
     const value = e.target.value
     this.setState({
       value,
     })
     this.onDebouncedFetchSuggestions(value)
+    this.props.onChange({[this.props.name]: value})
   }
 
   onSelect = (value, item) => {
@@ -73,7 +97,7 @@ class GeoInput extends Component {
       position: {
         latitude: item.latitude,
         longitude: item.longitude,
-        zoom: 15,
+        zoom: this.props.zoom,
       },
       marker: {
         latitude: item.latitude,
@@ -81,7 +105,6 @@ class GeoInput extends Component {
       }
     })
 
-    console.log(item)
     this.props.onChange(item)
   }
 
@@ -129,7 +152,6 @@ class GeoInput extends Component {
       id: 'placeholder',
     }
 
-    console.log(this.props.value)
 
     const input = <Autocomplete
       autocomplete='street-address'
@@ -142,7 +164,7 @@ class GeoInput extends Component {
         required,
       }}
       items={[].concat(suggestions || defaultSuggestion)}
-      onChange={this.onChange}
+      onChange={this.onTextChange}
       onSelect={this.onSelect}
       renderItem={({id, label, placeholder}, highlighted) => (
         <div
@@ -163,7 +185,7 @@ class GeoInput extends Component {
       wrapperProps={{ className: 'input-wrapper' }}
     />
 
-    if (!this.props.showMap) return input
+    if (!this.props.withMap) return input
     const {
       latitude, longitude, zoom
     } = position

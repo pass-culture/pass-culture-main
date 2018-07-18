@@ -13,6 +13,8 @@ const NEW_MERGE_FORM = 'NEW_MERGE_FORM'
 const REMOVE_FORM = 'REMOVE_FORM'
 const RESET_FORM = 'RESET_FORM'
 const NEW_ERROR_FORM = 'NEW_ERROR_FORM'
+const NEW_RESET_FORM = 'NEW_RESET_FORM'
+const NEW_REMOVE_ERROR_FORM = 'NEW_REMOVE_ERROR_FORM'
 
 // REDUCER
 const form = (state = initialState, action) => {
@@ -28,10 +30,20 @@ const form = (state = initialState, action) => {
           data: newValue
         }
       })
+    case NEW_RESET_FORM:
+      return Object.assign(state, {
+        [action.name]: null,
+      })
     case NEW_ERROR_FORM:
       return deepMerge(state, {
         [action.name]: {
           errors: [].concat(action.values),
+        }
+      })
+    case NEW_REMOVE_ERROR_FORM:
+      return deepMerge(state, {
+        [action.name]: {
+          errors: []
         }
       })
     case REMOVE_FORM:
@@ -81,6 +93,16 @@ export const newErrorForm = (name, values) => ({
   type: NEW_ERROR_FORM,
   name,
   values,
+})
+
+export const newResetForm = (name) => ({
+  type: NEW_RESET_FORM,
+  name,
+})
+
+export const newRemoveErrorForm = (name) => ({
+  type: NEW_REMOVE_ERROR_FORM,
+  name,
 })
 
 export const mergeForm = (collectionName, id, nameOrObject, value, parentValue) => ({

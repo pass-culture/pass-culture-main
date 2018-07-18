@@ -3,32 +3,6 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames'
 import Icon from './Icon'
 
-import CheckboxInput from './form/CheckboxInput'
-import DateInput from './form/DateInput'
-import GeoInput from './form/GeoInput'
-import HiddenInput from './form/HiddenInput'
-import NumberInput from './form/NumberInput'
-import PasswordInput from './form/PasswordInput'
-import SelectInput from './form/SelectInput'
-import SirenInput from './form/SirenInput'
-import TextareaInput from './form/TextareaInput'
-import TextInput from './form/TextInput'
-
-const inputByTypes = {
-  date: DateInput,
-  email: TextInput,
-  geo: GeoInput,
-  hidden: HiddenInput,
-  number: NumberInput,
-  password: PasswordInput,
-  select: SelectInput,
-  siren: SirenInput,
-  siret: SirenInput,
-  checkbox: CheckboxInput,
-  text: TextInput,
-  textarea: TextareaInput,
-}
-
 class Field extends Component {
 
   constructor(props) {
@@ -49,46 +23,14 @@ class Field extends Component {
     name: PropTypes.string.isRequired,
   }
 
-  static guessInputType(name) {
-    switch(name) {
-      case 'email':
-        return 'email'
-      case 'password':
-        return 'password'
-      case 'time':
-        return 'time'
-      case 'date':
-        return 'date'
-      case 'siren':
-        return 'siren'
-      case 'price':
-        return 'number'
-      default:
-        return 'text'
-    }
-  }
-
-  static guessAutoComplete(name, type) {
-    return type || name
-  }
-
-  static getDerivedStateFromProps({autoComplete, name, type, required, readonly, value}) {
-    type = type || Field.guessInputType(name) // Would be cleaner to use `this` instead of `Field` but doesn't work :(
-    const InputComponent = inputByTypes[type]
-
-    if (!InputComponent) console.error('Component not found', this.props.name, type)
-
-    return {
-      required: required && !readonly,
-      type,
-      autoComplete: autoComplete || Field.guessAutoComplete(name, type),
-      value,
-      InputComponent,
-    }
+  static getDerivedStateFromProps(newProps, currentState) {
+    return Object.assign({
+      value: newProps.value || currentState.value
+    })
   }
 
   componentDidMount() {
-    this.onChange(this.props.value)
+    this.props.value && this.onChange(this.props.value)
   }
 
   componentDidUpdate(prevProps) {
@@ -98,37 +40,27 @@ class Field extends Component {
   }
 
   onChange = (value) => {
-    if (value === this.props.value) return
+    // if (value === this.props.value) return
 
-    const displayValue = this.state.InputComponent.displayValue || this.props.displayValue
-    const storeValue = this.state.InputComponent.storeValue || this.props.storeValue
-
-    console.log(this.props.name, value)
+    const displayValue = this.props.InputComponent.displayValue || this.props.displayValue
+    const storeValue = this.props.InputComponent.storeValue || this.props.storeValue
 
     this.setState({
       value: displayValue(value),
-    }, () => {
-      this.props.onChange(this.props.name, storeValue(value))
     })
+    this.props.onChange(storeValue(value))
   }
 
   renderInput = () => {
-    const {
-      autoComplete,
-      required,
-      type,
-      value,
-      InputComponent,
-    } = this.state
 
     const inputProps = Object.assign({}, this.props, {
       'aria-describedby': `${this.props.id}-error`,
-      autoComplete,
       onChange: this.onChange,
-      required,
-      type,
-      value,
+      required: this.props.required && !this.props.readonly,
+      value: this.state.value,
     })
+
+    const InputComponent = this.props.InputComponent
 
     return <InputComponent {...inputProps} className={`input is-${this.props.size}`} />
   }
@@ -143,13 +75,11 @@ class Field extends Component {
       required,
       readOnly,
       size,
+      type,
     } = this.props
-    const {
-      type
-    } = this.state
     const $input = this.renderInput()
 
-    if (this.state.type === 'hidden') return $input
+    if (type === 'hidden') return $input
     switch(layout) {
       case 'horizontal':
         return <div className='field is-horizontal'>

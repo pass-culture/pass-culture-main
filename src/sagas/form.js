@@ -34,8 +34,8 @@ const fromWatchSirenInput = sireType => function*(action) {
       yield put(newMergeForm(action.name, {
         address: get(body, `${dataPath}.geo_adresse`),
         city: get(body, `${dataPath}.libelle_commune`),
-        latitude: get(body, `${dataPath}.latitude`),
-        longitude: get(body, `${dataPath}.longitude`),
+        latitude: parseFloat(get(body, `${dataPath}.latitude`)) || null,
+        longitude: parseFloat(get(body, `${dataPath}.longitude`)) || null,
         name: get(body, `${dataPath}.l1_normalisee`) ||  get(body, `${dataPath}.l1_declaree`) || '',
         postalCode: get(body, `${dataPath}.code_postal`),
         [sireType]: get(body, `${dataPath}.${sireType}`),

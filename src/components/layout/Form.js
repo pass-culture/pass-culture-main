@@ -5,10 +5,37 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
 
-import { newMergeForm } from '../../reducers/form'
+import { newMergeForm, newRemoveErrorForm } from '../../reducers/form'
 import { removeErrors } from '../../reducers/errors'
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
+
+import CheckboxInput from './form/CheckboxInput'
+import DateInput from './form/DateInput'
+import GeoInput from './form/GeoInput'
+import HiddenInput from './form/HiddenInput'
+import NumberInput from './form/NumberInput'
+import PasswordInput from './form/PasswordInput'
+import SelectInput from './form/SelectInput'
+import SirenInput from './form/SirenInput'
+import TextareaInput from './form/TextareaInput'
+import TextInput from './form/TextInput'
+
+const inputByTypes = {
+  date: DateInput,
+  email: TextInput,
+  geo: GeoInput,
+  hidden: HiddenInput,
+  number: NumberInput,
+  password: PasswordInput,
+  select: SelectInput,
+  siren: SirenInput,
+  siret: SirenInput,
+  checkbox: CheckboxInput,
+  text: TextInput,
+  textarea: TextareaInput,
+}
+
 
 class Form extends Component {
 
@@ -37,6 +64,26 @@ class Form extends Component {
     data: PropTypes.object,
   }
 
+  static guessInputType(name) {
+    switch(name) {
+      case 'email':
+        return 'email'
+      case 'password':
+        return 'password'
+      case 'time':
+        return 'time'
+      case 'date':
+        return 'date'
+      case 'siret':
+      case 'siren':
+        return 'siren'
+      case 'price':
+        return 'number'
+      default:
+        return 'text'
+    }
+  }
+
   static getDerivedStateFromProps = (props, prevState) => {
     return {
       method: props.method || get(props, 'data.id') ? 'PATCH' : 'POST',
@@ -44,7 +91,7 @@ class Form extends Component {
   }
 
   onMergeForm = () => {
-    // this.props.removeErrors()
+    this.props.newRemoveErrorForm()
     this.props.newMergeForm(this.props.name, this.state.editedValues)
     this.setState({
       editedValues: {},
@@ -76,17 +123,6 @@ class Form extends Component {
     })
   }
 
-  updateFormValue = (key, value) => {
-    const newEditedValues = typeof key === 'object' ? key : {[key]: value}
-    this.setState({
-      editedValues: Object.assign(this.state.editedValues, newEditedValues)
-    })
-    // Using debounce makes it fail when fields depends on each other (venue and offerer in OccasionForm)
-    // TODO: find a fix
-    // this.onDebouncedMergeForm()
-    this.onMergeForm()
-  }
-
   childrenWithProps = () => {
     const {
       children,
@@ -107,16 +143,30 @@ class Form extends Component {
         }
         const formValue = get(formData || {}, c.props.name)
         const storeValue = get(storeData || {}, c.props.name)
+        const type = c.props.type || Form.guessInputType(c.props.name) || 'text'
+        const InputComponent = inputByTypes[type]
+        if (!InputComponent) console.error('Component not found for type:', type)
 
-        return React.cloneElement(c, {
+        const onChange = value => {
+          const newEditedValues = typeof value === 'object' ? value : {[c.props.name]: value}
+          this.setState({
+            editedValues: Object.assign(this.state.editedValues, newEditedValues)
+          })
+          // this.onDebouncedMergeForm() // Not working for now
+          this.onMergeForm()
+        }
+
+        return React.cloneElement(c, Object.assign({
           id: `${name}-${c.props.name}`,
-          onChange: this.updateFormValue,
+          onChange,
           value: formValue || storeValue || '',
           errors: [].concat(formErrors).filter(e => get(e, c.props.name)).map(e => get(e, c.props.name)),
           readOnly: c.props.readOnly || readOnly,
           layout,
           size,
-        })
+          type,
+          InputComponent,
+        }, get(InputComponent, 'extraFormData', []).reduce((result, k) => Object.assign(result, {[k]: get(formData, k)}), {})))
       } else if (c.type.displayName === 'Submit') {
         return React.cloneElement(c, Object.assign({
           name,
@@ -169,5 +219,5 @@ export default connect(
     formData: get(state, `form.${ownProps.name}.data`),
     formErrors: get(state, `form.${ownProps.name}.errors`),
   }),
-  { newMergeForm, removeErrors, requestData }
+  { newMergeForm, newRemoveErrorForm, requestData }
 )(Form)
