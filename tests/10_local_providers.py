@@ -1,4 +1,4 @@
-from models.pc_object import PcObject
+import subprocess
 from inspect import isclass
 
 from sqlalchemy import func
