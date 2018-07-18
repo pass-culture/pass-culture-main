@@ -32,6 +32,7 @@ if (process.env.API_URL) {
                               : 'https://' + document.location.host.replace('app', 'api')
 }
 export const API_URL = CALCULATED_API_URL
+console.log('API_URL is set to: ' + API_URL)
 
 export const THUMBS_URL = IS_DEV
   ? `${API_URL}/storage/thumbs`

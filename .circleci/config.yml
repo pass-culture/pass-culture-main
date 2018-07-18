@@ -34,12 +34,13 @@ jobs:
       # Start server for testcafe
       - run:
           name: Running Webapp
-          command: yarn start
+          command: |
+            echo $API_URL
+            yarn start
           background: true
 
       # run functional tests!
       - run:
           name: Running tests
-          command: |
-            export API_URL='https://api.passculture-dev.beta.gouv.fr'
+          command:
             yarn testcafe
