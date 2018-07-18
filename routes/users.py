@@ -12,6 +12,7 @@ from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user import User
 from models.user_offerer import RightsType
+from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email, \
     subscribe_newsletter
@@ -44,7 +45,7 @@ def signin():
     json = request.get_json()
     identifier = json.get("identifier")
     password = json.get("password")
-    user = app.get_user_with_credentials(identifier, password)
+    user = get_user_with_credentials(identifier, password)
     return jsonify(user._asdict(include=USER_INCLUDES)), 200
 
 
