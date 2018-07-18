@@ -73,12 +73,16 @@ class Field extends Component {
 
   static getDerivedStateFromProps({autoComplete, name, type, required, readonly, value}) {
     type = type || Field.guessInputType(name) // Would be cleaner to use `this` instead of `Field` but doesn't work :(
+    const InputComponent = inputByTypes[type]
+
+    if (!InputComponent) console.error('Component not found', this.props.name, type)
 
     return {
       required: required && !readonly,
       type,
       autoComplete: autoComplete || Field.guessAutoComplete(name, type),
       value,
+      InputComponent,
     }
   }
 
@@ -93,12 +97,12 @@ class Field extends Component {
   }
 
   onChange = (value) => {
-    console.log(value, this.props.value)
     if (value === this.props.value) return
 
-    const InputComponent = inputByTypes[this.state.type]
-    const displayValue = InputComponent.displayValue || this.props.displayValue
-    const storeValue = InputComponent.storeValue || this.props.storeValue
+    const displayValue = this.state.InputComponent.displayValue || this.props.displayValue
+    const storeValue = this.state.InputComponent.storeValue || this.props.storeValue
+
+    console.log(this.props.name, value)
 
     this.setState({
       value: displayValue(value),
@@ -113,20 +117,17 @@ class Field extends Component {
       required,
       type,
       value,
+      InputComponent,
     } = this.state
 
-    const inputProps = Object.assign({
+    const inputProps = Object.assign({}, this.props, {
       'aria-describedby': `${this.props.id}-error`,
       autoComplete,
       onChange: this.onChange,
       required,
       type,
       value,
-    }, this.props)
-
-    const InputComponent = inputByTypes[type]
-
-    if (!InputComponent) console.error('Component not found', this.props.name, type)
+    })
 
     return <InputComponent {...inputProps} className={`input is-${this.props.size}`} />
   }

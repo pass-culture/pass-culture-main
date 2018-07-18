@@ -23,12 +23,14 @@ class PasswordInput extends Component {
     })
   }
 
+  onInputChange = e => this.props.onChange(e.target.value)
+
   render() {
     const {
       noPasswordToggler,
       ...otherProps,
     } = this.props
-    const input = <BasicInput {...otherProps} type={this.state.isPasswordHidden ? 'password' : 'text'} />
+    const input = <BasicInput {...otherProps} type={this.state.isPasswordHidden ? 'password' : 'text'} onChange={this.onInputChange} />
     if (noPasswordToggler) return input
     return <div className="field has-addons password">
       <div className="control is-expanded">
