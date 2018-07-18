@@ -24,14 +24,13 @@ export const IS_PROD = !IS_DEV
 export const NEW = '_new_'
 
 let CALCULATED_API_URL
-if (window.cordova) {
+if (process.env.API_URL) {
+  CALCULATED_API_URL = process.env.API_URL
+} else if (window.cordova) {
   CALCULATED_API_URL = 'https://api.passculture.beta.gouv.fr' // This will be replaced by 'yarn pgbuild' for staging
 } else {
-  CALCULATED_API_URL = IS_DEV
-    ? process.env.NGROK_API_URL && process.env.NGROK_API_URL.length
-      ? process.env.NGROK_API_URL
-      : 'http://localhost'
-    : 'https://' + document.location.host.replace('app', 'api')
+  CALCULATED_API_URL = IS_DEV ? 'http://localhost'
+                              : 'https://' + document.location.host.replace('app', 'api')
 }
 export const API_URL = CALCULATED_API_URL
 
