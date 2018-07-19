@@ -43,8 +43,6 @@ class OccurenceManager extends Component {
 
     const eventOccurenceId = queryStringToObject(search).dates
 
-    console.log('occasion', occasion)
-
     return (
       <div className='occurence-manager'>
         <div className='occurence-table-wrapper'>
