@@ -141,7 +141,7 @@ elif [[ "$CMD" == "install" ]]; then
 elif [[ "$CMD" == "install-geoip" ]]; then
 	RUN='wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz;
 	 		 gzip -df GeoLite2-City.mmdb.gz;
-			 mkdir -f $ROOT_PATH/api/geoip/;
+			 mkdir -p $ROOT_PATH/api/geoip/;
 			 mv GeoLite2-City.mmdb $ROOT_PATH/api/geoip/'
 elif [[ "$CMD" == "psql-file" ]]; then
   COLUMNS=${COLUMNS:-''};
