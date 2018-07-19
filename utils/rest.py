@@ -1,7 +1,7 @@
+""" rest """
 import re
 from functools import wraps
-
-from flask import abort, jsonify, request, current_app as app
+from flask import abort, jsonify, request
 from flask_login import current_user
 from sqlalchemy.exc import ProgrammingError
 
@@ -116,7 +116,7 @@ def ensure_current_user_has_rights(rights, offererId):
             'global',
             "Cette structure n'est pas enregistrée chez cet utilisateur."
         )
-        abort(403)
+        raise errors
 
 
 def ensure_can_be_updated(model, id):
