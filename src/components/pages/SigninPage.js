@@ -14,8 +14,8 @@ import Submit from '../layout/Submit'
 class SigninPage extends Component {
 
   componentDidUpdate () {
-    const { errors, history, user } = this.props
-    if (user && !errors) {
+    const { history, user } = this.props
+    if (user) {
       history.push('/offres')
     }
   }
@@ -63,7 +63,6 @@ export default compose(
   withRouter,
   connect(
     state => ({
-      errors: state.errors.global,
       user: state.user,
     })
   )
