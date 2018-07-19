@@ -10,7 +10,7 @@ import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import PageWrapper from '../layout/PageWrapper'
 import Icon from '../layout/Icon'
 import { resetForm } from '../../reducers/form'
-import { showModal } from '../../reducers/modal'
+import { showModal, closeModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
 import occurencesSelector from '../../selectors/occurences'
@@ -156,11 +156,11 @@ class OccasionPage extends Component {
       occasion,
       showModal
     } = this.props
-
-    search.indexOf('dates') > -1 && showModal(
-      <OccurenceManager  />, {
-      isUnclosable: true
-    })
+    console.log(search)
+    search.indexOf('dates') > -1 ? showModal(
+      <OccurenceManager occasion={occasion}  />, {
+      // isUnclosable: true
+    }) : closeModal()
   }
 
   componentDidMount() {
@@ -418,7 +418,8 @@ export default compose(
     {
       resetForm,
       showModal,
-      showNotification
+      closeModal,
+      showNotification,
     }
   )
 )(OccasionPage)

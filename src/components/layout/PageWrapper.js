@@ -14,6 +14,9 @@ import Modal from './Modal'
 import withLogin from '../hocs/withLogin'
 import { showNotification, closeNotification } from '../../reducers/notification'
 
+import Modal from './Modal'
+
+
 class PageWrapper extends Component {
 
   constructor () {
@@ -169,7 +172,8 @@ class PageWrapper extends Component {
           </div>
         )}
         {footer}
-      </Tag>
+      </Tag>,
+      <Modal key={'modal'} />
     ]
   }
 }

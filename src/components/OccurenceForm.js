@@ -295,7 +295,6 @@ class OccurenceForm extends Component {
             Valider
           </Submit>
         </td>
-        <td></td>
       </Form>
     )
   }
