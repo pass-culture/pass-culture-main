@@ -41,10 +41,9 @@ class Recommendation(app.model.PcObject, db.Model):
 
     eventId = db.Column(db.BigInteger,
                         db.ForeignKey('event.id'),
-                        db.CheckConstraint('("mediationId" IS NOT NULL AND "thingId" IS NULL AND "eventId" IS NULL)'
-                                           + 'OR ("mediationId" IS NULL AND "thingId" IS NOT NULL AND "eventId" IS NULL)'
-                                           + 'OR ("mediationId" IS NULL AND "thingId" IS NULL AND "eventId" IS NOT NULL)',
-                                           name='check_reco_has_mediationid_xor_thingid_xor_eventid'),
+                        db.CheckConstraint('("thingId" IS NOT NULL AND "eventId" IS NULL)'
+                                           + 'OR ("thingId" IS NULL AND "eventId" IS NOT NULL)',
+                                           name='check_reco_has_thingid_xor_eventid'),
                         index=True,
                         nullable=True) # NULL for recommendation created a mediation or an offer
 
