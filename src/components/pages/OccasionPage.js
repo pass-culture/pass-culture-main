@@ -24,6 +24,7 @@ import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
 // import { eventNormalizer } from '../../utils/normalizers'
+
 import {
   pluralize,
   // updateQueryString,
@@ -45,7 +46,7 @@ class OccasionPage extends Component {
 
   static getDerivedStateFromProps (nextProps) {
     const {
-      match: { params: { feature } },
+      location: { search },
       isNew,
       occasion,
       type,
@@ -55,7 +56,7 @@ class OccasionPage extends Component {
       thingId
     } = (occasion || {})
 
-    const isEdit = feature === 'modifie'
+    const isEdit = search.indexOf('modifie') > -1
     const isEventType = (get(type, 'type') === 'Event') || eventId
     const isReadOnly = !isNew && !isEdit
 
@@ -116,8 +117,8 @@ class OccasionPage extends Component {
       method
     } = action
     const {
-      occasion,
       history,
+      occasion,
       showNotification,
       venue
     } = this.props
@@ -151,29 +152,14 @@ class OccasionPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      history,
-      location,
-      match,
+      location: {search},
       occasion,
-      occurences,
       showModal
     } = this.props
-    const { params: { feature } } = match
-    if (feature !== 'dates') {
-      return
-    }
-    showModal(
-      <OccurenceManager
-        history={history}
-        location={location}
-        match={match}
-        occasion={occasion}
-        occurences={occurences}
-      />,
-      {
-        isUnclosable: true
-      }
-    )
+    search.indexOf('dates') > -1 && showModal(
+      <OccurenceManager occasion={occasion}  />, {
+      isUnclosable: true
+    })
   }
 
   componentDidMount() {
@@ -182,37 +168,17 @@ class OccasionPage extends Component {
 
   componentDidUpdate (prevProps) {
     const {
-      match: { params: { feature } },
-      location: { pathname },
+      location: { pathname, search },
       occasion,
       occurences,
-      // history,
-      // offerer,
-      // search,
-      // venue
-      // offererId,
-      // venueId,
     } = this.props
 
-    // IMHO not necessary: here I'd consider the query string as a inital value, but then we let the form handle the data, don't we?
-    // if (venue && venueId && venue.id !== venueId) {
-    //   history.push({
-    //     search: updateQueryString(search, { venueId })
-    //   })
-    //   return
-    // }
-    // if (offerer && offererId && offerer.id !== offererId) {
-    //   history.push({
-    //     search: updateQueryString(search, { offererId })
-    //   })
-    // }
-
-    if (feature === 'dates') {
+    if (search.indexOf('dates') > -1) {
       if (
-        !get(prevProps, 'match.params.feature') ||
         prevProps.occasion !== occasion ||
         prevProps.occurences !== occurences ||
-        prevProps.location.pathname !== pathname
+        prevProps.location.pathname !== pathname ||
+        prevProps.location.search !== search
       ) {
         this.handleShowOccurencesModal()
       }
@@ -227,7 +193,7 @@ class OccasionPage extends Component {
     const {
       event,
       isNew,
-      location: { pathname, search },
+      location: { search },
       occasion,
       occurences,
       offerer,
@@ -302,7 +268,7 @@ class OccasionPage extends Component {
                         </div>
                         <NavLink
                           className='button is-primary is-outlined is-small'
-                          to={`${routePath}/dates`}
+                          to={`${routePath}?dates`}
                         >
                           <span className='icon'><Icon svg='ico-calendar' /></span>
                           <span>Gérer les dates et les prix</span>
@@ -375,21 +341,21 @@ class OccasionPage extends Component {
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
                 { isReadOnly ? (
-                  <NavLink to={`/offres/${get(occasion, 'id')}/modifie${search}`}
+                  <NavLink to={`/offres/${get(occasion, 'id')}?modifie`}
                     className='button is-secondary is-medium'>
                     Modifier l'offre
                   </NavLink>
                 ) : (
                   <NavLink
                     className="button is-secondary is-medium"
-                    to={`/offres/${get(occasion, 'id')}${search}`}>
+                    to={`/offres/${get(occasion, 'id')}`}>
                     Annuler
                   </NavLink>
                 )}
               </div>
               <div className="control">
                 { isReadOnly ? (
-                  <NavLink to={`/offres${search}`} className='button is-primary is-medium'>
+                  <NavLink to='/offres' className='button is-primary is-medium'>
                     Terminer
                   </NavLink>
                 ) : (

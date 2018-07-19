@@ -2,130 +2,52 @@ import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { NavLink } from 'react-router-dom'
+
+import { withRouter } from 'react-router'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
+import occurencesSelector from '../selectors/occurences'
 import providerSelector from '../selectors/provider'
 import timezoneSelector from '../selectors/timezone'
-import { NEW } from '../utils/config'
+import { queryStringToObject } from '../utils/string'
 
 class OccurenceManager extends Component {
 
-  onCloseClick = () => {
-    const {
-      closeModal,
-      history,
-      location,
-      occasion
-    } = this.props
-    const {
-      search
-    } = location
-    const {
-      id
-    } = (occasion || {})
-    closeModal()
-    id && history.push(`/offres/${id}${search}`)
-  }
+  newOccurenceWithDefaults(occurence) {
+    if (!occurence) return
+    const beginningDatetime = moment(occurence.beginningDatetime).tz(this.props.tz).add(1, 'days')
+    const endDatetime = moment(occurence.endDatetime).tz(this.props.tz).add(1, 'days').format('HH:mm')
 
-  onAddClick = () => {
-    const {
-      history,
-      location,
-      occasion
-    } = this.props
-    const {
-      search
-    } = location
-    const {
-      id
-    } = (occasion || {})
-    id && history.push(`/offres/${id}/dates/nouvelle${search}`)
-  }
-
-  handleNextData = () => {
-    const {
-      mergeForm,
-      occurences,
-      tz
-    } = this.props
-
-    const lastOccurence = occurences.length > 0 && occurences[0]
-    if (lastOccurence) {
-      const {
-        beginningDatetime,
-        endDatetime,
-        offer
-      } = lastOccurence
-      const {
-        available,
-        groupSize,
-        pmrGroupSize,
-        price
-      } = get(offer, '0', {})
-
-      const date = moment(beginningDatetime).tz(tz).add(1, 'days')
-
-      mergeForm('eventOccurences', NEW,
-        {
-          available,
-          date,
-          time: date.format('HH:mm'),
-          endTime: moment(endDatetime).tz(tz).add(1, 'days').format('HH:mm'),
-          groupSize,
-          pmrGroupSize,
-          price: typeof price === 'undefined'
-            ? 0
-            : price
-        })
+    const newOccurence = {
+      beginningDatetime,
+      endDatetime,
+      ...get(occurence, 'offer.0',{}),
     }
-  }
-
-  componentDidMount () {
-    const {
-      match: { params: { eventOccurenceId } }
-    } = this.props
-    if (eventOccurenceId === 'nouvelle') {
-      this.handleNextData()
-    }
-  }
-
-  componentDidUpdate (prevProps) {
-    const {
-      match: { params: { eventOccurenceId } },
-    } = this.props
-    if (eventOccurenceId === 'nouvelle' &&
-      eventOccurenceId !== get(prevProps, 'match.params.eventOccurenceId')
-    ) {
-      this.handleNextData()
-    }
+    return  newOccurence
   }
 
   render() {
     const {
       event,
-      history,
-      location,
-      match,
+      location: {search},
       provider,
       occasion,
       occurences,
     } = this.props
-    const {
-      name
-    } = (event || {})
-    const {
-      params: { eventOccurenceId }
-    } = match
+
+    const eventOccurenceId = queryStringToObject(search).dates
 
     return (
       <div className='occurence-manager'>
         <div className='occurence-table-wrapper'>
-          <div className='subtitle has-text-weight-bold has-text-left'>
-            {name && name.toUpperCase()}
+          <div className='subtitle has-text-weight-bold has-text-left is-uppercase'>
+            {get(event, 'name')}
           </div>
           <div className="pc-title has-text-left">
             Dates, horaires et prix
@@ -146,8 +68,9 @@ class OccurenceManager extends Component {
             <tbody>
               { eventOccurenceId === 'nouvelle' ? (
                 <OccurenceForm
-                  history={history}
+                  isEditable={!provider}
                   occasion={occasion}
+                  occurence={this.newOccurenceWithDefaults(occurences[0])}
                 />
               ) : (
                 <tr>
@@ -157,27 +80,28 @@ class OccurenceManager extends Component {
                         Il n'est pas possible d'ajouter ni de supprimer de dates pour cet événement {provider.name}
                       </i>
                     ) : (
-                      <button className='button is-secondary' onClick={this.onAddClick}>
+                      <NavLink to={`/offres/${get(occasion, 'id')}?dates=nouvelle`} className='button is-secondary'>
                         + Ajouter un horaire
-                      </button>
+                      </NavLink>
                     )}
                   </td>
                 </tr>
               )}
-              {
-                occurences && occurences.map(o =>
-                  <OccurenceItem
-                    key={o.id}
-                    history={history}
-                    location={location}
-                    match={match}
-                    occasion={occasion}
-                    occurence={o}
-                    occurences={occurences}
-                    provider={provider}
-                  />
-                )
-              }
+              { occurences.map(o =>
+                o.id === eventOccurenceId && !provider ?
+                <OccurenceForm
+                  key={o.id}
+                  isEditable={!provider}
+                  occasion={occasion}
+                  occurence={o}
+                /> :
+                <OccurenceItem
+                  key={o.id}
+                  isEditable={!provider}
+                  occasion={occasion}
+                  occurence={o}
+                />
+              )}
             </tbody>
             {occurences.length > 12 && (
               <thead>
@@ -195,25 +119,32 @@ class OccurenceManager extends Component {
             )}
           </table>
         </div>
-        <button
-          className="button is-secondary is-pulled-right"
-          onClick={this.onCloseClick}>
+        <NavLink
+          to={`/offres/${get(occasion, 'id')}`}
+          className="button is-secondary is-pulled-right">
           Fermer
-        </button>
+        </NavLink>
       </div>
     )
   }
 }
 
-export default connect(
-  (state, ownProps) => {
-    const event = eventSelector(state, get(ownProps, 'occasion.eventId'))
-    const venueId = get(ownProps, 'occasion.venueId')
-    return {
-      event,
-      provider: providerSelector(state, get(event, 'lastProviderId')),
-      tz: timezoneSelector(state, venueId),
-    }
-  },
-  { closeModal, mergeForm }
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => {
+      const eventId = get(ownProps, 'occasion.eventId')
+      const venueId = get(ownProps, 'occasion.venueId')
+      const event = eventSelector(state, eventId)
+      const occurences = occurencesSelector(state, venueId, eventId)
+
+      return {
+        event,
+        occurences,
+        provider: providerSelector(state, get(event, 'lastProviderId')),
+        tz: timezoneSelector(state, venueId),
+      }
+    },
+    { closeModal, mergeForm }
+  )
 )(OccurenceManager)

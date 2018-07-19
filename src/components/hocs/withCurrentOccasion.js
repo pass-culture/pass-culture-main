@@ -60,6 +60,7 @@ const withCurrentOccasion = WrappedComponent => {
       const isNew = occasionId === 'nouveau'
       const apiPath = `occasions${isNew ? '' : `/${occasionId}`}`
       const routePath = `/offres${isNew ? 'nouveau' : `/${occasionId}`}`
+
       return {
         apiPath,
         isLoading: !(id || isNew),

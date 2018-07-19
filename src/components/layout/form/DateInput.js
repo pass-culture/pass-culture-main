@@ -7,12 +7,8 @@ import Icon from '../Icon'
 const DateInput = props => {
 
   const onChange = date => {
-    console.log(date)
     props.onChange({[props.name]: date})
   }
-
-  console.log(moment)
-  console.log(props.value)
 
   return props.readOnly ? (
     <span> {props.value && props.value.format(props.dateFormat)} </span>

@@ -3,8 +3,10 @@ import moment from 'moment'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { NavLink } from 'react-router-dom'
 
-import OccurenceForm from './OccurenceForm'
+import { withRouter } from 'react-router'
 import Price from './Price'
 import Icon from './layout/Icon'
 import offerSelector from '../selectors/offer'
@@ -12,71 +14,56 @@ import timezoneSelector from '../selectors/timezone'
 
 class OccurenceItem extends Component {
 
-  constructor() {
-    super()
-    this.state = {
-      date: null,
-      endTime: null,
-      isEditing: null,
-      time: null
-    }
-  }
+  // constructor() {
+  //   super()
+  //   this.state = {
+  //     date: null,
+  //     endTime: null,
+  //     isEditing: null,
+  //     time: null
+  //   }
+  // }
 
-  static getDerivedStateFromProps (nextProps) {
-    const {
-      match: { params: { eventOccurenceId } },
-      occurence,
-      offer,
-      tz
-    } = nextProps
+  // static getDerivedStateFromProps (nextProps) {
+  //   const {
+  //     occurence,
+  //     offer: {
+  //       bookingLimitDatetime
+  //     },
+  //     tz
+  //   } = nextProps
 
-    const {
-      beginningDatetime,
-      endDatetime,
-      id
-    } = (occurence || {})
+  //   const {
+  //     beginningDatetime,
+  //     endDatetime,
+  //     id
+  //   } = occurence || {}
 
-    const {
-      bookingLimitDatetime
-    } = (offer || {})
+  //   const eventOccurenceId = queryStringToObject(search).dates
 
-    const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
-    return {
-      bookingDate: bookingDate && bookingDate.format('DD/MM/YYYY'),
-      date: date && date.format('DD/MM/YYYY'),
-      endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
-      isAdding: eventOccurenceId === 'nouvelle',
-      isEditing: eventOccurenceId === id,
-      time: date && date.format('HH:mm'),
-    }
-  }
-
-  onEditClick = () => {
-    const {
-      history,
-      location: { search },
-      occasion,
-      occurence
-    } = this.props
-    const {
-      id
-    } = (occasion || {})
-    history.push(`/offres/${id}/dates/${occurence.id}${search}`)
-  }
+  //   const date = beginningDatetime && moment.tz(beginningDatetime, tz)
+  //   const bookingDate = bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz)
+  //   return {
+  //     bookingDate: bookingDate && bookingDate.format('DD/MM/YYYY'),
+  //     date: date && date.format('DD/MM/YYYY'),
+  //     endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
+  //     isEditing: eventOccurenceId === id,
+  //     time: date && date.format('HH:mm'),
+  //   }
+  // }
 
   onDeleteClick = () => {
     const {
-      occurence,
+      occurence: {
+        id,
+      },
       offer,
-      provider,
+      isEditable,
       requestData
     } = this.props
-    const {
-      id
-    } = occurence
 
     // IF AN OFFER IS ASSOCIATED WE NEED TO DELETE IT FIRST
+    // TODO: move this to backend
     if (offer) {
       requestData(
         'DELETE',
@@ -84,7 +71,7 @@ class OccurenceItem extends Component {
         {
           key: 'offers',
           handleSuccess: () => {
-            !provider && requestData(
+            isEditable && requestData(
               'DELETE',
               `eventOccurences/${id}`,
               {
@@ -94,7 +81,7 @@ class OccurenceItem extends Component {
           }
         }
       )
-    } else if (!provider) {
+    } else if (isEditable) {
       requestData(
         'DELETE',
         `eventOccurences/${id}`,
@@ -103,79 +90,61 @@ class OccurenceItem extends Component {
         }
       )
     }
-
   }
 
   render () {
     const {
-      history,
       occasion,
-      occurences,
       occurence,
-      offer,
-      provider,
-      //tz
+      offer: {
+        available,
+        bookingLimitDatetime,
+        price,
+      },
+      isEditable,
+      tz,
     } = this.props
-    const {
-      available,
-      price
-    } = (offer || {})
 
     const {
-      bookingDate,
-      date,
-      endTime,
-      isAdding,
-      isEditing,
-      time,
-    } = this.state
+      beginningDatetime,
+      endDatetime,
+    } = occurence || {}
 
-    if (isEditing) {
-      return <OccurenceForm
-        history={history}
-        occasion={occasion}
-        occurence={occurence}
-        occurences={occurences}
-        onDeleteClick={e => this.setState({isEditing: false})}
-      />
-    }
+    const date = beginningDatetime && moment.tz(beginningDatetime, tz)
+
     return (
-      <tr className=''>
-        <td>{date}</td>
-        <td>{time}</td>
-        <td>{endTime}</td>
+      <tr>
+        <td>{date && date.format('DD/MM/YYYY')}</td>
+        <td>{date && date.format('HH:mm')}</td>
+        <td>{endDatetime && moment.tz(endDatetime, tz).format('HH:mm')}</td>
         <td><Price value={price} /></td>
-        <td>{bookingDate}</td>
+        <td>{bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz).format('DD/MM/YYYY')}</td>
         <td>{available}</td>
         <td>
-          {
-            !provider && (
-              <button
-                className="button is-small is-secondary"
-                onClick={this.onDeleteClick}
-              >
-                <span className='icon'><Icon svg='ico-close-r' /></span>
-              </button>
-            )
-          }
+          { isEditable && (
+            <button
+              className="button is-small is-secondary"
+              onClick={this.onDeleteClick}
+            >
+              <span className='icon'><Icon svg='ico-close-r' /></span>
+            </button>
+          )}
         </td>
         <td>
-          {
-            (!isAdding || !isEditing) && (
-              <button
-                className="button is-small is-secondary"
-                onClick={this.onEditClick}>
-                <span className='icon'><Icon svg='ico-pen-r' /></span>
-              </button>
-            )
-          }
+          <NavLink
+            to={`/offres/${get(occasion, 'id')}?dates=${occurence.id}`}
+            className="button is-small is-secondary">
+            <span className='icon'><Icon svg='ico-pen-r' /></span>
+          </NavLink>
         </td>
       </tr>
     )
   }
 }
 
-export default connect(
+export default compose(
+  withRouter,
+  connect(
   () => {
     return (state, ownProps) => ({
       offer: offerSelector(state, get(ownProps, 'occurence.id')),
@@ -183,4 +152,4 @@ export default connect(
     })
   },
   { requestData }
-)(OccurenceItem)
+))(OccurenceItem)

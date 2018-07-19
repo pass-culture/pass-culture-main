@@ -3,6 +3,7 @@ import moment from 'moment'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { NavLink } from 'react-router-dom'
 
 import { mergeForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
@@ -11,7 +12,6 @@ import timezoneSelector from '../selectors/timezone'
 import venueSelector from '../selectors/venue'
 import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
-
 import Form from './layout/Form'
 import Field from './layout/Field'
 import Submit from './layout/Submit'
@@ -19,90 +19,85 @@ import Submit from './layout/Submit'
 
 class OccurenceForm extends Component {
 
-  constructor () {
-    super()
-    this.state = {
-      apiPath: null,
-      date: null,
-      highlightedDates: null,
-      method: null,
-      time: null
-    }
-  }
+  // constructor () {
+  //   super()
+  //   // this.state = {
+  //   //   apiPath: null,
+  //   //   date: null,
+  //   //   highlightedDates: null,
+  //   //   method: null,
+  //   //   time: null
+  //   // }
+  // }
 
-  static getDerivedStateFromProps (nextProps) {
-    const {
-      event,
-      form,
-      occurences,
-      occurence,
-      offer,
-      tz
-    } = nextProps
+  // static getDerivedStateFromProps (nextProps) {
+  //   const {
+  //     event,
+  //     form,
+  //     occurences,
+  //     occurence,
+  //     offer,
+  //     tz
+  //   } = nextProps
 
-    const {
-      beginningDatetime,
-      endDatetime,
-      id
-    } = (occurence || {})
+  //   const {
+  //     beginningDatetime,
+  //     endDatetime,
+  //     id
+  //   } = (occurence || {})
 
-    const {
-      bookingLimitDatetime
-    } = (offer || {})
+  //   const {
+  //     bookingLimitDatetime
+  //   } = (offer || {})
 
-    const eventOccurenceIdOrNew = id || NEW
-    const formOccurence = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`, {})
-    const isEmptyOccurenceForm = Object.keys(formOccurence).length === 0
-    const isEventOccurenceFrozen = event && typeof event.lastProviderId === 'string'
-    const offerId = get(offer, 'id')
-    const offerIdOrNew = offerId || NEW
+  //   const eventOccurenceIdOrNew = id || NEW
+  //   const formOccurence = get(form, `eventOccurencesById.${eventOccurenceIdOrNew}`, {})
+  //   const isEmptyOccurenceForm = Object.keys(formOccurence).length === 0
+  //   const isEventOccurenceFrozen = event && typeof event.lastProviderId === 'string'
+  //   const offerId = get(offer, 'id')
+  //   const offerIdOrNew = offerId || NEW
 
-    let apiPath, method, storeKey
-    if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
-      apiPath = `offers${offerId ? `/${offerId}` : ''}`
-      method = offerId ? 'PATCH' : 'POST'
-      storeKey = 'offers'
-    } else {
-      apiPath = `eventOccurences${id ? `/${id}` : ''}`
-      method = id ? 'PATCH' : 'POST'
-      storeKey = 'eventOccurences'
-    }
+  //   let apiPath, method, storeKey
+  //   if (isEventOccurenceFrozen || isEmptyOccurenceForm) {
+  //     apiPath = `offers${offerId ? `/${offerId}` : ''}`
+  //     method = offerId ? 'PATCH' : 'POST'
+  //     storeKey = 'offers'
+  //   } else {
+  //     apiPath = `eventOccurences${id ? `/${id}` : ''}`
+  //     method = id ? 'PATCH' : 'POST'
+  //     storeKey = 'eventOccurences'
+  //   }
 
-    const formDate = formOccurence.date
-    const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-    const bookingDate = formOccurence.bookingDate
-      || (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
-      || (formDate && formDate.clone().subtract(2, 'days'))
-    const filterBookingDate = date || formDate
-    return {
-      apiPath,
-      bookingDate,
-      date,
-      endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
-      eventOccurenceIdOrNew,
-      filterBookingDate,
-      formDate,
-      highlightedDates: occurences &&
-        occurences.map(o => moment(o.beginningDatetime)),
-      isEmptyOccurenceForm,
-      isEventOccurenceFrozen,
-      method,
-      offerIdOrNew,
-      storeKey,
-      time: date && date.format('HH:mm'),
-    }
-  }
+  //   const formDate = formOccurence.date
+  //   const date = beginningDatetime && moment.tz(beginningDatetime, tz)
+  //   const bookingDate = formOccurence.bookingDate
+  //     || (bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz))
+  //     || (formDate && formDate.clone().subtract(2, 'days'))
+  //   const filterBookingDate = date || formDate
+  //   return {
+  //     apiPath,
+  //     bookingDate,
+  //     date,
+  //     endTime: endDatetime && moment.tz(endDatetime, tz).format('HH:mm'),
+  //     eventOccurenceIdOrNew,
+  //     filterBookingDate,
+  //     formDate,
+  //     highlightedDates: occurences &&
+  //       occurences.map(o => moment(o.beginningDatetime)),
+  //     isEmptyOccurenceForm,
+  //     isEventOccurenceFrozen,
+  //     method,
+  //     offerIdOrNew,
+  //     storeKey,
+  //     time: date && date.format('HH:mm'),
+  //   }
+  // }
 
-  onCancelClick = () => {
-    const {
-      history,
-      occasion
-    } = this.props
-    const {
-      id
-    } = (occasion || {})
-    history.push(`/offres/${id}/dates`)
-  }
+  // static getDerivedStateFromProps(nextProps) {
+  //   const {
+  //     isEditable,
+  //   } = this.props
+  // }
 
   handleSuccessData = (state, action) => {
     const {
@@ -159,48 +154,60 @@ class OccurenceForm extends Component {
   }
 
   render () {
+
     const {
-      apiPath,
-      filterBookingDate,
-      highlightedDates,
-      isEventOccurenceFrozen,
-    } = this.state
+      isEditable,
+      occasion,
+      occurence,
+      occurences,
+      offer,
+    } = this.props
+
+    const apiPath = isEditable ? `eventOccurences/${get(occurence, 'id', '')}` : `offers/${get(offer, 'id', '')}`
+
+    const formData = Object.assign({
+      date: occurence && occurence.beginningDatetime,
+      time: occurence && occurence.beginningDatetime,
+      endDateTime: occurence && occurence.endDatetime,
+      bookingDate: offer && offer.bookingLimitDatetime,
+      price: offer && offer.price,
+      available: offer && offer.available,
+    })
 
     return (
       <Form
-        name='occurence'
+        name={`occurence-${occurence.id || NEW}`}
         TagName='tr'
         className='occurence-form'
         action={apiPath}
         handleSuccess={this.handleSuccessData}
-        data={this.state}
-        readOnly={isEventOccurenceFrozen}
+        data={formData}
         layout='input-only'
         size="small"
       >
         <td>
-          <Field name='date' required highlightedDates={highlightedDates} title='Date' />
+          <Field name='date' required highlightedDates={occurences.map(o => moment(o.beginningDatetime))} title='Date' readOnly={!isEditable} />
         </td>
         <td>
-          <Field name='time' required title='Heure' />
+          <Field name='time' required title='Heure' readOnly={!isEditable} />
         </td>
         <td>
-          <Field type='time' name='endTime' required title='Heure de fin' />
+          <Field type='time' name='endDateTime' required title='Heure de fin' readOnly={!isEditable} />
         </td>
         <td title='Vide si gratuit'>
           <Field name="price" placeholder='Gratuit' title='Prix' />
         </td>
         <td title='Laissez vide si pas de limite'>
-          <Field name='bookingDate' type='date' filterDate={date => filterBookingDate && date < filterBookingDate} placeholder="Laissez vide si pas de limite"/>
+          <Field name='bookingDate' type='date' filterDate={date => date.isBefore(occurence.bookingLimitDatetime)} placeholder="Laissez vide si pas de limite" readOnly={!isEditable}/>
         </td>
         <td title='Laissez vide si pas de limite'>
           <Field name='available' type='number' title='Places disponibles' />
         </td>
         <td>
-          <button
+          <NavLink
+            to={`/offres/${get(occasion, 'id')}?dates`}
             className="button is-secondary is-small"
-            onClick={this.onCancelClick}
-          >Annuler</button>
+          >Annuler</NavLink>
         </td>
         <td>
           <Submit className="button is-primary is-small"
@@ -293,7 +300,6 @@ export default connect(
     const {eventId, venueId} = ownProps.occasion || {}
     const occurenceId = get(ownProps, 'occurence.id')
     return {
-      form: state.form,
       event: eventSelector(state, eventId),
       offer: offerSelector(state, occurenceId),
       venue: venueSelector(state, venueId),
