@@ -5,10 +5,6 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
 
-import { newMergeForm, newRemoveErrorForm } from '../../reducers/form'
-import { recursiveMap } from '../../utils/react'
-import { pluralize } from '../../utils/string'
-
 import CheckboxInput from './form/CheckboxInput'
 import DateInput from './form/DateInput'
 import GeoInput from './form/GeoInput'
@@ -20,6 +16,10 @@ import SirenInput from './form/SirenInput'
 import TextareaInput from './form/TextareaInput'
 import TextInput from './form/TextInput'
 import TimeInput from './form/TimeInput'
+import { newMergeForm, newRemoveErrorForm } from '../../reducers/form'
+import { showNotification } from '../../reducers/notification'
+import { recursiveMap } from '../../utils/react'
+import { pluralize } from '../../utils/string'
 
 const inputByTypes = {
   date: DateInput,
@@ -117,11 +117,23 @@ class Form extends Component {
       action.replace(/^\//g, ''), {
       body: formatData(formData),
       formName: name,
-      handleFail,
+      handleFail: this.handleFail,
       handleSuccess,
       key: storePath, // key is a reserved prop name
       encode: formData instanceof FormData ? 'multipart/form-data' : null,
     })
+  }
+
+  handleFail = () => {
+    const {
+      handleFail,
+      showNotification
+    } = this.props
+    showNotification({
+      text: 'Formulaire non validé',
+      type: 'danger'
+    })
+    handleFail && handleFail()
   }
 
   childrenWithProps = () => {
@@ -220,5 +232,10 @@ export default connect(
     formData: get(state, `form.${ownProps.name}.data`),
     formErrors: get(state, `form.${ownProps.name}.errors`),
   }),
-  { newMergeForm, newRemoveErrorForm, requestData }
+  {
+    newMergeForm,
+    newRemoveErrorForm,
+    requestData,
+    showNotification
+  }
 )(Form)
