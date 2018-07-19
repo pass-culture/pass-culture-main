@@ -2,27 +2,27 @@
 from os import path
 import os, json
 from pathlib import Path
+import gspread
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 from models.api_errors import ApiErrors
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user import User
+from models.user_offerer import RightsType
+from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
-from utils.mailing import maybe_send_offerer_validation_email,\
-                          subscribe_newsletter
-from utils.rest import expect_json_data,\
-                       expect_json_data,\
-                       login_or_api_key_required
+from utils.mailing import maybe_send_offerer_validation_email, \
+    subscribe_newsletter
+from utils.rest import expect_json_data, \
+    login_or_api_key_required
 
 
 def make_user_query():
-    query = app.model.User.query
+    query = User.query
     return query
-
-Offerer = app.model.Offerer
-User = app.model.User
-
 
 @app.route("/users/current", methods=["GET"])
 @login_required
@@ -36,7 +36,7 @@ def get_profile():
 @expect_json_data
 def patch_profile():
     current_user.populateFromDict(request.json)
-    app.model.PcObject.check_and_save(current_user)
+    PcObject.check_and_save(current_user)
     return jsonify(current_user._asdict(include=USER_INCLUDES)), 200
 
 
@@ -45,7 +45,7 @@ def signin():
     json = request.get_json()
     identifier = json.get("identifier")
     password = json.get("password")
-    user = app.get_user_with_credentials(identifier, password)
+    user = get_user_with_credentials(identifier, password)
     return jsonify(user._asdict(include=USER_INCLUDES)), 200
 
 
@@ -133,23 +133,23 @@ def signup():
         new_user.canBook = False
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
-            offerer = app.model.Offerer()
+            offerer = Offerer()
             offerer.populateFromDict(request.json)
             offerer.generate_validation_token()
             user_offerer = offerer.give_rights(new_user,
-                                               app.model.RightsType.admin)
+                                               RightsType.admin)
             # offerer.bookingEmail = new_user.email
             # Don't validate the first user / offerer link so that the user can immediately start loading offers
-            app.model.PcObject.check_and_save(new_user, offerer, user_offerer)
+            PcObject.check_and_save(new_user, offerer, user_offerer)
         else:
             offerer = existing_offerer
             user_offerer = offerer.give_rights(new_user,
-                                               app.model.RightsType.editor)
+                                               RightsType.editor)
             user_offerer.generate_validation_token()
-            app.model.PcObject.check_and_save(user_offerer)
+            PcObject.check_and_save(user_offerer)
         maybe_send_offerer_validation_email(new_user, offerer, user_offerer)
     else:
-        app.model.PcObject.check_and_save(new_user)
+        PcObject.check_and_save(new_user)
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
     login_user(new_user)

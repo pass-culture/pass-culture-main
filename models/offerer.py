@@ -1,40 +1,51 @@
 """ offerer """
 from datetime import datetime
-from flask import current_app as app
-from luhn import verify as verify_luhn
-from sqlalchemy import Index
-from sqlalchemy.dialects.postgresql import TEXT
+from sqlalchemy import BigInteger,\
+                       Column,\
+                       DateTime,\
+                       Index,\
+                       String,\
+                       TEXT
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
+from models.db import Model
+from models.deactivable_mixin import DeactivableMixin
+from models.has_address_mixin import HasAddressMixin
+from models.has_thumb_mixin import HasThumbMixin
+from models.needs_validation_mixin import NeedsValidationMixin
+from models.occasion import Occasion
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
+from models.user_offerer import UserOfferer
 from utils.search import create_tsvector
 
-db = app.db
 
+class Offerer(PcObject,
+              HasThumbMixin,
+              HasAddressMixin,
+              ProvidableMixin,
+              NeedsValidationMixin,
+              DeactivableMixin,
+              Model):
 
-class Offerer(app.model.PcObject,
-              app.model.HasThumbMixin,
-              app.model.HasAddressMixin,
-              app.model.ProvidableMixin,
-              app.model.NeedsValidationMixin,
-              app.model.DeactivableMixin,
-              db.Model):
-    id = db.Column(db.BigInteger, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
 
-    dateCreated = db.Column(db.DateTime,
-                            nullable=False,
-                            default=datetime.utcnow)
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
 
-    name = db.Column(db.String(140), nullable=False)
+    name = Column(String(140), nullable=False)
 
-    users = db.relationship(lambda: app.model.User,
-                            secondary='user_offerer')
+    users = relationship('User',
+                         secondary='user_offerer')
 
-    siren = db.Column(db.String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
+    siren = Column(String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     def give_rights(self, user, rights):
         if user:
-            user_offerer = app.model.UserOfferer()
+            user_offerer = UserOfferer()
             user_offerer.offerer = self
             user_offerer.user = user
             user_offerer.rights = rights
@@ -42,7 +53,7 @@ class Offerer(app.model.PcObject,
 
     def errors(self):
         errors = super(Offerer, self).errors()
-        errors.errors.update(app.model.HasAddressMixin.errors(self).errors)
+        errors.errors.update(HasAddressMixin.errors(self).errors)
         if self.siren is not None\
            and (not len(self.siren) == 9):
                 #TODO: or not verify_luhn(self.siren)):
@@ -51,10 +62,9 @@ class Offerer(app.model.PcObject,
 
     @property
     def nOccasions(self):
-        return app.model.Occasion.query\
-                  .filter(app.model.Occasion.venueId.in_(list(map(lambda v: v.id,
+        return Occasion.query\
+                  .filter(Occasion.venueId.in_(list(map(lambda v: v.id,
                                                                   self.managedVenues)))).count()
-
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
@@ -69,5 +79,3 @@ Offerer.__table_args__ = (
         postgresql_using='gin'
     ),
 )
-
-app.model.Offerer = Offerer

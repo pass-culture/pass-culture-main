@@ -1,50 +1,50 @@
 """ occasion model """
-from datetime import datetime, timedelta
-from flask import current_app as app
-from sqlalchemy import event, DDL
-from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import datetime
+from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 
-db = app.db
+from models.db import Model
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 
 
-class Occasion(app.model.PcObject,
-               db.Model,
-               app.model.ProvidableMixin):
+class Occasion(PcObject,
+               Model,
+               ProvidableMixin):
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
-    dateCreated = db.Column(db.DateTime,
-                            nullable=False,
-                            default=datetime.utcnow)
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
 
-    thingId = db.Column(db.BigInteger,
-                        db.ForeignKey("thing.id"),
-                        nullable=True)
+    thingId = Column(BigInteger,
+                     ForeignKey("thing.id"),
+                     nullable=True)
 
-    thing = db.relationship(lambda: app.model.Thing,
-                            foreign_keys=[thingId],
-                            backref='occasions')
+    thing = relationship('Thing',
+                         foreign_keys=[thingId],
+                         backref='occasions')
 
-    eventId = db.Column(db.BigInteger,
-                        db.ForeignKey("event.id"),
-                        db.CheckConstraint('("eventId" IS NOT NULL AND "thingId" IS NULL)'
-                                           + 'OR ("eventId" IS NULL AND "thingId" IS NOT NULL)',
-                                           name='check_occasion_has_thing_xor_event'),
-                        nullable=True)
+    eventId = Column(BigInteger,
+                     ForeignKey("event.id"),
+                     CheckConstraint(
+                         '("eventId" IS NOT NULL AND "thingId" IS NULL)' +\
+                         'OR ("eventId" IS NULL AND "thingId" IS NOT NULL)',
+                         name='check_occasion_has_thing_xor_event'),
+                     nullable=True)
 
-    event = db.relationship(lambda: app.model.Event,
-                            foreign_keys=[eventId],
-                            backref='occasions')
+    event = relationship('Event',
+                         foreign_keys=[eventId],
+                         backref='occasions')
 
-    venueId = db.Column(db.BigInteger,
-                        db.ForeignKey("venue.id"),
-                        nullable=True,
-                        index=True)
+    venueId = Column(BigInteger,
+                     ForeignKey("venue.id"),
+                     nullable=True,
+                     index=True)
 
-    venue = db.relationship(lambda: app.model.Venue,
-                            foreign_keys=[venueId],
-                            backref='occasions')
-
-app.model.Occasion = Occasion
+    venue = relationship('Venue',
+                         foreign_keys=[venueId],
+                         backref='occasions')

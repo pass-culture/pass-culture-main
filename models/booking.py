@@ -1,56 +1,65 @@
 """ booking model """
 from datetime import datetime
-from flask import current_app as app
-from sqlalchemy import event, DDL
+from sqlalchemy import BigInteger, \
+    Column, \
+    DateTime, \
+    DDL, \
+    event, \
+    ForeignKey, \
+    Integer, \
+    String
+from sqlalchemy.orm import relationship
 
-db = app.db
+from models.db import Model
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
+from models.versioned_mixin import VersionedMixin
 
 
-class Booking(app.model.PcObject,
-              db.Model,
-              app.model.DeactivableMixin,
-              app.model.VersionedMixin):
+class Booking(PcObject,
+              Model,
+              DeactivableMixin,
+              VersionedMixin):
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    dateModified = Column(DateTime,
+                          nullable=False,
+                          default=datetime.utcnow)
 
-    dateModified = db.Column(db.DateTime,
-                             nullable=False,
-                             default=datetime.utcnow)
+    recommendationId = Column(BigInteger,
+                              ForeignKey("recommendation.id"))
 
-    recommendationId = db.Column(db.BigInteger,
-                                db.ForeignKey("recommendation.id"))
+    recommendation = relationship('Recommendation',
+                                  foreign_keys=[recommendationId],
+                                  backref='bookings')
 
-    recommendation = db.relationship(lambda: app.model.Recommendation,
-                                     foreign_keys=[recommendationId],
-                                     backref='bookings')
+    offerId = Column(BigInteger,
+                     ForeignKey("offer.id"),
+                     index=True,
+                     nullable=True)
 
-    offerId = db.Column(db.BigInteger,
-                        db.ForeignKey("offer.id"),
-                        index=True,
-                        nullable=True)
+    offer = relationship('Offer',
+                         foreign_keys=[offerId],
+                         backref='bookings')
 
-    offer = db.relationship(lambda: app.model.Offer,
-                            foreign_keys=[offerId],
-                            backref='bookings')
+    quantity = Column(Integer,
+                      nullable=False,
+                      default=1)
 
-    quantity = db.Column(db.Integer,
-                         nullable=False,
-                         default=1)
+    token = Column(String(6),
+                   unique=True,
+                   nullable=False)
 
-    token = db.Column(db.String(6),
-                      unique=True,
-                      nullable=False)
+    userId = Column(BigInteger,
+                    ForeignKey('user.id'),
+                    index=True,
+                    nullable=False)
 
-    userId = db.Column(db.BigInteger,
-                       db.ForeignKey('user.id'),
-                       index=True,
-                       nullable=False)
-
-    user = db.relationship(lambda: app.model.User,
-                           foreign_keys=[userId],
-                           backref='userBookings')
+    user = relationship('User',
+                        foreign_keys=[userId],
+                        backref='userBookings')
 
     @property
     def eventOccurenceBeginningDatetime(self):
@@ -59,7 +68,6 @@ class Booking(app.model.PcObject,
             return None
         return offer.eventOccurence.beginningDatetime
 
-app.model.Booking = Booking
 
 trig_ddl = DDL("""
     CREATE OR REPLACE FUNCTION check_booking()

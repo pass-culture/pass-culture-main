@@ -1,17 +1,14 @@
-from flask import current_app as app
+""" deactivable mixin """
+from sqlalchemy import Boolean, Column
 from sqlalchemy.sql import expression
-
-db = app.db
 
 
 class DeactivableMixin(object):
-    isActive = db.Column(db.Boolean,
-                         nullable=False,
-                         server_default=expression.true(),
-                         default=True)
+    isActive = Column(Boolean,
+                      nullable=False,
+                      server_default=expression.true(),
+                      default=True)
 
     @property
     def queryActive(self):
         return self.query.filter_by(isActive=True)
-
-app.model.DeactivableMixin = DeactivableMixin

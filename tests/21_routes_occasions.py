@@ -1,5 +1,5 @@
 from utils.human_ids import dehumanize, humanize
-from utils.test_utils import API_URL, req, req_with_auth
+from utils.test_utils import API_URL, req_with_auth
 
 
 def test_10_get_occasions():

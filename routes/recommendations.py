@@ -1,31 +1,30 @@
 """ user mediations routes """
 from datetime import datetime
+from random import shuffle
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
-from random import shuffle
-from sqlalchemy import update
 from sqlalchemy.sql.expression import func
 
 from datascience import create_recommendation, create_recommendations
+from models import Booking
 from models.api_errors import ApiErrors
-from utils.rest import expect_json_data
-from utils.config import BLOB_SIZE, BLOB_READ_NUMBER,\
-                         BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES,\
                            RECOMMENDATION_INCLUDES,\
                            RECOMMENDATION_OFFER_INCLUDES
+from models.event import Event
+from models.mediation import Mediation
+from models.offer import Offer
+from models.pc_object import PcObject
+from models.recommendation import Recommendation
+from models.thing import Thing
+from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, \
+    BLOB_UNREAD_NUMBER
 from utils.rest import expect_json_data
 
-Booking = app.model.Booking
-Event = app.model.Event
-Mediation = app.model.Mediation
-Offer = app.model.Offer
-Recommendation = app.model.Recommendation
-Thing = app.model.Thing
 
 log = app.log
-
 
 def pick_random_occasions_given_blob_size(recos, limit=BLOB_SIZE):
     return recos.order_by(func.random()) \
@@ -76,7 +75,7 @@ def patch_recommendation(recommendationId):
     query = Recommendation.query.filter_by(id=dehumanize(recommendationId))
     recommendation = query.first_or_404()
     recommendation.populateFromDict(request.json)
-    app.model.PcObject.check_and_save(recommendation)
+    PcObject.check_and_save(recommendation)
     return jsonify(dictify_reco(recommendation)), 200
 
 

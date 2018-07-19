@@ -1,17 +1,20 @@
-from datetime import datetime
-from flask import current_app as app
-import luhn
 import os
+import re
+from datetime import datetime
+import luhn
 import pandas as pd
 from pathlib import Path
-import re
 from zipfile import ZipFile
+from flask import current_app as app
 
-Venue = app.model.Venue
-Offerer = app.model.Offerer
+from models.local_provider import LocalProvider, ProvidableInfo
+from models.offerer import Offerer
+from models.provider import Provider
+from models.venue import Venue
+from models.venue_provider import VenueProvider
 
 
-class TiteLiveVenues(app.model.LocalProvider):
+class TiteLiveVenues(LocalProvider):
 
     help = ""
     identifierDescription = ""
@@ -48,7 +51,7 @@ class TiteLiveVenues(app.model.LocalProvider):
             self.dateModified = datetime.strptime(match.group(1), "%d/%m/%Y %H:%M")
         else:
             raise ValueError('Invalid Date_export.txt file format in titelive_offers')
-        self.titelive_offer_provider = app.model.Provider.query\
+        self.titelive_offer_provider = Provider.query\
                                         .filter_by(localClass='TiteLiveOffers')\
                                         .one_or_none()
         assert self.titelive_offer_provider is not None
@@ -58,18 +61,18 @@ class TiteLiveVenues(app.model.LocalProvider):
         row = self.data_lines.__next__()
         self.row = row
 
-        p_info_venue = app.model.ProvidableInfo()
-        p_info_venue.type = app.model.Venue
+        p_info_venue = ProvidableInfo()
+        p_info_venue.type = Venue
         p_info_venue.idAtProviders = str(row[0])
         p_info_venue.dateModifiedAtProvider = self.dateModified
 
-        p_info_offerer = app.model.ProvidableInfo()
-        p_info_offerer.type = app.model.Offerer
+        p_info_offerer = ProvidableInfo()
+        p_info_offerer.type = Offerer
         p_info_offerer.idAtProviders = str(row[0])
         p_info_offerer.dateModifiedAtProvider = self.dateModified
 
-        p_info_venueProvider = app.model.ProvidableInfo()
-        p_info_venueProvider.type = app.model.VenueProvider
+        p_info_venueProvider = ProvidableInfo()
+        p_info_venueProvider.type = VenueProvider
         p_info_venueProvider.idAtProviders = str(row[0])
         p_info_venueProvider.dateModifiedAtProvider = self.dateModified
 
@@ -80,7 +83,7 @@ class TiteLiveVenues(app.model.LocalProvider):
 
         assert obj.idAtProviders == str(row[0])
 
-        if isinstance(obj, app.model.Venue):
+        if isinstance(obj, Venue):
             obj.latitude = row[7]
             obj.longitude = row[8]
             obj.departementCode = str(row[4]).strip()[:2]
@@ -91,13 +94,13 @@ class TiteLiveVenues(app.model.LocalProvider):
             obj.managingOfferer = self.providables[0]
             obj.siret = luhn.append(str(row[1]))
             obj.bookingEmail = 'passculture-dev@beta.gouv.fr'
-        elif isinstance(obj, app.model.Offerer):
+        elif isinstance(obj, Offerer):
             obj.name = row[2]
             obj.address = row[3]
             obj.postalCode = str(row[4]).strip()
             obj.city = row[5]
             obj.siren = str(row[1])[:9]
-        elif isinstance(obj, app.model.VenueProvider):
+        elif isinstance(obj, VenueProvider):
             obj.provider = self.titelive_offer_provider
             obj.venue = self.providables[1]
             obj.venueIdAtOfferProvider = str(row[0])

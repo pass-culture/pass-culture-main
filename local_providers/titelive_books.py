@@ -1,10 +1,13 @@
-from datetime import datetime
-from flask import current_app as app
 import os
-from pathlib import Path
 import re
-from sqlalchemy.orm import aliased
+from datetime import datetime
+from pathlib import Path
 
+from flask import current_app as app
+
+from models.local_provider import LocalProvider, ProvidableInfo
+from models.local_provider_event import LocalProviderEventType
+from models.thing import Thing, ThingType, BookFormat
 from utils.string_processing import trim_with_elipsis
 
 DATE_FORMAT = "%d/%m/%Y"
@@ -27,14 +30,7 @@ def file_date(filename):
                          + filename)
     return int(match.group(1))
 
-
-BookFormat = app.model.BookFormat
-Thing = app.model.Thing
-ThingType = app.model.ThingType
-LocalProviderEventType = app.model.LocalProviderEventType
-
-
-class TiteLiveThings(app.model.LocalProvider):
+class TiteLiveThings(LocalProvider):
 
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire"\
@@ -223,7 +219,7 @@ class TiteLiveThings(app.model.LocalProvider):
             print(" WARNING: Unknown tl_type: "+tl_type)
             return None
 
-        p_info = app.model.ProvidableInfo()
+        p_info = ProvidableInfo()
         p_info.type = Thing
         p_info.idAtProviders = infos['ean13']
         p_info.dateModifiedAtProvider = read_date(infos['date_updated'])

@@ -3,11 +3,12 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from models.api_errors import ApiErrors
+from models.mediation import Mediation
+from models.pc_object import PcObject
+from models.user_offerer import RightsType
 from utils.human_ids import dehumanize
 from utils.rest import delete, ensure_current_user_has_rights, load_or_404
 
-Mediation = app.model.Mediation
-RightsType = app.model.RightsType
 
 ALLOWED_EXTENSIONS = set(['jpg', 'png', 'jpeg', 'gif'])
 
@@ -40,7 +41,7 @@ def create_mediation():
     new_mediation.author = current_user
     new_mediation.eventId = dehumanize(request.form['eventId'])
     new_mediation.offererId = offererId
-    app.model.PcObject.check_and_save(new_mediation)
+    PcObject.check_and_save(new_mediation)
 
     if 'croppingRect[x]' in request.form:
         crop = [float(request.form['croppingRect[x]']),

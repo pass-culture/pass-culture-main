@@ -1,11 +1,11 @@
+""" validate """
 from flask import current_app as app, jsonify, request
 
 from models.api_errors import ApiErrors
-
-
-Offerer = app.model.Offerer
-User = app.model.User
-UserOfferer = app.model.UserOfferer
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user import User
+from models.user_offerer import UserOfferer
 
 
 @app.route("/validate", methods=["GET"])
@@ -41,5 +41,5 @@ def validate():
     for obj in objects_to_validate:
         obj.validationToken = None
 
-    app.model.PcObject.check_and_save(*objects_to_validate)
+    PcObject.check_and_save(*objects_to_validate)
     return "Validation effectuée", 202

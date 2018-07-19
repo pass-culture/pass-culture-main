@@ -1,5 +1,6 @@
+""" api errors """
 # coding=utf-8
-from flask import current_app as app
+import json
 
 
 class ApiErrors(Exception):
@@ -52,6 +53,8 @@ class ApiErrors(Exception):
         if len(self.errors)>0:
             raise self
 
-    status_code = None
+    def __str__(self):
+        if self.errors:
+            return json.dumps(self.errors, indent=2)
 
-app.model.ApiErrors = ApiErrors
+    status_code = None

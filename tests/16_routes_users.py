@@ -1,5 +1,7 @@
+from models.offerer import Offerer
+from models.user import User
+from models.user_offerer import UserOfferer, RightsType
 from utils.test_utils import API_URL, req, req_with_auth
-
 
 BASE_DATA = {
               'email': 'toto@btmx.fr',
@@ -114,7 +116,7 @@ def test_13_get_profile_should_work_only_when_logged_in():
  
 #def test_16_should_be_able_to_validate_user(app):
 #    token = User.query\
-#                .filter(app.model.User.validationToken != None)\
+#                .filter(User.validationToken != None)\
 #                .first().validationToken
 #    r = req_with_auth().get(API_URL + '/validate?modelNames=User&token='+token)
 #    assert r.status_code == 202
@@ -182,23 +184,23 @@ def test_24_pro_signup_should_create_user_offerer_and_userOfferer(app):
                         json=BASE_DATA_PRO)
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
-    user = app.model.User.query\
+    user = User.query\
                          .filter_by(email='toto_pro@btmx.fr')\
                          .first()
     assert user is not None
-    offerer = app.model.Offerer.query\
+    offerer = Offerer.query\
                                .filter_by(siren='349974931')\
                                .first()
     assert offerer is not None
     assert offerer.validationToken is not None
     offerer_id = offerer.id
-    user_offerer = app.model.UserOfferer.query\
+    user_offerer = UserOfferer.query\
                                         .filter_by(user=user,
                                                    offerer=offerer)\
                                         .first()
     assert user_offerer is not None
     assert user_offerer.validationToken is None
-    assert user_offerer.rights == app.model.RightsType.admin
+    assert user_offerer.rights == RightsType.admin
 
 
 def test_25_should_not_be_able_to_validate_offerer_with_wrong_token():
@@ -210,12 +212,12 @@ def test_25_should_not_be_able_to_validate_offerer_with_wrong_token():
 
 def test_26_validate_offerer(app):
     global offerer_id
-    token = app.model.Offerer.query\
+    token = Offerer.query\
                              .filter_by(id=offerer_id)\
                              .first().validationToken
     r = req.get(API_URL + '/validate?modelNames=Offerer&token='+token)
     assert r.status_code == 202
-    offerer = app.model.Offerer.query\
+    offerer = Offerer.query\
                                .filter_by(id=offerer_id)\
                                .first()
     assert offerer.validationToken is None
@@ -230,18 +232,18 @@ def test_27_pro_signup_with_existing_offerer(app):
                             json=data)
         assert r_signup.status_code == 201
         assert 'Set-Cookie' in r_signup.headers
-        user = app.model.User.query\
+        user = User.query\
                              .filter_by(email='toto_pro2@btmx.fr')\
                              .first()
         assert user is not None
-        offerer = app.model.Offerer.query\
+        offerer = Offerer.query\
                                    .filter_by(siren='349974931')\
                                    .first()
         assert offerer is not None
-        user_offerer = app.model.UserOfferer.query\
+        user_offerer = UserOfferer.query\
                                             .filter_by(user=user,
                                                        offerer=offerer)\
                                             .first()
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
-        assert user_offerer.rights == app.model.RightsType.editor
+        assert user_offerer.rights == RightsType.editor

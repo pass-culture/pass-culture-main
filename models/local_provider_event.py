@@ -1,10 +1,11 @@
 """ provider_event model """
 import enum
 from datetime import datetime
-from flask import current_app as app
+from sqlalchemy import BigInteger, Column, DateTime, Enum, ForeignKey, String
+from sqlalchemy.orm import relationship
 
-db = app.db
-
+from models.db import Model
+from models.pc_object import PcObject
 
 class LocalProviderEventType(enum.Enum):
     SyncError = "SyncError"
@@ -16,31 +17,26 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-app.model.LocalProviderEventType = LocalProviderEventType
+class LocalProviderEvent(PcObject,
+                         Model):
 
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
-class LocalProviderEvent(app.model.PcObject,
-                         db.Model):
+    providerId = Column(BigInteger,
+                        ForeignKey("provider.id"),
+                        nullable=False)
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    provider = relationship('Provider',
+                            foreign_keys=[providerId])
 
-    providerId = db.Column(db.BigInteger,
-                           db.ForeignKey("provider.id"),
-                           nullable=False)
-    provider = db.relationship(lambda: app.model.Provider,
-                               foreign_keys=[providerId])
+    date = Column(DateTime,
+                  nullable=False,
+                  default=datetime.utcnow)
 
-    date = db.Column(db.DateTime,
-                     nullable=False,
-                     default=datetime.utcnow)
+    type = Column(Enum(LocalProviderEventType),
+                  nullable=False)
 
-    type = db.Column(db.Enum(app.model.LocalProviderEventType),
-                     nullable=False)
-
-    payload = db.Column(db.String(50),
-                        nullable=True)
-
-
-app.model.LocalProviderEvent = LocalProviderEvent
+    payload = Column(String(50),
+                     nullable=True)

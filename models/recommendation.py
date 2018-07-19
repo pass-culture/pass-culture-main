@@ -1,99 +1,106 @@
 """ recommendation model """
 from datetime import datetime
-from flask import current_app as app
 from sqlalchemy.sql import expression
+from sqlalchemy import BigInteger, \
+    Boolean, \
+    CheckConstraint, \
+    Column, \
+    DateTime, \
+    ForeignKey, \
+    String
+from sqlalchemy.orm import relationship
 
-db = app.db
+from models import Offer, EventOccurence
+from models.db import Model
+from models.pc_object import PcObject
 
 
-class Recommendation(app.model.PcObject, db.Model):
+class Recommendation(PcObject, Model):
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    userId = Column(BigInteger,
+                    ForeignKey('user.id'),
+                    nullable=False,
+                    index=True)
 
-    userId = db.Column(db.BigInteger,
-                       db.ForeignKey('user.id'),
+    user = relationship('User',
+                        foreign_keys=[userId],
+                        backref='recommendations')
+
+    mediationId = Column(BigInteger,
+                         ForeignKey('mediation.id'),
+                         index=True,
+                         nullable=True)  # NULL for recommendation created directly from a thing or an event
+
+    mediation = relationship('Mediation',
+                             foreign_keys=[mediationId],
+                             backref='recommendations')
+
+    thingId = Column(BigInteger,
+                     ForeignKey('thing.id'),
+                     index=True,
+                     nullable=True)  # NULL for recommendation created from a mediation or an event
+
+    thing = relationship('Thing',
+                         foreign_keys=[thingId],
+                         backref='recommendations')
+
+    eventId = Column(BigInteger,
+                     ForeignKey('event.id'),
+                     CheckConstraint('("thingId" IS NOT NULL AND "eventId" IS NULL)'
+                                     + 'OR ("thingId" IS NULL AND "eventId" IS NOT NULL)'
+                                     + 'OR ("thingId" IS NULL AND "eventId" IS NULL)',
+                                     name='check_reco_has_thingid_xor_eventid_xor_nothing'),
+                     index=True,
+                     nullable=True)  # NULL for recommendation created a mediation or an offer
+
+    event = relationship('Event',
+                         foreign_keys=[eventId],
+                         backref='recommendations')
+
+    shareMedium = Column(String(20),
+                         nullable=True)
+
+    inviteforEventOccurenceId = Column(BigInteger,
+                                       ForeignKey('event_occurence.id'),
+                                       nullable=True)
+
+    inviteforEventOccurence = relationship('EventOccurence',
+                                           foreign_keys=[inviteforEventOccurenceId],
+                                           backref='inviteRecommendations')
+
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
+
+    dateUpdated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
+
+    dateRead = Column(DateTime,
+                      nullable=True,
+                      index=True)
+
+    validUntilDate = Column(DateTime,
+                            nullable=True,
+                            index=True)
+
+    isClicked = Column(Boolean,
                        nullable=False,
-                       index=True)
+                       server_default=expression.false(),
+                       default=False)
 
-    user = db.relationship(lambda: app.model.User,
-                           foreign_keys=[userId],
-                           backref='recommendations')
-
-    mediationId = db.Column(db.BigInteger,
-                            db.ForeignKey('mediation.id'),
-                            index=True,
-                            nullable=True) # NULL for recommendation created directly from a thing or an event
-
-    mediation = db.relationship(lambda: app.model.Mediation,
-                                foreign_keys=[mediationId],
-                                backref='recommendations')
-
-    thingId = db.Column(db.BigInteger,
-                        db.ForeignKey('thing.id'),
-                        index=True,
-                        nullable=True) # NULL for recommendation created from a mediation or an event
-
-    thing = db.relationship(lambda: app.model.Thing,
-                            foreign_keys=[thingId],
-                            backref='recommendations')
-
-    eventId = db.Column(db.BigInteger,
-                        db.ForeignKey('event.id'),
-                        db.CheckConstraint('("thingId" IS NOT NULL AND "eventId" IS NULL)'
-                                           + 'OR ("thingId" IS NULL AND "eventId" IS NOT NULL)'
-                                           + 'OR ("thingId" IS NULL AND "eventId" IS NULL)',
-                                           name='check_reco_has_thingid_xor_eventid_xor_nothing'),
-                        index=True,
-                        nullable=True) # NULL for recommendation created a mediation or an offer
-
-    event = db.relationship(lambda: app.model.Event,
-                            foreign_keys=[eventId],
-                            backref='recommendations')
-
-    shareMedium = db.Column(db.String(20),
-                            nullable=True)
-
-    inviteforEventOccurenceId = db.Column(db.BigInteger,
-                                          db.ForeignKey('event_occurence.id'),
-                                          nullable=True)
-
-    inviteforEventOccurence = db.relationship(lambda: app.model.EventOccurence,
-                                              foreign_keys=[inviteforEventOccurenceId],
-                                              backref='inviteRecommendations')
-
-    dateCreated = db.Column(db.DateTime,
-                            nullable=False,
-                            default=datetime.utcnow)
-
-    dateUpdated = db.Column(db.DateTime,
-                            nullable=False,
-                            default=datetime.utcnow)
-
-    dateRead = db.Column(db.DateTime,
-                         nullable=True,
-                         index=True)
-
-    validUntilDate = db.Column(db.DateTime,
-                               nullable=True,
-                               index=True)
-
-    isClicked = db.Column(db.Boolean,
-                          nullable=False,
-                          server_default=expression.false(),
-                          default=False)
-
-    isFavorite = db.Column(db.Boolean,
-                           nullable=False,
-                           server_default=expression.false(),
-                           default=False)
-
-    isFirst = db.Column(db.Boolean,
+    isFavorite = Column(Boolean,
                         nullable=False,
                         server_default=expression.false(),
                         default=False)
 
+    isFirst = Column(Boolean,
+                     nullable=False,
+                     server_default=expression.false(),
+                     default=False)
 
     @property
     def mediatedOffers(self, as_query=False):
@@ -105,8 +112,7 @@ class Recommendation(app.model.PcObject, db.Model):
 
     @property
     def mediatedOffersQuery(self):
-        EventOccurence = app.model.EventOccurence
-        query = app.model.Offer.query
+        query = Offer.query
         reco_or_mediation = self
         if self.mediation is not None:
             reco_or_mediation = self.mediation
@@ -114,10 +120,10 @@ class Recommendation(app.model.PcObject, db.Model):
         if self.thingId is not None:
             query = query.filter_by(thingId=reco_or_mediation.thingId)
         elif self.eventId is not None:
-            query = query.join(EventOccurence)\
-                         .filter(EventOccurence.eventId == reco_or_mediation.eventId)
+            query = query.join(EventOccurence) \
+                .filter(EventOccurence.eventId == reco_or_mediation.eventId)
         return query
-        
+
     # FIXME: This is to support legacy code in the webapp
     # it should be removed once all requests from the webapp
     # have an app version header, which will mean that all
@@ -140,5 +146,3 @@ class Recommendation(app.model.PcObject, db.Model):
         return sorted(occurences,
                       key=lambda o: o.beginningDatetime,
                       reverse=True)
-
-app.model.Recommendation = Recommendation

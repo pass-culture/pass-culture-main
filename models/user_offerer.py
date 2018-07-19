@@ -1,7 +1,11 @@
+""" user offerer """
 import enum
-from flask import current_app as app
+from sqlalchemy import BigInteger, Column, Enum, ForeignKey
+from sqlalchemy.orm import backref, relationship
 
-db = app.db
+from models.db import Model
+from models.needs_validation_mixin import NeedsValidationMixin
+from models.pc_object import PcObject
 
 
 class RightsType(enum.Enum):
@@ -9,29 +13,24 @@ class RightsType(enum.Enum):
     editor = "editor"
 
 
-app.model.RightsType = RightsType
+class UserOfferer(PcObject,
+                  NeedsValidationMixin,
+                  Model):
 
+    userId = Column(BigInteger,
+                    ForeignKey('user.id'),
+                    primary_key=True)
 
-class UserOfferer(app.model.PcObject,
-                  app.model.NeedsValidationMixin,
-                  db.Model):
-    userId = db.Column(db.BigInteger,
-                       db.ForeignKey('user.id'),
+    user = relationship('User',
+                        foreign_keys=[userId],
+                        backref=backref("UserOfferers"))
+
+    offererId = Column(BigInteger,
+                       ForeignKey('offerer.id'),
                        primary_key=True)
 
-    user = db.relationship(lambda: app.model.User,
-                           foreign_keys=[userId],
-                           backref=db.backref("UserOfferers"))
+    offerer = relationship('Offerer',
+                           foreign_keys=[offererId],
+                           backref=backref("UserOfferers"))
 
-    offererId = db.Column(db.BigInteger,
-                          db.ForeignKey('offerer.id'),
-                          primary_key=True)
-
-    offerer = db.relationship(lambda: app.model.Offerer,
-                              foreign_keys=[offererId],
-                              backref=db.backref("UserOfferers"))
-
-    rights = db.Column(db.Enum(RightsType))
-
-
-app.model.UserOfferer = UserOfferer
+    rights = Column(Enum(RightsType))

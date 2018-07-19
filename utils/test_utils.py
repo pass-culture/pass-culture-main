@@ -1,9 +1,17 @@
-import requests as req
 import json
+from datetime import datetime, timedelta, timezone
 from os import path
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
 
+import requests as req
+
+from models.booking import Booking
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.offer import Offer
+from models.offerer import Offerer
+from models.user import User
+from models.venue import Venue
 
 API_URL = "http://localhost:5000"
 
@@ -28,34 +36,34 @@ def req_with_auth(email=None, password=None):
 
 
 def create_booking_for_booking_email_test(app, user, offer):
-    booking = app.model.Booking()
+    booking = Booking()
     booking.user = user
     offer.bookings = [booking]
     return booking
 
 
 def create_user_for_booking_email_test(app):
-    user = app.model.User()
+    user = User()
     user.publicName = 'Test'
     user.email = 'test@email.com'
     return user
 
 
 def create_offer_for_booking_email_test(app):
-    offer = app.model.Offer()
+    offer = Offer()
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-    offer.eventOccurence = app.model.EventOccurence()
+    offer.eventOccurence = EventOccurence()
     offer.eventOccurence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-    offer.eventOccurence.event = app.model.Event()
+    offer.eventOccurence.event = Event()
     offer.eventOccurence.event.name = 'Mains, sorts et papiers'
-    offer.eventOccurence.venue = app.model.Venue()
+    offer.eventOccurence.venue = Venue()
     offer.eventOccurence.venue.departementCode = '93'
     offer.thing = None
     offer.isActive = True
     return offer
 
 def create_offerer_for_booking_email_test(app):
-    offerer = app.model.Offerer()
+    offerer = Offerer()
     offerer.isActive = 't'
     offerer.address = '123 rue test'
     offerer.postalCode = '93000'

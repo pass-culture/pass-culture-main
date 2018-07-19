@@ -4,6 +4,7 @@ import random
 
 from utils.human_ids import humanize
 
+
 def tokenify(indexes):
     return  "".join([humanize(index) for index in indexes])
 

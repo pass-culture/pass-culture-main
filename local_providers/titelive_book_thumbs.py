@@ -1,12 +1,13 @@
-from datetime import datetime
-from flask import current_app as app
 import os
-from pathlib import Path, PurePath
 import re
+from datetime import datetime
+from pathlib import Path, PurePath
 from zipfile import ZipFile
+from flask import current_app as app
 
-LocalProviderEventType = app.model.LocalProviderEventType
-Thing = app.model.Thing
+from models.local_provider import LocalProvider, ProvidableInfo
+from models.local_provider_event import LocalProviderEventType
+from models.thing import Thing
 
 
 DATE_REGEXP = re.compile('livres_tl(\d+).zip')
@@ -24,7 +25,7 @@ def file_date(filename_or_zipfile):
     return int(match.group(1))
 
 
-class TiteLiveBookThumbs(app.model.LocalProvider):
+class TiteLiveBookThumbs(LocalProvider):
 
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire"\
@@ -78,7 +79,7 @@ class TiteLiveBookThumbs(app.model.LocalProvider):
             self.open_next_file()
             self.thumb_zipinfo = self.thumb_zipinfos.__next__()
 
-        p_info = app.model.ProvidableInfo()
+        p_info = ProvidableInfo()
         p_info.type = Thing
         p_info.dateModifiedAtProvider = None
         path = PurePath(self.thumb_zipinfo.filename)

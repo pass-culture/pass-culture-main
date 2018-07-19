@@ -1,5 +1,7 @@
-import inspect
 from flask import current_app as app
+
+from models.db import db
+from models.provider import Provider
 from utils.attr_dict import AttrDict
 
 app.local_providers = AttrDict()
@@ -15,17 +17,14 @@ import local_providers.titelive_books
 import local_providers.titelive_book_descriptions
 import local_providers.titelive_book_thumbs
 
-# Ensure all providers are referenced in database
-Provider = app.model.Provider
-
 for name in app.local_providers.keys():
     provider = app.local_providers[name]
-    db_provider = app.model.Provider.getByClassName(name)
+    db_provider = Provider.getByClassName(name)
 
     if not db_provider:
-        p = app.model.Provider()
+        p = Provider()
         p.name = provider.name
         p.localClass = name
         p.isActive = False
-        app.db.session.add(p)
-        app.db.session.commit()
+        db.session.add(p)
+        db.session.commit()

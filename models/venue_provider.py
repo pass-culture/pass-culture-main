@@ -1,32 +1,36 @@
-from flask import current_app as app
+""" venue provider """
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
+from sqlalchemy.orm import relationship
 
-db = app.db
+from models.db import Model
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 
 
-class VenueProvider(app.model.PcObject,
-                    app.model.ProvidableMixin,
-                    app.model.DeactivableMixin,
-                    db.Model):
+class VenueProvider(PcObject,
+                    ProvidableMixin,
+                    DeactivableMixin,
+                    Model):
 
-    venueId = db.Column(db.BigInteger,
-                        db.ForeignKey('venue.id'),
-                        nullable=False,
-                        index=True)
-    venue = db.relationship(lambda: app.model.Venue,
+    venueId = Column(BigInteger,
+                     ForeignKey('venue.id'),
+                     nullable=False,
+                     index=True)
+
+    venue = relationship('Venue',
+                         back_populates="venueProviders",
+                         foreign_keys=[venueId])
+
+    providerId = Column(BigInteger,
+                        ForeignKey('provider.id'),
+                        nullable=False)
+
+    provider = relationship('Provider',
                             back_populates="venueProviders",
-                            foreign_keys=[venueId])
+                            foreign_keys=[providerId])
 
-    providerId = db.Column(db.BigInteger,
-                           db.ForeignKey('provider.id'),
-                           nullable=False)
-    provider = db.relationship(lambda: app.model.Provider,
-                               back_populates="venueProviders",
-                               foreign_keys=[providerId])
+    venueIdAtOfferProvider = Column(String(70))
 
-    venueIdAtOfferProvider = db.Column(db.String(70))
-
-    lastSyncDate = db.Column(db.DateTime,
-                             nullable=True)
-
-
-app.model.VenueProvider = VenueProvider
+    lastSyncDate = Column(DateTime,
+                          nullable=True)

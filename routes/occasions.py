@@ -2,41 +2,37 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.occasion import Occasion
+from models.offer import Offer
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.thing import Thing
+from models.user_offerer import UserOfferer, RightsType
+from models.venue import Venue
 from utils.human_ids import dehumanize
 from utils.includes import OCCASION_INCLUDES
-from utils.rest import delete,\
-                       ensure_current_user_has_rights,\
-                       expect_json_data,\
-                       handle_rest_get_list,\
-                       load_or_404,\
-                       login_or_api_key_required
+from utils.rest import delete, \
+    ensure_current_user_has_rights, \
+    expect_json_data, \
+    handle_rest_get_list, \
+    load_or_404, \
+    login_or_api_key_required
 from utils.search import get_search_filter
-
-
-Event = app.model.Event
-EventOccurence = app.model.EventOccurence
-Occasion = app.model.Occasion
-Offer = app.model.Offer
-Offerer = app.model.Offerer
-RightsType = app.model.RightsType
-Thing = app.model.Thing
-UserOfferer = app.model.UserOfferer
-Venue = app.model.Venue
-
-
 
 def create_event_occurence(json, occasion, offerer, venue):
     event_occurence = EventOccurence()
     event_occurence.event = occasion
     event_occurence.venue = venue
     event_occurence.populateFromDict(json, skipped_keys=['offer'])
-    app.model.PcObject.check_and_save(event_occurence)
+    PcObject.check_and_save(event_occurence)
 
     offer = Offer()
     offer.eventOccurence = event_occurence
     offer.offerer = offerer
     offer.populateFromDict(json['offer'][0])
-    app.model.PcObject.check_and_save(offer)
+    PcObject.check_and_save(offer)
 
 
 @app.route('/occasions', methods=['GET'])
@@ -93,13 +89,13 @@ def post_occasion():
     ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
     ocas.populateFromDict(request.json)
-    app.model.PcObject.check_and_save(ocas)
+    PcObject.check_and_save(ocas)
     return jsonify(ocas._asdict(include=OCCASION_INCLUDES)), 201
 
 @app.route('/occasions/<id>', methods=['DELETE'])
 @login_or_api_key_required
 def delete_occasion(id):
     ocas = load_or_404(Occasion, id)
-    ensure_current_user_has_rights(app.model.RightsType.editor,
+    ensure_current_user_has_rights(RightsType.editor,
                                    ocas.venue.managingOffererId)
     return delete(ocas)

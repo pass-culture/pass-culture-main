@@ -1,19 +1,20 @@
-from flask import current_app as app
 import random
+from flask import current_app as app
 
-Event = app.model.Event
-Offer = app.model.Offer
-
+from models.db import db
+from models.event import Event
+from models.local_provider import ProvidableInfo
+from models.offer import Offer
 
 class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
     name = "Open Agenda Offers"
     objectType = Offer
 
     def __next__(self):
-        p_info_event = super().__next__()
+        p_info_event = super().__next__
 
-        p_info_offer = app.model.ProvidableInfo()
-        p_info_offer.type = app.model.Offer
+        p_info_offer = ProvidableInfo()
+        p_info_offer.type = Offer
         p_info_offer.idAtProviders = p_info_event.idAtProviders
         p_info_offer.dateModifiedAtProvider = p_info_event.dateModifiedAtProvider
 
@@ -27,7 +28,7 @@ class OpenAgendaOffers(app.local_providers.OpenAgendaEvents):
         return offer
 
     def getDeactivatedObjectIds(self):
-        return app.db.session.query(Offer.idAtProvider)\
+        return db.session.query(Offer.idAtProvider)\
                              .filter(Offer.provider == self.venue.provider,
                                      Offer.venue == self.venue,
                                      ~Offer.idAtProvider.in_(self.seen_uids))

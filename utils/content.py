@@ -1,3 +1,4 @@
+""" content """
 from random import randint
 
 def get_mediation (recommendation):

@@ -1,11 +1,13 @@
-from datetime import datetime
-from flask import current_app as app
-from os import path
-from pandas import read_excel, Series
 import re
-import sys
+from datetime import datetime
+from os import path
 from zipfile import ZipFile
+from flask import current_app as app
+from pandas import read_excel
 
+from models.event import Event
+from models.local_provider import LocalProvider, ProvidableInfo
+from models.offer import Offer
 from utils.human_ids import humanize
 from utils.object_storage import local_path
 from utils.string_processing import get_date_time_range, get_matched_string_index, get_price_value, read_date
@@ -14,11 +16,8 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 image_extension_regex = re.compile(r'jpg|JPG|png|PNG')
 thumb_target_keys = ['Titre', 'Artiste']
 
-Event = app.model.Event
-Offer = app.model.Offer
 
-
-class SpreadsheetOffers(app.model.LocalProvider):
+class SpreadsheetOffers(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Nom de la librairie"
     identifierRegexp = "^\w+$"
@@ -91,12 +90,12 @@ class SpreadsheetOffers(app.model.LocalProvider):
 
         self.index = self.index + 1
 
-        p_info_event = app.model.ProvidableInfo()
+        p_info_event = ProvidableInfo()
         p_info_event.type = Event
         p_info_event.idAtProviders = str(self.dateModified + '-' + str(self.index))
         p_info_event.dateModifiedAtProvider = read_date(self.dateModified)
 
-        p_info_offer = app.model.ProvidableInfo()
+        p_info_offer = ProvidableInfo()
         p_info_offer.type = Offer
         p_info_offer.idAtProviders = str(self.dateModified + '-' + str(self.index))
         p_info_offer.dateModifiedAtProvider = read_date(self.dateModified)

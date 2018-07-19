@@ -1,7 +1,8 @@
-from flask import current_app as app, request
-from flask import jsonify
-from utils.mailing import send_dev_email
 from pprint import pformat
+from flask import current_app as app, request
+
+from utils.mailing import send_dev_email
+
 
 @app.route('/api/client_errors/store', methods=['POST'])
 def post_error():

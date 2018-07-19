@@ -1,29 +1,31 @@
 """ offers """
-from flask import current_app as app, jsonify, request
 from pprint import pformat
+
+from flask import current_app as app, jsonify, request
 from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
 from models.api_errors import ApiErrors
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.mediation import Mediation
+from models.offer import Offer
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.thing import Thing
+from models.user_offerer import RightsType
+from models.venue import Venue
 from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
-from utils.rest import delete,\
-                       ensure_provider_can_update,\
-                       ensure_current_user_has_rights,\
-                       expect_json_data,\
-                       handle_rest_get_list,\
-                       load_or_404,\
-                       login_or_api_key_required
+from utils.rest import delete, \
+    ensure_provider_can_update, \
+    ensure_current_user_has_rights, \
+    expect_json_data, \
+    handle_rest_get_list, \
+    load_or_404, \
+    login_or_api_key_required
 from utils.search import get_ts_queries, LANGUAGE
-
-Event = app.model.Event
-EventOccurence = app.model.EventOccurence
-Mediation = app.model.Mediation
-Offer = app.model.Offer
-Offerer = app.model.Offerer
-Thing = app.model.Thing
-Venue = app.model.Venue
 
 search_models = [
     #Order is important
@@ -109,7 +111,7 @@ def get_offer(offer_id, mediation_id):
 def create_offer():
     print('OFFER', request.json)
     new_offer = Offer(from_dict=request.json)
-    app.model.PcObject.check_and_save(new_offer)
+    PcObject.check_and_save(new_offer)
     return jsonify(new_offer._asdict(include=OFFER_INCLUDES)), 201
 
 
@@ -123,7 +125,7 @@ def edit_offer(offer_id):
     ensure_provider_can_update(offer)
     offer.populateFromDict(updated_offer_dict)
     try:
-        app.model.PcObject.check_and_save(offer)
+        PcObject.check_and_save(offer)
     except InternalError as ie:
         if 'check_offer' in str(ie.orig):
             ae = ApiErrors()
@@ -151,6 +153,6 @@ def delete_offer(id):
         offererId = offer.eventOccurence.venue.managingOffererId
     else:
         offererId = offer.venue.managingOffererId
-    ensure_current_user_has_rights(app.model.RightsType.editor,
+    ensure_current_user_has_rights(RightsType.editor,
                                    offererId)
     return delete(offer)

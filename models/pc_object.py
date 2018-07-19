@@ -1,19 +1,22 @@
 """ pc_object """
 from collections import OrderedDict
 from datetime import datetime
-from dateutil import tz
 from decimal import Decimal, InvalidOperation
-from enum import Enum
 from pprint import pprint
-from flask import current_app as app, request
 from psycopg2.extras import DateTimeRange
+from sqlalchemy import CHAR,\
+                       BigInteger,\
+                       Column,\
+                       Enum,\
+                       Float,\
+                       Integer,\
+                       Numeric,\
+                       String
 from sqlalchemy.orm.collections import InstrumentedList
 
-
+from models.api_errors import ApiErrors
+from models.db import db
 from utils.human_ids import dehumanize, humanize
-from utils.string_processing import inflect_engine
-
-db = app.db
 
 
 def serialize(value, **options):
@@ -37,9 +40,9 @@ def serialize(value, **options):
 
 
 class PcObject():
-    id = db.Column(db.BigInteger,
-                   primary_key=True,
-                   autoincrement=True)
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
     def __init__(self, **options):
         if options and 'from_dict' in options and options['from_dict']:
@@ -67,14 +70,6 @@ class PcObject():
                 result[key] = list(value)
             else:
                 result[key] = serialize(value, **options)
-        if issubclass(self.__class__, app.model.HasThumbMixin) and self.thumbCount > 0:
-            # If multiple thumbs, make this an array of paths, mapped over the index
-            result['thumbPath'] = (
-                '/storage/thumbs/' +
-                inflect_engine.plural_noun(self.__table__.name) +
-                '/' +
-                str(result['id'])
-            )
         # add the model name
         result['modelName'] = self.__class__.__name__
         if options\
@@ -141,12 +136,12 @@ class PcObject():
         pprint(vars(self))
 
     def errors(self):
-        errors = app.model.ApiErrors()
+        errors = ApiErrors()
         data = self.__class__.__table__.columns._data
         for key in data.keys():
             col = data[key]
             val = getattr(self, key)
-            if not isinstance(col, db.Column):
+            if not isinstance(col, Column):
                 continue
             if not col.nullable\
                and not col.foreign_keys\
@@ -156,11 +151,11 @@ class PcObject():
                 errors.addError(key, 'Cette information est obligatoire')
             if val is None:
                 continue
-            if (isinstance(col.type, db.String) or isinstance(col.type, db.CHAR))\
-               and not isinstance(col.type, db.Enum)\
+            if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
+               and not isinstance(col.type, Enum)\
                and not isinstance(val, str):
                 errors.addError(key, 'doit être une chaîne de caractères')
-            if (isinstance(col.type, db.String) or isinstance(col.type, db.CHAR))\
+            if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
                and isinstance(val, str)\
                and col.type.length\
                and len(val)>col.type.length:
@@ -168,10 +163,10 @@ class PcObject():
                                 'Vous devez saisir moins de '
                                       + str(col.type.length)
                                       + ' caractères')
-            if isinstance(col.type, db.Integer)\
+            if isinstance(col.type, Integer)\
                and not isinstance(val, int):
                 errors.addError(key, 'doit être un entier')
-            if isinstance(col.type, db.Float)\
+            if isinstance(col.type, Float)\
                and not isinstance(val, float):
                 errors.addError(key, 'doit être un nombre')
         return errors
@@ -184,25 +179,26 @@ class PcObject():
     def populateFromDict(self, dct, skipped_keys=[]):
         data = dct.copy()
         if data.__contains__('id'):
-                del data['id']
+            del data['id']
         cols = self.__class__.__table__.columns._data
         for key in data.keys():
             if (key=='deleted') or (key in skipped_keys):
                 continue
+
             if cols.__contains__(key):
                 col = cols[key]
                 if key.endswith('Id'):
                     value = dehumanize(data.get(key))
                 else:
                     value = data.get(key)
-                if isinstance(value, str) and isinstance(col.type, db.Integer):
+                if isinstance(value, str) and isinstance(col.type, Integer):
                     try:
                         setattr(self, key, Decimal(value))
                     except InvalidOperation as io:
                         raise TypeError('Invalid value for %s: %r' % (key, value),
                                         'integer',
                                         key)
-                elif isinstance(value, str) and (isinstance(col.type, db.Float) or isinstance(col.type, db.Numeric)):
+                elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type,Numeric)):
                     try:
                         setattr(self, key, Decimal(value))
                     except InvalidOperation as io:
@@ -218,12 +214,13 @@ class PcObject():
             raise ValueError('Objects to save need to be passed as arguments'
                              + ' to check_and_save')
         for obj in objects:
-            if isinstance(obj, app.model.ProvidableMixin)\
-                and request\
-                and hasattr(request, 'provider'):
-                obj.lastProvider = request.provider
             obj.abortIfErrors()
             db.session.add(obj)
+        db.session.commit()
+
+    def save(self):
+        self.abortIfErrors()
+        db.session.add(self)
         db.session.commit()
 
     def soft_delete(self):
@@ -236,5 +233,3 @@ class PcObject():
                else str(self.id) + "/" + humanize(self.id)
         return '<%s #%s>' % (self.__class__.__name__,
                              id)
-
-app.model.PcObject = PcObject

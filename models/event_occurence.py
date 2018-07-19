@@ -1,52 +1,60 @@
 """ event occurence """
-from flask import current_app as app
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import Binary,\
+                       BigInteger,\
+                       Column,\
+                       DateTime,\
+                       Enum,\
+                       ForeignKey
+from sqlalchemy.orm import relationship
 
-db = app.db
+from models.db import Model
+from models.event import EventType
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 
 
-class EventOccurence(app.model.PcObject,
-                     db.Model,
-                     app.model.DeactivableMixin,
-                     app.model.ProvidableMixin
+class EventOccurence(PcObject,
+                     Model,
+                     DeactivableMixin,
+                     ProvidableMixin
                     ):
-    id = db.Column(db.BigInteger,
-                   primary_key=True)
 
-    type = db.Column(db.Enum(app.model.EventType),
+    id = Column(BigInteger,
+                primary_key=True)
+
+    type = Column(Enum(EventType),
+                  nullable=True)
+
+    eventId = Column(BigInteger,
+                     ForeignKey("event.id"),
+                     index=True,
+                     nullable=False)
+
+    event = relationship('Event',
+                         foreign_keys=[eventId],
+                         backref='occurences')
+
+    venueId = Column(BigInteger,
+                     ForeignKey("venue.id"),
+                     index=True,
                      nullable=True)
 
-    eventId = db.Column(db.BigInteger,
-                        db.ForeignKey("event.id"),
-                        index=True,
-                        nullable=False)
+    venue = relationship('Venue',
+                         foreign_keys=[venueId],
+                         backref='eventOccurences')
 
-    event = db.relationship(lambda: app.model.Event,
-                            foreign_keys=[eventId],
-                            backref='occurences')
+    beginningDatetime = Column(DateTime,
+                               index=True,
+                               nullable=False)
 
-    venueId = db.Column(db.BigInteger,
-                        db.ForeignKey("venue.id"),
-                        index=True,
-                        nullable=True)
+    endDatetime = Column(DateTime,
+                         nullable=False)
 
-    venue = db.relationship(lambda: app.model.Venue,
-                            foreign_keys=[venueId],
-                            backref='eventOccurences')
-
-    beginningDatetime = db.Column(db.DateTime,
-                                  index=True,
-                                  nullable=False)
-
-    endDatetime = db.Column(db.DateTime,
-                            nullable=False)
-
-    accessibility = db.Column(db.Binary(1),
-                              nullable=False,
-                              default=bytes([0]))
+    accessibility = Column(Binary(1),
+                           nullable=False,
+                           default=bytes([0]))
 
     @property
     def offer(self):
         return self.offers
-
-app.model.EventOccurence = EventOccurence

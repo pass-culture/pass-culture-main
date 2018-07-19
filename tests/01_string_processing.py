@@ -1,6 +1,8 @@
 from hypothesis import given
 from hypothesis.strategies import text
+
 from utils.string_processing import get_matched_string_index, get_price_value
+
 
 def test_get_matched_string_index():
     assert get_matched_string_index(

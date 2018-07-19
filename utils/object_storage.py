@@ -1,9 +1,6 @@
-from base64 import b64decode
-from datetime import datetime
 import os
+from datetime import datetime
 from pathlib import Path, PurePath
-
-from utils.human_ids import humanize
 
 #import swiftclient
 #

@@ -1,42 +1,47 @@
 """User model"""
-import bcrypt
 from datetime import datetime
-from flask import current_app as app
 from sqlalchemy.sql import expression
-import secrets
-db = app.db
+from sqlalchemy.orm import relationship
+from sqlalchemy import Binary, Boolean, Column, DateTime, String
+import bcrypt
 
+from models.db import Model
+from models.has_thumb_mixin import HasThumbMixin
+from models.needs_validation_mixin import NeedsValidationMixin
+from models.pc_object import PcObject
+from models.user_offerer import UserOfferer, RightsType
 
-class User(app.model.PcObject,
-           db.Model,
-           app.model.HasThumbMixin,
-           app.model.NeedsValidationMixin
+class User(PcObject,
+           Model,
+           HasThumbMixin,
+           NeedsValidationMixin
            ):
-    email = db.Column(db.String(120), nullable=False, unique=True)
-    password = db.Column(db.Binary(60), nullable=False)
 
-    publicName = db.Column(db.String(30), nullable=False)
+    email = Column(String(120), nullable=False, unique=True)
+    password = Column(Binary(60), nullable=False)
 
-    offerers = db.relationship(lambda: app.model.Offerer,
-                               secondary='user_offerer')
+    publicName = Column(String(30), nullable=False)
 
-    dateCreated = db.Column(db.DateTime,
-                            nullable=False,
-                            default=datetime.utcnow)
+    offerers = relationship('Offerer',
+                            secondary='user_offerer')
+
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
 
     clearTextPassword = None
 
-    departementCode = db.Column(db.String(3), nullable=False)
+    departementCode = Column(String(3), nullable=False)
 
-    canBook =  db.Column(db.Boolean,
-                         nullable=False,
-                         server_default=expression.true(),
-                         default=True)
+    canBook = Column(Boolean,
+                     nullable=False,
+                     server_default=expression.true(),
+                     default=True)
 
-    isAdmin =  db.Column(db.Boolean,
-                         nullable=False,
-                         server_default=expression.false(),
-                         default=False)
+    isAdmin = Column(Boolean,
+                     nullable=False,
+                     server_default=expression.false(),
+                     default=False)
 
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
@@ -83,15 +88,11 @@ class User(app.model.PcObject,
     def hasRights(self, rights, offererId):
         if self.isAdmin:
             return True
-        RightsType = app.model.RightsType
         if rights == RightsType.editor:
             compatible_rights = [RightsType.editor, RightsType.admin]
         else:
             compatible_rights = [rights]
-        return app.model.UserOfferer.query\
-                  .filter((app.model.UserOfferer.offererId == offererId) &
-                          (app.model.UserOfferer.rights.in_(compatible_rights)))\
+        return UserOfferer.query\
+                  .filter((UserOfferer.offererId == offererId) &
+                          (UserOfferer.rights.in_(compatible_rights)))\
                   .first() is not None
-
-
-app.model.User = User

@@ -1,12 +1,13 @@
-from flask import current_app as app, jsonify
-
 import re
-import simplejson as json
 import traceback
+import simplejson as json
+from flask import current_app as app, jsonify
 from sqlalchemy.exc import IntegrityError
 
+from models.api_errors import ApiErrors
 
-@app.errorhandler(app.model.ApiErrors)
+
+@app.errorhandler(ApiErrors)
 def restize_api_errors(e):
     print(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 400

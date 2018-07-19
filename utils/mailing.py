@@ -1,3 +1,8 @@
+from models.offer import Offer
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user_offerer import UserOfferer
+
 """ mailing """
 from datetime import datetime
 from flask import current_app as app
@@ -12,7 +17,7 @@ from utils.date import format_datetime, utc_datetime_to_dept_timezone
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
 
-Offer = app.model.Offer
+Offer = Offer
 
 
 if MAILJET_API_KEY is None or MAILJET_API_KEY=='':
@@ -55,7 +60,7 @@ def send_booking_recap_emails(offer, booking=None, offerer=None, is_cancellation
 
     if booking is None:
         offer.bookingRecapSent = datetime.utcnow()
-        app.model.PcObject.check_and_save(offer)
+        PcObject.check_and_save(offer)
 
 
 def send_booking_confirmation_email_to_user(offer, booking, is_cancellation=False):
@@ -168,20 +173,20 @@ def maybe_send_offerer_validation_email(user, *objects_to_validate):
             continue
         token = obj.validationToken  # objects validated together are supposed to have the same token
         classes_to_validate.append(obj.__class__.__name__)
-        if isinstance(obj, app.model.UserOfferer):
+        if isinstance(obj, UserOfferer):
             email_html += "<h3>Nouveau Rattachement : </h3>"
             email_html += "<h4>Utilisateur: </h4>"
             email_html += "<pre>"+pformat(vars(obj.user))+"</pre>"
             email_html += "<h4>Structure: </h4>"
             email_html += "<pre>"+pformat(vars(obj.offerer))+"</pre>"
-        elif isinstance(obj, app.model.Offerer):
+        elif isinstance(obj, Offerer):
             email_html += "<h3>Nouvelle Structure : </h3>"
             email_html += "<pre>"+pformat(vars(obj))+"</pre>"
         else:
             raise ValueError("Unexpected object type in"
                              + " maybe_send_pro_validation_email : "
                              + obj.__class__.__name__)
-        if isinstance(obj, app.model.Offerer):
+        if isinstance(obj, Offerer):
             email_html += "<h4>Infos API entreprise : </h4>"
             api_entreprise = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/"+obj.siren, verify=False)  # FIXME: add root cerficate on docker image ?
             if api_entreprise.status_code == 200:

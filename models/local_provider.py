@@ -1,13 +1,19 @@
-from abc import abstractproperty
-from collections import Iterator
-from datetime import datetime, timedelta
-from postgresql_audit.flask import versioning_manager
-from pprint import pprint
-from flask import current_app as app
-from sqlalchemy import text
+""" local provider """
 import sys
 import traceback
+from abc import abstractproperty, abstractmethod
+from collections import Iterator
+from datetime import datetime, timedelta
+from pprint import pprint
+from sqlalchemy import text
+from postgresql_audit.flask import versioning_manager
 
+from models.db import db
+from models.event import Event
+from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
+from models.pc_object import PcObject
+from models.provider import Provider
+from models.thing import Thing
 from utils.human_ids import humanize
 from utils.string_processing import inflect_engine
 
@@ -19,21 +25,14 @@ def read_json_date(date):
 
 
 class ProvidableInfo(object):
-    def type():
+    def type(self):
         pass
 
-    def idAtProviders():
+    def idAtProviders(self):
         pass
 
-    def dateModifiedAtProvider():
+    def dateModifiedAtProvider(self):
         pass
-
-
-app.model.ProvidableInfo = ProvidableInfo
-
-
-LocalProviderEvent = app.model.LocalProviderEvent
-LocalProviderEventType = app.model.LocalProviderEventType
 
 
 class LocalProvider(Iterator):
@@ -47,14 +46,16 @@ class LocalProvider(Iterator):
         self.updatedThumbs = 0
         self.checkedThumbs = 0
         self.erroredThumbs = 0
-        self.dbObject = app.model.Provider.getByClassName(self.__class__.__name__)
+        self.dbObject = Provider.getByClassName(self.__class__.__name__)
 
-    @abstractproperty
-    def canCreate():
+    @property
+    @abstractmethod
+    def canCreate(self):
         pass
 
-    @abstractproperty
-    def help():
+    @property
+    @abstractmethod
+    def help(self):
         pass
 
     def getDeactivatedObjectIds(self):
@@ -69,20 +70,24 @@ class LocalProvider(Iterator):
     def getObjectThumbDates(self, obj):
         return []
 
-    @abstractproperty
-    def identifierDescription():
+    @property
+    @abstractmethod
+    def identifierDescription(self):
         pass
 
-    @abstractproperty
-    def identifierRegexp():
+    @property
+    @abstractmethod
+    def identifierRegexp(self):
         pass
 
-    @abstractproperty
-    def name():
+    @property
+    @abstractmethod
+    def name(self):
         pass
 
-    @abstractproperty
-    def objectType():
+    @property
+    @abstractmethod
+    def objectType(self):
         pass
 
     def latestActivityDate(self):
@@ -94,7 +99,7 @@ class LocalProvider(Iterator):
                         + " OR NOT changed_data->>'dateModifiedAtLastProvider'"
                                + " = old_data->>'dateModifiedAtLastProvider')")
         latest_activity = Activity.query.filter(sql)\
-                                        .order_by(app.db.desc(Activity.id))\
+                                        .order_by(db.desc(Activity.id))\
                                         .limit(1)\
                                         .one_or_none()
         if latest_activity is None:
@@ -139,7 +144,7 @@ class LocalProvider(Iterator):
                     else:
                         self.createdThumbs += 1
             if need_save:
-                app.model.PcObject.check_and_save(obj)
+                PcObject.check_and_save(obj)
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
@@ -149,7 +154,7 @@ class LocalProvider(Iterator):
             pprint(vars(e))
 
     def existingObjectOrNone(self, providable_info):
-        with app.db.session.no_autoflush:
+        with db.session.no_autoflush:
             query = providable_info.type.query.filter_by(
                 idAtProviders=providable_info.idAtProviders
             )
@@ -178,8 +183,8 @@ class LocalProvider(Iterator):
         try:
             self.updateObject(obj)
             # FIXME: keep this until we make type an ENUM again
-            if isinstance(obj, app.model.Thing)\
-               or isinstance(obj, app.model.Event):
+            if isinstance(obj, Thing)\
+               or isinstance(obj, Event):
                 type_elems = str(obj.type).split('.')
                 if len(type_elems) == 2:
                     obj.type = type_elems[1]
@@ -189,7 +194,7 @@ class LocalProvider(Iterator):
             obj.lastProvider = self.dbObject
             if self.venueProvider is not None:
                 obj.venue = self.venueProvider.venue
-            app.model.PcObject.check_and_save(obj)
+            PcObject.check_and_save(obj)
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             print('ERROR during updateObject: '
@@ -203,8 +208,8 @@ class LocalProvider(Iterator):
         pe.type = eventType
         pe.payload = str(eventPayload)
         pe.provider = self.dbObject
-        app.db.session.add(pe)
-        app.db.session.commit()
+        db.session.add(pe)
+        db.session.commit()
 
     def updateObjects(self, limit=None):
         """Update venue's objects with this provider."""
@@ -212,7 +217,7 @@ class LocalProvider(Iterator):
             if not self.venueProvider.isActive:
                 print("VenueProvider is not active. Stopping")
                 return
-            app.db.session.add(self.venueProvider)  # FIXME: we should not need this
+            db.session.add(self.venueProvider)  # FIXME: we should not need this
         providerName = self.__class__.__name__
         if not self.dbObject.isActive:
             print("Provider "+providerName+" is inactive")
@@ -230,7 +235,7 @@ class LocalProvider(Iterator):
         else:
             print("")
         for providable_infos in self:
-            if isinstance(providable_infos, app.model.ProvidableInfo)\
+            if isinstance(providable_infos, ProvidableInfo)\
                or providable_infos is None:
                 providable_infos = [providable_infos]
             self.providables = []
@@ -264,22 +269,22 @@ class LocalProvider(Iterator):
                         self.handleThumb(pc_obj)
                 self.checkedObjects += 1
 
-            app.db.session.close()
+            db.session.close()
             if self.venueProvider is not None:
-                app.db.session.add(self.venueProvider)
-            app.db.session.add(self.dbObject)
+                db.session.add(self.venueProvider)
+            db.session.add(self.dbObject)
 
             if limit is not None and\
                self.checkedObjects >= limit:
                 break
 
-        #with app.db.session.no_autoflush:
+        #with db.session.no_autoflush:
         #    update = sa.update(self.objectType)\
         #               .where((self.objectType.provider == self.offerer.provider) &\
         #                      ~self.objectType.idAtProviders.in_(self.getDeactivatedObjectIds()))\
         #               .values({'deactivated': True})
-        #    app.db.session.execute(update)
-        #app.db.session.commit()
+        #    db.session.execute(update)
+        #db.session.commit()
 
         print("  Checked " + str(self.checkedObjects) + " objects")
         print("  Created " + str(self.createdObjects) + " objects")
@@ -293,6 +298,4 @@ class LocalProvider(Iterator):
         self.logEvent(LocalProviderEventType.SyncEnd)
         if self.venueProvider is not None:
             self.venueProvider.lastSyncDate = datetime.utcnow()
-            app.model.PcObject.check_and_save(self.venueProvider)
-
-app.model.LocalProvider = LocalProvider
+            PcObject.check_and_save(self.venueProvider)

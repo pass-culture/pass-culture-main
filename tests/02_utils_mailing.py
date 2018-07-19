@@ -1,7 +1,9 @@
+from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.test_utils import create_offer_for_booking_email_test, \
     create_user_for_booking_email_test, create_booking_for_booking_email_test, create_offerer_for_booking_email_test
 
-from utils.config import ENV, IS_DEV, IS_STAGING
+from utils.test_utils import create_offer_for_booking_email_test, \
+    create_user_for_booking_email_test, create_booking_for_booking_email_test, create_offerer_for_booking_email_test
 
 SUBJECT_USER_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'

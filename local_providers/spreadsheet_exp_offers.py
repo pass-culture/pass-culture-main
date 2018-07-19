@@ -7,6 +7,14 @@ from pandas import read_csv
 from pathlib import Path
 import re
 
+from models.event import Event
+from models.event_occurence import EventOccurence
+from models.local_provider import LocalProvider, ProvidableInfo
+from models.mediation import Mediation
+from models.occasion import Occasion
+from models.offer import Offer
+from models.offerer import Offerer
+from models.venue import Venue
 from utils.date import get_dept_timezone, format_duration
 
 
@@ -22,15 +30,7 @@ def is_filled(info):
     info = str(info)
     return info != 'nan' and info.replace(' ', '') != ''
 
-
-Event = app.model.Event
-EventOccurence = app.model.EventOccurence
-Mediation = app.model.Mediation
-Occasion = app.model.Occasion
-Offer = app.model.Offer
-
-
-class SpreadsheetExpOffers(app.model.LocalProvider):
+class SpreadsheetExpOffers(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
@@ -58,7 +58,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
         venueIdAtProviders = str(int(self.line['Ref Lieu']))
 
-        self.venue = app.model.Venue.query\
+        self.venue = Venue.query\
                                     .filter_by(idAtProviders=venueIdAtProviders)\
                                     .one_or_none()
 
@@ -67,7 +67,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
                   + ' not found, skipping line')
             self.__next__()
 
-        self.offerer = app.model.Offerer.query\
+        self.offerer = Offerer.query\
                                         .filter_by(idAtProviders=venueIdAtProviders)\
                                         .one_or_none()
 
@@ -78,14 +78,14 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
         providables = []
 
-        p_info_event = app.model.ProvidableInfo()
+        p_info_event = ProvidableInfo()
         p_info_event.type = Event
         p_info_event.idAtProviders = str(int(self.line['Ref Évènement']))
         p_info_event.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
         providables.append(p_info_event)
 
-        p_info_occasion = app.model.ProvidableInfo()
+        p_info_occasion = ProvidableInfo()
         p_info_occasion.type = Occasion
         p_info_occasion.idAtProviders = str(int(self.line['Ref Évènement']))
         p_info_occasion.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
@@ -101,7 +101,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
                 if evocc_dt is None:
                     print("Could not parse date : '"+horaire+"'")
 
-                p_info_evocc = app.model.ProvidableInfo()
+                p_info_evocc = ProvidableInfo()
                 p_info_evocc.type = EventOccurence
                 p_info_evocc.idAtProviders = str(int(self.line['Ref Évènement'])) + '_'\
                                              + evocc_dt.isoformat()
@@ -109,7 +109,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
                 providables.append(p_info_evocc)
 
-                p_info_offer = app.model.ProvidableInfo()
+                p_info_offer = ProvidableInfo()
                 p_info_offer.type = Offer
                 p_info_offer.idAtProviders = str(int(self.line['Ref Évènement'])) + '_'\
                                              + evocc_dt.isoformat()
@@ -119,7 +119,7 @@ class SpreadsheetExpOffers(app.model.LocalProvider):
 
         if is_filled(self.line['Lien Image Accroche']) or\
            is_filled(self.line['Texte Accroche']):
-            p_info_med = app.model.ProvidableInfo()
+            p_info_med = ProvidableInfo()
             p_info_med.type = Mediation
             p_info_med.idAtProviders = str(int(self.line['Ref Évènement']))
             p_info_med.dateModifiedAtProvider = read_date(self.line['Date MAJ'])

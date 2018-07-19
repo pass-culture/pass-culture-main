@@ -1,23 +1,21 @@
 """ recommendations """
 from datetime import datetime, timedelta
-from random import randint
 from flask import current_app as app
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
+from models import Event
+from models.db import db
+from models.event_occurence import EventOccurence
+from models.mediation import Mediation
+from models.offer import Offer
+from models.pc_object import PcObject
+from models.recommendation import Recommendation
+from models.thing import Thing
 from utils.attr_dict import AttrDict
-import utils.logger 
-
-Event = app.model.Event
-EventOccurence = app.model.EventOccurence
-Mediation = app.model.Mediation
-Offer = app.model.Offer
-Recommendation = app.model.Recommendation
-Thing = app.model.Thing
 
 app.datascience = AttrDict()
 from datascience.occasions import get_occasions
-
 
 def create_recommendation(user, occasion, mediation=None):
 
@@ -34,7 +32,7 @@ def create_recommendation(user, occasion, mediation=None):
             query = Mediation.query.filter_by(thing=occasion)
         else:
             query = Mediation.query.filter_by(event=occasion)
-        with app.db.session.no_autoflush:
+        with db.session.no_autoflush:
             random_mediation = query.order_by(func.random())\
                                     .first()
         if random_mediation:
@@ -63,7 +61,7 @@ def create_recommendation(user, occasion, mediation=None):
         recommendation.validUntilDate = min(recommendation.validUntilDate,
                                             last_offer.bookingLimitDatetime - timedelta(minutes=1))
 
-    app.model.PcObject.check_and_save(recommendation)
+    PcObject.check_and_save(recommendation)
     return recommendation
 
 
@@ -96,4 +94,4 @@ def insert_tuto_mediation(user, tuto_mediation):
     recommendation.user = user
     recommendation.mediation = tuto_mediation
     recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
-    app.model.PcObject.check_and_save(recommendation)
+    PcObject.check_and_save(recommendation)

@@ -1,19 +1,20 @@
 """ venue providers """
-from os import path
 import subprocess
 from flask import current_app as app, jsonify, request
 
 from models.api_errors import ApiErrors
+from models.pc_object import PcObject
+from models.provider import Provider
+from models.user_offerer import RightsType
+from models.venue_provider import VenueProvider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
-from utils.rest import delete, expect_json_data,\
-                       ensure_current_user_has_rights,\
-                       load_or_404,\
-                       login_or_api_key_required
+from utils.rest import delete, expect_json_data, \
+    ensure_current_user_has_rights, \
+    load_or_404, \
+    login_or_api_key_required
 
-VenueProvider = app.model.VenueProvider
-Provider = app.model.Provider
 
 @app.route('/venueProviders', methods=['GET'])
 @login_or_api_key_required
@@ -48,7 +49,7 @@ def create_venue_provider():
     # CHECK THAT THIS PROVIDER IS ACTIVE
     provider = load_or_404(Provider, request.json['providerId'])
     if not provider.isActive:
-        errors = app.model.ApiErrors()
+        errors = ApiErrors()
         errors.status_code = 401
         errors.addError('localClass', "Ce fournisseur n' est pas activé")
         errors.maybeRaise()
@@ -62,13 +63,13 @@ def create_venue_provider():
         venueIdAtOfferProvider=request.json['venueIdAtOfferProvider']
     ).first()
     if same_venue_provider:
-        errors = app.model.ApiErrors()
+        errors = ApiErrors()
         errors.status_code = 401
         errors.addError('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
         errors.maybeRaise()
 
     # SAVE
-    app.model.PcObject.check_and_save(new_vp)
+    PcObject.check_and_save(new_vp)
 
     # CALL THE PROVIDER SUB PROCESS
     p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
@@ -91,7 +92,7 @@ def create_venue_provider():
 def edit_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     vp.populateFromDict(request.json)
-    app.model.PcObject.check_and_save(vp)
+    PcObject.check_and_save(vp)
     return jsonify(vp._asdict()), 200
 
 
@@ -99,7 +100,7 @@ def edit_venue_provider(id):
 @login_or_api_key_required
 def delete_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
-    ensure_current_user_has_rights(app.model.RightsType.editor,
+    ensure_current_user_has_rights(RightsType.editor,
                                    vp.venue.managingOffererId)
     # TODO: should we also delete all the associated events/things...?
     return delete(vp)
