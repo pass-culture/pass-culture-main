@@ -3,13 +3,16 @@ import moment from 'moment'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import { mergeForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import offerSelector from '../selectors/offer'
 import timezoneSelector from '../selectors/timezone'
 import venueSelector from '../selectors/venue'
+import occasionSelector from '../selectors/occasion'
 import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
 import Form from './layout/Form'
@@ -165,6 +168,9 @@ class OccurenceForm extends Component {
 
     const apiPath = isEditable ? `eventOccurences/${get(occurence, 'id', '')}` : `offers/${get(offer, 'id', '')}`
 
+
+    console.log('FORM', occasion)
+
     const formData = Object.assign({
       date: occurence && occurence.beginningDatetime,
       time: occurence && occurence.beginningDatetime,
@@ -176,7 +182,7 @@ class OccurenceForm extends Component {
 
     return (
       <Form
-        name={`occurence-${occurence.id || NEW}`}
+        name={`occurence-${get(occurence, 'id', NEW)}`}
         TagName='tr'
         className='occurence-form'
         action={apiPath}
@@ -295,17 +301,22 @@ class OccurenceForm extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => {
-    const {eventId, venueId} = ownProps.occasion || {}
-    const occurenceId = get(ownProps, 'occurence.id')
-    return {
-      event: eventSelector(state, eventId),
-      offer: offerSelector(state, occurenceId),
-      venue: venueSelector(state, venueId),
-      tz: timezoneSelector(state, venueId),
-      occurences: occurencesSelector(state, venueId, eventId),
-    }
-  },
-  { mergeForm, requestData }
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => {
+      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+      const { eventId, venueId } = (occasion || {})
+      const occurenceId = get(ownProps, 'occurence.id')
+      return {
+        event: eventSelector(state, eventId),
+        offer: offerSelector(state, occurenceId),
+        venue: venueSelector(state, venueId),
+        tz: timezoneSelector(state, venueId),
+        occasion,
+        occurences: occurencesSelector(state, venueId, eventId),
+      }
+    },
+    { mergeForm, requestData }
+  )
 )(OccurenceForm)

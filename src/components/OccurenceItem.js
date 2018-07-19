@@ -3,12 +3,13 @@ import moment from 'moment'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
-import { NavLink } from 'react-router-dom'
-
 import { withRouter } from 'react-router'
+import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
+
 import Price from './Price'
 import Icon from './layout/Icon'
+import occasionSelector from '../selectors/occasion'
 import offerSelector from '../selectors/offer'
 import timezoneSelector from '../selectors/timezone'
 
@@ -145,11 +146,15 @@ class OccurenceItem extends Component {
 export default compose(
   withRouter,
   connect(
-  () => {
-    return (state, ownProps) => ({
-      offer: offerSelector(state, get(ownProps, 'occurence.id')),
-      tz: timezoneSelector(state, get(ownProps, 'occasion.venueId'))
-    })
-  },
-  { requestData }
-))(OccurenceItem)
+    (state, ownProps) => {
+      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+      const { venueId } = (occasion || {})
+      return {
+        occasion,
+        offer: offerSelector(state, get(ownProps, 'occurence.id')),
+        tz: timezoneSelector(state, 'venueId')
+      }
+    },
+    { requestData }
+  )
+)(OccurenceItem)

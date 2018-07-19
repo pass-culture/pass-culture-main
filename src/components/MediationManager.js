@@ -7,8 +7,8 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Icon from './layout/Icon'
-import occasionSelector from '../selectors/occasion'
 import mediationsSelector from '../selectors/mediations'
+import occasionSelector from '../selectors/occasion'
 import { THUMBS_URL } from '../utils/config'
 
 const mediationExplanation = `
@@ -19,8 +19,7 @@ const mediationExplanation = `
 
 const MediationManager = ({
   mediations,
-  occasion,
-  routePath
+  occasion
 }) => {
 
   const mediationsLength = get(mediations, 'length')

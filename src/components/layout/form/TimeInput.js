@@ -6,7 +6,7 @@ import BasicInput from './BasicInput'
 const TimeInput = props => {
   const onInputChange = e => props.onChange(e.target.value)
 
-  return <BasicInput {...props} onChange={onInputChange} value={props.value ? moment(props.value).format(props.format) : null} />
+  return <BasicInput {...props} onChange={onInputChange} value={props.value ? moment(props.value).format(props.format) : ''} />
 }
 
 TimeInput.defaultProps = {
@@ -14,4 +14,3 @@ TimeInput.defaultProps = {
 }
 
 export default TimeInput
-

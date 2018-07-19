@@ -2,16 +2,16 @@ import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
-import { NavLink } from 'react-router-dom'
-
 import { withRouter } from 'react-router'
+import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import OccurenceForm from './OccurenceForm'
 import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
+import occasionSelector from '../selectors/occasion'
 import occurencesSelector from '../selectors/occurences'
 import providerSelector from '../selectors/provider'
 import timezoneSelector from '../selectors/timezone'
@@ -29,7 +29,7 @@ class OccurenceManager extends Component {
       endDatetime,
       ...get(occurence, 'offer.0',{}),
     }
-    return  newOccurence
+    return newOccurence
   }
 
   render() {
@@ -42,6 +42,8 @@ class OccurenceManager extends Component {
     } = this.props
 
     const eventOccurenceId = queryStringToObject(search).dates
+
+    console.log('occasion', occasion)
 
     return (
       <div className='occurence-manager'>
@@ -69,7 +71,6 @@ class OccurenceManager extends Component {
               { eventOccurenceId === 'nouvelle' ? (
                 <OccurenceForm
                   isEditable={!provider}
-                  occasion={occasion}
                   occurence={this.newOccurenceWithDefaults(occurences[0])}
                 />
               ) : (
@@ -92,13 +93,11 @@ class OccurenceManager extends Component {
                 <OccurenceForm
                   key={o.id}
                   isEditable={!provider}
-                  occasion={occasion}
                   occurence={o}
                 /> :
                 <OccurenceItem
                   key={o.id}
                   isEditable={!provider}
-                  occasion={occasion}
                   occurence={o}
                 />
               )}
@@ -133,13 +132,13 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-      const eventId = get(ownProps, 'occasion.eventId')
-      const venueId = get(ownProps, 'occasion.venueId')
+      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+      const { eventId, venueId } = (occasion || {})
       const event = eventSelector(state, eventId)
       const occurences = occurencesSelector(state, venueId, eventId)
-
       return {
         event,
+        occasion,
         occurences,
         provider: providerSelector(state, get(event, 'lastProviderId')),
         tz: timezoneSelector(state, venueId),

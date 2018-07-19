@@ -10,6 +10,7 @@ import { compose } from 'redux'
 import Header from './Header'
 import Icon from './Icon'
 import Loader from './Loader'
+import Modal from './Modal'
 import withLogin from '../hocs/withLogin'
 import { showNotification, closeNotification } from '../../reducers/notification'
 
@@ -141,6 +142,7 @@ class PageWrapper extends Component {
         })}
         key='page-wrapper'
       >
+        <Modal />
         { fullscreen ? content : (
           <div className='columns is-gapless'>
             <div className='page-content column is-10 is-offset-1'>
