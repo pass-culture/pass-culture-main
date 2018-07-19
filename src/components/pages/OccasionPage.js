@@ -277,10 +277,7 @@ class OccasionPage extends Component {
                     </div>
                   </div>
                 )}
-                <MediationManager
-                  occasion={occasion}
-                  routePath={routePath}
-                />
+                <MediationManager />
               </div>
             )}
             { showAllForm &&
