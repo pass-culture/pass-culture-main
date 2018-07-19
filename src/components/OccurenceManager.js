@@ -118,12 +118,12 @@ class OccurenceManager extends Component {
             )}
           </table>
         </div>
-        <button
-          onClick={e => (this.props.closeModal() && this.props.history.push(`/offres/${get(occasion, 'id')}`))}
+        <NavLink
+          onClick={e => this.props.closeModal()}
           to={`/offres/${get(occasion, 'id')}`}
           className="button is-secondary is-pulled-right">
           Fermer
-        </button>
+        </NavLink>
       </div>
     )
   }
