@@ -37,13 +37,13 @@ def create_recommendation(user, occasion, mediation=None):
         with app.db.session.no_autoflush:
             random_mediation = query.order_by(func.random())\
                                     .first()
-
         if random_mediation:
             recommendation.mediation = random_mediation
-        elif isinstance(occasion, Thing):
-            recommendation.thing = occasion
-        elif isinstance(occasion, Event):
-            recommendation.event = occasion
+
+    if isinstance(occasion, Thing):
+        recommendation.thing = occasion
+    if isinstance(occasion, Event):
+        recommendation.event = occasion
 
     if isinstance(occasion, Thing):
         last_offer = Offer.query.filter(Offer.thing == occasion)\
