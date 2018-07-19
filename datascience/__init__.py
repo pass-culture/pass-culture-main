@@ -4,6 +4,7 @@ from flask import current_app as app
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
+from models import Event
 from models.db import db
 from models.event_occurence import EventOccurence
 from models.mediation import Mediation
