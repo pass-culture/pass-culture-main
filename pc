@@ -238,7 +238,7 @@ elif [[ "$CMD" == "testcafe-webapp" ]] || [[ "$CMD" == "testcafe-pro" ]]; then
 	fi
 	if [[ $# == 0 ]]; then
     confirm "Warning: your database will be wiped. Is this OK ?"
-     "$ROOT_PATH"/pc -e $ENV reset-all-db
+     "$ROOT_PATH"/pc -e $ENV reset-all-db && "$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venues_provider tests/10_local_providers.py::test_16_openagenda_events_provider
 		RUN='cd $APP_PATH && ./scripts/pc.js testcafe'
 	else
   	RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
