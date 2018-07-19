@@ -35,8 +35,7 @@ def list_export_urls():
     check_token()
     return "\n".join([request.host_url+'export/'+model_name
                                       +'?token='+request.args.get('token')
-                      for model_name in filter(is_exportable,
-                                               keys())])
+                      for model_name in filter(is_exportable, app.model.keys())])
 
 
 def clean_dict_for_export(model_name, dct):
