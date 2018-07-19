@@ -39,74 +39,69 @@ class Recommendation(PcObject, Model):
                                 foreign_keys=[mediationId],
                                 backref='recommendations')
 
-    thingId = db.Column(db.BigInteger,
-                        db.ForeignKey('thing.id'),
+    thingId = Column(BigInteger,
+                        ForeignKey('thing.id'),
                         index=True,
                         nullable=True) # NULL for recommendation created from a mediation or an event
 
-    thing = db.relationship('Thing',
+    thing = relationship('Thing',
                             foreign_keys=[thingId],
                             backref='recommendations')
 
-    eventId = db.Column(db.BigInteger,
-                        db.ForeignKey('event.id'),
-                        db.CheckConstraint('("thingId" IS NOT NULL AND "eventId" IS NULL)'
+    eventId = Column(BigInteger,
+                        ForeignKey('event.id'),
+                        CheckConstraint('("thingId" IS NOT NULL AND "eventId" IS NULL)'
                                            + 'OR ("thingId" IS NULL AND "eventId" IS NOT NULL)'
                                            + 'OR ("thingId" IS NULL AND "eventId" IS NULL)',
                                            name='check_reco_has_thingid_xor_eventid_xor_nothing'),
                         index=True,
                         nullable=True) # NULL for recommendation created a mediation or an offer
 
-    event = db.relationship('Event',
+    event = relationship('Event',
                             foreign_keys=[eventId],
                             backref='recommendations')
 
-    shareMedium = db.Column(db.String(20),
+    shareMedium = Column(String(20),
                             nullable=True)
 
-    inviteforEventOccurenceId = db.Column(db.BigInteger,
-                                          db.ForeignKey('event_occurence.id'),
+    inviteforEventOccurenceId = Column(BigInteger,
+                                          ForeignKey('event_occurence.id'),
                                           nullable=True)
 
-    inviteforEventOccurence = db.relationship('EventOccurence',
+    inviteforEventOccurence = relationship('EventOccurence',
                                               foreign_keys=[inviteforEventOccurenceId],
                                               backref='inviteRecommendations')
 
-    dateCreated = db.Column(db.DateTime,
+    dateCreated = Column(DateTime,
                             nullable=False,
                             default=datetime.utcnow)
 
-    dateUpdated = db.Column(db.DateTime,
+    dateUpdated = Column(DateTime,
                             nullable=False,
                             default=datetime.utcnow)
 
-    dateRead = db.Column(db.DateTime,
+    dateRead = Column(DateTime,
                          nullable=True,
                          index=True)
 
-    validUntilDate = db.Column(db.DateTime,
+    validUntilDate = Column(DateTime,
                                nullable=True,
                                index=True)
 
-    isClicked = db.Column(db.Boolean,
+    isClicked = Column(Boolean,
                           nullable=False,
                           server_default=expression.false(),
                           default=False)
 
-    isFavorite = db.Column(db.Boolean,
+    isFavorite = Column(Boolean,
                            nullable=False,
                            server_default=expression.false(),
                            default=False)
 
-    isFirst = db.Column(db.Boolean,
+    isFirst = Column(Boolean,
                         nullable=False,
                         server_default=expression.false(),
                         default=False)
-
-    isFirst = Column(Boolean,
-                     nullable=False,
-                     server_default=expression.false(),
-                     default=False)
 
     @property
     def mediatedOffers(self, as_query=False):
