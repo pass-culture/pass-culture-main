@@ -1,7 +1,7 @@
 """ app """
 import os
-from flask import Flask
 from flask_cors import CORS
+from flask import Flask
 
 from models.db import db
 from utils.config import IS_DEV

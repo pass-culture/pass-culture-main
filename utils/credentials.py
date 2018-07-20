@@ -1,3 +1,4 @@
+""" credentials """
 from flask_login import login_user
 
 from models.api_errors import ApiErrors

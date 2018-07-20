@@ -1,6 +1,6 @@
 """ login_manager """
-from flask import current_app as app, jsonify
 from flask_login import LoginManager
+from flask import current_app as app, jsonify
 
 from models.api_errors import ApiErrors
 from models.user import User
