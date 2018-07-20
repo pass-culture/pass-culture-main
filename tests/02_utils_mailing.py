@@ -1,5 +1,4 @@
 from utils.config import IS_DEV, IS_STAGING, ENV
-from utils.mailing import make_booking_recap_email
 
 from utils.test_utils import create_event_offer_for_booking_email_test, create_thing_offer_for_booking_email_test, \
     create_user_for_booking_email_test, create_booking_for_booking_email_test
@@ -44,10 +43,10 @@ SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL = \
 
 HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL = '<html><body>' + \
            '<p>Cher Test,</p>' + \
-           '<p>Votre annulation pour Mains, sorts et papiers, ' + \
+           '<p>Votre réservation pour Mains, sorts et papiers, ' + \
            'proposé par Test offerer ' + \
            'le 20 juillet 2019 à 14:00, ' + \
-           'a bien été prise en compte.</p>' + \
+           'a bien été annulée.</p>' + \
            '<p>Cordialement,</p>' + \
            '<p>L\'équipe pass culture</p>' + \
            '</body></html>'
@@ -161,7 +160,7 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
 def test_06_booking_recap_email_html_should_have_place_and_structure(app):
     # Given
-
+    from utils.mailing import make_booking_recap_email
     offer = create_event_offer_for_booking_email_test(app)
 
     user = create_user_for_booking_email_test(app)

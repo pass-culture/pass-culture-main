@@ -2,7 +2,7 @@ import os
 import pytest
 from flask import Flask
 from models.db import db
-import models
+
 
 @pytest.fixture(scope='session')
 def app():
