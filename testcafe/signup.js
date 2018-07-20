@@ -14,8 +14,6 @@ const API_URL = getConfig()
 
 const LOGGER_URL = API_URL.url + '/users'
 
-console.log('toto: ', LOGGER_URL)
-
 const logger = RequestLogger(LOGGER_URL, {
   logResponseBody: true,
   stringifyResponseBody: true,
