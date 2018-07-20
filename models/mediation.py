@@ -45,7 +45,7 @@ class Mediation(PcObject,
     occasionId = Column(BigInteger,
                         ForeignKey('occasion.id'),
                         index=True,
-                        nullable=False)
+                        nullable=True)
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
