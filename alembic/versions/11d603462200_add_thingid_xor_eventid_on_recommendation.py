@@ -20,16 +20,22 @@ def upgrade():
         'check_reco_has_mediationid_xor_thingid_xor_eventid',
         'recommendation'
     )
-    op.create_constraint(
+    op.create_check_constraint(
         'check_reco_has_thingid_xor_eventid_xor_nothing',
-        'recommendation'
+        'recommendation',
+        '("thingId" IS NOT NULL AND "eventId" IS NULL)'
+        + 'OR ("thingId" IS NULL AND "eventId" IS NOT NULL)'
+        + 'OR ("thingId" IS NULL AND "eventId" IS NULL)'
     )
 
 
 def downgrade():
-    op.create_constraint(
+    op.create_check_constraint(
         'check_reco_has_mediationid_xor_thingid_xor_eventid',
-        'recommendation'
+        'recommendation',
+        '("mediationId" IS NOT NULL AND "thingId" IS NULL AND "eventId" IS NULL)'
+        + 'OR ("mediationId" IS NULL AND "thingId" IS NOT NULL AND "eventId" IS NULL)'
+        + 'OR ("mediationId" IS NULL AND "thingId" IS NULL AND "eventId" IS NOT NULL)'
     )
     op.drop_constraint(
         'check_reco_has_thingid_xor_eventid_xor_nothing',
