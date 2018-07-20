@@ -2,7 +2,21 @@ import { Selector, RequestLogger } from 'testcafe'
 
 import BROWSER_ROOT_URL from './helpers/config'
 
-const logger = RequestLogger('http://localhost/users', {
+var fs = require('fs')
+
+const CONFIG_FILE_NAME = '/home/daniel/workspace/pass_culture/pass-culture-browser/testcafe/helpers/config.json'
+
+// Reads the configuration file and parses settings from JSON.
+function getConfig() {
+    return JSON.parse(fs.readFileSync(CONFIG_FILE_NAME, 'utf-8'))
+}
+const API_URL = getConfig()
+
+const LOGGER_URL = API_URL.url + '/users'
+
+console.log('toto: ', LOGGER_URL)
+
+const logger = RequestLogger(LOGGER_URL, {
   logResponseBody: true,
   stringifyResponseBody: true,
   logRequestBody: true,
