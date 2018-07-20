@@ -3,8 +3,9 @@ import { Selector, RequestLogger } from 'testcafe'
 import BROWSER_ROOT_URL from './helpers/config'
 
 var fs = require('fs')
+var path = require('path');
 
-const CONFIG_FILE_NAME = '/home/daniel/workspace/pass_culture/pass-culture-browser/testcafe/helpers/config.json'
+const CONFIG_FILE_NAME = path.join(__dirname, 'helpers', 'config.json');
 
 // Reads the configuration file and parses settings from JSON.
 function getConfig() {
