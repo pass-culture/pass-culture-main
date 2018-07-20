@@ -26,15 +26,6 @@ class EventOccurence(PcObject,
     type = Column(Enum(EventType),
                   nullable=True)
 
-    eventId = Column(BigInteger,
-                     ForeignKey("event.id"),
-                     index=True,
-                     nullable=False)
-
-    event = relationship('Event',
-                         foreign_keys=[eventId],
-                         backref='occurences')
-
     occasionId = Column(BigInteger,
                         ForeignKey('occasion.id'),
                         index=True,
