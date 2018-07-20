@@ -1,12 +1,10 @@
 import createCachedSelector from 're-reselect'
-import {resolveDataCollection} from '../utils/resolvers'
 
 export default createCachedSelector(
   state => state.data.mediations,
   (state, optionalEventId, optionalThingId) => optionalEventId,
   (state, optionalEventId, optionalThingId) => optionalThingId,
   (mediations, optionalEventId, optionalThingId) => {
-    mediations = resolveDataCollection(mediations, 'mediations')
     if (optionalEventId)
       mediations = mediations.filter(m => m.eventId === optionalEventId)
 

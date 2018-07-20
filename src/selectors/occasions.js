@@ -1,5 +1,4 @@
 import createCachedSelector from 're-reselect'
-import {resolveDataCollection} from '../utils/resolvers'
 
 import venuesSelector from './venues'
 
@@ -10,7 +9,7 @@ export default createCachedSelector(
   (occasions, venues, venueId) => {
     const venueIds = [].concat(venueId || (venues|| []).map(v => v.id))
 
-    return resolveDataCollection(occasions, 'occasions').filter(o => venueIds.length ? venueIds.includes(o.venueId) : true)
+    return occasions.filter(o => venueIds.length ? venueIds.includes(o.venueId) : true)
   }
 )(
   (state, offererId, venueId) => `${offererId || ''}/${venueId || ''}`
