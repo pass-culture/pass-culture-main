@@ -1,8 +1,8 @@
 // ACTIONS
-const ASSIGN_DATA = 'ASSIGN_DATA'
-const FILTER_DATA = 'FILTER_DATA'
-const REMOVE_DATA_ERROR = 'REMOVE_DATA_ERROR'
-const RESET_DATA = 'RESET_DATA'
+export const ASSIGN_DATA = 'ASSIGN_DATA'
+export const FILTER_DATA = 'FILTER_DATA'
+export const REMOVE_DATA_ERROR = 'REMOVE_DATA_ERROR'
+export const RESET_DATA = 'RESET_DATA'
 
 // INITIAL STATE
 const initialState = { referenceDate: null, isOptimist: false }

@@ -1,7 +1,7 @@
 import get from 'lodash.get'
 
-const PENDING = 'PENDING'
-const SUCCESS = 'SUCCESS'
+export const PENDING = 'PENDING'
+export const SUCCESS = 'SUCCESS'
 const FAIL = 'FAIL'
 
 export default (state = [], action) => {
