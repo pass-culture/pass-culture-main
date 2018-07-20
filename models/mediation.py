@@ -45,7 +45,7 @@ class Mediation(PcObject,
     occasionId = Column(BigInteger,
                         ForeignKey('occasion.id'),
                         index=True,
-                        nullable=True)
+                        nullable=False)
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
@@ -61,9 +61,8 @@ Mediation.__table_args__ = (
                        name='check_mediation_has_max_2_thumbs'),
     CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
                        name='check_mediation_has_thumb_or_text'),
-    CheckConstraint('"eventId" IS NOT NULL OR thingId IS NOT NULL'
-                       + ' OR tutoIndex IS NOT NULL',
-                       name='check_mediation_has_event_or_thing_or_tutoIndex'),
+    CheckConstraint('"occasionId" IS NOT NULL OR tutoIndex IS NOT NULL',
+                       name='check_mediation_has_occasion_or_tutoIndex'),
 )
 
 

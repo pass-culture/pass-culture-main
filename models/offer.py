@@ -35,8 +35,8 @@ class Offer(PcObject,
 
     eventOccurenceId = Column(BigInteger,
                               ForeignKey("event_occurence.id"),
-                              CheckConstraint('"eventOccurenceId" IS NOT NULL OR "thingId" IS NOT NULL',
-                                                    name='check_offer_has_event_occurence_or_thing'),
+                              CheckConstraint('"eventOccurenceId" IS NOT NULL OR "occasionId" IS NOT NULL',
+                                                    name='check_offer_has_event_occurence_or_occasion'),
                               index=True,
                               nullable=True)
 

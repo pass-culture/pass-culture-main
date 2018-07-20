@@ -3,7 +3,6 @@ from datetime import datetime
 from sqlalchemy.sql import expression
 from sqlalchemy import BigInteger, \
     Boolean, \
-    CheckConstraint, \
     Column, \
     DateTime, \
     ForeignKey, \
