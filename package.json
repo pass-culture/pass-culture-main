@@ -94,7 +94,7 @@
   },
   "scripts": {
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom",
+    "test": "node scripts/jesttest.js --env=jsdom",
     "testcafe": "testcafe 'chrome:headless' testcafe",
     "postinstall": "cd node_modules && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile",
     "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'",
