@@ -32,7 +32,7 @@ const inputUsersEmailError = Selector('#input_users_email-error')
 const inputUsersPasswordError = Selector('#input_users_password-error')
 const inputUsersContactOkError = Selector('#input_users_contact_ok-error')
 
-fixture `SignupPage | Création d'un compte utilisateur`
+fixture `01_01 SignupPage Component | Je crée un compte utilisatrice`
     .page `${BROWSER_ROOT_URL+'inscription'}`
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
@@ -50,22 +50,23 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
     .expect(signUpButton.hasAttribute('disabled')).ok()
 })
 
-test.skip("Lorsque le user est créé, l'utilisateur est redirigé vers la page /découverte/empty", async t => {
+test("Je crée un compte et je suis redirigé·e vers la page /découverte", async t => {
   await t
-  // TODO Comment créer un user à chaque test ?
+  // TODO Besoin de commencer avec la bdd sans ce user
   .typeText(inputUsersPublicName, 'Public Name')
   .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'password1234')
   await t.click(inputUsersContactOk)
+  .wait(1000)
   .click(signUpButton)
   .wait(1000)
 
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/decouverte/empty')
+  await t.expect(location.pathname).eql('/decouverte')
 
 })
 
-fixture `SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
+fixture `01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
   .page `${BROWSER_ROOT_URL+'inscription'}`
 
 test
@@ -89,10 +90,9 @@ test
 
 test
 .requestHooks(logger)
-
 ('E-mail déjà présent dans la base et mot de passe invalide', async t => {
-  await t
 
+  await t
   .typeText(inputUsersPublicName, 'Public Name')
   .typeText(inputUsersEmail, 'pctest.cafe@btmx.fr')
   .typeText(inputUsersPassword, 'pas')
