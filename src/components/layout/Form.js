@@ -87,7 +87,7 @@ class Form extends Component {
 
   static getDerivedStateFromProps = (props, prevState) => {
     return {
-      method: props.method || get(props, 'data.id') ? 'PATCH' : 'POST',
+      method: props.method || (get(props, 'data.id') ? 'PATCH' : 'POST'),
     }
   }
 
@@ -139,9 +139,6 @@ class Form extends Component {
 
     return recursiveMap(children, c => {
       if (c.type.displayName === 'Field') {
-        if (c.props.required) {
-          requiredFields = requiredFields.concat(c)
-        }
         const dataKey = c.props.dataKey || c.props.name // name is unique, dataKey may not
         const formValue = get(formData, dataKey)
         const storeValue = get(storeData, dataKey)
@@ -158,7 +155,7 @@ class Form extends Component {
           this.onMergeForm()
         }
 
-        return React.cloneElement(c, Object.assign({
+        const newChild =  React.cloneElement(c, Object.assign({
           id: `${name}-${c.props.name}`,
           dataKey,
           onChange,
@@ -170,15 +167,21 @@ class Form extends Component {
           type,
           InputComponent,
         }, get(InputComponent, 'extraFormData', []).reduce((result, k) => Object.assign(result, {[k]: get(formData, k)}), {})))
+
+        if (newChild.props.required) {
+          requiredFields = requiredFields.concat(newChild)
+        }
+
+        return newChild
       } else if (c.type.displayName === 'Submit') {
         return React.cloneElement(c, Object.assign({
           name,
           getDisabled: () => {
-            const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
+            const missingFields = requiredFields.filter(f => !get(formData, f.props.dataKey))
             return missingFields.length > 0
           },
           getTitle: () => {
-            const missingFields = requiredFields.filter(f => !get(formData, `${f.props.name}`))
+            const missingFields = requiredFields.filter(f => !get(formData, f.props.dataKey))
             if (missingFields.length === 0) return
             return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => (f.props.label || f.props.title || '').toLowerCase()).join(', ')}`
           }

@@ -121,6 +121,7 @@ class OccurenceForm extends Component {
   render () {
 
     const {
+      isNew,
       isEditing,
       isFullyEditable,
       occasion,
@@ -132,7 +133,7 @@ class OccurenceForm extends Component {
 
     const apiPath = isFullyEditable ? `eventOccurences/${get(occurence, 'id', '')}` : `offers/${get(offer, 'id', '')}`
 
-    const formData = Object.assign({}, occurence, offer)
+    const formData = Object.assign({}, occasion, occurence, offer)
 
     return (
       <Form
@@ -145,6 +146,7 @@ class OccurenceForm extends Component {
         layout='input-only'
         size="small"
         readOnly={!isEditing}
+        method={isNew ? 'POST' : 'PATCH'}
       >
         <td>
           <Field type='date' name='beginningDate' dataKey='beginningDatetime' required highlightedDates={occurences.map(o => o.beginningDatetime)} title='Date' readOnly={!isFullyEditable} minDate='today' debug />
@@ -165,6 +167,8 @@ class OccurenceForm extends Component {
           <Field name='available' type='number' title='Places disponibles' />
         </td>
         <td>
+          <Field type='hidden' name='eventId' />
+          <Field type='hidden' name='venueId' />
           { isEditing ? (
             <NavLink
               to={`/offres/${get(occasion, 'id')}?dates`}

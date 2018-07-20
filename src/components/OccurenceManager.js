@@ -20,6 +20,16 @@ import offerSelector from '../selectors/offer'
 
 class OccurenceManager extends Component {
 
+  onCloseClick = e => {
+    const {
+      occasion,
+      history,
+      closeModal,
+    } = this.props
+    closeModal()
+    history.push(`/offres/${get(occasion, 'id')}`)
+  }
+
   render() {
     const {
       event,
@@ -101,12 +111,11 @@ class OccurenceManager extends Component {
             )}
           </table>
         </div>
-        <NavLink
-          onClick={e => this.props.closeModal()}
-          to={`/offres/${get(occasion, 'id')}`}
+        <button
+          onClick={this.onCloseClick}
           className="button is-secondary is-pulled-right">
           Fermer
-        </NavLink>
+        </button>
       </div>
     )
   }
