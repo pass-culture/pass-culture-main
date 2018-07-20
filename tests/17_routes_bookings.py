@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
-from models.offer import Offer
-from models.pc_object import PcObject
+from models import User, Offerer, Thing, Recommendation, Offer, PcObject, Deposit, Venue
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth
 
@@ -107,51 +106,74 @@ def test_15_create_booking_should_not_work_if_user_can_not_book():
 
 def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     # Given
-    user = app.model.User()
+    user = User()
     user.publicName = 'Test'
-    user.email = 'test@email.com'
-    user.password = 'testpsswd'
+    user.email = 'test00@email.com'
+    user.setPassword('testpsswd')
     user.departementCode = '93'
-    app.model.PcObject.check_and_save(user)
+    PcObject.check_and_save(user)
 
-    offerer = app.model.Offerer()
+    offerer = Offerer()
     offerer.name = 'Test offerer'
-    app.model.PcObject.check_and_save(offerer)
+    offerer.postalCode = '93000'
+    offerer.address = '2 Test adress'
+    offerer.city = 'Test city'
+    PcObject.check_and_save(offerer)
 
-    thing = app.model.Thing()
+    thing = Thing()
     thing.type = 'Book'
     thing.name = 'Test name'
-    app.model.PcObject.check_and_save(thing)
+    thing.extraData = {'author': 'Test Author'}
+    PcObject.check_and_save(thing)
 
-    offer = app.model.Offer()
+    venue = Venue()
+    venue.name = 'Venue name'
+    venue.bookingEmail = 'booking@email.com'
+    venue.postalCode = '93000'
+    venue.departementCode = '93'
+    venue.address = '1 Test adress'
+    venue.city= 'Test city'
+    venue.managingOffererId = offerer.id
+    PcObject.check_and_save(venue)
+
+    offer = Offer()
     offer.thingId = thing.id
     offer.offererId = offerer.id
     offer.price = 20
-    app.model.PcObject.check_and_save(offer)
+    offer.venueId = venue.id
+    PcObject.check_and_save(offer)
 
-    recommendation = app.model.Recommendation()
+    recommendation = Recommendation()
     recommendation.userId = user.id
     recommendation.thingId = thing.id
-    app.model.PcObject.check_and_save(recommendation)
+    PcObject.check_and_save(recommendation)
 
-    deposit = app.model.Deposit()
+    deposit = Deposit()
     deposit.date = datetime.utcnow() - timedelta(minutes=2)
     deposit.amount = 10
     deposit.userId = user.id
     deposit.source = 'public'
-    app.model.PcObject.check_and_save(deposit)
+    PcObject.check_and_save(deposit)
 
     booking_json = {
-        'offerId': offer.id,
-        'recommendationId': recommendation.id,
-        'userId': user.id,
+        'offerId': humanize(offer.id),
+        'recommendationId': humanize(recommendation.id),
+        'userId': humanize(user.id),
         'amount': offer.price
     }
 
     # When
-    r_create = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('test00@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
 
     # Then
     assert r_create.status_code == 400
     assert 'insufficientFunds' in r_create.json()
+
+    user.soft_delete()
+    offerer.soft_delete()
+    thing.soft_delete()
+    offer.soft_delete()
+    recommendation.soft_delete()
+    deposit.soft_delete()
+    venue.soft_delete()
 

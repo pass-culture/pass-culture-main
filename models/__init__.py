@@ -1,6 +1,7 @@
 from models.api_errors import ApiErrors
 from models.booking import Booking
 from models.deactivable_mixin import DeactivableMixin
+from models.deposit import Deposit
 from models.event import Event
 from models.event_occurence import EventOccurence
 from models.extra_data_mixin import ExtraDataMixin
@@ -31,6 +32,7 @@ __all__ = (
     'ApiErrors',
     'PcObject',
     'DeactivableMixin',
+    'Deposit',
     'ExtraDataMixin',
     'HasAddressMixin',
     'HasThumbMixin',
