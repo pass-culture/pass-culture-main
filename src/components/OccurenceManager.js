@@ -1,5 +1,4 @@
 import get from 'lodash.get'
-import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -7,7 +6,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import OccurenceForm from './OccurenceForm'
-import OccurenceItem from './OccurenceItem'
 import { mergeForm } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
@@ -16,7 +14,6 @@ import occurencesSelector from '../selectors/occurences'
 import providerSelector from '../selectors/provider'
 import timezoneSelector from '../selectors/timezone'
 import { queryStringToObject } from '../utils/string'
-import offerSelector from '../selectors/offer'
 
 class OccurenceManager extends Component {
 

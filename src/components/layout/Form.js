@@ -105,7 +105,6 @@ class Form extends Component {
       action,
       formData,
       formatData,
-      handleFail,
       handleSuccess,
       name,
       requestData,
