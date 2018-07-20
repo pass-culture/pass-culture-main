@@ -143,8 +143,8 @@ class Form extends Component {
           requiredFields = requiredFields.concat(c)
         }
         const dataKey = c.props.dataKey || c.props.name // name is unique, dataKey may not
-        const formValue = get(formData || {}, dataKey)
-        const storeValue = get(storeData || {}, dataKey)
+        const formValue = get(formData, dataKey)
+        const storeValue = get(storeData, dataKey)
         const type = c.props.type || Form.guessInputType(c.props.name) || 'text'
         const InputComponent = inputByTypes[type]
         if (!InputComponent) console.error('Component not found for type:', type)
@@ -160,6 +160,7 @@ class Form extends Component {
 
         return React.cloneElement(c, Object.assign({
           id: `${name}-${c.props.name}`,
+          dataKey,
           onChange,
           value: formValue || storeValue || '',
           errors: [].concat(formErrors).filter(e => get(e, c.props.name)).map(e => get(e, c.props.name)),

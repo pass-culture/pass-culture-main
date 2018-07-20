@@ -1,5 +1,7 @@
 import { createSelector } from 'reselect'
 
+import {resolveDataCollection} from '../utils/resolvers'
+
 const removedLocalClasses = [
   'OpenAgendaOffers',
   'SpreadsheetExpThingOffers',
@@ -15,7 +17,7 @@ const removedLocalClasses = [
 
 export default createSelector(
   state => state.data.providers,
-  providers => providers
+  providers => resolveDataCollection(providers, 'providers')
     .filter(p => !removedLocalClasses.includes(p.localClass))
     .sort((p1, p2) => p1.localClass - p2.localClass)
 )

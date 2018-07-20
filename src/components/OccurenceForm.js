@@ -168,9 +168,6 @@ class OccurenceForm extends Component {
 
     const apiPath = isEditable ? `eventOccurences/${get(occurence, 'id', '')}` : `offers/${get(offer, 'id', '')}`
 
-
-    console.log('FORM', occasion)
-
     const formData = Object.assign({
       beginningDatetime: occurence && occurence.beginningDatetime,
       date: occurence && occurence.beginningDatetime,
@@ -180,8 +177,6 @@ class OccurenceForm extends Component {
       price: offer && offer.price,
       available: offer && offer.available,
     })
-
-    console.log(formData.beginningDatetime)
 
     return (
       <Form
@@ -195,7 +190,7 @@ class OccurenceForm extends Component {
         size="small"
       >
         <td>
-          <Field type='date' name='beginningDate' dataKey='beginningDatetime' required highlightedDates={occurences.map(o => moment(o.beginningDatetime))} title='Date' readOnly={!isEditable} />
+          <Field type='date' name='beginningDate' dataKey='beginningDatetime' required highlightedDates={occurences.map(o => o.beginningDatetime)} title='Date' readOnly={!isEditable} minDate='today' debug />
         </td>
         <td>
           <Field type='time' name='beginningTime' dataKey='beginningDatetime' required title='Heure' readOnly={!isEditable} />
@@ -207,7 +202,7 @@ class OccurenceForm extends Component {
           <Field name="price" placeholder='Gratuit' title='Prix' />
         </td>
         <td title='Laissez vide si pas de limite'>
-          <Field type='date' name='bookingDate' filterDate={date => date.isBefore(occurence.bookingLimitDatetime)} placeholder="Laissez vide si pas de limite" readOnly={!isEditable}/>
+          <Field type='date' name='bookingDate' maxDate={get(formData, 'beginningDatetime')} placeholder="Laissez vide si pas de limite" readOnly={!isEditable}/>
         </td>
         <td title='Laissez vide si pas de limite'>
           <Field name='available' type='number' title='Places disponibles' />

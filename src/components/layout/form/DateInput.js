@@ -7,7 +7,7 @@ import Icon from '../Icon'
 const DateInput = props => {
 
   const onChange = date => {
-    props.onChange({[props.name]: date})
+    props.onChange({[props.dataKey]: date})
   }
 
   return props.readOnly ? (
@@ -19,10 +19,11 @@ const DateInput = props => {
           className='date'
           filterDate={props.filterDate}
           highlightDates={props.highlightedDates || []}
-          minDate={props.minDate || moment()}
+          minDate={props.minDate === 'today' ? moment() : props.minDate}
+          maxDate={props.maxDate === 'today' ? moment() : props.maxDate}
           onChange={onChange}
           readOnly={props.readOnly}
-          selected={props.value ? moment(props.value) : null}
+          selected={props.value || null}
         />
       </span>
       <span className='icon'>

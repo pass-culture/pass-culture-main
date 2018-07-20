@@ -156,7 +156,6 @@ class OccasionPage extends Component {
       occasion,
       showModal
     } = this.props
-    console.log(search)
     search.indexOf('dates') > -1 ? showModal(
       <OccurenceManager occasion={occasion}  />, {
       // isUnclosable: true

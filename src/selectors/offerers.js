@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect'
 
+import {resolveDataCollection} from '../utils/resolvers'
+
 export default createSelector(
   state => state.data.offerers,
-  offerers => offerers
+  offerers => resolveDataCollection(offerers, 'offerers')
 )
