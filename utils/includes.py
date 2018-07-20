@@ -82,8 +82,11 @@ OFFER_INCLUDES = [
         "key": "eventOccurence",
         "sub_joins": [
             {
-                "key": "event",
-                "sub_joins": ['mediations']
+                "key": "occasion",
+                "sub_joins": [
+                    'thing',
+                    'event'
+                ]
             },
             "venue"
         ]
@@ -94,10 +97,10 @@ OFFER_INCLUDES = [
         #"sub_joins": OFFERER_INCLUDES
     },
     {
-        "key": "thing",
+        "key": "occasion",
         "sub_joins": [
-            "mediations",
-            "venue"
+            "thing",
+            "event"
         ]
     },
     {
