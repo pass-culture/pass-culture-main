@@ -164,19 +164,19 @@ class OccurenceForm extends Component {
       occurence,
       occurences,
       offer,
+      tz,
     } = this.props
 
     const apiPath = isEditable ? `eventOccurences/${get(occurence, 'id', '')}` : `offers/${get(offer, 'id', '')}`
 
-    const formData = Object.assign({
-      beginningDatetime: occurence && occurence.beginningDatetime,
-      date: occurence && occurence.beginningDatetime,
-      time: occurence && occurence.beginningDatetime,
-      endDateTime: occurence && occurence.endDatetime,
-      bookingDate: offer && offer.bookingLimitDatetime,
-      price: offer && offer.price,
-      available: offer && offer.available,
-    })
+    const formData = Object.assign({}, occurence, offer)
+    //  {
+    //   beginningDatetime: occurence && occurence.beginningDatetime,
+    //   endDateTime: occurence && occurence.endDatetime,
+    //   bookingDate: offer && offer.bookingLimitDatetime,
+    //   price: offer && offer.price,
+    //   available: offer && offer.available,
+    // })
 
     return (
       <Form
@@ -193,16 +193,16 @@ class OccurenceForm extends Component {
           <Field type='date' name='beginningDate' dataKey='beginningDatetime' required highlightedDates={occurences.map(o => o.beginningDatetime)} title='Date' readOnly={!isEditable} minDate='today' debug />
         </td>
         <td>
-          <Field type='time' name='beginningTime' dataKey='beginningDatetime' required title='Heure' readOnly={!isEditable} />
+          <Field type='time' name='beginningTime' dataKey='beginningDatetime' required title='Heure' readOnly={!isEditable} tz={tz} />
         </td>
         <td>
-          <Field type='time' name='endDateTime' required title='Heure de fin' readOnly={!isEditable} />
+          <Field type='time' name='endDatetime' required title='Heure de fin' readOnly={!isEditable} tz={tz} />
         </td>
         <td title='Vide si gratuit'>
           <Field name="price" placeholder='Gratuit' title='Prix' />
         </td>
         <td title='Laissez vide si pas de limite'>
-          <Field type='date' name='bookingDate' maxDate={get(formData, 'beginningDatetime')} placeholder="Laissez vide si pas de limite" readOnly={!isEditable}/>
+          <Field type='date' name='bookingLimitDatetime' maxDate={get(formData, 'beginningDatetime')} placeholder="Laissez vide si pas de limite" readOnly={!isEditable}/>
         </td>
         <td title='Laissez vide si pas de limite'>
           <Field name='available' type='number' title='Places disponibles' />

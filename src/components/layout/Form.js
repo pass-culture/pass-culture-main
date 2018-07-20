@@ -154,7 +154,7 @@ class Form extends Component {
           this.setState({
             editedValues: Object.assign(this.state.editedValues, newEditedValues)
           })
-          // this.onDebouncedMergeForm() // Not working for now
+          // this.onDebouncedMergeForm() // Not working for now, concurrency issue ...
           this.onMergeForm()
         }
 

@@ -21,6 +21,7 @@ class OccurenceManager extends Component {
 
   newOccurenceWithDefaults(occurence) {
     if (!occurence) return
+    console.log(occurence)
     const beginningDatetime = moment(occurence.beginningDatetime).tz(this.props.tz).add(1, 'days')
     const endDatetime = moment(occurence.endDatetime).tz(this.props.tz).add(1, 'days').format('HH:mm')
 

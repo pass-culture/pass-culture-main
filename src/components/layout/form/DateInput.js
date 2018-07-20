@@ -7,23 +7,23 @@ import Icon from '../Icon'
 const DateInput = props => {
 
   const onChange = date => {
-    props.onChange({[props.dataKey]: date})
+    props.onChange(date.toISOString())
   }
 
   return props.readOnly ? (
-    <span> {props.value && props.value.format(props.dateFormat)} </span>
+    <span> {props.value && moment(props.value).format(props.dateFormat)} </span>
     ) : (
     <div className={`input is-${props.size} date-picker`}>
       <span>
         <DatePicker
           className='date'
           filterDate={props.filterDate}
-          highlightDates={props.highlightedDates || []}
-          minDate={props.minDate === 'today' ? moment() : props.minDate}
-          maxDate={props.maxDate === 'today' ? moment() : props.maxDate}
+          highlightDates={(props.highlightedDates || []).map(d => moment(d))}
+          minDate={props.minDate === 'today' ? moment() : (props.minDate && moment(props.minDate))}
+          maxDate={props.maxDate === 'today' ? moment() : (props.maxDate && moment(props.maxDate))}
           onChange={onChange}
           readOnly={props.readOnly}
-          selected={props.value || null}
+          selected={props.value ? moment(props.value) : null}
         />
       </span>
       <span className='icon'>

@@ -113,15 +113,14 @@ class OccurenceItem extends Component {
       endDatetime,
     } = occurence || {}
 
-    const date = beginningDatetime && moment.tz(beginningDatetime, tz)
-
+    const date = beginningDatetime && moment(beginningDatetime).tz(tz)
     return (
       <tr>
         <td>{date && date.format('DD/MM/YYYY')}</td>
         <td>{date && date.format('HH:mm')}</td>
-        <td>{endDatetime && moment.tz(endDatetime, tz).format('HH:mm')}</td>
+        <td>{endDatetime && moment(endDatetime).tz(tz).format('HH:mm')}</td>
         <td><Price value={price} /></td>
-        <td>{bookingLimitDatetime && moment.tz(bookingLimitDatetime, tz).format('DD/MM/YYYY')}</td>
+        <td>{bookingLimitDatetime && moment(bookingLimitDatetime).tz(tz).format('DD/MM/YYYY')}</td>
         <td>{available}</td>
         <td>
           { isEditable && (
@@ -154,7 +153,7 @@ export default compose(
       return {
         occasion,
         offer: offerSelector(state, get(ownProps, 'occurence.id')),
-        tz: timezoneSelector(state, 'venueId')
+        tz: timezoneSelector(state, venueId)
       }
     },
     { requestData }

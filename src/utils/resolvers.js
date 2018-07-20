@@ -2,40 +2,40 @@ import moment from 'moment'
 import get from 'lodash.get'
 
 const resolvers = {
-  events: {
-    dateModifiedAtLastProvider: moment,
-  },
-  eventOccurences: {
-    beginningDatetime: moment,
-    dateModifiedAtLastProvider: moment,
-    endDatetime: moment,
-  },
-  mediations: {
-    dateCreated: moment,
-    dateModifiedAtLastProvider: moment,
-  },
-  occasions: {
-    dateCreated: moment,
-    dateModifiedAtLastProvider: moment,
-  },
-  offers: {
-    bookingLimitDatetime: moment,
-    dateModified: moment,
-    dateModifiedAtLastProvider: moment,
-  },
-  offerers: {
-    dateCreated: moment,
-    dateModifiedAtLastProvider: moment,
-  },
-  things: {
-    dateModifiedAtLastProvider: moment,
-  },
-  venues: {
-    dateModifiedAtLastProvider: moment,
-  },
-  users: {
-    dateCreated: moment,
-  }
+  // events: {
+  //   dateModifiedAtLastProvider: moment,
+  // },
+  // eventOccurences: {
+  //   beginningDatetime: moment,
+  //   dateModifiedAtLastProvider: moment,
+  //   endDatetime: moment,
+  // },
+  // mediations: {
+  //   dateCreated: moment,
+  //   dateModifiedAtLastProvider: moment,
+  // },
+  // occasions: {
+  //   dateCreated: moment,
+  //   dateModifiedAtLastProvider: moment,
+  // },
+  // offers: {
+  //   bookingLimitDatetime: moment,
+  //   dateModified: moment,
+  //   dateModifiedAtLastProvider: moment,
+  // },
+  // offerers: {
+  //   dateCreated: moment,
+  //   dateModifiedAtLastProvider: moment,
+  // },
+  // things: {
+  //   dateModifiedAtLastProvider: moment,
+  // },
+  // venues: {
+  //   dateModifiedAtLastProvider: moment,
+  // },
+  // users: {
+  //   dateCreated: moment,
+  // }
 }
 
 export const resolveDataCollection = (collection, collectionName) => {
