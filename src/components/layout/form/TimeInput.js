@@ -9,12 +9,11 @@ const TimeInput = props => {
     const [hour, minutes] = e.target.value.split(':')
     props.onChange(moment(props.value).hours(hour).minutes(minutes).toISOString())
   }
-  console.log(props.value)
   return <BasicInput {...props} onChange={onInputChange} value={props.value ? moment(props.value).tz(props.tz).format('HH:mm') : ''} />
 }
 
 TimeInput.propTypes = {
-  tz: PropTypes.object.isRequired,
+  tz: PropTypes.string.isRequired,
 }
 
 export default TimeInput

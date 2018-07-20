@@ -53,46 +53,6 @@ class OccurenceItem extends Component {
   //   }
   // }
 
-  onDeleteClick = () => {
-    const {
-      occurence: {
-        id,
-      },
-      offer,
-      isEditable,
-      requestData
-    } = this.props
-
-    // IF AN OFFER IS ASSOCIATED WE NEED TO DELETE IT FIRST
-    // TODO: move this to backend
-    if (offer) {
-      requestData(
-        'DELETE',
-        `offers/${offer.id}`,
-        {
-          key: 'offers',
-          handleSuccess: () => {
-            isEditable && requestData(
-              'DELETE',
-              `eventOccurences/${id}`,
-              {
-                key: 'eventOccurences'
-              }
-            )
-          }
-        }
-      )
-    } else if (isEditable) {
-      requestData(
-        'DELETE',
-        `eventOccurences/${id}`,
-        {
-          key: 'eventOccurences'
-        }
-      )
-    }
-  }
-
   render () {
     const {
       occasion,

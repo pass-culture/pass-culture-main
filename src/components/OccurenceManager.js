@@ -16,22 +16,9 @@ import occurencesSelector from '../selectors/occurences'
 import providerSelector from '../selectors/provider'
 import timezoneSelector from '../selectors/timezone'
 import { queryStringToObject } from '../utils/string'
+import offerSelector from '../selectors/offer'
 
 class OccurenceManager extends Component {
-
-  newOccurenceWithDefaults(occurence) {
-    if (!occurence) return
-    console.log(occurence)
-    const beginningDatetime = moment(occurence.beginningDatetime).tz(this.props.tz).add(1, 'days')
-    const endDatetime = moment(occurence.endDatetime).tz(this.props.tz).add(1, 'days').format('HH:mm')
-
-    const newOccurence = {
-      beginningDatetime,
-      endDatetime,
-      ...get(occurence, 'offer.0',{}),
-    }
-    return newOccurence
-  }
 
   render() {
     const {
@@ -43,8 +30,6 @@ class OccurenceManager extends Component {
     } = this.props
 
     const eventOccurenceId = queryStringToObject(search).dates
-
-    console.log('occasion', occasion)
 
     return (
       <div className='occurence-manager'>
@@ -71,8 +56,10 @@ class OccurenceManager extends Component {
             <tbody>
               { eventOccurenceId === 'nouvelle' ? (
                 <OccurenceForm
-                  isEditable={!provider}
-                  occurence={this.newOccurenceWithDefaults(occurences[0])}
+                  isFullyEditable={!provider}
+                  isEditing
+                  isNew
+                  occurence={occurences[0]}
                 />
               ) : (
                 <tr>
@@ -90,15 +77,10 @@ class OccurenceManager extends Component {
                 </tr>
               )}
               { occurences.map(o =>
-                o.id === eventOccurenceId && !provider ?
                 <OccurenceForm
                   key={o.id}
-                  isEditable={!provider}
-                  occurence={o}
-                /> :
-                <OccurenceItem
-                  key={o.id}
-                  isEditable={!provider}
+                  isFullyEditable={!provider}
+                  isEditing={o.id === eventOccurenceId}
                   occurence={o}
                 />
               )}

@@ -11,7 +11,7 @@ const DateInput = props => {
   }
 
   return props.readOnly ? (
-    <span> {props.value && moment(props.value).format(props.dateFormat)} </span>
+    <span className={`label is-${props.size}`}> {props.value && moment(props.value).format(props.dateFormat)} </span>
     ) : (
     <div className={`input is-${props.size} date-picker`}>
       <span>
