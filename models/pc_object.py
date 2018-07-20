@@ -224,6 +224,11 @@ class PcObject():
         db.session.add(self)
         db.session.commit()
 
+    @staticmethod
+    def delete(model):
+        db.session.delete(model)
+        db.session.commit()
+
     def soft_delete(self):
         self.deleted = True
         db.session.add(self)

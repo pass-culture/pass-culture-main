@@ -108,7 +108,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     # Given
     user = User()
     user.publicName = 'Test'
-    user.email = 'test00@email.com'
+    user.email = 'test7@email.com'
     user.setPassword('testpsswd')
     user.departementCode = '93'
     PcObject.check_and_save(user)
@@ -139,7 +139,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     offer = Offer()
     offer.thingId = thing.id
     offer.offererId = offerer.id
-    offer.price = 20
+    offer.price = 200
     offer.venueId = venue.id
     PcObject.check_and_save(offer)
 
@@ -150,7 +150,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
 
     deposit = Deposit()
     deposit.date = datetime.utcnow() - timedelta(minutes=2)
-    deposit.amount = 10
+    deposit.amount = 0
     deposit.userId = user.id
     deposit.source = 'public'
     PcObject.check_and_save(deposit)
@@ -163,17 +163,16 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     }
 
     # When
-    r_create = req_with_auth('test00@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('test7@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
 
     # Then
     assert r_create.status_code == 400
     assert 'insufficientFunds' in r_create.json()
 
-    user.soft_delete()
-    offerer.soft_delete()
-    thing.soft_delete()
-    offer.soft_delete()
-    recommendation.soft_delete()
-    deposit.soft_delete()
-    venue.soft_delete()
-
+    PcObject.delete(deposit)
+    PcObject.delete(recommendation)
+    PcObject.delete(offer)
+    PcObject.delete(venue)
+    PcObject.delete(thing)
+    PcObject.delete(offerer)
+    PcObject.delete(user)

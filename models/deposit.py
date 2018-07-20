@@ -3,14 +3,13 @@ from sqlalchemy.orm import relationship
 
 from models.pc_object import PcObject
 from models.has_thumb_mixin import  HasThumbMixin
-from models.providable_mixin import ProvidableMixin
 from models.db import Model
 
 
 class Deposit(PcObject,
                 Model,
-                HasThumbMixin,
-                ProvidableMixin):
+                HasThumbMixin
+              ):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

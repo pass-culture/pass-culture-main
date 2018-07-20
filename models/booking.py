@@ -79,6 +79,13 @@ trig_ddl = DDL("""
           RAISE EXCEPTION 'Offer has too many bookings'
                 USING HINT = 'Number of bookings cannot exceed "offer.available"';
       END IF;
+      
+      IF NEW.amount > (SUM(SELECT amount FROM OLD WHERE "userId"=NEW.userId)
+        - SUM(SELECT price from offer WHERE id=NEW."offerId")) THEN
+          RAISE EXCEPTION 'insufficientFunds'
+                USING HINT = 'The user does not have enough credit to book';
+      END IF;
+      
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
