@@ -160,7 +160,7 @@ elif [[ "$CMD" == "rebuild-frontend" ]]; then
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
        sudo rm -rf $ROOT_PATH/api/postgres_data;
-       docker-compose up --force-recreate'
+       cd $ROOT_PATH && docker-compose up --force-recreate'
 elif [[ "$CMD" == "update-db" ]]; then
 	RUN='cd "$ROOT_PATH";
 			 ./pc update_providables -p SpreadsheetExpVenues;
@@ -207,7 +207,7 @@ elif [[ "$CMD" == "ssh" ]]; then
 		ssh deploy@api.passculture-staging.beta.gouv.fr
 	fi
 elif [[ "$CMD" == "start-backend" ]]; then
-  RUN='docker-compose up'
+  RUN='cd $ROOT_PATH && docker-compose up'
 elif [[ "$CMD" == "start-browser-webapp" ]] || [[ "$CMD" == "start-browser-pro" ]]; then
 	NGROK_API_URL=''
 	if [[ $# == 1 ]] && [[ $1 == '-t' ]]; then
