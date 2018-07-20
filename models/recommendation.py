@@ -45,7 +45,7 @@ class Recommendation(PcObject, Model):
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
-                            backref='occasions')
+                            backref='recommendations')
 
     shareMedium = Column(String(20),
                          nullable=True)

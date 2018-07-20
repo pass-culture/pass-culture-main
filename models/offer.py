@@ -51,7 +51,7 @@ class Offer(PcObject,
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
-                            backref='occasions')
+                            backref='offers')
 
     price = Column(Numeric(10, 2),
                    nullable=False)

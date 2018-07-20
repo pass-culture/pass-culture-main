@@ -49,7 +49,7 @@ class Mediation(PcObject,
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
-                            backref='occasions')
+                            backref='mediations')
 
     tutoIndex = Column(Integer,
                        nullable=True,
