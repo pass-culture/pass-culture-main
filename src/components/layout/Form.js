@@ -142,14 +142,15 @@ class Form extends Component {
         if (c.props.required) {
           requiredFields = requiredFields.concat(c)
         }
-        const formValue = get(formData || {}, c.props.name)
-        const storeValue = get(storeData || {}, c.props.name)
+        const dataKey = c.props.dataKey || c.props.name // name is unique, dataKey may not
+        const formValue = get(formData || {}, dataKey)
+        const storeValue = get(storeData || {}, dataKey)
         const type = c.props.type || Form.guessInputType(c.props.name) || 'text'
         const InputComponent = inputByTypes[type]
         if (!InputComponent) console.error('Component not found for type:', type)
 
         const onChange = value => {
-          const newEditedValues = typeof value === 'object' ? value : {[c.props.name]: value}
+          const newEditedValues = typeof value === 'object' ? value : {[dataKey]: value}
           this.setState({
             editedValues: Object.assign(this.state.editedValues, newEditedValues)
           })

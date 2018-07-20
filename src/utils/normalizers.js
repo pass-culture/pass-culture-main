@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export const eventNormalizer = {
   mediations: 'mediations',
   occasions: 'occasions',
@@ -6,6 +8,13 @@ export const eventNormalizer = {
     normalizer: {
       offer: 'offers'
     }
+  }
+}
+
+export const eventOccurenceNormalize = {
+  venue: {
+    key: 'venues',
+    normalizer: venueNormalizer,
   }
 }
 

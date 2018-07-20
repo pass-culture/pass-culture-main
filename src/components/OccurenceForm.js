@@ -172,6 +172,7 @@ class OccurenceForm extends Component {
     console.log('FORM', occasion)
 
     const formData = Object.assign({
+      beginningDatetime: occurence && occurence.beginningDatetime,
       date: occurence && occurence.beginningDatetime,
       time: occurence && occurence.beginningDatetime,
       endDateTime: occurence && occurence.endDatetime,
@@ -179,6 +180,8 @@ class OccurenceForm extends Component {
       price: offer && offer.price,
       available: offer && offer.available,
     })
+
+    console.log(formData.beginningDatetime)
 
     return (
       <Form
@@ -192,10 +195,10 @@ class OccurenceForm extends Component {
         size="small"
       >
         <td>
-          <Field name='date' required highlightedDates={occurences.map(o => moment(o.beginningDatetime))} title='Date' readOnly={!isEditable} />
+          <Field type='date' name='beginningDate' dataKey='beginningDatetime' required highlightedDates={occurences.map(o => moment(o.beginningDatetime))} title='Date' readOnly={!isEditable} />
         </td>
         <td>
-          <Field name='time' required title='Heure' readOnly={!isEditable} />
+          <Field type='time' name='beginningTime' dataKey='beginningDatetime' required title='Heure' readOnly={!isEditable} />
         </td>
         <td>
           <Field type='time' name='endDateTime' required title='Heure de fin' readOnly={!isEditable} />
@@ -204,7 +207,7 @@ class OccurenceForm extends Component {
           <Field name="price" placeholder='Gratuit' title='Prix' />
         </td>
         <td title='Laissez vide si pas de limite'>
-          <Field name='bookingDate' type='date' filterDate={date => date.isBefore(occurence.bookingLimitDatetime)} placeholder="Laissez vide si pas de limite" readOnly={!isEditable}/>
+          <Field type='date' name='bookingDate' filterDate={date => date.isBefore(occurence.bookingLimitDatetime)} placeholder="Laissez vide si pas de limite" readOnly={!isEditable}/>
         </td>
         <td title='Laissez vide si pas de limite'>
           <Field name='available' type='number' title='Places disponibles' />

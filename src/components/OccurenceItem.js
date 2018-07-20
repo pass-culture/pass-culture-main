@@ -97,14 +97,16 @@ class OccurenceItem extends Component {
     const {
       occasion,
       occurence,
-      offer: {
-        available,
-        bookingLimitDatetime,
-        price,
-      },
+      offer,
       isEditable,
       tz,
     } = this.props
+
+    const {
+      available,
+      bookingLimitDatetime,
+      price,
+    } = offer || {}
 
     const {
       beginningDatetime,
