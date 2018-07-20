@@ -174,6 +174,7 @@ class PcObject():
     def abortIfErrors(self):
         apiErrors = self.errors()
         if apiErrors.errors:
+            print(apiErrors.errors)
             raise apiErrors
 
     def populateFromDict(self, dct, skipped_keys=[]):

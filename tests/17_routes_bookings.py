@@ -105,3 +105,53 @@ def test_15_create_booking_should_not_work_if_user_can_not_book():
     assert r_create.status_code == 400
 
 
+def test_16_create_booking_should_not_work_if_not_enough_credit(app):
+    # Given
+    user = app.model.User()
+    user.publicName = 'Test'
+    user.email = 'test@email.com'
+    user.password = 'testpsswd'
+    user.departementCode = '93'
+    app.model.PcObject.check_and_save(user)
+
+    offerer = app.model.Offerer()
+    offerer.name = 'Test offerer'
+    app.model.PcObject.check_and_save(offerer)
+
+    thing = app.model.Thing()
+    thing.type = 'Book'
+    thing.name = 'Test name'
+    app.model.PcObject.check_and_save(thing)
+
+    offer = app.model.Offer()
+    offer.thingId = thing.id
+    offer.offererId = offerer.id
+    offer.price = 20
+    app.model.PcObject.check_and_save(offer)
+
+    recommendation = app.model.Recommendation()
+    recommendation.userId = user.id
+    recommendation.thingId = thing.id
+    app.model.PcObject.check_and_save(recommendation)
+
+    deposit = app.model.Deposit()
+    deposit.date = datetime.utcnow() - timedelta(minutes=2)
+    deposit.amount = 10
+    deposit.userId = user.id
+    deposit.source = 'public'
+    app.model.PcObject.check_and_save(deposit)
+
+    booking_json = {
+        'offerId': offer.id,
+        'recommendationId': recommendation.id,
+        'userId': user.id,
+        'amount': offer.price
+    }
+
+    # When
+    r_create = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+
+    # Then
+    assert r_create.status_code == 400
+    assert 'insufficientFunds' in r_create.json()
+
