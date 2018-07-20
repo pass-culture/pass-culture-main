@@ -42,31 +42,14 @@ class Mediation(PcObject,
                           foreign_keys=[authorId],
                           backref='mediations')
 
-    offererId = Column(BigInteger,
-                       ForeignKey("offerer.id"),
-                       nullable=True)
+    occasionId = Column(BigInteger,
+                        ForeignKey('occasion.id'),
+                        index=True,
+                        nullable=True)
 
-    offerer = relationship('Offerer',
-                           foreign_keys=[offererId],
-                           backref='mediations')
-
-    eventId = Column(BigInteger,
-                     ForeignKey("event.id"),
-                     index=True,
-                     nullable=True)
-
-    event = relationship('Event',
-                         foreign_keys=[eventId],
-                         backref='mediations')
-
-    thingId = Column(BigInteger,
-                     ForeignKey("thing.id"),
-                     index=True,
-                     nullable=True)
-
-    thing = relationship('Thing',
-                         foreign_keys=[thingId],
-                         backref='mediations')
+    occasion = relationship('Occasion',
+                            foreign_keys=[occasionId],
+                            backref='occasions')
 
     tutoIndex = Column(Integer,
                        nullable=True,

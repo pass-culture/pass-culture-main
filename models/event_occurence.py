@@ -35,14 +35,14 @@ class EventOccurence(PcObject,
                          foreign_keys=[eventId],
                          backref='occurences')
 
-    venueId = Column(BigInteger,
-                     ForeignKey("venue.id"),
-                     index=True,
-                     nullable=True)
+    occasionId = Column(BigInteger,
+                        ForeignKey('occasion.id'),
+                        index=True,
+                        nullable=True)
 
-    venue = relationship('Venue',
-                         foreign_keys=[venueId],
-                         backref='eventOccurences')
+    occasion = relationship('Occasion',
+                            foreign_keys=[occasionId],
+                            backref='occasions')
 
     beginningDatetime = Column(DateTime,
                                index=True,

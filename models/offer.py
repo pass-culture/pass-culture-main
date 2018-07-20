@@ -44,35 +44,14 @@ class Offer(PcObject,
                                   foreign_keys=[eventOccurenceId],
                                   backref='offers')
 
-    thingId = Column(BigInteger,
-                     ForeignKey("thing.id"),
-                     index=True,
-                     nullable=True)
-
-    thing = relationship('Thing',
-                         foreign_keys=[thingId],
-                         backref='offers')
-
-    venueId = Column(BigInteger,
-                     ForeignKey("venue.id"),
-                     CheckConstraint('("venueId" IS NOT NULL AND "eventOccurenceId" IS NULL)'
-                                           + 'OR ("venueId" IS NULL AND "eventOccurenceId" IS NOT NULL)',
-                                           name='check_offer_has_venue_xor_event_occurence'),
+    occasionId = Column(BigInteger,
+                        ForeignKey('occasion.id'),
                         index=True,
                         nullable=True)
 
-    venue = relationship('Venue',
-                         foreign_keys=[venueId],
-                         backref='offers')
-
-    offererId = Column(BigInteger,
-                       ForeignKey("offerer.id"),
-                       index=True,
-                       nullable=False)
-
-    offerer = relationship('Offerer',
-                           foreign_keys=[offererId],
-                           backref='offers')
+    occasion = relationship('Occasion',
+                            foreign_keys=[occasionId],
+                            backref='occasions')
 
     price = Column(Numeric(10, 2),
                    nullable=False)

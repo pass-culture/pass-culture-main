@@ -38,27 +38,14 @@ class Recommendation(PcObject, Model):
                              foreign_keys=[mediationId],
                              backref='recommendations')
 
-    thingId = Column(BigInteger,
-                     ForeignKey('thing.id'),
-                     index=True,
-                     nullable=True)  # NULL for recommendation created from a mediation or an event
+    occasionId = Column(BigInteger,
+                        ForeignKey('occasion.id'),
+                        index=True,
+                        nullable=True)
 
-    thing = relationship('Thing',
-                         foreign_keys=[thingId],
-                         backref='recommendations')
-
-    eventId = Column(BigInteger,
-                     ForeignKey('event.id'),
-                     CheckConstraint('("thingId" IS NOT NULL AND "eventId" IS NULL)'
-                                     + 'OR ("thingId" IS NULL AND "eventId" IS NOT NULL)'
-                                     + 'OR ("thingId" IS NULL AND "eventId" IS NULL)',
-                                     name='check_reco_has_thingid_xor_eventid_xor_nothing'),
-                     index=True,
-                     nullable=True)  # NULL for recommendation created a mediation or an offer
-
-    event = relationship('Event',
-                         foreign_keys=[eventId],
-                         backref='recommendations')
+    occasion = relationship('Occasion',
+                            foreign_keys=[occasionId],
+                            backref='occasions')
 
     shareMedium = Column(String(20),
                          nullable=True)
