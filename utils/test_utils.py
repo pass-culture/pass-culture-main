@@ -5,6 +5,7 @@ from pathlib import Path
 
 import requests as req
 
+from models import Thing
 from models.booking import Booking
 from models.event import Event
 from models.event_occurence import EventOccurence
@@ -64,9 +65,9 @@ def create_event_offer_for_booking_email_test(app):
 
 
 def create_thing_offer_for_booking_email_test(app):
-    offer = app.model.Offer()
+    offer = Offer()
     offer.eventOccurence = None
-    offer.thing = app.model.Thing()
+    offer.thing = Thing()
     offer.thing.type = 'Book'
     offer.thing.name = 'Test Book'
     offer.thing.mediaUrls = 'test/urls'
@@ -87,7 +88,7 @@ def create_offerer_for_booking_email_test(app):
 
 
 def _create_venue_for_booking_email_test(app):
-    venue = app.model.Venue()
+    venue = Venue()
     venue.address = '123 rue test'
     venue.postalCode = '93000'
     venue.city = 'Test city'
