@@ -98,8 +98,8 @@ class VenuePage extends Component {
 
     // const redirectPathname = `/structures/${offerer.id}`
     const redirectPathname = get(action, 'method') === 'POST'
-      ? `/structures/${offerer.id}/lieux/${venueId}`
-      : `/structures/${offerer.id}`
+      ? `/structures/${get(offerer, 'id')}/lieux/${venueId}`
+      : `/structures/${get(offerer, 'id')}`
     history.push(redirectPathname)
     showNotification({
       text: get(action, 'method') === 'POST'

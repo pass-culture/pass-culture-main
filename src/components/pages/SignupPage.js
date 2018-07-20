@@ -15,8 +15,8 @@ import { showNotification } from '../../reducers/notification'
 class SignupPage extends Component {
 
   componentDidUpdate () {
-    const { errors, history, user } = this.props
-    if (user && !errors) {
+    const { history, user } = this.props
+    if (user) {
       history.push('/structures')
     }
   }
@@ -116,7 +116,6 @@ export default compose(
   withRouter,
   connect(
     state => ({
-      errors: state.errors.global,
       sirenName: get(state, `form.sign-up.data.name`),
       user: state.user,
     }),

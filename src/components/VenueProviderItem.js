@@ -71,10 +71,10 @@ class VenueProviderItem extends Component {
           ? [
             nOccasions
               ? (
-                <NavLink key={0} to={`/offres?structure=${get(venue, 'id')}`}
+                <NavLink key={0} to={`/offres?lieu=${get(venue, 'id')}`}
                   className='has-text-primary'>
                   <Icon svg='ico-offres-r' />
-                  {nOccasions} {pluralize(nOccasions, 'offres')}
+                  {pluralize(nOccasions, 'offres')}
                 </NavLink>
               )
               : (

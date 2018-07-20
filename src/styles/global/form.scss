@@ -22,6 +22,11 @@
           width: auto;
         }
       }
+      .help {
+        .column {
+          padding-right: 0;
+        }
+      }
     }
   }
 }
@@ -59,7 +64,6 @@
         }
       }
     }
-
   }
 }
 

@@ -90,9 +90,14 @@ class Field extends Component {
             <div className={`field ${classnames({'is-expanded': isExpanded})}`}>
               {$input}
             </div>
-            {errors.map((e, i) => <p className='help is-danger' id={`${id}-error`} key={i}>
-              <Icon svg="picto-warning" alt="Warning" /> {e}
-            </p>)}
+            {
+              errors.map((e, i) => (
+                <p className='help is-danger columns' id={`${id}-error`} key={i}>
+                  <Icon className='column is-1' svg="picto-warning" alt="Warning" />
+                  <span className='column'> {e} </span>
+                </p>
+              ))
+            }
           </div>
         </div>
       case 'sign-in-up':
@@ -100,19 +105,31 @@ class Field extends Component {
           return <div className='field checkbox'>{$input}</div>
         } else {
           const {sublabel} = this.props
-          return <div className="field">
-            {label && <label className='label' htmlFor={id}>
-              <h3 className={classnames({required, 'with-subtitle': sublabel})}>{label}</h3>
-              {sublabel && <p>... {sublabel} :</p>}
-            </label>}
+          return (
+            <div className="field">
+              {
+                label && (
+                  <label className='label' htmlFor={id}>
+                    <h3 className={classnames({required, 'with-subtitle': sublabel})}>{label}</h3>
+                    {sublabel && <p>... {sublabel} :</p>}
+                  </label>
+                )
+              }
             <div className="control">
               {$input}
             </div>
             <ul className="help is-danger" id={`${id}-error`}>
-              {errors.map((e, i) => <li key={i}><Icon svg="picto-warning" alt="Warning" /> {e}</li>)}
+              {
+                errors.map((e, i) => (
+                  <li className="columns" key={i}>
+                    <Icon className="column is-1" svg="picto-warning" alt="Warning" />
+                    <p className="column"> {e} </p>
+                  </li>
+                ))
+              }
             </ul>
           </div>
-        }
+        )}
       default:
         break
     }
