@@ -50,11 +50,6 @@ class EventType(Enum):
     FreeVisit         = "Visite libre : Exposition, Musée, Monument..."
 
 
-EventType = EventType
-
-
-
-
 class Event(PcObject,
             Model,
             DeactivableMixin,
