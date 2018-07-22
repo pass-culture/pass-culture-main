@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import OccurenceForm from './OccurenceForm'
-import { mergeForm } from '../reducers/form'
+import { mergeFormData } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
 import occasionSelector from '../selectors/occasion'
@@ -122,6 +122,7 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
+      console.log('ownProps.match.params', ownProps.match.params)
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
       const event = eventSelector(state, eventId)
@@ -134,6 +135,6 @@ export default compose(
         tz: timezoneSelector(state, venueId),
       }
     },
-    { closeModal, mergeForm }
+    { closeModal, mergeFormData }
   )
 )(OccurenceManager)

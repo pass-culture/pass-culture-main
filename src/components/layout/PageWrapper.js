@@ -12,6 +12,7 @@ import Icon from './Icon'
 import Loader from './Loader'
 import Modal from './Modal'
 import withLogin from '../hocs/withLogin'
+import { resetForm } from '../../reducers/form'
 import { showNotification, closeNotification } from '../../reducers/notification'
 
 class PageWrapper extends Component {
@@ -104,6 +105,7 @@ class PageWrapper extends Component {
 
   componentWillUnmount() {
     this.unblock && this.unblock()
+    this.props.resetForm()
   }
 
   render () {
@@ -187,6 +189,7 @@ export default compose(
     {
       closeNotification,
       requestData,
+      resetForm,
       showNotification,
     }
   )

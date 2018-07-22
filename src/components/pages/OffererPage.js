@@ -10,9 +10,8 @@ import VenueItem from '../VenueItem'
 import Form from '../layout/Form'
 import Field from '../layout/Field'
 import PageWrapper from '../layout/PageWrapper'
-import Submit from '../layout/Submit'
+import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
-import { resetForm } from '../../reducers/form'
 import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'
 import { NEW } from '../../utils/config'
@@ -85,11 +84,6 @@ class OffererPage extends Component {
     this.setState({ isNewProvider: true })
   }
 
-  componentWillUnmount() {
-    this.props.resetForm()
-  }
-
-
   render () {
     const {
       offerer,
@@ -142,7 +136,9 @@ class OffererPage extends Component {
                   </NavLink>
                 </div>
                 <div className="control">
-                  <Submit className="button is-primary is-medium">Valider</Submit>
+                  <SubmitButton className="button is-primary is-medium">
+                    Valider
+                  </SubmitButton>
                 </div>
               </div>
             </div>
@@ -184,7 +180,6 @@ export default compose(
     {
       closeNotification,
       requestData,
-      resetForm,
       showNotification
     }
   )

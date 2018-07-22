@@ -7,7 +7,12 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { mergeForm } from '../reducers/form'
+import Price from './Price'
+import Icon from './layout/Icon'
+import Form from './layout/Form'
+import Field from './layout/Field'
+import SubmitButton from './layout/SubmitButton'
+import { mergeFormData } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import offerSelector from '../selectors/offer'
 import timezoneSelector from '../selectors/timezone'
@@ -15,12 +20,7 @@ import venueSelector from '../selectors/venue'
 import occasionSelector from '../selectors/occasion'
 import occurencesSelector from '../selectors/occurences'
 import { NEW } from '../utils/config'
-import Form from './layout/Form'
-import Field from './layout/Field'
-import Submit from './layout/Submit'
 
-import Icon from './layout/Icon'
-import Price from './Price'
 
 class OccurenceForm extends Component {
 
@@ -182,15 +182,21 @@ class OccurenceForm extends Component {
           )}
         </td>
         <td>
-          { isEditing ? (
-            <Submit className="button is-primary is-small">Valider</Submit>
-          ) : (
-            <NavLink
-              to={`/offres/${get(occasion, 'id')}?dates=${occurence.id}`}
-              className="button is-small is-secondary">
-              <span className='icon'><Icon svg='ico-pen-r' /></span>
-            </NavLink>
-          )}
+          {
+            isEditing
+            ? (
+              <SubmitButton className="button is-primary is-small">
+                Valider
+              </SubmitButton>
+            )
+            : (
+              <NavLink
+                to={`/offres/${get(occasion, 'id')}?dates=${occurence.id}`}
+                className="button is-small is-secondary">
+                <span className='icon'><Icon svg='ico-pen-r' /></span>
+              </NavLink>
+            )
+          }
         </td>
       </Form>
     )
@@ -234,6 +240,6 @@ export default compose(
         offer,
       })
     },
-    { mergeForm, requestData }
+    { mergeFormData, requestData }
   )
 )(OccurenceForm)

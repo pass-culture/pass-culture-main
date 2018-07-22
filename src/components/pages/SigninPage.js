@@ -8,7 +8,7 @@ import Form from '../layout/Form'
 import Field from '../layout/Field'
 import Logo from '../layout/Logo'
 import PageWrapper from '../layout/PageWrapper'
-import Submit from '../layout/Submit'
+import SubmitButton from '../layout/SubmitButton'
 
 
 class SigninPage extends Component {
@@ -25,7 +25,7 @@ class SigninPage extends Component {
     return (
       <PageWrapper name="sign-in" fullscreen>
         <div className='logo-side'>
-          <Logo />
+          <Logo noLink />
         </div>
         <div className='container'>
           <div className='columns'>
@@ -46,7 +46,9 @@ class SigninPage extends Component {
                       <NavLink to="/inscription" className="button is-secondary">
                         Créer un compte
                       </NavLink>
-                      <Submit className="button is-primary is-outlined">Se connecter</Submit>
+                      <SubmitButton className="button is-primary is-outlined">
+                        Se connecter
+                      </SubmitButton>
                     </div>
                   </Form>
                 </div>

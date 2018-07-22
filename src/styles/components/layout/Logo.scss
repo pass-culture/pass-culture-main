@@ -10,4 +10,8 @@ a.logo {
     height: 2.25em;
     vertical-align: middle;
   }
+
+  &.no-link {
+    cursor: inherit;
+  }
 }

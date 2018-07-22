@@ -3,20 +3,21 @@ import { assignData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import withCurrentOccasion from '../hocs/withCurrentOccasion'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
 import mediationSelector from '../../selectors/mediation'
+import occasionSelector from '../../selectors/occasion'
 import offererSelector from '../../selectors/offerer'
 import thingSelector from '../../selectors/thing'
 import venueSelector from '../../selectors/venue'
-import { mediationNormalizer } from '../../utils/normalizers'
+import { mediationNormalizer, occasionNormalizer } from '../../utils/normalizers'
 
 
 const uploadExplanation = `
@@ -53,12 +54,21 @@ class MediationPage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { mediationId } },
+      match: { params: { mediationId, occasionId } },
+      occasion,
       requestData,
       user
     } = this.props
     const isNew = mediationId === 'nouveau'
-    if (user && !isNew) {
+    !occasion && requestData(
+      'GET',
+      `occasions/${occasionId}`,
+      {
+        key: 'occasions',
+        normalizer: occasionNormalizer
+      }
+    )
+    if (!isNew) {
      requestData(
         'GET',
         `mediations/${mediationId}`,
@@ -296,16 +306,21 @@ class MediationPage extends Component {
 }
 
 export default compose(
-  withCurrentOccasion,
+  withRouter,
   connect(
     (state, ownProps) => {
+
+      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+
       const {
         eventId,
         thingId,
         venueId,
-      } = ownProps.occasion || {}
+      } = (occasion || {})
+
       const venue = venueSelector(state, venueId)
       return {
+        occasion,
         offerer: offererSelector(state, get(venue, 'managingOffererId')),
         event: eventSelector(state, eventId),
         mediation: mediationSelector(state, ownProps.match.params.mediationId),

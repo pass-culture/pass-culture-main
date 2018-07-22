@@ -1,8 +1,8 @@
 import React from 'react'
 
+import HomeCard from '../HomeCard'
 import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
-import HomeCard from '../HomeCard'
 
 const HomePage = ({ user }) => {
   return (

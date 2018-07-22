@@ -1,9 +1,9 @@
+import get from 'lodash.get'
 import { call, put, takeEvery } from 'redux-saga/effects'
 
-import { newMergeForm } from '../reducers/form'
 import { assignErrors } from '../reducers/errors'
+import { mergeFormData } from '../reducers/form'
 import { capitalize } from '../utils/string'
-import get from 'lodash.get'
 
 const SIRET = 'siret'
 const SIREN = 'siren'
@@ -17,7 +17,7 @@ const fromWatchSirenInput = sireType => function*(action) {
     const response = yield call(fetch, `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${values[sireType]}`)
     if (response.status === 404)  {
       yield put(assignErrors({[sireType]: [`${capitalize(sireType)} invalide`]}))
-      yield put(newMergeForm(action.name,
+      yield put(mergeFormData(action.name,
         {
           address: null,
           city: null,
@@ -31,7 +31,7 @@ const fromWatchSirenInput = sireType => function*(action) {
     } else {
       const body = yield call([response, 'json'])
       const dataPath = sireType === SIREN ? 'siege_social' : 'etablissement'
-      yield put(newMergeForm(action.name, {
+      yield put(mergeFormData(action.name, {
         address: get(body, `${dataPath}.l4_normalisee`),
         // geo_adresse has postal code and city name which don't belong to this field
         // address: get(body, `${dataPath}.geo_adresse`),
@@ -54,14 +54,14 @@ const fromWatchSirenInput = sireType => function*(action) {
 export function* watchFormActions() {
   yield takeEvery(
     ({ type, values, options }) => {
-      const result = type === 'NEW_MERGE_FORM' && !get(options, 'calledFromSaga') && get(values, `${SIREN}.length`) === 9
+      const result = type === 'MERGE_FORM_DATA' && !get(options, 'calledFromSaga') && get(values, `${SIREN}.length`) === 9
       return result
     },
     fromWatchSirenInput(SIREN)
   )
   yield takeEvery(
     ({ type, values, options }) => {
-      return type === 'NEW_MERGE_FORM' && !get(options, 'calledFromSaga') && get(values, `${SIRET}.length`) === 14
+      return type === 'MERGE_FORM_DATA' && !get(options, 'calledFromSaga') && get(values, `${SIRET}.length`) === 14
     },
     fromWatchSirenInput(SIRET)
   )

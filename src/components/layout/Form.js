@@ -16,7 +16,7 @@ import SirenInput from './form/SirenInput'
 import TextareaInput from './form/TextareaInput'
 import TextInput from './form/TextInput'
 import TimeInput from './form/TimeInput'
-import { newMergeForm, newRemoveErrorForm } from '../../reducers/form'
+import { mergeFormData, removeFormError } from '../../reducers/form'
 import { showNotification } from '../../reducers/notification'
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
@@ -43,7 +43,7 @@ class Form extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      editedValues: {},
+      patch: {},
     }
     this.onDebouncedMergeForm = debounce(
       this.onMergeForm,
@@ -92,10 +92,10 @@ class Form extends Component {
   }
 
   onMergeForm = () => {
-    this.props.newRemoveErrorForm(this.props.name)
-    this.props.newMergeForm(this.props.name, this.state.editedValues)
+    this.props.removeFormError(this.props.name)
+    this.props.mergeFormData(this.props.name, this.state.patch)
     this.setState({
-      editedValues: {},
+      patch: {},
     })
   }
 
@@ -158,9 +158,9 @@ class Form extends Component {
         if (!InputComponent) console.error('Component not found for type:', type)
 
         const onChange = value => {
-          const newEditedValues = typeof value === 'object' ? value : {[dataKey]: value}
+          const newPatch = typeof value === 'object' ? value : {[dataKey]: value}
           this.setState({
-            editedValues: Object.assign(this.state.editedValues, newEditedValues)
+            patch: Object.assign(this.state.patch, newPatch)
           })
           // this.onDebouncedMergeForm() // Not working for now, concurrency issue ...
           this.onMergeForm()
@@ -184,7 +184,7 @@ class Form extends Component {
         }
 
         return newChild
-      } else if (c.type.displayName === 'Submit') {
+      } else if (c.type.displayName === 'SubmitButton') {
         return React.cloneElement(c, Object.assign({
           name,
           getDisabled: () => {
@@ -237,8 +237,8 @@ export default connect(
     formErrors: get(state, `form.${ownProps.name}.errors`),
   }),
   {
-    newMergeForm,
-    newRemoveErrorForm,
+    mergeFormData,
+    removeFormError,
     requestData,
     showNotification
   }

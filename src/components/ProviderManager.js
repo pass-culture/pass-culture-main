@@ -5,12 +5,12 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import VenueProviderItem from './VenueProviderItem'
 import Field from './layout/Field'
 import Form from './layout/Form'
 import Icon from './layout/Icon'
-import Submit from './layout/Submit'
-import VenueProviderItem from './VenueProviderItem'
-import { mergeForm } from '../reducers/form'
+import SubmitButton from './layout/SubmitButton'
+import { mergeFormData } from '../reducers/form'
 import providerSelector from '../selectors/provider'
 import providersSelector from '../selectors/providers'
 import venueProvidersSelector from '../selectors/venueProviders'
@@ -46,10 +46,10 @@ class ProviderManager extends Component {
   handleMergeForm = () => {
     const {
       match: { params: { venueId } },
-      mergeForm
+      mergeFormData
     } = this.props
     const { isNew } = this.state
-    isNew && mergeForm('venueProviders', NEW, { venueId })
+    isNew && mergeFormData('venueProviders', NEW, { venueId })
   }
 
   handleDataRequest = () => {
@@ -182,9 +182,9 @@ class ProviderManager extends Component {
                   {
                     provider && (
                       <div className='field level-item level-right'>
-                        <Submit className="button is-secondary">
+                        <SubmitButton className="button is-secondary">
                           Importer
-                        </Submit>
+                        </SubmitButton>
                       </div>
                     )
                   }
@@ -227,6 +227,6 @@ export default compose(
         venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
       }
     },
-    { mergeForm, requestData }
+    { mergeFormData, requestData }
   )
 )(ProviderManager)

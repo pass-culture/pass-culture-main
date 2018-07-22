@@ -11,14 +11,13 @@ import Form from '../layout/Form'
 import Field from '../layout/Field'
 import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
-import Submit from '../layout/Submit'
-import { resetForm } from '../../reducers/form'
+import SubmitButton from '../layout/SubmitButton'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { NEW } from '../../utils/config'
-import { venueNormalizer } from '../../utils/normalizers'
+import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
 
 
 class VenuePage extends Component {
@@ -63,22 +62,31 @@ class VenuePage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      requestData,
-      user
+      match,
+      requestData
     } = this.props
     const { apiPath } = this.state
-    if (user) {
-      requestData(
-        'GET',
-        apiPath,
-        {
-          handleSuccess,
-          handleFail,
-          key: 'venues',
-          normalizer: venueNormalizer
-        }
-      )
-    }
+    requestData(
+      'GET',
+      `offerers/${match.params.offererId}`,
+      {
+        handleSuccess: () => {
+          requestData(
+            'GET',
+            apiPath,
+            {
+              handleSuccess,
+              handleFail,
+              key: 'venues',
+              normalizer: venueNormalizer
+            }
+          )
+        },
+        handleFail,
+        key: 'offerers',
+        normalizer: offererNormalizer
+      }
+    )
   }
 
   handleSuccess = (state, action) => {
@@ -118,10 +126,6 @@ class VenuePage extends Component {
     )
   }
 
-  componentWillUnmount() {
-    this.props.resetForm()
-  }
-
   render () {
     const {
       match: {
@@ -143,7 +147,6 @@ class VenuePage extends Component {
       venueName
     } = this.state
 
-    const formData = Object.assign({}, venue, {managingOffererId: offererId, bookingEmail: get(user, 'email')})
     return (
       <PageWrapper
         backTo={{
@@ -185,7 +188,16 @@ class VenuePage extends Component {
 
         {!isNew && <ProviderManager venue={venue} />}
 
-        <Form name='venue' handleSuccess={this.handleSuccess} action={`/venues/${get(venue, 'id', '')}`} data={formData} readOnly={isReadOnly}>
+        <Form
+          action={`/venues/${get(venue, 'id', '')}`}
+          name='venue'
+          handleSuccess={this.handleSuccess}
+          data={Object.assign({}, venue, {
+            managingOffererId: offererId,
+            bookingEmail: get(user, 'email')
+          })} 
+          readOnly={isReadOnly}
+        >
           <Field type='hidden' name='managingOffererId' />
           <div className='section'>
             <h2 className='pc-list-title'>
@@ -195,7 +207,7 @@ class VenuePage extends Component {
               </span>
             </h2>
             <div className='field-group'>
-              <Field name='siret' label='SIRET' required />
+              <Field name='siret' label='SIRET' />
               <Field name='name' label='Nom du lieu' required />
               <Field type='email' name='bookingEmail' label='E-mail' required />
             </div>
@@ -242,7 +254,9 @@ class VenuePage extends Component {
                       </NavLink>
                     )
                     : (
-                      <Submit className="button is-primary is-medium">{isNew ? 'Créer' : 'Valider'}</Submit>
+                      <SubmitButton className="button is-primary is-medium">
+                        {isNew ? 'Créer' : 'Valider'}
+                      </SubmitButton>
                     )
                 }
               </div>
@@ -266,7 +280,6 @@ export default compose(
     {
       addBlockers,
       closeNotification,
-      resetForm,
       removeBlockers,
       requestData,
       showNotification

@@ -7,10 +7,11 @@ import { compose } from 'redux'
 
 import Form from '../layout/Form'
 import Field from '../layout/Field'
-import Submit from '../layout/Submit'
 import PageWrapper from '../layout/PageWrapper'
+import SubmitButton from '../layout/SubmitButton'
 import Logo from '../layout/Logo'
 import { showNotification } from '../../reducers/notification'
+
 
 class SignupPage extends Component {
 
@@ -30,7 +31,7 @@ class SignupPage extends Component {
     return (
       <PageWrapper name="sign-up" fullscreen>
         <div className='logo-side'>
-          <Logo />
+          <Logo noLink />
         </div>
         <div className='container'>
           <div className='columns'>
@@ -98,7 +99,9 @@ class SignupPage extends Component {
                       <NavLink to="/connexion" className="button is-secondary">
                         J'ai déjà un compte
                       </NavLink>
-                      <Submit className="button is-primary is-outlined">Créer</Submit>
+                      <SubmitButton className="button is-primary is-outlined">
+                        Créer
+                      </SubmitButton>
                     </div>
                   </Form>
                 </div>

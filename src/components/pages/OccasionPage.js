@@ -1,18 +1,22 @@
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
-import withCurrentOccasion from '../hocs/withCurrentOccasion'
-import PageWrapper from '../layout/PageWrapper'
+import Form from '../layout/Form'
+import Field from '../layout/Field'
 import Icon from '../layout/Icon'
-import { resetForm } from '../../reducers/form'
+import PageWrapper from '../layout/PageWrapper'
+import SubmitButton from '../layout/SubmitButton'
 import { showModal, closeModal } from '../../reducers/modal'
 import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
+import occasionSelector from '../../selectors/occasion'
 import occurencesSelector from '../../selectors/occurences'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
@@ -23,31 +27,24 @@ import typesSelector from '../../selectors/types'
 import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
-// import { eventNormalizer } from '../../utils/normalizers'
+import { occasionNormalizer } from '../../utils/normalizers'
+import { pluralize } from '../../utils/string'
 
-import {
-  pluralize,
-  // updateQueryString,
-} from '../../utils/string'
-
-import Form from '../layout/Form'
-import Field from '../layout/Field'
-import Submit from '../layout/Submit'
 
 class OccasionPage extends Component {
   constructor () {
     super()
     this.state = {
-      isReadOnly: true,
-      hasNoVenue: false,
+      isNew: false,
       isEventType: false,
+      isReadOnly: true,
     }
   }
 
   static getDerivedStateFromProps (nextProps) {
     const {
       location: { search },
-      isNew,
+      match: { params: { occasionId } },
       occasion,
       type,
     } = nextProps
@@ -57,28 +54,41 @@ class OccasionPage extends Component {
     } = (occasion || {})
 
     const isEdit = search.indexOf('modifie') > -1
+    const isNew = occasionId === 'nouveau'
     const isEventType = (get(type, 'type') === 'Event') || eventId
     const isReadOnly = !isNew && !isEdit
 
     const apiPath = isEventType
       ? `events/${eventId || ''}`
       : `things/${thingId || ''}`
+
     return {
       apiPath,
       isEventType,
+      isNew,
       isReadOnly,
     }
   }
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      match: { params: { occasionId } },
       history,
+      occasion,
       offerers,
       providers,
       requestData,
       showModal,
       types,
     } = this.props
+    !occasion && requestData(
+      'GET',
+      `occasions/${occasionId}`,
+      {
+        key: 'occasions',
+        normalizer: occasionNormalizer
+      }
+    )
     offerers.length === 0 && requestData(
       'GET',
       'offerers',
@@ -146,18 +156,17 @@ class OccasionPage extends Component {
         console.warn("Something wrong with returned data, we should retrieve the created occasion here")
         return
       }
-      history.push(`/offres/${occasion.id}/dates?modifie`)
+      history.push(`/offres/${occasion.id}?dates&modifie`)
     }
   }
 
   handleShowOccurencesModal = () => {
     const {
       location: {search},
-      occasion,
       showModal
     } = this.props
     search.indexOf('dates') > -1 ? showModal(
-      <OccurenceManager occasion={occasion}  />, {
+      <OccurenceManager />, {
         isUnclosable: true
     }) : closeModal()
   }
@@ -185,20 +194,14 @@ class OccasionPage extends Component {
     }
   }
 
-  componentWillUnmount () {
-    this.props.resetForm()
-  }
-
   render () {
     const {
       event,
-      isNew,
       location: { search },
       occasion,
       occurences,
       offerer,
       offerers,
-      routePath,
       thing,
       type,
       types,
@@ -207,6 +210,7 @@ class OccasionPage extends Component {
     } = this.props
     const {
       apiPath,
+      isNew,
       isReadOnly,
       isEventType,
     } = this.state
@@ -268,7 +272,7 @@ class OccasionPage extends Component {
                         </div>
                         <NavLink
                           className='button is-primary is-outlined is-small'
-                          to={`${routePath}?dates`}
+                          to={`/offres/${get(occasion, 'id')}?dates`}
                         >
                           <span className='icon'><Icon svg='ico-calendar' /></span>
                           <span>Gérer les dates et les prix</span>
@@ -351,13 +355,19 @@ class OccasionPage extends Component {
                 )}
               </div>
               <div className="control">
-                { isReadOnly ? (
-                  <NavLink to='/offres' className='button is-primary is-medium'>
-                    Terminer
-                  </NavLink>
-                ) : (
-                  <Submit className="button is-primary is-medium">Enregistrer</Submit>
-                )}
+                {
+                  isReadOnly
+                  ? (
+                    <NavLink to='/offres' className='button is-primary is-medium'>
+                      Terminer
+                    </NavLink>
+                  )
+                  : (
+                    <SubmitButton className="button is-primary is-medium">
+                      Enregistrer
+                    </SubmitButton>
+                  )
+                }
               </div>
             </div>
           </Form>
@@ -368,17 +378,19 @@ class OccasionPage extends Component {
 }
 
 export default compose(
-  withCurrentOccasion,
+  withRouter,
   connect(
     (state, ownProps) => {
       const search = searchSelector(state, ownProps.location.search)
 
       const providers = providersSelector(state)
 
-      const eventId = get(ownProps, 'occasion.eventId')
+      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+
+      const eventId = get(occasion, 'eventId')
       const event = eventSelector(state, eventId)
 
-      const thingId = get(ownProps, 'occasion.thingId')
+      const thingId = get(occasion, 'thingId')
       const thing = thingSelector(state, thingId)
 
       const types = typesSelector(state)
@@ -405,6 +417,7 @@ export default compose(
         providers,
         event,
         thing,
+        occasion,
         occurences,
         venues,
         venue,
@@ -415,9 +428,9 @@ export default compose(
       }
     },
     {
-      resetForm,
       showModal,
       closeModal,
+      requestData,
       showNotification,
     }
   )

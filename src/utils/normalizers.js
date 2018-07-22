@@ -58,9 +58,6 @@ export const venueNormalizer = {
       'event': 'events'
     }
   },
-  managingOfferer: {
-    key: 'offerers'
-  },
   offers: {
     key: 'offers',
     normalizer: {

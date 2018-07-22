@@ -5,8 +5,8 @@ import { compose } from 'redux'
 import withLogin from '../hocs/withLogin'
 import Form from '../layout/Form'
 import Field from '../layout/Field'
-import Submit from '../layout/Submit'
 import PageWrapper from '../layout/PageWrapper'
+import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { showNotification } from '../../reducers/notification'
 import { apiUrl } from '../../utils/config'
@@ -41,7 +41,9 @@ class ProfilePage extends Component {
           </div>
           <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
             <div className="control">
-              <Submit className='button is-primary is-medium'>Enregistrer</Submit>
+              <SubmitButton className='button is-primary is-medium'>
+                Enregistrer
+              </SubmitButton>
             </div>
             <div className='field'>
               <Field name='email' type='email' label='Email' required />
