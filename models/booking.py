@@ -7,7 +7,7 @@ from sqlalchemy import BigInteger, \
     event, \
     ForeignKey, \
     Integer, \
-    String
+    String, Numeric
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -61,6 +61,9 @@ class Booking(PcObject,
                         foreign_keys=[userId],
                         backref='userBookings')
 
+    amount = Column(Numeric(10, 2),
+                   nullable=False)
+
     @property
     def eventOccurenceBeginningDatetime(self):
         offer = self.offer
@@ -80,8 +83,11 @@ trig_ddl = DDL("""
                 USING HINT = 'Number of bookings cannot exceed "offer.available"';
       END IF;
       
-      IF NEW.amount > (SUM(SELECT amount FROM OLD WHERE "userId"=NEW.userId)
-        - SUM(SELECT price from offer WHERE id=NEW."offerId")) THEN
+      
+      SELECT (
+      (SELECT SUM(amount) old_booking_amount FROM booking WHERE "userId"=NEW."userId")  -
+      (SELECT SUM(amount) FROM deposit WHERE "userId"=NEW."userId") as available_funds)
+       IF (NEW.amount > available_funds) THEN
           RAISE EXCEPTION 'insufficientFunds'
                 USING HINT = 'The user does not have enough credit to book';
       END IF;
