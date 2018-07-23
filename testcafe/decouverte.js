@@ -1,4 +1,5 @@
 import { Selector } from 'testcafe'
+import { ClientFunction } from 'testcafe'
 
 import BROWSER_ROOT_URL from './helpers/config'
 import regularUser from './helpers/roles'
@@ -11,6 +12,8 @@ import regularUser from './helpers/roles'
   const spanPrice  = Selector('.price')
   const draggableImage = Selector('.react-draggable')
 
+const getPageUrl = ClientFunction(() => window.location.href.toString());
+
 fixture `Découverte | Je ne suis pas connecté·e`
 .page `${BROWSER_ROOT_URL+'decouverte'}`
 
@@ -18,7 +21,8 @@ fixture `Découverte | Je ne suis pas connecté·e`
   {
     await t
     const location = await t.eval(() => window.location)
-    await t.expect(location.pathname).eql('/connexion')
+    // await t.expect(location.pathname).eql('/connexion')
+    await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 });
   })
 
 fixture `Découverte | Après connexion | Les offres sont en cours de chargement`
