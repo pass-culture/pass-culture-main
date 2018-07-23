@@ -119,8 +119,8 @@ class OccurenceManager extends Component {
           </table>
         </div>
         <button
-          onClick={this.onCloseClick}
-          className="button is-secondary is-pulled-right">
+          className="button is-secondary is-pulled-right"
+          onClick={this.onCloseClick} >
           Fermer
         </button>
       </div>
@@ -140,8 +140,7 @@ export default compose(
         event,
         occasion,
         occurences,
-        provider: providerSelector(state, get(event, 'lastProviderId')),
-        tz: timezoneSelector(state, venueId),
+        provider: providerSelector(state, get(event, 'lastProviderId'))
       }
     },
     { closeModal, mergeFormData }

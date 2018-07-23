@@ -10,14 +10,14 @@ export default createCachedSelector(
   (offers, eventOccurenceId) => {
     const offer = offers.find(offer =>
       offer.eventOccurenceId === eventOccurenceId)
-    return Object.assign({},
-      {
-        available: get(offer, 'available'),
-        bookingLimitDatetime: moment(get(offer, 'bookingLimitDatetime'))
-          .add(1, 'day')
-          .toISOString(),
-        price: get(offer, 'price'),
-      }, offer)
+    if (offer) {
+      return Object.assign(
+        {
+          bookingLimitDatetime: moment(get(offer, 'bookingLimitDatetime'))
+            .add(1, 'day')
+            .toISOString()
+        }, offer)
+    }
   }
 )(
   (state, eventOccurenceId) => eventOccurenceId || ''
