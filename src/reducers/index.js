@@ -2,7 +2,7 @@ import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
 
 //import data from './data'
-import { data } from 'shared/reducers/data'
+import { data } from 'pass-culture-shared'
 import form from './form'
 import geolocation from './geolocation'
 import loading from './loading'

@@ -93,14 +93,15 @@
     "testcafe": "^0.20.4"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "pgbuild": "yarn build && node scripts/pgbuild.js",
-    "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "build": "node scripts/build.js",
     "ngrok": "ngrok start -config=./ngrok.yml --all",
+    "pgbuild": "yarn build && node scripts/pgbuild.js",
+    "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
+    "postinstall": "cd node_modules && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile",
+    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'",
+    "start": "node scripts/start.js",
     "test": "node scripts/jesttest.js --env=jsdom",
-    "testcafe": "testcafe 'chrome:headless' testcafe",
-    "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'"
+    "testcafe": "testcafe 'chrome:headless' testcafe"
   },
   "jest": {
     "collectCoverageFrom": [
