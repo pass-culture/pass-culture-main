@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
@@ -28,6 +30,7 @@ def assert_signup_error(data, err_field):
                                   json=data)
     assert r_signup.status_code == 400
     error = r_signup.json()
+    pprint(error)
     assert err_field in error
 
 
