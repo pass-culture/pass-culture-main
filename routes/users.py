@@ -25,6 +25,11 @@ def make_user_query():
     query = User.query
     return query
 
+
+def is_pro_signup(json_user):
+    return 'siren' not in json_user
+
+
 @app.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
@@ -67,7 +72,7 @@ def signup():
         return jsonify(e.errors), 400
 
     departement_code = None
-    if 'email' in request.json and 'siren' not in request.json:
+    if 'email' in request.json and not is_pro_signup(request.json):
         scope = ['https://spreadsheets.google.com/feeds',
                  'https://www.googleapis.com/auth/drive']
 
@@ -130,7 +135,7 @@ def signup():
     user_offerer = None
     # we don't validate users yet
     # new_user.generate_validation_token()
-    if 'siren' in request.json:
+    if is_pro_signup(request.json):
         new_user.canBook = False
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
