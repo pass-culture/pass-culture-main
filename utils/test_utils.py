@@ -36,35 +36,35 @@ def req_with_auth(email=None, password=None):
     return r
 
 
-def create_booking_for_booking_email_test(app, user, offer):
+def create_booking_for_booking_email_test(user, offer):
     booking = Booking()
     booking.user = user
     offer.bookings = [booking]
     return booking
 
 
-def create_user_for_booking_email_test(app):
+def create_user_for_booking_email_test():
     user = User()
     user.publicName = 'Test'
     user.email = 'test@email.com'
     return user
 
 
-def create_event_offer_for_booking_email_test(app):
+def create_event_offer_for_booking_email_test():
     offer = Offer()
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     offer.eventOccurence = EventOccurence()
     offer.eventOccurence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
     offer.eventOccurence.event = Event()
     offer.eventOccurence.event.name = 'Mains, sorts et papiers'
-    offer.eventOccurence.venue = _create_venue_for_booking_email_test(app)
+    offer.eventOccurence.venue = _create_venue_for_booking_email_test()
     offer.thing = None
     offer.isActive = True
 
     return offer
 
 
-def create_thing_offer_for_booking_email_test(app):
+def create_thing_offer_for_booking_email_test():
     offer = Offer()
     offer.eventOccurence = None
     offer.thing = Thing()
@@ -73,11 +73,11 @@ def create_thing_offer_for_booking_email_test(app):
     offer.thing.mediaUrls = 'test/urls'
     offer.thing.idAtProviders = '12345'
     offer.isActive = True
-    offer.venue = _create_venue_for_booking_email_test(app)
+    offer.venue = _create_venue_for_booking_email_test()
     return offer
 
 
-def create_offerer_for_booking_email_test(app):
+def create_offerer_for_booking_email_test():
     offerer = Offerer()
     offerer.isActive = 't'
     offerer.address = '123 rue test'
@@ -87,7 +87,7 @@ def create_offerer_for_booking_email_test(app):
     return offerer
 
 
-def _create_venue_for_booking_email_test(app):
+def _create_venue_for_booking_email_test():
     venue = Venue()
     venue.address = '123 rue test'
     venue.postalCode = '93000'

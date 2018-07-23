@@ -10,7 +10,6 @@ from pprint import pformat
 
 import requests
 from flask import current_app as app
-from mailjet_rest import Client
 
 from utils.config import API_URL, ENV, IS_DEV, IS_STAGING
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
@@ -23,10 +22,7 @@ if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
 
 if MAILJET_API_SECRET is None or MAILJET_API_SECRET == '':
     raise ValueError("Missing environment variable MAILJET_API_SECRET")
-client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET),
-                version='v3')
-app.mailjet_client = client
-app.mailjet = client.send.create
+
 
 
 def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
@@ -48,7 +44,7 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
         email['To'] = ", ".join(recipients)
     print('EMAIL', email['To'])
 
-    mailjet_result = app.mailjet(data=email)
+    mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
         raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
 
@@ -72,7 +68,7 @@ def send_booking_confirmation_email_to_user(booking, is_cancellation=False):
         email['To'] = ", ".join(recipients)
     print('EMAIL', email['To'])
 
-    mailjet_result = app.mailjet(data=email)
+    mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
         raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
 
@@ -208,7 +204,7 @@ def maybe_send_offerer_validation_email(user, *objects_to_validate):
         'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING
         else 'passculture@beta.gouv.fr'
     }
-    mailjet_result = app.mailjet(data=email)
+    mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
         raise Exception(": " + pformat(vars(mailjet_result)))
 
@@ -221,7 +217,7 @@ def send_dev_email(subject, html_text):
         'Html-part': html_text,
         'To': 'passculture-dev@beta.gouv.fr'
     }
-    mailjet_result = app.mailjet(data=email)
+    mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
         raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
 
@@ -284,10 +280,6 @@ def subscribe_newsletter(user):
         id=contact['ID'],
         data=contact_lists_data
     ).json()
-
-
-app.get_contact = get_contact
-app.subscribe_newsletter = subscribe_newsletter
 
 
 def _generate_reservation_email_html_subject(user, offer):

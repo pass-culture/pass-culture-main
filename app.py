@@ -2,9 +2,11 @@
 import os
 from flask_cors import CORS
 from flask import Flask
+from mailjet_rest import Client
 
 from models.db import db
 from utils.config import IS_DEV
+from utils.mailing import get_contact, subscribe_newsletter, MAILJET_API_KEY, MAILJET_API_SECRET
 
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
@@ -26,6 +28,11 @@ with app.app_context():
     import utils.logger
     import local_providers
     import routes
+
+    app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+
+    app.get_contact = get_contact
+    app.subscribe_newsletter = subscribe_newsletter
 
     app.model = {}
     for model_name in models.__all__:
