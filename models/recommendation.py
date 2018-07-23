@@ -99,36 +99,11 @@ class Recommendation(PcObject, Model):
     @property
     def mediatedOffersQuery(self):
         query = Offer.query
-        reco_or_mediation = self
-        if self.mediation is not None:
-            reco_or_mediation = self.mediation
-            query = query.filter_by(offererId=self.mediation.offererId)
-        if self.thingId is not None:
-            query = query.filter_by(thingId=reco_or_mediation.thingId)
-        elif self.eventId is not None:
-            query = query.join(EventOccurence) \
-                .filter(EventOccurence.eventId == reco_or_mediation.eventId)
+        if not self.occasion:
+            return query
+
+        if self.occasion.thingId is not None:
+            query = query.filter_by(thingId=self.occasion.thingId)
+        elif self.occasion.eventId is not None:
+            query = query.join(EventOccurence).filter(EventOccurence.eventId == self.occasion.eventId)
         return query
-
-    # FIXME: This is to support legacy code in the webapp
-    # it should be removed once all requests from the webapp
-    # have an app version header, which will mean that all
-    # clients (or at least those who do use the app) have
-    # a recent version of the app
-
-    @property
-    def mediatedOccurences(self):
-        occurences = []
-        if self.mediationId is None:
-            if self.event is None:
-                return None
-            else:
-                occurences = self.event.occurences
-        else:
-            if self.mediation.event is None:
-                return None
-            else:
-                occurences = self.mediation.event.occurences
-        return sorted(occurences,
-                      key=lambda o: o.beginningDatetime,
-                      reverse=True)

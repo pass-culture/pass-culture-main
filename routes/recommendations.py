@@ -194,8 +194,8 @@ def put_recommendations():
                         + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
 
     logger.info('(recap reco) '
-             + str([(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos])
-             + str(len(recos)))
+                + str([(reco, reco.mediation, reco.dateRead, reco.occasion) for reco in recos])
+                + str(len(recos)))
 
     return jsonify(list(map(dictify_reco, recos))), 200
 
@@ -209,24 +209,4 @@ def dictify_reco(reco):
                                          .filter(Booking.user == current_user)
                                          .with_entities(Booking)
                                          .all()))
-    # FIXME: This is to support legacy code in the webapp
-    # it should be cleaned up and the app adapted
-
-    if reco.event is not None or\
-       (reco.mediation is not None and
-        reco.mediation.event is not None):
-        if reco.event is not None:
-            occurences = reco.event.occurences
-        else:
-            occurences = reco.mediation.event.occurences
-        ros = list(map(lambda eo: eo.offers[0]._asdict(include=RECOMMENDATION_OFFER_INCLUDES),
-                       filter(lambda eo: len(eo.offers) > 0,
-                              occurences)))
-        dict_reco['recommendationOffers'] = sorted(ros,
-                                                   key=lambda ro: ro['bookingLimitDatetime'],
-                                                   reverse=True)
-    elif reco.mediation and\
-         reco.mediation.tutoIndex is not None:
-        dict_reco['recommendationOffers'] = []
-
     return dict_reco
