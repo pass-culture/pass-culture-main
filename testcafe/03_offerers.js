@@ -8,7 +8,7 @@ const modalDialog = Selector('.modal-dialog')
 const modalContent = Selector('.modal-content')
 const closeButton = Selector('.close')
 
-fixture `OfferersPage | Je me connecte pour la première fois en tant que nouvel utilisateur·ice`
+fixture `03_01 OfferersPage | Je me connecte pour la première fois en tant que nouvel utilisateur·ice`
     .beforeEach( async t => {
       await t
       .useRole(regularOfferer)
