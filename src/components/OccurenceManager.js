@@ -61,36 +61,46 @@ class OccurenceManager extends Component {
               </tr>
             </thead>
             <tbody>
-              { eventOccurenceId === 'nouvelle' ? (
-                <OccurenceForm
-                  isFullyEditable={!provider}
-                  isEditing
-                  isNew
-                  occurence={occurences[0]}
-                />
-              ) : (
-                <tr>
-                  <td colSpan='10'>
-                    { provider ? (
-                      <i>
-                        Il n'est pas possible d'ajouter ni de supprimer de dates pour cet événement {provider.name}
-                      </i>
-                    ) : (
-                      <NavLink to={`/offres/${get(occasion, 'id')}?dates=nouvelle`} className='button is-secondary'>
-                        + Ajouter un horaire
-                      </NavLink>
-                    )}
-                  </td>
-                </tr>
-              )}
-              { occurences.map(o =>
-                <OccurenceForm
-                  key={o.id}
-                  isFullyEditable={!provider}
-                  isEditing={o.id === eventOccurenceId}
-                  occurence={o}
-                />
-              )}
+              {
+                eventOccurenceId === 'nouvelle'
+                ? (
+                  <OccurenceForm
+                    isEditing
+                    isFullyEditable={!provider}
+                    isNew
+                    occurence={occurences[0]}
+                  />
+                )
+                : (
+                  <tr>
+                    <td colSpan='10'>
+                      {
+                        provider
+                        ? (
+                          <i>
+                            Il n'est pas possible d'ajouter ni de supprimer de dates pour cet événement {provider.name}
+                          </i>
+                        )
+                        : (
+                          <NavLink
+                            className='button is-secondary'
+                            to={`/offres/${get(occasion, 'id')}?dates=nouvelle`}>
+                            + Ajouter un horaire
+                          </NavLink>
+                        )
+                      }
+                    </td>
+                  </tr>
+                )
+              }
+              {
+                occurences.map(o =>
+                  <OccurenceForm
+                    key={o.id}
+                    isFullyEditable={!provider}
+                    isEditing={o.id === eventOccurenceId}
+                    occurence={o} />)
+              }
             </tbody>
             {occurences.length > 12 && (
               <thead>
@@ -122,7 +132,6 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-      console.log('ownProps.match.params', ownProps.match.params)
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
       const event = eventSelector(state, eventId)

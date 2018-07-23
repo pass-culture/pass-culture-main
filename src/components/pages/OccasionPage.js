@@ -1,20 +1,26 @@
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
+import {
+  //Field,
+  //Form,
+  Icon,
+  requestData,
+  showNotification,
+  SubmitButton
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+
+import Field from '../layout/Field'
+import Form from '../layout/Form'
+
 import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
-import Form from '../layout/Form'
-import Field from '../layout/Field'
-import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import { showModal, closeModal } from '../../reducers/modal'
-import { showNotification } from '../../reducers/notification'
 import eventSelector from '../../selectors/event'
 import occasionSelector from '../../selectors/occasion'
 import occurencesSelector from '../../selectors/occurences'
@@ -29,7 +35,6 @@ import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
 import { occasionNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
-
 
 class OccasionPage extends Component {
   constructor () {
@@ -221,6 +226,9 @@ class OccasionPage extends Component {
       { offererId: get(venue, 'managingOffererId') },
       isEventType ? event : thing
     )
+
+    // console.log('occasion', occasion, 'event', event)
+    // console.log('formData', formData)
 
     return (
       <PageWrapper

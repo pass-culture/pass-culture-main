@@ -7,12 +7,12 @@ import { connect } from 'react-redux'
 
 import CheckboxInput from './form/CheckboxInput'
 import DateInput from './form/DateInput'
-import GeoInput from './form/GeoInput'
+import GeoInput from './GeoInput'
 import HiddenInput from './form/HiddenInput'
 import NumberInput from './form/NumberInput'
 import PasswordInput from './form/PasswordInput'
 import SelectInput from './form/SelectInput'
-import SirenInput from './form/SirenInput'
+import SirenInput from './SirenInput'
 import TextareaInput from './form/TextareaInput'
 import TextInput from './form/TextInput'
 import TimeInput from './form/TimeInput'
@@ -20,23 +20,6 @@ import { mergeFormData, removeFormError } from '../../reducers/form'
 import { showNotification } from '../../reducers/notification'
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
-
-const inputByTypes = {
-  date: DateInput,
-  email: TextInput,
-  geo: GeoInput,
-  hidden: HiddenInput,
-  number: NumberInput,
-  password: PasswordInput,
-  select: SelectInput,
-  siren: SirenInput,
-  siret: SirenInput,
-  checkbox: CheckboxInput,
-  text: TextInput,
-  textarea: TextareaInput,
-  time: TimeInput,
-}
-
 
 class Form extends Component {
 
@@ -154,7 +137,7 @@ class Form extends Component {
         const formValue = get(formData, dataKey)
         const storeValue = get(storeData, dataKey)
         const type = c.props.type || Form.guessInputType(c.props.name) || 'text'
-        const InputComponent = inputByTypes[type]
+        const InputComponent = Form.inputByTypes[type]
         if (!InputComponent) console.error('Component not found for type:', type)
 
         const onChange = value => {
@@ -216,6 +199,9 @@ class Form extends Component {
     const {
       method
     } = this.state
+    if (!TagName) {
+      return this.childrenWithProps()
+    }
     return (
       <TagName
         action={action}
@@ -228,7 +214,22 @@ class Form extends Component {
       </TagName>
     )
   }
+}
 
+Form.inputByTypes = {
+  checkbox: CheckboxInput,
+  date: DateInput,
+  email: TextInput,
+  hidden: HiddenInput,
+  geo: GeoInput,
+  number: NumberInput,
+  password: PasswordInput,
+  select: SelectInput,
+  siren: SirenInput,
+  siret: SirenInput,
+  text: TextInput,
+  textarea: TextareaInput,
+  time: TimeInput,
 }
 
 export default connect(

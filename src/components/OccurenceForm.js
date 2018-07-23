@@ -3,46 +3,42 @@ import moment from 'moment'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Portal } from 'react-portal'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Price from './Price'
-import Icon from './layout/Icon'
-import Form from './layout/Form'
 import Field from './layout/Field'
+import Form from './layout/Form'
+import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
 import { mergeFormData } from '../reducers/form'
 import eventSelector from '../selectors/event'
-import offerSelector from '../selectors/offer'
 import timezoneSelector from '../selectors/timezone'
-import venueSelector from '../selectors/venue'
 import occasionSelector from '../selectors/occasion'
+import occurenceSelector from '../selectors/occurence'
 import occurencesSelector from '../selectors/occurences'
-import { NEW } from '../utils/config'
+import offerSelector from '../selectors/offer'
+import venueSelector from '../selectors/venue'
 
 
 class OccurenceForm extends Component {
 
+  constructor () {
+    super()
+    this.state = {
+      '$submit': null
+    }
+  }
+
   handleSuccessData = (state, action) => {
     const {
-      form,
       history,
       occasion,
-      requestData,
-      venue,
-      tz
     } = this.props
-    const {
-      id
-    } = (occasion || {})
-    const {
-      method,
-      offerIdOrNew,
-      storeKey
-    } = this.state
 
-
+    /*
     // ON A POST/PATCH EVENT OCCURENCE SUCCESS
     // WE CAN CHECK IF WE NEED TO POST/PATCH ALSO
     // AN ASSOCIATED OFFER
@@ -73,9 +69,8 @@ class OccurenceForm extends Component {
         )
       }
     }
-
-    history.push(`/offres/${id}/dates`)
-
+    */
+    history.push(`/offres/${get(occasion, 'id')}/dates`)
   }
 
   onDeleteClick = () => {
@@ -118,78 +113,173 @@ class OccurenceForm extends Component {
     }
   }
 
+  componentDidMount () {
+    this.setState({ $submit: this.$submit })
+  }
+
+  componentDidUpdate (prevProps) {
+    const {
+      formBeginningDatetime,
+      mergeFormData,
+      occurences
+    } = this.props
+
+    // look if
+    if (!formBeginningDatetime && get(occurences, 'length')) {
+      console.log('ON POURRAIT', occurences)
+      mergeFormData('occurence', {
+        beginningDatetime: moment(occurences[0].beginningDatetime).add(1, 'day')
+      })
+      return
+    }
+
+
+    // bind endDatetime to be 1hour after the juste set already
+    // beginningDatetime
+    if (formBeginningDatetime !== prevProps.formBeginningDatetime) {
+      mergeFormData('occurence', {
+        endDatetime: moment(formBeginningDatetime).add(1, 'hour')
+      })
+    }
+  }
+
   render () {
 
     const {
+      eventId,
       isNew,
       isEditing,
       isFullyEditable,
+      formBeginningDatetime,
       occasion,
       occurence,
       occurences,
       offer,
       tz,
+      venueId
     } = this.props
 
-    const apiPath = isFullyEditable ? `eventOccurences/${get(occurence, 'id', '')}` : `offers/${get(offer, 'id', '')}`
-
-    const formData = Object.assign({}, occasion, occurence, offer)
+    const maxDate = formBeginningDatetime ||
+      get(occurence, 'beginningDatetime')
 
     return (
-      <Form
-        name={`occurence-${get(occurence, 'id', NEW)}`}
-        TagName='tr'
-        className='occurence-form'
-        action={apiPath}
-        handleSuccess={this.handleSuccessData}
-        data={formData}
-        layout='input-only'
-        size="small"
-        readOnly={!isEditing}
-        method={isNew ? 'POST' : 'PATCH'}
-      >
-        <td>
-          <Field type='date' name='beginningDate' dataKey='beginningDatetime' required highlightedDates={occurences.map(o => o.beginningDatetime)} title='Date' readOnly={!isFullyEditable} minDate='today' debug />
-        </td>
-        <td>
-          <Field type='time' name='beginningTime' dataKey='beginningDatetime' required title='Heure' readOnly={!isFullyEditable} tz={tz} />
-        </td>
-        <td>
-          <Field type='time' name='endDatetime' required title='Heure de fin' readOnly={!isFullyEditable} tz={tz} />
-        </td>
-        <td title='Vide si gratuit'>
-          {isEditing ? <Field name="price" placeholder='Gratuit' title='Prix' /> : <Price value={get(offer, 'price')} /> }
-        </td>
-        <td title='Laissez vide si pas de limite'>
-          <Field type='date' name='bookingLimitDatetime' maxDate={get(formData, 'beginningDatetime')} placeholder="Laissez vide si pas de limite" readOnly={!isFullyEditable}/>
-        </td>
-        <td title='Laissez vide si pas de limite'>
-          <Field name='available' type='number' title='Places disponibles' />
-        </td>
-        <td>
-          <Field type='hidden' name='eventId' />
-          <Field type='hidden' name='venueId' />
-          { isEditing ? (
-            <NavLink
-              to={`/offres/${get(occasion, 'id')}?dates`}
-              className="button is-secondary is-small">Annuler</NavLink>
-          ) : (
-            <button
-              className="button is-small is-secondary"
-              onClick={this.onDeleteClick}>
-              <span className='icon'><Icon svg='ico-close-r' /></span>
-            </button>
-          )}
-        </td>
+      <tr>
+        <Form
+          action={`/eventOccurences/${get(occurence, 'id', '')}`}
+          className='occurence-form'
+          data={Object.assign({}, occurence, {
+            eventId,
+            venueId
+          })}
+          handleSuccess={this.handleSuccessData}
+          layout='input-only'
+          name='occurence'
+          readOnly={!isEditing}
+          size="small"
+          TagName={null}>
+          <td>
+
+            <Field name='eventId' type='hidden' />
+            <Field name='venueId' type='hidden' />
+            <Field
+              maxDate={maxDate}
+              name='endDatetime'
+              type='hidden' />
+
+            <Field
+              dataKey='beginningDatetime'
+              debug
+              highlightedDates={occurences.map(o => o.beginningDatetime)}
+              minDate='today'
+              name='beginningDate'
+              readOnly={!isFullyEditable}
+              required
+              title='Date'
+              type='date' />
+          </td>
+          <td>
+            <Field
+              dataKey='beginningDatetime'
+              name='beginningTime'
+              readOnly={!isFullyEditable}
+              required
+              title='Heure'
+              type='time'
+              tz={tz} />
+          </td>
+          <td>
+            <Field
+              dataKey='endDatetime'
+              name='endTime'
+              readOnly={!isFullyEditable}
+              required
+              title='Heure de fin'
+              type='time'
+              tz={tz} />
+          </td>
+          {
+            isEditing && (
+              <Portal node={this.state.$submit}>
+                <SubmitButton className="button is-primary is-small submitt">
+                  Valider
+                </SubmitButton>
+              </Portal>
+            )
+          }
+        </Form>
+        <Form
+          action={`/offer/${get(offer, 'id', '')}`}
+          className='occurence-form'
+          data={offer}
+          handleSuccess={this.handleSuccessData}
+          layout='input-only'
+          key={1}
+          name='offer'
+          size="small"
+          TagName={null}
+          readOnly={!isEditing} >
+
+          <td title='Vide si gratuit'>
+            {
+              isEditing
+                ? <Field name="price" placeholder='Gratuit' title='Prix' />
+                : <Price value={get(offer, 'price')} />
+            }
+          </td>
+          <td title='Laissez vide si pas de limite'>
+            <Field
+              maxDate={maxDate}
+              name='bookingLimitDatetime'
+              placeholder="Laissez vide si pas de limite"
+              readOnly={!isFullyEditable}
+              type='date' />
+          </td>
+          <td title='Laissez vide si pas de limite'>
+            <Field name='available' type='number' title='Places disponibles' />
+          </td>
+        </Form>
         <td>
           {
             isEditing
-            ? (
-              <SubmitButton className="button is-primary is-small">
-                Valider
-              </SubmitButton>
-            )
-            : (
+              ? (
+                  <NavLink
+                    className="button is-secondary is-small"
+                    to={`/offres/${get(occasion, 'id')}?dates`}>
+                    Annuler
+                  </NavLink>
+                )
+              : (
+                <button
+                  className="button is-small is-secondary"
+                  onClick={this.onDeleteClick}>
+                  <span className='icon'><Icon svg='ico-close-r' /></span>
+                </button>
+              )
+          }
+        </td>
+        <td ref={_e => this.$submit = _e}>
+          {
+            !isEditing && (
               <NavLink
                 to={`/offres/${get(occasion, 'id')}?dates=${occurence.id}`}
                 className="button is-small is-secondary">
@@ -198,23 +288,8 @@ class OccurenceForm extends Component {
             )
           }
         </td>
-      </Form>
+      </tr>
     )
-  }
-}
-
-const newOccurenceWithDefaults = (occurence, offer) => {
-  if (!occurence || !offer) return
-  return {
-    occurence: {
-      beginningDatetime: moment(get(occurence, 'beginningDatetime')).add(1, 'day').toISOString(),
-      endDatetime: moment(get(occurence, 'endDatetime')).add(1, 'day').toISOString(),
-    },
-    offer: {
-      price: get(offer, 'price'),
-      available: get(offer, 'available'),
-      bookingLimitDatetime: moment(get(offer, 'bookingLimitDatetime')).add(1, 'day').toISOString(),
-    },
   }
 }
 
@@ -225,20 +300,19 @@ export default compose(
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
 
-      const occurence = get(ownProps, 'occurence')
-      const offer = offerSelector(state, get(occurence, 'id'))
-      const occurences = occurencesSelector(state, venueId, eventId)
-
-      return Object.assign({
+      return {
         event: eventSelector(state, eventId),
+        eventId,
+        formBeginningDatetime: get(state, 'form.occurence.data.beginningDatetime'),
+        // formEndDatetime: get(state, 'form.occurence.data.endDatetime'),
         venue: venueSelector(state, venueId),
-        tz: timezoneSelector(state, venueId),
         occasion,
-        occurences,
-      }, ownProps.isNew ? newOccurenceWithDefaults(occurence, offer) : {
-        occurence,
-        offer,
-      })
+        occurence: occurenceSelector(state, ownProps.occurence),
+        occurences: occurencesSelector(state, venueId, eventId),
+        offer: offerSelector(state, get(ownProps, 'occurence.id')),
+        tz: timezoneSelector(state, venueId),
+        venueId
+      }
     },
     { mergeFormData, requestData }
   )

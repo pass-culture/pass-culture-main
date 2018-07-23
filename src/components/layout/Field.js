@@ -82,24 +82,26 @@ class Field extends Component {
     if (type === 'hidden') return $input
     switch(layout) {
       case 'horizontal':
-        return <div className='field is-horizontal'>
-          {label && <div className={`field-label is-${size}`}>
-            <label htmlFor={id} className='label'><span className={`subtitle ${classnames({required, readOnly})}`}>{label} :</span></label>
-          </div>}
-          <div className='field-body'>
-            <div className={`field ${classnames({'is-expanded': isExpanded})}`}>
-              {$input}
+        return (
+          <div className='field is-horizontal'>
+            {label && <div className={`field-label is-${size}`}>
+              <label htmlFor={id} className='label'><span className={`subtitle ${classnames({required, readOnly})}`}>{label} :</span></label>
+            </div>}
+            <div className='field-body'>
+              <div className={`field ${classnames({'is-expanded': isExpanded})}`}>
+                {$input}
+              </div>
+              {
+                errors.map((e, i) => (
+                  <p className='help is-danger columns' id={`${id}-error`} key={i}>
+                    <Icon className='column is-1' svg="picto-warning" alt="Warning" />
+                    <span className='column'> {e} </span>
+                  </p>
+                ))
+              }
             </div>
-            {
-              errors.map((e, i) => (
-                <p className='help is-danger columns' id={`${id}-error`} key={i}>
-                  <Icon className='column is-1' svg="picto-warning" alt="Warning" />
-                  <span className='column'> {e} </span>
-                </p>
-              ))
-            }
           </div>
-        </div>
+        )
       case 'sign-in-up':
         if (type === 'checkbox') {
           return <div className='field checkbox'>{$input}</div>
