@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import BROWSER_ROOT_URL from './helpers/config'
+import { ROOT_PATH } from '../src/utils/config'
 
 const inputUsersIdentifier = Selector('#input_users_identifier')
 const inputUsersPassword = Selector('#input_users_password')
@@ -10,7 +10,7 @@ const signInButton  = Selector('button') //connexion
 const signUpButton  = Selector('.is-secondary') // inscription
 
 fixture `02_01 SignInPage Component | J'ai un compte et je me connecte`
-    .page `${BROWSER_ROOT_URL+'connexion'}`
+    .page `${ROOT_PATH+'connexion'}`
 
 test("Je peux cliquer sur lien /inscription", async t => {
 

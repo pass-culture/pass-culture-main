@@ -1,9 +1,9 @@
 import { Selector } from 'testcafe'
 
-import BROWSER_ROOT_URL from './helpers/config'
+import { ROOT_PATH } from '../src/utils/config'
 
 fixture `00 BetaPage Component | J'arrive à la racine de la webapp`
-    .page `${BROWSER_ROOT_URL}`
+    .page `${ROOT_PATH}`
 
 test('Je suis redirigé·e  vers /beta', async t => {
 

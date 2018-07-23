@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 import { ClientFunction } from 'testcafe'
 
-import BROWSER_ROOT_URL from './helpers/config'
+import { ROOT_PATH } from '../src/utils/config'
 import regularUser from './helpers/roles'
 
 
@@ -17,7 +17,7 @@ const spanPrice  = Selector('.price')
 const draggableImage = Selector('.react-draggable')
 
 fixture `O4_01 Découverte | Je ne suis pas connecté·e`
-.page `${BROWSER_ROOT_URL+'decouverte'}`
+.page `${ROOT_PATH+'decouverte'}`
 
   test("Je suis redirigé vers la page /connexion", async t => {
 
@@ -62,7 +62,7 @@ fixture `O4_02 Découverte | Après connexion | Les offres sont en cours de char
     test('Lorsque je clique sur la flêche vers le haut, je vois le verso de la recommendation et je peux la fermer', async t => {
 
       await t
-      .navigateTo(BROWSER_ROOT_URL+'decouverte/tuto/A9')
+      .navigateTo(ROOT_PATH+'decouverte/tuto/A9')
       .wait(1000)
       await t.expect(clueDiv.visible).ok()
       .click(showVerso)
@@ -76,7 +76,7 @@ fixture `O4_03 Découverte | Après connexion | Recommandations`
     .beforeEach( async t => {
       await t
       .useRole(regularUser)
-      await t.navigateTo(BROWSER_ROOT_URL+'decouverte/AH7Q/AU#AM')
+      await t.navigateTo(ROOT_PATH+'decouverte/AH7Q/AU#AM')
     })
 
   test.skip("Je vois les informations de l'accroche du recto", async t => {

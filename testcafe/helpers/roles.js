@@ -1,7 +1,7 @@
 import { Role } from 'testcafe'
-import BROWSER_ROOT_URL from './config.js'
+import { ROOT_PATH } from '../../src/utils/config'
 
-const regularUser = Role(BROWSER_ROOT_URL+'connexion', async t => {
+const regularUser = Role(ROOT_PATH+'connexion', async t => {
     await t
         .typeText('#input_users_identifier', 'pctest.cafe@btmx.fr')
         .typeText('#input_users_password', 'password1234')

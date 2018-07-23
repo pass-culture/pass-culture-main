@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import BROWSER_ROOT_URL from './helpers/config'
+import { ROOT_PATH } from '../src/utils/config'
 import regularUser from './helpers/roles'
 
 const menuButton = Selector('.menu-button').filterVisible()
@@ -23,7 +23,7 @@ fixture `03_01 Modale Profil`
     .beforeEach( async t => {
       await t
       .useRole(regularUser)
-      .navigateTo(BROWSER_ROOT_URL+'decouverte/AH7Q/AU')
+      .navigateTo(ROOT_PATH+'decouverte/AH7Q/AU')
    })
 
   test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
