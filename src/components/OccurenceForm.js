@@ -15,6 +15,7 @@ import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
 import { mergeFormData } from '../reducers/form'
 import eventSelector from '../selectors/event'
+import searchSelector from '../selectors/search'
 import timezoneSelector from '../selectors/timezone'
 import occasionSelector from '../selectors/occasion'
 import occurenceSelector from '../selectors/occurence'
@@ -34,6 +35,11 @@ class OccurenceForm extends Component {
   }
 
   handleEventOccurenceSuccessData = (state, action) => {
+    const {
+      history,
+      occasion
+    } = this.props
+    history.push(`/offres/${get(occasion, 'id')}?gestion=${action.data.id}&stoques=nouveau`)
     this.setState({ isEventOccurenceStep: false })
   }
 
@@ -42,7 +48,7 @@ class OccurenceForm extends Component {
       history,
       occasion,
     } = this.props
-    history.push(`/offres/${get(occasion, 'id')}?dates`)
+    history.push(`/offres/${get(occasion, 'id')}?gestion`)
     this.setState({ isEventOccurenceStep: true })
   }
 
@@ -83,7 +89,7 @@ class OccurenceForm extends Component {
     }
   }
 
-  handleDefaultDatetime () {
+  handleNextDatetimes = () => {
     const {
       formBeginningDatetime,
       mergeFormData,
@@ -105,15 +111,20 @@ class OccurenceForm extends Component {
     }
   }
 
-  componentDidMount () {
-    this.setState({ $submit: this.$submit })
-    this.handleDefaultDatetime()
+  handleCrossingEndDatetime = () => {
+    const {
+      formBeginningDatetime,
+      formEndDatetime,
+      mergeFormData
+    } = this.props
+    if (formEndDatetime < formBeginningDatetime) {
+      mergeFormData('occurence', {
+        endDatetime: moment(formEndDatetime).add(1, 'day')
+      })
+    }
   }
 
-  componentDidUpdate (prevProps) {
-    this.handleDefaultDatetime()
-
-    // bind endDatetime to be 1hour after the just set beginningDatetime
+  handleInitEndDatetime = (prevProps) => {
     const {
       formBeginningDatetime,
       mergeFormData,
@@ -127,6 +138,17 @@ class OccurenceForm extends Component {
         endDatetime: moment(formBeginningDatetime).add(1, 'hour')
       })
     }
+  }
+
+  componentDidMount () {
+    this.setState({ $submit: this.$submit })
+    this.handleNextDatetimes()
+  }
+
+  componentDidUpdate (prevProps) {
+    this.handleNextDatetimes()
+    this.handleCrossingEndDatetime()
+    this.handleInitEndDatetime(prevProps)
   }
 
   render () {
@@ -267,7 +289,7 @@ class OccurenceForm extends Component {
               ? (
                   <NavLink
                     className="button is-secondary is-small"
-                    to={`/offres/${get(occasion, 'id')}?dates`}>
+                    to={`/offres/${get(occasion, 'id')}?gestion`}>
                     Annuler
                   </NavLink>
                 )
@@ -284,7 +306,7 @@ class OccurenceForm extends Component {
           {
             !isEditing && (
               <NavLink
-                to={`/offres/${get(occasion, 'id')}?dates=${occurence.id}`}
+                to={`/offres/${get(occasion, 'id')}?gestion&date=${occurence.id}`}
                 className="button is-small is-secondary">
                 <span className='icon'><Icon svg='ico-pen-r' /></span>
               </NavLink>
@@ -300,6 +322,8 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
+      const search = searchSelector(state, ownProps.location.search)
+      const { eventOccurenceId, offererId } = (search || {})
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
       const occurence = occurenceSelector(state, ownProps.occurence)
@@ -309,6 +333,10 @@ export default compose(
         formBeginningDatetime: get(
           state,
           `form.occurence${get(occurence, 'id', '')}.data.beginningDatetime`
+        ),
+        formEndDatetime: get(
+          state,
+          `form.occurence${get(occurence, 'id', '')}.data.endDatetime`
         ),
         venue: venueSelector(state, venueId),
         occasion,

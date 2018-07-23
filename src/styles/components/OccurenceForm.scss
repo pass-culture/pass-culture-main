@@ -34,6 +34,9 @@
               &.date-picker {
                 min-width: 100px;
               }
+              &[type="time"] {
+                padding-left: 2rem;
+              }
             }
           }
         }

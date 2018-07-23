@@ -11,9 +11,10 @@ import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
 import occasionSelector from '../selectors/occasion'
 import occurencesSelector from '../selectors/occurences'
+import searchSelector from '../selectors/search'
 import providerSelector from '../selectors/provider'
 import timezoneSelector from '../selectors/timezone'
-import { queryStringToObject } from '../utils/string'
+
 
 class OccurenceManager extends Component {
 
@@ -30,13 +31,11 @@ class OccurenceManager extends Component {
   render() {
     const {
       event,
-      location: {search},
+      eventOccurenceId,
       provider,
       occasion,
       occurences,
     } = this.props
-
-    const eventOccurenceId = queryStringToObject(search).dates
 
     return (
       <div className='occurence-manager'>
@@ -84,7 +83,7 @@ class OccurenceManager extends Component {
                         : (
                           <NavLink
                             className='button is-secondary'
-                            to={`/offres/${get(occasion, 'id')}?dates=nouvelle`}>
+                            to={`/offres/${get(occasion, 'id')}?gestion&date=nouvelle`}>
                             + Ajouter un horaire
                           </NavLink>
                         )
@@ -132,12 +131,15 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
+      const search = searchSelector(state, ownProps.location.search)
+      const { eventOccurenceId } = (search || {})
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
       const event = eventSelector(state, eventId)
       const occurences = occurencesSelector(state, venueId, eventId)
       return {
         event,
+        eventOccurenceId,
         occasion,
         occurences,
         provider: providerSelector(state, get(event, 'lastProviderId'))

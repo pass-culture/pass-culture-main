@@ -161,7 +161,7 @@ class OccasionPage extends Component {
         console.warn("Something wrong with returned data, we should retrieve the created occasion here")
         return
       }
-      history.push(`/offres/${occasion.id}?dates&modifie`)
+      history.push(`/offres/${occasion.id}?gestion`)
     }
   }
 
@@ -170,7 +170,7 @@ class OccasionPage extends Component {
       location: {search},
       showModal
     } = this.props
-    search.indexOf('dates') > -1 ? showModal(
+    search.indexOf('gestion') > -1 ? showModal(
       <OccurenceManager />, {
         isUnclosable: true
     }) : closeModal()
@@ -187,7 +187,7 @@ class OccasionPage extends Component {
       occurences,
     } = this.props
 
-    if (search.indexOf('dates') > -1) {
+    if (search.indexOf('gestion') > -1) {
       if (
         prevProps.occasion !== occasion ||
         prevProps.occurences !== occurences ||
@@ -280,8 +280,7 @@ class OccasionPage extends Component {
                         </div>
                         <NavLink
                           className='button is-primary is-outlined is-small'
-                          to={`/offres/${get(occasion, 'id')}?dates`}
-                        >
+                          to={`/offres/${get(occasion, 'id')}?gestion`}>
                           <span className='icon'><Icon svg='ico-calendar' /></span>
                           <span>Gérer les dates et les prix</span>
                         </NavLink>

@@ -39,6 +39,11 @@ export function queryStringToObject(string='') {
     .reduce((result, group) => {
     let [key, value] = group.split('=')
     switch (key) {
+      case 'date':
+        key = 'eventOccurenceId'
+        break
+      case 'stock':
+        key = 'offerId'
       case 'lieu':
         key = 'venueId'
         break
