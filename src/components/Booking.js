@@ -117,6 +117,7 @@ class Booking extends Component {
     const dateOk = dateRequired ? this.state.date && this.state.time : true
     const offerer = this.props.offerer
     const { availableDates, availableHours } = this.getAvailableDateTimes()
+    console.log("availableDates", availableDates)
     return (
       <VersoWrapper>
         <div className="booking">
@@ -141,7 +142,7 @@ class Booking extends Component {
                       inputIconPosition="after"
                       anchorDirection="center"
                       isDayBlocked={date =>
-                        !availableDates.find(d => d.isSame(date, 'day'))
+                        !availableDates.find(d => d.isSame(date.tz(tz), 'day'))
                       }
                       customInputIcon={<Icon svg="ico-calendar" alt="calendrier" />}
                       customCloseIcon={<Icon svg='ico-close-b' alt="Fermer" />}
