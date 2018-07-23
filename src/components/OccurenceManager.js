@@ -31,7 +31,7 @@ class OccurenceManager extends Component {
   render() {
     const {
       event,
-      eventOccurenceId,
+      eventOccurenceIdOrNew,
       provider,
       occasion,
       occurences,
@@ -61,10 +61,9 @@ class OccurenceManager extends Component {
             </thead>
             <tbody>
               {
-                eventOccurenceId === 'nouvelle'
+                eventOccurenceIdOrNew === 'nouvelle'
                 ? (
                   <OccurenceForm
-                    isEditing
                     isFullyEditable={!provider}
                     isNew
                     occurence={occurences[0]}
@@ -97,7 +96,6 @@ class OccurenceManager extends Component {
                   <OccurenceForm
                     key={o.id}
                     isFullyEditable={!provider}
-                    isEditing={o.id === eventOccurenceId}
                     occurence={o} />)
               }
             </tbody>
@@ -132,14 +130,14 @@ export default compose(
   connect(
     (state, ownProps) => {
       const search = searchSelector(state, ownProps.location.search)
-      const { eventOccurenceId } = (search || {})
+      const { eventOccurenceIdOrNew } = (search || {})
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
       const event = eventSelector(state, eventId)
       const occurences = occurencesSelector(state, venueId, eventId)
       return {
         event,
-        eventOccurenceId,
+        eventOccurenceIdOrNew,
         occasion,
         occurences,
         provider: providerSelector(state, get(event, 'lastProviderId'))

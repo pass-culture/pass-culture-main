@@ -227,9 +227,6 @@ class OccasionPage extends Component {
       isEventType ? event : thing
     )
 
-    // console.log('occasion', occasion, 'event', event)
-    // console.log('formData', formData)
-
     return (
       <PageWrapper
         backTo={{path: `/offres${search}`, label: 'Vos offres'}}

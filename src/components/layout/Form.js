@@ -93,7 +93,6 @@ class Form extends Component {
       requestData,
       storePath,
     } = this.props
-
     requestData(
       this.state.method,
       action.replace(/^\//g, ''), {
@@ -130,6 +129,9 @@ class Form extends Component {
       size,
     } = this.props
     let requiredFields = []
+
+    // console.log(name, 'children', children)
+
 
     return recursiveMap(children, c => {
       if (c.type.displayName === 'Field') {
