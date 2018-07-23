@@ -16,7 +16,7 @@ const latitudeInput = Selector("#input_venues_latitude")
 const longitudeInput = Selector("#input_venues_longitude")
 const submitButton  = Selector('button.button.is-primary') //connexion
 
-fixture `VenuePage | Créer un nouveau lieu`
+fixture `05_ VenuePage | Créer un nouveau lieu`
   .beforeEach( async t => {
     await t
     .useRole(regularOfferer)

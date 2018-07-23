@@ -11,7 +11,7 @@ const nameInput = Selector("#input_offerers_name")
 const adressInput = Selector("#input_offerers_address")
 const submitButton  = Selector('button.button.is-primary') //connexion
 
-fixture `OffererPage | Créer une nouvelle structure`
+fixture `04_01 OffererPage | Créer une nouvelle structure`
     .beforeEach( async t => {
       await t
       .useRole(regularOfferer)

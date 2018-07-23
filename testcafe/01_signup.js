@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import { BROWSER_ROOT_URL } from './helpers/config'
+import { ROOT_PATH } from '../src/utils/config'
 import { offererUser } from './helpers/users'
 
 const publicNameInput = Selector('#sign-up-publicName')
@@ -12,9 +12,8 @@ const signInButton = Selector('.is-secondary')
 const sirenInput = Selector('#sign-up-siren')
 const newsletterOkInput = Selector('#sign-up-newsletter_ok')
 
-fixture `SignupPage | Création d'un compte utilisateur·ice`
-    .page `${BROWSER_ROOT_URL+'inscription'}`
-
+fixture `01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
+    .page `${ROOT_PATH+'inscription'}`
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
 
@@ -32,7 +31,7 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
     await t.expect(signUpButton.hasAttribute('disabled')).ok()
 })
 
-test("Lorsqu'un·e utilisateur·ice est créé, iel est redirigé·e vers la page /structures", async t => {
+test("Je créé un compte, je suis redirigé·e vers la page /structures", async t => {
     await t
       .typeText(publicNameInput, offererUser.publicName)
       .typeText(emailInput, offererUser.email)
