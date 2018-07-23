@@ -149,8 +149,7 @@ class SpreadsheetExpOffers(LocalProvider):
             obj.beginningDatetime = dateparser.parse(eo_date, settings=date_settings)
             obj.endDatetime = obj.beginningDatetime\
                               + timedelta(minutes=self.providables[0].durationMinutes)
-            obj.venue = self.venue
-            obj.event = self.providables[0]
+            obj.occasion = self.providables[1]
         elif isinstance(obj, Offer):
             for providable in self.providables[1:]:
                 if isinstance(providable, EventOccurence)\

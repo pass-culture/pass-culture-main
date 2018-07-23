@@ -29,7 +29,7 @@ class EventOccurence(PcObject,
     occasionId = Column(BigInteger,
                         ForeignKey('occasion.id'),
                         index=True,
-                        nullable=True)
+                        nullable=False)
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
