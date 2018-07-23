@@ -226,7 +226,7 @@ class OccurenceForm extends Component {
               tz={tz} />
           </td>
           {
-            eventOccurenceIdOrNew && (
+            !isEventOccurenceReadOnly && (
               <Portal node={this.state.$submit}>
                 <SubmitButton className="button is-primary is-small">
                   Valider
@@ -236,7 +236,7 @@ class OccurenceForm extends Component {
           }
         </Form>
         <Form
-          action={`/offer/${get(offer, 'id', '')}`}
+          action={`/offers/${get(offer, 'id', '')}`}
           data={Object.assign({
             eventOccurenceIdOrNew: get(occurence, 'id')
           }, offer)}
@@ -278,10 +278,10 @@ class OccurenceForm extends Component {
               type='number' />
           </td>
           {
-            !isEventOccurenceReadOnly && occurence && (
+            isEventOccurenceReadOnly && occurence && (
               <Portal node={this.state.$submit}>
                 <SubmitButton className="button is-primary is-small">
-                  Valider
+                  Valideeeer
                 </SubmitButton>
               </Portal>
             )
