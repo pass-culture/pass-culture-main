@@ -27,7 +27,7 @@ def make_user_query():
 
 
 def is_pro_signup(json_user):
-    return 'siren' not in json_user
+    return 'siren' in json_user
 
 
 @app.route("/users/current", methods=["GET"])
