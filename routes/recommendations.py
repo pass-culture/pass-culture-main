@@ -21,10 +21,9 @@ from models.recommendation import Recommendation
 from models.thing import Thing
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, \
     BLOB_UNREAD_NUMBER
+from utils.logger import logger
 from utils.rest import expect_json_data
 
-
-log = app.log
 
 def pick_random_occasions_given_blob_size(recos, limit=BLOB_SIZE):
     return recos.order_by(func.random()) \
@@ -37,7 +36,7 @@ def find_or_make_recommendation(user, occasion_type, occasion_id,
     if isinstance(occasion_type, str):
         occasion_type = occasion_type.lower()
     query = Recommendation.query
-    log.info('(special) occasion_id=' + str(occasion_id)
+    logger.info('(special) occasion_id=' + str(occasion_id)
              + ' mediation_id=' + str(mediation_id))
     if not mediation_id and not (occasion_id and occasion_type):
         return None
@@ -95,7 +94,7 @@ def put_recommendations():
 
     print('requested req', requested_recommendation)
 
-    log.info('(special) requested_recommendation '
+    logger.info('(special) requested_recommendation '
              + str(requested_recommendation))
 
 #    if (request.args.get('occasionId') is not None
@@ -123,25 +122,25 @@ def put_recommendations():
     unread_recos = query.filter(~filter_already_read)
     unread_recos = pick_random_occasions_given_blob_size(unread_recos)
 
-    log.info('(unread reco) count %i', len(unread_recos))
+    logger.info('(unread reco) count %i', len(unread_recos))
 
 
     read_recos = query.filter(filter_already_read)
     read_recos = pick_random_occasions_given_blob_size(read_recos)
 
-    log.info('(read reco) count %i', len(read_recos))
+    logger.info('(read reco) count %i', len(read_recos))
 
     needed_new_recos = BLOB_SIZE\
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER)\
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
-    log.info('(needed new recos) count %i', needed_new_recos)
+    logger.info('(needed new recos) count %i', needed_new_recos)
 
     new_recos = create_recommendations(needed_new_recos,
                                        user=current_user)
 
-    log.info('(new recos)'+str([(reco, reco.mediation, reco.dateRead) for reco in new_recos]))
-    log.info('(new reco) count %i', len(new_recos))
+    logger.info('(new recos)'+str([(reco, reco.mediation, reco.dateRead) for reco in new_recos]))
+    logger.info('(new reco) count %i', len(new_recos))
 
     recos = new_recos
 
@@ -167,7 +166,7 @@ def put_recommendations():
                                                        & (filter_already_read))\
                                                .count()
 
-    log.info('(all read recos) count %i', all_read_recos_count)
+    logger.info('(all read recos) count %i', all_read_recos_count)
 
     if requested_recommendation:
         for i, reco in enumerate(recos):
@@ -183,7 +182,7 @@ def put_recommendations():
                                            & filter_not_seen_occasion)\
                                    .order_by(Mediation.tutoIndex)\
                                    .all()
-        log.info('(tuto recos) count %i', len(tuto_recos))
+        logger.info('(tuto recos) count %i', len(tuto_recos))
 
         tutos_read = 0
         for tuto_reco in tuto_recos:
@@ -194,7 +193,7 @@ def put_recommendations():
                         + [tuto_reco]\
                         + recos[tuto_reco.mediation.tutoIndex-tutos_read:]
 
-    log.info('(recap reco) '
+    logger.info('(recap reco) '
              + str([(reco, reco.mediation, reco.dateRead, reco.thing, reco.event) for reco in recos])
              + str(len(recos)))
 
