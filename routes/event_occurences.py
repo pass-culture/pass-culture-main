@@ -3,7 +3,6 @@ from flask import current_app as app, jsonify, request
 
 from models.event import Event
 from models.event_occurence import EventOccurence
-from models.offer import Offer
 from models.pc_object import PcObject
 from models.user_offerer import RightsType
 from models.venue import Venue
@@ -20,7 +19,7 @@ from utils.rest import delete, \
 @login_or_api_key_required
 def list_event_occurences():
     return handle_rest_get_list(EventOccurence)
-
+    
 
 @app.route('/eventOccurences/<id>', methods=['GET'])
 @login_or_api_key_required
