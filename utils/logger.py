@@ -1,4 +1,3 @@
-from flask import current_app as app
 import logging
 
 from utils.attr_dict import AttrDict
@@ -23,9 +22,9 @@ def pc_logging(level, *args):
         logging.log(level, *evaled_args)
 
 
-app.log = AttrDict()
-app.log.critical = lambda *args: pc_logging(logging.CRITICAL, *args)
-app.log.debug = lambda *args: pc_logging(logging.DEBUG, *args)
-app.log.error = lambda *args: pc_logging(logging.ERROR, *args)
-app.log.info = lambda *args: pc_logging(logging.INFO, *args)
-app.log.warning = lambda *args: pc_logging(logging.WARNING, *args)
+logger = AttrDict()
+logger.critical = lambda *args: pc_logging(logging.CRITICAL, *args)
+logger.debug = lambda *args: pc_logging(logging.DEBUG, *args)
+logger.error = lambda *args: pc_logging(logging.ERROR, *args)
+logger.info = lambda *args: pc_logging(logging.INFO, *args)
+logger.warning = lambda *args: pc_logging(logging.WARNING, *args)

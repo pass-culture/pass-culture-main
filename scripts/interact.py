@@ -13,11 +13,13 @@ db.app = app
 
 # IMPORT A LOT OF TOOLS TO MAKE THEM AVAILABLE
 # IN THE PYTHON SHELL
+from datascience import *
 from models import *
 from sqlalchemy import *
 from utils.content import *
 from utils.credentials import *
 from utils.human_ids import *
 from utils.includes import *
+from utils.logger import *
 from utils.printer import *
 from utils.token import *

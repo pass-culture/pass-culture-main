@@ -20,6 +20,7 @@ from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from utils.search import create_tsvector
 
+
 class Venue(PcObject,
             HasThumbMixin,
             HasAddressMixin,

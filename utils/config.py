@@ -9,7 +9,7 @@ DELETE = '_delete_'
 ENV = os.environ.get('ENV', 'development')
 IS_DEV = ENV == 'development'
 IS_STAGING = ENV == 'staging'
-LOG_LEVEL = LOG_LEVEL_INFO
+LOG_LEVEL = int(os.environ.get('LOG_LEVEL', LOG_LEVEL_INFO))
 
 if IS_DEV:
     API_URL = 'localhost'
