@@ -220,6 +220,11 @@ elif [[ "$CMD" == "start-browser-webapp" ]] || [[ "$CMD" == "start-browser-pro" 
 	fi
 elif [[ "$CMD" == "start-ios" ]]; then
 	RUN='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
+elif [[ "$CMD" == "shared" ]]; then
+	RUN='cd $ROOT_PATH/shared && yarn run compile;
+			 cd $ROOT_PATH/webapp/node_modules && ln -sf ../../shared pass-culture-shared;
+			 cd $ROOT_PATH/pro/node_modules && ln -sf ../../shared pass-culture-shared;
+			' 
 elif [[ "$CMD" == "symlink" ]]; then
   RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
 elif [[ "$CMD" == "test-backend" ]]; then
