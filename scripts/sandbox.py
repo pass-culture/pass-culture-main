@@ -10,6 +10,7 @@ from os import path
 from pathlib import Path
 from flask import current_app as app
 
+from models.deposit import Deposit
 from models.booking import Booking
 from models.event_occurence import EventOccurence
 from models.event import Event
@@ -152,6 +153,21 @@ def do_sandbox():
                 print("CREATED booking")
                 pprint(vars(booking))
                 bookings.append(booking)
+
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'deposits.json'
+    deposits = []
+    with open(json_path) as json_file:
+        for obj in json.load(json_file):
+            user = User.query.filter_by(email=obj['userEmail']).one()
+            query = Deposit.query.filter_by(userId=user.id)
+            if query.count() == 0:
+                deposit = Deposit(from_dict=obj)
+                deposit.user = user
+                deposit.save()
+                print("CREATED deposit")
+                pprint(vars(deposit))
+                bookings.append(deposit)
+                deposits.append(deposit)
 
 
 
