@@ -71,6 +71,7 @@ def test_14_update_offer_available_should_check_bookings(app):
     booking.recommendationId = 1
     booking.token = random_token()
     booking.userId = 1
+    booking.amount = 0
     PcObject.check_and_save(booking)
 
     r_update = req_with_auth().patch(API_URL + '/offers/'+humanize(offerId),

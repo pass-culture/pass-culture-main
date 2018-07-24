@@ -79,17 +79,19 @@ trig_ddl = DDL("""
       IF EXISTS (SELECT "available" FROM offer WHERE id=NEW."offerId" AND "available" IS NOT NULL)
          AND ((SELECT "available" FROM offer WHERE id=NEW."offerId")
               < (SELECT COUNT(*) FROM booking WHERE "offerId"=NEW."offerId")) THEN
-          RAISE EXCEPTION 'Offer has too many bookings'
+          RAISE EXCEPTION 'tooManyBookings'
                 USING HINT = 'Number of bookings cannot exceed "offer.available"';
       END IF;
       
-      
-      SELECT (
-      (SELECT SUM(amount) old_booking_amount FROM booking WHERE "userId"=NEW."userId")  -
-      (SELECT SUM(amount) FROM deposit WHERE "userId"=NEW."userId") as available_funds)
-       IF (NEW.amount > available_funds) THEN
-          RAISE EXCEPTION 'insufficientFunds'
-                USING HINT = 'The user does not have enough credit to book';
+      IF (
+        SELECT (
+          (SELECT COALESCE(SUM(AMOUNT), 0) FROM deposit WHERE "userId"=NEW."userId")
+          -
+          (SELECT COALESCE(SUM(AMOUNT), 0) FROM booking WHERE "userId"=NEW."userId")
+        ) < NEW.amount
+      )
+      THEN RAISE EXCEPTION 'insufficientFunds'
+                 USING HINT = 'The user does not have enough credit to book';
       END IF;
       
       RETURN NEW;

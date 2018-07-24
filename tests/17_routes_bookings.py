@@ -8,7 +8,8 @@ from utils.test_utils import API_URL, req_with_auth
 def test_10_create_booking():
     booking_json = {
         'offerId': humanize(2),
-        'recommendationId': humanize(1)
+        'recommendationId': humanize(1),
+        'amount': 0
     }
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     print(r_create.json())
@@ -81,6 +82,7 @@ def test_13_create_booking_should_not_work_if_too_many_bookings(app):
 
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
+    print(r_create.json())
     assert 'global' in r_create.json()
     assert 'quantité disponible' in r_create.json()['global'][0]
 
@@ -88,7 +90,8 @@ def test_13_create_booking_should_not_work_if_too_many_bookings(app):
 def test_14_create_booking_should_work_if_user_can_book():
     booking_json = {
         'offerId': humanize(2),
-        'recommendationId': humanize(1)
+        'recommendationId': humanize(1),
+        'amount': 0
     }
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 201
@@ -98,17 +101,18 @@ def test_15_create_booking_should_not_work_if_user_can_not_book():
     # with default admin user
     booking_json = {
         'offerId': humanize(3),
-        'recommendationId': humanize(1)
+        'recommendationId': humanize(1),
+        'amount': 0
     }
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
 
 
 def test_16_create_booking_should_not_work_if_not_enough_credit(app):
-    # Given
+    #Given
     user = User()
     user.publicName = 'Test'
-    user.email = 'test7@email.com'
+    user.email = 'test07@email.com'
     user.setPassword('testpsswd')
     user.departementCode = '93'
     PcObject.check_and_save(user)
@@ -141,6 +145,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     offer.offererId = offerer.id
     offer.price = 200
     offer.venueId = venue.id
+    offer.available = 50
     PcObject.check_and_save(offer)
 
     recommendation = Recommendation()
@@ -156,14 +161,14 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     PcObject.check_and_save(deposit)
 
     booking_json = {
-        'offerId': humanize(offer.id),
-        'recommendationId': humanize(recommendation.id),
-        'userId': humanize(user.id),
-        'amount': offer.price
+        "offerId": humanize(offer.id),
+        "recommendationId": humanize(recommendation.id),
+        "userId": humanize(user.id),
+        "amount": float(offer.price)
     }
 
     # When
-    r_create = req_with_auth('test7@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('test07@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
 
     # Then
     assert r_create.status_code == 400

@@ -64,6 +64,10 @@ def post_booking():
         return jsonify(ae.errors), 400
 
     new_booking = Booking()
+    amount = request.json.get('amount')
+    if amount is None:
+        amount = offer.price
+    new_booking.amount = amount
     new_booking.offerId = dehumanize(offer_id)
 
     token = random_token()
@@ -77,8 +81,13 @@ def post_booking():
         PcObject.check_and_save(new_booking)
     except InternalError as ie:
         if 'check_booking' in str(ie.orig):
-            ae.addError('global', 'la quantité disponible pour cette offre'
-                                  + ' est atteinte')
+            if 'tooManyBookings' in str(ie.orig):
+                ae.addError('global', 'la quantité disponible pour cette offre'
+                            + ' est atteinte')
+            elif 'insufficientFunds' in str(ie.orig):
+                ae.addError('insufficientFunds', 'l\'utilisateur ne dispose pas'
+                            + ' de fonds suffisants pour effectuer'
+                            + ' une réservation.')
             return jsonify(ae.errors), 400
         else:
             raise ie

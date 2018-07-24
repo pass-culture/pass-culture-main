@@ -8,7 +8,6 @@ from models.db import Model
 
 class Deposit(PcObject,
                 Model,
-                HasThumbMixin
               ):
     id = Column(BigInteger,
                 primary_key=True,
