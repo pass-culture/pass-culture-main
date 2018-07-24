@@ -10,6 +10,7 @@ import { mergeFormData } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
 import occasionSelector from '../selectors/occasion'
+import occurenceErrorsSelector from '../selectors/occurenceErrors'
 import occurencesSelector from '../selectors/occurences'
 import searchSelector from '../selectors/search'
 import providerSelector from '../selectors/provider'
@@ -30,9 +31,11 @@ class OccurenceManager extends Component {
 
   render() {
     const {
+      errors,
       event,
       eventOccurenceIdOrNew,
       isEditing,
+      location,
       provider,
       occasion,
       occurences,
@@ -40,6 +43,17 @@ class OccurenceManager extends Component {
 
     return (
       <div className='occurence-manager'>
+        {
+          errors && (
+            <div className='notification is-danger'>
+            {
+              Object.keys(errors).map(key =>
+                <p key={key}> {key} : {errors[key]}</p>
+              )
+            }
+            </div>
+          )
+        }
         <div className='occurence-table-wrapper'>
           <div className='subtitle has-text-weight-bold has-text-left is-uppercase'>
             {get(event, 'name')}
@@ -61,32 +75,33 @@ class OccurenceManager extends Component {
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td colSpan='10'>
+                  {
+                    provider
+                      ? (
+                        <i>
+                          Il n'est pas possible d'ajouter ni de supprimer d'horaires pour cet événement {provider.name}
+                        </i>
+                      )
+                      : (
+                        <NavLink
+                          className='button is-secondary'
+                          disabled={isEditing}
+                          to={
+                            isEditing
+                              ? `${location.pathname}${location.search}`
+                              : `/offres/${get(occasion, 'id')}?gestion&date=nouvelle`
+                          }>
+                          + Ajouter un horaire
+                        </NavLink>
+                      )
+                  }
+                </td>
+              </tr>
               {
-                eventOccurenceIdOrNew === "nouvelle" && 
+                eventOccurenceIdOrNew === "nouvelle" &&
                 <OccurenceForm isFullyEditable={!provider} />
-              }
-              {
-                !isEditing && (
-                  <tr>
-                    <td colSpan='10'>
-                      {
-                        provider
-                          ? (
-                            <i>
-                              Il n'est pas possible d'ajouter ni de supprimer d'horaires pour cet événement {provider.name}
-                            </i>
-                          )
-                          : (
-                            <NavLink
-                              className='button is-secondary'
-                              to={`/offres/${get(occasion, 'id')}?gestion&date=nouvelle`}>
-                              + Ajouter un horaire
-                            </NavLink>
-                          )
-                      }
-                    </td>
-                  </tr>
-                )
               }
               {
                 occurences.map(o =>
@@ -96,20 +111,22 @@ class OccurenceManager extends Component {
                     occurence={o} />)
               }
             </tbody>
-            {occurences.length > 12 && (
-              <thead>
-                <tr>
-                  <td>Date</td>
-                  <td>Heure de début</td>
-                  <td>Heure de fin</td>
-                  <td>Prix</td>
-                  <td>Date Limite de Réservation</td>
-                  <td>Places (total)</td>
-                  <td>Supprimer</td>
-                  <td>Modifier</td>
-                </tr>
-              </thead>
-            )}
+            {
+              occurences.length > 12 && (
+                <thead>
+                  <tr>
+                    <td>Date</td>
+                    <td>Heure de début</td>
+                    <td>Heure de fin</td>
+                    <td>Prix</td>
+                    <td>Date Limite de Réservation</td>
+                    <td>Places (total)</td>
+                    <td>Supprimer</td>
+                    <td>Modifier</td>
+                  </tr>
+                </thead>
+              )
+            }
           </table>
         </div>
         <button
@@ -136,7 +153,10 @@ export default compose(
       const event = eventSelector(state, eventId)
       const occurences = occurencesSelector(state, venueId, eventId)
 
+      const errors = occurenceErrorsSelector(state)
+
       return {
+        errors,
         event,
         eventOccurenceIdOrNew,
         isEditing,

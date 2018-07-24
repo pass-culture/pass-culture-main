@@ -152,18 +152,33 @@ class Form extends Component {
           this.onMergeForm()
         }
 
-        const newChild =  React.cloneElement(c, Object.assign({
-          id: `${name}-${c.props.name}`,
-          dataKey,
-          onChange,
-          value: formValue || storeValue || '',
-          errors: [].concat(formErrors).filter(e => get(e, c.props.name)).map(e => get(e, c.props.name)),
-          readOnly: c.props.readOnly || readOnly,
-          layout,
-          size,
-          type,
-          InputComponent,
-        }, get(InputComponent, 'extraFormData', []).reduce((result, k) => Object.assign(result, {[k]: get(formData, k)}), {})))
+        const newChild =  React.cloneElement(c,
+          Object.assign({
+            id: `${name}-${c.props.name}`,
+            dataKey,
+            onChange,
+            value: formValue || storeValue || '',
+            errors: [].concat(formErrors)
+              .filter(e => get(e, c.props.name))
+              /*
+              .map(e => {
+                const error = get(e, c.props.name)
+                return Array.isArray(error)
+                  ? error[0]
+                  : error
+              }),
+              */
+              .map(e => get(e, c.props.name)),
+            readOnly: c.props.readOnly || readOnly,
+            layout,
+            size,
+            type,
+            InputComponent,
+          },
+          get(InputComponent, 'extraFormData', [])
+            .reduce((result, k) =>
+              Object.assign(result, {[k]: get(formData, k)}), {}))
+        )
 
         if (newChild.props.required) {
           requiredFields = requiredFields.concat(newChild)
@@ -176,8 +191,6 @@ class Form extends Component {
           getDisabled: () => {
             const missingFields = requiredFields.filter(f =>
               !get(formData, f.props.dataKey))
-
-            console.log('requiredFields', requiredFields, 'missingFields', missingFields)
             return missingFields.length > 0
           },
           getTitle: () => {

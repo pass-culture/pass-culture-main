@@ -145,31 +145,39 @@ class PageWrapper extends Component {
         key='page-wrapper'
       >
         <Modal />
-        { fullscreen ? content : (
-          <div className='columns is-gapless'>
-            <div className='page-content column is-10 is-offset-1'>
-              {notification && (
-                <div className={`notification is-${notification.type || 'info'}`}>
-                  {notification.text}
-                  <button className="close" onClick={closeNotification}>
-                    OK
-                  </button>
+        {
+          fullscreen
+          ? content
+          : (
+            <div className='columns is-gapless'>
+              <div className='page-content column is-10 is-offset-1'>
+                {
+                  notification && (
+                    <div className={`notification is-${notification.type || 'info'}`}>
+                      {notification.text}
+                      <button className="close" onClick={closeNotification}>
+                        OK
+                      </button>
+                    </div>
+                  )
+                }
+                <div className='after-notification-content'>
+                  {
+                    backTo && (
+                      <NavLink to={backTo.path} className='back-button has-text-primary'>
+                        <Icon svg='ico-back' />{` ${backTo.label}`}
+                      </NavLink>
+                    )
+                  }
+                  <div className='pc-content'>
+                    {content}
+                  </div>
+                  {loading && <Loader />}
                 </div>
-              )}
-              <div className='after-notification-content'>
-                {backTo && (
-                  <NavLink to={backTo.path} className='back-button has-text-primary'>
-                    <Icon svg='ico-back' />{` ${backTo.label}`}
-                  </NavLink>
-                )}
-                <div className='pc-content'>
-                  {content}
-                </div>
-                {loading && <Loader />}
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
         {footer}
       </Tag>,
       <Modal key={'modal'} />

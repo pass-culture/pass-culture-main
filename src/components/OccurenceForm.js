@@ -78,7 +78,9 @@ class OccurenceForm extends Component {
     } = this.props
     if (formEndDatetime < formBeginningDatetime) {
       mergeFormData('occurence', {
-        endDatetime: moment(formEndDatetime).add(1, 'day')
+        endDatetime: moment(formEndDatetime)
+                      .add(1, 'day')
+                      .toISOString()
       })
     }
   }
@@ -103,8 +105,11 @@ class OccurenceForm extends Component {
     if (!occurence || formBookingLimitDatetime || isOfferReadOnly) {
       return
     }
+
     mergeFormData('offer', {
-      bookingLimitDatetime: moment(occurence.beginningDatetime).subtract(2, 'day')
+      bookingLimitDatetime: moment(occurence.beginningDatetime)
+                              .subtract(2, 'day')
+                              .toISOString()
     })
   }
 
@@ -118,7 +123,10 @@ class OccurenceForm extends Component {
       return
     }
     mergeFormData('occurence', {
-      endDatetime: moment(formBeginningDatetime).add(1, 'hour')
+      endDatetime: moment(formBeginningDatetime)
+                    .add(1, 'hour')
+                    .toISOString()
+
     })
   }
 
@@ -161,11 +169,14 @@ class OccurenceForm extends Component {
     }
   }
 
+  componentWillMount() {
+    this.handleResetForm()
+  }
+
   componentDidMount () {
     this.setState({ $submit: this.$submit })
     this.handleNextDatetimes()
     this.handleInitBookingLimitDatetime()
-    this.handleResetForm()
   }
 
   componentDidUpdate (prevProps) {
@@ -174,16 +185,16 @@ class OccurenceForm extends Component {
       isEditing
     } = this.props
 
+    if (prevProps.isEditing && !isEditing) {
+      this.handleResetForm()
+    }
+
     this.handleNextDatetimes()
     this.handleInitBookingLimitDatetime()
     this.handleCrossingEndDatetime()
 
     if (formBeginningDatetime && !prevProps.formBeginningDatetime) {
       this.handleInitEndDatetime()
-    }
-
-    if (prevProps.isEditing && !isEditing) {
-      this.handleResetForm()
     }
   }
 
@@ -204,6 +215,7 @@ class OccurenceForm extends Component {
       offer,
       offerIdOrNew,
       tz,
+      venue,
       venueId
     } = this.props
 
@@ -277,7 +289,8 @@ class OccurenceForm extends Component {
         <Form
           action={`/offers/${get(offer, 'id', '')}`}
           data={Object.assign({
-            eventOccurenceId: get(occurence, 'id')
+            eventOccurenceId: get(occurence, 'id'),
+            offererId: get(venue, 'managingOffererId')
           }, offer)}
           handleSuccess={this.handleOfferSuccessData}
           layout='input-only'
@@ -290,6 +303,7 @@ class OccurenceForm extends Component {
           <td title='Vide si gratuit'>
 
             <Field name='eventOccurenceId' type='hidden' />
+            <Field name='offererId' type='hidden' />
 
             {
               isOfferReadOnly
@@ -349,7 +363,7 @@ class OccurenceForm extends Component {
           {
             !isEditing && (
               <NavLink
-                to={`/offres/${get(occasion, 'id')}?gestion&date=${occurence.id}`}
+                to={`/offres/${get(occasion, 'id')}?gestion&date=${get(occurence, 'id')}`}
                 className="button is-small is-secondary">
                 <span className='icon'><Icon svg='ico-pen-r' /></span>
               </NavLink>
@@ -371,21 +385,34 @@ export default compose(
 
       const occurence = occurenceSelector(state, ownProps.occurence)
 
-      const isEditing = eventOccurenceIdOrNew || offerIdOrNew
       const isEventOccurenceReadOnly = !eventOccurenceIdOrNew ||
+        (eventOccurenceIdOrNew === 'nouvelle' && occurence) ||
+        (
+          eventOccurenceIdOrNew !== 'nouvelle' &&
+          get(occurence, 'id') !== eventOccurenceIdOrNew
+        ) ||
         offerIdOrNew ||
         !ownProps.isFullyEditable
+
+      const offer = offerSelector(state, get(ownProps, 'occurence.id'))
       const isOfferReadOnly = !occurence ||
         !eventOccurenceIdOrNew ||
         eventOccurenceIdOrNew === "nouvelle" ||
-        !offerIdOrNew
+        !offerIdOrNew ||
+        (offerIdOrNew === 'nouveau' && offer) ||
+        (
+          offerIdOrNew !== 'nouveau' &&
+          get(offer, 'id') !== offerIdOrNew
+        )
+
+      const isEditing = !isEventOccurenceReadOnly || !isOfferReadOnly
 
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
 
-      const offer = offerSelector(state, get(ownProps, 'occurence.id'))
 
       return {
+        errors: state.errors,
         event: eventSelector(state, eventId),
         eventId,
         eventOccurenceIdOrNew,

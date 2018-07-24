@@ -34,7 +34,10 @@ class Field extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.value !== this.props.value) {
+    if (
+      prevProps.value !== this.props.value ||
+      prevProps.readOnly && !this.props.readOnly
+    ) {
       this.onChange(this.props.value)
     }
   }
@@ -84,9 +87,17 @@ class Field extends Component {
       case 'horizontal':
         return (
           <div className='field is-horizontal'>
-            {label && <div className={`field-label is-${size}`}>
-              <label htmlFor={id} className='label'><span className={`subtitle ${classnames({required, readOnly})}`}>{label} :</span></label>
-            </div>}
+            {
+              label && (
+                <div className={`field-label is-${size}`}>
+                  <label htmlFor={id} className='label'>
+                    <span className={`subtitle ${classnames({required, readOnly})}`}>
+                      {label} :
+                    </span>
+                  </label>
+                </div>
+              )
+            }
             <div className='field-body'>
               <div className={`field ${classnames({'is-expanded': isExpanded})}`}>
                 {$input}
