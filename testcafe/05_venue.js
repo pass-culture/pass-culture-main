@@ -25,12 +25,13 @@ fixture `05_ VenuePage | Créer un nouveau lieu`
 
 test.skip("Je rentre une nouveau lieu via son siret", async t => {
 
-  // TODO Ne fonctionne pas car la structure admin n'existe pas dans la base de données
+  // TODO Ne fonctionne pas
   // navigation
   await t
     .click(navbarLink)
     .click(offerersNavbarLink)
     .click(offererButton)
+    .wait(500)
     .click(newVenueButton)
 
   // input
