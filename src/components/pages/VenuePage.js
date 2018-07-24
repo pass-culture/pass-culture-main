@@ -190,12 +190,12 @@ class VenuePage extends Component {
 
         <Form
           action={`/venues/${get(venue, 'id', '')}`}
-          name='venue'
-          handleSuccess={this.handleSuccess}
           data={Object.assign({}, venue, {
             managingOffererId: offererId,
             bookingEmail: get(user, 'email')
-          })} 
+          })}
+          handleSuccess={this.handleSuccess}
+          name='venue'
           readOnly={isReadOnly}
         >
           <Field type='hidden' name='managingOffererId' />
@@ -207,9 +207,9 @@ class VenuePage extends Component {
               </span>
             </h2>
             <div className='field-group'>
-              <Field name='siret' label='SIRET' />
-              <Field name='name' label='Nom du lieu' required />
-              <Field type='email' name='bookingEmail' label='E-mail' required />
+              <Field label='SIRET' name='siret' />
+              <Field label='Nom du lieu' name='name' required />
+              <Field label='E-mail' name='bookingEmail' required type='email' />
             </div>
           </div>
           <div className='section'>
@@ -217,9 +217,31 @@ class VenuePage extends Component {
               ADRESSE
             </h2>
             <div className='field-group'>
-              <Field type="geo" name='address' label='Numéro et voie' required isExpanded withMap />
-              <Field name='postalCode' label='Code postal' autocomplete='postal-code' required />
-              <Field name='city' label='Ville' autocomplete='address-level2' required />
+              <Field
+                isExpanded
+                label='Numéro et voie'
+                name='address'
+                required
+                type="geo"
+                withMap />
+              <Field
+                autocomplete='postal-code'
+                label='Code postal'
+                name='postalCode'
+                required />
+              <Field
+                autocomplete='address-level2'
+                label='Ville'
+                name='city'
+                required />
+              <Field
+                label='Longitude'
+                name='longitude'
+                required />
+              <Field
+                label='Latitude'
+                name='latitude'
+                required />
             </div>
           </div>
         <hr />
@@ -229,7 +251,9 @@ class VenuePage extends Component {
             {
               isReadOnly
                 ? (
-                  <NavLink to={`${pathname}?modifie`} className='button is-secondary is-medium'>
+                  <NavLink
+                    className='button is-secondary is-medium'
+                    to={`${pathname}?modifie`} >
                     Modifier le lieu
                   </NavLink>
                 )
@@ -249,7 +273,9 @@ class VenuePage extends Component {
                 {
                   isReadOnly
                     ? (
-                      <NavLink to={routePath} className='button is-primary is-medium'>
+                      <NavLink
+                        className='button is-primary is-medium'
+                        to={routePath} >
                         Terminer
                       </NavLink>
                     )
