@@ -1,7 +1,16 @@
-import { Selector } from 'testcafe'
+import { Selector, RequestLogger } from 'testcafe'
 
-import { ROOT_PATH } from '../src/utils/config'
+import { API_URL, ROOT_PATH } from '../src/utils/config'
 import { offererUser } from './helpers/users'
+
+const LOGGER_URL = API_URL + '/users'
+
+const logger = RequestLogger(LOGGER_URL, {
+  logResponseBody: true,
+  stringifyResponseBody: true,
+  logRequestBody: true,
+  stringifyRequestBody: true
+})
 
 const publicNameInput = Selector('#sign-up-publicName')
 const emailInput = Selector('#sign-up-email')
@@ -31,20 +40,21 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
     await t.expect(signUpButton.hasAttribute('disabled')).ok()
 })
 
-test("Je créé un compte, je suis redirigé·e vers la page /structures", async t => {
+test
+.requestHooks(logger)
+("Je créé un compte, je suis redirigé·e vers la page /structures", async t => {
     await t
       .typeText(publicNameInput, offererUser.publicName)
       .typeText(emailInput, offererUser.email)
       .typeText(passwordInput, offererUser.password)
       .typeText(sirenInput, offererUser.siren)
+      .wait(1000)
       .click(contactOkInput)
       .click(newsletterOkInput)
       .wait(1000)
-
     await t
       .click(signUpButton)
       .wait(1000)
-
     const location = await t.eval(() => window.location)
     await t.expect(location.pathname).eql('/structures')
   })
