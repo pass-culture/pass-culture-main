@@ -174,11 +174,15 @@ class Form extends Component {
         return React.cloneElement(c, Object.assign({
           name,
           getDisabled: () => {
-            const missingFields = requiredFields.filter(f => !get(formData, f.props.dataKey))
+            const missingFields = requiredFields.filter(f =>
+              !get(formData, f.props.dataKey))
+
+            console.log('requiredFields', requiredFields, 'missingFields', missingFields)
             return missingFields.length > 0
           },
           getTitle: () => {
-            const missingFields = requiredFields.filter(f => !get(formData, f.props.dataKey))
+            const missingFields = requiredFields.filter(f =>
+              !get(formData, f.props.dataKey))
             if (missingFields.length === 0) return
             return `Champs ${pluralize('non-valide', missingFields.length)} : ${missingFields.map(f => (f.props.label || f.props.title || '').toLowerCase()).join(', ')}`
           }

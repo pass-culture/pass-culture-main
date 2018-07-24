@@ -10,14 +10,15 @@ const SIREN = 'siren'
 
 const fromWatchSirenInput = sireType => function*(action) {
   const {
-    values,
+    data,
+    name,
   } = action
 
   try {
-    const response = yield call(fetch, `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${values[sireType]}`)
+    const response = yield call(fetch, `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${data[sireType]}`)
     if (response.status === 404)  {
       yield put(assignErrors({[sireType]: [`${capitalize(sireType)} invalide`]}))
-      yield put(mergeFormData(action.name,
+      yield put(mergeFormData(name,
         {
           address: null,
           city: null,
@@ -53,16 +54,13 @@ const fromWatchSirenInput = sireType => function*(action) {
 
 export function* watchFormActions() {
   yield takeEvery(
-    ({ type, values, options }) => {
-      const result = type === 'MERGE_FORM_DATA' && !get(options, 'calledFromSaga') && get(values, `${SIREN}.length`) === 9
-      return result
-    },
+    ({ type, data, config }) =>
+      type === 'MERGE_FORM_DATA' && !get(config, 'calledFromSaga') && get(data, `${SIREN}.length`) === 9,
     fromWatchSirenInput(SIREN)
   )
   yield takeEvery(
-    ({ type, values, options }) => {
-      return type === 'MERGE_FORM_DATA' && !get(options, 'calledFromSaga') && get(values, `${SIRET}.length`) === 14
-    },
+    ({ type, data, config }) =>
+      type === 'MERGE_FORM_DATA' && !get(config, 'calledFromSaga') && get(data, `${SIRET}.length`) === 14,
     fromWatchSirenInput(SIRET)
   )
 }

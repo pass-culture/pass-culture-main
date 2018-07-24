@@ -5,7 +5,7 @@ import {
   Icon,
   requestData,
   showNotification,
-  SubmitButton
+  // SubmitButton
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -16,6 +16,7 @@ import { compose } from 'redux'
 
 import Field from '../layout/Field'
 import Form from '../layout/Form'
+import SubmitButton from '../layout/SubmitButton'
 
 import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
@@ -231,8 +232,7 @@ class OccasionPage extends Component {
       <PageWrapper
         backTo={{path: `/offres${search}`, label: 'Vos offres'}}
         name='offer'
-        handleDataRequest={this.handleDataRequest}
-      >
+        handleDataRequest={this.handleDataRequest}>
         <div className='section'>
           <h1 className='pc-title'>
             { isNew ? "Ajouter une offre" : "Détails de l'offre" }
@@ -242,7 +242,13 @@ class OccasionPage extends Component {
           </p>
           <Form
             action={apiPath}
-            data={formData}
+            data={Object.assign(
+              {
+                offererId: get(venue, 'managingOffererId'),
+                venueId: get(venue, 'id')
+              },
+              isEventType ? event : thing
+            )}
             name='occasion'
             handleSuccess={this.handleSuccess}
             handleFail={this.handleFail}
@@ -261,85 +267,91 @@ class OccasionPage extends Component {
                 required
               />
             </div>
-            { !isNew && (
-              <div className='field'>
-                { event && (
-                  <div className='field form-field is-horizontal'>
-                    <div className='field-label'>
-                      <label className="label" htmlFor="input_occasions_name">
-                        <div className="subtitle">Dates :</div>
-                      </label>
-                    </div>
-                    <div className='field-body'>
-                      <div className='field'>
-                        <div className='nb-dates'>
-                          {pluralize(get(occurences, 'length'), 'date')}
-                        </div>
-                        <NavLink
-                          className='button is-primary is-outlined is-small'
-                          to={`/offres/${get(occasion, 'id')}?gestion`}>
-                          <span className='icon'><Icon svg='ico-calendar' /></span>
-                          <span>Gérer les dates et les prix</span>
-                        </NavLink>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <MediationManager />
-              </div>
-            )}
-            { showAllForm &&
-              <div>
-                <h2 className='pc-list-title'>
-                  Infos pratiques
-                </h2>
-                <div className='field-group'>
-                  <Field
-                    debug
-                    label='Structure'
-                    name='offererId'
-                    options={offerers}
-                    placeholder="Sélectionnez une structure"
-                    required
-                    type='select' />
+            {
+              !isNew && (
+                <div className='field'>
                   {
-                    offerer && get(venues, 'length') === 0
-                      ? (
-                        <div className='field is-horizontal'>
-                          <div className='field-label'></div>
-                          <div className='field-body'>
-                            <p className='help is-danger'>
-                              Il faut obligatoirement une structure avec un lieu.
-                            </p>
+                    event && (
+                      <div className='field form-field is-horizontal'>
+                        <div className='field-label'>
+                          <label className="label" htmlFor="input_occasions_name">
+                            <div className="subtitle">Dates :</div>
+                          </label>
+                        </div>
+                        <div className='field-body'>
+                          <div className='field'>
+                            <div className='nb-dates'>
+                              {pluralize(get(occurences, 'length'), 'date')}
+                            </div>
+                            <NavLink
+                              className='button is-primary is-outlined is-small'
+                              to={`/offres/${get(occasion, 'id')}?gestion`}>
+                              <span className='icon'><Icon svg='ico-calendar' /></span>
+                              <span>Gérer les dates et les prix</span>
+                            </NavLink>
                           </div>
                         </div>
-                      )
-                      : get(venues, 'length') > 0 && (
-                        <Field
-                          label='Lieu'
-                          name='venueId'
-                          options={venues}
-                          placeholder='Sélectionnez un lieu'
-                          required
-                          type='select' />
-                      )
+                      </div>
+                    )
                   }
-                  { isEventType && (
-                    <Field type='number' name='durationMinutes' label='Durée en minutes' required />
-                  )}
+                  <MediationManager />
                 </div>
-                <h2 className='pc-list-title'>Infos artistiques</h2>
-                <div className='field-group'>
-                  <Field type='textarea' name='description' label='Description' maxLength={750} required isExpanded />
-                  <Field name='author' label='Auteur' isExpanded/>
-                  {
-                    isEventType && [
-                      <Field key={0} name='stageDirector' label='Metteur en scène' isExpanded />,
-                      <Field key={1} name='performer' label='Interprète' isExpanded />
-                    ]
-                  }
+              )
+            }
+            {
+              showAllForm && (
+                <div>
+                  <h2 className='pc-list-title'>
+                    Infos pratiques
+                  </h2>
+                  <div className='field-group'>
+                    <Field
+                      debug
+                      label='Structure'
+                      name='offererId'
+                      options={offerers}
+                      placeholder="Sélectionnez une structure"
+                      required
+                      type='select' />
+                    {
+                      offerer && get(venues, 'length') === 0
+                        ? (
+                          <div className='field is-horizontal'>
+                            <div className='field-label'></div>
+                            <div className='field-body'>
+                              <p className='help is-danger'>
+                                Il faut obligatoirement une structure avec un lieu.
+                              </p>
+                            </div>
+                          </div>
+                        )
+                        : get(venues, 'length') > 0 && (
+                          <Field
+                            label='Lieu'
+                            name='venueId'
+                            options={venues}
+                            placeholder='Sélectionnez un lieu'
+                            required
+                            type='select' />
+                        )
+                    }
+                    { isEventType && (
+                      <Field type='number' name='durationMinutes' label='Durée en minutes' required />
+                    )}
+                  </div>
+                  <h2 className='pc-list-title'>Infos artistiques</h2>
+                  <div className='field-group'>
+                    <Field type='textarea' name='description' label='Description' maxLength={750} required isExpanded />
+                    <Field name='author' label='Auteur' isExpanded/>
+                    {
+                      isEventType && [
+                        <Field key={0} name='stageDirector' label='Metteur en scène' isExpanded />,
+                        <Field key={1} name='performer' label='Interprète' isExpanded />
+                      ]
+                    }
+                  </div>
                 </div>
-              </div>
+              )
             }
 
             <hr />

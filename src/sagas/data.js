@@ -1,8 +1,8 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
 import { failData, successData } from '../reducers/data'
-import { newErrorForm } from '../reducers/form'
 import { assignErrors } from '../reducers/errors'
+import { mergeFormError } from '../reducers/form'
 import { fetchData } from '../utils/request'
 
 function* fromWatchRequestDataActions(action) {
@@ -39,7 +39,7 @@ function* fromWatchRequestDataActions(action) {
 
     } else {
       if (formName) {
-        yield put(newErrorForm(formName, result.errors))
+        yield put(mergeFormError(formName, result.errors))
       }
       yield put(failData(method, path, result.errors, config))
     }
