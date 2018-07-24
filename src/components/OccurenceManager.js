@@ -32,6 +32,7 @@ class OccurenceManager extends Component {
     const {
       event,
       eventOccurenceIdOrNew,
+      isEditing,
       provider,
       occasion,
       occurences,
@@ -61,31 +62,27 @@ class OccurenceManager extends Component {
             </thead>
             <tbody>
               {
-                eventOccurenceIdOrNew === 'nouvelle'
-                ? (
-                  <OccurenceForm
-                    isFullyEditable={!provider}
-                    isNew
-                    occurence={occurences[0]}
-                  />
-                )
-                : (
+                eventOccurenceIdOrNew === "nouvelle" && 
+                <OccurenceForm isFullyEditable={!provider} />
+              }
+              {
+                !isEditing && (
                   <tr>
                     <td colSpan='10'>
                       {
                         provider
-                        ? (
-                          <i>
-                            Il n'est pas possible d'ajouter ni de supprimer de dates pour cet événement {provider.name}
-                          </i>
-                        )
-                        : (
-                          <NavLink
-                            className='button is-secondary'
-                            to={`/offres/${get(occasion, 'id')}?gestion&date=nouvelle`}>
-                            + Ajouter un horaire
-                          </NavLink>
-                        )
+                          ? (
+                            <i>
+                              Il n'est pas possible d'ajouter ni de supprimer d'horaires pour cet événement {provider.name}
+                            </i>
+                          )
+                          : (
+                            <NavLink
+                              className='button is-secondary'
+                              to={`/offres/${get(occasion, 'id')}?gestion&date=nouvelle`}>
+                              + Ajouter un horaire
+                            </NavLink>
+                          )
                       }
                     </td>
                   </tr>
@@ -129,15 +126,20 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
+
       const search = searchSelector(state, ownProps.location.search)
-      const { eventOccurenceIdOrNew } = (search || {})
+      const { eventOccurenceIdOrNew, offerIdOrNew } = (search || {})
+      const isEditing = eventOccurenceIdOrNew || offerIdOrNew
+
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
       const event = eventSelector(state, eventId)
       const occurences = occurencesSelector(state, venueId, eventId)
+
       return {
         event,
         eventOccurenceIdOrNew,
+        isEditing,
         occasion,
         occurences,
         provider: providerSelector(state, get(event, 'lastProviderId'))
