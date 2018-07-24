@@ -96,13 +96,14 @@ class Form extends Component {
     requestData(
       this.state.method,
       action.replace(/^\//g, ''), {
-      body: formatData(formData),
-      formName: name,
-      handleFail: this.handleFail,
-      handleSuccess,
-      key: storePath, // key is a reserved prop name
-      encode: formData instanceof FormData ? 'multipart/form-data' : null,
-    })
+        body: formatData(formData),
+        formName: name,
+        handleFail: this.handleFail,
+        handleSuccess,
+        key: storePath, // key is a reserved prop name
+        encode: formData instanceof FormData ? 'multipart/form-data' : null,
+      }
+    )
   }
 
   handleFail = () => {

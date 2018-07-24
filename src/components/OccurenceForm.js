@@ -13,7 +13,7 @@ import Field from './layout/Field'
 import Form from './layout/Form'
 import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
-import { mergeFormData } from '../reducers/form'
+import { mergeFormData, resetForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import searchSelector from '../selectors/search'
 import timezoneSelector from '../selectors/timezone'
@@ -31,24 +31,6 @@ class OccurenceForm extends Component {
     this.state = {
       '$submit': null
     }
-  }
-
-  handleEventOccurenceSuccessData = (state, action) => {
-    const {
-      history,
-      occasion,
-      offer
-    } = this.props
-    const offerIdOrNew = get(offer, 'id', 'nouveau')
-    history.push(`/offres/${get(occasion, 'id')}?gestion&date=${action.data.id}&stock=${offerIdOrNew}`)
-  }
-
-  handleOfferSuccessData = (state, action) => {
-    const {
-      history,
-      occasion,
-    } = this.props
-    history.push(`/offres/${get(occasion, 'id')}?gestion`)
   }
 
   onDeleteClick = () => {
@@ -88,6 +70,58 @@ class OccurenceForm extends Component {
     }
   }
 
+  handleCrossingEndDatetime = () => {
+    const {
+      formBeginningDatetime,
+      formEndDatetime,
+      mergeFormData
+    } = this.props
+    if (formEndDatetime < formBeginningDatetime) {
+      mergeFormData('occurence', {
+        endDatetime: moment(formEndDatetime).add(1, 'day')
+      })
+    }
+  }
+
+  handleEventOccurenceSuccessData = (state, action) => {
+    const {
+      history,
+      occasion,
+      offer
+    } = this.props
+    const offerIdOrNew = get(offer, 'id', 'nouveau')
+    history.push(`/offres/${get(occasion, 'id')}?gestion&date=${action.data.id}&stock=${offerIdOrNew}`)
+  }
+
+  handleInitBookingLimitDatetime = () => {
+    const {
+      formBookingLimitDatetime,
+      isOfferReadOnly,
+      mergeFormData,
+      occurence
+    } = this.props
+    if (!occurence || formBookingLimitDatetime || isOfferReadOnly) {
+      return
+    }
+    mergeFormData('offer', {
+      bookingLimitDatetime: moment(occurence.beginningDatetime).subtract(2, 'day')
+    })
+  }
+
+  handleInitEndDatetime = () => {
+    const {
+      formBeginningDatetime,
+      mergeFormData,
+      occurence,
+    } = this.props
+    if (occurence) {
+      return
+    }
+    mergeFormData('occurence', {
+      endDatetime: moment(formBeginningDatetime).add(1, 'hour')
+    })
+  }
+
   handleNextDatetimes = () => {
     const {
       formBeginningDatetime,
@@ -106,48 +140,51 @@ class OccurenceForm extends Component {
         beginningDatetime,
         endDatetime: moment(beginningDatetime).add(1, 'hour')
       })
-      return
     }
   }
 
-  handleCrossingEndDatetime = () => {
+  handleOfferSuccessData = (state, action) => {
     const {
-      formBeginningDatetime,
-      formEndDatetime,
-      mergeFormData
+      history,
+      occasion,
     } = this.props
-    if (formEndDatetime < formBeginningDatetime) {
-      mergeFormData('occurence', {
-        endDatetime: moment(formEndDatetime).add(1, 'day')
-      })
-    }
+    history.push(`/offres/${get(occasion, 'id')}?gestion`)
   }
 
-  handleInitEndDatetime = (prevProps) => {
+  handleResetForm = () => {
     const {
-      formBeginningDatetime,
-      mergeFormData,
-      occurence,
+      isEditing,
+      resetForm
     } = this.props
-    if (occurence) {
-      return
-    }
-    if (formBeginningDatetime !== prevProps.formBeginningDatetime) {
-      mergeFormData('occurence', {
-        endDatetime: moment(formBeginningDatetime).add(1, 'hour')
-      })
+    if (!isEditing) {
+      resetForm()
     }
   }
 
   componentDidMount () {
     this.setState({ $submit: this.$submit })
     this.handleNextDatetimes()
+    this.handleInitBookingLimitDatetime()
+    this.handleResetForm()
   }
 
   componentDidUpdate (prevProps) {
+    const {
+      formBeginningDatetime,
+      isEditing
+    } = this.props
+
     this.handleNextDatetimes()
+    this.handleInitBookingLimitDatetime()
     this.handleCrossingEndDatetime()
-    this.handleInitEndDatetime(prevProps)
+
+    if (formBeginningDatetime && !prevProps.formBeginningDatetime) {
+      this.handleInitEndDatetime()
+    }
+
+    if (prevProps.isEditing && !isEditing) {
+      this.handleResetForm()
+    }
   }
 
   render () {
@@ -156,8 +193,10 @@ class OccurenceForm extends Component {
       eventId,
       eventOccurenceIdOrNew,
       formBeginningDatetime,
+      isEditing,
       isEventOccurenceReadOnly,
       isFullyEditable,
+      isOfferReadOnly,
       isNew,
       occasion,
       occurence,
@@ -182,7 +221,7 @@ class OccurenceForm extends Component {
           handleSuccess={this.handleEventOccurenceSuccessData}
           layout='input-only'
           name={`occurence${get(occurence, 'id', '')}`}
-          readOnly={!eventOccurenceIdOrNew || offerIdOrNew}
+          readOnly={isEventOccurenceReadOnly}
           size="small"
           TagName={null} >
           <td>
@@ -238,27 +277,27 @@ class OccurenceForm extends Component {
         <Form
           action={`/offers/${get(offer, 'id', '')}`}
           data={Object.assign({
-            eventOccurenceIdOrNew: get(occurence, 'id')
+            eventOccurenceId: get(occurence, 'id')
           }, offer)}
           handleSuccess={this.handleOfferSuccessData}
           layout='input-only'
           key={1}
           name={`offer${get(offer, 'id', '')}`}
           size="small"
-          readOnly={!offerIdOrNew}
+          readOnly={isOfferReadOnly}
           TagName={null} >
 
           <td title='Vide si gratuit'>
 
-            <Field name='eventOccurenceIdOrNew' type='hidden' />
+            <Field name='eventOccurenceId' type='hidden' />
 
             {
-              offerIdOrNew
-                ? <Field
+              isOfferReadOnly
+                ? <Price value={get(offer, 'price')} />
+                : <Field
                     name="price"
                     placeholder='Gratuit'
                     title='Prix'  />
-                : <Price value={get(offer, 'price')} />
             }
 
           </td>
@@ -267,18 +306,18 @@ class OccurenceForm extends Component {
               maxDate={beginningDatetime}
               name='bookingLimitDatetime'
               placeholder="Laissez vide si pas de limite"
-              readOnly={!offerIdOrNew}
+              readOnly={isOfferReadOnly}
               type='date' />
           </td>
           <td title='Laissez vide si pas de limite'>
             <Field
               name='available'
-              readOnly={!offerIdOrNew}
+              readOnly={isOfferReadOnly}
               title='Places disponibles'
               type='number' />
           </td>
           {
-            isEventOccurenceReadOnly && occurence && (
+            !isOfferReadOnly && (
               <Portal node={this.state.$submit}>
                 <SubmitButton className="button is-primary is-small">
                   Valideeeer
@@ -289,7 +328,7 @@ class OccurenceForm extends Component {
         </Form>
         <td>
           {
-            (eventOccurenceIdOrNew || offerIdOrNew)
+            isEditing
               ? (
                   <NavLink
                     className="button is-secondary is-small"
@@ -308,7 +347,7 @@ class OccurenceForm extends Component {
         </td>
         <td ref={_e => this.$submit = _e}>
           {
-            !eventOccurenceIdOrNew && !offerIdOrNew && (
+            !isEditing && (
               <NavLink
                 to={`/offres/${get(occasion, 'id')}?gestion&date=${occurence.id}`}
                 className="button is-small is-secondary">
@@ -330,13 +369,21 @@ export default compose(
       const search = searchSelector(state, ownProps.location.search)
       const { eventOccurenceIdOrNew, offerIdOrNew } = (search || {})
 
+      const occurence = occurenceSelector(state, ownProps.occurence)
+
+      const isEditing = eventOccurenceIdOrNew || offerIdOrNew
       const isEventOccurenceReadOnly = !eventOccurenceIdOrNew ||
         offerIdOrNew ||
         !ownProps.isFullyEditable
+      const isOfferReadOnly = !occurence ||
+        !eventOccurenceIdOrNew ||
+        eventOccurenceIdOrNew === "nouvelle" ||
+        !offerIdOrNew
 
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
       const { eventId, venueId } = (occasion || {})
-      const occurence = occurenceSelector(state, ownProps.occurence)
+
+      const offer = offerSelector(state, get(ownProps, 'occurence.id'))
 
       return {
         event: eventSelector(state, eventId),
@@ -346,21 +393,27 @@ export default compose(
           state,
           `form.occurence${get(occurence, 'id', '')}.data.beginningDatetime`
         ),
+        formBookingLimitDatetime: get(
+          state,
+          `form.offer${get(offer, 'id', '')}.data.bookingLimitDatetime`
+        ),
         formEndDatetime: get(
           state,
           `form.occurence${get(occurence, 'id', '')}.data.endDatetime`
         ),
+        isEditing,
         isEventOccurenceReadOnly,
+        isOfferReadOnly,
         occasion,
         occurence,
         offerIdOrNew,
         occurences: occurencesSelector(state, venueId, eventId),
-        offer: offerSelector(state, get(ownProps, 'occurence.id')),
+        offer,
         tz: timezoneSelector(state, venueId),
         venue: venueSelector(state, venueId),
         venueId
       }
     },
-    { mergeFormData, requestData }
+    { mergeFormData, requestData, resetForm }
   )
 )(OccurenceForm)
