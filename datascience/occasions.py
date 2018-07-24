@@ -195,6 +195,6 @@ def get_occasions(limit=3, user=None, coords=None):
                                    coords=coords,
                                    departement_codes=departement_codes)
 
-    log.info('(reco) final occasions (events + things) count (%i + %i)',
+    logger.info('(reco) final occasions (events + things) count (%i + %i)',
              len(events), len(things))
     return list(roundrobin(events, things))[:limit]
