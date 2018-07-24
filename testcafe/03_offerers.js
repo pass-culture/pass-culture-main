@@ -20,7 +20,7 @@ fixture `03_01 OfferersPage | Je me connecte pour la première fois en tant que 
       //TODO En attente de la possibilité de créer un nouvel utilisateur pour ce test. Tout de suite après la création, l'user arrive sur /structures
     })
 
-    test.skip("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une modale m'informe et je suis redirigé·e vers la page /structures", async t => {
+    test("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une modale m'informe et je suis redirigé·e vers la page /structures", async t => {
       // TODO Ne fonctionne que quand la base de données est vide
       await t.expect(createOfferButton.innerText).eql('\nCréer une offre\n')
       .click(createOfferButton)
