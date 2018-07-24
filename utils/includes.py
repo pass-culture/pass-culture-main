@@ -158,7 +158,8 @@ BOOKING_INCLUDES = [
 ]
 
 USER_INCLUDES = [
-    '-password'
+    '-password',
+    'wallet_balance'
 ]
 
 VENUE_INCLUDES = [

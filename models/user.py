@@ -2,10 +2,11 @@
 from datetime import datetime
 from sqlalchemy.sql import expression
 from sqlalchemy.orm import relationship
-from sqlalchemy import Binary, Boolean, Column, DateTime, String
+from sqlalchemy import Binary, Boolean, Column, DateTime, String, func
 import bcrypt
 
-from models.db import Model
+from models import Deposit, Booking
+from models.db import Model, db
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
@@ -96,3 +97,13 @@ class User(PcObject,
                   .filter((UserOfferer.offererId == offererId) &
                           (UserOfferer.rights.in_(compatible_rights)))\
                   .first() is not None
+
+    @property
+    def wallet_balance(self):
+        credit = db.session.query(func.coalesce(func.sum(Deposit.amount), 0)).filter_by(userId=self.id).scalar()
+        debit = db.session.query(func.coalesce(func.sum(Booking.amount), 0)).filter_by(userId=self.id).scalar()
+
+        print('credit', credit)
+        print('debit', debit)
+
+        return credit - debit

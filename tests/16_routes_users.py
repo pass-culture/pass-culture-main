@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+from models import PcObject, Thing, Venue, Offer, Recommendation, Deposit, Booking
 from pprint import pprint
 
 from models.offerer import Offerer
@@ -250,3 +252,78 @@ def test_27_pro_signup_with_existing_offerer(app):
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
         assert user_offerer.rights == RightsType.editor
+
+
+def test_28_user_should_have_its_waller_balance(app):
+    # Given
+    user = User()
+    user.publicName = 'Test'
+    user.email = 'wallet_test@email.com'
+    user.setPassword('testpsswd')
+    user.departementCode = '93'
+    PcObject.check_and_save(user)
+
+    offerer = Offerer()
+    offerer.name = 'Test offerer'
+    offerer.postalCode = '93000'
+    offerer.address = '2 Test adress'
+    offerer.city = 'Test city'
+    PcObject.check_and_save(offerer)
+
+    thing = Thing()
+    thing.type = 'Book'
+    thing.name = 'Test name'
+    thing.extraData = {'author': 'Test Author'}
+    PcObject.check_and_save(thing)
+
+    venue = Venue()
+    venue.name = 'Venue name'
+    venue.bookingEmail = 'booking@email.com'
+    venue.postalCode = '93000'
+    venue.departementCode = '93'
+    venue.address = '1 Test address'
+    venue.city = 'Test city'
+    venue.managingOffererId = offerer.id
+    PcObject.check_and_save(venue)
+
+    offer = Offer()
+    offer.thingId = thing.id
+    offer.offererId = offerer.id
+    offer.price = 5
+    offer.venueId = venue.id
+    offer.available = 50
+    PcObject.check_and_save(offer)
+
+    recommendation = Recommendation()
+    recommendation.userId = user.id
+    recommendation.thingId = thing.id
+    PcObject.check_and_save(recommendation)
+
+    deposit = Deposit()
+    deposit.date = datetime.utcnow() - timedelta(minutes=2)
+    deposit.amount = 10
+    deposit.userId = user.id
+    deposit.source = 'public'
+    PcObject.check_and_save(deposit)
+
+    deposit = Deposit()
+    deposit.date = datetime.utcnow() - timedelta(minutes=2)
+    deposit.amount = 10
+    deposit.userId = user.id
+    deposit.source = 'public'
+    PcObject.check_and_save(deposit)
+
+    booking = Booking()
+    booking.offerId = offer.id
+    booking.recommendationId = recommendation.id
+    booking.userId = user.id
+    booking.token = '2ALUY5'
+    booking.amount = offer.price
+    PcObject.check_and_save(booking)
+
+    r_create = req_with_auth('wallet_test@email.com', 'testpsswd').get(API_URL + '/users/current')
+    wallet_balance = r_create.json()['wallet_balance']
+    print('rcreate', r_create)
+    print('json', r_create.json())
+    #Then
+    assert wallet_balance == 15
