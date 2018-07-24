@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
+import { requestData, resetForm } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -12,7 +12,6 @@ import Icon from './Icon'
 import Loader from './Loader'
 import Modal from './Modal'
 import withLogin from '../hocs/withLogin'
-import { resetForm } from '../../reducers/form'
 import { showNotification, closeNotification } from '../../reducers/notification'
 
 class PageWrapper extends Component {

@@ -1,6 +1,10 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { requestData } from 'pass-culture-shared'
+import {
+  mergeFormData,
+  requestData,
+  resetForm
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Portal } from 'react-portal'
@@ -13,7 +17,6 @@ import Field from './layout/Field'
 import Form from './layout/Form'
 import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
-import { mergeFormData, resetForm } from '../reducers/form'
 import eventSelector from '../selectors/event'
 import searchSelector from '../selectors/search'
 import timezoneSelector from '../selectors/timezone'
@@ -130,6 +133,18 @@ class OccurenceForm extends Component {
     })
   }
 
+  handleInitPrice = () => {
+    const {
+      formPrice,
+      mergeFormData,
+      offer,
+    } = this.props
+    if (offer || formPrice) {
+      return
+    }
+    mergeFormData('offer', { price: 0 })
+  }
+
   handleNextDatetimes = () => {
     const {
       formBeginningDatetime,
@@ -177,6 +192,7 @@ class OccurenceForm extends Component {
     this.setState({ $submit: this.$submit })
     this.handleNextDatetimes()
     this.handleInitBookingLimitDatetime()
+    this.handleInitPrice()
   }
 
   componentDidUpdate (prevProps) {
@@ -196,6 +212,8 @@ class OccurenceForm extends Component {
     if (formBeginningDatetime && !prevProps.formBeginningDatetime) {
       this.handleInitEndDatetime()
     }
+
+    this.handleInitPrice()
   }
 
   render () {
@@ -412,7 +430,6 @@ export default compose(
 
 
       return {
-        errors: state.errors,
         event: eventSelector(state, eventId),
         eventId,
         eventOccurenceIdOrNew,
@@ -427,6 +444,10 @@ export default compose(
         formEndDatetime: get(
           state,
           `form.occurence${get(occurence, 'id', '')}.data.endDatetime`
+        ),
+        formPrice: get(
+          state,
+          `form.offer${get(offer, 'id', '')}.data.price`
         ),
         isEditing,
         isEventOccurenceReadOnly,

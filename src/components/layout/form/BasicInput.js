@@ -1,7 +1,6 @@
 import React from 'react'
 
 const BasicInput = props => {
-
   return <input
     aria-describedby={props['aria-describedby']}
     autoComplete={props.autoComplete}
@@ -17,4 +16,3 @@ const BasicInput = props => {
 }
 
 export default BasicInput
-

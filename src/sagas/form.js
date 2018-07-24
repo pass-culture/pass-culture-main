@@ -1,9 +1,10 @@
 import get from 'lodash.get'
+import {
+  capitalize,
+  assignErrors,
+  mergeFormData
+} from 'pass-culture-shared'
 import { call, put, takeEvery } from 'redux-saga/effects'
-
-import { assignErrors } from '../reducers/errors'
-import { mergeFormData } from '../reducers/form'
-import { capitalize } from '../utils/string'
 
 const SIRET = 'siret'
 const SIREN = 'siren'

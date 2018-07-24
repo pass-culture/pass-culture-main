@@ -5,7 +5,11 @@ import BasicInput from './BasicInput'
 class NumberInput extends Component {
 
   onChange = e => {
-    this.props.onChange(parseInt(e.target.value, 10))
+    this.props.onChange(
+      e.target.value
+        ? parseInt(e.target.value, 10)
+        : 0
+    )
   }
 
   render () {

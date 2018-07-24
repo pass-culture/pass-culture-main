@@ -1,9 +1,14 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-export function errorToKey (error) {
-  switch (error) {
+export function errorKeyToFrenchKey (errorKey) {
+  switch (errorKey) {
     case 'available':
       return 'Places'
+    case 'beginningDatetime':
+      return 'Date'
+    case 'endDatetime':
+      return 'Heure de fin'
     case 'price':
       return 'Prix'
     default:
@@ -12,16 +17,17 @@ export function errorToKey (error) {
 }
 
 export default createSelector(
-  state => state.errors,
-  errors => {
-    const occurenceErrors = {}
-    Object.keys(errors).filter(errorToKey).forEach(
-      error => {
-        occurenceErrors[errorToKey(error)] = errors[error]
-      }
-    )
-    if (Object.keys(occurenceErrors).length) {
-      return occurenceErrors
-    }
+  state => get(state, 'errors.occurence'),
+  state => get(state, 'errors.offer'),
+  (occurenceErrors, offerErrors) => {
+    const errors = Object.assign({}, occurenceErrors, offerErrors)
+    const e = Object.keys(errors)
+          .filter(errorKeyToFrenchKey)
+          .reduce((result, errorKey) =>
+            Object.assign(
+              { [errorKeyToFrenchKey(errorKey)]: errors[errorKey] },
+              result
+            ), null)
+    return e
   }
 )

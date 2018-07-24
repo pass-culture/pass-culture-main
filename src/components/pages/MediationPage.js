@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import { assignData } from 'pass-culture-shared'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
@@ -8,14 +8,11 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { showNotification } from '../../reducers/notification'
-import eventSelector from '../../selectors/event'
 import mediationSelector from '../../selectors/mediation'
 import occasionSelector from '../../selectors/occasion'
 import offererSelector from '../../selectors/offerer'
-import thingSelector from '../../selectors/thing'
 import venueSelector from '../../selectors/venue'
 import { mediationNormalizer, occasionNormalizer } from '../../utils/normalizers'
 
@@ -39,10 +36,14 @@ class MediationPage extends Component {
   }
 
   static getDerivedStateFromProps (nextProps, prevState) {
+    const {
+      match: { params: { mediationId } }
+    } = nextProps
     return {
       inputUrl: prevState.inputUrl,
       imageUrl: prevState.imageUrl || get(nextProps, 'mediation.thumbPath'),
       image: prevState.image,
+      isNew: mediationId === 'nouveau'
     }
   }
 
@@ -56,10 +57,9 @@ class MediationPage extends Component {
     const {
       match: { params: { mediationId, occasionId } },
       occasion,
-      requestData,
-      user
+      requestData
     } = this.props
-    const isNew = mediationId === 'nouveau'
+    const { isNew } = this.state
     !occasion && requestData(
       'GET',
       `occasions/${occasionId}`,
@@ -155,9 +155,60 @@ class MediationPage extends Component {
     })
   }
 
+  onSubmit = () => {
+    const {
+      mediation,
+      occasion,
+      occasionId,
+      offerer,
+      requestData
+    } = this.props
+    const {
+      croppingRect,
+      image,
+      isNew
+    } = this.state
+
+    const eventId = get(occasion, 'eventId')
+    const offererId = get(offerer, 'id')
+    const thingId = get(occasion, 'thingId')
+
+    let body
+    if (typeof image === 'string') {
+      body = {
+        croppingRect,
+        eventId: occasionId,
+        offererId,
+        thingId,
+        thumb: image,
+      }
+    } else {
+      const formData = new FormData();
+      formData.append('thumb', image)
+      formData.append('eventId', eventId)
+      formData.append('thingId', thingId)
+      formData.append('offererId', offererId)
+      formData.append('croppingRect[x]', croppingRect.x)
+      formData.append('croppingRect[y]', croppingRect.y)
+      formData.append('croppingRect[width]', croppingRect.width)
+      formData.append('croppingRect[height]', croppingRect.height)
+      body = formData
+    }
+
+    requestData(
+      isNew ? 'POST' : 'PATCH',
+      `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
+      {
+        body,
+        encode: 'multipart/form-data',
+        handleSuccess: this.handleSuccessData,
+        key: 'mediations'
+      }
+    )
+  }
+
   render () {
     const {
-      event,
       imageUploadSize,
       imageUploadBorder,
       match: {
@@ -169,7 +220,6 @@ class MediationPage extends Component {
       mediation,
       occasion,
       offerer,
-      thing,
     } = this.props
     const {
       name
@@ -179,8 +229,8 @@ class MediationPage extends Component {
       image,
       imageUrl,
       inputUrl,
+      isNew
     } = this.state
-    const isNew = mediationId === 'nouveau'
     const backPath = `/offres/${occasionId}`
 
     return (
@@ -206,7 +256,6 @@ class MediationPage extends Component {
         </section>
 
         <div className='section'>
-
           <label className="label">Depuis une adresse Internet :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
@@ -239,13 +288,14 @@ class MediationPage extends Component {
               required
               onImageChange={this.onImageChange}
               storeKey='mediations'
-              type='thumb'
-            />
-            { image && (
-              <div className='section content'>
-                <ReactMarkdown source={uploadExplanation} />
-              </div>
-            )}
+              type='thumb' />
+            {
+              image && (
+                <div className='section content'>
+                  <ReactMarkdown source={uploadExplanation} />
+                </div>
+              )
+            }
           </div>
           <div className='column is-one-quarter'>
             <div className='section'>
@@ -263,41 +313,12 @@ class MediationPage extends Component {
             </NavLink>
           </div>
           <div className="control">
-            <SubmitButton
+            <button
               className="button is-primary is-medium"
-              getBody={form => {
-
-                const eventId = get(event, 'id')
-                const offererId = get(offerer, 'id')
-                const thingId = get(thing, 'id')
-
-                if (typeof image === 'string') {
-                  return {
-                    croppingRect,
-                    eventId: occasionId,
-                    offererId,
-                    thingId,
-                    thumb: image,
-                  }
-                }
-                const formData = new FormData();
-                formData.append('thumb', image)
-                formData.append('eventId', eventId)
-                formData.append('thingId', thingId)
-                formData.append('offererId', offererId)
-                formData.append('croppingRect[x]', croppingRect.x)
-                formData.append('croppingRect[y]', croppingRect.y)
-                formData.append('croppingRect[width]', croppingRect.width)
-                formData.append('croppingRect[height]', croppingRect.height)
-                return formData
-              }}
-              getIsDisabled={form => !image}
-              handleSuccess={this.handleSuccessData}
-              method={isNew ? 'POST' : 'PATCH'}
-              path={'mediations' + (isNew ? '' : `/${get(mediation, 'id')}`)}
-              storeKey="mediations"
-              text='Valider'
-            />
+              disabled={!image}
+              onClick={this.onSubmit}>
+              Valider
+            </button>
           </div>
         </div>
       </PageWrapper>
@@ -309,24 +330,14 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
-
-      const {
-        eventId,
-        thingId,
-        venueId,
-      } = (occasion || {})
-
-      const venue = venueSelector(state, venueId)
+      const venue = venueSelector(state, get(occasion, 'venueId'))
       return {
         occasion,
         offerer: offererSelector(state, get(venue, 'managingOffererId')),
-        event: eventSelector(state, eventId),
         mediation: mediationSelector(state, ownProps.match.params.mediationId),
-        thing: thingSelector(state, thingId),
       }
     },
-    { assignData, showNotification }
+    { requestData, showNotification }
   )
 )(MediationPage)

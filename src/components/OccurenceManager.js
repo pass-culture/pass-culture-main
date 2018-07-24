@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import { mergeFormData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -6,7 +7,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import OccurenceForm from './OccurenceForm'
-import { mergeFormData } from '../reducers/form'
 import { closeModal } from '../reducers/modal'
 import eventSelector from '../selectors/event'
 import occasionSelector from '../selectors/occasion'

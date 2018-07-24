@@ -1,6 +1,10 @@
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
+import {
+  mergeFormData,
+  removeErrors,
+  requestData
+} from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
@@ -16,7 +20,6 @@ import SirenInput from './SirenInput'
 import TextareaInput from './form/TextareaInput'
 import TextInput from './form/TextInput'
 import TimeInput from './form/TimeInput'
-import { mergeFormData, removeFormError } from '../../reducers/form'
 import { showNotification } from '../../reducers/notification'
 import { recursiveMap } from '../../utils/react'
 import { pluralize } from '../../utils/string'
@@ -75,7 +78,7 @@ class Form extends Component {
   }
 
   onMergeForm = () => {
-    this.props.removeFormError(this.props.name)
+    this.props.removeErrors(this.props.name)
     this.props.mergeFormData(this.props.name, this.state.patch)
     this.setState({
       patch: {},
@@ -97,10 +100,10 @@ class Form extends Component {
       this.state.method,
       action.replace(/^\//g, ''), {
         body: formatData(formData),
-        formName: name,
         handleFail: this.handleFail,
         handleSuccess,
         key: storePath, // key is a reserved prop name
+        name,
         encode: formData instanceof FormData ? 'multipart/form-data' : null,
       }
     )
@@ -131,9 +134,6 @@ class Form extends Component {
     } = this.props
     let requiredFields = []
 
-    // console.log(name, 'children', children)
-
-
     return recursiveMap(children, c => {
       if (c.type.displayName === 'Field') {
         const dataKey = c.props.dataKey || c.props.name // name is unique, dataKey may not
@@ -160,14 +160,6 @@ class Form extends Component {
             value: formValue || storeValue || '',
             errors: [].concat(formErrors)
               .filter(e => get(e, c.props.name))
-              /*
-              .map(e => {
-                const error = get(e, c.props.name)
-                return Array.isArray(error)
-                  ? error[0]
-                  : error
-              }),
-              */
               .map(e => get(e, c.props.name)),
             readOnly: c.props.readOnly || readOnly,
             layout,
@@ -259,7 +251,7 @@ export default connect(
   }),
   {
     mergeFormData,
-    removeFormError,
+    removeErrors,
     requestData,
     showNotification
   }

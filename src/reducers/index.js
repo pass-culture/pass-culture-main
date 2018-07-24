@@ -1,9 +1,7 @@
-import { data } from 'pass-culture-shared'
+import { data, errors, form } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 
 import blockers from './blockers'
-import errors from './errors'
-import form from './form'
 import loading from './loading'
 import modal from './modal'
 import notification from './notification'
