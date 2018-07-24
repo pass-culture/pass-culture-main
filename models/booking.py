@@ -88,7 +88,7 @@ trig_ddl = DDL("""
           (SELECT COALESCE(SUM(AMOUNT), 0) FROM deposit WHERE "userId"=NEW."userId")
           -
           (SELECT COALESCE(SUM(AMOUNT), 0) FROM booking WHERE "userId"=NEW."userId")
-        ) < NEW.amount
+        ) < 0
       )
       THEN RAISE EXCEPTION 'insufficientFunds'
                  USING HINT = 'The user does not have enough credit to book';

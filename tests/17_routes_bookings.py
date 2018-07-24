@@ -112,7 +112,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     #Given
     user = User()
     user.publicName = 'Test'
-    user.email = 'test07@email.com'
+    user.email = 'insufficient_funds_test@email.com'
     user.setPassword('testpsswd')
     user.departementCode = '93'
     PcObject.check_and_save(user)
@@ -135,7 +135,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     venue.bookingEmail = 'booking@email.com'
     venue.postalCode = '93000'
     venue.departementCode = '93'
-    venue.address = '1 Test adress'
+    venue.address = '1 Test address'
     venue.city= 'Test city'
     venue.managingOffererId = offerer.id
     PcObject.check_and_save(venue)
@@ -168,7 +168,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     }
 
     # When
-    r_create = req_with_auth('test07@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('insufficient_funds_test@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
 
     # Then
     assert r_create.status_code == 400
@@ -181,3 +181,72 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     PcObject.delete(thing)
     PcObject.delete(offerer)
     PcObject.delete(user)
+
+
+def test_17_create_booking_should_work_if_not_enough_credit(app):
+    #Given
+    user = User()
+    user.publicName = 'Test'
+    user.email = 'sufficient_funds@email.com'
+    user.setPassword('testpsswd')
+    user.departementCode = '93'
+    PcObject.check_and_save(user)
+
+    offerer = Offerer()
+    offerer.name = 'Test offerer'
+    offerer.postalCode = '93000'
+    offerer.address = '2 Test adress'
+    offerer.city = 'Test city'
+    PcObject.check_and_save(offerer)
+
+    thing = Thing()
+    thing.type = 'Book'
+    thing.name = 'Test name'
+    thing.extraData = {'author': 'Test Author'}
+    PcObject.check_and_save(thing)
+
+    venue = Venue()
+    venue.name = 'Venue name'
+    venue.bookingEmail = 'booking@email.com'
+    venue.postalCode = '93000'
+    venue.departementCode = '93'
+    venue.address = '1 Test address'
+    venue.city= 'Test city'
+    venue.managingOffererId = offerer.id
+    PcObject.check_and_save(venue)
+
+    offer = Offer()
+    offer.thingId = thing.id
+    offer.offererId = offerer.id
+    offer.price = 5
+    offer.venueId = venue.id
+    offer.available = 50
+    PcObject.check_and_save(offer)
+
+    recommendation = Recommendation()
+    recommendation.userId = user.id
+    recommendation.thingId = thing.id
+    PcObject.check_and_save(recommendation)
+
+    deposit = Deposit()
+    deposit.date = datetime.utcnow() - timedelta(minutes=2)
+    deposit.amount = 9
+    deposit.userId = user.id
+    deposit.source = 'public'
+    PcObject.check_and_save(deposit)
+
+    booking_json = {
+        "offerId": humanize(offer.id),
+        "recommendationId": humanize(recommendation.id),
+        "userId": humanize(user.id),
+    }
+
+    # When
+    r_create = req_with_auth('sufficient_funds@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+
+    # Then
+    r_create_json = r_create.json()
+    print(r_create_json)
+    assert r_create.status_code == 201
+    assert r_create_json['amount'] == 5.0
+    assert r_create_json['quantity'] == 1

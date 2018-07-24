@@ -138,6 +138,20 @@ def do_sandbox():
             else:
                 offers.append(query.one())
 
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'deposits.json'
+    deposits = []
+    with open(json_path) as json_file:
+        for obj in json.load(json_file):
+            user = User.query.filter_by(email=obj['userEmail']).one()
+            query = Deposit.query.filter_by(userId=user.id)
+            if query.count() == 0:
+                deposit = Deposit(from_dict=obj)
+                deposit.user = user
+                deposit.save()
+                print("CREATED deposit")
+                pprint(vars(deposit))
+                deposits.append(deposit)
+
     json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'bookings.json'
     bookings = []
     with open(json_path) as json_file:
@@ -153,21 +167,6 @@ def do_sandbox():
                 print("CREATED booking")
                 pprint(vars(booking))
                 bookings.append(booking)
-
-    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'deposits.json'
-    deposits = []
-    with open(json_path) as json_file:
-        for obj in json.load(json_file):
-            user = User.query.filter_by(email=obj['userEmail']).one()
-            query = Deposit.query.filter_by(userId=user.id)
-            if query.count() == 0:
-                deposit = Deposit(from_dict=obj)
-                deposit.user = user
-                deposit.save()
-                print("CREATED deposit")
-                pprint(vars(deposit))
-                bookings.append(deposit)
-                deposits.append(deposit)
 
 
 
