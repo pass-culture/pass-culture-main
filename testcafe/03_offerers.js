@@ -22,14 +22,15 @@ fixture `03_01 OfferersPage | Je me connecte pour la première fois en tant que 
 
     test("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une modale m'informe et je suis redirigé·e vers la page /structures", async t => {
       // TODO Ne fonctionne que quand la base de données est vide
-      await t.expect(createOfferButton.innerText).eql('\nCréer une offre\n')
+      await t.expect(createOfferButton.innerText)
+             .eql('\nCréer une offre\n')
       .click(createOfferButton)
       const location = await t.eval(() => window.location)
       await t.expect(location.pathname).eql('/offres/nouveau')
-      await t.expect(modalContent.innerText).eql('Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres\n')
+      await t.expect(modalContent.innerText)
+             .eql('Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres\n')
+     await t.wait(2000)
       .click(closeButton)
-      await t.expect(modalDialog.visible).ok()
-      .wait(2000)
 
       const structuresLocation = await t.eval(() => window.location)
       await t.expect(structuresLocation.pathname).eql('/structures')
