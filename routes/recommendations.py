@@ -7,7 +7,7 @@ from flask_login import current_user, login_required
 from sqlalchemy.sql.expression import func
 
 from datascience import create_recommendation, create_recommendations
-from models import Booking
+from models import Booking, Occasion
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES,\
@@ -31,38 +31,28 @@ def pick_random_occasions_given_blob_size(recos, limit=BLOB_SIZE):
         .all()
 
 
-def find_or_make_recommendation(user, occasion_type, occasion_id,
+def find_or_make_recommendation(user, occasion_id,
                                 mediation_id, from_user_id=None):
-    if isinstance(occasion_type, str):
-        occasion_type = occasion_type.lower()
-    query = Recommendation.query
-    logger.info('(special) occasion_id=' + str(occasion_id)
+    query = Recommendation.query.join(Occasion)
+    log.info('(requested) occasion_id=' + str(occasion_id)
              + ' mediation_id=' + str(mediation_id))
-    if not mediation_id and not (occasion_id and occasion_type):
+    if not mediation_id and not occasion_id:
         return None
     if mediation_id:
         filter = (Recommendation.mediationId == mediation_id)
-    elif occasion_id and occasion_type:
-        if occasion_type == 'thing':
-            filter = (Recommendation.thingId == occasion_id)
-        elif occasion_type == 'event':
-            filter = (Recommendation.eventId == occasion_id)
-        else:
-            ae = ApiErrors()
-            ae.addError('occasion_type',
-                        "Invalid occasion type : "+occasion_type)
-            raise ae
+    elif occasion_id:
+        filter = (Occasion.id == occasion_id)
     requested_recommendation = query.filter(filter & (Recommendation.userId==user.id))\
                                     .first()
     if requested_recommendation is None:
         if mediation_id:
             return None
-        elif occasion_type == 'thing':
-            occasion = Thing.query.filter_by(id=occasion_id).first()
-        elif occasion_type == 'event':
-            occasion = Event.query.filter_by(id=occasion_id).first()
+        occasion = Occasion.query.filter_by(id=occasion_id).first()
         mediation = Mediation.query.filter_by(id=mediation_id).first()
         requested_recommendation = create_recommendation(user, occasion, mediation=mediation)
+
+    if requested_recommendation is None:
+        raise ApiErrors()
 
     return requested_recommendation
 
@@ -88,15 +78,20 @@ def put_recommendations():
     else:
         seen_recommendationIds = []
     requested_recommendation = find_or_make_recommendation(current_user,
-                                                           request.args.get('occasionType'),
                                                            dehumanize(request.args.get('occasionId')),
                                                            dehumanize(request.args.get('mediationId')))
+
+    if (request.args.get('occasionId')
+        or request.args.get('mediationId'))\
+       and requested_recommendation is None:
+        return "Occasion or mediation not found", 404
 
     print('requested req', requested_recommendation)
 
     logger.info('(special) requested_recommendation '
              + str(requested_recommendation))
 
+# TODO
 #    if (request.args.get('occasionId') is not None
 #        or request.args.get('mediationId') is not None)\
 #       and request.args.get('singleReco') is not None\
@@ -174,8 +169,7 @@ def put_recommendations():
                 recos = recos[:i]+recos[i+1:]
                 break
         recos = [requested_recommendation] + recos
-    elif request.args.get('occasionId') is None\
-         and request.args.get('mediationId') is None:
+    else:
         tuto_recos = Recommendation.query.join(Mediation)\
                                    .filter((Mediation.tutoIndex != None)
                                            & (Recommendation.user == current_user)
@@ -203,10 +197,14 @@ def put_recommendations():
 def dictify_reco(reco):
 
     dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
-    dict_reco['bookings'] = list(map(lambda b: b._asdict(include=BOOKING_INCLUDES),
-                                     reco.mediatedOffersQuery
-                                         .join(Booking)
-                                         .filter(Booking.user == current_user)
-                                         .with_entities(Booking)
-                                         .all()))
+    if reco.occasion:
+        booking_query = Booking.query\
+                               .join(Offer)
+        if reco.occasion.eventId:
+            booking_query = booking_query.join(EventOccurence)
+        booking_query = booking_query.join(Occasion)\
+                                     .filter(Booking.user == current_user)\
+                                     .filter(Occasion.id == reco.occasionId)
+        dict_reco['bookings'] = list(map(lambda b: b._asdict(include=BOOKING_INCLUDES),
+                                         booking_query.all()))
     return dict_reco

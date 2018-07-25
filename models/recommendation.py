@@ -87,23 +87,3 @@ class Recommendation(PcObject, Model):
                      nullable=False,
                      server_default=expression.false(),
                      default=False)
-
-    @property
-    def mediatedOffers(self, as_query=False):
-        "Returns the offers that correspond to this recommendation\
-         if there is a mediation, only offers from the author of the\
-         mediation are considered (offerers don't want to advertise\
-         for each other)."
-        return self.mediatedOffersQuery.all()
-
-    @property
-    def mediatedOffersQuery(self):
-        query = Offer.query
-        if not self.occasion:
-            return query
-
-        if self.occasion.thingId is not None:
-            query = query.filter_by(thingId=self.occasion.thingId)
-        elif self.occasion.eventId is not None:
-            query = query.join(EventOccurence).filter(EventOccurence.eventId == self.occasion.eventId)
-        return query

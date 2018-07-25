@@ -49,7 +49,6 @@ def subtest_initial_recos():
 def subtest_recos_with_params(params,
                               expected_status=200,
                               expected_mediation_id=None,
-                              expected_occasion_type=None,
                               expected_occasion_id=None,
                               is_tuto=False):
     r = req_with_auth().put(RECOMMENDATION_URL+'?'+params, json={})
@@ -61,6 +60,10 @@ def subtest_recos_with_params(params,
         assert len(list(filter(lambda reco: 'mediation' in reco and
                                             reco['mediation']['tutoIndex'] is not None,
                                recos))) == (1 if is_tuto else 0)
+        if expected_mediation_id:
+            assert recos[0]['mediationId'] == expected_mediation_id
+        if expected_occasion_id:
+            assert recos[0]['occasionId'] == expected_occasion_id
         check_recos(recos)
         return recos
 
@@ -72,9 +75,8 @@ def test_10_put_recommendations_should_work_only_when_logged_in():
 
 def test_11_put_recommendations_should_return_a_list_of_recos():
     recos1 = subtest_initial_recos()
-    assert len(list(filter(lambda reco: 'mediation' in reco and
-                                        'event' in reco['mediation'] and
-                                        reco['mediation']['event'] is not None,
+    assert len(list(filter(lambda reco: 'mediationId' in reco and
+                                        'occasionId' in reco,
                            recos1))) > 0
     recos2 = subtest_initial_recos()
     assert len(recos1) == len(recos2)
@@ -84,74 +86,67 @@ def test_11_put_recommendations_should_return_a_list_of_recos():
 
 def test_12_if_i_request_a_specific_reco_it_should_be_first():
     # Full request
-    subtest_recos_with_params('occasionType=event&occasionId=AE&mediationId=AM',
+    subtest_recos_with_params('occasionId=AE&mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # No mediationId but occasionId
-    subtest_recos_with_params('occasionType=event&occasionId=AE',
+    subtest_recos_with_params('occasionId=AE',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # No occasionId but mediationId and occasionType
-    subtest_recos_with_params('occasionType=event&mediationId=AM',
+    subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # No occasionId, no occasionType, but mediationId
     subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
     # no occasionType but mediationId and occasionId
     subtest_recos_with_params('occasionId=AE&mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_type='event',
                               expected_occasion_id=dehumanize('AE'))
 
 
 def test_13_requesting_a_reco_with_bad_params_should_return_reponse_anyway():
     # occasionId correct and mediationId correct but not the same event
-    subtest_recos_with_params('occasionType=event&occasionId=AQ&mediationId=AE',
+    subtest_recos_with_params('occasionId=AQ&mediationId=AE',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AE'),
                               is_tuto=True) 
     # occasionId correct and mediationId correct but not the same occasion type
-    subtest_recos_with_params('occasionType=event&occasionId=A9&mediationId=AM',
+    subtest_recos_with_params('occasionId=A9&mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AE'))
     # invalid (not matching an object) occasionId with valid mediationId
-    subtest_recos_with_params('occasionType=event&occasionId=ABCDE&mediationId=AM',
+    subtest_recos_with_params('occasionId=ABCDE&mediationId=AM',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AE'))
     # invalid (not matching an object) mediationId with valid occasionId
-    subtest_recos_with_params('occasionType=event&occasionId=AE&mediationId=ABCDE',
+    subtest_recos_with_params('occasionId=AE&mediationId=ABCDE',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AE'))
     # invalid (not matching an object) mediationId with invalid (not matching an object) occasionId
-    subtest_recos_with_params('occasionType=event&occasionId=ABCDE&mediationId=ABCDE',
+    subtest_recos_with_params('occasionId=ABCDE&mediationId=ABCDE',
                               expected_status=200,
                               expected_mediation_id=dehumanize('AE'))
 
 
 def test_14_actual_errors_should_generate_a_400():
-    # wrong occasionType with valid occasionId
-    subtest_recos_with_params('occasionType=invalid&occasionId=AE',
-                              expected_status=400)
+    pass
     #TODO
     # invalid (not dehumanizable) occasionId with valid mediationId
-    # subtest_recos_with_params('occasionType=event&occasionId=00&mediationId=AE',
+    # subtest_recos_with_params('occasionId=00&mediationId=AE',
     #                          expected_status=400)
     # invalid (not dehumanizable) mediationId with valid occasionId
-    #subtest_recos_with_params('occasionType=event&occasionId=AE&mediationId=00',
+    #subtest_recos_with_params('occasionId=AE&mediationId=00',
     #                          expected_status=400)
     # invalid (not dehumanizable) mediationId with invalid (not dehumanizable) occasionId
-    #subtest_recos_with_params('occasionType=event&occasionId=00&mediationId=00',
+    #subtest_recos_with_params('occasionId=00&mediationId=00',
     #                          expected_status=400)
 
 

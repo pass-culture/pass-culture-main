@@ -58,11 +58,12 @@ class Mediation(PcObject,
 
 Mediation.__table_args__ = (
     CheckConstraint('"thumbCount" <= 2',
-                       name='check_mediation_has_max_2_thumbs'),
+                    name='check_mediation_has_max_2_thumbs'),
     CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
-                       name='check_mediation_has_thumb_or_text'),
-    CheckConstraint('"occasionId" IS NOT NULL OR tutoIndex IS NOT NULL',
-                       name='check_mediation_has_occasion_or_tutoIndex'),
+                    name='check_mediation_has_thumb_or_text'),
+    CheckConstraint('("occasionId" IS NOT NULL AND "tutoIndex" IS NULL)'
+                    + ' OR ("occasionId" IS NULL AND "tutoIndex" IS NOT NULL)',
+                    name='check_mediation_has_occasion_xor_tutoIndex'),
 )
 
 

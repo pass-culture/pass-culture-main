@@ -89,12 +89,6 @@ def list_offers():
 def get_offer(offer_id, mediation_id):
     query = make_offer_query().filter_by(id=dehumanize(offer_id))
     if offer_id == '0':
-        if mediation_id is None:
-            return "", 404
-        mediation = Mediation.query.filter_by(thingId=null,
-                                              eventId=null,
-                                              id=mediation_id)\
-                                   .first_or_404()
         offer = {'id': '0',
                  'thing': {'id': '0',
                            'mediations': [mediation]}}

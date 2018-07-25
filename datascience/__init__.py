@@ -1,6 +1,6 @@
 """ recommendations """
 from datetime import datetime, timedelta
-from sqlalchemy import desc
+from flask import current_app as app
 from sqlalchemy.sql.expression import func
 
 from datascience.occasions import get_occasions, get_occasions_by_type
@@ -19,17 +19,9 @@ __all__ = (
 
 
 
-def create_recommendation(user, thing_or_event, mediation=None):
-    if thing_or_event is None:
-        return None
-
+def create_recommendation(user, occasion, mediation=None):
     recommendation = Recommendation()
     recommendation.user = user
-
-    occasion = Occasion.query \
-        .filter((Occasion.thing == thing_or_event) | (Occasion.event == thing_or_event)) \
-        .order_by(func.random()) \
-        .first()
     recommendation.occasion = occasion
 
     if mediation:
@@ -41,27 +33,15 @@ def create_recommendation(user, thing_or_event, mediation=None):
             .first()
         recommendation.mediation = mediation
 
-    if isinstance(thing_or_event, Thing):
-        last_offer = Offer.query \
-            .filter(Offer.occasion == occasion) \
-            .order_by(desc(Offer.bookingLimitDatetime)) \
-            .first()
-    else:
-        last_offer = Offer.query\
-            .join(EventOccurence) \
-            .filter(EventOccurence.occasion == occasion) \
-            .order_by(desc(Offer.bookingLimitDatetime)) \
-            .first()
-
     if recommendation.mediation:
         recommendation.validUntilDate = datetime.utcnow() + timedelta(days=3)
     else:
         recommendation.validUntilDate = datetime.utcnow() + timedelta(days=1)
 
-    if last_offer.bookingLimitDatetime:
+    if occasion.lastOffer.bookingLimitDatetime:
         recommendation.validUntilDate = min(
             recommendation.validUntilDate,
-            last_offer.bookingLimitDatetime - timedelta(minutes=1)
+            occasion.lastOffer.bookingLimitDatetime - timedelta(minutes=1)
         )
 
     PcObject.check_and_save(recommendation)

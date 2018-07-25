@@ -51,8 +51,9 @@ class OpenAgendaEvents(LocalProvider):
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
         self.venue = Venue.query\
-                                    .filter_by(id=self.venueProvider.venueId)\
-                                    .one_or_none()
+                          .filter_by(id=self.venueProvider.venueId)\
+                          .first()
+        assert self.venue is not None
         self.venueId = self.venueProvider.venueId
         self.is_mock = 'mock' in options and options['mock']
         self.seen_uids = []

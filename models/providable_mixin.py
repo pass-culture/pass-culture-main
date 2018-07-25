@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
 from models.versioned_mixin import VersionedMixin
+from models.api_errors import ApiErrors
 
 
 class ProvidableMixin(VersionedMixin):
@@ -34,3 +35,12 @@ class ProvidableMixin(VersionedMixin):
     dateModifiedAtLastProvider = Column(DateTime,
                                         nullable=True,
                                         default=datetime.utcnow)
+
+    def ensure_can_be_updated(self):
+        if self.lastProvider:
+            errors = ApiErrors()
+            errors.addError(
+                'global',
+                'not allowed because data come from provider ' + element.lastProvider.name
+            )
+            raise errors
