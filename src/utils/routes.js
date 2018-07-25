@@ -97,22 +97,22 @@ const routes = [
   },
   {
     exact: true,
-    path: '/offres/:occasionId/:feature',
-    title: 'Offre',
-    render: () => <OccasionPage />,
-  },
-  {
-    exact: true,
     path: '/offres/:occasionId/accroches/:mediationId',
     title: 'Accroche',
     render: () => <MediationPage />,
   },
-  {
-    exact: true,
-    path: '/offres/:occasionId/:feature/:eventOccurenceId',
-    title: 'Offre',
-    render: () => <OccasionPage />,
-  },
+  // {
+  //   exact: true,
+  //   path: '/offres/:occasionId/dates',
+  //   title: 'Editeur de dates',
+  //   render: () => <OccasionPage />,
+  // },
+  // {
+  //   exact: true,
+  //   path: '/offres/:occasionId/dates/:eventOccurenceId',
+  //   title: 'Modifier une date',
+  //   render: () => <OccasionPage />,
+  // },
   {
     exact: true,
     path: '/structures/:offererId/offres/:occasionId',

@@ -1,79 +1,71 @@
-import get from 'lodash.get'
-import React from 'react'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
-import PageWrapper from '../layout/PageWrapper'
-import FormField from '../layout/FormField'
+import Form from '../layout/Form'
+import Field from '../layout/Field'
 import Logo from '../layout/Logo'
+import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import withSign from '../hocs/withSign'
-import { NEW } from '../../utils/config'
 
-const Label = ({ title }) => {
-  return <h3>{title}</h3>
-}
 
-const SigninPage = ({ errors }) => {
-  return (
-    <PageWrapper name="sign-in" fullscreen>
-      <div className='logo-side'>
-        <Logo />
-      </div>
-      <div className='container'>
-        <div className='columns'>
-          <div className='column is-offset-6 is-two-fifths'>
-            <section className='hero has-text-grey'>
-              <div className='hero-body'>
-                <h1 className='title is-spaced is-1'>
-                  <span className="has-text-weight-bold ">Bienvenue</span>{' '}
-                  <span className="has-text-weight-semibold">dans la version bêta</span>
-                  <span className="has-text-weight-normal">du Pass Culture pro.</span>
-                </h1>
-                <h2 className='subtitle is-2'>Et merci de votre participation pour nous aider à l'améliorer !</h2>
-                <form>
-                  <FormField
-                    autoComplete="email"
-                    collectionName="users"
-                    inputClassName='input'
-                    label={<Label title="Adresse e-mail" />}
-                    name="identifier"
-                    // type="email"
-                    placeholder="Identifiant (email)"
-                  />
-                  <FormField
-                    autoComplete="current-password"
-                    collectionName="users"
-                    inputClassName='input'
-                    label={<Label title="Mot de passe" />}
-                    name="password"
-                    type="password"
-                    placeholder="Mot de passe"
-                  />
-                  <div className="errors">{errors}</div>
-                  <div className='field buttons-field'>
-                    <NavLink to="/inscription" className="button is-secondary">
-                      Créer un compte
-                    </NavLink>
-                    <SubmitButton
-                      className="button is-primary is-outlined"
-                      getBody={form => form.usersById[NEW]}
-                      getIsDisabled={form =>
-                        !(get(form, 'usersById._new_.identifier') &&
-                          get(form, 'usersById._new_.password'))
-                      }
-                      path="users/signin"
-                      storeKey="users"
-                      text="Se connecter"
-                    />
-                  </div>
-                </form>
-              </div>
-            </section>
+class SigninPage extends Component {
+
+  componentDidUpdate () {
+    const { history, user } = this.props
+    if (user) {
+      history.push('/offres')
+    }
+  }
+
+  render () {
+    const { errors } = this.props
+    return (
+      <PageWrapper name="sign-in" fullscreen>
+        <div className='logo-side'>
+          <Logo noLink />
+        </div>
+        <div className='container'>
+          <div className='columns'>
+            <div className='column is-offset-6 is-two-fifths'>
+              <section className='hero has-text-grey'>
+                <div className='hero-body'>
+                  <h1 className='title is-spaced is-1'>
+                    <span className="has-text-weight-bold ">Bienvenue</span>{' '}
+                    <span className="has-text-weight-semibold">dans la version bêta</span>
+                    <span className="has-text-weight-normal">du Pass Culture pro.</span>
+                  </h1>
+                  <h2 className='subtitle is-2'>Et merci de votre participation pour nous aider à l'améliorer !</h2>
+                  <Form name='sign-in' action='users/signin' storePath='users' layout='sign-in-up'>
+                    <Field name='identifier' type='email' label='Adresse e-mail' placeholder="Identifiant (email)" />
+                    <Field name='password' autoComplete="current-password" label='Mot de passe' placeholder='Mot de passe' />
+                    <div className="errors">{errors}</div>
+                    <div className='field buttons-field'>
+                      <NavLink to="/inscription" className="button is-secondary">
+                        Créer un compte
+                      </NavLink>
+                      <SubmitButton className="button is-primary is-outlined">
+                        Se connecter
+                      </SubmitButton>
+                    </div>
+                  </Form>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
-      </div>
-    </PageWrapper>
-  )
+      </PageWrapper>
+    )
+  }
 }
 
-export default withSign(SigninPage)
+export default compose(
+  withRouter,
+  connect(
+    state => ({
+      user: state.user,
+    })
+  )
+)(SigninPage)

@@ -1,20 +1,19 @@
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
+import { mergeFormData, requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import FormField from './layout/FormField'
+import VenueProviderItem from './VenueProviderItem'
+import Field from './layout/Field'
+import Form from './layout/Form'
 import Icon from './layout/Icon'
 import SubmitButton from './layout/SubmitButton'
-import VenueProviderItem from './VenueProviderItem'
-import { mergeForm } from '../reducers/form'
 import providerSelector from '../selectors/provider'
 import providersSelector from '../selectors/providers'
 import venueProvidersSelector from '../selectors/venueProviders'
 import { NEW } from '../utils/config'
-import { optionify } from '../utils/form'
 
 class ProviderManager extends Component {
 
@@ -46,10 +45,10 @@ class ProviderManager extends Component {
   handleMergeForm = () => {
     const {
       match: { params: { venueId } },
-      mergeForm
+      mergeFormData
     } = this.props
     const { isNew } = this.state
-    isNew && mergeForm('venueProviders', NEW, { venueId })
+    isNew && mergeFormData('venueProviders', NEW, { venueId })
   }
 
   handleDataRequest = () => {
@@ -71,7 +70,7 @@ class ProviderManager extends Component {
     )
   }
 
-  handleSuccessData = () => {
+  handleSuccess = () => {
     const {
       history,
       match: { params: { offererId, venueId } }
@@ -101,13 +100,13 @@ class ProviderManager extends Component {
 
   render () {
     const {
+      formData,
       provider,
       providers,
       venue,
       venueProviders
     } = this.props
     const {
-      id,
       identifierDescription,
       identifierRegexp,
     } = (provider || {})
@@ -116,10 +115,8 @@ class ProviderManager extends Component {
       withError
     } = this.state
 
-    const providerOptionsWithPlaceholder = optionify(providers, 'Source d\'importation')
-
     return (
-      <div className='section'>
+      <div className='provider-manager section'>
         <h2 className='pc-list-title'>
           IMPORTATIONS D'OFFRES
           <span className='is-pulled-right is-size-7 has-text-grey'>
@@ -139,52 +136,59 @@ class ProviderManager extends Component {
           {
             isNew && (
               <li>
-                {
-                  withError && (
-                    <p className={
-                      withError ? 'has-text-weight-bold has-text-danger' : ''
-                    }>
-                      Il faut un identifiant ou celui-ci existe déjà
-                    </p>
-                  )
-                }
-
-                <div className='picto'><Icon svg='picto-db-default' /></div>
-                <FormField
-                  collectionName="venueProviders"
-                  defaultValue={id}
-                  name="providerId"
-                  options={providerOptionsWithPlaceholder}
-                  required
-                  type="select"
-                  size="small"
-                />
-                {
-                  provider && identifierRegexp && (
-                    <FormField
-                      collectionName="venueProviders"
-                      name="venueIdAtOfferProvider"
-                      placeholder="identifiant"
+                <Form
+                  action='/venueProviders'
+                  className='level'
+                  data={Object.assign({ venueId: get(venue, 'id') }, formData)}
+                  handleSuccess={this.handleSuccess}
+                  name='venueProvider'
+                >
+                  <Field type='hidden' name='venueId' />
+                  {
+                    withError && (
+                      <p className={
+                        withError ? 'has-text-weight-bold has-text-danger' : ''
+                      }>
+                        Il faut un identifiant ou celui-ci existe déjà
+                      </p>
+                    )
+                  }
+                  <div className='level-left'>
+                    <div className='field picto level-item'>
+                      <Icon svg='picto-db-default' />
+                    </div>
+                    <Field
+                      name='providerId'
+                      options={providers}
+                      optionValue='id'
+                      placeholder="Source d\'importation"
+                      required
                       size="small"
-                      title={identifierDescription}
+                      type="select"
                     />
-                  )
-                }
-                {
-                  provider && (
-                    <SubmitButton
-                      className="button is-secondary"
-                      getBody={form => get(form, `venueProvidersById.${NEW}`)}
-                      getIsDisabled={form =>
-                        !get(form, `venueProvidersById.${NEW}.venueIdAtOfferProvider`)}
-                      handleSuccess={this.handleSuccessData}
-                      method="POST"
-                      path="venueProviders"
-                      storeKey="venueProviders"
-                      text="Importer"
-                    />
-                  )
-                }
+                    {
+                      provider && identifierRegexp && (
+                        <Field
+                          name="venueIdAtOfferProvider"
+                          placeholder="identifiant"
+                          required
+                          size="small"
+                          title={identifierDescription}
+                        />
+                      )
+                    }
+                  </div>
+                  {
+                    provider && (
+                      <div className='field level-item level-right'>
+                        <SubmitButton className="button is-secondary">
+                          Importer
+                        </SubmitButton>
+                      </div>
+                    )
+                  }
+                  <div />
+                </Form>
               </li>
             )
           }
@@ -215,12 +219,13 @@ export default compose(
       }
 
       return {
+        formData: get(state, 'form.venueProvider.data'),
         provider,
         providers,
         user: state.user,
         venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
       }
     },
-    { mergeForm, requestData }
+    { mergeFormData, requestData }
   )
 )(ProviderManager)

@@ -1,3 +1,5 @@
+import get from 'lodash.get'
+import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
 import offersSelector from './offers'
@@ -5,8 +7,18 @@ import offersSelector from './offers'
 export default createCachedSelector(
   state => offersSelector(state),
   (state, eventOccurenceId) => eventOccurenceId,
-  (offers, eventOccurenceId) => offers.find(offer =>
-    offer.eventOccurenceId === eventOccurenceId)
+  (offers, eventOccurenceId) => {
+    const offer = offers.find(offer =>
+      offer.eventOccurenceId === eventOccurenceId)
+    if (offer) {
+      return Object.assign(
+        {
+          bookingLimitDatetime: moment(get(offer, 'bookingLimitDatetime'))
+            .add(1, 'day')
+            .toISOString()
+        }, offer)
+    }
+  }
 )(
   (state, eventOccurenceId) => eventOccurenceId || ''
 )

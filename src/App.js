@@ -4,9 +4,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import Modal from './components/layout/Modal'
 import { closeNotification } from './reducers/notification'
-
 
 class App extends Component {
 
@@ -28,7 +26,6 @@ class App extends Component {
     return (
       <div className={classnames('app', {'modal-open': modalOpen})}>
         {children}
-        <Modal />
       </div>
     )
   }

@@ -10,14 +10,9 @@ export default createCachedSelector(
       eventOccurences = eventOccurences.filter(o => o.venueId === venueId)
     if (eventId)
       eventOccurences = eventOccurences.filter(o => o.eventId === eventId)
+
     return eventOccurences
-      .map(o => Object.assign({}, o, {
-        beginningDatetimeMoment: moment(o.beginningDatetime),
-        endDatetimeMoment: moment(o.endDatetime)
-      }))
-      .sort((o1,o2) =>
-        o2.beginningDatetimeMoment - o1.beginningDatetimeMoment
-      )
+      .sort((o1,o2) => moment(o2.beginningDatetime).unix() - moment(o1.beginningDatetime).unix())
   }
 )(
   (state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`

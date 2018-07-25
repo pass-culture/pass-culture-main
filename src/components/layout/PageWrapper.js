@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
+import { requestData, resetForm } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -10,6 +10,7 @@ import { compose } from 'redux'
 import Header from './Header'
 import Icon from './Icon'
 import Loader from './Loader'
+import Modal from './Modal'
 import withLogin from '../hocs/withLogin'
 import { showNotification, closeNotification } from '../../reducers/notification'
 
@@ -103,6 +104,7 @@ class PageWrapper extends Component {
 
   componentWillUnmount() {
     this.unblock && this.unblock()
+    this.props.resetForm()
   }
 
   render () {
@@ -141,33 +143,43 @@ class PageWrapper extends Component {
         })}
         key='page-wrapper'
       >
-        { fullscreen ? content : (
-          <div className='columns is-gapless'>
-            <div className='page-content column is-10 is-offset-1'>
-              {notification && (
-                <div className={`notification is-${notification.type || 'info'}`}>
-                  {notification.text}
-                  <button className="close" onClick={closeNotification}>
-                    OK
-                  </button>
+        <Modal />
+        {
+          fullscreen
+          ? content
+          : (
+            <div className='columns is-gapless'>
+              <div className='page-content column is-10 is-offset-1'>
+                {
+                  notification && (
+                    <div className={`notification is-${notification.type || 'info'}`}>
+                      {notification.text}
+                      <button className="close" onClick={closeNotification}>
+                        OK
+                      </button>
+                    </div>
+                  )
+                }
+                <div className='after-notification-content'>
+                  {
+                    backTo && (
+                      <NavLink to={backTo.path} className='back-button has-text-primary'>
+                        <Icon svg='ico-back' />{` ${backTo.label}`}
+                      </NavLink>
+                    )
+                  }
+                  <div className='pc-content'>
+                    {content}
+                  </div>
+                  {loading && <Loader />}
                 </div>
-              )}
-              <div className='after-notification-content'>
-                {backTo && (
-                  <NavLink to={backTo.path} className='back-button has-text-primary'>
-                    <Icon svg='ico-back' />{` ${backTo.label}`}
-                  </NavLink>
-                )}
-                <div className='pc-content'>
-                  {content}
-                </div>
-                {loading && <Loader />}
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
         {footer}
-      </Tag>
+      </Tag>,
+      <Modal key={'modal'} />
     ]
   }
 }
@@ -184,6 +196,7 @@ export default compose(
     {
       closeNotification,
       requestData,
+      resetForm,
       showNotification,
     }
   )

@@ -58,13 +58,17 @@ export const venueNormalizer = {
       'event': 'events'
     }
   },
-  managingOfferer: {
-    key: 'offerers'
-  },
   offers: {
     key: 'offers',
     normalizer: {
       thing: 'things'
     }
+  }
+}
+
+export const eventOccurenceNormalize = {
+  venue: {
+    key: 'venues',
+    normalizer: venueNormalizer,
   }
 }

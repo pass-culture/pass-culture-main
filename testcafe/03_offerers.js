@@ -8,7 +8,7 @@ const modalDialog = Selector('.modal-dialog')
 const modalContent = Selector('.modal-content')
 const closeButton = Selector('.close')
 
-fixture `OfferersPage | Je me connecte pour la première fois en tant que nouvel utilisateur·ice`
+fixture `03_01 OfferersPage | Je me connecte pour la première fois en tant que nouvel utilisateur·ice`
     .beforeEach( async t => {
       await t
       .useRole(regularOfferer)
@@ -21,6 +21,7 @@ fixture `OfferersPage | Je me connecte pour la première fois en tant que nouvel
     })
 
     test("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une modale m'informe et je suis redirigé·e vers la page /structures", async t => {
+      // TODO Ne fonctionne que quand la base de données est vide
       await t.expect(createOfferButton.innerText).eql('\nCréer une offre\n')
       .click(createOfferButton)
       const location = await t.eval(() => window.location)

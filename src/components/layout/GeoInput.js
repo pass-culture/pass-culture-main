@@ -5,9 +5,6 @@ import { ROOT_PATH } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
-import { connect } from 'react-redux'
-
-import { getFormValue, mergeForm } from '../../reducers/form'
 
 const customIcon = new L.Icon({
     iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
@@ -15,13 +12,10 @@ const customIcon = new L.Icon({
     iconSize: [21, 30],
     iconAnchor: [10, 30],
     popupAnchor: null,
-    // shadowUrl: null,
-    // shadowSize: null,
-    // shadowAnchor: null,
 });
 
 
-class FormGeo extends Component {
+class GeoInput extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -43,11 +37,30 @@ class FormGeo extends Component {
     showMap: true,
     maxSuggestions: 5,
     placeholder: 'Sélectionnez l\'adresse lorsqu\'elle est proposée.',
-    initialPosition: { // Displays France
+    zoom: 15,
+    defaultInitialPosition: { // Displays France
       latitude: 46.98025235521883,
       longitude: 1.9335937500000002,
       zoom: 5,
     }
+  }
+
+  static extraFormData = ['latitude', 'longitude']
+
+  static getDerivedStateFromProps = (newProps, currentState) => {
+    return Object.assign({}, currentState, {
+      position: {
+        latitude: newProps.latitude || newProps.defaultInitialPosition.latitude,
+        longitude: newProps.longitude || newProps.defaultInitialPosition.longitude,
+        zoom: newProps.latitude && newProps.longitude ? newProps.zoom : newProps.defaultInitialPosition.zoom
+      }
+    }, newProps.latitude && newProps.longitude ? {
+      suggestions: [],
+      marker: {
+        latitude: newProps.latitude,
+        longitude: newProps.longitude,
+      }
+    } : null)
   }
 
   toggleDraggable = () => {
@@ -62,36 +75,37 @@ class FormGeo extends Component {
         longitude: lng
       },
     })
+    this.props.onChange({
+      latitude: lat,
+      longitude: lng,
+    })
   }
 
-  onChange = (e) => {
+  onTextChange = (e) => {
     const value = e.target.value
     this.setState({
       value,
     })
     this.onDebouncedFetchSuggestions(value)
+    this.props.onChange({[this.props.name]: value})
   }
 
   onSelect = (value, item) => {
     if (item.placeholder) return
-    const {
-      collectionName,
-      entityId,
-      mergeForm
-    } = this.props
     this.setState({
       value,
       position: {
         latitude: item.latitude,
         longitude: item.longitude,
-        zoom: 15,
+        zoom: this.props.zoom,
       },
       marker: {
         latitude: item.latitude,
         longitude: item.longitude,
       }
     })
-    mergeForm(collectionName, entityId, item)
+
+    this.props.onChange(item)
   }
 
   fetchSuggestions = value => {
@@ -138,7 +152,9 @@ class FormGeo extends Component {
       id: 'placeholder',
     }
 
+
     const input = <Autocomplete
+      autocomplete='street-address'
       getItemValue={value => value.label}
       inputProps={{
         className: className || 'input',
@@ -148,8 +164,9 @@ class FormGeo extends Component {
         required,
       }}
       items={[].concat(suggestions || defaultSuggestion)}
-      onChange={this.onChange}
+      onChange={this.onTextChange}
       onSelect={this.onSelect}
+      readOnly={readOnly}
       renderItem={({id, label, placeholder}, highlighted) => (
         <div
           className={classnames({
@@ -169,7 +186,7 @@ class FormGeo extends Component {
       wrapperProps={{ className: 'input-wrapper' }}
     />
 
-    if (!this.props.showMap) return input
+    if (!this.props.withMap) return input
     const {
       latitude, longitude, zoom
     } = position
@@ -201,7 +218,5 @@ class FormGeo extends Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({ value: getFormValue(state, ownProps) }),
-  { mergeForm }
-)(FormGeo)
+
+export default GeoInput

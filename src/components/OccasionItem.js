@@ -94,7 +94,7 @@ class OccasionItem extends Component {
             <li className='is-uppercase'>{get(type, 'label') || (event ? 'Evénement' : 'Objet')}</li>
             {event &&
               <li>
-                <NavLink className='has-text-primary' to={`/offres/${occasion.id}/dates${search}`}>
+                <NavLink className='has-text-primary' to={`/offres/${occasion.id}?gestion`}>
                   {pluralize(get(occurences, 'length'), 'dates')}
                 </NavLink>
               </li>

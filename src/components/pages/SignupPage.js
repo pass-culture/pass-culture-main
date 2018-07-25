@@ -1,191 +1,121 @@
 import get from 'lodash.get'
-import React from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import PageWrapper from '../layout/PageWrapper'
-import FormField from '../layout/FormField'
+import Field from '../layout/Field'
+import Form from '../layout/Form'
 import Logo from '../layout/Logo'
+import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
-import withSign from '../hocs/withSign'
-import { addBlockers, removeBlockers } from '../../reducers/blockers'
-import { closeNotification, showNotification } from '../../reducers/notification'
-import { NEW } from '../../utils/config'
+import { showNotification } from '../../reducers/notification'
 
-const Label = ({ subtitle, title, inline }) => (
-  <div className={inline && 'inline'}>
-    <h3 className={`can-be-required ${subtitle ? 'with-subtitle' : ''}`}>{title}</h3>
-    <p>{subtitle}</p>
-  </div>
-)
 
-const requiredFields = [
-  'address',
-  'contact_ok',
-  'email',
-  'latitude',
-  'longitude',
-  'name',
-  'password',
-  'postalCode',
-  'publicName',
-  'siren'
-]
+class SignupPage extends Component {
 
-const SignupPage = ({
-  addBlockers,
-  closeNotification,
-  errors,
-  removeBlockers,
-  sirenName,
-  showNotification
-}) => {
-  return (
-    <PageWrapper name="sign-up" fullscreen>
-      <div className='logo-side'>
-        <Logo />
-      </div>
-      <div className='container'>
-        <div className='columns'>
-          <div className='column is-offset-6 is-two-fifths'>
-            <section className='hero'>
-              <div className='hero-body'>
-                <h1 className='title is-spaced is-1'>Créez votre compte</h1>
-                <h2 className='subtitle is-2'>
-                  Merci de renseigner tous les champs marqués d'un <span className='required-legend'>*</span>.
-                </h2>
-                <form>
-                  <FormField
-                    autoComplete="email"
-                    collectionName="users"
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="Adresse e-mail"
-                        subtitle="... pour se connecter et récupérer son mot de passe en cas d'oubli :"
-                      />
-                    }
-                    name="email"
-                    placeholder="nom@exemple.fr"
-                    required
-                    type="email"
-                  />
-                  <FormField
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="Identifiant"
-                        subtitle="... vu par les autres utilisateurs :"
-                      />
-                    }
-                    required
-                    collectionName="users"
-                    name="publicName"
-                    autoComplete="name"
-                    placeholder="Mon nom ou pseudo"
-                    type="text"
-                  />
-                  <FormField
-                    autoComplete="new-password"
-                    collectionName="users"
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="Mot de passe"
-                        subtitle="... pour se connecter :"
-                      />
-                    }
-                    name="password"
-                    placeholder="Mon mot de passe"
-                    required
-                    type="password"
-                  />
-                  <FormField
-                    autoComplete="siren"
-                    collectionName="users"
-                    inputClassName="input"
-                    label={
-                      <Label
-                        title="SIREN"
-                        subtitle="... de la structure à rattacher :"
-                      />
-                    }
-                    name="siren"
-                    placeholder="123 456 789"
-                    required
-                    sireType="siren"
-                    type="sirene"
-                    withDisplayName
-                  />
-                  <FormField
-                    collectionName="users"
-                    label={
-                      <span>
-                        Je souhaite recevoir les actualités du Pass Culture.
-                      </span>
-                    }
-                    name="newsletter_ok"
-                    required
-                    type="checkbox"
-                  />
-                  <FormField
-                    collectionName="users"
-                    label={
-                      <span className='can-be-required'>
-                        J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture.
-                      </span>
-                    }
-                    name="contact_ok"
-                    required
-                    type="checkbox"
-                  />
-                  <div className="errors">{errors}</div>
-                  <div className='field buttons-field'>
-                    <NavLink to="/connexion" className="button is-secondary">
-                      J'ai déjà un compte
-                    </NavLink>
-                    <SubmitButton
-                      className="button is-primary is-outlined"
-                      getBody={form => form.usersById[NEW]}
-                      getIsDisabled={form =>
-                        requiredFields.filter(k =>
-                          !get(form, `usersById.${NEW}.${k}`)
-                        ).length > 0
-                      }
-                      handleSuccess={() => {
-                        showNotification({
-                          text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
-                          type: 'success'
-                        })
-                      }}
-                      path="users"
-                      storeKey="users"
-                      text="Créer"
-                    />
-                  </div>
-                </form>
-              </div>
-            </section>
+  componentDidUpdate () {
+    const { history, user } = this.props
+    if (user) {
+      history.push('/structures')
+    }
+  }
 
+  render () {
+    const {
+      errors,
+      sirenName,
+      showNotification
+    } = this.props
+    return (
+      <PageWrapper name="sign-up" fullscreen>
+        <div className='logo-side'>
+          <Logo noLink />
+        </div>
+        <div className='container'>
+          <div className='columns'>
+            <div className='column is-offset-6 is-two-fifths'>
+              <section className='hero'>
+                <div className='hero-body'>
+                  <h1 className='title is-spaced is-1'>Créez votre compte</h1>
+                  <h2 className='subtitle is-2'>
+                    Merci de renseigner tous les champs marqués d'un <span className='required-legend'>*</span>.
+                  </h2>
+                  <Form
+                    name='sign-up'
+                    action='/users'
+                    layout='sign-in-up'
+                    handleSuccess={() => {
+                      showNotification({
+                        text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
+                        type: 'success'
+                      })
+                    }}>
+                    <Field
+                      name='email'
+                      label='Adresse e-mail'
+                      sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
+                      placeholder="nom@exemple.fr"
+                      required />
+                    <Field
+                      name='publicName'
+                      label='Identifiant'
+                      sublabel='vu par les autres utilisateurs'
+                      placeholder='Mon nom ou pseudo'
+                      autoComplete='name'
+                      required />
+                    <Field
+                      name='password'
+                      label='Mot de passe'
+                      sublabel='pour se connecter'
+                      placeholder="Mon mot de passe"
+                      autoComplete="new-password"
+                      required />
+                    <Field
+                      name='siren'
+                      label='SIREN'
+                      sublabel='de la structure à rattacher'
+                      placeholder="123 456 789"
+                      fetchedName={sirenName || ''}
+                      required />
+                    <Field
+                      name="newsletter_ok"
+                      type="checkbox"
+                      label='Je souhaite recevoir les actualités du Pass Culture.' />
+                    <Field
+                      name="contact_ok"
+                      type="checkbox"
+                      label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
+                      required />
+                    <div className="errors">{errors}</div>
+                    <div className='field buttons-field'>
+                      <NavLink to="/connexion" className="button is-secondary">
+                        J'ai déjà un compte
+                      </NavLink>
+                      <SubmitButton className="button is-primary is-outlined">
+                        Créer
+                      </SubmitButton>
+                    </div>
+                  </Form>
+                </div>
+              </section>
+
+            </div>
           </div>
         </div>
-      </div>
-    </PageWrapper>
-  )
+      </PageWrapper>
+    )
+  }
 }
 
 export default compose(
-  withSign,
+  withRouter,
   connect(
     state => ({
-      sirenName: get(state, `form.usersById.${NEW}.name`)
+      sirenName: get(state, `form.sign-up.data.name`),
+      user: state.user,
     }),
-    {
-      addBlockers,
-      closeNotification,
-      removeBlockers,
-      showNotification
-    }
+    { showNotification }
   )
 )(SignupPage)

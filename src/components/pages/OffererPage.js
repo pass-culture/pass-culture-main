@@ -2,17 +2,16 @@ import get from 'lodash.get'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
-import { withRouter } from 'react-router'
 
 import VenueItem from '../VenueItem'
-import FormField from '../layout/FormField'
-import Label from '../layout/Label'
+import Form from '../layout/Form'
+import Field from '../layout/Field'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
-import { resetForm } from '../../reducers/form'
 import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'
 import { NEW } from '../../utils/config'
@@ -69,7 +68,7 @@ class OffererPage extends Component {
     handleSuccess()
   }
 
-  handleSuccessData = () => {
+  handleSuccess = () => {
     const {
       history,
       showNotification
@@ -85,11 +84,6 @@ class OffererPage extends Component {
     this.setState({ isNewProvider: true })
   }
 
-  componentWillUnmount() {
-    this.props.resetForm()
-  }
-
-
   render () {
     const {
       offerer,
@@ -98,16 +92,7 @@ class OffererPage extends Component {
     } = this.props
 
     const {
-      address,
-      name,
-      siren,
-    } = offerer || {}
-
-    const {
-      apiPath,
       isNew,
-      method,
-      offererIdOrNew,
     } = this.state
     return (
       <PageWrapper
@@ -117,7 +102,7 @@ class OffererPage extends Component {
       >
         <div className='section hero'>
           <h2 className='subtitle has-text-weight-bold'>
-            {name}
+            {get(offerer, 'name')}
           </h2>
           <h1 className="pc-title">Structure</h1>
           <p className="subtitle">
@@ -125,49 +110,16 @@ class OffererPage extends Component {
           </p>
         </div>
 
-        <div className='section'>
+        <Form name='offerer' className='section'
+          action={`/offerers/${isNew ? '' : get(offerer, 'id')}`}
+          data={offerer}
+          handleSuccess={this.handleSuccess} >
           <div className='field-group'>
-            <FormField
-              autoComplete="siren"
-              collectionName="offerers"
-              defaultValue={siren}
-              entityId={offererIdOrNew}
-              isHorizontal
-              label={<Label title="SIREN :" />}
-              name="siren"
-              readOnly={!isNew}
-              required
-              sireType="siren"
-              type="sirene"
-            />
+            <Field name='siren' label='SIREN' required readOnly={!isNew} />
             {
-              (name || fetchedName) && [
-                <FormField
-                  autoComplete="name"
-                  collectionName="offerers"
-                  defaultValue={name}
-                  entityId={offererIdOrNew}
-                  isHorizontal
-                  isExpanded
-                  key={0}
-                  label={<Label title="Désignation :" />}
-                  name="name"
-                  readOnly
-                  type="name"
-                />,
-                <FormField
-                  autoComplete="address"
-                  collectionName="offerers"
-                  defaultValue={address}
-                  entityId={offererIdOrNew}
-                  isHorizontal
-                  isExpanded
-                  key={1}
-                  label={<Label title="Siège social :" />}
-                  name="address"
-                  readOnly
-                  type="adress"
-                />
+              (get(offerer, 'name') || fetchedName) && [
+                <Field key={0}  label='Désignation' name='name' required readOnly isExpanded/>,
+                <Field key={1} label='Siège social' name='address' required readOnly isExpanded/>
               ]
             }
           </div>
@@ -184,22 +136,9 @@ class OffererPage extends Component {
                   </NavLink>
                 </div>
                 <div className="control">
-                  <SubmitButton
-                    className="button is-primary is-medium"
-                    getBody={form => form.offerersById[offererIdOrNew]}
-                    getIsDisabled={form => {
-                      return isNew
-                        ? !get(form, `offerersById.${offererIdOrNew}.name`) ||
-                          !get(form, `offerersById.${offererIdOrNew}.address`)
-                        : !get(form, `offerersById.${offererIdOrNew}.name`) &&
-                          !get(form, `offerersById.${offererIdOrNew}.address`)
-                    }}
-                    handleSuccess={this.handleSuccessData}
-                    method={method}
-                    path={apiPath}
-                    storeKey="offerers"
-                    text="Valider"
-                  />
+                  <SubmitButton className="button is-primary is-medium">
+                    Valider
+                  </SubmitButton>
                 </div>
               </div>
             </div>
@@ -209,20 +148,17 @@ class OffererPage extends Component {
                 LIEUX
               </h2>
               <ul className='pc-list venues-list'>
-                {
-                  venues.map(v =>
-                    <VenueItem key={v.id} venue={v} />)
-                }
+                { venues.map(v => <VenueItem key={v.id} venue={v} />) }
               </ul>
               <div className='has-text-centered'>
-                <NavLink to={`/structures/${offererIdOrNew}/lieux/nouveau`}
+                <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
                   className="button is-secondary is-outlined">
                   + Ajouter un lieu
                 </NavLink>
               </div>
             </div>
           )}
-        </div>
+        </Form>
 
     </PageWrapper>
     )
@@ -234,19 +170,16 @@ export default compose(
   connect(
     (state, ownProps) => {
       const offererId = ownProps.match.params.offererId
-      const offerer = offererSelector(state, offererId)
-      const fetchedName = get(offerer, 'name') || get(state,   `form.offerersById.${NEW}.name`)
       return {
-        offerer,
+        offerer: offererSelector(state, offererId),
         venues: venuesSelector(state, offererId),
         user: state.user,
-        fetchedName
+        fetchedName: get(state, 'form.offerer.data.name'),
       }
     },
     {
       closeNotification,
       requestData,
-      resetForm,
       showNotification
     }
   )

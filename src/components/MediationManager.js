@@ -2,11 +2,14 @@ import get from 'lodash.get'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Icon from './layout/Icon'
 import mediationsSelector from '../selectors/mediations'
-import { API_URL } from '../utils/config'
+import occasionSelector from '../selectors/occasion'
+import { THUMBS_URL } from '../utils/config'
 
 const mediationExplanation = `
   **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
@@ -16,8 +19,9 @@ const mediationExplanation = `
 
 const MediationManager = ({
   mediations,
-  routePath
+  occasion
 }) => {
+
   const mediationsLength = get(mediations, 'length')
 
   return (
@@ -28,29 +32,38 @@ const MediationManager = ({
           mediations.map(m => (
             <li key={m.id}>
               <img
-                alt={`accroche-${m.thumbPath}`}
-                src={`${API_URL}${m.thumbPath}`} />
+                alt={`accroche-${m.id}`}
+                src={`${THUMBS_URL}/mediations/${m.id}`} />
             </li>
           ))
         }
       </ul>
       <p>
-        <NavLink
-          className={`button is-primary ${mediationsLength > 0 ? 'is-outlined' : ''}`}
-          to={`${routePath}/accroches/nouveau`}>
-          <span className='icon'><Icon svg={mediationsLength > 0 ? 'ico-stars' : 'ico-stars-w'} /></span>
-          <span>Ajouter une accroche</span>
-        </NavLink>
+        {
+          occasion && (
+            <NavLink
+              className={`button is-primary ${mediationsLength > 0 ? 'is-outlined' : ''}`}
+              to={`/offres/${get(occasion, 'id')}/accroches/nouveau`}>
+              <span className='icon'><Icon svg={mediationsLength > 0 ? 'ico-stars' : 'ico-stars-w'} /></span>
+              <span>Ajouter une accroche</span>
+            </NavLink>
+          )
+        }
       </p>
     </div>
   )
 }
 
-export default connect(
-  (state, ownProps) => {
-    const { eventId, thingId } = (ownProps.occasion || {})
-    return {
-      mediations: mediationsSelector(state, eventId, thingId)
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => {
+      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+      const { eventId, thingId } = (occasion || {})
+      return {
+        mediations: mediationsSelector(state, eventId, thingId),
+        occasion
+      }
     }
-  }
+  )
 )(MediationManager)

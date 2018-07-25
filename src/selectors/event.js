@@ -1,7 +1,9 @@
 import createCachedSelector from 're-reselect'
 
+import eventsSelector from './events'
+
 export default createCachedSelector(
-  state => state.data.events,
+  state => eventsSelector(state),
   (state, eventId) => eventId,
   (events, eventId) => events.find(event => event.id === eventId)
 )(
