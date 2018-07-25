@@ -20,6 +20,7 @@ from models.provider import Provider
 from models.recommendation import Recommendation
 from models.thing import Thing
 from models.user import User
+from models.user_offerer import RightsType
 from models.user_offerer import UserOfferer
 from models.venue import Venue
 from models.venue_provider import VenueProvider
@@ -50,6 +51,7 @@ __all__ = (
     'Occasion',
     'Provider',
     'Recommendation',
+    'RightsType',
     'Thing',
     'UserOfferer',
     'User',
