@@ -1,7 +1,9 @@
+// import { requestData } from 'pass-culture-shared'
+import { requestData } from 'shared/reducers/data'
+
 import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
-import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { connect } from 'react-redux'

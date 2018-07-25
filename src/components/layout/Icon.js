@@ -1,6 +1,9 @@
-import { ROOT_PATH } from 'pass-culture-shared'
+//import { ROOT_PATH } from 'pass-culture-shared'
+
 import * as reactIconPack from 'react-icons/lib/md'
 import React from 'react'
+
+import { ROOT_PATH } from '../../utils/config'
 
 export default props => {
   const { svg, ...imgProps } = props

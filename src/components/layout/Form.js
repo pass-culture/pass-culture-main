@@ -1,10 +1,17 @@
-import debounce from 'lodash.debounce'
-import get from 'lodash.get'
+/*
 import {
   mergeFormData,
   removeErrors,
   requestData
 } from 'pass-culture-shared'
+*/
+import { requestData } from 'shared/reducers/data'
+import { mergeFormData } from 'shared/reducers/form'
+import { removeErrors } from 'shared/reducers/errors'
+
+
+import debounce from 'lodash.debounce'
+import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
@@ -16,6 +23,7 @@ import HiddenInput from './form/HiddenInput'
 import NumberInput from './form/NumberInput'
 import PasswordInput from './form/PasswordInput'
 import SelectInput from './form/SelectInput'
+
 import SirenInput from './SirenInput'
 import TextareaInput from './form/TextareaInput'
 import TextInput from './form/TextInput'
@@ -247,7 +255,8 @@ Form.inputByTypes = {
 export default connect(
   (state, ownProps) => ({
     formData: get(state, `form.${ownProps.name}.data`),
-    formErrors: get(state, `form.${ownProps.name}.errors`),
+    //formErrors: get(state, `form.${ownProps.name}.errors`),
+    formErrors: get(state, `errors.${ownProps.name}`),
   }),
   {
     mergeFormData,

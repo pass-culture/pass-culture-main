@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Icon from '../layout/Icon'
+import Icon from './Icon'
 
 export default ({ finished, children }) => {
   if (finished) {

@@ -1,7 +1,8 @@
-import React, {Component} from 'react'
-import { optionify } from '../../../utils/form'
-import get from 'lodash.get'
 import classnames from 'classnames'
+import get from 'lodash.get'
+import React, { Component } from 'react'
+
+import { optionify } from '../../../utils/form'
 
 
 class SelectInput extends Component {
@@ -58,4 +59,3 @@ SelectInput.defaultProps = {
 }
 
 export default SelectInput
-

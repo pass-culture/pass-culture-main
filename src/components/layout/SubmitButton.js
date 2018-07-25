@@ -25,4 +25,8 @@ class SubmitButton extends Component {
   }
 }
 
+// NEEDED FOR MINIFY BUILD TIME
+// BECAUCE c.type.displayName DISAPPEARS OTHERWISE
+SubmitButton.displayName = "SubmitButton"
+
 export default SubmitButton

@@ -1,5 +1,7 @@
+// import { requestData } from 'pass-culture-shared'
+import { requestData } from 'shared/reducers/data'
+
 import classnames from 'classnames'
-import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'

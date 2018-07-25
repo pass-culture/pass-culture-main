@@ -1,6 +1,8 @@
+// import { requestData } from 'pass-culture-shared'
+import { requestData } from 'shared/reducers/data'
+
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'

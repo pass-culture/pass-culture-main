@@ -1,6 +1,9 @@
+// import { requestData, resetForm } from 'pass-culture-shared'
+import { requestData } from 'shared/reducers/data'
+import { resetForm } from 'shared/reducers/form'
+
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { requestData, resetForm } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'

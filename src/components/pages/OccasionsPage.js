@@ -1,4 +1,6 @@
-import { assignData, requestData } from 'pass-culture-shared'
+// import { assignData, requestData } from 'pass-culture-shared'
+import { assignData, requestData } from 'shared/reducers/data'
+
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'

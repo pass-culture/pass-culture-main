@@ -1,6 +1,7 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types';
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+
 import Icon from './Icon'
 
 class Field extends Component {
@@ -102,7 +103,7 @@ class Field extends Component {
                 {$input}
               </div>
               {
-                errors.map((e, i) => (
+                errors && errors.map((e, i) => (
                   <p className='help is-danger columns' id={`${id}-error`} key={i}>
                     <Icon className='column is-1' svg="picto-warning" alt="Warning" />
                     <span className='column'> {e} </span>
@@ -122,7 +123,9 @@ class Field extends Component {
               {
                 label && (
                   <label className='label' htmlFor={id}>
-                    <h3 className={classnames({required, 'with-subtitle': sublabel})}>{label}</h3>
+                    <h3 className={classnames({required, 'with-subtitle': sublabel})}>
+                      {label}
+                    </h3>
                     {sublabel && <p>... {sublabel} :</p>}
                   </label>
                 )
@@ -132,7 +135,7 @@ class Field extends Component {
             </div>
             <ul className="help is-danger" id={`${id}-error`}>
               {
-                errors.map((e, i) => (
+                errors && errors.map((e, i) => (
                   <li className="columns" key={i}>
                     <Icon className="column is-1" svg="picto-warning" alt="Warning" />
                     <p className="column"> {e} </p>
@@ -152,5 +155,9 @@ class Field extends Component {
     return this.renderLayout()
   }
 }
+
+// NEEDED FOR MINIFY BUILD TIME
+// BECAUCE c.type.displayName DISAPPEAR OTHERWISE
+Field.displayName = "Field"
 
 export default Field
