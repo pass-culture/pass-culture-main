@@ -6,9 +6,9 @@ from sqlalchemy.orm import aliased, relationship
 
 from models import Event, EventOccurence
 from models.offer import Offer
-from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from models.db import Model
 
 
 class Occasion(PcObject,
@@ -53,8 +53,8 @@ class Occasion(PcObject,
                          backref='occasions')
 
     @property
-    def thing_or_event(self):
-        return self.thing or self.event
+    def eventOrThing(self):
+        return self.event or self.thing
 
     @property
     def offers(self):
@@ -62,7 +62,7 @@ class Occasion(PcObject,
             return self.thing.offers
         elif self.eventId:
             return chain(map(lambda eo: eo.offers,
-                             self.event.eventOccurence))
+                             self.eventOccurences))
         else:
             return []
 

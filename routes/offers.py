@@ -15,7 +15,6 @@ from models.user_offerer import RightsType
 from models.venue import Venue
 from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
-from utils.includes import OFFER_INCLUDES
 from utils.rest import delete, \
     ensure_provider_can_update, \
     ensure_current_user_has_rights, \
@@ -73,7 +72,6 @@ def make_offer_query():
 def list_offers():
     return handle_rest_get_list(Offer,
                                 query=make_offer_query(),
-                                include=OFFER_INCLUDES,
                                 paginate=50)
 
 @app.route('/offers/<offer_id>',
@@ -89,7 +87,7 @@ def get_offer(offer_id, mediation_id):
         return jsonify(offer)
     else:
         offer = query.first_or_404()
-        return jsonify(offer._asdict(include=OFFER_INCLUDES))
+        return jsonify(offer._asdict())
 
 
 @app.route('/offers', methods=['POST'])
@@ -99,7 +97,7 @@ def create_offer():
     print('OFFER', request.json)
     new_offer = Offer(from_dict=request.json)
     PcObject.check_and_save(new_offer)
-    return jsonify(new_offer._asdict(include=OFFER_INCLUDES)), 201
+    return jsonify(new_offer._asdict()), 201
 
 
 @app.route('/offers/<offer_id>', methods=['PATCH'])
@@ -130,7 +128,7 @@ def edit_offer(offer_id):
             return jsonify(ae.errors), 400
         else:
             raise ie
-    return jsonify(offer._asdict(include=OFFER_INCLUDES)), 200
+    return jsonify(offer._asdict()), 200
 
 @app.route('/offers/<id>', methods=['DELETE'])
 @login_or_api_key_required

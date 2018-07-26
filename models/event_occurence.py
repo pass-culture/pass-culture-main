@@ -33,7 +33,7 @@ class EventOccurence(PcObject,
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
-                            backref='occurences')
+                            backref='eventOccurences')
 
     beginningDatetime = Column(DateTime,
                                index=True,

@@ -53,7 +53,7 @@ def score_occasion(occasion, departement_codes):
 
     if len(occasion.mediations) > 0:
         common_score += 20
-    elif occasion.thing_or_event.thumbCount == 0:
+    elif occasion.eventOrThing.thumbCount == 0:
         # we don't want to recommend occasions that have neither their own
         # image nor a mediation
         return None

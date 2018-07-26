@@ -50,8 +50,9 @@ def post_booking():
         ae.addError('offerId', 'offerId ne correspond à aucune offer')
         return jsonify(ae.errors), 400
 
+    managingOfferer = offer.resolvedOccasion.venue.managingOfferer
     if not offer.isActive or\
-       not offer.resolvedOccasion.venue.managingOfferer.isActive or\
+       not managingOfferer.isActive or\
        (offer.eventOccurence and (not offer.eventOccurence.isActive)):
         ae.addError('offerId', "Cette offre a été retirée. Elle n'est plus valable.")
         return jsonify(ae.errors), 400

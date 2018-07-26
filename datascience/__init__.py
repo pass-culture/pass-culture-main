@@ -1,22 +1,14 @@
 """ recommendations """
 from datetime import datetime, timedelta
-from flask import current_app as app
 from sqlalchemy.sql.expression import func
 
 from datascience.occasions import get_occasions, get_occasions_by_type
-from models.event_occurence import EventOccurence
-from models.mediation import Mediation
-from models.offer import Offer
-from models import Occasion
-from models.pc_object import PcObject
-from models.recommendation import Recommendation
-from models.thing import Thing
+from models import Mediation, PcObject, Recommendation
 
 __all__ = (
             'get_occasions',
             'get_occasions_by_type',
           )
-
 
 
 def create_recommendation(user, occasion, mediation=None):

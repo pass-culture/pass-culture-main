@@ -28,7 +28,7 @@ def bookable_occasions(query, occasion_type):
     # (crude filter to limit joins before the more complete one below)
     query = query.reset_joinpoint()
     if occasion_type == Event:
-        query = query.filter(Occasion.occurences.any(EventOccurence.beginningDatetime > datetime.utcnow()))
+        query = query.filter(Occasion.eventOccurences.any(EventOccurence.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
     query = query.filter((Offer.isActive == True)
