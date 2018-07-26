@@ -100,10 +100,4 @@ class User(PcObject,
 
     @property
     def wallet_balance(self):
-        credit = db.session.query(func.coalesce(func.sum(Deposit.amount), 0)).filter_by(userId=self.id).scalar()
-        debit = db.session.query(func.coalesce(func.sum(Booking.amount), 0)).filter_by(userId=self.id).scalar()
-
-        print('credit', credit)
-        print('debit', debit)
-
-        return credit - debit
+        return db.session.query(func.get_wallet_balance(self.id)).scalar()

@@ -64,11 +64,10 @@ def post_booking():
         return jsonify(ae.errors), 400
 
     new_booking = Booking()
-    amount = request.json.get('amount')
-    if amount is None:
-        amount = offer.price
-    new_booking.amount = amount
     new_booking.offerId = dehumanize(offer_id)
+
+    amount = offer.price
+    new_booking.amount = amount
 
     token = random_token()
     new_booking.token = token

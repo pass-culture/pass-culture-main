@@ -73,6 +73,16 @@ class Booking(PcObject,
 
 
 trig_ddl = DDL("""
+    CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT)
+    RETURNS NUMERIC(10,2) AS $$
+    BEGIN
+        RETURN 
+                (SELECT COALESCE(SUM(AMOUNT), 0) FROM deposit WHERE "userId"=user_id)
+                -
+                (SELECT COALESCE(SUM(AMOUNT), 0) FROM booking WHERE "userId"=user_id);
+    END; $$
+    LANGUAGE plpgsql;
+
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -83,13 +93,7 @@ trig_ddl = DDL("""
                 USING HINT = 'Number of bookings cannot exceed "offer.available"';
       END IF;
       
-      IF (
-        SELECT (
-          (SELECT COALESCE(SUM(AMOUNT), 0) FROM deposit WHERE "userId"=NEW."userId")
-          -
-          (SELECT COALESCE(SUM(AMOUNT), 0) FROM booking WHERE "userId"=NEW."userId")
-        ) < 0
-      )
+      IF (SELECT get_wallet_balance(NEW."userId") < 0)
       THEN RAISE EXCEPTION 'insufficientFunds'
                  USING HINT = 'The user does not have enough credit to book';
       END IF;
@@ -105,3 +109,5 @@ trig_ddl = DDL("""
 event.listen(Booking.__table__,
              'after_create',
              trig_ddl)
+
+

@@ -9,7 +9,6 @@ def test_10_create_booking():
     booking_json = {
         'offerId': humanize(2),
         'recommendationId': humanize(1),
-        'amount': 0
     }
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     print(r_create.json())
@@ -91,7 +90,6 @@ def test_14_create_booking_should_work_if_user_can_book():
     booking_json = {
         'offerId': humanize(2),
         'recommendationId': humanize(1),
-        'amount': 0
     }
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 201
@@ -102,7 +100,6 @@ def test_15_create_booking_should_not_work_if_user_can_not_book():
     booking_json = {
         'offerId': humanize(3),
         'recommendationId': humanize(1),
-        'amount': 0
     }
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
@@ -164,7 +161,6 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
         "offerId": humanize(offer.id),
         "recommendationId": humanize(recommendation.id),
         "userId": humanize(user.id),
-        "amount": float(offer.price)
     }
 
     # When
