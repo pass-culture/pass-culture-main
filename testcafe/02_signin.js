@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import BROWSER_ROOT_URL from './helpers/config'
+import { ROOT_PATH } from '../src/utils/config'
 
 const inputUsersIdentifier = Selector('#input_users_identifier')
 const inputUsersPassword = Selector('#input_users_password')
@@ -9,8 +9,8 @@ const inputUsersPasswordError = Selector('#input_users_password-error')
 const signInButton  = Selector('button') //connexion
 const signUpButton  = Selector('.is-secondary') // inscription
 
-fixture `SignInPage | Se connecter en tant qu'utilisateur`
-    .page `${BROWSER_ROOT_URL+'connexion'}`
+fixture `02_01 SignInPage Component | J'ai un compte et je me connecte`
+    .page `${ROOT_PATH+'connexion'}`
 
 test("Je peux cliquer sur lien /inscription", async t => {
 
@@ -21,10 +21,11 @@ test("Je peux cliquer sur lien /inscription", async t => {
 })
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
-    await t
-    .typeText(inputUsersIdentifier, 'email@email.test')
-    .wait(1000)
-    .expect(signInButton.hasAttribute('disabled')).ok()
+
+  await t
+  .typeText(inputUsersIdentifier, 'email@email.test')
+  .wait(1000)
+  .expect(signInButton.hasAttribute('disabled')).ok()
 })
 
 test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans erreurs", async t => {
@@ -38,7 +39,6 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/decouverte')
 })
-
 
 test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
 
@@ -55,7 +55,7 @@ test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur la page /connection", async t => {
 
   await t
   .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
