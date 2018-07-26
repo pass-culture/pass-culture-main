@@ -7,14 +7,15 @@ export default createCachedSelector(
   (state, optionalEventId, optionalThingId) => optionalThingId,
   (mediations, optionalEventId, optionalThingId) => {
 
-    let selectedMediations
+    let selectedMediations = mediations
     if (optionalEventId)
       selectedMediations = mediations.filter(m => m.eventId === optionalEventId)
 
     if (optionalThingId)
       selectedMediations = mediations.filter(m => m.thingId === optionalThingId)
 
-    selectedMediations.sort((m1, m2) => moment(m1.dateCreated) - moment(m2.dateCreated))
+    selectedMediations && selectedMediations.sort((m1, m2) =>
+      moment(m1.dateCreated) - moment(m2.dateCreated))
 
     return selectedMediations
   }

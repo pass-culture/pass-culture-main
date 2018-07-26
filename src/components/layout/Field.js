@@ -44,9 +44,9 @@ class Field extends Component {
     const storeValue = this.props.InputComponent.storeValue ||
       this.props.storeValue
 
-    this.setState({ value: displayValue(value) })
+    this.setState({ value: displayValue(value, this.props) })
 
-    this.props.onChange(storeValue(value))
+    this.props.onChange(storeValue(value, this.props))
   }
 
   renderInput = () => {

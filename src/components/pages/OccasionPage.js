@@ -90,7 +90,7 @@ class OccasionPage extends Component {
       showModal,
       types,
     } = this.props
-    !occasion && requestData(
+    !occasion && occasionId !== 'nouveau' && requestData(
       'GET',
       `occasions/${occasionId}`,
       {
