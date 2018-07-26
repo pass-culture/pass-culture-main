@@ -5,6 +5,7 @@ export const SUCCESS = 'SUCCESS'
 const FAIL = 'FAIL'
 
 export default (state = [], action) => {
+  // console.log('action in queries ----------> ', action);
   const id = get(action, 'config.requestId')
   if (/REQUEST_DATA_(PATCH|POST|PUT|DELETE)_(.*)/.test(action.type)) {
     return state.concat({

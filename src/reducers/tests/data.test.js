@@ -17,6 +17,7 @@ describe('src | reducers | data  ', () => {
   let state
   beforeEach(() => {
     state = {
+      bookings: [],
       isOptimist: false,
       referenceDate: null
     }
