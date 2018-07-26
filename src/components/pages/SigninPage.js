@@ -39,8 +39,8 @@ class SigninPage extends Component {
                   </h1>
                   <h2 className='subtitle is-2'>Et merci de votre participation pour nous aider à l'améliorer !</h2>
                   <Form name='sign-in' action='users/signin' storePath='users' layout='sign-in-up'>
-                    <Field name='identifier' type='email' label='Adresse e-mail' placeholder="Identifiant (email)" />
-                    <Field name='password' autoComplete="current-password" label='Mot de passe' placeholder='Mot de passe' />
+                    <Field name='identifier' type='email' label='Adresse e-mail' placeholder="Identifiant (email)" required/>
+                    <Field name='password' autoComplete="current-password" label='Mot de passe' placeholder='Mot de passe' required />
                     <div className="errors">{errors}</div>
                     <div className='field buttons-field'>
                       <NavLink to="/inscription" className="button is-secondary">
