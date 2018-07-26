@@ -69,7 +69,7 @@ fixture `05_02 VenuePage | Je ne peux pas créer de lieu, j'ai des erreurs`
 .beforeEach( async t => {
   await t
   .useRole(regularOfferer)
-  // le userRole a l'option preserveUrl: true donc le test commence sur la page /offres
+
   // navigation
   await t
     .click(navbarLink)
@@ -149,5 +149,4 @@ test("Je peux modifier le lieu", async t => {
   // update
   await t
     .click(updateButton)
-    // TODO On ne peut pas modifier les champs actuellement
 })
