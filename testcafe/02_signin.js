@@ -22,8 +22,7 @@ test("Je peux cliquer sur lien Créer un compte", async t => {
   await t.expect(location.pathname).eql('/inscription')
 })
 
-test.skip("Lorsque l'un des deux champs est manquant, le bouton connexion est desactivé", async t => {
-  // TODO Bug, le bouton ne se désactive plus
+test("Lorsque l'un des deux champs est manquant, le bouton connexion est desactivé", async t => {
   await t
     .typeText(inputUsersIdentifier, offererUser.email)
     .wait(1000)
