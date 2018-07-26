@@ -1,7 +1,7 @@
+import { Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import Icon from './Icon'
 import SignoutButton from './SignoutButton'
 import { ROOT_PATH } from '../../utils/config'
 import menu from '../../utils/menu'

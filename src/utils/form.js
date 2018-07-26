@@ -1,18 +1,11 @@
 import get from 'lodash.get'
+import { Form } from 'pass-culture-shared'
 
-export function getIsDisabled (form, keys, isNew) {
-  return !form ||
-    isNew
-      ? keys.filter(f => typeof get(form, f) === 'undefined').length
-      : keys.every(f => typeof get(form, f) === 'undefined')
-}
+import GeoInput from '../components/layout/GeoInput'
+import SirenInput from '../components/layout/SirenInput'
 
-export function optionify(
-  collection=[],
-  placeholder,
-) {
-  const collectionWithPlaceholder = collection.length > 1
-    ? [{label: placeholder, value: ''}].concat(collection)
-    : collection
-  return collectionWithPlaceholder
-}
+Object.assign(Form.WrappedComponent.inputsByType, {
+  geo: GeoInput,
+  siren: SirenInput,
+  siret: SirenInput
+})

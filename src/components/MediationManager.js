@@ -1,3 +1,4 @@
+import { Icon } from 'pass-culture-shared'
 import get from 'lodash.get'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -6,7 +7,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Icon from './layout/Icon'
 import mediationsSelector from '../selectors/mediations'
 import occasionSelector from '../selectors/occasion'
 import { THUMBS_URL } from '../utils/config'

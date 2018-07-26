@@ -1,11 +1,9 @@
 import {
   Icon,
   requestData,
-  resetForm
+  resetForm,
+  withLogin
 } from 'pass-culture-shared'
-// import { requestData } from 'shared/reducers/data'
-// import { resetForm } from 'shared/reducers/form'
-
 import classnames from 'classnames'
 import get from 'lodash.get'
 import React, { Component } from 'react'
@@ -17,7 +15,6 @@ import { compose } from 'redux'
 import Header from './Header'
 import Loader from './Loader'
 import Modal from './Modal'
-import withLogin from '../hocs/withLogin'
 import { showNotification, closeNotification } from '../../reducers/notification'
 
 class PageWrapper extends Component {

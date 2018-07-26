@@ -1,9 +1,9 @@
 import get from 'lodash.get'
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import Icon from './layout/Icon'
 import venuesSelector from '../selectors/venues'
 import { pluralize } from '../utils/string'
 

@@ -1,7 +1,5 @@
-import { mergeFormData } from 'pass-culture-shared'
-// import { mergeFormData } from 'shared/reducers/form'
-
 import get from 'lodash.get'
+import { mergeFormData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'

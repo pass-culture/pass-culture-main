@@ -2,8 +2,6 @@ import {
   Icon,
   requestData
 } from 'pass-culture-shared'
-// import { requestData } from 'shared/reducers/data'
-
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'

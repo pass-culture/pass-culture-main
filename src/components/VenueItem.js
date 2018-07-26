@@ -1,8 +1,8 @@
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
-import Icon from './layout/Icon'
 import { pluralize } from '../utils/string'
 
 const VenueItem = ({

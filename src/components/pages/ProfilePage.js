@@ -5,9 +5,7 @@ import {
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 
-import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 import UploadThumb from '../layout/UploadThumb'
 import { showNotification } from '../../reducers/notification'
@@ -73,13 +71,10 @@ class ProfilePage extends Component {
   }
 }
 
-export default compose(
-  withLogin({ isRequired: true }),
-  connect(
-    state => ({
-      user: state.user,
-    }), {
-      showNotification,
-    }
-  )
+export default connect(
+  state => ({
+    user: state.user,
+  }), {
+    showNotification,
+  }
 )(ProfilePage)

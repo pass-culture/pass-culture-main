@@ -1,22 +1,21 @@
-import { mergeFormData, requestData } from 'pass-culture-shared'
-//import { requestData } from 'shared/reducers/data'
-//import { mergeFormData } from 'shared/reducers/form'
-
 import get from 'lodash.get'
+import {
+  Field,
+  Form,
+  Icon,
+  mergeFormData,
+  requestData,
+  SubmitButton
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import VenueProviderItem from './VenueProviderItem'
-import Field from './layout/Field'
-import Form from './layout/Form'
-import Icon from './layout/Icon'
-import SubmitButton from './layout/SubmitButton'
 import providerSelector from '../selectors/provider'
 import providersSelector from '../selectors/providers'
 import venueProvidersSelector from '../selectors/venueProviders'
-import { NEW } from '../utils/config'
 
 class ProviderManager extends Component {
 
@@ -51,7 +50,7 @@ class ProviderManager extends Component {
       mergeFormData
     } = this.props
     const { isNew } = this.state
-    isNew && mergeFormData('venueProviders', NEW, { venueId })
+    isNew && mergeFormData('venueProviders', 'nouveau', { venueId })
   }
 
   handleDataRequest = () => {
@@ -213,16 +212,18 @@ export default compose(
     (state, ownProps) => {
       const providers = providersSelector(state)
 
+      const formData = get(state, 'form.venueProvider.data')
+
       let provider
       if (providers.length === 1) {
         provider = providers[0]
       } else {
-        const providerId = get(state, `form.venueProvidersById.${NEW}.providerId`)
+        const providerId = get(formData, 'providerId')
         provider = providerSelector(state, providerId)
       }
 
       return {
-        formData: get(state, 'form.venueProvider.data'),
+        formData,
         provider,
         providers,
         user: state.user,

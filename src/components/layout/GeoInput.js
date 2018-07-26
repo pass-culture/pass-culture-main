@@ -1,6 +1,3 @@
-import { Form } from 'pass-culture-shared'
-// import { ROOT_PATH } from 'shared/utils/config'
-
 import classnames from 'classnames'
 import L from 'leaflet'
 import debounce from 'lodash.debounce'
@@ -221,8 +218,5 @@ class GeoInput extends Component {
     )
   }
 }
-
-// bind
-Form.WrappedComponent.inputsByType.geo = GeoInput
 
 export default GeoInput

@@ -1,3 +1,4 @@
+import { Icon } from 'pass-culture-shared'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import React, { Component } from 'react'
@@ -6,7 +7,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Icon from './Icon'
 import SignoutButton from './SignoutButton'
 import Logo from './Logo'
 

@@ -1,12 +1,11 @@
+import get from 'lodash.get'
 import {
   Icon,
   Field,
   Form,
-  requestData
+  requestData,
+  SubmitButton
 } from 'pass-culture-shared'
-// import { requestData } from 'shared/reducers/data'
-
-import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
@@ -15,12 +14,10 @@ import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
-import { NEW } from '../../utils/config'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
 
 
@@ -46,7 +43,6 @@ class VenuePage extends Component {
     const isEdit = search === '?modifie'
     const isNew = venueId === 'nouveau'
     const isReadOnly = !isNew && !isEdit
-    const venueIdOrNew = isNew ? NEW : venueId
     const offererName = get(offerer, 'name')
     const routePath = `/structures/${offererId}`
     const venueName = get(venue, 'name')
@@ -59,7 +55,6 @@ class VenuePage extends Component {
       isReadOnly,
       offererName,
       routePath,
-      venueIdOrNew,
       venueName
     }
   }

@@ -2,7 +2,6 @@ import React from 'react'
 
 import MediationManager from '../MediationManager'
 import PageWrapper from '../layout/PageWrapper'
-import withLogin from '../hocs/withLogin'
 
 const MediationsPage = () => {
   return (
@@ -12,4 +11,4 @@ const MediationsPage = () => {
   )
 }
 
-export default withLogin({ isRequired: true })(MediationsPage)
+export default MediationsPage

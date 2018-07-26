@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import {
   Field,
   Form,
@@ -7,10 +8,6 @@ import {
   resetForm,
   SubmitButton
 } from 'pass-culture-shared'
-// import { requestData } from 'shared/reducers/data'
-// import { mergeFormData, resetForm } from 'shared/reducers/form'
-
-import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'

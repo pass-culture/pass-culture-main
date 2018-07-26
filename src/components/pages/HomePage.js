@@ -1,7 +1,6 @@
 import React from 'react'
 
 import HomeCard from '../HomeCard'
-import withLogin from '../hocs/withLogin'
 import PageWrapper from '../layout/PageWrapper'
 
 const HomePage = ({ user }) => {
@@ -15,4 +14,4 @@ const HomePage = ({ user }) => {
   )
 }
 
-export default withLogin({ isRequired: true })(HomePage)
+export default HomePage

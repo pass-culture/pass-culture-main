@@ -1,7 +1,5 @@
-import { requestData } from 'pass-culture-shared'
-// import { requestData } from 'shared/reducers/data'
-
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
