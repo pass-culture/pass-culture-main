@@ -112,8 +112,8 @@ class OffererPage extends Component {
 
         <Form name='offerer' className='section'
           action={`/offerers/${isNew ? '' : get(offerer, 'id')}`}
-          data={offerer}
-          handleSuccess={this.handleSuccess} >
+          handleSuccess={this.handleSuccess}
+          patch={offerer} >
           <div className='field-group'>
             <Field name='siren' label='SIREN' required readOnly={!isNew} />
             {
@@ -174,7 +174,7 @@ export default compose(
         offerer: offererSelector(state, offererId),
         venues: venuesSelector(state, offererId),
         user: state.user,
-        fetchedName: get(state, 'form.offerer.data.name'),
+        fetchedName: get(state, 'form.offerer.name'),
       }
     },
     {

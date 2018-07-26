@@ -24,17 +24,23 @@ class ProfilePage extends Component {
   }
 
   render() {
+    const { user } = this.props
     const {
       id,
       thumbPath,
-    } = this.props.user || {}
+    } = user || {}
 
     return (
       <PageWrapper name="profile" backTo={{path: '/accueil', label: 'Accueil'}}>
         <div className='section'>
           <h1 className='pc-title'>Profil</h1>
         </div>
-        <Form className='section' name='editProfile' action='users/me' data={this.props.user} handleSuccess={this.handleSuccess}>
+        <Form
+          action='users/me'
+          className='section'
+          handleSuccess={this.handleSuccess}
+          name='editProfile'
+          patch={user} >
           <div className='field-group'>
             <Field name='publicName' label='Nom' required />
             <Field name='email' label='Email' required readOnly />

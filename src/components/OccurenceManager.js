@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import { mergeFormData } from 'pass-culture-shared'
+import { mergeForm } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -164,6 +164,6 @@ export default compose(
         provider: providerSelector(state, get(event, 'lastProviderId'))
       }
     },
-    { closeModal, mergeFormData }
+    { closeModal, mergeForm }
   )
 )(OccurenceManager)

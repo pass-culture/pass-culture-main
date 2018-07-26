@@ -232,16 +232,16 @@ class OccasionPage extends Component {
           </p>
           <Form
             action={apiPath}
-            data={Object.assign(
+            name='occasion'
+            handleSuccess={this.handleSuccess}
+            handleFail={this.handleFail}
+            patch={Object.assign(
               {
                 offererId: get(venue, 'managingOffererId'),
                 venueId: get(venue, 'id')
               },
               isEventType ? event : thing
             )}
-            name='occasion'
-            handleSuccess={this.handleSuccess}
-            handleFail={this.handleFail}
             readOnly={isReadOnly}
           >
             <div className='field-group'>
@@ -405,14 +405,19 @@ export default compose(
 
       const types = typesSelector(state)
 
-      const typeValue = get(state, 'form.occasion.data.type') || get(event, 'type') || get(thing, 'type')
+      const typeValue = get(state, 'form.occasion.type') ||
+        get(event, 'type') ||
+        get(thing, 'type')
 
       const type = typeSelector(state, typeValue)
 
-      let offererId = get(state, 'form.occasion.data.offererId') || search.offererId
+      let offererId = get(state, 'form.occasion.offererId') || search.offererId
 
       const venues = venuesSelector(state, offererId)
-      const venueId = get(state, 'form.occasion.data.venueId') || search.venueId || get(event, 'venueId') || get(thing, 'venueId')
+      const venueId = get(state, 'form.occasion.venueId') ||
+        search.venueId ||
+        get(event, 'venueId') ||
+        get(thing, 'venueId')
       const venue = venueSelector(state, venueId)
 
       offererId = offererId || get(venue, 'managingOffererId')

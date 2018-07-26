@@ -3,7 +3,7 @@ import {
   Field,
   Form,
   Icon,
-  mergeFormData,
+  mergeForm,
   requestData,
   SubmitButton
 } from 'pass-culture-shared'
@@ -47,10 +47,10 @@ class ProviderManager extends Component {
   handleMergeForm = () => {
     const {
       match: { params: { venueId } },
-      mergeFormData
+      mergeForm
     } = this.props
     const { isNew } = this.state
-    isNew && mergeFormData('venueProviders', 'nouveau', { venueId })
+    isNew && mergeForm('venueProviders', 'nouveau', { venueId })
   }
 
   handleDataRequest = () => {
@@ -102,7 +102,7 @@ class ProviderManager extends Component {
 
   render () {
     const {
-      formData,
+      formPatch,
       provider,
       providers,
       venue,
@@ -141,10 +141,9 @@ class ProviderManager extends Component {
                 <Form
                   action='/venueProviders'
                   className='level'
-                  data={Object.assign({ venueId: get(venue, 'id') }, formData)}
                   handleSuccess={this.handleSuccess}
                   name='venueProvider'
-                >
+                  patch={Object.assign({ venueId: get(venue, 'id') }, formPatch)}>
                   <Field type='hidden' name='venueId' />
                   {
                     withError && (
@@ -212,24 +211,24 @@ export default compose(
     (state, ownProps) => {
       const providers = providersSelector(state)
 
-      const formData = get(state, 'form.venueProvider.data')
+      const formPatch = get(state, 'form.venueProvider.data')
 
       let provider
       if (providers.length === 1) {
         provider = providers[0]
       } else {
-        const providerId = get(formData, 'providerId')
+        const providerId = get(formPatch, 'providerId')
         provider = providerSelector(state, providerId)
       }
 
       return {
-        formData,
+        formPatch,
         provider,
         providers,
         user: state.user,
         venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
       }
     },
-    { mergeFormData, requestData }
+    { mergeForm, requestData }
   )
 )(ProviderManager)

@@ -46,7 +46,7 @@ class GeoInput extends Component {
     }
   }
 
-  static extraFormData = ['latitude', 'longitude']
+  static extraFormPatch = ['latitude', 'longitude']
 
   static getDerivedStateFromProps = (newProps, currentState) => {
     return Object.assign({}, currentState, {

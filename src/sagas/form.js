@@ -2,7 +2,7 @@ import get from 'lodash.get'
 import {
   capitalize,
   assignErrors,
-  mergeFormData
+  mergeForm
 } from 'pass-culture-shared'
 import { call, put, takeEvery } from 'redux-saga/effects'
 
@@ -11,15 +11,15 @@ const SIREN = 'siren'
 
 const fromWatchSirenInput = sireType => function*(action) {
   const {
-    data,
     name,
+    patch
   } = action
 
   try {
-    const response = yield call(fetch, `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${data[sireType]}`)
+    const response = yield call(fetch, `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${patch[sireType]}`)
     if (response.status === 404)  {
       yield put(assignErrors({[sireType]: [`${capitalize(sireType)} invalide`]}))
-      yield put(mergeFormData(name,
+      yield put(mergeForm(name,
         {
           address: null,
           city: null,
@@ -33,7 +33,7 @@ const fromWatchSirenInput = sireType => function*(action) {
     } else {
       const body = yield call([response, 'json'])
       const dataPath = sireType === SIREN ? 'siege_social' : 'etablissement'
-      yield put(mergeFormData(action.name, {
+      yield put(mergeForm(action.name, {
         address: get(body, `${dataPath}.l4_normalisee`),
         // geo_adresse has postal code and city name which don't belong to this field
         // address: get(body, `${dataPath}.geo_adresse`),
@@ -55,13 +55,13 @@ const fromWatchSirenInput = sireType => function*(action) {
 
 export function* watchFormActions() {
   yield takeEvery(
-    ({ type, data, config }) =>
-      type === 'MERGE_FORM_DATA' && !get(config, 'calledFromSaga') && get(data, `${SIREN}.length`) === 9,
+    ({ type, config, patch }) =>
+      type === 'MERGE_FORM' && !get(config, 'calledFromSaga') && get(patch, `${SIREN}.length`) === 9,
     fromWatchSirenInput(SIREN)
   )
   yield takeEvery(
-    ({ type, data, config }) =>
-      type === 'MERGE_FORM_DATA' && !get(config, 'calledFromSaga') && get(data, `${SIRET}.length`) === 14,
+    ({ type, config, patch }) =>
+      type === 'MERGE_FORM' && !get(config, 'calledFromSaga') && get(patch, `${SIRET}.length`) === 14,
     fromWatchSirenInput(SIRET)
   )
 }

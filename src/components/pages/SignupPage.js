@@ -45,7 +45,7 @@ class SignupPage extends Component {
                     Merci de renseigner tous les champs marqués d'un <span className='required-legend'>*</span>.
                   </h2>
                   <Form
-                    name='sign-up'
+                    name='user'
                     action='/users'
                     layout='sign-in-up'
                     handleSuccess={() => {
@@ -59,7 +59,8 @@ class SignupPage extends Component {
                       label='Adresse e-mail'
                       sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
                       placeholder="nom@exemple.fr"
-                      required />
+                      required
+                      type='email' />
                     <Field
                       name='publicName'
                       label='Identifiant'
@@ -73,14 +74,16 @@ class SignupPage extends Component {
                       sublabel='pour se connecter'
                       placeholder="Mon mot de passe"
                       autoComplete="new-password"
-                      required />
+                      required
+                      type="password" />
                     <Field
                       name='siren'
                       label='SIREN'
                       sublabel='de la structure à rattacher'
                       placeholder="123 456 789"
                       fetchedName={sirenName || ''}
-                      required />
+                      required
+                      type='siren' />
                     <Field
                       name="newsletter_ok"
                       type="checkbox"
@@ -115,7 +118,7 @@ export default compose(
   withRouter,
   connect(
     state => ({
-      sirenName: get(state, `form.sign-up.data.name`),
+      sirenName: get(state, `form.user.name`),
       user: state.user,
     }),
     { showNotification }

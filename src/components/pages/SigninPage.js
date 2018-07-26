@@ -35,14 +35,37 @@ class SigninPage extends Component {
               <section className='hero has-text-grey'>
                 <div className='hero-body'>
                   <h1 className='title is-spaced is-1'>
-                    <span className="has-text-weight-bold ">Bienvenue</span>{' '}
-                    <span className="has-text-weight-semibold">dans la version bêta</span>
-                    <span className="has-text-weight-normal">du Pass Culture pro.</span>
+                    <span className="has-text-weight-bold ">
+                      Bienvenue
+                    </span>{' '}
+                    <span className="has-text-weight-semibold">
+                      dans la version bêta
+                    </span>
+                    <span className="has-text-weight-normal">
+                      du Pass Culture pro.
+                    </span>
                   </h1>
-                  <h2 className='subtitle is-2'>Et merci de votre participation pour nous aider à l'améliorer !</h2>
-                  <Form name='sign-in' action='users/signin' storePath='users' layout='sign-in-up'>
-                    <Field name='identifier' type='email' label='Adresse e-mail' placeholder="Identifiant (email)" required/>
-                    <Field name='password' autoComplete="current-password" label='Mot de passe' placeholder='Mot de passe' required />
+                  <h2 className='subtitle is-2'>
+                    Et merci de votre participation pour nous aider à l'améliorer !
+                  </h2>
+                  <Form
+                    action='/users/signin'
+                    layout='sign-in-up'
+                    name='user'
+                    storePath='users' >
+                    <Field
+                      label='Adresse e-mail'
+                      name='identifier'
+                      placeholder="Identifiant (email)"
+                      required
+                      type='email' />
+                    <Field
+                      autoComplete="current-password"
+                      label='Mot de passe'
+                      name='password'
+                      placeholder='Mot de passe'
+                      required
+                      type='password' />
                     <div className="errors">{errors}</div>
                     <div className='field buttons-field'>
                       <NavLink to="/inscription" className="button is-secondary">

@@ -189,12 +189,12 @@ class VenuePage extends Component {
 
         <Form
           action={`/venues/${get(venue, 'id', '')}`}
-          data={Object.assign({}, venue, {
+          handleSuccess={this.handleSuccess}
+          name='venue'
+          patch={Object.assign({}, venue, {
             managingOffererId: offererId,
             bookingEmail: get(user, 'email')
           })}
-          handleSuccess={this.handleSuccess}
-          name='venue'
           readOnly={isReadOnly}
         >
           <Field type='hidden' name='managingOffererId' />
@@ -206,7 +206,7 @@ class VenuePage extends Component {
               </span>
             </h2>
             <div className='field-group'>
-              <Field label='SIRET' name='siret' />
+              <Field label='SIRET' name='siret' type='siret' />
               <Field label='Nom du lieu' name='name' required />
               <Field label='E-mail' name='bookingEmail' required type='email' />
             </div>

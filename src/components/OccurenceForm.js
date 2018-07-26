@@ -3,7 +3,7 @@ import {
   Field,
   Form,
   Icon,
-  mergeFormData,
+  mergeForm,
   requestData,
   resetForm,
   SubmitButton
@@ -77,10 +77,10 @@ class OccurenceForm extends Component {
     const {
       formBeginningDatetime,
       formEndDatetime,
-      mergeFormData
+      mergeForm
     } = this.props
     if (formEndDatetime < formBeginningDatetime) {
-      mergeFormData('occurence', {
+      mergeForm('occurence', {
         endDatetime: moment(formEndDatetime)
                       .add(1, 'day')
                       .toISOString()
@@ -102,14 +102,14 @@ class OccurenceForm extends Component {
     const {
       formBookingLimitDatetime,
       isOfferReadOnly,
-      mergeFormData,
+      mergeForm,
       occurence
     } = this.props
     if (!occurence || formBookingLimitDatetime || isOfferReadOnly) {
       return
     }
 
-    mergeFormData('offer', {
+    mergeForm('offer', {
       bookingLimitDatetime: moment(occurence.beginningDatetime)
                               .subtract(2, 'day')
                               .toISOString()
@@ -119,13 +119,13 @@ class OccurenceForm extends Component {
   handleInitEndDatetime = () => {
     const {
       formBeginningDatetime,
-      mergeFormData,
+      mergeForm,
       occurence,
     } = this.props
     if (occurence) {
       return
     }
-    mergeFormData('occurence', {
+    mergeForm('occurence', {
       endDatetime: moment(formBeginningDatetime)
                     .add(1, 'hour')
                     .toISOString()
@@ -136,19 +136,19 @@ class OccurenceForm extends Component {
   handleInitPrice = () => {
     const {
       formPrice,
-      mergeFormData,
+      mergeForm,
       offer,
     } = this.props
     if (offer || formPrice) {
       return
     }
-    mergeFormData('offer', { price: 0 })
+    mergeForm('offer', { price: 0 })
   }
 
   handleNextDatetimes = () => {
     const {
       formBeginningDatetime,
-      mergeFormData,
+      mergeForm,
       occurence,
       occurences
     } = this.props
@@ -159,7 +159,7 @@ class OccurenceForm extends Component {
     }
     if (!formBeginningDatetime && get(occurences, 'length')) {
       const beginningDatetime = moment(occurences[0].beginningDatetime).add(1, 'day')
-      mergeFormData('occurence', {
+      mergeForm('occurence', {
         beginningDatetime,
         endDatetime: moment(beginningDatetime).add(1, 'hour')
       })
@@ -240,13 +240,13 @@ class OccurenceForm extends Component {
       <tr className='occurence-form'>
         <Form
           action={`/eventOccurences/${get(occurence, 'id', '')}`}
-          data={Object.assign({}, occurence, {
-            eventId,
-            venueId
-          })}
           handleSuccess={this.handleEventOccurenceSuccessData}
           layout='input-only'
           name={`occurence${get(occurence, 'id', '')}`}
+          patch={Object.assign({
+            eventId,
+            venueId
+          }, occurence)}
           readOnly={isEventOccurenceReadOnly}
           size="small"
           TagName={null} >
@@ -260,11 +260,11 @@ class OccurenceForm extends Component {
               type='hidden' />
 
             <Field
-              dataKey='beginningDatetime'
               debug
               highlightedDates={occurences.map(o => o.beginningDatetime)}
               minDate='today'
               name='beginningDate'
+              patchKey='beginningDatetime'
               readOnly={isEventOccurenceReadOnly}
               required
               title='Date'
@@ -272,8 +272,8 @@ class OccurenceForm extends Component {
           </td>
           <td>
             <Field
-              dataKey='beginningDatetime'
               name='beginningTime'
+              patchKey='beginningDatetime'
               readOnly={isEventOccurenceReadOnly}
               required
               title='Heure'
@@ -282,8 +282,8 @@ class OccurenceForm extends Component {
           </td>
           <td>
             <Field
-              dataKey='endDatetime'
               name='endTime'
+              patchKey='endDatetime'
               readOnly={isEventOccurenceReadOnly}
               required
               title='Heure de fin'
@@ -302,14 +302,14 @@ class OccurenceForm extends Component {
         </Form>
         <Form
           action={`/offers/${get(offer, 'id', '')}`}
-          data={Object.assign({
-            eventOccurenceId: get(occurence, 'id'),
-            offererId: get(venue, 'managingOffererId')
-          }, offer)}
           handleSuccess={this.handleOfferSuccessData}
           layout='input-only'
           key={1}
           name={`offer${get(offer, 'id', '')}`}
+          patch={Object.assign({
+            eventOccurenceId: get(occurence, 'id'),
+            offererId: get(venue, 'managingOffererId')
+          }, offer)}
           size="small"
           readOnly={isOfferReadOnly}
           TagName={null} >
@@ -431,19 +431,19 @@ export default compose(
         eventOccurenceIdOrNew,
         formBeginningDatetime: get(
           state,
-          `form.occurence${get(occurence, 'id', '')}.data.beginningDatetime`
+          `form.occurence${get(occurence, 'id', '')}.beginningDatetime`
         ),
         formBookingLimitDatetime: get(
           state,
-          `form.offer${get(offer, 'id', '')}.data.bookingLimitDatetime`
+          `form.offer${get(offer, 'id', '')}.bookingLimitDatetime`
         ),
         formEndDatetime: get(
           state,
-          `form.occurence${get(occurence, 'id', '')}.data.endDatetime`
+          `form.occurence${get(occurence, 'id', '')}.endDatetime`
         ),
         formPrice: get(
           state,
-          `form.offer${get(offer, 'id', '')}.data.price`
+          `form.offer${get(offer, 'id', '')}.price`
         ),
         isEditing,
         isEventOccurenceReadOnly,
@@ -458,6 +458,6 @@ export default compose(
         venueId
       }
     },
-    { mergeFormData, requestData, resetForm }
+    { mergeForm, requestData, resetForm }
   )
 )(OccurenceForm)
