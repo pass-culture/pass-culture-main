@@ -43,7 +43,6 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
 test
 .requestHooks(logger)
 ("Je créé un compte, je suis redirigé·e vers la page /structures", async t => {
-    // TODO Ne fonctionne que si la base de données est vide
     await t
       .typeText(publicNameInput, offererUser.publicName)
       .typeText(emailInput, offererUser.email)
