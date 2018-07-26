@@ -1,0 +1,9 @@
+{
+  "extends": "react-app",
+  "plugins": ["prettier"],
+  "rules": {
+    "no-else-return": [2, {
+      "allowElseIf": false
+    }]
+  }
+}

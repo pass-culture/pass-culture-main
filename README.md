@@ -8,6 +8,7 @@ pour être informé des différentes lignes de commande associées à ce repo.
 ## Note sur Yarn
 
 Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer globalement sur votre ordinateur (https://yarnpkg.com/en/docs/install), puis:
+
 ```bash
-  yarn
+yarn
 ```

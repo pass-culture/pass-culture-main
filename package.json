@@ -90,6 +90,7 @@
     "jest": "20.0.4",
     "lint-staged": "^7.0.4",
     "prettier": "1.12.1",
+    "prettier-eslint": "^8.8.2",
     "testcafe": "^0.20.4"
   },
   "scripts": {
@@ -101,15 +102,12 @@
     "prettier": "$(yarn bin)/prettier --config config/prettier.js --write 'src/**/*.js'",
     "start": "node scripts/start.js",
     "test": "node scripts/jesttest.js --env=jsdom",
-    "testcafe": "testcafe 'chrome:headless' testcafe"
+    "testcafe": "testcafe 'chrome:headless' testcafe",
+    "precommit": "pretty-quick --staged"
   },
   "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,mjs}"
-    ],
-    "setupFiles": [
-      "<rootDir>/config/polyfills.js"
-    ],
+    "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+    "setupFiles": ["<rootDir>/config/polyfills.js"],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
       "<rootDir>/testcafe/**/*.{js,jsx,mjs}",
@@ -120,11 +118,10 @@
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
       "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+      "^(?!.*\\.(js|jsx|mjs|css|json)$)":
+        "<rootDir>/config/jest/fileTransform.js"
     },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
-    ],
+    "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"],
     "moduleNameMapper": {
       "^react-native$": "react-native-web"
     },
@@ -139,20 +136,8 @@
     ]
   },
   "babel": {
-    "plugins": [
-      "react-hot-loader/babel"
-    ],
-    "presets": [
-      "react-app"
-    ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn prettier"
-    }
+    "plugins": ["react-hot-loader/babel"],
+    "presets": ["react-app"]
   },
   "homepage": "."
 }
