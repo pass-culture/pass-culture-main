@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { Form } from 'pass-culture-shared'
 
 import GeoInput from '../components/layout/GeoInput'

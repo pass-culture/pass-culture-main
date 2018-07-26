@@ -218,11 +218,6 @@ class OccasionPage extends Component {
 
     const showAllForm = type || !isNew
 
-    const formData = Object.assign(
-      { offererId: get(venue, 'managingOffererId') },
-      isEventType ? event : thing
-    )
-
     return (
       <PageWrapper
         backTo={{path: `/offres${search}`, label: 'Vos offres'}}

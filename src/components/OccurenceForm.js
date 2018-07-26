@@ -220,18 +220,14 @@ class OccurenceForm extends Component {
 
     const {
       eventId,
-      eventOccurenceIdOrNew,
       formBeginningDatetime,
       isEditing,
       isEventOccurenceReadOnly,
-      isFullyEditable,
       isOfferReadOnly,
-      isNew,
       occasion,
       occurence,
       occurences,
       offer,
-      offerIdOrNew,
       tz,
       venue,
       venueId

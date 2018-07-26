@@ -213,19 +213,16 @@ class MediationPage extends Component {
       imageUploadBorder,
       match: {
         params: {
-          mediationId,
           occasionId
         }
       },
       mediation,
       occasion,
-      offerer,
     } = this.props
     const {
       name
     } = (occasion || {})
     const {
-      croppingRect,
       image,
       imageUrl,
       inputUrl,

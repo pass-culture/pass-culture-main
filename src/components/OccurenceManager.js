@@ -14,7 +14,6 @@ import occurenceErrorsSelector from '../selectors/occurenceErrors'
 import occurencesSelector from '../selectors/occurences'
 import searchSelector from '../selectors/search'
 import providerSelector from '../selectors/provider'
-import timezoneSelector from '../selectors/timezone'
 
 
 class OccurenceManager extends Component {
