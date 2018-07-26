@@ -24,12 +24,6 @@ class Field extends Component {
     name: PropTypes.string.isRequired,
   }
 
-  static getDerivedStateFromProps(newProps, currentState) {
-    return Object.assign({
-      value: newProps.value || currentState.value
-    })
-  }
-
   componentDidMount() {
     this.props.value && this.onChange(this.props.value)
   }
@@ -44,7 +38,6 @@ class Field extends Component {
   }
 
   onChange = (value) => {
-    if (value === this.props.value) return
 
     const displayValue = this.props.InputComponent.displayValue ||
       this.props.displayValue

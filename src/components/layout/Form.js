@@ -88,9 +88,29 @@ class Form extends Component {
   }
 
   onMergeForm = () => {
-    this.props.removeErrors(this.props.name)
-    this.props.mergeFormData(this.props.name, this.state.patch)
+    const {
+      formData,
+      mergeFormData,
+      name,
+      removeErrors
+    } = this.props
+    const { patch } = this.state
+
     this.setState({ patch: {} })
+
+    // no need to go further if patch is actually equal to formDate
+    Object.keys(patch).forEach(key => {
+      if (formData[key] === patch[key]) {
+        delete patch[key]
+      }
+    })
+    if (Object.keys(patch).length === 0) {
+      return
+    }
+
+    removeErrors(name)
+    mergeFormData(name, patch)
+
   }
 
   onSubmit = e => {
@@ -155,7 +175,9 @@ class Form extends Component {
         if (!InputComponent) console.error('Component not found for type:', type)
 
         const onChange = value => {
-          const newPatch = typeof value === 'object' ? value : {[dataKey]: value}
+          const newPatch = typeof value === 'object'
+            ? value
+            : {[dataKey]: value}
           this.setState({
             patch: Object.assign(this.state.patch, newPatch)
           })
