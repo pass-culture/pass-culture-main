@@ -38,9 +38,9 @@
   - Casse: camelCase pour les variables, sauf CamelCase pour les classes
 
   - Syntaxe des reducers:
-    * action: <VERBE>\_<REDUCER_NAME>\_<COMPLEMENT D OBJECT> (UNDERSCORE_CASE):
+    * action: \<VERBE\>\_\<REDUCER_NAME\>\_\<COMPLEMENT D OBJECT\> (UNDERSCORE_CASE):
       exemple: REQUEST_DATA_GET_MEDIATIONS, SHOW_MODAL
-    * créateur d'action: <verbe><reducerName><complement d'object> (camelCase)
+    * créateur d'action: \<verbe>\<reducerName\>\<complement d'object\> (camelCase)
       exemple: setUser, closeModal
 
   - Accesseurs:
