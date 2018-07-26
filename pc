@@ -235,6 +235,8 @@ elif [[ "$CMD" == "test-backend" ]]; then
   else
      RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest '"$*"'"'
   fi
+elif [[ "$CMD" == "test-backend-provider" ]]; then
+	RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venues_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
 elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 	if [[ "$CMD" == "test-cafe-webapp"  ]]; then
 		APP_PATH=$ROOT_PATH/webapp
@@ -243,7 +245,7 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 	fi
 	if [[ $# == 0 ]]; then
     confirm "Warning: your database will be wiped. Is this OK ?"
-     "$ROOT_PATH"/pc -e $ENV reset-all-db && "$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venues_provider tests/10_local_providers.py::test_16_openagenda_events_provider
+     "$ROOT_PATH"/pc -e $ENV reset-all-db && pc test-backend-provider
 		RUN='cd $APP_PATH && ./scripts/pc.js testcafe'
 	else
   	RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
