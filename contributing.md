@@ -29,6 +29,12 @@
       import { THUMBS_URL } form '../../utils/config'
       ```
 
+  - Nomination des variables, si possible:
+    * arrays avec des pluriels, exemple : data, events
+    * object avec des singuliers, si les objets sont des
+      hmaps de variables de même type, alors on peut le specifier
+      avec des noms de type objectsByName, eventsById, etc...
+
 ## Backend Python
 
   - Casse: underscore case pour les variables, mais camelCase pour les clés des objets postgres
