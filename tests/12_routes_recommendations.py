@@ -86,54 +86,35 @@ def test_11_put_recommendations_should_return_a_list_of_recos():
 
 def test_12_if_i_request_a_specific_reco_it_should_be_first():
     # Full request
-    subtest_recos_with_params('occasionId=AE&mediationId=AM',
+    subtest_recos_with_params('occasionId=AFQA&mediationId=AM',  # AM=1 AFQA=352
                               expected_status=200,
-                              expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_id=dehumanize('AE'))
+                              expected_mediation_id='AM',
+                              expected_occasion_id='AFQA')
     # No mediationId but occasionId
-    subtest_recos_with_params('occasionId=AE',
+    subtest_recos_with_params('occasionId=AFQA',
                               expected_status=200,
-                              expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_id=dehumanize('AE'))
-    # No occasionId but mediationId and occasionType
+                              expected_mediation_id='AM',
+                              expected_occasion_id='AFQA')
+    # No occasionId but mediationId
     subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
-                              expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_id=dehumanize('AE'))
-    # No occasionId, no occasionType, but mediationId
-    subtest_recos_with_params('mediationId=AM',
-                              expected_status=200,
-                              expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_id=dehumanize('AE'))
-    # no occasionType but mediationId and occasionId
-    subtest_recos_with_params('occasionId=AE&mediationId=AM',
-                              expected_status=200,
-                              expected_mediation_id=dehumanize('AM'),
-                              expected_occasion_id=dehumanize('AE'))
+                              expected_mediation_id='AM',
+                              expected_occasion_id='AFQA')
 
 
-def test_13_requesting_a_reco_with_bad_params_should_return_reponse_anyway():
+def test_13_requesting_a_reco_with_bad_params_should_return_404():
     # occasionId correct and mediationId correct but not the same event
     subtest_recos_with_params('occasionId=AQ&mediationId=AE',
-                              expected_status=200,
-                              expected_mediation_id=dehumanize('AE'),
-                              is_tuto=True) 
-    # occasionId correct and mediationId correct but not the same occasion type
-    subtest_recos_with_params('occasionId=A9&mediationId=AM',
-                              expected_status=200,
-                              expected_mediation_id=dehumanize('AE'))
+                              expected_status=404)
     # invalid (not matching an object) occasionId with valid mediationId
     subtest_recos_with_params('occasionId=ABCDE&mediationId=AM',
-                              expected_status=200,
-                              expected_mediation_id=dehumanize('AE'))
+                              expected_status=404)
     # invalid (not matching an object) mediationId with valid occasionId
     subtest_recos_with_params('occasionId=AE&mediationId=ABCDE',
-                              expected_status=200,
-                              expected_mediation_id=dehumanize('AE'))
+                              expected_status=404)
     # invalid (not matching an object) mediationId with invalid (not matching an object) occasionId
     subtest_recos_with_params('occasionId=ABCDE&mediationId=ABCDE',
-                              expected_status=200,
-                              expected_mediation_id=dehumanize('AE'))
+                              expected_status=404)
 
 
 def test_14_actual_errors_should_generate_a_400():

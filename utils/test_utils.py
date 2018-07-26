@@ -9,6 +9,7 @@ from models import Thing
 from models.booking import Booking
 from models.event import Event
 from models.event_occurence import EventOccurence
+from models.occasion import Occasion
 from models.offer import Offer
 from models.offerer import Offerer
 from models.user import User
@@ -56,10 +57,10 @@ def create_event_offer_for_booking_email_test():
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     offer.eventOccurence = EventOccurence()
     offer.eventOccurence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-    offer.eventOccurence.event = Event()
-    offer.eventOccurence.event.name = 'Mains, sorts et papiers'
-    offer.eventOccurence.venue = _create_venue_for_booking_email_test()
-    offer.thing = None
+    offer.eventOccurence.occasion = Occasion()
+    offer.eventOccurence.occasion.event = Event()
+    offer.eventOccurence.occasion.event.name = 'Mains, sorts et papiers'
+    offer.eventOccurence.occasion.venue = _create_venue_for_booking_email_test()
     offer.isActive = True
 
     return offer
@@ -67,14 +68,14 @@ def create_event_offer_for_booking_email_test():
 
 def create_thing_offer_for_booking_email_test():
     offer = Offer()
-    offer.eventOccurence = None
-    offer.thing = Thing()
-    offer.thing.type = 'Book'
-    offer.thing.name = 'Test Book'
-    offer.thing.mediaUrls = 'test/urls'
-    offer.thing.idAtProviders = '12345'
+    offer.occasion = Occasion()
+    offer.occasion.thing = Thing()
+    offer.occasion.thing.type = 'Book'
+    offer.occasion.thing.name = 'Test Book'
+    offer.occasion.thing.mediaUrls = 'test/urls'
+    offer.occasion.thing.idAtProviders = '12345'
+    offer.occasion.venue = _create_venue_for_booking_email_test()
     offer.isActive = True
-    offer.venue = _create_venue_for_booking_email_test()
     return offer
 
 

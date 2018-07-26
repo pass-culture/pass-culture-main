@@ -163,7 +163,7 @@ class SpreadsheetExpOffers(LocalProvider):
             if is_filled(self.line['Places Par Horaire']):
                 obj.available = int(self.line['Places Par Horaire'])
         elif isinstance(obj, Mediation):
-            obj.event = self.providables[0]
+            obj.occasion = self.providables[1]
             obj.offerer = self.offerer
             if is_filled(self.line['Texte Accroche']):
                 obj.text = str(self.line['Texte Accroche'])

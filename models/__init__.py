@@ -18,7 +18,7 @@ from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
-from models.thing import Thing
+from models.thing import Thing, ThingType
 from models.user import User
 from models.user_offerer import RightsType
 from models.user_offerer import UserOfferer
@@ -53,6 +53,7 @@ __all__ = (
     'Recommendation',
     'RightsType',
     'Thing',
+    'ThingType',
     'UserOfferer',
     'User',
     'Venue'

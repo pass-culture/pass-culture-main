@@ -21,19 +21,6 @@ from utils.rest import delete, \
     login_or_api_key_required
 from utils.search import get_search_filter
 
-def create_event_occurence(json, occasion, offerer, venue):
-    event_occurence = EventOccurence()
-    event_occurence.event = occasion
-    event_occurence.venue = venue
-    event_occurence.populateFromDict(json, skipped_keys=['offer'])
-    PcObject.check_and_save(event_occurence)
-
-    offer = Offer()
-    offer.eventOccurence = event_occurence
-    offer.offerer = offerer
-    offer.populateFromDict(json['offer'][0])
-    PcObject.check_and_save(offer)
-
 
 @app.route('/occasions', methods=['GET'])
 @login_or_api_key_required

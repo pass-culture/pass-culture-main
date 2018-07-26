@@ -18,6 +18,7 @@ from models.event_occurence import EventOccurence
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
+
 class Offer(PcObject,
             Model,
             DeactivableMixin,
@@ -75,9 +76,9 @@ class Offer(PcObject,
     bookingRecapSent = Column(DateTime,
                               nullable=True)
 
-    @hybrid_property
-    def object(self):
-        return self.thing or self.eventOccurence
+    @property
+    def resolvedOccasion(self):
+        return self.occasion or self.eventOccurence.occasion
 
 
 @event.listens_for(Offer, 'before_insert')

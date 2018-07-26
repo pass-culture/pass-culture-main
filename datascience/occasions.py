@@ -127,7 +127,7 @@ def get_occasions(limit=3, user=None, coords=None):
                               departement_codes)
     occasions = remove_duplicate_things_or_events(occasions)
 
-    log.info('(reco) final occasions (events + things) count (%i)',
-             len(occasions))
+    logger.info('(reco) final occasions (events + things) count (%i)',
+                len(occasions))
 
     return roundrobin(occasions, limit)

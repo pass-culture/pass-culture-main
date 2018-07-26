@@ -9,16 +9,14 @@ from sqlalchemy.sql.expression import func
 from datascience import create_recommendation, create_recommendations
 from models import Booking, Occasion
 from models.api_errors import ApiErrors
-from utils.human_ids import dehumanize, humanize
+from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES,\
-                           RECOMMENDATION_INCLUDES,\
-                           RECOMMENDATION_OFFER_INCLUDES
-from models.event import Event
-from models.mediation import Mediation
-from models.offer import Offer
-from models.pc_object import PcObject
-from models.recommendation import Recommendation
-from models.thing import Thing
+                           RECOMMENDATION_INCLUDES
+from models import EventOccurence,\
+                   Mediation,\
+                   Offer,\
+                   PcObject,\
+                   Recommendation
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, \
     BLOB_UNREAD_NUMBER
 from utils.logger import logger
@@ -34,16 +32,15 @@ def pick_random_occasions_given_blob_size(recos, limit=BLOB_SIZE):
 def find_or_make_recommendation(user, occasion_id,
                                 mediation_id, from_user_id=None):
     query = Recommendation.query.join(Occasion)
-    log.info('(requested) occasion_id=' + str(occasion_id)
+    logger.info('(requested) occasion_id=' + str(occasion_id)
              + ' mediation_id=' + str(mediation_id))
     if not mediation_id and not occasion_id:
         return None
     if mediation_id:
-        filter = (Recommendation.mediationId == mediation_id)
-    elif occasion_id:
-        filter = (Occasion.id == occasion_id)
-    requested_recommendation = query.filter(filter & (Recommendation.userId==user.id))\
-                                    .first()
+        query = query.filter(Recommendation.mediationId == mediation_id)
+    if occasion_id:
+        query = query.filter(Occasion.id == occasion_id)
+    requested_recommendation = query.first()
     if requested_recommendation is None:
         if mediation_id:
             return None

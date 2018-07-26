@@ -6,12 +6,7 @@ from flask import current_app as app
 from pandas import read_csv
 
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.mediation import Mediation
-from models.offer import Offer
-from models.offerer import Offerer
-from models.provider import Provider
-from models.thing import Thing, ThingType
-from models.venue import Venue
+from models import Occasion, Mediation, Offer, Offerer, Provider, Thing, ThingType, Venue
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
 HOUR_REGEX = re.compile(r"(\d)h(\d?)$", re.IGNORECASE)
@@ -72,7 +67,7 @@ class SpreadsheetExpThingOffers(LocalProvider):
                   + ' not found, skipping line')
             self.__next__()
 
-        self.thing = None
+        self.occasion = None
 
         providables = []
 
@@ -102,8 +97,8 @@ class SpreadsheetExpThingOffers(LocalProvider):
         return providables
 
     def updateObject(self, obj):
-        if not isinstance(obj, Thing) and self.thing is None:
-            self.thing = Thing.query.filter_by(idAtProviders=obj.idAtProviders, lastProviderId=Provider.getByClassName(self.__class__.__name__).id).first()
+        if not isinstance(obj, Thing) and self.occasion is None:
+            self.occasion = Occasion.query.filter_by(idAtProviders=obj.idAtProviders, lastProviderId=Provider.getByClassName(self.__class__.__name__).id).first()
         if isinstance(obj, Thing):
             obj.name = self.line['Titre']
             obj.extraData = {'author': self.line['Auteur']}
@@ -112,13 +107,13 @@ class SpreadsheetExpThingOffers(LocalProvider):
             obj.type = ThingType[self.line['Type']]
             self.thing = obj
         elif isinstance(obj, Offer):
-            obj.thing = self.thing
+            obj.occasion = self.occasion
             obj.price = 0
             obj.offerer = self.offerer
             obj.venue = self.venue
             obj.available = int(self.line['Stock'])
         elif isinstance(obj, Mediation):
-            obj.thing = self.thing
+            obj.occasion = self.occasion
             obj.offerer = self.offerer
             if is_filled(self.line['Texte Accroche']):
                 obj.text = str(self.line['Texte Accroche'])

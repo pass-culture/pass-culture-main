@@ -7,9 +7,8 @@ from sqlalchemy.sql.expression import and_, or_
 from models.api_errors import ApiErrors
 from models.event import Event
 from models.event_occurence import EventOccurence
-from models.mediation import Mediation
+from models.occasion import Occasion
 from models.offer import Offer
-from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
@@ -37,9 +36,9 @@ search_models = [
 def join_offers(query):
     for search_model in search_models:
         if search_model == Event:
-            query = query.outerjoin(EventOccurence).outerjoin(search_model)
+            query = query.outerjoin(EventOccurence).join(Occasion).outerjoin(search_model)
         else:
-            query = query.outerjoin(search_model)
+            query = query.join(Occasion).outerjoin(search_model)
     return query
 
 
@@ -59,11 +58,6 @@ def make_offer_query():
     query = Offer.query
     # FILTERS
     filters = request.args.copy()
-    # SEARCH
-    if 'search' in filters and filters['search'].strip() != '':
-        ts_queries = get_ts_queries(filters['search'])
-        query = join_offers(query)\
-                    .filter(and_(*map(query_offers, ts_queries)))
     if 'offererId' in filters:
         query = query.filter(Offer.offererId == dehumanize(filters['offererId']))
         check_offerer_user(query.first_or_404().offerer.query)

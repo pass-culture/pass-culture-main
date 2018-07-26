@@ -29,6 +29,7 @@ def get_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
 
+
 @app.route('/bookings', methods=['POST'])
 @login_required
 @expect_json_data
@@ -50,10 +51,8 @@ def post_booking():
         return jsonify(ae.errors), 400
 
     if not offer.isActive or\
-       not offer.offerer.isActive or\
-       (offer.thing and not offer.thing.isActive) or\
-       (offer.eventOccurence and (not offer.eventOccurence.isActive or
-                                  not offer.eventOccurence.event.isActive)):
+       not offer.resolvedOccasion.venue.managingOfferer.isActive or\
+       (offer.eventOccurence and (not offer.eventOccurence.isActive)):
         ae.addError('offerId', "Cette offre a été retirée. Elle n'est plus valable.")
         return jsonify(ae.errors), 400
 
