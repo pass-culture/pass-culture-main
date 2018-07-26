@@ -2,14 +2,13 @@ import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
 
+const adressInput = Selector("#offerer-address")
+const nameInput = Selector("#offerer-name")
 const navbarLink = Selector('a.navbar-link')
-const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const newOffererButton  = Selector("a.button.is-primary[href='/structures/nouveau']")
-
+const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const sirenInput = Selector('#offerer-siren')
 const sirenErrorInput = Selector('#offerer-siren-error')
-const nameInput = Selector("#offerer-name")
-const adressInput = Selector("#offerer-address")
 const submitButton  = Selector('button.button.is-primary') //connexion
 
 fixture `04_01 OffererPage | Créer une nouvelle structure`

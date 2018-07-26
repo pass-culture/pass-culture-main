@@ -10,7 +10,7 @@ const createOfferButton = Selector("a.button.is-primary[href='/offres/nouveau?li
 
 fixture `06_01 OfferPage | Créer une nouvelle offre`
 
-test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre", async t => {
+test.skip("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre", async t => {
   await t
     .useRole(regularOfferer)
     .navigateTo(ROOT_PATH+'structures/AE/lieux/AE')
@@ -22,9 +22,9 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
     // await t.expect(location.pathname).eql('/offres/nouveau?lieu=AE')
     await t.expect(location.pathname).eql('/offres/nouveau')
 
-  // await t
-    // .click(cancelButton)
-    // await t.expect(location.pathname).eql('/offres')
+  await t
+    .click(cancelButton)
+    await t.expect(location.pathname).eql('/offres')
 })
 
 // annuler renvoie vers /offres

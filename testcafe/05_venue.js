@@ -3,26 +3,27 @@ import { ROOT_PATH } from '../src/utils/config'
 
 import { regularOfferer } from './helpers/roles'
 
-const navbarLink = Selector('a.navbar-link')
-const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
-const offererButton  = Selector("a[href^='/structures/']").withText('THEATRE NATIONAL DE CHAILLOT')
-const newVenueButton  = Selector("a.button.is-secondary").withText("+ Ajouter un lieu")
-
-const siretInput = Selector('#venue-siret')
-const nameInput = Selector("#venue-name")
 const adressInput = Selector("#venue-address")
-const postalCodeInput = Selector("#venue-postalCode")
+const backButton  = Selector('a.back-button')
 const cityInput = Selector("#venue-city")
+const closeButton  = Selector('button.close').withText('OK')
+
 const latitudeInput = Selector("#venue-latitude")
 const longitudeInput = Selector("#venue-longitude")
-const submitButton  = Selector('button.button.is-primary') //créer un lieu
-const updateButton  = Selector('a.button.is-secondary') //modifier un lieu
+const nameInput = Selector("#venue-name")
+const navbarLink = Selector('a.navbar-link')
+const newVenueButton  = Selector("a.button.is-secondary").withText("+ Ajouter un lieu")
+const postalCodeInput = Selector("#venue-postalCode")
 const notificationError  = Selector('.notification.is-danger')
 const notificationSuccess  = Selector('.notification.is-success')
+const offererButton  = Selector("a[href^='/structures/']").withText('THEATRE NATIONAL DE CHAILLOT')
+const siretInput = Selector('#venue-siret')
+const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const siretInputError  = Selector('#venue-siret-error')
-const closeButton  = Selector('button.close').withText('OK')
-const backButton  = Selector('a.back-button')
+const submitButton  = Selector('button.button.is-primary') //créer un lieu
+const updateButton  = Selector('a.button.is-secondary') //modifier un lieu
 const venueName  = Selector('.list-content p.name')
+
 
 fixture `05_01 VenuePage | Créer un nouveau lieu avec succès`
 test("Je rentre une nouveau lieu via son siret avec succès", async t => {
