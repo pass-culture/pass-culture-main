@@ -38,7 +38,7 @@ class Booking(PcObject,
     offerId = Column(BigInteger,
                      ForeignKey("offer.id"),
                      index=True,
-                     nullable=True)
+                     nullable=False)
 
     offer = relationship('Offer',
                          foreign_keys=[offerId],
