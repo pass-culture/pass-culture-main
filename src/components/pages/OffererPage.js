@@ -1,5 +1,10 @@
-// import { requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
+import {
+  Field,
+  Form,
+  requestData,
+  SubmitButton
+} from 'pass-culture-shared'
+// import { requestData } from 'shared/reducers/data'
 
 import get from 'lodash.get'
 import React, { Component } from 'react'
@@ -9,14 +14,10 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VenueItem from '../VenueItem'
-import Form from '../layout/Form'
-import Field from '../layout/Field'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import { closeNotification, showNotification } from '../../reducers/notification'
 import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'
-import { NEW } from '../../utils/config'
 import { offererNormalizer } from '../../utils/normalizers'
 
 
@@ -40,8 +41,7 @@ class OffererPage extends Component {
     return {
       apiPath: isNew ? `offerers/` : `offerers/${offererId}`,
       isNew,
-      method,
-      offererIdOrNew: isNew ? NEW : offererId
+      method
     }
   }
 

@@ -53,6 +53,8 @@ class Form extends Component {
     formatData: data => data,
   }
 
+  static inputsByType = {}
+
   static propTypes = {
     name: PropTypes.string.isRequired,
     action : PropTypes.string.isRequired,

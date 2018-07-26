@@ -1,5 +1,8 @@
-// import { requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
+import {
+  Icon,
+  requestData
+} from 'pass-culture-shared'
+// import { requestData } from 'shared/reducers/data'
 
 import classnames from 'classnames'
 import get from 'lodash.get'
@@ -12,7 +15,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Price from './Price'
-import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import eventSelector from '../selectors/event'
 import maxDateSelector from '../selectors/maxDate'

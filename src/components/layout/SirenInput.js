@@ -1,6 +1,6 @@
+import { BasicInput, Form } from 'pass-culture-shared'
 import React from 'react'
 
-import BasicInput from './form/BasicInput'
 import { removeWhitespaces, formatSiren } from '../../utils/string'
 
 const SirenInput = props => {
@@ -20,7 +20,8 @@ const SirenInput = props => {
   )
 }
 
-// SirenInput.displayValue = formatSiren
-// SirenInput.storeValue = removeWhitespaces
+// bind
+Form.WrappedComponent.inputsByType.siren = SirenInput
+Form.WrappedComponent.inputsByType.siret = SirenInput
 
 export default SirenInput

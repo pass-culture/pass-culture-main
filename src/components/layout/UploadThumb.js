@@ -1,5 +1,5 @@
-// import { requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
+import { requestData } from 'pass-culture-shared'
+// import { requestData } from 'shared/reducers/data'
 
 import classnames from 'classnames'
 import React, { Component } from 'react'
@@ -7,7 +7,6 @@ import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux'
 
-import { NEW } from '../../utils/config'
 
 class UploadThumb extends Component {
 
@@ -80,7 +79,9 @@ class UploadThumb extends Component {
     // const type = image.type.includes('image/') && image.type.split('image/')[1]
     const formData = new FormData()
     formData.append('file', image)
-    console.log('storeKey', storeKey)
+    if (!entityId) {
+      console.warn('entityId not defined for upload')
+    }
     requestData(
       'POST',
       `storage/thumb/${collectionName}/${entityId}/${index}`,
@@ -212,7 +213,6 @@ UploadThumb.defaultProps = {
   border: 25,
   borderRadius: 250,
   height: 250,
-  entityId: NEW,
   index: 0,
   maxSize: 10, // in MB
   width: 250

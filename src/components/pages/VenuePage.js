@@ -1,5 +1,10 @@
-// import { requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
+import {
+  Icon,
+  Field,
+  Form,
+  requestData
+} from 'pass-culture-shared'
+// import { requestData } from 'shared/reducers/data'
 
 import get from 'lodash.get'
 import React, { Component } from 'react'
@@ -9,9 +14,6 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
-import Form from '../layout/Form'
-import Field from '../layout/Field'
-import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import SubmitButton from '../layout/SubmitButton'
 import { addBlockers, removeBlockers } from '../../reducers/blockers'

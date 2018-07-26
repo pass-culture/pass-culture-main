@@ -1,6 +1,6 @@
-//import { mergeFormData, requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
-import { mergeFormData } from 'shared/reducers/form'
+import { mergeFormData, requestData } from 'pass-culture-shared'
+//import { requestData } from 'shared/reducers/data'
+//import { mergeFormData } from 'shared/reducers/form'
 
 import get from 'lodash.get'
 import React, { Component } from 'react'

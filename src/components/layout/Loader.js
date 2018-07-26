@@ -1,7 +1,7 @@
+import { Icon } from 'pass-culture-shared'
 import classnames from 'classnames'
 import React, { Component } from 'react'
 
-import Icon from './Icon'
 
 class Loader extends Component {
 

@@ -1,10 +1,9 @@
-//import { requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
+import { Icon, requestData } from 'pass-culture-shared'
+//import { requestData } from 'shared/reducers/data'
 
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Icon from './Icon'
 import { closeModal, showModal } from '../../reducers/modal'
 
 class DeleteButton extends Component {

@@ -1,6 +1,6 @@
+import { Icon } form 'pass-culture-shared'
 import React from 'react'
 
-import Icon from './Icon'
 
 export default ({ finished, children }) => {
   if (finished) {

@@ -1,8 +1,7 @@
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../layout/Icon'
-// import FormField from '../layout/FormField'
 import PageWrapper from '../layout/PageWrapper'
 
 const CounterPage = () => {

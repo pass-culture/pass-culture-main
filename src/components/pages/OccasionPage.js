@@ -1,14 +1,14 @@
-/*
+
 import {
   Field,
   Form,
   Icon,
+  requestData,
   showNotification,
   SubmitButton
 } from 'pass-culture-shared'
-*/
-import { requestData } from 'shared/reducers/data'
-import { showNotification } from 'shared/reducers/notification'
+//import { requestData } from 'shared/reducers/data'
+//import { showNotification } from 'shared/reducers/notification'
 
 import get from 'lodash.get'
 import React, { Component } from 'react'
@@ -17,10 +17,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Field from '../layout/Field'
-import Form from '../layout/Form'
-import Icon from '../layout/Icon'
-import SubmitButton from '../layout/SubmitButton'
 import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
 import PageWrapper from '../layout/PageWrapper'

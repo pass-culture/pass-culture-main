@@ -1,12 +1,14 @@
-// import { requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
+import {
+  Icon,
+  requestData
+} from 'pass-culture-shared'
+// import { requestData } from 'shared/reducers/data'
 
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
-import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 import OffererItem from '../OffererItem'
 import Search from '../layout/Search'

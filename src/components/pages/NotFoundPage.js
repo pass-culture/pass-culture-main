@@ -1,7 +1,7 @@
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../layout/Icon'
 import PageWrapper from '../layout/PageWrapper'
 
 const NotFoundPage = () => {

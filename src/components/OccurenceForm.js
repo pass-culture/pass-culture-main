@@ -1,12 +1,14 @@
-/*
 import {
+  Field,
+  Form,
+  Icon,
   mergeFormData,
   requestData,
-  resetForm
+  resetForm,
+  SubmitButton
 } from 'pass-culture-shared'
-*/
-import { requestData } from 'shared/reducers/data'
-import { mergeFormData, resetForm } from 'shared/reducers/form'
+// import { requestData } from 'shared/reducers/data'
+// import { mergeFormData, resetForm } from 'shared/reducers/form'
 
 import get from 'lodash.get'
 import moment from 'moment'
@@ -18,10 +20,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Price from './Price'
-import Field from './layout/Field'
-import Form from './layout/Form'
-import Icon from './layout/Icon'
-import SubmitButton from './layout/SubmitButton'
 import eventSelector from '../selectors/event'
 import searchSelector from '../selectors/search'
 import timezoneSelector from '../selectors/timezone'
@@ -357,7 +355,7 @@ class OccurenceForm extends Component {
             !isOfferReadOnly && (
               <Portal node={this.state.$submit}>
                 <SubmitButton className="button is-primary is-small">
-                  Valideeeer
+                  Valider
                 </SubmitButton>
               </Portal>
             )

@@ -1,6 +1,10 @@
-// import { requestData, resetForm } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
-import { resetForm } from 'shared/reducers/form'
+import {
+  Icon,
+  requestData,
+  resetForm
+} from 'pass-culture-shared'
+// import { requestData } from 'shared/reducers/data'
+// import { resetForm } from 'shared/reducers/form'
 
 import classnames from 'classnames'
 import get from 'lodash.get'
@@ -11,7 +15,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Header from './Header'
-import Icon from './Icon'
 import Loader from './Loader'
 import Modal from './Modal'
 import withLogin from '../hocs/withLogin'

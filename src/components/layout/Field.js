@@ -1,8 +1,8 @@
 import classnames from 'classnames'
+import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import Icon from './Icon'
 
 class Field extends Component {
 

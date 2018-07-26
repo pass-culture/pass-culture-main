@@ -1,9 +1,9 @@
 import classnames from 'classnames'
+import { Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
-import Icon from './Icon'
 import { closeModal } from '../../reducers/modal'
 
 const initialState = {

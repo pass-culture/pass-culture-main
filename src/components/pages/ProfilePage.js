@@ -1,12 +1,14 @@
+import {
+  Field,
+  Form,
+  SubmitButton
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
-import Form from '../layout/Form'
-import Field from '../layout/Field'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 import UploadThumb from '../layout/UploadThumb'
 import { showNotification } from '../../reducers/notification'
 import { apiUrl } from '../../utils/config'

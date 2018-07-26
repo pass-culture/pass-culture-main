@@ -1,4 +1,4 @@
-// import { ROOT_PATH } from 'pass-culture-shared'
+import { Form } from 'pass-culture-shared'
 // import { ROOT_PATH } from 'shared/utils/config'
 
 import classnames from 'classnames'
@@ -222,5 +222,7 @@ class GeoInput extends Component {
   }
 }
 
+// bind
+Form.WrappedComponent.inputsByType.geo = GeoInput
 
 export default GeoInput

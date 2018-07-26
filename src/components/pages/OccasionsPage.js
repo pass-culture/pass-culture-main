@@ -1,6 +1,8 @@
-// import { assignData, requestData } from 'pass-culture-shared'
-import { assignData, requestData } from 'shared/reducers/data'
-
+import {
+  assignData,
+  Icon,
+  requestData
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
@@ -8,7 +10,6 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
-import Icon from '../layout/Icon'
 import InfiniteScroller from '../layout/InfiniteScroller'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'

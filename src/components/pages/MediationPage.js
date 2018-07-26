@@ -1,5 +1,5 @@
-// import { requestData } from 'pass-culture-shared'
-import { requestData } from 'shared/reducers/data'
+import { requestData } from 'pass-culture-shared'
+// import { requestData } from 'shared/reducers/data'
 
 import get from 'lodash.get'
 import React, { Component } from 'react'

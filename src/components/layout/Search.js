@@ -1,11 +1,14 @@
 import debounce from 'lodash.debounce'
 import get from 'lodash.get'
-import { assignData, requestData } from 'pass-culture-shared'
+import {
+  assignData,
+  Icon,
+  requestData
+} from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Icon from '../layout/Icon'
 import { closeLoading, showLoading } from '../../reducers/loading'
 
 const KEY_RETURN = 13

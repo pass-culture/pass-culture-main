@@ -1,14 +1,16 @@
+import {
+  Field,
+  Form,
+  SubmitButton
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Form from '../layout/Form'
-import Field from '../layout/Field'
 import Logo from '../layout/Logo'
 import PageWrapper from '../layout/PageWrapper'
-import SubmitButton from '../layout/SubmitButton'
 
 
 class SigninPage extends Component {

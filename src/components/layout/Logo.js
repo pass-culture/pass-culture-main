@@ -21,8 +21,7 @@ const Logo = ({
       className={classnames('logo', className, { 'no-link': noLink })}
       isActive={() => false}
       to='/accueil'
-      {...extraProps}
-    >
+      {...extraProps}>
       <img src={src} alt="Logo" />
     </NavLink>
   )
