@@ -112,7 +112,7 @@ class OccasionItem extends Component {
           </ul>
           <ul className='actions'>
             <li>
-              <NavLink  to={`offres/${occasion.id}${mediationsLength ? '' : `/accroches/nouveau${search}`}`}
+              <NavLink  to={`/offres/${occasion.id}${mediationsLength ? '' : `/accroches/nouveau${search}`}`}
                 className={`button is-small ${mediationsLength ? 'is-secondary' : 'is-primary is-outlined'}`}>
                 <span className='icon'><Icon svg='ico-stars' /></span>
                 <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
@@ -126,7 +126,7 @@ class OccasionItem extends Component {
                   Désactiver
                   </span> : ('Activer')}
               </button>
-              <NavLink  to={`offres/${occasion.id}`} className="button is-secondary is-small">
+              <NavLink  to={`/offres/${occasion.id}`} className="button is-secondary is-small">
                 <Icon svg='ico-pen-r' />
               </NavLink>
             </li>

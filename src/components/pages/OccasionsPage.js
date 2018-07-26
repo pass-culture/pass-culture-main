@@ -8,8 +8,8 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
-import InfiniteScroller from '../layout/InfiniteScroller'
 import Icon from '../layout/Icon'
+import InfiniteScroller from '../layout/InfiniteScroller'
 import PageWrapper from '../layout/PageWrapper'
 import { showModal } from '../../reducers/modal'
 import occasionsSelector from '../../selectors/occasions'
@@ -52,7 +52,6 @@ class OccasionsPage extends Component {
       requestData,
       types,
     } = this.props
-
     requestData(
       'GET',
       `occasions?${objectToQueryString(Object.assign({}, this.state.queryParams, {page: this.state.page}))}`,
@@ -184,11 +183,16 @@ class OccasionsPage extends Component {
                 </button>
               </div>
             </div>
-            <InfiniteScroller className='occasions-list pc-list' handleLoadMore={this.handleDataRequest}>
-              { occasions.map(o =>
-                <OccasionItem key={o.id} occasion={o} />
-              )}
-            </InfiniteScroller>
+            {
+              <InfiniteScroller
+                className='occasions-list pc-list'
+                handleLoadMore={this.handleDataRequest}>
+                {
+                  occasions.map(o =>
+                    <OccasionItem key={o.id} occasion={o} />)
+                }
+              </InfiniteScroller>
+            }
           </div>
         }
       </PageWrapper>

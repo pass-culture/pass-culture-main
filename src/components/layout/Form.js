@@ -80,17 +80,17 @@ class Form extends Component {
   }
 
   static getDerivedStateFromProps = (props, prevState) => {
+    const isEditing = typeof get(props, 'data.id') !== 'undefined'
     return {
-      method: props.method || (get(props, 'data.id') ? 'PATCH' : 'POST'),
+      isEditing,
+      method: props.method || (isEditing ? 'PATCH' : 'POST'),
     }
   }
 
   onMergeForm = () => {
     this.props.removeErrors(this.props.name)
     this.props.mergeFormData(this.props.name, this.state.patch)
-    this.setState({
-      patch: {},
-    })
+    this.setState({ patch: {} })
   }
 
   onSubmit = e => {
@@ -140,6 +140,9 @@ class Form extends Component {
       readOnly,
       size,
     } = this.props
+    const { isEditing } = this.state
+
+    let notHiddenFields = []
     let requiredFields = []
 
     return recursiveMap(children, c => {
@@ -184,11 +187,20 @@ class Form extends Component {
           requiredFields = requiredFields.concat(newChild)
         }
 
+        if (newChild.props.type !== 'hidden') {
+          notHiddenFields = notHiddenFields.concat(newChild)
+        }
+
         return newChild
       } else if (c.type.displayName === 'SubmitButton') {
         return React.cloneElement(c, Object.assign({
           name,
           getDisabled: () => {
+            if (isEditing) {
+              const oneEditedField = notHiddenFields.find(f =>
+                get(formData, f.props.dataKey))
+              return !oneEditedField
+            }
             const missingFields = requiredFields.filter(f =>
               !get(formData, f.props.dataKey))
             return missingFields.length > 0

@@ -360,18 +360,22 @@ class OccasionPage extends Component {
             <hr />
             <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
               <div className="control">
-                { isReadOnly ? (
-                  <NavLink to={`/offres/${get(occasion, 'id')}?modifie`}
-                    className='button is-secondary is-medium'>
-                    Modifier l'offre
-                  </NavLink>
-                ) : (
-                  <NavLink
-                    className="button is-secondary is-medium"
-                    to={`/offres/${get(occasion, 'id')}`}>
-                    Annuler
-                  </NavLink>
-                )}
+                {
+                  isReadOnly
+                    ? (
+                      <NavLink to={`/offres/${get(occasion, 'id')}?modifie`}
+                        className='button is-secondary is-medium'>
+                        Modifier l'offre
+                      </NavLink>
+                    )
+                    : (
+                      <NavLink
+                        className="button is-secondary is-medium"
+                        to={isNew ? '/offres' : `/offres/${get(occasion, 'id')}`}>
+                        Annuler
+                      </NavLink>
+                    )
+                }
               </div>
               <div className="control">
                 {

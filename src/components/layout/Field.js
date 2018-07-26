@@ -44,10 +44,12 @@ class Field extends Component {
   }
 
   onChange = (value) => {
-    // if (value === this.props.value) return
+    if (value === this.props.value) return
 
-    const displayValue = this.props.InputComponent.displayValue || this.props.displayValue
-    const storeValue = this.props.InputComponent.storeValue || this.props.storeValue
+    const displayValue = this.props.InputComponent.displayValue ||
+      this.props.displayValue
+    const storeValue = this.props.InputComponent.storeValue ||
+      this.props.storeValue
 
     this.setState({ value: displayValue(value) })
 

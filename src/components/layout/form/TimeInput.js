@@ -8,18 +8,20 @@ class TimeInput extends Component {
   onInputChange = e => {
     const { onChange, value } = this.props
     if (onChange && value) {
+      // console.log('value', value)
       const [hour, minutes] = e.target.value.split(':')
-      onChange(
-        moment(value)
-          .hours(hour)
-          .minutes(minutes)
-          .toISOString()
-      )
+      // console.log('hour, minutes', hour, minutes)
+      const date = moment(value)
+        .hours(hour)
+        .minutes(minutes)
+      onChange(date && date.toISOString())
     }
   }
 
   render () {
     const { value, tz } = this.props
+
+    //console.log('value', value, moment(value).tz(tz))
     return (
       <BasicInput {...this.props}
         onChange={this.onInputChange}

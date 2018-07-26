@@ -33,6 +33,7 @@ class InfiniteScroller extends Component {
       isFinished,
     } = this.state
     const {
+      handleLoadMore,
       loadScrollRatio,
       scrollingElement
     } = this.props
@@ -51,7 +52,8 @@ class InfiniteScroller extends Component {
       isLoading: isLoading || shouldLoadMore,
       lastScrollTop: scrollTop,
     })
-    shouldLoadMore && this.props.handleLoadMore(this.loadSuccess, this.loadError)
+
+    shouldLoadMore && handleLoadMore(this.loadSuccess, this.loadError)
   }
 
   loadSuccess = (state, action) => {
@@ -95,9 +97,9 @@ class InfiniteScroller extends Component {
     } = this.state
     return (
       <Tag className={classnames('infinite-scroller', className)}>
-        {children}
+        { children }
         { isLoading && renderLoading() }
-        { isFinished && renderFinished()}
+        { isFinished && renderFinished() }
         { errors && renderErrors(errors) }
       </Tag>
     )
