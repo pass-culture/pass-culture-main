@@ -1,5 +1,6 @@
 import get from 'lodash.get'
 import {
+  CancelButton,
   Icon,
   Field,
   Form,
@@ -128,7 +129,7 @@ class VenuePage extends Component {
   render () {
     const {
       match: {
-        params: { offererId }
+        params: { offererId, venueId }
       },
       location: {
         pathname
@@ -257,11 +258,11 @@ class VenuePage extends Component {
                   </NavLink>
                 )
                 : (
-                  <NavLink
+                  <CancelButton
                     className="button is-secondary is-medium"
-                    to={`/structures/${offererId}`}>
+                    to={`/structures/${offererId}/lieux/${venueId}`}>
                     Annuler
-                  </NavLink>
+                  </CancelButton>
                 )
             }
           </div>

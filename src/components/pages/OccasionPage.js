@@ -1,5 +1,6 @@
 import get from 'lodash.get'
 import {
+  CancelButton,
   Field,
   Form,
   Icon,
@@ -356,11 +357,11 @@ class OccasionPage extends Component {
                       </NavLink>
                     )
                     : (
-                      <NavLink
+                      <CancelButton
                         className="button is-secondary is-medium"
                         to={isNew ? '/offres' : `/offres/${get(occasion, 'id')}`}>
                         Annuler
-                      </NavLink>
+                      </CancelButton>
                     )
                 }
               </div>
