@@ -208,7 +208,8 @@ class OccasionPage extends Component {
       type,
       types,
       venue,
-      venues
+      venues,
+      user
     } = this.props
     const {
       apiPath,
@@ -326,6 +327,17 @@ class OccasionPage extends Component {
                             type='select' />
                         )
                     }
+                    {
+                      get(user,
+                        // 'isAdmin'
+                        'id'
+                      ) && (
+                        <Field
+                          label='Offre à rayonnement national'
+                          name='isNational'
+                          type='checkbox' />
+                        )
+                    }
                     { isEventType && (
                       <Field type='number' name='durationMinutes' label='Durée en minutes' required />
                     )}
@@ -428,6 +440,8 @@ export default compose(
 
       const occurences = occurencesSelector(state, venueId, eventId)
 
+      const user = state.user
+
       return {
         search,
         providers,
@@ -441,6 +455,7 @@ export default compose(
         offerer,
         types,
         type,
+        user,
       }
     },
     {
