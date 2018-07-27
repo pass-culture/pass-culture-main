@@ -95,17 +95,38 @@ def test_14_create_booking_should_work_if_user_can_book():
     assert r_create.status_code == 201
 
 
-def test_15_create_booking_should_not_work_if_user_can_not_book():
+def test_15_create_booking_should_not_work_if_user_is_admin():
     # with default admin user
     booking_json = {
         'offerId': humanize(3),
         'recommendationId': humanize(1),
     }
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    assert r_create.json()['canBook'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
     assert r_create.status_code == 400
 
 
-def test_16_create_booking_should_not_work_if_not_enough_credit(app):
+def test_16_create_booking_should_not_work_if_user_can_not_book(app):
+    # Given
+    user = User()
+    user.publicName = 'Cannot Book'
+    user.email = 'user_cannot_book@email.com'
+    user.setPassword('testpsswd')
+    user.departementCode = '93'
+    user.canBook = False
+    PcObject.check_and_save(user)
+
+    booking_json = {
+        'offerId': humanize(3),
+        'recommendationId': humanize(1),
+    }
+    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    print(r_create.json())
+    assert r_create.json()['canBook'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
+    assert r_create.status_code == 400
+
+
+def test_17_create_booking_should_not_work_if_not_enough_credit(app):
     #Given
     user = User()
     user.publicName = 'Test'

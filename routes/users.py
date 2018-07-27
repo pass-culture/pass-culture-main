@@ -6,6 +6,7 @@ import gspread
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 from oauth2client.service_account import ServiceAccountCredentials
+from sqlalchemy.exc import IntegrityError
 
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from models.api_errors import ApiErrors
@@ -69,7 +70,7 @@ def signup():
         str(request.json['contact_ok']).lower() != 'true'):
         e = ApiErrors()
         e.addError('contact_ok', 'Vous devez obligatoirement cocher cette case')
-        return jsonify(e.errors), 400
+        raise e
 
     departement_code = None
     if 'email' in request.json and not is_pro_signup(request.json):
@@ -116,7 +117,7 @@ def signup():
         except ValueError:
             e = ApiErrors()
             e.addError('email', "Adresse non autorisée pour l'expérimentation")
-            return jsonify(e.errors), 400
+            raise e
 
         departement_code = values[email_index][departement_index]
         if departement_code.strip() == '':
@@ -125,7 +126,7 @@ def signup():
 
             e = ApiErrors()
             e.addError('email', "Adresse non autorisée pour l'expérimentation")
-            return jsonify(e.errors), 400
+            raise e
 
     new_user = User(from_dict=request.json)
     new_user.id = None
@@ -153,17 +154,27 @@ def signup():
                                                RightsType.admin)
             # offerer.bookingEmail = new_user.email
             # Don't validate the first user / offerer link so that the user can immediately start loading offers
-            PcObject.check_and_save(new_user, offerer, user_offerer)
+            objects_to_save = [new_user, offerer, user_offerer]
         else:
             offerer = existing_offerer
             new_user.departementCode = offerer.postalCode[:2]
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.editor)
             user_offerer.generate_validation_token()
-            PcObject.check_and_save(user_offerer)
+            objects_to_save = [new_user]
         maybe_send_offerer_validation_email(new_user, offerer, user_offerer)
     else:
-        PcObject.check_and_save(new_user)
+        objects_to_save = [new_user]
+    try:
+        PcObject.check_and_save(*objects_to_save)
+    except IntegrityError as ie:
+        e = ApiErrors()
+        if "check_admin_cannot_book" in str(ie.orig):
+            e.addError('canBook', 'Admin ne peut pas booker')
+        raise e
+
+
+
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
     login_user(new_user)
