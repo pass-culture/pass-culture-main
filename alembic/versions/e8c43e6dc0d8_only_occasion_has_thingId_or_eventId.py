@@ -94,7 +94,6 @@ def upgrade():
     op.drop_column('recommendation', 'thingId')
     op.drop_table('account')
 
-
     # ### end Alembic commands ###
 
 
@@ -113,7 +112,20 @@ def downgrade():
     op.drop_index(op.f('ix_recommendation_occasionId'), table_name='recommendation')
     op.drop_column('recommendation', 'occasionId')
     op.add_column('offer', sa.Column('thingId', sa.BIGINT(), autoincrement=False, nullable=True))
-    op.add_column('offer', sa.Column('offererId', sa.BIGINT(), autoincrement=False, nullable=False))
+
+    # op.add_column('offer', sa.Column('offererId', sa.BIGINT(), autoincrement=False, nullable=False))
+    op.add_column('offer', sa.Column('offererId', sa.BIGINT(), autoincrement=False, nullable=True))
+    op.execute(
+        'UPDATE offer o '
+        'SET "offererId" = ('
+        '   SELECT v."managingOffererId" '
+        '   FROM venue v, occasion occ '
+        '   WHERE v.id = occ."venueId" '
+        '   AND o."occasionId" = occ.id'
+        ')'
+    )
+    op.alter_column('offer', 'offererId', existing_type=sa.BIGINT(), nullable=False)
+
     op.add_column('offer', sa.Column('venueId', sa.BIGINT(), autoincrement=False, nullable=True))
     op.drop_constraint('offer_occasionId_fkey', 'offer', type_='foreignkey')
     op.create_foreign_key('offer_thingId_fkey', 'offer', 'thing', ['thingId'], ['id'])
