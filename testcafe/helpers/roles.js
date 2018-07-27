@@ -6,8 +6,8 @@ import { offererUser } from './users'
 
 export const regularOfferer = Role(ROOT_PATH+'connexion', async t => {
   await t
-    .typeText('#sign-in-identifier', offererUser.email)
-    .typeText('#sign-in-password', offererUser.password)
+    .typeText('#user-identifier', offererUser.email)
+    .typeText('#user-password', offererUser.password)
     .wait(1000)
     .click('button.button.is-primary')
     .wait(1000)
