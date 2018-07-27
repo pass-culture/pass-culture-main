@@ -3,10 +3,10 @@ import { Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
 import { offererUser } from './helpers/users'
 
-const inputUsersIdentifier = Selector('#sign-in-identifier')
-const inputUsersIdentifierError = Selector('#sign-in-identifier-error')
-const inputUsersPassword = Selector('#sign-in-password')
-const inputUsersPasswordError = Selector('#sign-in-password-error')
+const inputUsersIdentifier = Selector('#user-identifier')
+const inputUsersIdentifierError = Selector('#user-identifier-error')
+const inputUsersPassword = Selector('#user-password')
+const inputUsersPasswordError = Selector('#user-password-error')
 const pageTitle = Selector('h1')
 const signInButton  = Selector('button.button.is-primary') //connexion
 const signUpButton  = Selector('.is-secondary') // inscription
