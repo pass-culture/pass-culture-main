@@ -161,11 +161,12 @@ def signup():
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.editor)
             user_offerer.generate_validation_token()
-            objects_to_save = [new_user]
+            objects_to_save = [user_offerer]
         maybe_send_offerer_validation_email(new_user, offerer, user_offerer)
     else:
         objects_to_save = [new_user]
     try:
+
         PcObject.check_and_save(*objects_to_save)
     except IntegrityError as ie:
         e = ApiErrors()
