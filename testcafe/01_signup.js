@@ -12,14 +12,18 @@ const logger = RequestLogger(LOGGER_URL, {
   stringifyRequestBody: true
 })
 
-const contactOkInput = Selector('#sign-up-contact_ok')
-const emailInput = Selector('#sign-up-email')
-const passwordInput = Selector('#sign-up-password')
-const newsletterOkInput = Selector('#sign-up-newsletter_ok')
-const publicNameInput = Selector('#sign-up-publicName')
+const contactOkInput = Selector('#user-contact_ok')
+const emailInput = Selector('#user-email')
+const emailInputError = Selector('#user-email-error')
+const passwordInput = Selector('#user-password')
+const passwordInputError = Selector('#user-password-error')
+const newsletterOkInput = Selector('#user-newsletter_ok')
+const publicNameInput = Selector('#user-publicName')
+const publicNameInputError = Selector('#user-publicName-error')
 const signInButton = Selector('.is-secondary')
 const signUpButton = Selector('button.button.is-primary')
-const sirenInput = Selector('#sign-up-siren')
+const sirenInput = Selector('#user-siren')
+const sirenInputError = Selector('#user-siren-error')
 
 fixture `01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
     .page `${ROOT_PATH+'inscription'}`
