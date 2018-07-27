@@ -189,7 +189,9 @@ class PageWrapper extends Component {
 
 export default compose(
   withRouter,
-  withLogin(),
+  withLogin({
+    failRedirect: '/connexion'
+  }),
   connect(
     state => ({
       blockers: state.blockers,

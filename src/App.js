@@ -33,8 +33,8 @@ class App extends Component {
 
 export default compose(
   withRouter,
-  connect(store => ({
-    modalOpen: store.modal.isActive,
+  connect(state => ({
+    modalOpen: state.modal.isActive,
   }), {
     closeNotification,
   })

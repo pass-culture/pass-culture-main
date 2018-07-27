@@ -8,3 +8,11 @@ Object.assign(Form.WrappedComponent.inputsByType, {
   siren: SirenInput,
   siret: SirenInput
 })
+
+Object.assign(
+  Form.WrappedComponent.defaultProps,
+  {
+      handleFailNotification: () => 'formulaire non validé',
+      handleSuccessNotification: () => 'formulaire validé',
+  }
+)

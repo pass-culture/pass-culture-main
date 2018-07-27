@@ -52,7 +52,7 @@ class SigninPage extends Component {
                     action='/users/signin'
                     layout='sign-in-up'
                     name='user'
-                    storePath='users' >
+                    successNotification={null} >
                     <Field
                       label='Adresse e-mail'
                       name='identifier'

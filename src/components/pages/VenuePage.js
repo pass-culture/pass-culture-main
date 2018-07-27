@@ -196,8 +196,7 @@ class VenuePage extends Component {
             managingOffererId: offererId,
             bookingEmail: get(user, 'email')
           })}
-          readOnly={isReadOnly}
-        >
+          readOnly={isReadOnly}>
           <Field type='hidden' name='managingOffererId' />
           <div className='section'>
             <h2 className='pc-list-title'>
