@@ -34,10 +34,10 @@ class User(PcObject,
 
     departementCode = Column(String(3), nullable=False)
 
-    canBook = Column(Boolean,
-                     nullable=False,
-                     server_default=expression.true(),
-                     default=True)
+    canBookFreeOffers = Column(Boolean,
+                               nullable=False,
+                               server_default=expression.true(),
+                               default=True)
 
     isAdmin = Column(Boolean,
                      nullable=False,

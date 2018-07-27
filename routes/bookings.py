@@ -35,10 +35,6 @@ def get_booking(booking_id):
 def post_booking():
     offer_id = request.json.get('offerId')
     ae = ApiErrors()
-    if current_user.canBook == False:
-        ae.addError('canBook', 'L\'utilisateur n\'a pas le droit de réserver d\'offre')
-        return jsonify(ae.errors), 400
-
     if offer_id is None:
         ae.addError('offerId', 'Vous devez préciser un identifiant d\'offre')
         return jsonify(ae.errors), 400
@@ -47,6 +43,10 @@ def post_booking():
 
     if offer is None:
         ae.addError('offerId', 'offerId ne correspond à aucune offer')
+        return jsonify(ae.errors), 400
+
+    if (current_user.canBookFreeOffers == False) and (offer.price == 0):
+        ae.addError('cannotBookFreeOffers', 'L\'utilisateur n\'a pas le droit de réserver d\'offres gratuites')
         return jsonify(ae.errors), 400
 
     if not offer.isActive or\

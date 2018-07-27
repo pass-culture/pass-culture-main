@@ -16,7 +16,7 @@
     "email": "pctest.admin@btmx.fr",
     "departementCode": "93",
     "isAdmin": true,
-    "canBook": false,
+    "canBookFreeOffers": false,
     "password": "pctestadmin"
   }
 ]
