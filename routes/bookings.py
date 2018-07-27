@@ -51,6 +51,10 @@ def post_booking():
         ae.addError('offerId', 'offerId ne correspond à aucune offer')
         return jsonify(ae.errors), 400
 
+    if (current_user.canBookFreeOffers == False) and (offer.price == 0):
+        ae.addError('cannotBookFreeOffers', 'L\'utilisateur n\'a pas le droit de réserver d\'offres gratuites')
+        return jsonify(ae.errors), 400
+
     managingOfferer = offer.resolvedOccasion.venue.managingOfferer
     if not offer.isActive or\
        not managingOfferer.isActive or\

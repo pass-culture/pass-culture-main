@@ -137,7 +137,7 @@ def signup():
     # we don't validate users yet
     # new_user.generate_validation_token()
     if is_pro_signup(request.json):
-        new_user.canBook = False
+        new_user.canBookFreeOffers = False
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
             offerer = Offerer()
