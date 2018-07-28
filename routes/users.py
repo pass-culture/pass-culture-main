@@ -63,7 +63,7 @@ def signout():
     return jsonify({"global": "Deconnecté"})
 
 
-@app.route("/users", methods=["POST"])
+@app.route("/users/signup", methods=["POST"])
 def signup():
     if 'contact_ok' not in request.json or\
        (request.json['contact_ok'] is not True and
