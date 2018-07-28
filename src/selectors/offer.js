@@ -7,7 +7,8 @@ import offersSelector from './offers'
 export default createCachedSelector(
   state => offersSelector(state),
   (state, eventOccurenceId) => eventOccurenceId,
-  (offers, eventOccurenceId) => {
+  (state, eventOccurenceId, offererId) => offererId,
+  (offers, eventOccurenceId, offererId) => {
     const offer = offers.find(offer =>
       offer.eventOccurenceId === eventOccurenceId)
     if (offer) {
@@ -15,8 +16,13 @@ export default createCachedSelector(
         {
           bookingLimitDatetime: moment(get(offer, 'bookingLimitDatetime'))
             .add(1, 'day')
-            .toISOString()
+            .toISOString(),
+          offererId
         }, offer)
+    }
+    return {
+      eventOccurenceId,
+      offererId,
     }
   }
 )(

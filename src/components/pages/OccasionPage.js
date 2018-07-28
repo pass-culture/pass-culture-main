@@ -20,6 +20,7 @@ import PageWrapper from '../layout/PageWrapper'
 import { showModal, closeModal } from '../../reducers/modal'
 import eventSelector from '../../selectors/event'
 import occasionSelector from '../../selectors/occasion'
+import occasionPatchSelector from '../../selectors/occasionPatch'
 import occurencesSelector from '../../selectors/occurences'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
@@ -201,6 +202,7 @@ class OccasionPage extends Component {
       event,
       location: { search },
       occasion,
+      occasionPatch,
       occurences,
       offerer,
       offerers,
@@ -237,13 +239,7 @@ class OccasionPage extends Component {
             name='occasion'
             handleSuccess={this.handleSuccess}
             handleFail={this.handleFail}
-            patch={Object.assign(
-              {
-                offererId: get(venue, 'managingOffererId'),
-                venueId: get(venue, 'id')
-              },
-              isEventType ? event : thing
-            )}
+            patch={occasionPatch}
             readOnly={isReadOnly}
           >
             <div className='field-group'>
@@ -444,12 +440,15 @@ export default compose(
 
       const user = state.user
 
+      const occasionPatch = occasionPatchSelector(state, event, thing, venue)
+
       return {
         search,
         providers,
         event,
         thing,
         occasion,
+        occasionPatch,
         occurences,
         venues,
         venue,

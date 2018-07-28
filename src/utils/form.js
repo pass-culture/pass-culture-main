@@ -12,7 +12,7 @@ Object.assign(Form.WrappedComponent.inputsByType, {
 Object.assign(
   Form.WrappedComponent.defaultProps,
   {
-      handleFailNotification: () => 'formulaire non validé',
-      handleSuccessNotification: () => 'formulaire validé',
+      handleFailNotification: () => 'Formulaire non validé',
+      handleSuccessNotification: () => 'Formulaire validé',
   }
 )
