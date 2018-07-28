@@ -1,23 +1,45 @@
-import { BasicInput } from 'pass-culture-shared'
-import React from 'react'
+import {
+  BasicInput,
+  removeWhitespaces
+} from 'pass-culture-shared'
+import React, { Component } from 'react'
 
-import { removeWhitespaces, formatSiren } from '../../utils/string'
+import { formatSiren } from '../../utils/string'
 
-const SirenInput = props => {
+class SirenInput extends Component  {
 
-  const onInputChange = e => props.onChange(removeWhitespaces(e.target.value))
+  onChange = e => {
+    this.props.onChange(
+      removeWhitespaces(e.target.value),
+      { isSagaCalling: true }
+    )
+  }
 
-  const input = <BasicInput {...props} type='text' onChange={onInputChange} value={formatSiren(props.value)} />
+  render () {
 
-  if (typeof props.fetchedName !== 'string') return input
-  return (
-    <div className='with-display-name'>
-      {input}
-      <div className='display-name'>
-        {props.fetchedName}
+    const {
+      fetchedName,
+      value
+    } = this.props
+
+    const $input = (
+      <BasicInput
+        {...this.props}
+        onChange={this.onChange}
+        type='text'
+        value={formatSiren(value)} />
+    )
+
+    if (typeof fetchedName !== 'string') return $input
+    return (
+      <div className='with-display-name'>
+        {$input}
+        <div className='display-name'>
+          {fetchedName}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 export default SirenInput

@@ -1,7 +1,7 @@
 import get from 'lodash.get'
 import {
   capitalize,
-  assignErrors,
+  mergeErrors,
   mergeForm
 } from 'pass-culture-shared'
 import { call, put, takeEvery } from 'redux-saga/effects'
@@ -18,7 +18,7 @@ const fromWatchSirenInput = sireType => function*(action) {
   try {
     const response = yield call(fetch, `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${patch[sireType]}`)
     if (response.status === 404)  {
-      yield put(assignErrors({[sireType]: [`${capitalize(sireType)} invalide`]}))
+      yield put(mergeErrors(name, {[sireType]: [`${capitalize(sireType)} invalide`]}))
       yield put(mergeForm(name,
         {
           address: null,
@@ -33,14 +33,15 @@ const fromWatchSirenInput = sireType => function*(action) {
     } else {
       const body = yield call([response, 'json'])
       const dataPath = sireType === SIREN ? 'siege_social' : 'etablissement'
-      yield put(mergeForm(action.name, {
+      yield put(mergeForm(name, {
         address: get(body, `${dataPath}.l4_normalisee`),
         // geo_adresse has postal code and city name which don't belong to this field
         // address: get(body, `${dataPath}.geo_adresse`),
         city: get(body, `${dataPath}.libelle_commune`),
         latitude: parseFloat(get(body, `${dataPath}.latitude`)) || null,
         longitude: parseFloat(get(body, `${dataPath}.longitude`)) || null,
-        name: get(body, `${dataPath}.l1_normalisee`) ||  get(body, `${dataPath}.l1_declaree`) || '',
+        name: get(body, `${dataPath}.l1_normalisee`) ||
+              get(body, `${dataPath}.l1_declaree`) || '',
         postalCode: get(body, `${dataPath}.code_postal`),
         [sireType]: get(body, `${dataPath}.${sireType}`),
       }, {
@@ -49,19 +50,29 @@ const fromWatchSirenInput = sireType => function*(action) {
     }
   } catch(e) {
     console.error(e)
-    yield put(assignErrors({[sireType]: [`Impossible de vérifier le ${capitalize(sireType)} saisi.`]}))
+    yield put(mergeErrors({
+      [sireType]: [`Impossible de vérifier le ${capitalize(sireType)} saisi.`]
+    }))
   }
 }
 
 export function* watchFormActions() {
   yield takeEvery(
     ({ type, config, patch }) =>
-      type === 'MERGE_FORM' && !get(config, 'calledFromSaga') && get(patch, `${SIREN}.length`) === 9,
+      type === 'MERGE_FORM' &&
+      get(config, 'isSagaCalling') &&
+      get(config, 'type') === 'siren' &&
+      !get(config, 'calledFromSaga') &&
+      get(patch, `${SIREN}.length`) === 9,
     fromWatchSirenInput(SIREN)
   )
   yield takeEvery(
     ({ type, config, patch }) =>
-      type === 'MERGE_FORM' && !get(config, 'calledFromSaga') && get(patch, `${SIRET}.length`) === 14,
+      type === 'MERGE_FORM' &&
+      get(config, 'isSagaCalling') &&
+      get(config, 'type') === 'siret' &&
+      !get(config, 'calledFromSaga') &&
+      get(patch, `${SIRET}.length`) === 14,
     fromWatchSirenInput(SIRET)
   )
 }
