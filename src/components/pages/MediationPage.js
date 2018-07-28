@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -28,10 +29,11 @@ class MediationPage extends Component {
   constructor () {
     super()
     this.state = {
+      croppingRect: null,
       inputUrl: '',
       imageUrl: null,
       image: null,
-      croppingRect: null,
+      isLoading: false,
     }
   }
 
@@ -94,14 +96,19 @@ class MediationPage extends Component {
       occasion,
     } = this.props
 
-    // PATCH
-    if (method === 'PATCH' || method === 'POST') {
-      history.push(`/offres/${occasion.id}`)
-      showNotification({
-        text: 'Votre accroche a bien été enregistrée',
-        type: 'success'
-      })
-    }
+    this.setState(
+      { isLoading: false },
+      () => {
+        history.push(`/offres/${occasion.id}`)
+
+        // TODO
+        showNotification({
+          text: 'Votre accroche a bien été enregistrée',
+          type: 'success'
+        })
+      }
+    )
+
   }
 
   onImageChange = (context, image, croppingRect) => {
@@ -195,6 +202,8 @@ class MediationPage extends Component {
       body = formData
     }
 
+    this.setState({ isLoading: true })
+
     requestData(
       isNew ? 'POST' : 'PATCH',
       `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
@@ -226,6 +235,7 @@ class MediationPage extends Component {
       image,
       imageUrl,
       inputUrl,
+      isLoading,
       isNew
     } = this.state
     const backPath = `/offres/${occasionId}`
@@ -234,8 +244,7 @@ class MediationPage extends Component {
       <PageWrapper
         name='mediation'
         backTo={{path: backPath, label: 'Revenir à l\'offre'}}
-        handleDataRequest={this.handleDataRequest}
-        >
+        handleDataRequest={this.handleDataRequest} >
         <section className='section hero'>
           <h2 className='subtitle has-text-weight-bold'>
             {name}
@@ -311,7 +320,9 @@ class MediationPage extends Component {
           </div>
           <div className="control">
             <button
-              className="button is-primary is-medium"
+              className={classnames("button is-primary is-medium", {
+                'is-loading': isLoading
+              })}
               disabled={!image}
               onClick={this.onSubmit}>
               Valider
