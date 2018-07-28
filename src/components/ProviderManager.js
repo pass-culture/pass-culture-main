@@ -10,6 +10,7 @@ import {
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VenueProviderItem from './VenueProviderItem'
@@ -103,6 +104,7 @@ class ProviderManager extends Component {
   render () {
     const {
       formPatch,
+      match: { params: { offererId, venueId } },
       provider,
       providers,
       venue,
@@ -165,8 +167,7 @@ class ProviderManager extends Component {
                       placeholder="Source d\'importation"
                       required
                       size="small"
-                      type="select"
-                    />
+                      type="select" />
                     {
                       provider && identifierRegexp && (
                         <Field
@@ -178,6 +179,13 @@ class ProviderManager extends Component {
                         />
                       )
                     }
+                  </div>
+                  <div className='field level-item level-right'>
+                    <NavLink
+                      className='button is-secondary'
+                      to={`/structures/${offererId}/lieux/${venueId}`} >
+                      Annuler
+                    </NavLink>
                   </div>
                   {
                     provider && (
@@ -196,6 +204,7 @@ class ProviderManager extends Component {
         </ul>
         <div className='has-text-centered'>
           <button className="button is-secondary"
+            disabled={isNew}
             onClick={this.onAddClick}>
             + Importer des offres
           </button>
