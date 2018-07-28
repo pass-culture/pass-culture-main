@@ -95,7 +95,7 @@ const SignupPage = ({ errors }) => {
             !get(form, 'usersById._new_.email') ||
             !get(form, 'usersById._new_.password')
           }
-          path="users"
+          path="users/signup"
           storeKey="users"
         />
         <NavLink to="/connexion" className="button is-secondary">
