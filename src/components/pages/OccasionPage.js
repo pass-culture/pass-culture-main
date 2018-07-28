@@ -245,7 +245,6 @@ class OccasionPage extends Component {
             <div className='field-group'>
               <Field name='name' label="Titre de l'offre" required isExpanded/>
               <Field
-                type='select'
                 label='Type'
                 name='type'
                 optionLabel='label'
@@ -253,7 +252,7 @@ class OccasionPage extends Component {
                 options={types}
                 placeholder="Sélectionnez un type d'offre"
                 required
-              />
+                type='select' />
             </div>
             {
               !isNew && (
@@ -324,30 +323,43 @@ class OccasionPage extends Component {
                         )
                     }
                     {
-                      /*
-                      get(user,
-                        // 'isAdmin'
-                        'id'
-                      ) && (
+                      get(user, 'isAdmin') && (
                         <Field
                           label='Offre à rayonnement national'
                           name='isNational'
                           type='checkbox' />
                         )
-                      */
                     }
                     { isEventType && (
-                      <Field type='number' name='durationMinutes' label='Durée en minutes' required />
+                      <Field
+                        label='Durée en minutes'
+                        name='durationMinutes'
+                        required
+                        type='number' />
                     )}
                   </div>
                   <h2 className='pc-list-title'>Infos artistiques</h2>
                   <div className='field-group'>
-                    <Field type='textarea' name='description' label='Description' maxLength={750} required isExpanded />
-                    <Field name='author' label='Auteur' isExpanded/>
+                    <Field
+                      isExpanded
+                      label='Description'
+                      maxLength={750}
+                      name='description'
+                      required
+                      type='textarea' />
+                    <Field name='author' label='Auteur' isExpanded />
                     {
                       isEventType && [
-                        <Field key={0} name='stageDirector' label='Metteur en scène' isExpanded />,
-                        <Field key={1} name='performer' label='Interprète' isExpanded />
+                        <Field
+                          isExpanded
+                          key={0}
+                          label='Metteur en scène'
+                          name='stageDirector' />,
+                        <Field
+                          isExpanded
+                          key={1}
+                          label='Interprète'
+                          name='performer' />
                       ]
                     }
                   </div>
@@ -356,7 +368,9 @@ class OccasionPage extends Component {
             }
 
             <hr />
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+            <div
+              className="field is-grouped is-grouped-centered"
+              style={{justifyContent: 'space-between'}}>
               <div className="control">
                 {
                   isReadOnly
