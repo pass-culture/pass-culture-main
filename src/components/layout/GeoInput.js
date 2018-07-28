@@ -89,7 +89,7 @@ class GeoInput extends Component {
       value,
     })
     this.onDebouncedFetchSuggestions(value)
-    this.props.onChange({[this.props.name]: value})
+    this.props.onChange(value)
   }
 
   onSelect = (value, item) => {
@@ -153,9 +153,7 @@ class GeoInput extends Component {
       placeholder: true,
       id: 'placeholder',
     }
-
-    console.log('this.props.value', this.props.value, 'value', value)
-
+    
     const $input = readOnly
       ? <BasicInput {...this.props} />
       : (
@@ -188,11 +186,7 @@ class GeoInput extends Component {
               {children}
             </div>
           )}
-          value={
-            (value === "" && !this.props.value)
-              ? value
-              : (this.props.value || value)
-          }
+          value={this.props.value || value}
           wrapperProps={{ className: 'input-wrapper' }}
         />
       )
