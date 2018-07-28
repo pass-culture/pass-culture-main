@@ -27,7 +27,6 @@ class VenuePage extends Component {
   constructor () {
     super()
     this.state = {
-      isEdit: false,
       isLoading: false,
       isNew: false,
       isReadOnly: true
@@ -41,39 +40,28 @@ class VenuePage extends Component {
       offerer,
       venue
     } = nextProps
-    const isEdit = search === '?modifie'
+    const isEdit = search.includes('modifie')
     const isNew = venueId === 'nouveau'
     const isReadOnly = !isNew && !isEdit
-    const offererName = get(offerer, 'name')
-    const routePath = `/structures/${offererId}`
-    const venueName = get(venue, 'name')
     return {
-      apiPath: isNew ? `venues` : `venues/${venueId}`,
-      isLoading: !(get(offerer, 'id') && (get(venue, 'id') || isNew)),
       isNew,
-      method: isNew ? 'POST' : 'PATCH',
-      isEdit,
-      isReadOnly,
-      offererName,
-      routePath,
-      venueName
+      isReadOnly
     }
   }
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match,
+      match: { params: { offererId, venueId } },
       requestData
     } = this.props
-    const { apiPath } = this.state
     requestData(
       'GET',
-      `offerers/${match.params.offererId}`,
+      `offerers/${offererId}`,
       {
         handleSuccess: () => {
           requestData(
             'GET',
-            apiPath,
+            `venues/${venueId ? venueId : ''}`,
             {
               handleSuccess,
               handleFail,
@@ -131,33 +119,26 @@ class VenuePage extends Component {
       match: {
         params: { offererId, venueId }
       },
-      location: {
-        pathname
-      },
       offerer,
       user,
       venue,
     } = this.props
 
     const {
-      offererName,
       isNew,
       isReadOnly,
-      routePath,
-      venueName
     } = this.state
 
     return (
       <PageWrapper
         backTo={{
-          label: offererName === venueName
+          label: get(offerer, 'name') === get(venue, 'name')
             ? 'STRUCTURE'
-            : offererName,
-          path: routePath
+            : get(offerer, 'name'),
+          path:`/structures/${offererId}`
         }}
         name='venue'
-        handleDataRequest={this.handleDataRequest}
-      >
+        handleDataRequest={this.handleDataRequest}>
         <div className='section hero'>
           <h2 className='subtitle has-text-weight-bold'>
             {get(venue, 'name')}
@@ -192,10 +173,7 @@ class VenuePage extends Component {
           action={`/venues/${get(venue, 'id', '')}`}
           handleSuccess={this.handleSuccess}
           name='venue'
-          patch={Object.assign({}, venue, {
-            managingOffererId: offererId,
-            bookingEmail: get(user, 'email')
-          })}
+          patch={venue}
           readOnly={isReadOnly}>
           <Field type='hidden' name='managingOffererId' />
           <div className='section'>
@@ -252,14 +230,18 @@ class VenuePage extends Component {
                 ? (
                   <NavLink
                     className='button is-secondary is-medium'
-                    to={`${pathname}?modifie`} >
+                    to={`/structures/${offererId}/lieux/${venueId}?modifie`} >
                     Modifier le lieu
                   </NavLink>
                 )
                 : (
                   <CancelButton
                     className="button is-secondary is-medium"
-                    to={`/structures/${offererId}/lieux/${venueId}`}>
+                    to={
+                      isNew
+                        ? `/structures/${offererId}`
+                        : `/structures/${offererId}/lieux/${venueId}`
+                    }>
                     Annuler
                   </CancelButton>
                 )
@@ -267,14 +249,14 @@ class VenuePage extends Component {
           </div>
           <div className="control">
             <div className="field is-grouped is-grouped-centered"
-              style={{justifyContent: 'space-between'}}>
+              style={{ justifyContent: 'space-between' }}>
               <div className="control">
                 {
                   isReadOnly
                     ? (
                       <NavLink
                         className='button is-primary is-medium'
-                        to={routePath} >
+                        to={`/structures/${offererId}`} >
                         Terminer
                       </NavLink>
                     )
@@ -297,11 +279,14 @@ class VenuePage extends Component {
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => ({
-      user: state.user,
-      venue: venueSelector(state, ownProps.match.params.venueId),
-      offerer: offererSelector(state, ownProps.match.params.offererId),
-    }),
+    (state, ownProps) => {
+      const { offererId, venueId } = ownProps.match.params
+      return {
+        user: state.user,
+        venue: venueSelector(state, venueId, offererId),
+        offerer: offererSelector(state, offererId),
+      }
+    },
     {
       addBlockers,
       closeNotification,

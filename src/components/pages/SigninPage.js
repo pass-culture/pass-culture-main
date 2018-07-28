@@ -50,7 +50,7 @@ class SigninPage extends Component {
                   </h2>
                   <Form
                     action='/users/signin'
-                    layout='sign-in-up'
+                    layout='vertical'
                     name='user'
                     successNotification={null} >
                     <Field

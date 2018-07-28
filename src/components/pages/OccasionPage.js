@@ -328,6 +328,7 @@ class OccasionPage extends Component {
                         )
                     }
                     {
+                      /*
                       get(user,
                         // 'isAdmin'
                         'id'
@@ -337,6 +338,7 @@ class OccasionPage extends Component {
                           name='isNational'
                           type='checkbox' />
                         )
+                      */
                     }
                     { isEventType && (
                       <Field type='number' name='durationMinutes' label='Durée en minutes' required />
