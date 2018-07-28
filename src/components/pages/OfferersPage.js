@@ -8,7 +8,6 @@ import { NavLink } from 'react-router-dom'
 
 import PageWrapper from '../layout/PageWrapper'
 import OffererItem from '../OffererItem'
-import Search from '../layout/Search'
 import offerersSelector from '../../selectors/offerers'
 
 class OfferersPage extends Component {

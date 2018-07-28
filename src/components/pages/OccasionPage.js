@@ -206,10 +206,8 @@ class OccasionPage extends Component {
       occurences,
       offerer,
       offerers,
-      thing,
       type,
       types,
-      venue,
       venues,
       user
     } = this.props

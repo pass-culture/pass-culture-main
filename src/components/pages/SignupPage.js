@@ -12,16 +12,14 @@ import { compose } from 'redux'
 
 import Logo from '../layout/Logo'
 import PageWrapper from '../layout/PageWrapper'
-import { showNotification } from '../../reducers/notification'
 
 
 class SignupPage extends Component {
-  
+
   render () {
     const {
       errors,
-      sirenName,
-      showNotification
+      sirenName
     } = this.props
     return (
       <PageWrapper name="sign-up" fullscreen>
@@ -110,7 +108,6 @@ export default compose(
     state => ({
       sirenName: get(state, `form.user.name`),
       user: state.user,
-    }),
-    { showNotification }
+    })
   )
 )(SignupPage)

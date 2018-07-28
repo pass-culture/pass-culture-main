@@ -36,9 +36,7 @@ class VenuePage extends Component {
   static getDerivedStateFromProps (nextProps) {
     const {
       location: { search },
-      match: { params: { offererId, venueId } },
-      offerer,
-      venue
+      match: { params: { venueId } }
     } = nextProps
     const isEdit = search.includes('modifie')
     const isNew = venueId === 'nouveau'
@@ -120,7 +118,6 @@ class VenuePage extends Component {
         params: { offererId, venueId }
       },
       offerer,
-      user,
       venue,
     } = this.props
 

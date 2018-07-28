@@ -2,6 +2,7 @@ import classnames from 'classnames'
 import L from 'leaflet'
 import debounce from 'lodash.debounce'
 import React, { Component } from 'react'
+import { BasicInput } from 'pass-culture-shared'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
@@ -153,48 +154,57 @@ class GeoInput extends Component {
       id: 'placeholder',
     }
 
+    console.log('this.props.value', this.props.value, 'value', value)
 
-    const input = <Autocomplete
-      autocomplete='street-address'
-      getItemValue={value => value.label}
-      inputProps={{
-        className: className || 'input',
-        id,
-        placeholder,
-        readOnly,
-        required,
-      }}
-      items={[].concat(suggestions || defaultSuggestion)}
-      onChange={this.onTextChange}
-      onSelect={this.onSelect}
-      readOnly={readOnly}
-      renderItem={({id, label, placeholder}, highlighted) => (
-        <div
-          className={classnames({
-            item: true,
-            highlighted,
+    const $input = readOnly
+      ? <BasicInput {...this.props} />
+      : (
+        <Autocomplete
+          autocomplete='street-address'
+          getItemValue={value => value.label}
+          inputProps={{
+            className: className || 'input',
+            id,
             placeholder,
-          })}
-          key={id}
-        >{label}</div>
-      )}
-      renderMenu={children => (
-        <div className={classnames('menu', {empty: children.length === 0})}>
-          {children}
-        </div>
-      )}
-      value={this.props.value || value}
-      wrapperProps={{ className: 'input-wrapper' }}
-    />
+            readOnly,
+            required,
+          }}
+          items={[].concat(suggestions || defaultSuggestion)}
+          onChange={this.onTextChange}
+          onSelect={this.onSelect}
+          readOnly={readOnly}
+          renderItem={({id, label, placeholder}, highlighted) => (
+            <div
+              className={classnames({
+                item: true,
+                highlighted,
+                placeholder,
+              })}
+              key={id}
+            >{label}</div>
+          )}
+          renderMenu={children => (
+            <div className={classnames('menu', {empty: children.length === 0})}>
+              {children}
+            </div>
+          )}
+          value={
+            (value === "" && !this.props.value)
+              ? value
+              : (this.props.value || value)
+          }
+          wrapperProps={{ className: 'input-wrapper' }}
+        />
+      )
 
-    if (!this.props.withMap) return input
+    if (!this.props.withMap) return $input
     const {
       latitude, longitude, zoom
     } = position
 
     return (
       <div className='form-geo'>
-        {input}
+        {$input}
         <Map
           center={[latitude, longitude]}
           zoom={zoom}

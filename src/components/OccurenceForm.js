@@ -219,7 +219,6 @@ class OccurenceForm extends Component {
   render () {
 
     const {
-      eventId,
       formBeginningDatetime,
       isEditing,
       isEventOccurenceReadOnly,
@@ -228,9 +227,7 @@ class OccurenceForm extends Component {
       occurence,
       occurences,
       offer,
-      tz,
-      venue,
-      venueId
+      tz
     } = this.props
 
     const beginningDatetime = formBeginningDatetime ||
