@@ -1,5 +1,4 @@
 import {
-  Icon,
   requestData
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -59,28 +58,17 @@ class OfferersPage extends Component {
         </p>
 
         <br />
-        {false && (
-          <nav className="level is-mobile">
-            <Search
-              collectionName="offerers"
-              config={{
-                isMergingArray: false,
-                key: 'searchedOfferers'
-              }}
-              isLoading
-            />
-          </nav>
-        )}
+        <NavLink to={`/structures/nouveau`} className="button is-primary is-outlined">
+          + Rattacher une structure
+        </NavLink>
+
+        <br />
+        <br />
+        <br />
         <ul className="main-list offerers-list">
           {offerers.map(o =>
             <OffererItem key={o.id} offerer={o} />)}
         </ul>
-        <NavLink to={`/structures/nouveau`} className="button is-primary is-outlined">
-          {false && <span className='icon'>
-                    <Icon svg={'ico-guichet-w'} />
-                  </span>}
-          + Rattacher une structure
-        </NavLink>
       </PageWrapper>
     )
   }
