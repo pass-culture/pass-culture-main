@@ -228,7 +228,7 @@ class OccasionPage extends Component {
         name='offer'
         handleDataRequest={this.handleDataRequest}>
         <div className='section'>
-          <h1 className='pc-title'>
+          <h1 className='main-title'>
             { isNew ? "Ajouter une offre" : "Détails de l'offre" }
           </h1>
           <p className='subtitle'>
@@ -288,7 +288,7 @@ class OccasionPage extends Component {
             {
               showAllForm && (
                 <div>
-                  <h2 className='pc-list-title'>
+                  <h2 className='main-list-title'>
                     Infos pratiques
                   </h2>
                   <div className='field-group'>
@@ -338,7 +338,7 @@ class OccasionPage extends Component {
                         type='number' />
                     )}
                   </div>
-                  <h2 className='pc-list-title'>Infos artistiques</h2>
+                  <h2 className='main-list-title'>Infos artistiques</h2>
                   <div className='field-group'>
                     <Field
                       isExpanded

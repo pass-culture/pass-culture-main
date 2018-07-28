@@ -50,7 +50,7 @@ class OfferersPage extends Component {
       <PageWrapper name="offerers"
         handleDataRequest={this.handleDataRequest}
       >
-        <h1 className="pc-title">
+        <h1 className="main-title">
           Vos structures
         </h1>
 
@@ -71,7 +71,7 @@ class OfferersPage extends Component {
             />
           </nav>
         )}
-        <ul className="pc-list offerers-list">
+        <ul className="main-list offerers-list">
           {offerers.map(o =>
             <OffererItem key={o.id} offerer={o} />)}
         </ul>

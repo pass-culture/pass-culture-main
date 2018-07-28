@@ -240,7 +240,7 @@ class MediationPage extends Component {
           <h2 className='subtitle has-text-weight-bold'>
             {name}
           </h2>
-          <h1 className='pc-title'>
+          <h1 className='main-title'>
             {isNew ? 'Créez' : 'Modifiez'} une accroche
           </h1>
           <p className='subtitle'>

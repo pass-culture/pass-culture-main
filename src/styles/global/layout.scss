@@ -35,14 +35,14 @@ hr {
   @include dotted($red);
 }
 
-.pc-title {
+.main-title {
   color: $grey;
   font-style: italic;
   margin-bottom: 2rem;
   font-size: $size-1;
 }
 
-.pc-list-title {
+.main-list-title {
   border-bottom: thin solid;
   display: block;
   margin: 1.5rem 0;
@@ -61,7 +61,7 @@ hr {
 }
 
 
-ul.pc-list {
+ul.main-list {
   margin-bottom: 1rem;
   > li {
     display: flex;

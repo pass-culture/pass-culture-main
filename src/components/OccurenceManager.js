@@ -57,7 +57,7 @@ class OccurenceManager extends Component {
           <div className='subtitle has-text-weight-bold has-text-left is-uppercase'>
             {get(event, 'name')}
           </div>
-          <div className="pc-title has-text-left">
+          <div className="main-title has-text-left">
             Dates, horaires et prix
           </div>
           <table className='table is-hoverable occurence-table'>

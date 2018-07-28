@@ -144,7 +144,7 @@ class VenuePage extends Component {
             {get(venue, 'name')}
           </h2>
 
-          <h1 className='pc-title'>
+          <h1 className='main-title'>
             Lieu
           </h1>
 
@@ -177,7 +177,7 @@ class VenuePage extends Component {
           readOnly={isReadOnly}>
           <Field type='hidden' name='managingOffererId' />
           <div className='section'>
-            <h2 className='pc-list-title'>
+            <h2 className='main-list-title'>
               IDENTIFIANTS
               <span className='is-pulled-right is-size-7 has-text-grey'>
                 Les champs marqués d'un <span className='required-legend'> * </span> sont obligatoires
@@ -190,7 +190,7 @@ class VenuePage extends Component {
             </div>
           </div>
           <div className='section'>
-            <h2 className='pc-list-title'>
+            <h2 className='main-list-title'>
               ADRESSE
             </h2>
             <div className='field-group'>

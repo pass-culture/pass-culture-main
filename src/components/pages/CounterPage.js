@@ -12,7 +12,7 @@ const CounterPage = () => {
       {
       /*
       <div className='section hero'>
-        <h1 className="pc-title">Guichet</h1>
+        <h1 className="main-title">Guichet</h1>
         <p className="subtitle">
           Enregistrez les codes de réservations présentés par les porteurs du Pass.
         </p>

@@ -104,7 +104,7 @@ class OffererPage extends Component {
           <h2 className='subtitle has-text-weight-bold'>
             {get(offerer, 'name')}
           </h2>
-          <h1 className="pc-title">Structure</h1>
+          <h1 className="main-title">Structure</h1>
           <p className="subtitle">
             Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
           </p>
@@ -144,10 +144,10 @@ class OffererPage extends Component {
             </div>
           ) : (
             <div className='section'>
-              <h2 className='pc-list-title'>
+              <h2 className='main-list-title'>
                 LIEUX
               </h2>
-              <ul className='pc-list venues-list'>
+              <ul className='main-list venues-list'>
                 { venues.map(v => <VenueItem key={v.id} venue={v} />) }
               </ul>
               <div className='has-text-centered'>

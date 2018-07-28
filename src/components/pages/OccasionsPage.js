@@ -118,7 +118,7 @@ class OccasionsPage extends Component {
             <span className='icon'><Icon svg='ico-offres-w' /></span>
             <span>Créer une offre</span>
           </NavLink>
-          <h1 className='pc-title'>
+          <h1 className='main-title'>
             Vos offres
           </h1>
         </div>
@@ -192,7 +192,7 @@ class OccasionsPage extends Component {
             </div>
             {
               <InfiniteScroller
-                className='occasions-list pc-list'
+                className='occasions-list main-list'
                 handleLoadMore={this.handleDataRequest}>
                 {
                   occasions.map(o =>

@@ -38,7 +38,7 @@ class OfferersList extends Component {
       offerers
     } = this.props
     return (
-      <ul className="pc-list offerers-list">
+      <ul className="main-list offerers-list">
         {offerers && offerers.map(o =>
           <OffererItem key={o.id} offerer={o} />)}
       </ul>

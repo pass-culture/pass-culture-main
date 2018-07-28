@@ -119,13 +119,13 @@ class ProviderManager extends Component {
 
     return (
       <div className='provider-manager section'>
-        <h2 className='pc-list-title'>
+        <h2 className='main-list-title'>
           IMPORTATIONS D'OFFRES
           <span className='is-pulled-right is-size-7 has-text-grey'>
             Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
           </span>
         </h2>
-        <ul className='pc-list'>
+        <ul className='main-list'>
           {
             venueProviders.map((vp, index) => (
                 <VenueProviderItem

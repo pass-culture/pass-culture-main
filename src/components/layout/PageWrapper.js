@@ -171,7 +171,7 @@ class PageWrapper extends Component {
                       </NavLink>
                     )
                   }
-                  <div className='pc-content'>
+                  <div className='main-content'>
                     {content}
                   </div>
                   {loading && <Loader />}

@@ -33,7 +33,7 @@ class ProfilePage extends Component {
     return (
       <PageWrapper name="profile" backTo={{path: '/accueil', label: 'Accueil'}}>
         <div className='section'>
-          <h1 className='pc-title'>Profil</h1>
+          <h1 className='main-title'>Profil</h1>
         </div>
         <Form
           action='users/me'
