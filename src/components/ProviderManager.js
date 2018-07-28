@@ -16,6 +16,7 @@ import { compose } from 'redux'
 import VenueProviderItem from './VenueProviderItem'
 import providerSelector from '../selectors/provider'
 import providersSelector from '../selectors/providers'
+import venueProviderSelector from '../selectors/venueProvider'
 import venueProvidersSelector from '../selectors/venueProviders'
 
 class ProviderManager extends Component {
@@ -108,6 +109,7 @@ class ProviderManager extends Component {
       provider,
       providers,
       venue,
+      venueProvider,
       venueProviders
     } = this.props
     const {
@@ -145,7 +147,7 @@ class ProviderManager extends Component {
                   className='level'
                   handleSuccess={this.handleSuccess}
                   name='venueProvider'
-                  patch={Object.assign({ venueId: get(venue, 'id') }, formPatch)}>
+                  patch={venueProvider} >
                   <Field type='hidden' name='venueId' />
                   {
                     withError && (
@@ -220,7 +222,7 @@ export default compose(
     (state, ownProps) => {
       const providers = providersSelector(state)
 
-      const formPatch = get(state, 'form.venueProvider.data')
+      const formPatch = get(state, 'form.venueProvider')
 
       let provider
       if (providers.length === 1) {
@@ -230,12 +232,15 @@ export default compose(
         provider = providerSelector(state, providerId)
       }
 
+      const venueId = get(ownProps, 'venue.id')
+
       return {
         formPatch,
         provider,
         providers,
         user: state.user,
-        venueProviders: venueProvidersSelector(state, get(ownProps, 'venue.id'))
+        venueProvider: venueProviderSelector(state, venueId),
+        venueProviders: venueProvidersSelector(state, venueId)
       }
     },
     { mergeForm, requestData }
