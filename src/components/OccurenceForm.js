@@ -45,7 +45,7 @@ class OccurenceForm extends Component {
     } = this.props
 
     // IF AN OFFER IS ASSOCIATED WE NEED TO DELETE IT FIRST
-    if (offer) {
+    if (get(offer, 'id')) {
       requestData(
         'DELETE',
         `offers/${offer.id}`,
@@ -243,10 +243,7 @@ class OccurenceForm extends Component {
           handleSuccess={this.handleEventOccurenceSuccessData}
           layout='input-only'
           name={`occurence${get(occurence, 'id', '')}`}
-          patch={Object.assign({
-            eventId,
-            venueId
-          }, occurence)}
+          patch={occurence}
           readOnly={isEventOccurenceReadOnly}
           size="small"
           TagName={null} >
@@ -306,10 +303,7 @@ class OccurenceForm extends Component {
           layout='input-only'
           key={1}
           name={`offer${get(offer, 'id', '')}`}
-          patch={Object.assign({
-            eventOccurenceId: get(occurence, 'id'),
-            offererId: get(venue, 'managingOffererId')
-          }, offer)}
+          patch={offer}
           size="small"
           readOnly={isOfferReadOnly}
           TagName={null} >
@@ -323,8 +317,9 @@ class OccurenceForm extends Component {
               isOfferReadOnly
                 ? <Price value={get(offer, 'price')} />
                 : <Field
-                    name="price"
+                    name='price'
                     placeholder='Gratuit'
+                    type='number'
                     title='Prix'  />
             }
 
@@ -397,33 +392,40 @@ export default compose(
       const search = searchSelector(state, ownProps.location.search)
       const { eventOccurenceIdOrNew, offerIdOrNew } = (search || {})
 
-      const occurence = occurenceSelector(state, ownProps.occurence)
+      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+      const { eventId, venueId } = (occasion || {})
+
+      const occurence = occurenceSelector(state, ownProps.occurence, eventId, venueId)
+      const occurenceId = get(occurence, 'id')
 
       const isEventOccurenceReadOnly = !eventOccurenceIdOrNew ||
-        (eventOccurenceIdOrNew === 'nouvelle' && occurence) ||
+        (eventOccurenceIdOrNew === 'nouvelle' && occurenceId) ||
         (
           eventOccurenceIdOrNew !== 'nouvelle' &&
-          get(occurence, 'id') !== eventOccurenceIdOrNew
+          occurenceId !== eventOccurenceIdOrNew
         ) ||
         offerIdOrNew ||
         !ownProps.isFullyEditable
 
-      const offer = offerSelector(state, get(ownProps, 'occurence.id'))
-      const isOfferReadOnly = !occurence ||
+      const venue = venueSelector(state, venueId)
+
+      const offer = offerSelector(state,
+        get(ownProps, 'occurence.id'),
+        get(venue, 'managingOffererId')
+      )
+      const offerId = get(offer, 'id')
+
+      const isOfferReadOnly = !occurenceId ||
         !eventOccurenceIdOrNew ||
         eventOccurenceIdOrNew === "nouvelle" ||
         !offerIdOrNew ||
-        (offerIdOrNew === 'nouveau' && offer) ||
+        (offerIdOrNew === 'nouveau' && offerId) ||
         (
           offerIdOrNew !== 'nouveau' &&
-          get(offer, 'id') !== offerIdOrNew
+          offerId !== offerIdOrNew
         )
 
       const isEditing = !isEventOccurenceReadOnly || !isOfferReadOnly
-
-      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
-      const { eventId, venueId } = (occasion || {})
-
 
       return {
         event: eventSelector(state, eventId),
@@ -431,19 +433,19 @@ export default compose(
         eventOccurenceIdOrNew,
         formBeginningDatetime: get(
           state,
-          `form.occurence${get(occurence, 'id', '')}.beginningDatetime`
+          `form.occurence${occurenceId || ''}.beginningDatetime`
         ),
         formBookingLimitDatetime: get(
           state,
-          `form.offer${get(offer, 'id', '')}.bookingLimitDatetime`
+          `form.offer${offerId || ''}.bookingLimitDatetime`
         ),
         formEndDatetime: get(
           state,
-          `form.occurence${get(occurence, 'id', '')}.endDatetime`
+          `form.occurence${occurenceId || ''}.endDatetime`
         ),
         formPrice: get(
           state,
-          `form.offer${get(offer, 'id', '')}.price`
+          `form.offer${offerId || ''}.price`
         ),
         isEditing,
         isEventOccurenceReadOnly,
@@ -454,7 +456,7 @@ export default compose(
         occurences: occurencesSelector(state, venueId, eventId),
         offer,
         tz: timezoneSelector(state, venueId),
-        venue: venueSelector(state, venueId),
+        venue,
         venueId
       }
     },

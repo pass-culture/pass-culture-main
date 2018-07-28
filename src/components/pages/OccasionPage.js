@@ -20,6 +20,7 @@ import PageWrapper from '../layout/PageWrapper'
 import { showModal, closeModal } from '../../reducers/modal'
 import eventSelector from '../../selectors/event'
 import occasionSelector from '../../selectors/occasion'
+import occasionPatchSelector from '../../selectors/occasionPatch'
 import occurencesSelector from '../../selectors/occurences'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
@@ -201,6 +202,7 @@ class OccasionPage extends Component {
       event,
       location: { search },
       occasion,
+      occasionPatch,
       occurences,
       offerer,
       offerers,
@@ -208,7 +210,8 @@ class OccasionPage extends Component {
       type,
       types,
       venue,
-      venues
+      venues,
+      user
     } = this.props
     const {
       apiPath,
@@ -236,19 +239,12 @@ class OccasionPage extends Component {
             name='occasion'
             handleSuccess={this.handleSuccess}
             handleFail={this.handleFail}
-            patch={Object.assign(
-              {
-                offererId: get(venue, 'managingOffererId'),
-                venueId: get(venue, 'id')
-              },
-              isEventType ? event : thing
-            )}
+            patch={occasionPatch}
             readOnly={isReadOnly}
           >
             <div className='field-group'>
               <Field name='name' label="Titre de l'offre" required isExpanded/>
               <Field
-                type='select'
                 label='Type'
                 name='type'
                 optionLabel='label'
@@ -256,7 +252,7 @@ class OccasionPage extends Component {
                 options={types}
                 placeholder="Sélectionnez un type d'offre"
                 required
-              />
+                type='select' />
             </div>
             {
               !isNew && (
@@ -326,18 +322,44 @@ class OccasionPage extends Component {
                             type='select' />
                         )
                     }
+                    {
+                      get(user, 'isAdmin') && (
+                        <Field
+                          label='Offre à rayonnement national'
+                          name='isNational'
+                          type='checkbox' />
+                        )
+                    }
                     { isEventType && (
-                      <Field type='number' name='durationMinutes' label='Durée en minutes' required />
+                      <Field
+                        label='Durée en minutes'
+                        name='durationMinutes'
+                        required
+                        type='number' />
                     )}
                   </div>
                   <h2 className='pc-list-title'>Infos artistiques</h2>
                   <div className='field-group'>
-                    <Field type='textarea' name='description' label='Description' maxLength={750} required isExpanded />
-                    <Field name='author' label='Auteur' isExpanded/>
+                    <Field
+                      isExpanded
+                      label='Description'
+                      maxLength={750}
+                      name='description'
+                      required
+                      type='textarea' />
+                    <Field name='author' label='Auteur' isExpanded />
                     {
                       isEventType && [
-                        <Field key={0} name='stageDirector' label='Metteur en scène' isExpanded />,
-                        <Field key={1} name='performer' label='Interprète' isExpanded />
+                        <Field
+                          isExpanded
+                          key={0}
+                          label='Metteur en scène'
+                          name='stageDirector' />,
+                        <Field
+                          isExpanded
+                          key={1}
+                          label='Interprète'
+                          name='performer' />
                       ]
                     }
                   </div>
@@ -346,7 +368,9 @@ class OccasionPage extends Component {
             }
 
             <hr />
-            <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+            <div
+              className="field is-grouped is-grouped-centered"
+              style={{justifyContent: 'space-between'}}>
               <div className="control">
                 {
                   isReadOnly
@@ -428,12 +452,17 @@ export default compose(
 
       const occurences = occurencesSelector(state, venueId, eventId)
 
+      const user = state.user
+
+      const occasionPatch = occasionPatchSelector(state, event, thing, venue)
+
       return {
         search,
         providers,
         event,
         thing,
         occasion,
+        occasionPatch,
         occurences,
         venues,
         venue,
@@ -441,6 +470,7 @@ export default compose(
         offerer,
         types,
         type,
+        user,
       }
     },
     {

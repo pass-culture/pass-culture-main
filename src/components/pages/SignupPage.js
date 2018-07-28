@@ -16,14 +16,7 @@ import { showNotification } from '../../reducers/notification'
 
 
 class SignupPage extends Component {
-
-  componentDidUpdate () {
-    const { history, user } = this.props
-    if (user) {
-      history.push('/structures')
-    }
-  }
-
+  
   render () {
     const {
       errors,
@@ -46,14 +39,11 @@ class SignupPage extends Component {
                   </h2>
                   <Form
                     name='user'
-                    action='/users'
-                    layout='sign-in-up'
-                    handleSuccess={() => {
-                      showNotification({
-                        text: 'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.',
-                        type: 'success'
-                      })
-                    }}>
+                    action='/users/signup'
+                    layout='vertical'
+                    handleSuccessNotification={() =>
+                      'Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d\'inscription par e-mail.'}
+                    handleSuccessRedirect={() => '/structures'}>
                     <Field
                       name='email'
                       label='Adresse e-mail'
@@ -85,13 +75,13 @@ class SignupPage extends Component {
                       required
                       type='siren' />
                     <Field
+                      label='Je souhaite recevoir les actualités du Pass Culture.'
                       name="newsletter_ok"
-                      type="checkbox"
-                      label='Je souhaite recevoir les actualités du Pass Culture.' />
+                      type="checkbox" />
                     <Field
+                      label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
                       name="contact_ok"
                       type="checkbox"
-                      label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
                       required />
                     <div className="errors">{errors}</div>
                     <div className='field buttons-field'>

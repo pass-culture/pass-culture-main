@@ -68,3 +68,8 @@ input[type="checkbox"], input[type="radio"] {
   }
 
 }
+
+.field-group .field.is-horizontal .field-body .field:not(.is-expanded) input[type=checkbox] {
+  width: 1.1875em;
+  margin-top: 0.5rem;
+}
