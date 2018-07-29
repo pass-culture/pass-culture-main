@@ -59,7 +59,7 @@ fixture `03_01 OfferersPage | Je me connecte pour la première fois en tant que 
       await t
         .click(firstArrow)
         const location = await t.eval(() => window.location)
-        await t.expect(location.pathname).eql('/structures/AE')
+        await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
         await t.expect(subTitle.innerText).eql('THEATRE NATIONAL DE CHAILLOT')
     })
 

@@ -13,7 +13,7 @@ program
 
   .option('testcafe', 'testcafe')
 
-  .option('-b, --browser [type]', 'Define browser', 'chrome')
+  .option('-b, --browser [type]', 'Define browser', 'chrome:headless')
   .option('-e, --environment [type]', 'Define environment', 'development')
   .option('-f, --file [type]', 'Define file', '')
 

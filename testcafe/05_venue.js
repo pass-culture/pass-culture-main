@@ -12,17 +12,19 @@ const latitudeInput = Selector("#venue-latitude")
 const longitudeInput = Selector("#venue-longitude")
 const nameInput = Selector("#venue-name")
 const navbarLink = Selector('a.navbar-link')
-const newVenueButton  = Selector("a.button.is-secondary").withText("+ Ajouter un lieu")
+const newVenueButton  = Selector("a.button.is-secondary")
+                          .withText("+ Ajouter un lieu")
 const postalCodeInput = Selector("#venue-postalCode")
 const notificationError  = Selector('.notification.is-danger')
 const notificationSuccess  = Selector('.notification.is-success')
-const offererButton  = Selector("a[href^='/structures/']").withText('THEATRE NATIONAL DE CHAILLOT')
+const offererButton  = Selector("a[href^='/structures/']")
+                        .withText('THEATRE NATIONAL DE CHAILLOT')
 const siretInput = Selector('#venue-siret')
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const siretInputError  = Selector('#venue-siret-error')
 const submitButton  = Selector('button.button.is-primary') //créer un lieu
 const updateButton  = Selector('a.button.is-secondary') //modifier un lieu
-const venueName  = Selector('.list-content p.name')
+const venueButton  = Selector("#a-theatre-national-de-chaillot")
 
 
 fixture `05_01 VenuePage | Créer un nouveau lieu avec succès`
@@ -55,7 +57,7 @@ test("Je rentre une nouveau lieu via son siret avec succès", async t => {
   await t
     .click(submitButton)
     const location = await t.eval(() => window.location)
-    await t.expect(location.pathname).eql('/structures/AE/lieux/AE')
+    await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
     .expect(notificationSuccess.innerText).eql('Lieu ajouté avec succès !OK')
 
     // close notification div
@@ -131,17 +133,26 @@ fixture `05_03 VenuePage |  Component | Je suis sur la page de détail du lieu`
   .beforeEach( async t => {
     await t
       .useRole(regularOfferer)
-      .navigateTo(ROOT_PATH+'structures/AE/lieux/AE')
+
+      // navigation
+      await t
+        .click(navbarLink)
+        .click(offerersNavbarLink)
+        .click(offererButton)
+        .wait(500)
+        .click(venueButton)
+
     })
 
 test("Je vois les détails du lieu", async t => {
 
   // Navigate to offerer Detail page and found venue added
   await t
-  .click(backButton)
+    .click(backButton)
+
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures/AE')
-  .expect(venueName.innerText).eql('THEATRE NATIONAL DE CHAILLOT')
+  await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
+         .expect(venueButton.innerText).eql('THEATRE NATIONAL DE CHAILLOT')
 
 })
 
