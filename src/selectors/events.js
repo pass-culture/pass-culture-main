@@ -9,6 +9,4 @@ export default createCachedSelector(
     }
     return events
   }
-)(
-  (state, providerId) => providerId || ''
-)
+)((state, providerId) => providerId || '')

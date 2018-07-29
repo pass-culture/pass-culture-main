@@ -1,4 +1,4 @@
-import createCachedSelector from 're-reselect';
+import createCachedSelector from 're-reselect'
 
 export default createCachedSelector(
   state => state.data.venues,
@@ -8,6 +8,4 @@ export default createCachedSelector(
       return venues.filter(v => v.managingOffererId === optionalOffererId)
     return venues
   }
-)(
-  (state, optionalOffererId) => optionalOffererId || ''
-)
+)((state, optionalOffererId) => optionalOffererId || '')

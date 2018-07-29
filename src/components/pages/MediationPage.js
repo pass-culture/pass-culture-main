@@ -1,9 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import {
-  requestData,
-  showNotification
-} from 'pass-culture-shared'
+import { requestData, showNotification } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
@@ -17,8 +14,10 @@ import mediationSelector from '../../selectors/mediation'
 import occasionSelector from '../../selectors/occasion'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
-import { mediationNormalizer, occasionNormalizer } from '../../utils/normalizers'
-
+import {
+  mediationNormalizer,
+  occasionNormalizer,
+} from '../../utils/normalizers'
 
 const uploadExplanation = `
 **Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
@@ -27,8 +26,7 @@ La zone bleue représente le cadrage de l'image dans la fiche détails.
 `
 
 class MediationPage extends Component {
-
-  constructor () {
+  constructor() {
     super()
     this.state = {
       croppingRect: null,
@@ -39,15 +37,17 @@ class MediationPage extends Component {
     }
   }
 
-  static getDerivedStateFromProps (nextProps, prevState) {
+  static getDerivedStateFromProps(nextProps, prevState) {
     const {
-      match: { params: { mediationId } }
+      match: {
+        params: { mediationId },
+      },
     } = nextProps
     return {
       inputUrl: prevState.inputUrl,
       imageUrl: prevState.imageUrl || get(nextProps, 'mediation.thumbPath'),
       image: prevState.image,
-      isNew: mediationId === 'nouveau'
+      isNew: mediationId === 'nouveau',
     }
   }
 
@@ -59,55 +59,42 @@ class MediationPage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { mediationId, occasionId } },
+      match: {
+        params: { mediationId, occasionId },
+      },
       occasion,
-      requestData
+      requestData,
     } = this.props
     const { isNew } = this.state
-    !occasion && requestData(
-      'GET',
-      `occasions/${occasionId}`,
-      {
+    !occasion &&
+      requestData('GET', `occasions/${occasionId}`, {
         key: 'occasions',
-        normalizer: occasionNormalizer
-      }
-    )
+        normalizer: occasionNormalizer,
+      })
     if (!isNew) {
-     requestData(
-        'GET',
-        `mediations/${mediationId}`,
-        {
-          handleSuccess,
-          handleFail,
-          key: 'mediations',
-          normalizer: mediationNormalizer
-        }
-      )
+      requestData('GET', `mediations/${mediationId}`, {
+        handleSuccess,
+        handleFail,
+        key: 'mediations',
+        normalizer: mediationNormalizer,
+      })
       return
     }
     handleSuccess()
   }
 
   handleSuccessData = (state, action) => {
-    const {
-      history,
-      showNotification,
-      occasion,
-    } = this.props
+    const { history, showNotification, occasion } = this.props
 
-    this.setState(
-      { isLoading: false },
-      () => {
-        history.push(`/offres/${occasion.id}`)
+    this.setState({ isLoading: false }, () => {
+      history.push(`/offres/${occasion.id}`)
 
-        // TODO
-        showNotification({
-          text: 'Votre accroche a bien été enregistrée',
-          type: 'success'
-        })
-      }
-    )
-
+      // TODO
+      showNotification({
+        text: 'Votre accroche a bien été enregistrée',
+        type: 'success',
+      })
+    })
   }
 
   onImageChange = (context, image, croppingRect) => {
@@ -119,13 +106,10 @@ class MediationPage extends Component {
   }
 
   drawRectangles = ctx => {
+    const { imageUploadBorder, imageUploadSize } = this.props
 
-    const {
-      imageUploadBorder,
-      imageUploadSize
-    } = this.props
-
-    const size = window.devicePixelRatio * (imageUploadSize + 2 * imageUploadBorder)
+    const size =
+      window.devicePixelRatio * (imageUploadSize + 2 * imageUploadBorder)
     const firstDimensions = [
       imageUploadBorder + size / 7.5,
       imageUploadBorder + size / 32,
@@ -141,39 +125,30 @@ class MediationPage extends Component {
     ]
 
     // First rectangle
-    ctx.beginPath();
-    ctx.lineWidth='2';
-    ctx.strokeStyle='#b921d7';
-    ctx.rect(...firstDimensions);
-    ctx.stroke();
+    ctx.beginPath()
+    ctx.lineWidth = '2'
+    ctx.strokeStyle = '#b921d7'
+    ctx.rect(...firstDimensions)
+    ctx.stroke()
 
     // Second rectangle
-    ctx.beginPath();
-    ctx.strokeStyle='#54c7fc';
-    ctx.rect(...secondDimensions);
-    ctx.stroke();
+    ctx.beginPath()
+    ctx.strokeStyle = '#54c7fc'
+    ctx.rect(...secondDimensions)
+    ctx.stroke()
   }
 
   onOkClick = e => {
     console.log(this.state.inputUrl)
-    this.state.inputUrl && this.setState({
-      imageUrl: this.state.inputUrl
-    })
+    this.state.inputUrl &&
+      this.setState({
+        imageUrl: this.state.inputUrl,
+      })
   }
 
   onSubmit = () => {
-    const {
-      mediation,
-      occasion,
-      occasionId,
-      offerer,
-      requestData
-    } = this.props
-    const {
-      croppingRect,
-      image,
-      isNew
-    } = this.state
+    const { mediation, occasion, occasionId, offerer, requestData } = this.props
+    const { croppingRect, image, isNew } = this.state
 
     const eventId = get(occasion, 'eventId')
     const offererId = get(offerer, 'id')
@@ -189,7 +164,7 @@ class MediationPage extends Component {
         thumb: image,
       }
     } else {
-      const formData = new FormData();
+      const formData = new FormData()
       formData.append('thumb', image)
       formData.append('eventId', eventId)
       formData.append('thingId', thingId)
@@ -210,80 +185,72 @@ class MediationPage extends Component {
         body,
         encode: 'multipart/form-data',
         handleSuccess: this.handleSuccessData,
-        key: 'mediations'
+        key: 'mediations',
       }
     )
   }
 
-  render () {
+  render() {
     const {
       imageUploadSize,
       imageUploadBorder,
       match: {
-        params: {
-          occasionId
-        }
+        params: { occasionId },
       },
       mediation,
       occasion,
     } = this.props
-    const {
-      name
-    } = (occasion || {})
-    const {
-      image,
-      imageUrl,
-      inputUrl,
-      isLoading,
-      isNew
-    } = this.state
+    const { name } = occasion || {}
+    const { image, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${occasionId}`
 
     return (
       <PageWrapper
-        name='mediation'
-        backTo={{path: backPath, label: 'Revenir à l\'offre'}}
-        handleDataRequest={this.handleDataRequest} >
-        <section className='section hero'>
-          <h2 className='subtitle has-text-weight-bold'>
-            {name}
-          </h2>
-          <h1 className='main-title'>
+        name="mediation"
+        backTo={{ path: backPath, label: "Revenir à l'offre" }}
+        handleDataRequest={this.handleDataRequest}
+      >
+        <section className="section hero">
+          <h2 className="subtitle has-text-weight-bold">{name}</h2>
+          <h1 className="main-title">
             {isNew ? 'Créez' : 'Modifiez'} une accroche
           </h1>
-          <p className='subtitle'>
+          <p className="subtitle">
             Ajoutez un visuel marquant pour mettre en avant cette offre.
             <br />
-            <span className="label">
-              Le fichier doit peser 100Ko minimum.
-            </span>
+            <span className="label">Le fichier doit peser 100Ko minimum.</span>
           </p>
         </section>
 
-        <div className='section'>
+        <div className="section">
           <label className="label">Depuis une adresse Internet :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                type='url'
-                className='input is-rounded'
-                placeholder='URL du fichier'
+                type="url"
+                className="input is-rounded"
+                placeholder="URL du fichier"
                 value={inputUrl}
-                onChange={e => this.setState({inputUrl: e.target.value})}
+                onChange={e => this.setState({ inputUrl: e.target.value })}
               />
             </p>
             <p className="control">
-              <button className='button is-primary is-outlined is-medium' onClick={this.onOkClick}>OK</button>
+              <button
+                className="button is-primary is-outlined is-medium"
+                onClick={this.onOkClick}
+              >
+                OK
+              </button>
             </p>
           </div>
         </div>
-        <div className='section columns'>
-          <div className='column is-three-quarters'>
-            <label className='label'>... ou depuis votre poste :</label>
+        <div className="section columns">
+          <div className="column is-three-quarters">
+            <label className="label">... ou depuis votre poste :</label>
             <UploadThumb
               border={imageUploadBorder}
               borderRadius={0}
-              collectionName='mediations'
+              collectionName="mediations"
               entityId={get(mediation, 'id')}
               hasExistingImage={!isNew}
               height={imageUploadSize}
@@ -292,38 +259,47 @@ class MediationPage extends Component {
               width={imageUploadSize}
               required
               onImageChange={this.onImageChange}
-              storeKey='mediations'
-              type='thumb' />
-            {
-              image && (
-                <div className='section content'>
-                  <ReactMarkdown source={uploadExplanation} />
-                </div>
-              )
-            }
+              storeKey="mediations"
+              type="thumb"
+            />
+            {image && (
+              <div className="section content">
+                <ReactMarkdown source={uploadExplanation} />
+              </div>
+            )}
           </div>
-          <div className='column is-one-quarter'>
-            <div className='section'>
+          <div className="column is-one-quarter">
+            <div className="section">
               <h6>Exemple :</h6>
-              <img src='/mediation-example.png' title='Exemple de cadrage' alt='Explication' />
+              <img
+                src="/mediation-example.png"
+                title="Exemple de cadrage"
+                alt="Explication"
+              />
             </div>
           </div>
         </div>
         <hr />
-        <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+        <div
+          className="field is-grouped is-grouped-centered"
+          style={{ justifyContent: 'space-between' }}
+        >
           <div className="control">
-            <NavLink to={backPath}
-              className="button is-primary is-outlined is-medium">
+            <NavLink
+              to={backPath}
+              className="button is-primary is-outlined is-medium"
+            >
               Annuler
             </NavLink>
           </div>
           <div className="control">
             <button
-              className={classnames("button is-primary is-medium", {
-                'is-loading': isLoading
+              className={classnames('button is-primary is-medium', {
+                'is-loading': isLoading,
               })}
               disabled={!image}
-              onClick={this.onSubmit}>
+              onClick={this.onSubmit}
+            >
               Valider
             </button>
           </div>

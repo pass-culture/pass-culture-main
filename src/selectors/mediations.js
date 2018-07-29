@@ -6,7 +6,6 @@ export default createCachedSelector(
   (state, optionalEventId, optionalThingId) => optionalEventId,
   (state, optionalEventId, optionalThingId) => optionalThingId,
   (mediations, optionalEventId, optionalThingId) => {
-
     let selectedMediations = mediations
     if (optionalEventId)
       selectedMediations = mediations.filter(m => m.eventId === optionalEventId)
@@ -14,11 +13,14 @@ export default createCachedSelector(
     if (optionalThingId)
       selectedMediations = mediations.filter(m => m.thingId === optionalThingId)
 
-    selectedMediations && selectedMediations.sort((m1, m2) =>
-      moment(m1.dateCreated) - moment(m2.dateCreated))
+    selectedMediations &&
+      selectedMediations.sort(
+        (m1, m2) => moment(m1.dateCreated) - moment(m2.dateCreated)
+      )
 
     return selectedMediations
   }
 )(
-  (state, optionalEventId, optionalThingId) => `${optionalEventId || ''}/${optionalThingId || ''}`
+  (state, optionalEventId, optionalThingId) =>
+    `${optionalEventId || ''}/${optionalThingId || ''}`
 )

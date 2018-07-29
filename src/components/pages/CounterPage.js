@@ -6,11 +6,8 @@ import PageWrapper from '../layout/PageWrapper'
 
 const CounterPage = () => {
   return (
-    <PageWrapper
-      name='counter'
-    >
-      {
-      /*
+    <PageWrapper name="counter">
+      {/*
       <div className='section hero'>
         <h1 className="main-title">Guichet</h1>
         <p className="subtitle">
@@ -35,8 +32,7 @@ const CounterPage = () => {
         to='/offres'>
         Terminer
       </NavLink>
-      */
-      }
+      */}
 
       <h1>
         <strong>Page en cours de construction</strong>
@@ -50,7 +46,6 @@ const CounterPage = () => {
           <Icon svg="ico-next" />
         </Link>
       </footer>
-
     </PageWrapper>
   )
 }

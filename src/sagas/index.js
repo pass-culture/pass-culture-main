@@ -2,7 +2,7 @@ import {
   watchDataActions,
   watchErrorsActions,
   watchModalActions,
-  watchUserActions
+  watchUserActions,
 } from 'pass-culture-shared'
 import { all } from 'redux-saga/effects'
 

@@ -4,11 +4,7 @@ import PageWrapper from '../layout/PageWrapper'
 
 class AccoutingPage extends Component {
   render() {
-    return (
-      <PageWrapper name="accouting">
-        VOTRE COMPTA
-      </PageWrapper>
-    )
+    return <PageWrapper name="accouting">VOTRE COMPTA</PageWrapper>
   }
 }
 

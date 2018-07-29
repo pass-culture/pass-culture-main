@@ -6,7 +6,7 @@ import {
   requestData,
   resetForm,
   showNotification,
-  withLogin
+  withLogin,
 } from 'pass-culture-shared'
 import classnames from 'classnames'
 import get from 'lodash.get'
@@ -19,8 +19,7 @@ import { compose } from 'redux'
 import Header from './Header'
 
 class PageWrapper extends Component {
-
-  constructor () {
+  constructor() {
     super()
     this.state = {
       loading: false,
@@ -37,7 +36,8 @@ class PageWrapper extends Component {
     })
     this.props.showNotification({
       type: 'danger',
-      text: get(action, 'errors.global', []).join('\n') || 'Erreur de chargement'
+      text:
+        get(action, 'errors.global', []).join('\n') || 'Erreur de chargement',
     })
   }
 
@@ -46,12 +46,9 @@ class PageWrapper extends Component {
       // possibility of the handleDataRequest to return
       // false in order to not trigger the loading
       this.setState({
-        loading: true
+        loading: true,
       })
-      this.props.handleDataRequest(
-        this.handleDataSuccess,
-        this.handleDataFail
-      )
+      this.props.handleDataRequest(this.handleDataSuccess, this.handleDataFail)
     }
   }
 
@@ -62,41 +59,34 @@ class PageWrapper extends Component {
   }
 
   handleHistoryBlock = () => {
-    const {
-      blockers,
-      history
-    } = this.props
+    const { blockers, history } = this.props
     this.unblock && this.unblock()
-    this.unblock = history.block(
-      () => {
-
-        // test all the blockers
-        for (let blocker of blockers) {
-          const {
-            block
-          } = (blocker || {})
-          const shouldBlock = block && block(this.props)
-          if (shouldBlock) {
-            return false
-          }
+    this.unblock = history.block(() => {
+      // test all the blockers
+      for (let blocker of blockers) {
+        const { block } = blocker || {}
+        const shouldBlock = block && block(this.props)
+        if (shouldBlock) {
+          return false
         }
-
-        // return true by default, which means that we don't block
-        // the change of pathname
-        return true
       }
-    )
+
+      // return true by default, which means that we don't block
+      // the change of pathname
+      return true
+    })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.handleHistoryBlock()
     this.props.user && this.handleDataRequest()
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const blockersChanged = prevProps.blockers !== this.props.blockers
     const userChanged = !prevProps.user && this.props.user // User just loaded
-    const searchChanged = this.props.location.search !== prevProps.location.search
+    const searchChanged =
+      this.props.location.search !== prevProps.location.search
 
     if (blockersChanged) {
       this.handleHistoryBlock()
@@ -111,7 +101,7 @@ class PageWrapper extends Component {
     this.props.resetForm()
   }
 
-  render () {
+  render() {
     const {
       backTo,
       closeNotification,
@@ -124,16 +114,16 @@ class PageWrapper extends Component {
       notification,
       whiteHeader,
     } = this.props
-    const {
-      loading
-    } = this.state
+    const { loading } = this.state
     const footer = [].concat(children).find(e => e && e.type === 'footer')
     const content = []
       .concat(children)
       .filter(e => e && e.type !== 'header' && e.type !== 'footer')
 
     return [
-      !fullscreen && <Header key='header' whiteHeader={whiteHeader} {...header} />,
+      !fullscreen && (
+        <Header key="header" whiteHeader={whiteHeader} {...header} />
+      ),
       <Tag
         className={classnames({
           page: true,
@@ -145,45 +135,43 @@ class PageWrapper extends Component {
           fullscreen,
           loading,
         })}
-        key='page-wrapper'
+        key="page-wrapper"
       >
         <Modal />
-        {
-          fullscreen
-          ? content
-          : (
-            <div className='columns is-gapless'>
-              <div className='page-content column is-10 is-offset-1'>
-                {
-                  notification && (
-                    <div className={`notification is-${notification.type || 'info'}`}>
-                      {notification.text}
-                      <button className="close" onClick={closeNotification}>
-                        OK
-                      </button>
-                    </div>
-                  )
-                }
-                <div className='after-notification-content'>
-                  {
-                    backTo && (
-                      <NavLink to={backTo.path} className='back-button has-text-primary'>
-                        <Icon svg='ico-back' />{` ${backTo.label}`}
-                      </NavLink>
-                    )
-                  }
-                  <div className='main-content'>
-                    {content}
-                  </div>
-                  {loading && <Loading />}
+        {fullscreen ? (
+          content
+        ) : (
+          <div className="columns is-gapless">
+            <div className="page-content column is-10 is-offset-1">
+              {notification && (
+                <div
+                  className={`notification is-${notification.type || 'info'}`}
+                >
+                  {notification.text}
+                  <button className="close" onClick={closeNotification}>
+                    OK
+                  </button>
                 </div>
+              )}
+              <div className="after-notification-content">
+                {backTo && (
+                  <NavLink
+                    to={backTo.path}
+                    className="back-button has-text-primary"
+                  >
+                    <Icon svg="ico-back" />
+                    {` ${backTo.label}`}
+                  </NavLink>
+                )}
+                <div className="main-content">{content}</div>
+                {loading && <Loading />}
               </div>
             </div>
-          )
-        }
+          </div>
+        )}
         {footer}
       </Tag>,
-      <Modal key={'modal'} />
+      <Modal key={'modal'} />,
     ]
   }
 }
@@ -191,7 +179,7 @@ class PageWrapper extends Component {
 export default compose(
   withRouter,
   withLogin({
-    failRedirect: '/connexion'
+    failRedirect: '/connexion',
   }),
   connect(
     state => ({

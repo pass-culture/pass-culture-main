@@ -5,44 +5,35 @@ import { NavLink } from 'react-router-dom'
 import { THUMBS_URL } from '../utils/config'
 
 class MediationItem extends Component {
-
-  constructor () {
+  constructor() {
     super()
     this.state = {
       routePath: null,
-      thumbUrl: null
+      thumbUrl: null,
     }
   }
 
-  static getDerivedStateFromProps (nextProps) {
-    const {
-      id,
-      occasionRoutePath
-    } = nextProps
+  static getDerivedStateFromProps(nextProps) {
+    const { id, occasionRoutePath } = nextProps
     return {
       routePath: `${occasionRoutePath}/accroches/${id}`,
-      thumbUrl: `${THUMBS_URL}/mediations/${id}`
+      thumbUrl: `${THUMBS_URL}/mediations/${id}`,
     }
   }
 
   render() {
-    const {
-      backText,
-    } = this.props
-    const {
-      routePath,
-      thumbUrl
-    } = this.state
+    const { backText } = this.props
+    const { routePath, thumbUrl } = this.state
     return (
       <article className="mediation-item media box">
         <figure className="media-left">
           <p className="image is-96x96">
-            <img alt='thumbnail' src={thumbUrl}/>
+            <img alt="thumbnail" src={thumbUrl} />
           </p>
         </figure>
         <div className="media-content">
           <div className="content">
-            <Dotdotdot className='is-small' clamp={3}>
+            <Dotdotdot className="is-small" clamp={3}>
               {backText}
             </Dotdotdot>
           </div>
@@ -53,8 +44,10 @@ class MediationItem extends Component {
                   Modifier
                 </button>
               </NavLink>
-              <button className="button is-primary level-item"
-                onClick={this.onDeactivateClick}>
+              <button
+                className="button is-primary level-item"
+                onClick={this.onDeactivateClick}
+              >
                 Effacer
               </button>
             </div>

@@ -12,7 +12,7 @@ const data = createData({
   things: [],
   types: [],
   venues: [],
-  venueProviders: []
+  venueProviders: [],
 })
 
 export default data

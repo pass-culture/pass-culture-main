@@ -3,12 +3,11 @@ import SigninPage from '../SigninPage'
 import { shallow } from 'enzyme'
 
 describe('src | components | pages | SigninPage', () => {
-
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        errors: {}
+        errors: {},
       }
 
       // when

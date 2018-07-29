@@ -1,11 +1,11 @@
-export function collectionToPath (collectionName) {
-  switch(collectionName) {
+export function collectionToPath(collectionName) {
+  switch (collectionName) {
     case 'events':
       return 'evenements'
     case 'mediations':
       return 'accroches'
     case 'venues':
-      return 'lieux';
+      return 'lieux'
     case 'offerers':
       return 'structures'
     case 'things':
@@ -15,8 +15,8 @@ export function collectionToPath (collectionName) {
   }
 }
 
-export function pathToCollection (path) {
-  switch(path) {
+export function pathToCollection(path) {
+  switch (path) {
     case 'accroches':
       return 'mediations'
     case 'evenements':
@@ -24,37 +24,37 @@ export function pathToCollection (path) {
     case 'lieux':
       return 'venues'
     case 'objets':
-      return 'things';
+      return 'things'
     case 'structures':
       return 'offerers'
     default:
-      return path;
+      return path
   }
 }
 
-export function pathToModel (path) {
-  switch(path) {
+export function pathToModel(path) {
+  switch (path) {
     case 'evenements':
       return 'Event'
     case 'objets':
-      return 'Thing';
+      return 'Thing'
     default:
-      return path;
+      return path
   }
 }
 
-export function modelToPath (model) {
-  switch(model) {
+export function modelToPath(model) {
+  switch (model) {
     case 'Event':
       return 'evenements'
     case 'Thing':
-      return 'lieux';
+      return 'lieux'
     default:
-      return model;
+      return model
   }
 }
 
-export function typeToTag (type) {
+export function typeToTag(type) {
   switch (type) {
     case 'ComedyEvent':
       return 'Comédie'

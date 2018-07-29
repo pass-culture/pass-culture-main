@@ -26,7 +26,7 @@ const routes = [
   {
     exact: true,
     path: '/comptabilite',
-    title: "Comptabilité",
+    title: 'Comptabilité',
     render: () => <AccoutingPage />,
   },
   {
@@ -146,7 +146,7 @@ const routes = [
   {
     title: 'Page non trouvée',
     render: () => <NotFoundPage />,
-  }
+  },
 ]
 
 export default routes

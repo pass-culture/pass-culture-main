@@ -12,7 +12,6 @@ class Menu extends Component {
     event.preventDefault()
   }
 
-
   render() {
     const { user } = this.props
     return (
@@ -28,21 +27,16 @@ class Menu extends Component {
           </div>
         </div>
         <nav>
-          {
-            menu.links.map(({ icon, path, title }, index) =>
-              <div className="has-text-centered"
-                key={index}>
-                <NavLink to={path}>
-                  <div className="heading">
-                    <Icon svg={icon} />
-                  </div>
-                  <p className="title">
-                    {title}
-                  </p>
-                </NavLink>
-              </div>
-            )
-          }
+          {menu.links.map(({ icon, path, title }, index) => (
+            <div className="has-text-centered" key={index}>
+              <NavLink to={path}>
+                <div className="heading">
+                  <Icon svg={icon} />
+                </div>
+                <p className="title">{title}</p>
+              </NavLink>
+            </div>
+          ))}
           <SignoutButton />
         </nav>
       </div>

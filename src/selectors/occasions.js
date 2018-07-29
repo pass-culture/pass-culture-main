@@ -7,10 +7,10 @@ export default createCachedSelector(
   (state, offererId, venueId) => offererId && venuesSelector(state, offererId),
   (state, offererId, venueId) => venueId,
   (occasions, venues, venueId) => {
-    const venueIds = [].concat(venueId || (venues|| []).map(v => v.id))
+    const venueIds = [].concat(venueId || (venues || []).map(v => v.id))
 
-    return occasions.filter(o => venueIds.length ? venueIds.includes(o.venueId) : true)
+    return occasions.filter(
+      o => (venueIds.length ? venueIds.includes(o.venueId) : true)
+    )
   }
-)(
-  (state, offererId, venueId) => `${offererId || ''}/${venueId || ''}`
-)
+)((state, offererId, venueId) => `${offererId || ''}/${venueId || ''}`)
