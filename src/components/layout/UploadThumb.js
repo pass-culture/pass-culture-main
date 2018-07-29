@@ -136,13 +136,11 @@ class UploadThumb extends Component {
             onDragLeave={this.handleDragStop}
             onDrop={this.handleDrop}
             disableClick={Boolean(image || readOnly)}
-            style={{ width, height }}
-          >
+            style={{ width, height }}>
             {!image && (
               <div
                 className={`drag-n-drop ${dragging ? 'dragged' : ''}`}
-                style={{ borderRadius, width, height }}
-              >
+                style={{ borderRadius, width, height }}>
                 Cliquez ou glissez-déposez pour charger une image
               </div>
             )}
@@ -184,8 +182,7 @@ class UploadThumb extends Component {
                 {readOnly && (
                   <button
                     onClick={e => this.setState({ isEdited: true })}
-                    className="button is-primary"
-                  >
+                    className="button is-primary">
                     Modifier l'image
                   </button>
                 )}
@@ -195,8 +192,7 @@ class UploadThumb extends Component {
                     <button
                       onClick={this.onUploadClick}
                       className="button is-primary"
-                      disabled={isUploadDisabled}
-                    >
+                      disabled={isUploadDisabled}>
                       Enregistrer
                     </button>
                   )}
@@ -212,8 +208,7 @@ class UploadThumb extends Component {
                           isUploadDisabled: false,
                         })
                       }
-                      className="button is-primary is-outlined"
-                    >
+                      className="button is-primary is-outlined">
                       Retirer l'image
                     </button>
                   </div>
@@ -225,8 +220,7 @@ class UploadThumb extends Component {
                       onClick={e =>
                         this.setState({ isEdited: false, dragging: false })
                       }
-                      className="button is-primary is-outlined"
-                    >
+                      className="button is-primary is-outlined">
                       Annuler la modification
                     </button>
                   </div>

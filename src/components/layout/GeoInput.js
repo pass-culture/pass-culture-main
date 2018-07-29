@@ -184,8 +184,7 @@ class GeoInput extends Component {
               highlighted,
               placeholder,
             })}
-            key={id}
-          >
+            key={id}>
             {label}
           </div>
         )}

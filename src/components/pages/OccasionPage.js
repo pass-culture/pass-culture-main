@@ -210,8 +210,7 @@ class OccasionPage extends Component {
       <PageWrapper
         backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
         name="offer"
-        handleDataRequest={this.handleDataRequest}
-      >
+        handleDataRequest={this.handleDataRequest}>
         <div className="section">
           <h1 className="main-title">
             {isNew ? 'Ajouter une offre' : "Détails de l'offre"}
@@ -226,8 +225,7 @@ class OccasionPage extends Component {
             handleSuccess={this.handleSuccess}
             handleFail={this.handleFail}
             patch={event || thing}
-            readOnly={isReadOnly}
-          >
+            readOnly={isReadOnly}>
             <div className="field-group">
               <Field name="name" label="Titre de l'offre" required isExpanded />
               <Field
@@ -257,8 +255,7 @@ class OccasionPage extends Component {
                         </div>
                         <NavLink
                           className="button is-primary is-outlined is-small"
-                          to={`/offres/${get(occasion, 'id')}?gestion`}
-                        >
+                          to={`/offres/${get(occasion, 'id')}?gestion`}>
                           <span className="icon">
                             <Icon svg="ico-calendar" />
                           </span>
@@ -353,21 +350,18 @@ class OccasionPage extends Component {
             <hr />
             <div
               className="field is-grouped is-grouped-centered"
-              style={{ justifyContent: 'space-between' }}
-            >
+              style={{ justifyContent: 'space-between' }}>
               <div className="control">
                 {isReadOnly ? (
                   <NavLink
                     to={`/offres/${get(occasion, 'id')}?modifie`}
-                    className="button is-secondary is-medium"
-                  >
+                    className="button is-secondary is-medium">
                     Modifier l'offre
                   </NavLink>
                 ) : (
                   <CancelButton
                     className="button is-secondary is-medium"
-                    to={isNew ? '/offres' : `/offres/${get(occasion, 'id')}`}
-                  >
+                    to={isNew ? '/offres' : `/offres/${get(occasion, 'id')}`}>
                     Annuler
                   </CancelButton>
                 )}

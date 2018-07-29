@@ -40,8 +40,7 @@ const CounterPage = () => {
       <footer>
         <Link
           to="/accueil"
-          className="button is-secondary has-text-weight-light is-italic"
-        >
+          className="button is-secondary has-text-weight-light is-italic">
           Revenir à l'accueil
           <Icon svg="ico-next" />
         </Link>

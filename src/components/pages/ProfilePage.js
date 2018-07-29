@@ -27,8 +27,7 @@ class ProfilePage extends Component {
     return (
       <PageWrapper
         name="profile"
-        backTo={{ path: '/accueil', label: 'Accueil' }}
-      >
+        backTo={{ path: '/accueil', label: 'Accueil' }}>
         <div className="section">
           <h1 className="main-title">Profil</h1>
         </div>
@@ -37,16 +36,14 @@ class ProfilePage extends Component {
           className="section"
           handleSuccess={this.handleSuccess}
           name="editProfile"
-          patch={user}
-        >
+          patch={user}>
           <div className="field-group">
             <Field name="publicName" label="Nom" required />
             <Field name="email" label="Email" required readOnly />
           </div>
           <div
             className="field is-grouped is-grouped-centered"
-            style={{ justifyContent: 'space-between' }}
-          >
+            style={{ justifyContent: 'space-between' }}>
             <div className="control">
               <SubmitButton className="button is-primary is-medium">
                 Enregistrer

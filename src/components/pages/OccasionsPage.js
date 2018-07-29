@@ -117,8 +117,7 @@ class OccasionsPage extends Component {
         <div className="section">
           <NavLink
             to={`/offres/nouveau`}
-            className="button is-primary is-medium is-pulled-right"
-          >
+            className="button is-primary is-medium is-pulled-right">
             <span className="icon">
               <Icon svg="ico-offres-w" />
             </span>
@@ -186,8 +185,7 @@ class OccasionsPage extends Component {
                   <select
                     onChange={this.handleOrderByChange}
                     className=""
-                    value={orderBy}
-                  >
+                    value={orderBy}>
                     <option value="sold">Offres écoulées</option>
                     <option value="createdAt">Date de création</option>
                   </select>
@@ -196,8 +194,7 @@ class OccasionsPage extends Component {
               <div>
                 <button
                   onClick={this.handleOrderDirectionChange}
-                  className="button is-secondary"
-                >
+                  className="button is-secondary">
                   <Icon
                     svg={
                       orderDirection === ASC
@@ -211,8 +208,7 @@ class OccasionsPage extends Component {
             {
               <InfiniteScroller
                 className="occasions-list main-list"
-                handleLoadMore={this.handleDataRequest}
-              >
+                handleLoadMore={this.handleDataRequest}>
                 {occasions.map(o => <OccasionItem key={o.id} occasion={o} />)}
               </InfiniteScroller>
             }

@@ -33,8 +33,7 @@ class Header extends Component {
                 this.setState({
                   showMobileMenu: !showMobileMenu,
                 })
-              }
-            >
+              }>
               <span />
               <span />
               <span />
@@ -43,8 +42,7 @@ class Header extends Component {
           <div
             className={classnames('navbar-menu', {
               'is-active': showMobileMenu,
-            })}
-          >
+            })}>
             <div className="navbar-end">
               <NavLink className="navbar-item" to={'/guichet'} key={0}>
                 <span className="icon">
@@ -56,8 +54,7 @@ class Header extends Component {
                 <NavLink
                   className="navbar-item"
                   to={`/offres${search}`}
-                  key={1}
-                >
+                  key={1}>
                   <span className="icon">
                     <Icon svg={'ico-offres-w'} />
                   </span>

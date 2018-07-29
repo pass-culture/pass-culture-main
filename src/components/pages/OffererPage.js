@@ -85,8 +85,7 @@ class OffererPage extends Component {
       <PageWrapper
         backTo={{ label: 'Vos structures', path: '/structures' }}
         name="offerer"
-        handleDataRequest={this.handleDataRequest}
-      >
+        handleDataRequest={this.handleDataRequest}>
         <div className="section hero">
           <h2 className="subtitle has-text-weight-bold">
             {get(offerer, 'name')}
@@ -103,8 +102,7 @@ class OffererPage extends Component {
           className="section"
           action={`/offerers/${isNew ? '' : get(offerer, 'id')}`}
           handleSuccess={this.handleSuccess}
-          patch={offerer}
-        >
+          patch={offerer}>
           <div className="field-group">
             <Field name="siren" label="SIREN" required readOnly={!isNew} />
             {(get(offerer, 'name') || fetchedName) && [
@@ -132,13 +130,11 @@ class OffererPage extends Component {
               <hr />
               <div
                 className="field is-grouped is-grouped-centered"
-                style={{ justifyContent: 'space-between' }}
-              >
+                style={{ justifyContent: 'space-between' }}>
                 <div className="control">
                   <NavLink
                     className="button is-secondary is-medium"
-                    to="/structures"
-                  >
+                    to="/structures">
                     Retour
                   </NavLink>
                 </div>
@@ -158,8 +154,7 @@ class OffererPage extends Component {
               <div className="has-text-centered">
                 <NavLink
                   to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
-                  className="button is-secondary is-outlined"
-                >
+                  className="button is-secondary is-outlined">
                   + Ajouter un lieu
                 </NavLink>
               </div>

@@ -39,8 +39,7 @@ const MediationManager = ({ mediations, occasion }) => {
             className={`button is-primary ${
               mediationsLength > 0 ? 'is-outlined' : ''
             }`}
-            to={`/offres/${get(occasion, 'id')}/accroches/nouveau`}
-          >
+            to={`/offres/${get(occasion, 'id')}/accroches/nouveau`}>
             <span className="icon">
               <Icon svg={mediationsLength > 0 ? 'ico-stars' : 'ico-stars-w'} />
             </span>

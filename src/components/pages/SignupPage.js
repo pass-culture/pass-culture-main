@@ -34,8 +34,7 @@ class SignupPage extends Component {
                     handleSuccessNotification={() =>
                       "Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d'inscription par e-mail."
                     }
-                    handleSuccessRedirect={() => '/structures'}
-                  >
+                    handleSuccessRedirect={() => '/structures'}>
                     <Field
                       name="email"
                       label="Adresse e-mail"

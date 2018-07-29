@@ -135,8 +135,7 @@ class PageWrapper extends Component {
           fullscreen,
           loading,
         })}
-        key="page-wrapper"
-      >
+        key="page-wrapper">
         <Modal />
         {fullscreen ? (
           content
@@ -145,8 +144,7 @@ class PageWrapper extends Component {
             <div className="page-content column is-10 is-offset-1">
               {notification && (
                 <div
-                  className={`notification is-${notification.type || 'info'}`}
-                >
+                  className={`notification is-${notification.type || 'info'}`}>
                   {notification.text}
                   <button className="close" onClick={closeNotification}>
                     OK
@@ -157,8 +155,7 @@ class PageWrapper extends Component {
                 {backTo && (
                   <NavLink
                     to={backTo.path}
-                    className="back-button has-text-primary"
-                  >
+                    className="back-button has-text-primary">
                     <Icon svg="ico-back" />
                     {` ${backTo.label}`}
                   </NavLink>

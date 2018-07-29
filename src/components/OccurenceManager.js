@@ -84,8 +84,7 @@ class OccurenceManager extends Component {
                               occasion,
                               'id'
                             )}?gestion&date=nouvelle`
-                      }
-                    >
+                      }>
                       + Ajouter un horaire
                     </NavLink>
                   )}
@@ -120,8 +119,7 @@ class OccurenceManager extends Component {
         </div>
         <button
           className="button is-secondary is-pulled-right"
-          onClick={this.onCloseClick}
-        >
+          onClick={this.onCloseClick}>
           Fermer
         </button>
       </div>

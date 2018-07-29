@@ -18,8 +18,7 @@ const VenueItem = ({ venue }) => {
         <p className="name">
           <NavLink
             id={`a-${name ? name.toLowerCase().replace(/\s/g, '-') : ''}`}
-            to={showPath}
-          >
+            to={showPath}>
             {name}
           </NavLink>
         </p>
@@ -27,8 +26,7 @@ const VenueItem = ({ venue }) => {
           <li>
             <NavLink
               to={`/offres/nouveau?lieu=${id}`}
-              className="has-text-primary"
-            >
+              className="has-text-primary">
               <Icon svg="ico-offres-r" /> Créer une offre
             </NavLink>
           </li>

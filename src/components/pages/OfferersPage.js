@@ -44,8 +44,7 @@ class OfferersPage extends Component {
         <br />
         <NavLink
           to={`/structures/nouveau`}
-          className="button is-primary is-outlined"
-        >
+          className="button is-primary is-outlined">
           + Rattacher une structure
         </NavLink>
 

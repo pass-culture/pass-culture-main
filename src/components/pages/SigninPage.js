@@ -45,8 +45,7 @@ class SigninPage extends Component {
                     action="/users/signin"
                     layout="vertical"
                     name="user"
-                    successNotification={null}
-                  >
+                    successNotification={null}>
                     <Field
                       label="Adresse e-mail"
                       name="identifier"
@@ -66,8 +65,7 @@ class SigninPage extends Component {
                     <div className="field buttons-field">
                       <NavLink
                         to="/inscription"
-                        className="button is-secondary"
-                      >
+                        className="button is-secondary">
                         Créer un compte
                       </NavLink>
                       <SubmitButton className="button is-primary is-outlined">

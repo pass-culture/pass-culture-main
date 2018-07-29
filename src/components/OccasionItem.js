@@ -66,8 +66,7 @@ class OccasionItem extends Component {
           <NavLink
             className="name"
             to={`/offres/${occasion.id}${search}`}
-            title={name}
-          >
+            title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className="infos">
@@ -84,8 +83,7 @@ class OccasionItem extends Component {
               <li>
                 <NavLink
                   className="has-text-primary"
-                  to={`/offres/${occasion.id}?gestion`}
-                >
+                  to={`/offres/${occasion.id}?gestion`}>
                   {pluralize(get(occurences, 'length'), 'dates')}
                 </NavLink>
               </li>
@@ -98,8 +96,7 @@ class OccasionItem extends Component {
                     ? `minimum ${pluralize(groupSizeMin, 'personnes')}`
                     : `entre ${groupSizeMin} et ${groupSizeMax} personnes`
                   : undefined
-              }
-            >
+              }>
               {groupSizeMin === 0 && (
                 <div>
                   <Icon svg="picto-user" /> {'ou '} <Icon svg="picto-group" />
@@ -136,8 +133,7 @@ class OccasionItem extends Component {
                 }`}
                 className={`button is-small ${
                   mediationsLength ? 'is-secondary' : 'is-primary is-outlined'
-                }`}
-              >
+                }`}>
                 <span className="icon">
                   <Icon svg="ico-stars" />
                 </span>
@@ -151,8 +147,7 @@ class OccasionItem extends Component {
             <li>
               <button
                 className="button is-secondary is-small"
-                onClick={this.onDeactivateClick}
-              >
+                onClick={this.onDeactivateClick}>
                 {isActive ? (
                   <span>
                     <Icon svg="ico-close-r" />
@@ -164,8 +159,7 @@ class OccasionItem extends Component {
               </button>
               <NavLink
                 to={`/offres/${occasion.id}`}
-                className="button is-secondary is-small"
-              >
+                className="button is-secondary is-small">
                 <Icon svg="ico-pen-r" />
               </NavLink>
             </li>

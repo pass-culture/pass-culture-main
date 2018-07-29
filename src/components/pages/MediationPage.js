@@ -208,8 +208,7 @@ class MediationPage extends Component {
       <PageWrapper
         name="mediation"
         backTo={{ path: backPath, label: "Revenir à l'offre" }}
-        handleDataRequest={this.handleDataRequest}
-      >
+        handleDataRequest={this.handleDataRequest}>
         <section className="section hero">
           <h2 className="subtitle has-text-weight-bold">{name}</h2>
           <h1 className="main-title">
@@ -237,8 +236,7 @@ class MediationPage extends Component {
             <p className="control">
               <button
                 className="button is-primary is-outlined is-medium"
-                onClick={this.onOkClick}
-              >
+                onClick={this.onOkClick}>
                 OK
               </button>
             </p>
@@ -282,13 +280,11 @@ class MediationPage extends Component {
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
-          style={{ justifyContent: 'space-between' }}
-        >
+          style={{ justifyContent: 'space-between' }}>
           <div className="control">
             <NavLink
               to={backPath}
-              className="button is-primary is-outlined is-medium"
-            >
+              className="button is-primary is-outlined is-medium">
               Annuler
             </NavLink>
           </div>
@@ -298,8 +294,7 @@ class MediationPage extends Component {
                 'is-loading': isLoading,
               })}
               disabled={!image}
-              onClick={this.onSubmit}
-            >
+              onClick={this.onSubmit}>
               Valider
             </button>
           </div>

@@ -145,15 +145,13 @@ class ProviderManager extends Component {
                 className="level"
                 handleSuccess={this.handleSuccess}
                 name="venueProvider"
-                patch={venueProvider}
-              >
+                patch={venueProvider}>
                 <Field type="hidden" name="venueId" />
                 {withError && (
                   <p
                     className={
                       withError ? 'has-text-weight-bold has-text-danger' : ''
-                    }
-                  >
+                    }>
                     Il faut un identifiant ou celui-ci existe déjà
                   </p>
                 )}
@@ -184,8 +182,7 @@ class ProviderManager extends Component {
                 <div className="field level-item level-right">
                   <NavLink
                     className="button is-secondary"
-                    to={`/structures/${offererId}/lieux/${venueId}`}
-                  >
+                    to={`/structures/${offererId}/lieux/${venueId}`}>
                     Annuler
                   </NavLink>
                 </div>
@@ -205,8 +202,7 @@ class ProviderManager extends Component {
           <button
             className="button is-secondary"
             disabled={isNew}
-            onClick={this.onAddClick}
-          >
+            onClick={this.onAddClick}>
             + Importer des offres
           </button>
         </div>

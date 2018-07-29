@@ -24,20 +24,17 @@ class DeleteButton extends Component {
               <div className="mb2">Enlever ?</div>
               <button
                 className="button is-default"
-                onClick={this.onConfirmClick}
-              >
+                onClick={this.onConfirmClick}>
                 Oui
               </button>
               <button
                 className="button is-default"
-                onClick={this.onCancelClick}
-              >
+                onClick={this.onCancelClick}>
                 Non
               </button>
             </div>
           )
-        }
-      >
+        }>
         {text || <Icon name="delete" />}
       </button>
     )

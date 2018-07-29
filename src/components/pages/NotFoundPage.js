@@ -14,8 +14,7 @@ const NotFoundPage = () => {
       <footer>
         <Link
           to="/accueil"
-          className="button is-secondary is-inversed has-text-weight-light is-italic"
-        >
+          className="button is-secondary is-inversed has-text-weight-light is-italic">
           Revenir à l'accueil
           <Icon svg="ico-next" />
         </Link>

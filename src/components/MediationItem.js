@@ -46,8 +46,7 @@ class MediationItem extends Component {
               </NavLink>
               <button
                 className="button is-primary level-item"
-                onClick={this.onDeactivateClick}
-              >
+                onClick={this.onDeactivateClick}>
                 Effacer
               </button>
             </div>

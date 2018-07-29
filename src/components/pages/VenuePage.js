@@ -128,8 +128,7 @@ class VenuePage extends Component {
           path: `/structures/${offererId}`,
         }}
         name="venue"
-        handleDataRequest={this.handleDataRequest}
-      >
+        handleDataRequest={this.handleDataRequest}>
         <div className="section hero">
           <h2 className="subtitle has-text-weight-bold">
             {get(venue, 'name')}
@@ -145,8 +144,7 @@ class VenuePage extends Component {
             get(venue, 'id') && (
               <NavLink
                 to={`/offres/nouveau?lieu=${venue.id}`}
-                className="button is-primary is-medium is-pulled-right cta"
-              >
+                className="button is-primary is-medium is-pulled-right cta">
                 <span className="icon">
                   <Icon svg="ico-offres-w" />
                 </span>
@@ -162,8 +160,7 @@ class VenuePage extends Component {
           handleSuccess={this.handleSuccess}
           name="venue"
           patch={venue}
-          readOnly={isReadOnly}
-        >
+          readOnly={isReadOnly}>
           <Field type="hidden" name="managingOffererId" />
           <div className="section">
             <h2 className="main-list-title">
@@ -209,14 +206,12 @@ class VenuePage extends Component {
           <hr />
           <div
             className="field is-grouped is-grouped-centered"
-            style={{ justifyContent: 'space-between' }}
-          >
+            style={{ justifyContent: 'space-between' }}>
             <div className="control">
               {isReadOnly ? (
                 <NavLink
                   className="button is-secondary is-medium"
-                  to={`/structures/${offererId}/lieux/${venueId}?modifie`}
-                >
+                  to={`/structures/${offererId}/lieux/${venueId}?modifie`}>
                   Modifier le lieu
                 </NavLink>
               ) : (
@@ -226,8 +221,7 @@ class VenuePage extends Component {
                     isNew
                       ? `/structures/${offererId}`
                       : `/structures/${offererId}/lieux/${venueId}`
-                  }
-                >
+                  }>
                   Annuler
                 </CancelButton>
               )}
@@ -235,14 +229,12 @@ class VenuePage extends Component {
             <div className="control">
               <div
                 className="field is-grouped is-grouped-centered"
-                style={{ justifyContent: 'space-between' }}
-              >
+                style={{ justifyContent: 'space-between' }}>
                 <div className="control">
                   {isReadOnly ? (
                     <NavLink
                       className="button is-primary is-medium"
-                      to={`/structures/${offererId}`}
-                    >
+                      to={`/structures/${offererId}`}>
                       Terminer
                     </NavLink>
                   ) : (

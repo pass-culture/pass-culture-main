@@ -204,8 +204,7 @@ class OccurenceForm extends Component {
           patch={occurence}
           readOnly={isEventOccurenceReadOnly}
           size="small"
-          TagName={null}
-        >
+          TagName={null}>
           <td>
             <Field name="eventId" type="hidden" />
             <Field name="venueId" type="hidden" />
@@ -266,8 +265,7 @@ class OccurenceForm extends Component {
           patch={offer}
           size="small"
           readOnly={isOfferReadOnly}
-          TagName={null}
-        >
+          TagName={null}>
           <td title="Vide si gratuit">
             <Field name="eventOccurenceId" type="hidden" />
             <Field name="offererId" type="hidden" />
@@ -310,15 +308,13 @@ class OccurenceForm extends Component {
           {isEditing ? (
             <NavLink
               className="button is-secondary is-small"
-              to={`/offres/${get(occasion, 'id')}?gestion`}
-            >
+              to={`/offres/${get(occasion, 'id')}?gestion`}>
               Annuler
             </NavLink>
           ) : (
             <button
               className="button is-small is-secondary"
-              onClick={this.onDeleteClick}
-            >
+              onClick={this.onDeleteClick}>
               <span className="icon">
                 <Icon svg="ico-close-r" />
               </span>
@@ -332,8 +328,7 @@ class OccurenceForm extends Component {
                 occurence,
                 'id'
               )}`}
-              className="button is-small is-secondary"
-            >
+              className="button is-small is-secondary">
               <span className="icon">
                 <Icon svg="ico-pen-r" />
               </span>

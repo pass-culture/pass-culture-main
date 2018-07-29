@@ -51,8 +51,7 @@ class VenueProviderItem extends Component {
               <NavLink
                 key={0}
                 to={`/offres?lieu=${get(venue, 'id')}`}
-                className="has-text-primary"
-              >
+                className="has-text-primary">
                 <Icon svg="ico-offres-r" />
                 {pluralize(nOccasions, 'offres')}
               </NavLink>
@@ -62,8 +61,7 @@ class VenueProviderItem extends Component {
             <div key={1}>
               <button
                 className="button is-secondary"
-                onClick={this.onDeactivateClick}
-              >
+                onClick={this.onDeactivateClick}>
                 {isActive ? 'Désactiver' : 'Activer'}
               </button>
             </div>,

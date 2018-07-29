@@ -30,8 +30,7 @@ const OffererItem = ({ offerer, venues }) => {
                   <li key={0}>
                     <NavLink
                       to={`/offres/nouveau?structure=${id}`}
-                      className="has-text-primary"
-                    >
+                      className="has-text-primary">
                       <Icon svg="ico-offres-r" />
                       Nouvelle offre
                     </NavLink>
@@ -41,8 +40,7 @@ const OffererItem = ({ offerer, venues }) => {
                     <li key={1}>
                       <NavLink
                         to={`/offres?structure=${id}`}
-                        className="has-text-primary"
-                      >
+                        className="has-text-primary">
                         <Icon svg="ico-offres-r" />
                         {pluralize(offerer.nOccasions, 'offres')}
                       </NavLink>
@@ -67,8 +65,7 @@ const OffererItem = ({ offerer, venues }) => {
                 <li key={4}>
                   <NavLink
                     to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
-                    className="has-text-primary"
-                  >
+                    className="has-text-primary">
                     <Icon svg="ico-venue-r" /> Ajouter un lieu
                   </NavLink>
                 </li>
