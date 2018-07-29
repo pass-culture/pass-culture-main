@@ -1,16 +1,9 @@
-import { Selector, RequestLogger } from 'testcafe'
+import { Selector } from 'testcafe'
 
 import { API_URL, ROOT_PATH } from '../src/utils/config'
 import { offererUser } from './helpers/users'
 
 const LOGGER_URL = API_URL + '/users'
-
-const logger = RequestLogger(LOGGER_URL, {
-  logResponseBody: true,
-  stringifyResponseBody: true,
-  logRequestBody: true,
-  stringifyRequestBody: true
-})
 
 const contactOkInput = Selector('#user-contact_ok')
 const contactOkInputError = Selector('#user-contact_ok-error')
@@ -45,7 +38,6 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
 })
 
 test
-.requestHooks(logger)
 ("Je créé un compte, je suis redirigé·e vers la page /structures", async t => {
     await t
       .typeText(publicNameInput, offererUser.publicName)
@@ -69,26 +61,20 @@ fixture `01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreu
 .page `${ROOT_PATH+'inscription'}`
 
 test
-.requestHooks(logger)
 ('E-mail déjà présent dans la base et mot de passe invalide', async t => {
 
 await t
-.typeText(publicNameInput, offererUser.publicName)
-.typeText(emailInput, offererUser.email)
-.typeText(passwordInput, 'pas')
-.typeText(sirenInput, offererUser.siren)
-.wait(1000)
-.click(contactOkInput)
-.wait(1000)
-.click(signUpButton)
-.wait(1000)
-const errorMessage = logger.requests[0].response.body
-console.log('logger.requests errorMessage', errorMessage)
-const expected = [
-  {"email": "Une entr\u00e9e avec cet identifiant existe d\u00e9j\u00e0 dans notre base de donn\u00e9es"}
-]
-await t.expect(JSON.parse(errorMessage)).eql(expected)
-await t.expect(emailInputError.innerText).eql("\nUne entrée avec cet identifiant existe déjà dans notre base de données\n\n")
+  .typeText(publicNameInput, offererUser.publicName)
+  .typeText(emailInput, offererUser.email)
+  .typeText(passwordInput, 'pas')
+  .typeText(sirenInput, offererUser.siren)
+  .wait(1000)
+  .click(contactOkInput)
+  .wait(1000)
+  .click(signUpButton)
+  .wait(1000)
+await t.expect(emailInputError.innerText)
+       .eql("\nUne entrée avec cet identifiant existe déjà dans notre base de données\n\n")
 // TODO Mot de passe invalide en attente correction API
 // await t.expect(passwordInputError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
 })

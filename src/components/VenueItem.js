@@ -25,7 +25,11 @@ const VenueItem = ({
       </div>
       <div className="list-content">
         <p className="name">
-          <NavLink to={showPath}>{name}</NavLink>
+          <NavLink
+            id={`a-${name ? name.toLowerCase().replace(/\s/g, '-') : ''}`}
+            to={showPath}>
+            {name}
+          </NavLink>
         </p>
         <ul className='actions'>
           <li>
