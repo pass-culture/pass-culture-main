@@ -1,6 +1,7 @@
 import {
   Field,
   Form,
+  showNotification,
   SubmitButton
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -8,7 +9,6 @@ import { connect } from 'react-redux'
 
 import PageWrapper from '../layout/PageWrapper'
 import UploadThumb from '../layout/UploadThumb'
-import { showNotification } from '../../reducers/notification'
 import { apiUrl } from '../../utils/config'
 
 class ProfilePage extends Component {

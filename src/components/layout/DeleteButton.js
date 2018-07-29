@@ -1,8 +1,11 @@
-import { Icon, requestData } from 'pass-culture-shared'
+import {
+  closeModal,
+  Icon,
+  requestData,
+  showModal
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-
-import { closeModal, showModal } from '../../reducers/modal'
 
 class DeleteButton extends Component {
   onCancelClick = () => {
@@ -26,14 +29,12 @@ class DeleteButton extends Component {
               <div className="mb2">Enlever ?</div>
               <button
                 className="button is-default"
-                onClick={this.onConfirmClick}
-              >
+                onClick={this.onConfirmClick}>
                 Oui
               </button>
               <button
                 className="button is-default"
-                onClick={this.onCancelClick}
-              >
+                onClick={this.onCancelClick}>
                 Non
               </button>
             </div>

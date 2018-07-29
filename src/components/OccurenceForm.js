@@ -16,7 +16,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Price from './Price'
 import eventSelector from '../selectors/event'
 import searchSelector from '../selectors/search'
 import timezoneSelector from '../selectors/timezone'
@@ -105,7 +104,7 @@ class OccurenceForm extends Component {
       mergeForm,
       occurence
     } = this.props
-    if (!occurence || formBookingLimitDatetime || isOfferReadOnly) {
+    if (!get(occurence, 'id') || formBookingLimitDatetime || isOfferReadOnly) {
       return
     }
 
@@ -122,7 +121,7 @@ class OccurenceForm extends Component {
       mergeForm,
       occurence,
     } = this.props
-    if (occurence) {
+    if (get(occurence, 'id')) {
       return
     }
     mergeForm('occurence', {
@@ -139,7 +138,7 @@ class OccurenceForm extends Component {
       mergeForm,
       offer,
     } = this.props
-    if (offer || formPrice) {
+    if (get(offer, 'id') || formPrice) {
       return
     }
     mergeForm('offer', { price: 0 })
@@ -154,7 +153,7 @@ class OccurenceForm extends Component {
     } = this.props
     // add automatically a default beginninDatetime and a endDatetime
     // one day after the previous occurence
-    if (occurence) {
+    if (get(occurence, 'id')) {
       return
     }
     if (!formBeginningDatetime && get(occurences, 'length')) {
@@ -306,33 +305,28 @@ class OccurenceForm extends Component {
           TagName={null} >
 
           <td title='Vide si gratuit'>
-
             <Field name='eventOccurenceId' type='hidden' />
             <Field name='offererId' type='hidden' />
-
-            {
-              isOfferReadOnly
-                ? <Price value={get(offer, 'price')} />
-                : <Field
-                    name='price'
-                    placeholder='Gratuit'
-                    type='number'
-                    title='Prix'  />
-            }
-
+            <Field
+              displayValue={(value, {readOnly}) => value === 0
+                ? readOnly ? 'Gratuit' : 0
+                : readOnly ? `${value}€` : value
+              }
+              name='price'
+              placeholder='Gratuit'
+              type='number'
+              title='Prix' />
           </td>
           <td title='Laissez vide si pas de limite'>
             <Field
               maxDate={beginningDatetime}
               name='bookingLimitDatetime'
               placeholder="Laissez vide si pas de limite"
-              readOnly={isOfferReadOnly}
               type='date' />
           </td>
           <td title='Laissez vide si pas de limite'>
             <Field
               name='available'
-              readOnly={isOfferReadOnly}
               title='Places disponibles'
               type='number' />
           </td>
@@ -415,6 +409,7 @@ export default compose(
       const isOfferReadOnly = !occurenceId ||
         !eventOccurenceIdOrNew ||
         eventOccurenceIdOrNew === "nouvelle" ||
+        eventOccurenceIdOrNew !== occurenceId ||
         !offerIdOrNew ||
         (offerIdOrNew === 'nouveau' && offerId) ||
         (

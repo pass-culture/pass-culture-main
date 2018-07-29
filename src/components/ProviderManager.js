@@ -104,7 +104,6 @@ class ProviderManager extends Component {
 
   render () {
     const {
-      formPatch,
       match: { params: { offererId, venueId } },
       provider,
       providers,
@@ -235,7 +234,6 @@ export default compose(
       const venueId = get(ownProps, 'venue.id')
 
       return {
-        formPatch,
         provider,
         providers,
         user: state.user,

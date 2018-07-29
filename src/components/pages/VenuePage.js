@@ -1,10 +1,14 @@
 import get from 'lodash.get'
 import {
+  addBlockers,
   CancelButton,
+  closeNotification,
   Icon,
   Field,
   Form,
+  removeBlockers,
   requestData,
+  showNotification,
   SubmitButton
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -15,8 +19,6 @@ import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
 import PageWrapper from '../layout/PageWrapper'
-import { addBlockers, removeBlockers } from '../../reducers/blockers'
-import { closeNotification, showNotification } from '../../reducers/notification'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'

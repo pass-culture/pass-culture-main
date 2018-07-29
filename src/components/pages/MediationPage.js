@@ -1,6 +1,9 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
+import {
+  requestData,
+  showNotification
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
@@ -10,7 +13,6 @@ import { compose } from 'redux'
 
 import PageWrapper from '../layout/PageWrapper'
 import UploadThumb from '../layout/UploadThumb'
-import { showNotification } from '../../reducers/notification'
 import mediationSelector from '../../selectors/mediation'
 import occasionSelector from '../../selectors/occasion'
 import offererSelector from '../../selectors/offerer'
@@ -87,9 +89,6 @@ class MediationPage extends Component {
   }
 
   handleSuccessData = (state, action) => {
-    const {
-      method
-    } = action
     const {
       history,
       showNotification,

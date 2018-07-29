@@ -1,8 +1,10 @@
 import get from 'lodash.get'
 import {
+  closeNotification,
   Field,
   Form,
   requestData,
+  showNotification,
   SubmitButton
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -13,7 +15,6 @@ import { compose } from 'redux'
 
 import VenueItem from '../VenueItem'
 import PageWrapper from '../layout/PageWrapper'
-import { closeNotification, showNotification } from '../../reducers/notification'
 import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'
 import { offererNormalizer } from '../../utils/normalizers'

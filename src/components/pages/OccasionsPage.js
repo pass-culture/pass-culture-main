@@ -1,7 +1,9 @@
 import {
   assignData,
   Icon,
-  requestData
+  InfiniteScroller,
+  requestData,
+  showModal
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -10,9 +12,7 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
-import InfiniteScroller from '../layout/InfiniteScroller'
 import PageWrapper from '../layout/PageWrapper'
-import { showModal } from '../../reducers/modal'
 import occasionsSelector from '../../selectors/occasions'
 import offererSelector from '../../selectors/offerer'
 import searchSelector from '../../selectors/search'

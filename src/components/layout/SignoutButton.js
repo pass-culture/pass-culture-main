@@ -1,10 +1,11 @@
-import { requestData } from 'pass-culture-shared'
+import {
+  closeModal,
+  requestData
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-
-import { closeModal } from '../../reducers/modal'
 
 class SignoutButton extends Component {
 

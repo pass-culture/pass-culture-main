@@ -1,7 +1,11 @@
 import {
+  closeNotification,
   Icon,
+  Loading,
+  Modal,
   requestData,
   resetForm,
+  showNotification,
   withLogin
 } from 'pass-culture-shared'
 import classnames from 'classnames'
@@ -13,9 +17,6 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Header from './Header'
-import Loader from './Loader'
-import Modal from './Modal'
-import { showNotification, closeNotification } from '../../reducers/notification'
 
 class PageWrapper extends Component {
 
@@ -174,7 +175,7 @@ class PageWrapper extends Component {
                   <div className='main-content'>
                     {content}
                   </div>
-                  {loading && <Loader />}
+                  {loading && <Loading />}
                 </div>
               </div>
             </div>
