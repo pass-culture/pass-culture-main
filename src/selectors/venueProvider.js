@@ -7,10 +7,10 @@ export default createCachedSelector(
   (state, venueId) => venueId,
   (state, venueId, venueProviderId) => venueProviderId,
   (venueProviders, venueId, venueProviderId) => {
-    const venueProvider = venueProviders && venueProviderId &&
+    const venueProvider =
+      venueProviders &&
+      venueProviderId &&
       venueProviders.find(vp => vp.id === venueProviderId)
     return Object.assign({ venueId }, venueProvider)
   }
-)(
-  (state, venueId, venueProviderId) => venueProviderId || ''
-)
+)((state, venueId, venueProviderId) => venueProviderId || '')

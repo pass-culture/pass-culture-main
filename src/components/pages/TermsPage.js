@@ -51,12 +51,10 @@ feugiat orci ut diam ullamcorper consequat.
 class TermsPage extends Component {
   render() {
     return (
-      <PageWrapper
-        name="terms"
-        noHeader
-        backButton
-      >
-        <header><h1>Mentions légales</h1></header>
+      <PageWrapper name="terms" noHeader backButton>
+        <header>
+          <h1>Mentions légales</h1>
+        </header>
         <div className="content">
           <ReactMarkdown source={mardownContent} />
         </div>

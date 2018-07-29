@@ -4,7 +4,7 @@ import 'moment-timezone'
 
 moment.locale('fr-fr')
 
-const NODE_ENV = process.env.NODE_ENV || 'development'
+const NODE_ENV = process.env.NODE_ENV || 'development'
 
 export const IS_DEBUG = true
 
@@ -19,7 +19,7 @@ export const SPACE = ' '
 
 var CALCULATED_API_URL
 
-if (typeof(window) !== 'undefined' &&  window.cordova) {
+if (typeof window !== 'undefined' && window.cordova) {
   CALCULATED_API_URL = 'https://api.passculture.beta.gouv.fr' // This will be replaced by 'yarn pgbuild' for staging
 } else {
   CALCULATED_API_URL = IS_DEV
@@ -38,7 +38,7 @@ export function apiUrl(path) {
 }
 
 function getMobileOperatingSystem() {
-  if ( typeof(window) !== 'undefined' && typeof(navigator) !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
     var userAgent = navigator.userAgent || navigator.vendor || window.opera
 
     // Windows Phone must come first because its UA also contains "Android"
@@ -55,16 +55,15 @@ function getMobileOperatingSystem() {
       return 'ios'
     }
     return 'unknown'
-  } else {
-    return 'unknown'
   }
 }
 
 export const MOBILE_OS = getMobileOperatingSystem()
 
 let calculatedLocalhost
-if ( typeof(window) !== 'undefined') {
-  calculatedLocalhost = window.location.hostname === 'localhost' ||
+if (typeof window !== 'undefined') {
+  calculatedLocalhost =
+    window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
     window.location.hostname === '[::1]' ||
     // 127.0.0.1/8 is considered localhost for IPv4.
@@ -76,7 +75,7 @@ if ( typeof(window) !== 'undefined') {
 export const IS_LOCALHOST = Boolean(calculatedLocalhost)
 
 var CALC_ROOT_PATH = ''
-if (typeof(window) !== 'undefined' && window.cordova) {
+if (typeof window !== 'undefined' && window.cordova) {
   document.body.className += ' cordova'
   if (MOBILE_OS === 'android') {
     CALC_ROOT_PATH = 'file:///android_asset/www'
@@ -100,12 +99,12 @@ if (typeof(window) !== 'undefined' && window.cordova) {
       .join(' ')
   })
 } else {
-  if (typeof(window) !== 'undefined') {
+  if (typeof window !== 'undefined') {
     document.body.className += ' web'
     CALC_ROOT_PATH = window.location.protocol + '//' + document.location.host
   }
 }
 
-export const ROOT_PATH = CALC_ROOT_PATH  || 'http://localhost:3000/'
+export const ROOT_PATH = CALC_ROOT_PATH || 'http://localhost:3000/'
 
 export const DEFAULT_TO = '/accueil'

@@ -9,6 +9,4 @@ export default createCachedSelector(
     offers.filter(offer =>
       occurences.some(occurence => offer.eventOccurenceId === occurence.id)
     )
-)(
-  (state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`
-)
+)((state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`)

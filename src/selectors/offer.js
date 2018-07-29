@@ -9,22 +9,23 @@ export default createCachedSelector(
   (state, eventOccurenceId) => eventOccurenceId,
   (state, eventOccurenceId, offererId) => offererId,
   (offers, eventOccurenceId, offererId) => {
-    const offer = offers.find(offer =>
-      offer.eventOccurenceId === eventOccurenceId)
+    const offer = offers.find(
+      offer => offer.eventOccurenceId === eventOccurenceId
+    )
     if (offer) {
       return Object.assign(
         {
           bookingLimitDatetime: moment(get(offer, 'bookingLimitDatetime'))
             .add(1, 'day')
             .toISOString(),
-          offererId
-        }, offer)
+          offererId,
+        },
+        offer
+      )
     }
     return {
       eventOccurenceId,
       offererId,
     }
   }
-)(
-  (state, eventOccurenceId) => eventOccurenceId || ''
-)
+)((state, eventOccurenceId) => eventOccurenceId || '')

@@ -7,18 +7,13 @@ export default createCachedSelector(
   (state, occurence, eventId) => eventId,
   (state, occurence, eventId, venueId) => venueId,
   (occurence, eventId, venueId) => {
-    return Object.assign({},
-      occurence,
-      {
-        beginningDatetime: moment(get(occurence, 'beginningDatetime'))
-          .toISOString(),
-        endDatetime: moment(get(occurence, 'endDatetime'))
-          .toISOString(),
-        eventId,
-        venueId
-      }
-    )
+    return Object.assign({}, occurence, {
+      beginningDatetime: moment(
+        get(occurence, 'beginningDatetime')
+      ).toISOString(),
+      endDatetime: moment(get(occurence, 'endDatetime')).toISOString(),
+      eventId,
+      venueId,
+    })
   }
-)(
-  (state, occurence) => get(occurence, 'id') || ''
-)
+)((state, occurence) => get(occurence, 'id') || '')

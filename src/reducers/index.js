@@ -5,7 +5,7 @@ import {
   loading,
   modal,
   notification,
-  user
+  user,
 } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 

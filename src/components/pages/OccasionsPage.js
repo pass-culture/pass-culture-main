@@ -3,7 +3,7 @@ import {
   Icon,
   InfiniteScroller,
   requestData,
-  showModal
+  showModal,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -31,7 +31,6 @@ const defaultQueryParams = {
 }
 
 class OccasionsPage extends Component {
-
   constructor() {
     super()
     this.state = {
@@ -41,21 +40,24 @@ class OccasionsPage extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const queryParams = Object.assign({}, defaultQueryParams, nextProps.queryParams)
+    const queryParams = Object.assign(
+      {},
+      defaultQueryParams,
+      nextProps.queryParams
+    )
     return {
       queryParams,
       page: prevState.page,
     }
   }
 
-  handleDataRequest = (handleSuccess=()=>{}, handleFail=()=>{}) => {
-    const {
-      requestData,
-      types,
-    } = this.props
+  handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
+    const { requestData, types } = this.props
     requestData(
       'GET',
-      `occasions?${objectToQueryString(Object.assign({}, this.state.queryParams, {page: this.state.page}))}`,
+      `occasions?${objectToQueryString(
+        Object.assign({}, this.state.queryParams, { page: this.state.page })
+      )}`,
       {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
@@ -64,14 +66,16 @@ class OccasionsPage extends Component {
           })
         },
         handleFail,
-        normalizer: occasionNormalizer
+        normalizer: occasionNormalizer,
       }
     )
     types.length === 0 && requestData('GET', 'types')
   }
 
   handleQueryParamsChange(newValue) {
-    const newPath = `${this.props.location.pathname}?${objectToQueryString(Object.assign({}, this.state.queryParams, newValue))}`
+    const newPath = `${this.props.location.pathname}?${objectToQueryString(
+      Object.assign({}, this.state.queryParams, newValue)
+    )}`
     this.props.assignData({ occasions: [] })
     this.setState({
       page: 1,
@@ -81,53 +85,52 @@ class OccasionsPage extends Component {
 
   handleOrderDirectionChange = e => {
     const [by, direction] = this.state.queryParams.order_by.split('+')
-    this.handleQueryParamsChange({order_by: [by, direction === DESC ? ASC : DESC].join('+')  })
+    this.handleQueryParamsChange({
+      order_by: [by, direction === DESC ? ASC : DESC].join('+'),
+    })
   }
 
   handleOrderByChange = e => {
     const [, direction] = this.state.queryParams.order_by.split('+')
-    this.handleQueryParamsChange({order_by: [e.target.value, direction].join('+')})
+    this.handleQueryParamsChange({
+      order_by: [e.target.value, direction].join('+'),
+    })
   }
 
   handleRemoveFilter = key => e => {
-    this.handleQueryParamsChange({[key]: null})
+    this.handleQueryParamsChange({ [key]: null })
   }
 
   handleSearchChange = e => {
     e.preventDefault()
-    this.handleQueryParamsChange({search: e.target.elements.search.value})
+    this.handleQueryParamsChange({ search: e.target.elements.search.value })
   }
 
   render() {
-    const {
-      occasions,
-      offerer,
-      venue,
-    } = this.props
+    const { occasions, offerer, venue } = this.props
 
-    const {
-      search,
-      order_by,
-    } = this.state.queryParams || {}
+    const { search, order_by } = this.state.queryParams || {}
 
     const [orderBy, orderDirection] = order_by.split('+')
     return (
       <PageWrapper name="offers" handleDataRequest={this.handleDataRequest}>
         <div className="section">
-          <NavLink to={`/offres/nouveau`} className='button is-primary is-medium is-pulled-right'>
-            <span className='icon'><Icon svg='ico-offres-w' /></span>
+          <NavLink
+            to={`/offres/nouveau`}
+            className="button is-primary is-medium is-pulled-right">
+            <span className="icon">
+              <Icon svg="ico-offres-w" />
+            </span>
             <span>Créer une offre</span>
           </NavLink>
-          <h1 className='main-title'>
-            Vos offres
-          </h1>
+          <h1 className="main-title">Vos offres</h1>
         </div>
-        <form className='section' onSubmit={this.handleSearchChange}>
+        <form className="section" onSubmit={this.handleSearchChange}>
           <label className="label">Rechercher une offre :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                id='search'
+                id="search"
                 className="input search-input"
                 placeholder="Saisissez une recherche"
                 type="text"
@@ -135,69 +138,78 @@ class OccasionsPage extends Component {
               />
             </p>
             <p className="control">
-              <button type='submit' className='button is-primary is-outlined'>OK</button>
-              {' '}
-              <button className='button is-secondary'>&nbsp;<Icon svg='ico-filter' />&nbsp;</button>
+              <button type="submit" className="button is-primary is-outlined">
+                OK
+              </button>{' '}
+              <button className="button is-secondary">
+                &nbsp;<Icon svg="ico-filter" />&nbsp;
+              </button>
             </p>
           </div>
         </form>
 
-        <ul className='section'>
-          {
-            offerer
-              ? (
-                <li className='tag is-rounded is-medium'>
-                  Structure :
-                  <span className="has-text-weight-semibold"> {offerer.name} </span>
-                  <button
-                    className="delete is-small"
-                    onClick={this.handleRemoveFilter('offererId')} />
-                </li>
-              )
-              : venue && (
-                <li className='tag is-rounded is-medium'>
-                  Lieu :
-                  <span className="has-text-weight-semibold">
-                    {venue.name}
-                  </span>
-                  <button
-                    className="delete is-small"
-                    onClick={this.handleRemoveFilter('venueId')}/>
-                </li>
-              )
-          }
+        <ul className="section">
+          {offerer ? (
+            <li className="tag is-rounded is-medium">
+              Structure :
+              <span className="has-text-weight-semibold"> {offerer.name} </span>
+              <button
+                className="delete is-small"
+                onClick={this.handleRemoveFilter('offererId')}
+              />
+            </li>
+          ) : (
+            venue && (
+              <li className="tag is-rounded is-medium">
+                Lieu :
+                <span className="has-text-weight-semibold">{venue.name}</span>
+                <button
+                  className="delete is-small"
+                  onClick={this.handleRemoveFilter('venueId')}
+                />
+              </li>
+            )
+          )}
         </ul>
 
         {
-          <div className='section'>
-            <div className='list-header'>
+          <div className="section">
+            <div className="list-header">
               <div>
-                <div className='recently-added'></div>
+                <div className="recently-added" />
                 Ajouté récemment
               </div>
               <div>
                 Trier par:
-                <span className='select is-rounded is-small'>
-                <select onChange={this.handleOrderByChange} className='' value={orderBy}>
-                  <option value='sold'>Offres écoulées</option>
-                  <option value='createdAt'>Date de création</option>
-                </select>
+                <span className="select is-rounded is-small">
+                  <select
+                    onChange={this.handleOrderByChange}
+                    className=""
+                    value={orderBy}>
+                    <option value="sold">Offres écoulées</option>
+                    <option value="createdAt">Date de création</option>
+                  </select>
                 </span>
               </div>
               <div>
-                <button onClick={this.handleOrderDirectionChange} className='button is-secondary'>
-                  <Icon svg={orderDirection === ASC ? 'ico-sort-ascending' : 'ico-sort-descending'} />
+                <button
+                  onClick={this.handleOrderDirectionChange}
+                  className="button is-secondary">
+                  <Icon
+                    svg={
+                      orderDirection === ASC
+                        ? 'ico-sort-ascending'
+                        : 'ico-sort-descending'
+                    }
+                  />
                 </button>
               </div>
             </div>
             {
               <InfiniteScroller
-                className='occasions-list main-list'
+                className="occasions-list main-list"
                 handleLoadMore={this.handleDataRequest}>
-                {
-                  occasions.map(o =>
-                    <OccasionItem key={o.id} occasion={o} />)
-                }
+                {occasions.map(o => <OccasionItem key={o.id} occasion={o} />)}
               </InfiniteScroller>
             }
           </div>
@@ -213,7 +225,11 @@ export default compose(
     (state, ownProps) => {
       const queryParams = searchSelector(state, ownProps.location.search)
       return {
-        occasions: occasionsSelector(state, queryParams.offererId, queryParams.venueId),
+        occasions: occasionsSelector(
+          state,
+          queryParams.offererId,
+          queryParams.venueId
+        ),
         offerer: offererSelector(state, queryParams.offererId),
         queryParams,
         user: state.user,

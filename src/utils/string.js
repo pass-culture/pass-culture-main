@@ -1,14 +1,12 @@
-export function capitalize(string='') {
-  return string
-    ? `${string[0].toUpperCase()}${string.slice(1)}`
-    : string
+export function capitalize(string = '') {
+  return string ? `${string[0].toUpperCase()}${string.slice(1)}` : string
 }
 
 export function removeWhitespaces(string) {
   return string && string.trim().replace(/\s/g, '')
 }
 
-function pluralizeWord(string, number, pluralizeWith='s') {
+function pluralizeWord(string, number, pluralizeWith = 's') {
   let singular, plural
   const lastLetter = string.slice(-1)[0]
   if (lastLetter === 's' || lastLetter === 'x') {
@@ -22,7 +20,10 @@ function pluralizeWord(string, number, pluralizeWith='s') {
 }
 
 function pluralizeString(string, number, pluralizeWith) {
-  return string.split(' ').map(w => pluralizeWord(w, number, pluralizeWith)).join(' ')
+  return string
+    .split(' ')
+    .map(w => pluralizeWord(w, number, pluralizeWith))
+    .join(' ')
 }
 
 export function pluralize(number, string, pluralizeWith) {
@@ -33,39 +34,45 @@ export function pluralize(number, string, pluralizeWith) {
   return `${number} ${pluralizeString(string, number, pluralizeWith)}`
 }
 
-export function queryStringToObject(string='') {
-  return string.replace(/^\??/, '').split('&')
+export function queryStringToObject(string = '') {
+  return string
+    .replace(/^\??/, '')
+    .split('&')
     .filter(el => el)
     .reduce((result, group) => {
-    let [key, value] = group.split('=')
-    switch (key) {
-      case 'date':
-        key = 'eventOccurenceIdOrNew'
-        break
-      case 'stock':
-        key = 'offerIdOrNew'
-        break
-      case 'lieu':
-        key = 'venueId'
-        break
-      case 'structure':
-        key = 'offererId'
-        break
-      default:
-        break
-    }
-    return Object.assign({}, result, {[key]: value})
-  }, {})
+      let [key, value] = group.split('=')
+      switch (key) {
+        case 'date':
+          key = 'eventOccurenceIdOrNew'
+          break
+        case 'stock':
+          key = 'offerIdOrNew'
+          break
+        case 'lieu':
+          key = 'venueId'
+          break
+        case 'structure':
+          key = 'offererId'
+          break
+        default:
+          break
+      }
+      return Object.assign({}, result, { [key]: value })
+    }, {})
 }
 
-export function objectToQueryString (object={}) {
-  return object && Object.keys(object)
-    .filter(k => (k && object[k]))
-    .map(key => {
-      const value = String(object[key])
-      return value && `${key}=${value}`
-    }).filter(arg => arg)
+export function objectToQueryString(object = {}) {
+  return (
+    object &&
+    Object.keys(object)
+      .filter(k => k && object[k])
+      .map(key => {
+        const value = String(object[key])
+        return value && `${key}=${value}`
+      })
+      .filter(arg => arg)
       .join('&')
+  )
 }
 
 export function updateQueryString(string, object) {

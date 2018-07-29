@@ -1,8 +1,5 @@
 import get from 'lodash.get'
-import {
-  closeModal,
-  mergeForm
-} from 'pass-culture-shared'
+import { closeModal, mergeForm } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -17,15 +14,9 @@ import occurencesSelector from '../selectors/occurences'
 import searchSelector from '../selectors/search'
 import providerSelector from '../selectors/provider'
 
-
 class OccurenceManager extends Component {
-
   onCloseClick = e => {
-    const {
-      occasion,
-      history,
-      closeModal,
-    } = this.props
+    const { occasion, history, closeModal } = this.props
     closeModal()
     history.push(`/offres/${get(occasion, 'id')}`)
   }
@@ -43,26 +34,25 @@ class OccurenceManager extends Component {
     } = this.props
 
     return (
-      <div className='occurence-manager'>
-        {
-          errors && (
-            <div className='notification is-danger'>
-            {
-              Object.keys(errors).map(key =>
-                <p key={key}> {key} : {errors[key]}</p>
-              )
-            }
-            </div>
-          )
-        }
-        <div className='occurence-table-wrapper'>
-          <div className='subtitle has-text-weight-bold has-text-left is-uppercase'>
+      <div className="occurence-manager">
+        {errors && (
+          <div className="notification is-danger">
+            {Object.keys(errors).map(key => (
+              <p key={key}>
+                {' '}
+                {key} : {errors[key]}
+              </p>
+            ))}
+          </div>
+        )}
+        <div className="occurence-table-wrapper">
+          <div className="subtitle has-text-weight-bold has-text-left is-uppercase">
             {get(event, 'name')}
           </div>
           <div className="main-title has-text-left">
             Dates, horaires et prix
           </div>
-          <table className='table is-hoverable occurence-table'>
+          <table className="table is-hoverable occurence-table">
             <thead>
               <tr>
                 <td>Date</td>
@@ -77,62 +67,59 @@ class OccurenceManager extends Component {
             </thead>
             <tbody>
               <tr>
-                <td colSpan='10'>
-                  {
-                    provider
-                      ? (
-                        <i>
-                          Il n'est pas possible d'ajouter ni de supprimer d'horaires pour cet événement {provider.name}
-                        </i>
-                      )
-                      : (
-                        <NavLink
-                          className='button is-secondary'
-                          disabled={isEditing}
-                          to={
-                            isEditing
-                              ? `${location.pathname}${location.search}`
-                              : `/offres/${get(occasion, 'id')}?gestion&date=nouvelle`
-                          }>
-                          + Ajouter un horaire
-                        </NavLink>
-                      )
-                  }
+                <td colSpan="10">
+                  {provider ? (
+                    <i>
+                      Il n'est pas possible d'ajouter ni de supprimer d'horaires
+                      pour cet événement {provider.name}
+                    </i>
+                  ) : (
+                    <NavLink
+                      className="button is-secondary"
+                      disabled={isEditing}
+                      to={
+                        isEditing
+                          ? `${location.pathname}${location.search}`
+                          : `/offres/${get(
+                              occasion,
+                              'id'
+                            )}?gestion&date=nouvelle`
+                      }>
+                      + Ajouter un horaire
+                    </NavLink>
+                  )}
                 </td>
               </tr>
-              {
-                eventOccurenceIdOrNew === "nouvelle" &&
+              {eventOccurenceIdOrNew === 'nouvelle' && (
                 <OccurenceForm isFullyEditable={!provider} />
-              }
-              {
-                occurences.map(o =>
-                  <OccurenceForm
-                    key={o.id}
-                    isFullyEditable={!provider}
-                    occurence={o} />)
-              }
+              )}
+              {occurences.map(o => (
+                <OccurenceForm
+                  key={o.id}
+                  isFullyEditable={!provider}
+                  occurence={o}
+                />
+              ))}
             </tbody>
-            {
-              occurences.length > 12 && (
-                <thead>
-                  <tr>
-                    <td>Date</td>
-                    <td>Heure de début</td>
-                    <td>Heure de fin</td>
-                    <td>Prix</td>
-                    <td>Date Limite de Réservation</td>
-                    <td>Places (total)</td>
-                    <td>Supprimer</td>
-                    <td>Modifier</td>
-                  </tr>
-                </thead>
-              )
-            }
+            {occurences.length > 12 && (
+              <thead>
+                <tr>
+                  <td>Date</td>
+                  <td>Heure de début</td>
+                  <td>Heure de fin</td>
+                  <td>Prix</td>
+                  <td>Date Limite de Réservation</td>
+                  <td>Places (total)</td>
+                  <td>Supprimer</td>
+                  <td>Modifier</td>
+                </tr>
+              </thead>
+            )}
           </table>
         </div>
         <button
           className="button is-secondary is-pulled-right"
-          onClick={this.onCloseClick} >
+          onClick={this.onCloseClick}>
           Fermer
         </button>
       </div>
@@ -144,13 +131,12 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-
       const search = searchSelector(state, ownProps.location.search)
-      const { eventOccurenceIdOrNew, offerIdOrNew } = (search || {})
+      const { eventOccurenceIdOrNew, offerIdOrNew } = search || {}
       const isEditing = eventOccurenceIdOrNew || offerIdOrNew
 
       const occasion = occasionSelector(state, ownProps.match.params.occasionId)
-      const { eventId, venueId } = (occasion || {})
+      const { eventId, venueId } = occasion || {}
       const event = eventSelector(state, eventId)
       const occurences = occurencesSelector(state, venueId, eventId)
 
@@ -163,7 +149,7 @@ export default compose(
         isEditing,
         occasion,
         occurences,
-        provider: providerSelector(state, get(event, 'lastProviderId'))
+        provider: providerSelector(state, get(event, 'lastProviderId')),
       }
     },
     { closeModal, mergeForm }

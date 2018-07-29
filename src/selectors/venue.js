@@ -4,19 +4,17 @@ import createCachedSelector from 're-reselect'
 import venuesSelector from './venues'
 
 export default createCachedSelector(
-  (state) => venuesSelector(state),
+  state => venuesSelector(state),
   (state, venueId) => venueId,
   (state, venueId, offererId) => offererId,
-  (state) => get(state, 'user.email'),
+  state => get(state, 'user.email'),
   (venues, venueId, offererId, bookingEmail) => {
     return Object.assign(
       {
         bookingEmail,
-        managingOffererId: offererId
+        managingOffererId: offererId,
       },
       venues.find(v => v.id === venueId)
     )
   }
-)(
-  (state, venueId) => venueId || ''
-)
+)((state, venueId) => venueId || '')

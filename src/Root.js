@@ -5,7 +5,7 @@ import {
   matchPath,
   Redirect,
   Route,
-  Switch
+  Switch,
 } from 'react-router-dom'
 
 import App from './App'

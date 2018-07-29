@@ -21,8 +21,7 @@ const withBackButton = (
           <div>
             <button
               className={`button back ${btnClass}`}
-              onClick={history.goBack}
-            >
+              onClick={history.goBack}>
               <Icon svg="ico-back-simple-w" />
             </button>
             <WrappedComponent {...otherProps} />

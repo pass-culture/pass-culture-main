@@ -1,9 +1,4 @@
-import {
-  closeModal,
-  Icon,
-  requestData,
-  showModal
-} from 'pass-culture-shared'
+import { closeModal, Icon, requestData, showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
@@ -39,15 +34,13 @@ class DeleteButton extends Component {
               </button>
             </div>
           )
-        }
-      >
+        }>
         {text || <Icon name="delete" />}
       </button>
     )
   }
 }
 
-export default connect(
-  null,
-  { closeModal, requestData, showModal }
-)(DeleteButton)
+export default connect(null, { closeModal, requestData, showModal })(
+  DeleteButton
+)

@@ -6,6 +6,4 @@ export default createCachedSelector(
   state => eventsSelector(state),
   (state, eventId) => eventId,
   (events, eventId) => events.find(event => event.id === eventId)
-)(
-  (state, eventId) => eventId || ''
-)
+)((state, eventId) => eventId || '')

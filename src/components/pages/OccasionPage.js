@@ -8,7 +8,7 @@ import {
   requestData,
   showModal,
   showNotification,
-  SubmitButton
+  SubmitButton,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -35,7 +35,7 @@ import { occasionNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
 
 class OccasionPage extends Component {
-  constructor () {
+  constructor() {
     super()
     this.state = {
       isNew: false,
@@ -44,21 +44,20 @@ class OccasionPage extends Component {
     }
   }
 
-  static getDerivedStateFromProps (nextProps) {
+  static getDerivedStateFromProps(nextProps) {
     const {
       location: { search },
-      match: { params: { occasionId } },
+      match: {
+        params: { occasionId },
+      },
       occasion,
       type,
     } = nextProps
-    const {
-      eventId,
-      thingId
-    } = (occasion || {})
+    const { eventId, thingId } = occasion || {}
 
     const isEdit = search.indexOf('modifie') > -1
     const isNew = occasionId === 'nouveau'
-    const isEventType = (get(type, 'type') === 'Event') || eventId
+    const isEventType = get(type, 'type') === 'Event' || eventId
     const isReadOnly = !isNew && !isEdit
 
     const apiPath = isEventType
@@ -75,7 +74,9 @@ class OccasionPage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { occasionId } },
+      match: {
+        params: { occasionId },
+      },
       history,
       occasion,
       offerers,
@@ -84,33 +85,30 @@ class OccasionPage extends Component {
       showModal,
       types,
     } = this.props
-    !occasion && occasionId !== 'nouveau' && requestData(
-      'GET',
-      `occasions/${occasionId}`,
-      {
+    !occasion &&
+      occasionId !== 'nouveau' &&
+      requestData('GET', `occasions/${occasionId}`, {
         key: 'occasions',
-        normalizer: occasionNormalizer
-      }
-    )
-    offerers.length === 0 && requestData(
-      'GET',
-      'offerers',
-      {
+        normalizer: occasionNormalizer,
+      })
+    offerers.length === 0 &&
+      requestData('GET', 'offerers', {
         handleSuccess: (state, action) => {
           if (!get(state, 'data.venues.length')) {
             showModal(
               <div>
-                Vous devez avoir déjà enregistré un lieu
-                dans une de vos structures pour ajouter des offres
-              </div>, {
-                onCloseClick: () => history.push('/structures')
-              })
+                Vous devez avoir déjà enregistré un lieu dans une de vos
+                structures pour ajouter des offres
+              </div>,
+              {
+                onCloseClick: () => history.push('/structures'),
+              }
+            )
           }
         },
         handleFail,
-        normalizer: { managedVenues: 'venues' }
-      }
-    )
+        normalizer: { managedVenues: 'venues' },
+      })
     providers.length === 0 && requestData('GET', 'providers')
     types.length === 0 && requestData('GET', 'types')
 
@@ -120,28 +118,18 @@ class OccasionPage extends Component {
   handleFail = (state, action) => {
     this.props.showNotification({
       type: 'danger',
-      text: 'Un problème est survenu lors de l\'enregistrement',
+      text: "Un problème est survenu lors de l'enregistrement",
     })
   }
 
   handleSuccess = (state, action) => {
-    const {
-      data,
-      method
-    } = action
-    const {
-      history,
-      occasion,
-      showNotification,
-      venue
-    } = this.props
-    const {
-      isEventType
-    } = this.state
+    const { data, method } = action
+    const { history, occasion, showNotification, venue } = this.props
+    const { isEventType } = this.state
 
     showNotification({
       text: 'Votre offre a bien été enregistrée',
-      type: 'success'
+      type: 'success',
     })
 
     // PATCH
@@ -152,11 +140,13 @@ class OccasionPage extends Component {
 
     // POST
     if (isEventType && method === 'POST') {
-      const { occasions } = (data || {})
-      const occasion = occasions && occasions.find(o =>
-        o.venueId === get(venue, 'id'))
+      const { occasions } = data || {}
+      const occasion =
+        occasions && occasions.find(o => o.venueId === get(venue, 'id'))
       if (!occasion) {
-        console.warn("Something wrong with returned data, we should retrieve the created occasion here")
+        console.warn(
+          'Something wrong with returned data, we should retrieve the created occasion here'
+        )
         return
       }
       history.push(`/offres/${occasion.id}?gestion`)
@@ -165,20 +155,21 @@ class OccasionPage extends Component {
 
   handleShowOccurencesModal = () => {
     const {
-      location: {search},
-      showModal
+      location: { search },
+      showModal,
     } = this.props
-    search.indexOf('gestion') > -1 ? showModal(
-      <OccurenceManager />, {
-        isUnclosable: true
-    }) : closeModal()
+    search.indexOf('gestion') > -1
+      ? showModal(<OccurenceManager />, {
+          isUnclosable: true,
+        })
+      : closeModal()
   }
 
   componentDidMount() {
     this.handleShowOccurencesModal()
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const {
       location: { pathname, search },
       occasion,
@@ -197,7 +188,7 @@ class OccasionPage extends Component {
     }
   }
 
-  render () {
+  render() {
     const {
       event,
       location: { search },
@@ -209,197 +200,182 @@ class OccasionPage extends Component {
       type,
       types,
       venues,
-      user
+      user,
     } = this.props
-    const {
-      apiPath,
-      isNew,
-      isReadOnly,
-      isEventType,
-    } = this.state
+    const { apiPath, isNew, isReadOnly, isEventType } = this.state
 
     const showAllForm = type || !isNew
 
     return (
       <PageWrapper
-        backTo={{path: `/offres${search}`, label: 'Vos offres'}}
-        name='offer'
+        backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
+        name="offer"
         handleDataRequest={this.handleDataRequest}>
-        <div className='section'>
-          <h1 className='main-title'>
-            { isNew ? "Ajouter une offre" : "Détails de l'offre" }
+        <div className="section">
+          <h1 className="main-title">
+            {isNew ? 'Ajouter une offre' : "Détails de l'offre"}
           </h1>
-          <p className='subtitle'>
-            Renseignez les détails de cette offre et mettez-la en avant en ajoutant une ou plusieurs accorches.
+          <p className="subtitle">
+            Renseignez les détails de cette offre et mettez-la en avant en
+            ajoutant une ou plusieurs accorches.
           </p>
           <Form
             action={apiPath}
-            name='occasion'
+            name="occasion"
             handleSuccess={this.handleSuccess}
             handleFail={this.handleFail}
             patch={event || thing}
-            readOnly={isReadOnly} >
-            <div className='field-group'>
-              <Field name='name' label="Titre de l'offre" required isExpanded/>
+            readOnly={isReadOnly}>
+            <div className="field-group">
+              <Field name="name" label="Titre de l'offre" required isExpanded />
               <Field
-                label='Type'
-                name='type'
-                optionLabel='label'
-                optionValue='value'
+                label="Type"
+                name="type"
+                optionLabel="label"
+                optionValue="value"
                 options={types}
                 placeholder="Sélectionnez un type d'offre"
                 required
-                type='select' />
+                type="select"
+              />
             </div>
-            {
-              !isNew && (
-                <div className='field'>
-                  {
-                    event && (
-                      <div className='field form-field is-horizontal'>
-                        <div className='field-label'>
-                          <label className="label" htmlFor="input_occasions_name">
-                            <div className="subtitle">Dates :</div>
-                          </label>
+            {!isNew && (
+              <div className="field">
+                {event && (
+                  <div className="field form-field is-horizontal">
+                    <div className="field-label">
+                      <label className="label" htmlFor="input_occasions_name">
+                        <div className="subtitle">Dates :</div>
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="nb-dates">
+                          {pluralize(get(occurences, 'length'), 'date')}
                         </div>
-                        <div className='field-body'>
-                          <div className='field'>
-                            <div className='nb-dates'>
-                              {pluralize(get(occurences, 'length'), 'date')}
-                            </div>
-                            <NavLink
-                              className='button is-primary is-outlined is-small'
-                              to={`/offres/${get(occasion, 'id')}?gestion`}>
-                              <span className='icon'><Icon svg='ico-calendar' /></span>
-                              <span>Gérer les dates et les prix</span>
-                            </NavLink>
-                          </div>
-                        </div>
+                        <NavLink
+                          className="button is-primary is-outlined is-small"
+                          to={`/offres/${get(occasion, 'id')}?gestion`}>
+                          <span className="icon">
+                            <Icon svg="ico-calendar" />
+                          </span>
+                          <span>Gérer les dates et les prix</span>
+                        </NavLink>
                       </div>
-                    )
-                  }
-                  <MediationManager />
-                </div>
-              )
-            }
-            {
-              showAllForm && (
-                <div>
-                  <h2 className='main-list-title'>
-                    Infos pratiques
-                  </h2>
-                  <div className='field-group'>
-                    <Field
-                      debug
-                      label='Structure'
-                      name='offererId'
-                      options={offerers}
-                      placeholder="Sélectionnez une structure"
-                      required
-                      type='select' />
-                    {
-                      offerer && get(venues, 'length') === 0
-                        ? (
-                          <div className='field is-horizontal'>
-                            <div className='field-label'></div>
-                            <div className='field-body'>
-                              <p className='help is-danger'>
-                                Il faut obligatoirement une structure avec un lieu.
-                              </p>
-                            </div>
-                          </div>
-                        )
-                        : get(venues, 'length') > 0 && (
-                          <Field
-                            label='Lieu'
-                            name='venueId'
-                            options={venues}
-                            placeholder='Sélectionnez un lieu'
-                            required
-                            type='select' />
-                        )
-                    }
-                    {
-                      get(user, 'isAdmin') && (
-                        <Field
-                          label='Offre à rayonnement national'
-                          name='isNational'
-                          type='checkbox' />
-                        )
-                    }
-                    { isEventType && (
-                      <Field
-                        label='Durée en minutes'
-                        name='durationMinutes'
-                        required
-                        type='number' />
-                    )}
+                    </div>
                   </div>
-                  <h2 className='main-list-title'>Infos artistiques</h2>
-                  <div className='field-group'>
+                )}
+                <MediationManager />
+              </div>
+            )}
+            {showAllForm && (
+              <div>
+                <h2 className="main-list-title">Infos pratiques</h2>
+                <div className="field-group">
+                  <Field
+                    debug
+                    label="Structure"
+                    name="offererId"
+                    options={offerers}
+                    placeholder="Sélectionnez une structure"
+                    required
+                    type="select"
+                  />
+                  {offerer && get(venues, 'length') === 0 ? (
+                    <div className="field is-horizontal">
+                      <div className="field-label" />
+                      <div className="field-body">
+                        <p className="help is-danger">
+                          Il faut obligatoirement une structure avec un lieu.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    get(venues, 'length') > 0 && (
+                      <Field
+                        label="Lieu"
+                        name="venueId"
+                        options={venues}
+                        placeholder="Sélectionnez un lieu"
+                        required
+                        type="select"
+                      />
+                    )
+                  )}
+                  {get(user, 'isAdmin') && (
+                    <Field
+                      label="Offre à rayonnement national"
+                      name="isNational"
+                      type="checkbox"
+                    />
+                  )}
+                  {isEventType && (
+                    <Field
+                      label="Durée en minutes"
+                      name="durationMinutes"
+                      required
+                      type="number"
+                    />
+                  )}
+                </div>
+                <h2 className="main-list-title">Infos artistiques</h2>
+                <div className="field-group">
+                  <Field
+                    isExpanded
+                    label="Description"
+                    maxLength={750}
+                    name="description"
+                    required
+                    type="textarea"
+                  />
+                  <Field name="author" label="Auteur" isExpanded />
+                  {isEventType && [
                     <Field
                       isExpanded
-                      label='Description'
-                      maxLength={750}
-                      name='description'
-                      required
-                      type='textarea' />
-                    <Field name='author' label='Auteur' isExpanded />
-                    {
-                      isEventType && [
-                        <Field
-                          isExpanded
-                          key={0}
-                          label='Metteur en scène'
-                          name='stageDirector' />,
-                        <Field
-                          isExpanded
-                          key={1}
-                          label='Interprète'
-                          name='performer' />
-                      ]
-                    }
-                  </div>
+                      key={0}
+                      label="Metteur en scène"
+                      name="stageDirector"
+                    />,
+                    <Field
+                      isExpanded
+                      key={1}
+                      label="Interprète"
+                      name="performer"
+                    />,
+                  ]}
                 </div>
-              )
-            }
+              </div>
+            )}
 
             <hr />
             <div
               className="field is-grouped is-grouped-centered"
-              style={{justifyContent: 'space-between'}}>
+              style={{ justifyContent: 'space-between' }}>
               <div className="control">
-                {
-                  isReadOnly
-                    ? (
-                      <NavLink to={`/offres/${get(occasion, 'id')}?modifie`}
-                        className='button is-secondary is-medium'>
-                        Modifier l'offre
-                      </NavLink>
-                    )
-                    : (
-                      <CancelButton
-                        className="button is-secondary is-medium"
-                        to={isNew ? '/offres' : `/offres/${get(occasion, 'id')}`}>
-                        Annuler
-                      </CancelButton>
-                    )
-                }
+                {isReadOnly ? (
+                  <NavLink
+                    to={`/offres/${get(occasion, 'id')}?modifie`}
+                    className="button is-secondary is-medium">
+                    Modifier l'offre
+                  </NavLink>
+                ) : (
+                  <CancelButton
+                    className="button is-secondary is-medium"
+                    to={isNew ? '/offres' : `/offres/${get(occasion, 'id')}`}>
+                    Annuler
+                  </CancelButton>
+                )}
               </div>
               <div className="control">
-                {
-                  isReadOnly
-                  ? (
-                    <NavLink to='/offres' className='button is-primary is-medium'>
-                      Terminer
-                    </NavLink>
-                  )
-                  : (
-                    <SubmitButton className="button is-primary is-medium">
-                      Enregistrer
-                    </SubmitButton>
-                  )
-                }
+                {isReadOnly ? (
+                  <NavLink to="/offres" className="button is-primary is-medium">
+                    Terminer
+                  </NavLink>
+                ) : (
+                  <SubmitButton className="button is-primary is-medium">
+                    Enregistrer
+                  </SubmitButton>
+                )}
               </div>
             </div>
           </Form>
@@ -427,7 +403,8 @@ export default compose(
 
       const types = typesSelector(state)
 
-      const typeValue = get(state, 'form.occasion.type') ||
+      const typeValue =
+        get(state, 'form.occasion.type') ||
         get(event, 'type') ||
         get(thing, 'type')
 
@@ -436,7 +413,8 @@ export default compose(
       let offererId = get(state, 'form.occasion.offererId') || search.offererId
 
       const venues = venuesSelector(state, offererId)
-      const venueId = get(state, 'form.occasion.venueId') ||
+      const venueId =
+        get(state, 'form.occasion.venueId') ||
         search.venueId ||
         get(event, 'venueId') ||
         get(thing, 'venueId')

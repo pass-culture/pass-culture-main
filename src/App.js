@@ -4,12 +4,9 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-const App = ({
-  modalOpen,
-  children,
-}) => {
+const App = ({ modalOpen, children }) => {
   return (
-    <div className={classnames('app', {'modal-open': modalOpen})}>
+    <div className={classnames('app', { 'modal-open': modalOpen })}>
       {children}
     </div>
   )

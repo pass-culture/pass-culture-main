@@ -5,7 +5,7 @@ import PageWrapper from '../layout/PageWrapper'
 
 const MediationsPage = () => {
   return (
-    <PageWrapper name='mediations'>
+    <PageWrapper name="mediations">
       <MediationManager />
     </PageWrapper>
   )

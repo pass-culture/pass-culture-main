@@ -17,6 +17,4 @@ export default createCachedSelector(
       : get(event, 'thumbCount')
         ? `${THUMBS_URL}/events/${get(event, 'id')}`
         : get(thing, 'thumbCount') && `${THUMBS_URL}/things/${get(thing, 'id')}`
-)(
-  (state, eventId, thingId) => `${eventId || ''}/${thingId || ''}`
-)
+)((state, eventId, thingId) => `${eventId || ''}/${thingId || ''}`)

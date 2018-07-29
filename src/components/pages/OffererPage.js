@@ -5,7 +5,7 @@ import {
   Form,
   requestData,
   showNotification,
-  SubmitButton
+  SubmitButton,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -19,17 +19,15 @@ import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'
 import { offererNormalizer } from '../../utils/normalizers'
 
-
 class OffererPage extends Component {
-
-  constructor () {
+  constructor() {
     super()
     this.state = {
-      isNew: false
+      isNew: false,
     }
   }
 
-  static getDerivedStateFromProps (nextProps) {
+  static getDerivedStateFromProps(nextProps) {
     const {
       offerer,
       match: { params },
@@ -40,29 +38,25 @@ class OffererPage extends Component {
     return {
       apiPath: isNew ? `offerers/` : `offerers/${offererId}`,
       isNew,
-      method
+      method,
     }
   }
 
-
-
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      match: { params: { offererId } },
+      match: {
+        params: { offererId },
+      },
       requestData,
     } = this.props
     const { isNew } = this.state
     if (!isNew) {
-      requestData(
-        'GET',
-        `offerers/${offererId}`,
-        {
-          handleSuccess,
-          handleFail,
-          key: 'offerers',
-          normalizer: offererNormalizer
-        }
-      )
+      requestData('GET', `offerers/${offererId}`, {
+        handleSuccess,
+        handleFail,
+        key: 'offerers',
+        normalizer: offererNormalizer,
+      })
       return
     }
     // prevent loading
@@ -70,14 +64,12 @@ class OffererPage extends Component {
   }
 
   handleSuccess = () => {
-    const {
-      history,
-      showNotification
-    } = this.props
+    const { history, showNotification } = this.props
     history.push('/structures')
     showNotification({
-      text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
-      type: 'success'
+      text:
+        'Votre structure a bien été enregistrée, elle est en cours de validation.',
+      type: 'success',
     })
   }
 
@@ -85,54 +77,64 @@ class OffererPage extends Component {
     this.setState({ isNewProvider: true })
   }
 
-  render () {
-    const {
-      offerer,
-      venues,
-      fetchedName,
-    } = this.props
+  render() {
+    const { offerer, venues, fetchedName } = this.props
 
-    const {
-      isNew,
-    } = this.state
+    const { isNew } = this.state
     return (
       <PageWrapper
-        backTo={{label: 'Vos structures', path: '/structures'}}
-        name='offerer'
-        handleDataRequest={this.handleDataRequest}
-      >
-        <div className='section hero'>
-          <h2 className='subtitle has-text-weight-bold'>
+        backTo={{ label: 'Vos structures', path: '/structures' }}
+        name="offerer"
+        handleDataRequest={this.handleDataRequest}>
+        <div className="section hero">
+          <h2 className="subtitle has-text-weight-bold">
             {get(offerer, 'name')}
           </h2>
           <h1 className="main-title">Structure</h1>
           <p className="subtitle">
-            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+            Détails de la structure rattachée, des lieux et des fournisseurs de
+            ses offres.
           </p>
         </div>
 
-        <Form name='offerer' className='section'
+        <Form
+          name="offerer"
+          className="section"
           action={`/offerers/${isNew ? '' : get(offerer, 'id')}`}
           handleSuccess={this.handleSuccess}
-          patch={offerer} >
-          <div className='field-group'>
-            <Field name='siren' label='SIREN' required readOnly={!isNew} />
-            {
-              (get(offerer, 'name') || fetchedName) && [
-                <Field key={0}  label='Désignation' name='name' required readOnly isExpanded/>,
-                <Field key={1} label='Siège social' name='address' required readOnly isExpanded/>
-              ]
-            }
+          patch={offerer}>
+          <div className="field-group">
+            <Field name="siren" label="SIREN" required readOnly={!isNew} />
+            {(get(offerer, 'name') || fetchedName) && [
+              <Field
+                key={0}
+                label="Désignation"
+                name="name"
+                required
+                readOnly
+                isExpanded
+              />,
+              <Field
+                key={1}
+                label="Siège social"
+                name="address"
+                required
+                readOnly
+                isExpanded
+              />,
+            ]}
           </div>
 
           {isNew ? (
             <div>
               <hr />
-              <div className="field is-grouped is-grouped-centered" style={{justifyContent: 'space-between'}}>
+              <div
+                className="field is-grouped is-grouped-centered"
+                style={{ justifyContent: 'space-between' }}>
                 <div className="control">
                   <NavLink
                     className="button is-secondary is-medium"
-                    to='/structures' >
+                    to="/structures">
                     Retour
                   </NavLink>
                 </div>
@@ -144,15 +146,14 @@ class OffererPage extends Component {
               </div>
             </div>
           ) : (
-            <div className='section'>
-              <h2 className='main-list-title'>
-                LIEUX
-              </h2>
-              <ul className='main-list venues-list'>
-                { venues.map(v => <VenueItem key={v.id} venue={v} />) }
+            <div className="section">
+              <h2 className="main-list-title">LIEUX</h2>
+              <ul className="main-list venues-list">
+                {venues.map(v => <VenueItem key={v.id} venue={v} />)}
               </ul>
-              <div className='has-text-centered'>
-                <NavLink to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
+              <div className="has-text-centered">
+                <NavLink
+                  to={`/structures/${get(offerer, 'id')}/lieux/nouveau`}
                   className="button is-secondary is-outlined">
                   + Ajouter un lieu
                 </NavLink>
@@ -160,8 +161,7 @@ class OffererPage extends Component {
             </div>
           )}
         </Form>
-
-    </PageWrapper>
+      </PageWrapper>
     )
   }
 }
@@ -181,7 +181,7 @@ export default compose(
     {
       closeNotification,
       requestData,
-      showNotification
+      showNotification,
     }
   )
 )(OffererPage)
