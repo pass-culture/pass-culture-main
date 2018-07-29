@@ -55,8 +55,6 @@ function getMobileOperatingSystem() {
       return 'ios'
     }
     return 'unknown'
-  } else {
-    return 'unknown'
   }
 }
 
