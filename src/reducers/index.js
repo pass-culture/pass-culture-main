@@ -1,4 +1,11 @@
-import { errors, form, loading, modal, user } from 'pass-culture-shared'
+import {
+  blockers,
+  errors,
+  form,
+  loading,
+  modal,
+  user,
+} from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
 
@@ -9,6 +16,7 @@ import verso from './verso'
 import splash from './splash'
 
 const rootReducer = combineReducers({
+  blockers,
   data,
   errors,
   form,

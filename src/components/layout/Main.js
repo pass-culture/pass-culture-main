@@ -61,6 +61,9 @@ class Main extends Component {
     const { blockers, history } = this.props
     this.unblock && this.unblock()
     this.unblock = history.block(() => {
+      if (!blockers) {
+        return
+      }
       // test all the blockers
       for (let blocker of blockers) {
         const { block } = blocker || {}
@@ -69,7 +72,6 @@ class Main extends Component {
           return false
         }
       }
-
       // return true by default, which means that we don't block
       // the change of pathname
       return true
@@ -116,16 +118,6 @@ class Main extends Component {
       .concat(children)
       .filter(e => e.type !== 'header' && e.type !== 'footer')
 
-    console.log(
-      'HEIN',
-      Modal,
-      'header',
-      header,
-      'backButton',
-      backButton,
-      'BackButton',
-      BackButton
-    )
     return [
       <Tag
         className={classnames({
@@ -155,7 +147,6 @@ export default compose(
   withRouter,
   withLogin({
     failRedirect: '/connexion',
-    successRedirect: '/decouverte',
   }),
   connect(
     state => ({

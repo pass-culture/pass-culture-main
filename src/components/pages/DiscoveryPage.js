@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import { requestData } from 'pass-culture-shared'
+import { closeLoading, requestData, showLoading } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -13,19 +13,14 @@ import { recommendationNormalizer } from '../../utils/normalizers'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
-  constructor() {
-    super()
-    this.state = {
-      isEmpty: false,
-    }
-  }
-
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      closeLoading,
       currentRecommendation,
       eventOrThingId,
       mediationId,
       requestData,
+      showLoading,
     } = this.props
     if (!currentRecommendation) {
       let query = ''
@@ -41,12 +36,12 @@ class DiscoveryPage extends Component {
       requestData('PUT', 'recommendations?' + query, {
         handleSuccess: (state, action) => {
           if (!get(action, 'data.length')) {
-            console.log('Y A RIEN')
-            this.setState({ isEmpty: true })
+            closeLoading({ isEmpty: true })
           }
         },
         normalizer: recommendationNormalizer,
       })
+      showLoading({ isEmpty: false })
     }
   }
 
@@ -87,14 +82,16 @@ class DiscoveryPage extends Component {
   }
 
   render() {
+    const { backButton, isMenuOnTop } = this.props
+
     return (
       <Main
-        backButton={this.props.backButton ? { className: 'discovery' } : null}
+        backButton={backButton ? { className: 'discovery' } : null}
         handleDataRequest={this.handleDataRequest}
-        menuButton={{ borderTop: true }}
+        menuButton={{ borderTop: true, onTop: isMenuOnTop }}
         name="discovery"
         noPadding>
-        <Deck isEmpty={this.state.isEmpty} />
+        <Deck />
       </Main>
     )
   }
@@ -107,8 +104,10 @@ export default compose(
       backButton: state.router.location.search.indexOf('to=verso') > -1,
       currentRecommendation: selectCurrentRecommendation(state),
       eventOrThingId: selectCurrentEventOrThingId(state),
+      isMenuOnTop:
+        state.loading.isActive || get(state, 'loading.config.isEmpty'),
       recommendations: state.data.recommendations,
     }),
-    { requestData }
+    { closeLoading, requestData, showLoading }
   )
 )(DiscoveryPage)

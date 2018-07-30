@@ -12,7 +12,7 @@ class MenuButton extends Component {
   }
 
   render() {
-    const { borderTop, colored, isFlipped } = this.props
+    const { borderTop, colored, isFlipped, onTop } = this.props
     const maybeColored = {}
     if (colored) {
       maybeColored.colored = 'colored'
@@ -26,6 +26,7 @@ class MenuButton extends Component {
         className={classnames('menu-button', {
           bordered: borderTop,
           colored: colored,
+          'on-top': onTop,
         })}
         style={style}>
         <div className="button-wrapper">

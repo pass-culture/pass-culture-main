@@ -398,6 +398,7 @@ export default compose(
       currentHeaderColor: selectCurrentHeaderColor(state),
       currentRecommendation: selectCurrentRecommendation(state),
       deprecatedRecommendations: state.data.deprecatedRecommendations,
+      isEmpty: get(state, 'loading.config.isEmpty'),
       isFlipDisabled: selectIsFlipDisabled(state),
       isFlipped: state.verso.isFlipped,
       nextLimit: selectNextLimit(state),
