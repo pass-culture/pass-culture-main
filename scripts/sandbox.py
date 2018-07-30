@@ -163,7 +163,6 @@ def do_sandbox():
                 booking = Booking(from_dict=obj)
                 booking.offer = offer
                 booking.user = user
-                booking.amount = offer.price
                 booking.save()
                 print("CREATED booking")
                 pprint(vars(booking))

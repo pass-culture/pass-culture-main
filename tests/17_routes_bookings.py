@@ -78,73 +78,39 @@ def test_14_create_booking_should_work_if_user_can_book(app):
     assert r_create.status_code == 201
 
 
-def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
+def test_15_create_booking_should_not_work_if_user_is_admin():
+    # with default admin user
+    booking_json = {
+        'offerId': humanize(3),
+        'recommendationId': humanize(1),
+    }
+    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    assert r_create.json()['canBook'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
+    assert r_create.status_code == 400
+
+
+def test_16_create_booking_should_not_work_if_user_can_not_book(app):
+    # Given
     user = User()
-    user.publicName = 'Test'
-    user.email = 'cannotBook_freeOffers@email.com'
+    user.publicName = 'Cannot Book'
+    user.email = 'user_cannot_book@email.com'
     user.setPassword('testpsswd')
     user.departementCode = '93'
-    user.canBookFreeOffers = False
+    user.canBook = False
     PcObject.check_and_save(user)
 
-    offerer = Offerer()
-    offerer.name = 'Offerer'
-    offerer.postalCode = '93000'
-    offerer.address = '99 Test adress'
-    offerer.city = 'Test city'
-    PcObject.check_and_save(offerer)
-
-    thing_occasion = create_thing_occasion()
-    PcObject.check_and_save(thing_occasion)
-
-    venue = Venue()
-    venue.name = 'Venue name'
-    venue.bookingEmail = 'booking@email.com'
-    venue.postalCode = '93000'
-    venue.departementCode = '93'
-    venue.address = '1 Test address'
-    venue.city = 'Test city'
-    venue.managingOfferer = offerer
-    PcObject.check_and_save(venue)
-
-    offer = Offer()
-    offer.occasion = thing_occasion
-    offer.occasion.venue = venue
-    offer.offerer = offerer
-    offer.price = 0
-    offer.available = 50
-    PcObject.check_and_save(offer)
-
-    recommendation = Recommendation()
-    recommendation.occasion = thing_occasion
-    recommendation.user = user
-    PcObject.check_and_save(recommendation)
-
-    PcObject.check_and_save(recommendation)
-
-    deposit = Deposit()
-    deposit.date = datetime.utcnow() - timedelta(minutes=2)
-    deposit.amount = 500
-    deposit.userId = user.id
-    deposit.source = 'public'
-    PcObject.check_and_save(deposit)
-
     booking_json = {
-        "offerId": humanize(offer.id),
-        "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        'offerId': humanize(3),
+        'recommendationId': humanize(1),
     }
-
-    # When
-    r_create = req_with_auth('cannotBook_freeOffers@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
-
-    # Then
+    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    print(r_create.json())
+    assert r_create.json()['canBook'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
     assert r_create.status_code == 400
-    assert 'cannotBookFreeOffers' in r_create.json()
 
 
-def test_16_create_booking_should_not_work_if_not_enough_credit(app):
-    #Given
+def test_17_create_booking_should_not_work_if_not_enough_credit(app):
+    # Given
     user = User()
     user.publicName = 'Test'
     user.email = 'insufficient_funds_test@email.com'
@@ -215,8 +181,8 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     PcObject.delete(user)
 
 
-def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(app):
-    #Given
+def test_17_create_booking_should_work_if_enough_credit(app):
+    # Given
     user = User()
     user.publicName = 'Test'
     user.email = 'sufficient_funds@email.com'
@@ -277,69 +243,4 @@ def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffe
     r_create_json = r_create.json()
     assert r_create.status_code == 201
     assert r_create_json['amount'] == 5.0
-    assert r_create_json['quantity'] == 1
-
-
-def test_18_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
-    user = User()
-    user.publicName = 'Test'
-    user.email = 'can_book_paid_offers@email.com'
-    user.setPassword('testpsswd')
-    user.departementCode = '93'
-    user.canBookFreeOffers = False
-    PcObject.check_and_save(user)
-
-    offerer = Offerer()
-    offerer.name = 'Offerer'
-    offerer.postalCode = '93000'
-    offerer.address = '99 Test adress'
-    offerer.city = 'Test city'
-    PcObject.check_and_save(offerer)
-
-    thing_occasion = create_thing_occasion()
-    PcObject.check_and_save(thing_occasion)
-
-    venue = Venue()
-    venue.name = 'Venue name'
-    venue.bookingEmail = 'booking@email.com'
-    venue.postalCode = '93000'
-    venue.departementCode = '93'
-    venue.address = '1 Test address'
-    venue.city = 'Test city'
-    venue.managingOfferer = offerer
-    PcObject.check_and_save(venue)
-
-    offer = Offer()
-    offer.occasion = thing_occasion
-    offer.occasion.venue = venue
-    offer.offerer = offerer
-    offer.price = 5
-    offer.available = 50
-    PcObject.check_and_save(offer)
-
-    recommendation = Recommendation()
-    recommendation.occasion = thing_occasion
-    recommendation.user = user
-    PcObject.check_and_save(recommendation)
-
-    deposit = Deposit()
-    deposit.date = datetime.utcnow() - timedelta(minutes=2)
-    deposit.amount = 500
-    deposit.userId = user.id
-    deposit.source = 'public'
-    PcObject.check_and_save(deposit)
-
-    booking_json = {
-        "offerId": humanize(offer.id),
-        "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
-    }
-
-    # When
-    r_create = req_with_auth('can_book_paid_offers@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
-    r_create_json = r_create.json()
-
-    # Then
-    assert r_create.status_code == 201
-    assert r_create_json['amount'] == 10.0
     assert r_create_json['quantity'] == 1

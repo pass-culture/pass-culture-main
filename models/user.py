@@ -34,10 +34,10 @@ class User(PcObject,
 
     departementCode = Column(String(3), nullable=False)
 
-    canBookFreeOffers = Column(Boolean,
-                               nullable=False,
-                               server_default=expression.true(),
-                               default=True)
+    canBook = Column(Boolean,
+                     nullable=False,
+                     server_default=expression.true(),
+                     default=True)
 
     isAdmin = Column(Boolean,
                      CheckConstraint('("canBook" IS FALSE AND "isAdmin" IS TRUE)'
