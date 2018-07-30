@@ -35,7 +35,7 @@ const SigninPage = () => {
           <Field
             autoComplete="current-password"
             className={inputClassName}
-            label="Mot de passe"
+            label="Mot de passe:"
             name="password"
             placeholder="Mot de passe"
             type="password"

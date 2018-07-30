@@ -7,6 +7,10 @@
     background-color: $primary;
     color: $white;
 
+    label {
+      color: $white;
+    }
+
     header {
       @include dotted($white, bottom);
     }

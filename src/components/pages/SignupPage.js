@@ -8,7 +8,7 @@ import PageWrapper from '../layout/PageWrapper'
 const SignupPage = () => {
   return (
     <PageWrapper name="sign-up" Tag="form">
-      <div className="section form-container">
+      <div className="section">
         <h2 className="subtitle is-italic">
           Une minute pour créer un compte, et puis c'est tout !
         </h2>
@@ -47,9 +47,10 @@ const SignupPage = () => {
             sublabel="pour se connecter"
             type="password"
           />
+          <br />
           <Field
             label={
-              <h4>
+              <span className="subtitle">
                 {' '}
                 J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
                 <a
@@ -58,7 +59,7 @@ const SignupPage = () => {
                   Pass Culture
                 </a>
                 .
-              </h4>
+              </span>
             }
             name="contact_ok"
             required
