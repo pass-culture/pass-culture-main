@@ -52,12 +52,14 @@ class SigninPage extends Component {
               type="password"
             />
 
-            <SubmitButton className="button is-primary is-inverted">
-              Connexion
-            </SubmitButton>
-            <NavLink to="/inscription" className="button is-secondary">
-              Inscription
-            </NavLink>
+            <Portal node={this.state.$footer}>
+              <SubmitButton className="button is-primary is-inverted">
+                Connexion
+              </SubmitButton>
+              <NavLink to="/inscription" className="button is-secondary">
+                Inscription
+              </NavLink>
+            </Portal>
           </Form>
         </div>
 
