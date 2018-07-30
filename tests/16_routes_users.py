@@ -279,6 +279,7 @@ def test_28_user_should_have_its_wallet_balance(app):
     offerer.postalCode = '93000'
     offerer.address = '2 Test adress'
     offerer.city = 'Test city'
+    offerer.siren = '999999987'
     PcObject.check_and_save(offerer)
 
     thing = Thing()
