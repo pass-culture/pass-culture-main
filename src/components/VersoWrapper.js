@@ -19,13 +19,17 @@ class VersoWrapper extends Component {
   }
 
   componentDidMount() {
-    this.$el.addEventListener('touchmove', e => {
-      if (this.props.draggable && this.$el.scrollTop > 0){
-        this.props.makeUndraggable()
-      } else if (!this.props.draggable && this.$el.scrollTop <= 0) {
-        this.props.makeDraggable()
-      }
-    }, {passive: true})
+    this.$el.addEventListener(
+      'touchmove',
+      e => {
+        if (this.props.draggable && this.$el.scrollTop > 0) {
+          this.props.makeUndraggable()
+        } else if (!this.props.draggable && this.$el.scrollTop <= 0) {
+          this.props.makeDraggable()
+        }
+      },
+      { passive: true }
+    )
   }
 
   componentWillUnMount() {
@@ -50,12 +54,13 @@ class VersoWrapper extends Component {
     }
     const author = get(source, 'extraData.author')
     return (
-      <div ref={$el => this.$el = $el} className={`verso-wrapper ${className || ''}`}>
+      <div
+        ref={$el => (this.$el = $el)}
+        className={`verso-wrapper ${className || ''}`}>
         <div
           className="verso-header"
           style={{ backgroundColor: headerColor }}
-          ref={element => (this.element = element)}
-        >
+          ref={element => (this.element = element)}>
           <h1>
             {' '}
             {source && source.name}
@@ -72,11 +77,14 @@ class VersoWrapper extends Component {
   }
 }
 
-export default connect(state => ({
-  headerColor: selectCurrentHeaderColor(state),
-  isFlipped: state.verso.isFlipped,
-  draggable: state.verso.draggable,
-  isCurrentTuto: selectIsCurrentTuto(state),
-  source: selectCurrentSource(state),
-  venue: selectCurrentVenue(state),
-}), { makeDraggable, makeUndraggable })(VersoWrapper)
+export default connect(
+  state => ({
+    headerColor: selectCurrentHeaderColor(state),
+    isFlipped: state.verso.isFlipped,
+    draggable: state.verso.draggable,
+    isCurrentTuto: selectIsCurrentTuto(state),
+    source: selectCurrentSource(state),
+    venue: selectCurrentVenue(state),
+  }),
+  { makeDraggable, makeUndraggable }
+)(VersoWrapper)

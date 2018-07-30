@@ -103,8 +103,7 @@ class Modal extends Component {
         })}
         role="dialog"
         style={{ backgroundColor: maskColor, zIndex: zIndex }}
-        onClick={this.onCloseClick}
-      >
+        onClick={this.onCloseClick}>
         <div
           className={classnames('modal-dialog', {
             fullscreen: this.props.fullscreen,
@@ -114,8 +113,7 @@ class Modal extends Component {
             transitionDuration: `${transitionDuration}ms`,
             transform: this.transform(),
           }}
-          onClick={e => this.stopPropagation(e)}
-        >
+          onClick={e => this.stopPropagation(e)}>
           {!isUnclosable &&
             hasCloseButton && (
               <button className="close" onClick={this.onCloseClick}>

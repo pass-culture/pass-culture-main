@@ -23,22 +23,19 @@ class ProfilePage extends Component {
     }
   }
 
-
   render() {
     const { user } = this.props
     return (
       <PageWrapper
         name="profile"
         menuButton={{ borderTop: true, colored: true }}
-        backButton
-      >
+        backButton>
         <header>Mon profil</header>
         <h2 className="title is-2">Bienvenue !</h2>
         <button
           className="button is-default"
           disabled={!user}
-          onClick={this.onSignOutClick}
-        >
+          onClick={this.onSignOutClick}>
           Déconnexion
         </button>
       </PageWrapper>
@@ -49,5 +46,8 @@ class ProfilePage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   withRouter,
-  connect(state => ({ user: state.user }), { requestData })
+  connect(
+    state => ({ user: state.user }),
+    { requestData }
+  )
 )(ProfilePage)

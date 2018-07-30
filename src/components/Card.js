@@ -11,37 +11,24 @@ import Verso from './Verso'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 import { IS_DEXIE } from '../utils/config'
 
-
 class Card extends Component {
-
-  componentDidUpdate (prevProps) {
-    const { isFlipped,
-      position,
-      recommendation,
-      requestData
-    } = this.props
+  componentDidUpdate(prevProps) {
+    const { isFlipped, position, recommendation, requestData } = this.props
     if (recommendation && position === 'current') {
       if (!prevProps.isFlipped && isFlipped && !recommendation.isClicked) {
-        requestData('PATCH', `recommendations/${recommendation.id}`,
-          {
-            body: {
-              isClicked: true
-            },
-            key: 'recommendations',
-            local: IS_DEXIE
-          }
-        )
+        requestData('PATCH', `recommendations/${recommendation.id}`, {
+          body: {
+            isClicked: true,
+          },
+          key: 'recommendations',
+          local: IS_DEXIE,
+        })
       }
     }
   }
 
   render() {
-    const {
-      currentHeaderColor,
-      recommendation,
-      position,
-      width
-    } = this.props
+    const { currentHeaderColor, recommendation, position, width } = this.props
     return (
       <div
         className={classnames('card', {
@@ -50,8 +37,7 @@ class Card extends Component {
         style={{
           transform: `translate(${get(recommendation, 'index') * width}px, 0)`,
           backgroundColor: currentHeaderColor,
-        }}
-      >
+        }}>
         <Recto {...recommendation} />
         {position === 'current' && <Verso />}
       </div>
@@ -60,7 +46,7 @@ class Card extends Component {
 }
 
 Card.defaultProps = {
-  readTimeout: 3000
+  readTimeout: 3000,
 }
 
 export default compose(

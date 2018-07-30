@@ -5,9 +5,9 @@ import PageWrapper from '../layout/PageWrapper'
 import { ROOT_PATH } from '../../utils/config'
 
 class TermsPage extends Component {
-  constructor () {
-      super()
-      this.state = { mdText: '' }
+  constructor() {
+    super()
+    this.state = { mdText: '' }
   }
 
   async componentDidMount() {
@@ -22,12 +22,15 @@ class TermsPage extends Component {
       <PageWrapper
         name="terms"
         menuButton={{ borderTop: true, colored: true }}
-        backButton
-      >
+        backButton>
         <header>Mentions légales</header>
         <div className="content">
           <ReactMarkdown source={mdText} />
-          <p className="version"><br/><br/>Pass Culture version ##VERSION##</p>
+          <p className="version">
+            <br />
+            <br />
+            Pass Culture version ##VERSION##
+          </p>
         </div>
       </PageWrapper>
     )

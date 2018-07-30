@@ -21,9 +21,7 @@ function* fromWatchSuccessGetSignoutActions() {
 }
 
 function* fromWatchSuccessSignActions() {
-  const user = yield select(state =>
-    state.data.users && state.data.users[0]
-  )
+  const user = yield select(state => state.data.users && state.data.users[0])
   const currentUser = yield select(state => state.user)
   const isDeprecatedCurrentUser =
     currentUser &&

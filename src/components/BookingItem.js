@@ -27,7 +27,11 @@ const BookingItem = props => {
                 {get(props, 'source.name')}
               </Dotdotdot>
             </h5>
-            <Capitalize>{moment(date).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
+            <Capitalize>
+              {moment(date)
+                .tz(tz)
+                .format('dddd DD/MM/YYYY à H:mm')}
+            </Capitalize>
           </div>
           <div className="token">{token}</div>
         </div>

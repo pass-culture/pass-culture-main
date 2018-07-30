@@ -18,12 +18,11 @@ import history from './utils/history'
 
 const Root = () => {
   if (!IS_DEV) {
-    Raven
-    .config(API_URL+'/client_errors', {
+    Raven.config(API_URL + '/client_errors', {
       release: version,
       environment: process.env.NODE_ENV,
-      logger: 'javascript'})
-      .install()
+      logger: 'javascript',
+    }).install()
   }
   return (
     <Provider store={store}>

@@ -14,5 +14,3 @@ export function* watchModalActions() {
   yield takeEvery(CLOSE_MODAL, fromWatchCloseModalAction)
   yield takeEvery(SHOW_MODAL, fromWatchShowModalAction)
 }
-
-export default watchModalActions

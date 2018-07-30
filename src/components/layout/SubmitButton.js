@@ -70,8 +70,7 @@ class SubmitButton extends Component {
           disabled: isDisabled,
         })}
         disabled={Boolean(submitRequestId) || isDisabled}
-        onClick={this.onSubmitClick}
-      >
+        onClick={this.onSubmitClick}>
         {submitRequestId ? submittingText : text}
       </button>
     )

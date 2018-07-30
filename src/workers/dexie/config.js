@@ -23,7 +23,7 @@ const config = {
         }
         return query
       },
-      sortBy: 'dehumanizedId'
+      sortBy: 'dehumanizedId',
     },
     {
       description: 'id',

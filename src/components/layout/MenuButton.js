@@ -8,7 +8,7 @@ import { showModal } from '../../reducers/modal'
 
 class MenuButton extends Component {
   onClick = () => {
-    this.props.showModal(<Menu />, {zIndex: 10002})
+    this.props.showModal(<Menu />, { zIndex: 10002 })
   }
 
   render() {
@@ -27,11 +27,10 @@ class MenuButton extends Component {
           bordered: borderTop,
           colored: colored,
         })}
-        style={style}
-      >
+        style={style}>
         <div className="button-wrapper">
           <button className="profile-button" onClick={this.onClick}>
-            <ProfilePicture alt='Mon menu' {...maybeColored} />
+            <ProfilePicture alt="Mon menu" {...maybeColored} />
           </button>
         </div>
       </footer>
@@ -39,6 +38,9 @@ class MenuButton extends Component {
   }
 }
 
-export default connect(state => ({ isFlipped: state.verso.isFlipped }), {
-  showModal,
-})(MenuButton)
+export default connect(
+  state => ({ isFlipped: state.verso.isFlipped }),
+  {
+    showModal,
+  }
+)(MenuButton)

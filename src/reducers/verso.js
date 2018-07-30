@@ -40,11 +40,11 @@ export function flip(action = {}) {
 }
 
 export function makeDraggable(action = {}) {
-  return { type: MAKE_DRAGGABLE}
+  return { type: MAKE_DRAGGABLE }
 }
 
 export function makeUndraggable(action = {}) {
-  return { type: MAKE_UNDRAGGABLE}
+  return { type: MAKE_UNDRAGGABLE }
 }
 
 export function unFlip(action = {}) {

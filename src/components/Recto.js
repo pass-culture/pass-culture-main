@@ -41,7 +41,7 @@ const Recto = ({
 export default connect((state, ownProps) =>
   Object.assign(
     {
-      isFlipped: state.verso.isFlipped
+      isFlipped: state.verso.isFlipped,
     },
     ownProps.position === 'current'
       ? selectCurrentRecommendation(state)

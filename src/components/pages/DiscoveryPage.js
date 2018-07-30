@@ -14,25 +14,37 @@ import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
   ensureRecommendations(props) {
-    const { currentRecommendation, eventOrThingId, mediationId, requestData } = props
+    const {
+      currentRecommendation,
+      eventOrThingId,
+      mediationId,
+      requestData,
+    } = props
     if (!currentRecommendation) {
-        let query = ''
-        if (mediationId || eventOrThingId) {
-          query += 'occasionType=event'
-        }
-        if (mediationId) {
-          query += '&mediationId='+mediationId
-        }
-        if (eventOrThingId) {
-          query += '&occasionId='+eventOrThingId
-        }
-        requestData('PUT', 'recommendations?'+query, { normalizer: recommendationNormalizer })
+      let query = ''
+      if (mediationId || eventOrThingId) {
+        query += 'occasionType=event'
+      }
+      if (mediationId) {
+        query += '&mediationId=' + mediationId
+      }
+      if (eventOrThingId) {
+        query += '&occasionId=' + eventOrThingId
+      }
+      requestData('PUT', 'recommendations?' + query, {
+        normalizer: recommendationNormalizer,
+      })
     }
   }
 
   handleRedirectFromLoading(props) {
     const { history, mediationId, offerId, recommendations } = props
-    if (!recommendations || (recommendations.length === 0) || mediationId || offerId)
+    if (
+      !recommendations ||
+      recommendations.length === 0 ||
+      mediationId ||
+      offerId
+    )
       return
 
     const targetRecommendation = recommendations[0]
@@ -67,8 +79,7 @@ class DiscoveryPage extends Component {
         name="discovery"
         noPadding
         menuButton={{ borderTop: true }}
-        backButton={this.props.backButton ? { className: 'discovery' } : null}
-      >
+        backButton={this.props.backButton ? { className: 'discovery' } : null}>
         <Deck />
       </PageWrapper>
     )
@@ -78,10 +89,13 @@ class DiscoveryPage extends Component {
 export default compose(
   withLogin({ isRequired: true }),
   withRouter,
-  connect(state => ({
-    backButton: state.router.location.search.indexOf('to=verso') > -1,
-    currentRecommendation: selectCurrentRecommendation(state),
-    eventOrThingId: selectCurrentEventOrThingId(state),
-    recommendations: state.data.recommendations,
-  }), { requestData })
+  connect(
+    state => ({
+      backButton: state.router.location.search.indexOf('to=verso') > -1,
+      currentRecommendation: selectCurrentRecommendation(state),
+      eventOrThingId: selectCurrentEventOrThingId(state),
+      recommendations: state.data.recommendations,
+    }),
+    { requestData }
+  )
 )(DiscoveryPage)

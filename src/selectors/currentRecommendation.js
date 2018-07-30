@@ -9,11 +9,7 @@ export default createSelector(
   state => state.router.location.pathname,
   selectRecommendationsWithIndex,
   selectRecommendationQuery,
-  (
-    pathname,
-    recommendations,
-    recommendationQuery
-  ) => {
+  (pathname, recommendations, recommendationQuery) => {
     // NOTE: you will see that recommendationQuery is not actually
     // used in the body of this function, but it is still necessary
     // to trigger this selector again when /recommendations/<recommendationId>

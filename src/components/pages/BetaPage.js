@@ -25,8 +25,7 @@ class BetaPage extends Component {
         <footer>
           <Link
             to="/inscription"
-            className="button is-secondary has-text-weight-light is-italic"
-          >
+            className="button is-secondary has-text-weight-light is-italic">
             C'est par là
             <Icon svg="ico-next" alt="Suivant" />
           </Link>
@@ -38,7 +37,10 @@ class BetaPage extends Component {
 
 export default compose(
   withLogin({ redirectTo: '/decouverte' }),
-  connect(state => ({ closeSplashTimeout: state.splash.closeTimeout }), {
-    closeSplash,
-  })
+  connect(
+    state => ({ closeSplashTimeout: state.splash.closeTimeout }),
+    {
+      closeSplash,
+    }
+  )
 )(BetaPage)

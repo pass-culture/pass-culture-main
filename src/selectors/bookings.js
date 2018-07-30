@@ -8,13 +8,13 @@ export default createSelector(
     if (!bookings) {
       return []
     }
-    return bookings.filter(function (booking) {
-        const offer = booking.offer
-        if (offer.thingId) {
-          return offer.thingId === eventOrThingId
-        } else {
-          return offer.eventOccurence.eventId === eventOrThingId
-        }
+    return bookings.filter(function(booking) {
+      const offer = booking.offer
+      if (offer.thingId) {
+        return offer.thingId === eventOrThingId
+      } else {
+        return offer.eventOccurence.eventId === eventOrThingId
+      }
     })
   }
 )
