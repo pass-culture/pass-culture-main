@@ -1,25 +1,27 @@
-import { requestData } from 'pass-culture-shared'
+import get from 'lodash.get'
+import { closeLoading, requestData, showLoading } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import Deck from '../Deck'
-import PageWrapper from '../layout/PageWrapper'
-import withLogin from '../hocs/withLogin'
+import Main from '../layout/Main'
 import selectCurrentEventOrThingId from '../../selectors/currentEventOrThingId'
 import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../utils/normalizers'
 import { getDiscoveryPath } from '../../utils/routes'
 
 class DiscoveryPage extends Component {
-  ensureRecommendations(props) {
+  handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      closeLoading,
       currentRecommendation,
       eventOrThingId,
       mediationId,
       requestData,
-    } = props
+      showLoading,
+    } = this.props
     if (!currentRecommendation) {
       let query = ''
       if (mediationId || eventOrThingId) {
@@ -32,8 +34,14 @@ class DiscoveryPage extends Component {
         query += '&occasionId=' + eventOrThingId
       }
       requestData('PUT', 'recommendations?' + query, {
+        handleSuccess: (state, action) => {
+          if (!get(action, 'data.length')) {
+            closeLoading({ isEmpty: true })
+          }
+        },
         normalizer: recommendationNormalizer,
       })
+      showLoading({ isEmpty: false })
     }
   }
 
@@ -62,40 +70,44 @@ class DiscoveryPage extends Component {
   }
 
   componentWillMount() {
-    this.handleRedirectFromLoading(this.props)
-    this.ensureRecommendations(this.props)
+    //this.handleRedirectFromLoading(this.props)
+    //this.ensureRecommendations(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.handleRedirectFromLoading(nextProps)
+    //this.handleRedirectFromLoading(nextProps)
     if (nextProps.offerId && nextProps.offerId !== this.props.offerId) {
-      this.ensureRecommendations(nextProps)
+      //this.ensureRecommendations(nextProps)
     }
   }
 
   render() {
+    const { backButton, isMenuOnTop } = this.props
+
     return (
-      <PageWrapper
+      <Main
+        backButton={backButton ? { className: 'discovery' } : null}
+        handleDataRequest={this.handleDataRequest}
+        menuButton={{ borderTop: true, onTop: isMenuOnTop }}
         name="discovery"
-        noPadding
-        menuButton={{ borderTop: true }}
-        backButton={this.props.backButton ? { className: 'discovery' } : null}>
+        noPadding>
         <Deck />
-      </PageWrapper>
+      </Main>
     )
   }
 }
 
 export default compose(
-  withLogin({ isRequired: true }),
   withRouter,
   connect(
     state => ({
       backButton: state.router.location.search.indexOf('to=verso') > -1,
       currentRecommendation: selectCurrentRecommendation(state),
       eventOrThingId: selectCurrentEventOrThingId(state),
+      isMenuOnTop:
+        state.loading.isActive || get(state, 'loading.config.isEmpty'),
       recommendations: state.data.recommendations,
     }),
-    { requestData }
+    { closeLoading, requestData, showLoading }
   )
 )(DiscoveryPage)

@@ -43,6 +43,10 @@
       background-color: white;
     }
   }
+
+  &.on-top {
+    z-index: 500;
+  }
 }
 
 body.cordova-android .menu-button {

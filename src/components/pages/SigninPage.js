@@ -1,68 +1,72 @@
 import get from 'lodash.get'
-import React from 'react'
+import { Field, Form, SubmitButton } from 'pass-culture-shared'
+import React, { Component } from 'react'
+import { Portal } from 'react-portal'
 import { NavLink } from 'react-router-dom'
 
-import PageWrapper from '../layout/PageWrapper'
-import FormField from '../layout/FormField'
-import SubmitButton from '../layout/SubmitButton'
-import withSign from '../hocs/withSign'
-import { NEW } from '../../utils/config'
+import Main from '../layout/Main'
 
 const inputClassName = 'input block col-12 mb2 red'
 
-const Label = ({ title }) => {
-  return <div className="mb1">{title}</div>
-}
+class SigninPage extends Component {
+  constructor() {
+    super()
+    this.state = { $footer: null }
+  }
 
-const SigninPage = ({ errors }) => {
-  return (
-    <PageWrapper name="sign-in" Tag="form" redBg>
-      <div className="form-container">
-        <div className="section">
+  componentDidMount() {
+    this.setState({ $footer: this.$footer })
+  }
+
+  render() {
+    return (
+      <Main name="sign-in" redBg>
+        <div className="section form-container">
           <h1 className="title is-1 is-italic">Bonjour&nbsp;!</h1>
           <h2 className="subtitle is-2 is-italic">
             Identifiez-vous <br />
             pour accéder aux offres.
           </h2>
+
+          <br />
+          <Form
+            action="/users/signin"
+            layout="vertical"
+            name="user"
+            handleSuccessNotification={null}
+            handleSuccessRedirect={() => '/decouverte'}>
+            <Field
+              autoComplete="email"
+              className={inputClassName}
+              label="Adresse e-mail:"
+              name="identifier"
+              placeholder="Identifiant (email)"
+              type="email"
+            />
+            <Field
+              autoComplete="current-password"
+              className={inputClassName}
+              label="Mot de passe:"
+              name="password"
+              placeholder="Mot de passe"
+              type="password"
+            />
+
+            <Portal node={this.state.$footer}>
+              <SubmitButton className="button is-primary is-inverted">
+                Connexion
+              </SubmitButton>
+              <NavLink to="/inscription" className="button is-secondary">
+                Inscription
+              </NavLink>
+            </Portal>
+          </Form>
         </div>
-        <FormField
-          className={inputClassName}
-          type="email"
-          collectionName="users"
-          label={<Label title="Adresse e-mail:" />}
-          name="identifier"
-          placeholder="Identifiant (email)"
-          autoComplete="email"
-        />
-        <FormField
-          className={inputClassName}
-          collectionName="users"
-          label={<Label title="Mot de passe" />}
-          name="password"
-          type="password"
-          placeholder="Mot de passe"
-          autoComplete="current-password"
-        />
-        <div className="errors">{errors}</div>
-      </div>
-      <footer>
-        <SubmitButton
-          getBody={form => form.usersById[NEW]}
-          getIsDisabled={form =>
-            !get(form, 'usersById._new_.identifier') ||
-            !get(form, 'usersById._new_.password')
-          }
-          className="button is-primary is-inverted"
-          path="users/signin"
-          storeKey="users"
-          text="Connexion"
-        />
-        <NavLink to="/inscription" className="button is-secondary">
-          Inscription
-        </NavLink>
-      </footer>
-    </PageWrapper>
-  )
+
+        <footer ref={_e => (this.$footer = _e)} />
+      </Main>
+    )
+  }
 }
 
-export default withSign(SigninPage)
+export default SigninPage

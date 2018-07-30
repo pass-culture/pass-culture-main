@@ -1,10 +1,10 @@
 import classnames from 'classnames'
+import { showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Menu from './Menu'
 import ProfilePicture from './ProfilePicture'
-import { showModal } from '../../reducers/modal'
 
 class MenuButton extends Component {
   onClick = () => {
@@ -12,7 +12,7 @@ class MenuButton extends Component {
   }
 
   render() {
-    const { borderTop, colored, isFlipped } = this.props
+    const { borderTop, colored, isFlipped, onTop } = this.props
     const maybeColored = {}
     if (colored) {
       maybeColored.colored = 'colored'
@@ -26,6 +26,7 @@ class MenuButton extends Component {
         className={classnames('menu-button', {
           bordered: borderTop,
           colored: colored,
+          'on-top': onTop,
         })}
         style={style}>
         <div className="button-wrapper">

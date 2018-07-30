@@ -1,22 +1,16 @@
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
-import PageWrapper from '../layout/PageWrapper'
-import withLogin from '../hocs/withLogin'
+import Main from '../layout/Main'
 
 class FavoritesPage extends Component {
   render() {
     const { favorites } = this.props
     return (
-      <PageWrapper
-        name="favorites"
-        redBg
-        menuButton={{ borderTop: true }}
-        backButton>
+      <Main name="favorites" redBg menuButton={{ borderTop: true }} backButton>
         <header>
           <h1>Mes favoris</h1>
         </header>
@@ -39,17 +33,14 @@ class FavoritesPage extends Component {
             </p>
           </div>
         )}
-      </PageWrapper>
+      </Main>
     )
   }
 }
 
-export default compose(
-  withLogin({ isRequired: true }),
-  connect(
-    state => ({
-      favorites: state.data.favorites || [],
-    }),
-    { requestData }
-  )
+export default connect(
+  state => ({
+    favorites: state.data.favorites || [],
+  }),
+  { requestData }
 )(FavoritesPage)

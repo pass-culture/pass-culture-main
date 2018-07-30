@@ -1,12 +1,10 @@
 // Warning: this component is volontarily impure.
 // Don't use it as an example unless you know what you are doing.
-
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import moment from 'moment'
 import get from 'lodash.get'
-
-import { showModal } from '../../reducers/modal'
+import { showModal } from 'pass-culture-shared'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import '../../utils/debugInitializer'
 

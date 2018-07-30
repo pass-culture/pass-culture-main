@@ -5,10 +5,8 @@ import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
-import PageWrapper from '../layout/PageWrapper'
-import withLogin from '../hocs/withLogin'
+import Main from '../layout/Main'
 import selectBookingsByTime from '../../selectors/bookingsByTime'
-import { IS_DEXIE } from '../../utils/config'
 
 class BookingsPage extends Component {
   componentDidMount() {
@@ -16,17 +14,13 @@ class BookingsPage extends Component {
   }
 
   handleRequestBookings = () => {
-    this.props.requestData('GET', 'bookings', { local: IS_DEXIE })
+    this.props.requestData('GET', 'bookings')
   }
 
   render() {
     const { soonBookings, otherBookings } = this.props.bookingsByTime
     return (
-      <PageWrapper
-        name="bookings"
-        redBg
-        menuButton={{ borderTop: true }}
-        backButton>
+      <Main name="bookings" redBg menuButton={{ borderTop: true }} backButton>
         <header>
           <h1>Mes réservations</h1>
         </header>
@@ -61,13 +55,12 @@ class BookingsPage extends Component {
               </p>
             </div>
           )}
-      </PageWrapper>
+      </Main>
     )
   }
 }
 
 export default compose(
-  withLogin({ isRequired: true }),
   connect(
     state => ({
       bookingsByTime: selectBookingsByTime(state),

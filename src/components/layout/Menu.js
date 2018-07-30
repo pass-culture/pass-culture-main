@@ -1,10 +1,10 @@
-import { requestData } from 'pass-culture-shared'
+import { closeModal, Icon, requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { compose } from 'redux'
 
-import Icon from '../layout/Icon'
-import { closeModal } from '../../reducers/modal'
 import { ROOT_PATH } from '../../utils/config'
 
 class Menu extends Component {
@@ -14,9 +14,13 @@ class Menu extends Component {
   }
 
   onSignOutClick = () => {
-    const { closeModal, requestData } = this.props
-    requestData('GET', 'users/signout')
-    closeModal()
+    const { closeModal, history, requestData } = this.props
+    requestData('GET', 'users/signout', {
+      handleSuccess: () => {
+        history.push('/connexion')
+        closeModal()
+      },
+    })
   }
 
   render() {
@@ -110,7 +114,13 @@ class Menu extends Component {
   }
 }
 
-export default connect(state => ({ user: state.user }), {
-  closeModal,
-  requestData,
-})(Menu)
+export default compose(
+  withRouter,
+  connect(
+    state => ({ user: state.user }),
+    {
+      closeModal,
+      requestData,
+    }
+  )
+)(Menu)

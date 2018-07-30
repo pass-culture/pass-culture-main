@@ -4,8 +4,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import withLogin from '../hocs/withLogin'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
 class ProfilePage extends Component {
   onSignOutClick = () => {
@@ -26,7 +25,7 @@ class ProfilePage extends Component {
   render() {
     const { user } = this.props
     return (
-      <PageWrapper
+      <Main
         name="profile"
         menuButton={{ borderTop: true, colored: true }}
         backButton>
@@ -38,13 +37,12 @@ class ProfilePage extends Component {
           onClick={this.onSignOutClick}>
           Déconnexion
         </button>
-      </PageWrapper>
+      </Main>
     )
   }
 }
 
 export default compose(
-  withLogin({ isRequired: true }),
   withRouter,
   connect(
     state => ({ user: state.user }),

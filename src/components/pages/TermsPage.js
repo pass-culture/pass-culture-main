@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import { ROOT_PATH } from '../../utils/config'
 
 class TermsPage extends Component {
@@ -19,7 +19,7 @@ class TermsPage extends Component {
   render() {
     const { mdText } = this.state
     return (
-      <PageWrapper
+      <Main
         name="terms"
         menuButton={{ borderTop: true, colored: true }}
         backButton>
@@ -32,7 +32,7 @@ class TermsPage extends Component {
             Pass Culture version ##VERSION##
           </p>
         </div>
-      </PageWrapper>
+      </Main>
     )
   }
 }

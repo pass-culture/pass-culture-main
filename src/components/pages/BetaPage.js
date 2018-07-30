@@ -1,11 +1,10 @@
+import { Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
-import Icon from '../layout/Icon'
-import PageWrapper from '../layout/PageWrapper'
-import withLogin from '../hocs/withLogin'
+import Main from '../layout/Main'
 import { closeSplash } from '../../reducers/splash'
 
 class BetaPage extends Component {
@@ -16,7 +15,7 @@ class BetaPage extends Component {
 
   render() {
     return (
-      <PageWrapper name="beta" redBg>
+      <Main name="beta" redBg>
         <h1>
           <strong>Bienvenue dans la version beta</strong>
           <span>du Pass Culture</span>
@@ -30,13 +29,12 @@ class BetaPage extends Component {
             <Icon svg="ico-next" alt="Suivant" />
           </Link>
         </footer>
-      </PageWrapper>
+      </Main>
     )
   }
 }
 
 export default compose(
-  withLogin({ redirectTo: '/decouverte' }),
   connect(
     state => ({ closeSplashTimeout: state.splash.closeTimeout }),
     {
