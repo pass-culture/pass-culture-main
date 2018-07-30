@@ -1,7 +1,8 @@
+import { requestData } from 'pass-culture-shared'
+
 import DexieWorker from './index.js'
 import config from './config'
 // import { showEstimatedQuota } from './storage'
-import { requestData } from '../../reducers/data'
 import { IS_DEV } from '../../utils/config'
 
 export const worker = new DexieWorker()

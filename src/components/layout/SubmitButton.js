@@ -1,10 +1,10 @@
 import get from 'lodash.get'
 import classnames from 'classnames'
+import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestData } from '../../reducers/data'
 import { randomHash } from '../../utils/random'
 
 class SubmitButton extends Component {

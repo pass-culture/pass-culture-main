@@ -1,9 +1,9 @@
 import debounce from 'lodash.debounce'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 // import { Portal } from 'react-portal'
 import { connect } from 'react-redux'
 
-import { requestData } from '../../reducers/data'
 import { closeLoading, showLoading } from '../../reducers/loading'
 
 class SearchInput extends Component {

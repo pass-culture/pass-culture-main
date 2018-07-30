@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -13,7 +14,6 @@ import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
 import selectIsFinished from '../selectors/isFinished'
-import { requestData } from '../reducers/data'
 import { showModal } from '../reducers/modal'
 import { IS_DEXIE } from '../utils/config'
 

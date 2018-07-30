@@ -1,8 +1,8 @@
 import debounce from 'lodash.debounce'
+import { removeDataError } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { removeDataError } from '../../reducers/data'
 import { getFormValue, mergeForm } from '../../reducers/form'
 import { NEW } from '../../utils/config'
 

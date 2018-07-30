@@ -1,10 +1,10 @@
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import withLogin from '../hocs/withLogin'
-import { requestData } from '../../reducers/data'
 import PageWrapper from '../layout/PageWrapper'
 
 class ProfilePage extends Component {
@@ -12,7 +12,7 @@ class ProfilePage extends Component {
     const { requestData } = this.props
     requestData('GET', 'users/signout')
   }
-  
+
   componentWillReceiveProps(nextProps) {
     const {
       history: { push },

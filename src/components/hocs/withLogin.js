@@ -1,12 +1,12 @@
 // POSSIBLE HOC FOR ALL OTHER THE PAGE THAN SIGNIN AND SIGNUP
 // withLogin ASK FOR A CONNECTED USER, IF NOT IT REDIRECTS TO SININGPAGE
 // ON USER SUCCESS IT CAN ALSO REDIRECT TO A SPECIFIC PATH
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { requestData } from '../../reducers/data'
 import { IS_DEXIE } from '../../utils/config'
 
 const withLogin = (config = {}) => WrappedComponent => {

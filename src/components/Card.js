@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import withSizes from 'react-sizes'
@@ -7,7 +8,6 @@ import { compose } from 'redux'
 
 import Recto from './Recto'
 import Verso from './Verso'
-import { requestData } from '../reducers/data'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 import { IS_DEXIE } from '../utils/config'
 

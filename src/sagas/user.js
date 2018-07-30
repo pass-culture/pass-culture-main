@@ -1,7 +1,7 @@
 import moment from 'moment'
+import { resetData } from 'pass-culture-shared'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 
-import { resetData } from '../reducers/data'
 import { setUser } from '../reducers/user'
 import { clear } from '../workers/dexie/data'
 import { worker } from '../workers/dexie/register'
