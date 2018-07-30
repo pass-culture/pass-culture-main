@@ -72,6 +72,9 @@ class Venue(PcObject,
                                       .filter_by(id=self.managingOffererId).first()
             else:
                 managingOfferer = self.managingOfferer
+            if managingOfferer.siren is None:
+                errors.addError('siren', 'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
+                                + 'SIREN renseigné')
             if self.siret is not None\
                and managingOfferer is not None\
                and not self.siret.startswith(managingOfferer.siren):
