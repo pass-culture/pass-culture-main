@@ -11,7 +11,7 @@ import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 
 revision = 'e8c43e6dc0d8'
-down_revision = '11d603462200'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -92,7 +92,6 @@ def upgrade():
     op.drop_constraint('recommendation_eventId_fkey', 'recommendation', type_='foreignkey')
     op.drop_column('recommendation', 'eventId')
     op.drop_column('recommendation', 'thingId')
-    op.drop_table('account')
 
     # ### end Alembic commands ###
 

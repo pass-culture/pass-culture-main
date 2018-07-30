@@ -26,7 +26,6 @@ target_metadata = db.metadata
 
 
 def include_object(object, name, type_, reflected, compare_to):
-    print('/////////////////////////////////////// %s' % name)
     if type_ == "table" and name in ('transaction', 'activity'):
         return False
     else:
