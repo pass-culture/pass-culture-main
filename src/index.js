@@ -28,7 +28,7 @@ const initApp = () => {
 }
 
 if (window.cordova) {
-  document.addEventListener("deviceready", initApp, false);
+  document.addEventListener('deviceready', initApp, false)
 } else {
   initApp()
 }
