@@ -1,8 +1,7 @@
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
 
-//import data from './data'
-import { createData } from 'pass-culture-shared'
+import data from './data'
 import form from './form'
 import geolocation from './geolocation'
 import loading from './loading'
@@ -13,7 +12,7 @@ import splash from './splash'
 import user from './user'
 
 const rootReducer = combineReducers({
-  data: createData(),
+  data,
   form,
   geolocation,
   loading,
