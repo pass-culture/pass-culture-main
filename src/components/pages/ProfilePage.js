@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import withLogin from '../hocs/withLogin'
 import Main from '../layout/Main'
 
 class ProfilePage extends Component {
@@ -44,7 +43,6 @@ class ProfilePage extends Component {
 }
 
 export default compose(
-  withLogin({ isRequired: true }),
   withRouter,
   connect(
     state => ({ user: state.user }),

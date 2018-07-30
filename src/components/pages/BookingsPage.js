@@ -6,9 +6,7 @@ import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
-import withLogin from '../hocs/withLogin'
 import selectBookingsByTime from '../../selectors/bookingsByTime'
-import { IS_DEXIE } from '../../utils/config'
 
 class BookingsPage extends Component {
   componentDidMount() {
@@ -16,7 +14,7 @@ class BookingsPage extends Component {
   }
 
   handleRequestBookings = () => {
-    this.props.requestData('GET', 'bookings', { local: IS_DEXIE })
+    this.props.requestData('GET', 'bookings')
   }
 
   render() {
@@ -63,7 +61,6 @@ class BookingsPage extends Component {
 }
 
 export default compose(
-  withLogin({ isRequired: true }),
   connect(
     state => ({
       bookingsByTime: selectBookingsByTime(state),

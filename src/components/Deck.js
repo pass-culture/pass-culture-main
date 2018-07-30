@@ -20,7 +20,7 @@ import selectNextLimit from '../selectors/nextLimit'
 import selectNextRecommendation from '../selectors/nextRecommendation'
 import selectPreviousLimit from '../selectors/previousLimit'
 import selectPreviousRecommendation from '../selectors/previousRecommendation'
-import { IS_DEV, IS_DEXIE, ROOT_PATH } from '../utils/config'
+import { IS_DEV, ROOT_PATH } from '../utils/config'
 import { getDiscoveryPath } from '../utils/routes'
 
 class Deck extends Component {
@@ -158,8 +158,6 @@ class Deck extends Component {
               body: {
                 dateRead: moment().toISOString(),
               },
-              key: 'recommendations',
-              local: IS_DEXIE,
             }
           )
           // this.setState({ isRead: true })
@@ -230,6 +228,7 @@ class Deck extends Component {
     const {
       currentHeaderColor,
       currentRecommendation,
+      isEmpty,
       isFlipDisabled,
       isFlipped,
       nextRecommendation,
@@ -275,7 +274,11 @@ class Deck extends Component {
               svg="ico-loading-card"
               alt="Chargement ..."
             />
-            <h2 className="subtitle is-2">chargement des offres</h2>
+            <h2 className="subtitle is-2">
+              {isEmpty
+                ? 'aucune offre pour le moment'
+                : 'chargement des offres'}
+            </h2>
           </div>
         </div>
         <Draggable

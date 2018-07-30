@@ -34,7 +34,10 @@ class SigninPage extends Component {
             layout="vertical"
             name="user"
             handleSuccessNotification={null}
-            handleSuccessRedirect={() => '/decouverte'}>
+            handleSuccessRedirect={
+              //() => '/decouverte'
+              null
+            }>
             <Field
               autoComplete="email"
               className={inputClassName}

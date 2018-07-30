@@ -115,6 +115,17 @@ class Main extends Component {
     const content = []
       .concat(children)
       .filter(e => e.type !== 'header' && e.type !== 'footer')
+
+    console.log(
+      'HEIN',
+      Modal,
+      'header',
+      header,
+      'backButton',
+      backButton,
+      'BackButton',
+      BackButton
+    )
     return [
       <Tag
         className={classnames({
@@ -144,6 +155,7 @@ export default compose(
   withRouter,
   withLogin({
     failRedirect: '/connexion',
+    successRedirect: '/decouverte',
   }),
   connect(
     state => ({

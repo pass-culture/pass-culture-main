@@ -1,12 +1,10 @@
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
-import withLogin from '../hocs/withLogin'
 
 class FavoritesPage extends Component {
   render() {
@@ -40,12 +38,9 @@ class FavoritesPage extends Component {
   }
 }
 
-export default compose(
-  withLogin({ isRequired: true }),
-  connect(
-    state => ({
-      favorites: state.data.favorites || [],
-    }),
-    { requestData }
-  )
+export default connect(
+  state => ({
+    favorites: state.data.favorites || [],
+  }),
+  { requestData }
 )(FavoritesPage)
