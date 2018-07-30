@@ -92,7 +92,7 @@ class OfferInfo extends Component {
                     </li>
                   )
               )}
-              {bookableOccurences.length > 7 && <li>Clicker sur "j'y vais" pour voir plus de dates.</li>}
+              {bookableOccurences.length > 7 && <li>Cliquez sur "j'y vais" pour voir plus de dates.</li>}
             </ul>
           </div>
         )}
