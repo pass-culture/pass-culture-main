@@ -340,21 +340,20 @@ def test_28_user_should_have_its_wallet_balance(app):
     assert wallet_balance == 15
 
 
-def test_29_user_with_isAdmin_true_and_canBook_raises_error():
+def test_29_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
     user_json = {
         'email': 'pctest.isAdmin.canBook@btmx.fr',
         'publicName': 'IsAdmin CanBook',
         'password': 'toto12345678',
         'contact_ok': 'true',
         'isAdmin': True,
-        'canBook': True
+        'canBookFreeOffers': True
     }
     r_signup = req.post(API_URL + '/users/signup',
                                   json=user_json)
-    #print(r_signup)
-    #print(r_signup.json())
+
     assert r_signup.status_code == 400
     print(r_signup)
     error = r_signup.json()
     pprint(error)
-    assert error == {'canBook': ['Admin ne peut pas booker']}
+    assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
