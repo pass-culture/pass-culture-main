@@ -28,7 +28,7 @@ BASE_DATA_PRO = {
 
 
 def assert_signup_error(data, err_field):
-    r_signup = req.post(API_URL + '/users',
+    r_signup = req.post(API_URL + '/users/signup',
                                   json=data)
     assert r_signup.status_code == 400
     error = r_signup.json()
@@ -88,7 +88,7 @@ def test_10_signup_should_not_work_with_invalid_contact_ok():
 
 
 def test_11_signup():
-    r_signup = req.post(API_URL + '/users',
+    r_signup = req.post(API_URL + '/users/signup',
                         json=BASE_DATA)
     print(r_signup.json())
     assert r_signup.status_code == 201
@@ -117,8 +117,8 @@ def test_13_get_profile_should_work_only_when_logged_in():
 #                      password='toto12345678')\
 #                 .get(API_URL + '/validate?modelNames=User&token=123')
 #    assert r.status_code == 404
- 
- 
+
+
 #def test_16_should_be_able_to_validate_user(app):
 #    token = User.query\
 #                .filter(User.validationToken != None)\
@@ -185,7 +185,7 @@ offerer_id = None
 
 def test_24_pro_signup_should_create_user_offerer_and_userOfferer(app):
     global offerer_id
-    r_signup = req.post(API_URL + '/users',
+    r_signup = req.post(API_URL + '/users/signup',
                         json=BASE_DATA_PRO)
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
@@ -244,7 +244,7 @@ def test_27_pro_signup_with_existing_offerer(app):
     data = BASE_DATA_PRO.copy()
     data['email'] = 'toto_pro2@btmx.fr'
     data['siren'] = '418166096'
-    r_signup = req.post(API_URL + '/users',
+    r_signup = req.post(API_URL + '/users/signup',
                         json=data)
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
@@ -349,7 +349,7 @@ def test_29_user_with_isAdmin_true_and_canBook_raises_error():
         'isAdmin': True,
         'canBook': True
     }
-    r_signup = req.post(API_URL + '/users',
+    r_signup = req.post(API_URL + '/users/signup',
                                   json=user_json)
     #print(r_signup)
     #print(r_signup.json())
