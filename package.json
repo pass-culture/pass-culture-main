@@ -19,7 +19,6 @@
     "colorsys": "^1.0.20",
     "commander": "^2.14.1",
     "css-loader": "0.28.7",
-    "dexie": "^2.0.3",
     "dotenv": "4.0.0",
     "es5-shim": "^4.5.10",
     "extract-text-webpack-plugin": "3.0.2",

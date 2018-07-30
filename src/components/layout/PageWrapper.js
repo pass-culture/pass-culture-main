@@ -1,4 +1,5 @@
 import classnames from 'classnames'
+import { Modal } from 'pass-culture-shared'
 import React from 'react'
 
 import BackButton from './BackButton'
@@ -29,6 +30,7 @@ const PageWrapper = props => {
         'red-bg': redBg,
         'no-padding': noPadding,
       })}>
+      <Modal />
       {header}
       {backButton && <BackButton {...backButton} />}
       <div className="page-content">{content}</div>

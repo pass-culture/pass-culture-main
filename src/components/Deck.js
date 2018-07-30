@@ -12,7 +12,6 @@ import withSizes from 'react-sizes'
 import Card from './Card'
 import Clue from './Clue'
 import Icon from './layout/Icon'
-
 import { flip, unFlip } from '../reducers/verso'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
@@ -23,7 +22,6 @@ import selectPreviousLimit from '../selectors/previousLimit'
 import selectPreviousRecommendation from '../selectors/previousRecommendation'
 import { IS_DEV, IS_DEXIE, ROOT_PATH } from '../utils/config'
 import { getDiscoveryPath } from '../utils/routes'
-import { worker } from '../workers/dexie/register'
 
 class Deck extends Component {
   constructor() {
@@ -70,20 +68,26 @@ class Deck extends Component {
   handleRefreshPrevious = () => {
     const { currentRecommendation, previousLimit } = this.props
     if (currentRecommendation.index <= previousLimit) {
+      // TODO replace by a requestData
+      /*
       worker.postMessage({
         key: 'dexie-push-pull',
         state: { around: currentRecommendation.id },
       })
+      */
     }
   }
 
   handleRefreshNext = () => {
     const { currentRecommendation, nextLimit } = this.props
     if (currentRecommendation.index >= nextLimit) {
+      // TODO replace by a requestData
+      /*
       worker.postMessage({
         key: 'dexie-push-pull',
         state: { around: currentRecommendation.id },
       })
+      */
     }
   }
 
