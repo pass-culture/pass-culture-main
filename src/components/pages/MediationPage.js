@@ -8,7 +8,7 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import UploadThumb from '../layout/UploadThumb'
 import mediationSelector from '../../selectors/mediation'
 import occasionSelector from '../../selectors/occasion'
@@ -205,7 +205,7 @@ class MediationPage extends Component {
     const backPath = `/offres/${occasionId}`
 
     return (
-      <PageWrapper
+      <Main
         name="mediation"
         backTo={{ path: backPath, label: "Revenir à l'offre" }}
         handleDataRequest={this.handleDataRequest}>
@@ -299,7 +299,7 @@ class MediationPage extends Component {
             </button>
           </div>
         </div>
-      </PageWrapper>
+      </Main>
     )
   }
 }

@@ -1,13 +1,13 @@
 import React from 'react'
 
 import MediationManager from '../MediationManager'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
 const MediationsPage = () => {
   return (
-    <PageWrapper name="mediations">
+    <Main name="mediations">
       <MediationManager />
-    </PageWrapper>
+    </Main>
   )
 }
 

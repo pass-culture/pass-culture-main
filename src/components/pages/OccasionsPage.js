@@ -12,7 +12,7 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import occasionsSelector from '../../selectors/occasions'
 import offererSelector from '../../selectors/offerer'
 import searchSelector from '../../selectors/search'
@@ -113,7 +113,7 @@ class OccasionsPage extends Component {
 
     const [orderBy, orderDirection] = order_by.split('+')
     return (
-      <PageWrapper name="offers" handleDataRequest={this.handleDataRequest}>
+      <Main name="offers" handleDataRequest={this.handleDataRequest}>
         <div className="section">
           <NavLink
             to={`/offres/nouveau`}
@@ -214,7 +214,7 @@ class OccasionsPage extends Component {
             }
           </div>
         }
-      </PageWrapper>
+      </Main>
     )
   }
 }

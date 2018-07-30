@@ -6,7 +6,7 @@ import { compose } from 'redux'
 
 class SignoutButton extends Component {
   static defaultProps = {
-    tagName: 'button',
+    Tag: 'button',
   }
 
   onSignoutClick = () => {
@@ -23,11 +23,11 @@ class SignoutButton extends Component {
   }
 
   render() {
-    const TagName = this.props.tagName
+    const Tag = this.props.Tag
     return (
-      <TagName onClick={this.onSignoutClick} className={this.props.className}>
+      <Tag onClick={this.onSignoutClick} className={this.props.className}>
         {this.props.children}
-      </TagName>
+      </Tag>
     )
   }
 }

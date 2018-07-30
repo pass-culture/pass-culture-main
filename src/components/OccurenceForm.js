@@ -204,7 +204,7 @@ class OccurenceForm extends Component {
           patch={occurence}
           readOnly={isEventOccurenceReadOnly}
           size="small"
-          TagName={null}>
+          Tag={null}>
           <td>
             <Field name="eventId" type="hidden" />
             <Field name="venueId" type="hidden" />
@@ -265,7 +265,7 @@ class OccurenceForm extends Component {
           patch={offer}
           size="small"
           readOnly={isOfferReadOnly}
-          TagName={null}>
+          Tag={null}>
           <td title="Vide si gratuit">
             <Field name="eventOccurenceId" type="hidden" />
             <Field name="offererId" type="hidden" />

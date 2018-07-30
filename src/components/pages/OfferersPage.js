@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import OffererItem from '../OffererItem'
 import offerersSelector from '../../selectors/offerers'
 
@@ -33,7 +33,7 @@ class OfferersPage extends Component {
   render() {
     const { offerers } = this.props
     return (
-      <PageWrapper name="offerers" handleDataRequest={this.handleDataRequest}>
+      <Main name="offerers" handleDataRequest={this.handleDataRequest}>
         <h1 className="main-title">Vos structures</h1>
 
         <p className="subtitle">
@@ -54,7 +54,7 @@ class OfferersPage extends Component {
         <ul className="main-list offerers-list">
           {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
         </ul>
-      </PageWrapper>
+      </Main>
     )
   }
 }

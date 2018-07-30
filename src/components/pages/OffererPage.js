@@ -14,7 +14,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VenueItem from '../VenueItem'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'
 import { offererNormalizer } from '../../utils/normalizers'
@@ -82,7 +82,7 @@ class OffererPage extends Component {
 
     const { isNew } = this.state
     return (
-      <PageWrapper
+      <Main
         backTo={{ label: 'Vos structures', path: '/structures' }}
         name="offerer"
         handleDataRequest={this.handleDataRequest}>
@@ -161,7 +161,7 @@ class OffererPage extends Component {
             </div>
           )}
         </Form>
-      </PageWrapper>
+      </Main>
     )
   }
 }

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
 class AccoutingPage extends Component {
   render() {
-    return <PageWrapper name="accouting">VOTRE COMPTA</PageWrapper>
+    return <Main name="accouting">VOTRE COMPTA</Main>
   }
 }
 

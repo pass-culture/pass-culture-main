@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
 // TODO: import this from other file
 const mardownContent = `
@@ -51,14 +51,14 @@ feugiat orci ut diam ullamcorper consequat.
 class TermsPage extends Component {
   render() {
     return (
-      <PageWrapper name="terms" noHeader backButton>
+      <Main name="terms" noHeader backButton>
         <header>
           <h1>Mentions légales</h1>
         </header>
         <div className="content">
           <ReactMarkdown source={mardownContent} />
         </div>
-      </PageWrapper>
+      </Main>
     )
   }
 }

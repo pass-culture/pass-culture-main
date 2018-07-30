@@ -2,11 +2,11 @@ import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
 const CounterPage = () => {
   return (
-    <PageWrapper name="counter">
+    <Main name="counter">
       {/*
       <div className='section hero'>
         <h1 className="main-title">Guichet</h1>
@@ -45,7 +45,7 @@ const CounterPage = () => {
           <Icon svg="ico-next" />
         </Link>
       </footer>
-    </PageWrapper>
+    </Main>
   )
 }
 

@@ -1,3 +1,5 @@
+import classnames from 'classnames'
+import get from 'lodash.get'
 import {
   closeNotification,
   Icon,
@@ -8,8 +10,6 @@ import {
   Spinner,
   withLogin,
 } from 'pass-culture-shared'
-import classnames from 'classnames'
-import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -18,7 +18,7 @@ import { compose } from 'redux'
 
 import Header from './Header'
 
-class PageWrapper extends Component {
+class Main extends Component {
   constructor() {
     super()
     this.state = {
@@ -104,14 +104,14 @@ class PageWrapper extends Component {
   render() {
     const {
       backTo,
-      closeNotification,
-      header,
-      Tag,
-      name,
-      redBg,
-      fullscreen,
       children,
+      closeNotification,
+      fullscreen,
+      header,
+      name,
       notification,
+      redBg,
+      Tag,
       whiteHeader,
     } = this.props
     const { loading } = this.state
@@ -135,8 +135,7 @@ class PageWrapper extends Component {
           fullscreen,
           loading,
         })}
-        key="page-wrapper">
-        <Modal />
+        key="main">
         {fullscreen ? (
           content
         ) : (
@@ -168,7 +167,7 @@ class PageWrapper extends Component {
         )}
         {footer}
       </Tag>,
-      <Modal key={'modal'} />,
+      <Modal key="modal" />,
     ]
   }
 }
@@ -191,4 +190,4 @@ export default compose(
       showNotification,
     }
   )
-)(PageWrapper)
+)(Main)

@@ -2,11 +2,11 @@ import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
 const NotFoundPage = () => {
   return (
-    <PageWrapper name="not-found" fullscreen redBg>
+    <Main name="not-found" fullscreen redBg>
       <h1>
         <strong>Page Non Trouvée</strong>
       </h1>
@@ -19,7 +19,7 @@ const NotFoundPage = () => {
           <Icon svg="ico-next" />
         </Link>
       </footer>
-    </PageWrapper>
+    </Main>
   )
 }
 

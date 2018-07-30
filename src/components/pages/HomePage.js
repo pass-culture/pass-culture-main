@@ -1,11 +1,11 @@
 import React from 'react'
 
 import HomeCard from '../HomeCard'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
 const HomePage = ({ user }) => {
   return (
-    <PageWrapper name="home" whiteHeader>
+    <Main name="home" whiteHeader>
       <div className="home-cards columns">
         <HomeCard
           svg="ico-guichet-w"
@@ -20,7 +20,7 @@ const HomePage = ({ user }) => {
           navLink="/offres"
         />
       </div>
-    </PageWrapper>
+    </Main>
   )
 }
 

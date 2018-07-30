@@ -18,7 +18,7 @@ import { compose } from 'redux'
 
 import MediationManager from '../MediationManager'
 import OccurenceManager from '../OccurenceManager'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import eventSelector from '../../selectors/event'
 import occasionSelector from '../../selectors/occasion'
 import occurencesSelector from '../../selectors/occurences'
@@ -207,7 +207,7 @@ class OccasionPage extends Component {
     const showAllForm = type || !isNew
 
     return (
-      <PageWrapper
+      <Main
         backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
         name="offer"
         handleDataRequest={this.handleDataRequest}>
@@ -380,7 +380,7 @@ class OccasionPage extends Component {
             </div>
           </Form>
         </div>
-      </PageWrapper>
+      </Main>
     )
   }
 }

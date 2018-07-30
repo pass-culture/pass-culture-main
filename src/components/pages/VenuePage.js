@@ -18,7 +18,7 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 
 import ProviderManager from '../ProviderManager'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
@@ -119,7 +119,7 @@ class VenuePage extends Component {
     const { isNew, isReadOnly } = this.state
 
     return (
-      <PageWrapper
+      <Main
         backTo={{
           label:
             get(offerer, 'name') === get(venue, 'name')
@@ -247,7 +247,7 @@ class VenuePage extends Component {
             </div>
           </div>
         </Form>
-      </PageWrapper>
+      </Main>
     )
   }
 }
