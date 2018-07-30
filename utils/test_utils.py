@@ -1,11 +1,13 @@
 import json
+import random
+import string
 from datetime import datetime, timedelta, timezone
 from os import path
 from pathlib import Path
 
 import requests as req
 
-from models import Thing
+from models import Thing, Deposit
 from models.booking import Booking
 from models.event import Event
 from models.event_occurence import EventOccurence
@@ -70,15 +72,21 @@ def create_offer_with_event_occasion(price=10):
 def create_offer_with_thing_occasion(price=10):
     offer = Offer()
     offer.price = price
-    offer.occasion = Occasion()
-    offer.occasion.thing = Thing()
-    offer.occasion.thing.type = 'Book'
-    offer.occasion.thing.name = 'Test Book'
-    offer.occasion.thing.mediaUrls = 'test/urls'
-    offer.occasion.thing.idAtProviders = '12345'
+    offer.occasion = create_thing_occasion()
     offer.occasion.venue = _create_venue_for_booking_email_test()
     offer.isActive = True
     return offer
+
+
+def create_thing_occasion():
+    occasion = Occasion()
+    occasion.thing = Thing()
+    occasion.thing.type = 'Book'
+    occasion.thing.name = 'Test Book'
+    occasion.thing.mediaUrls = 'test/urls'
+    occasion.thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
+    occasion.thing.extraData = {'author': 'Test Author'}
+    return occasion
 
 
 def create_offerer():
@@ -101,3 +109,11 @@ def _create_venue_for_booking_email_test():
     venue.departementCode = '93'
     venue.managingOfferer = create_offerer()
     return venue
+
+
+def create_deposit(user, amount=50):
+    deposit = Deposit()
+    deposit.user = user
+    deposit.source = "Test money"
+    deposit.amount = amount
+    return deposit

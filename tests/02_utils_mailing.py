@@ -182,6 +182,7 @@ def test_07_booking_recap_email_subject_should_have_defined_structure():
 
 def test_08_maker_user_booking_thing_recap_email_should_have_standard_body():
     offer = create_offer_with_thing_occasion()
+    offer.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
     booking = create_booking_for_booking_email_test(user, offer)
 
@@ -193,6 +194,7 @@ def test_08_maker_user_booking_thing_recap_email_should_have_standard_body():
 
 def test_09_maker_user_booking_thing_recap_email_should_have_standard_subject():
     offer = create_offer_with_thing_occasion()
+    offer.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
     booking = create_booking_for_booking_email_test(user, offer)
 
@@ -205,6 +207,7 @@ def test_09_maker_user_booking_thing_recap_email_should_have_standard_subject():
 def test_10_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation():
     # Given
     offer = create_offer_with_thing_occasion()
+    offer.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
     booking = create_booking_for_booking_email_test(user, offer)
 
@@ -217,6 +220,7 @@ def test_10_make_user_booking_thing_recap_email_should_have_standard_subject_can
 def test_11_make_user_booking_thing_recap_email_should_have_standard_body_cancellation():
     # Given
     offer = create_offer_with_thing_occasion()
+    offer.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
     booking = create_booking_for_booking_email_test(user, offer)
 

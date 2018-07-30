@@ -80,9 +80,6 @@ def post_booking():
     try:
         PcObject.check_and_save(new_booking)
     except InternalError as ie:
-        logger.error('//////////////////////')
-        logger.error(str(ie.orig))
-        logger.error('//////////////////////')
         if 'check_booking' in str(ie.orig):
             if 'tooManyBookings' in str(ie.orig):
                 ae.addError('global', 'la quantité disponible pour cette offre'
