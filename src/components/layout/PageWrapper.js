@@ -28,8 +28,7 @@ const PageWrapper = props => {
         'with-footer': Boolean(footer) || Boolean(menuButton),
         'red-bg': redBg,
         'no-padding': noPadding,
-      })}
-    >
+      })}>
       {header}
       {backButton && <BackButton {...backButton} />}
       <div className="page-content">{content}</div>

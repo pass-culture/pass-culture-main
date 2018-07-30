@@ -22,7 +22,7 @@ class DexieWrapper {
   async dexiePushPull() {
     const message = {
       isSyncRedux: true,
-      text: 'dexiePushPull'
+      text: 'dexiePushPull',
     }
     message.results = this.state.user && (await pushPull(this.state))
     this.receiveMessage(message)
@@ -36,7 +36,7 @@ class DexieWrapper {
     }
     const message = {
       isSyncRedux: true,
-      text: 'dexieSignin'
+      text: 'dexieSignin',
     }
     message.results = await pushPull(this.state)
     user && (await setUser(this.state))

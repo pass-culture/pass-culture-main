@@ -26,9 +26,10 @@ class BookingsPage extends Component {
         name="bookings"
         redBg
         menuButton={{ borderTop: true }}
-        backButton
-      >
-        <header><h1>Mes réservations</h1></header>
+        backButton>
+        <header>
+          <h1>Mes réservations</h1>
+        </header>
         {soonBookings.length > 0 && (
           <div>
             <h4>C'est bientôt !</h4>

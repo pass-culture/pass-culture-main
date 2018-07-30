@@ -11,61 +11,67 @@ import { showModal } from '../../reducers/modal'
 import '../../utils/debugInitializer'
 
 class Debug extends Component {
-
   static defaultProps = {
     timeoutDuration: 3000,
   }
 
   showDebug = () => {
     this.props.showModal(
-      (<div className='debug-modal'>
-        <h1 className='title'>Pass Culture Debug</h1>
+      <div className="debug-modal">
+        <h1 className="title">Pass Culture Debug</h1>
         <pre>{get(window, 'logContent', []).map(this.renderLine)}</pre>
-      </div>), {
-      fullscreen: true,
-      maskColor: 'transparent',
-    })
+      </div>,
+      {
+        fullscreen: true,
+        maskColor: 'transparent',
+      }
+    )
   }
 
-  handleTouchPress = (e) => {
+  handleTouchPress = e => {
     if (get(e, 'touches', []).length >= 2) {
       this.buttonPressTimer = setTimeout(() => {
         this.showDebug()
-      }, this.props.timeoutDuration);
+      }, this.props.timeoutDuration)
     }
   }
 
   handleTouchRelease = () => {
-    clearTimeout(this.buttonPressTimer);
+    clearTimeout(this.buttonPressTimer)
   }
 
   displayVariable = value => {
-    if (typeof value === 'string') return value;
-    return JSON.stringify(value, null, 2)
-      .replace(/"([^(")"]+)":/g,"$1:") // remove quotes
+    if (typeof value === 'string') return value
+    return JSON.stringify(value, null, 2).replace(/"([^(")"]+)":/g, '$1:') // remove quotes
   }
 
-  renderLine = ({time, method, hash, values}) => {
+  renderLine = ({ time, method, hash, values }) => {
     return (
       <code key={hash} title={time}>
-        <div className='header'>{`${method.toUpperCase()} | `}
-        <time dateTime={time}>{moment(time).format('h:mm:ss')}</time></div>
-        <div className='log'>{values.map(this.displayVariable).join('\n')}</div>
+        <div className="header">
+          {`${method.toUpperCase()} | `}
+          <time dateTime={time}>{moment(time).format('h:mm:ss')}</time>
+        </div>
+        <div className="log">{values.map(this.displayVariable).join('\n')}</div>
       </code>
     )
   }
 
   render() {
-    return <div
-      className={this.props.className}
-      onTouchStart={this.handleTouchPress}
-      onTouchEnd={this.handleTouchRelease}
-      onClick={e => (e.detail === 3 && e.shiftKey) && this.showDebug(e)}
-      >
-      {this.props.children}
-    </div>
+    return (
+      <div
+        className={this.props.className}
+        onTouchStart={this.handleTouchPress}
+        onTouchEnd={this.handleTouchRelease}
+        onClick={e => e.detail === 3 && e.shiftKey && this.showDebug(e)}>
+        {this.props.children}
+      </div>
+    )
   }
 }
-export default connect(state => ({}), {
-  showModal,
-})(Debug)
+export default connect(
+  state => ({}),
+  {
+    showModal,
+  }
+)(Debug)

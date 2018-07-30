@@ -1,17 +1,14 @@
-import queries,
-{
-  PENDING,
-  SUCCESS
-} from '../queries'
+import queries, { PENDING, SUCCESS } from '../queries'
 
 describe('src | reducers | queries  ', () => {
-
   describe('queries', () => {
     let state
     beforeEach(() => {
-      state = [{
-        data : {}
-      }]
+      state = [
+        {
+          data: {},
+        },
+      ]
     })
 
     it('should return the initial state by default', () => {
@@ -25,7 +22,6 @@ describe('src | reducers | queries  ', () => {
       expect(updatedState).toEqual(state)
     })
 
-
     describe('When action.type is REQUEST_DATA', () => {
       it('should return correct update state', () => {
         // given
@@ -34,10 +30,10 @@ describe('src | reducers | queries  ', () => {
           id: 'fakeRequestId',
           method: 'PUT',
           path: 'recommendations',
-          config : {
+          config: {
             key: 'fakeKey',
-            requestId: 'fakeRequestId'
-          }
+            requestId: 'fakeRequestId',
+          },
         }
 
         // when
@@ -45,42 +41,44 @@ describe('src | reducers | queries  ', () => {
         const expected = [
           state[0],
           {
-          id: 'fakeRequestId',
-          path: 'recommendations',
-          status: PENDING
-        }
-      ]
+            id: 'fakeRequestId',
+            path: 'recommendations',
+            status: PENDING,
+          },
+        ]
         // then
         expect(queriesReducer).toEqual(expected)
       })
     })
 
     describe('When action.type is SUCCESS_DATA and not PENDING', () => {
-      const currentState = [ {
-        id: 'fakeRequestId',
-        path : 'recommendations?',
-        status: SUCCESS
-      }]
+      const currentState = [
+        {
+          id: 'fakeRequestId',
+          path: 'recommendations?',
+          status: SUCCESS,
+        },
+      ]
       it('should return correct update state', () => {
         // given
         const action = {
-            config: {
+          config: {
             key: 'users',
             local: false,
-            requestId: 'fakeRequestId'
+            requestId: 'fakeRequestId',
           },
           method: 'GET',
           path: 'users/current',
-          type: 'SUCCESS_DATA_GET_USERS/CURRENT'
+          type: 'SUCCESS_DATA_GET_USERS/CURRENT',
         }
 
         // when
-        const queriesReducer = queries(currentState, action,)
+        const queriesReducer = queries(currentState, action)
         const expected = [
           {
             id: 'fakeRequestId',
-            status: SUCCESS
-          }
+            status: SUCCESS,
+          },
         ]
         // then
         expect(queriesReducer).toEqual(expected)
@@ -88,26 +86,28 @@ describe('src | reducers | queries  ', () => {
     })
 
     describe('When action.type is SUCCESS_DATA and PENDING', () => {
-      const currentState = [ {
-        id: 'fakeRequestId',
-        path : 'recommendations?',
-        status: PENDING
-      }]
+      const currentState = [
+        {
+          id: 'fakeRequestId',
+          path: 'recommendations?',
+          status: PENDING,
+        },
+      ]
       it('should return correct update state', () => {
         // given
         const action = {
-            config: {
+          config: {
             key: 'users',
             local: false,
-            requestId: 'fakeRequestId'
+            requestId: 'fakeRequestId',
           },
           method: 'GET',
           path: 'users/current',
-          type: 'SUCCESS_DATA_GET_USERS/CURRENT'
+          type: 'SUCCESS_DATA_GET_USERS/CURRENT',
         }
 
         // when
-        const queriesReducer = queries(currentState, action,)
+        const queriesReducer = queries(currentState, action)
 
         // then
         expect(queriesReducer).toEqual([])

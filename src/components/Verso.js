@@ -14,12 +14,8 @@ const Verso = ({ mediation, isFlipped, isCurrentTuto }) => {
     <div
       className={classnames('verso', {
         flipped: isFlipped,
-      })}
-    >
-      <VersoWrapper
-        hasControlBar={!isCurrentTuto}
-        className="with-padding-top"
-      >
+      })}>
+      <VersoWrapper hasControlBar={!isCurrentTuto} className="with-padding-top">
         {isCurrentTuto ? (
           mediation && (
             <img

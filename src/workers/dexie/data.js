@@ -10,12 +10,11 @@ import { IS_DEV, IS_DEXIE } from '../../utils/config'
 
 const storesConfig = {}
 const collections = config.collections
-collections.forEach(({ description, name }) =>
-  (storesConfig[name] = description))
+collections.forEach(
+  ({ description, name }) => (storesConfig[name] = description)
+)
 
-export const db = IS_DEXIE
-  ? new Dexie(config.name)
-  : {}
+export const db = IS_DEXIE ? new Dexie(config.name) : {}
 
 if (IS_DEXIE) {
   db.version(config.version).stores(storesConfig)
@@ -36,8 +35,9 @@ export async function getData(collectionName, query) {
   if (!table) {
     return
   }
-  const { sortBy } = collections.find(collection =>
-    collection.name === collectionName)
+  const { sortBy } = collections.find(
+    collection => collection.name === collectionName
+  )
   // get
   let data = table
   if (query && Object.keys(query).length) {
@@ -48,8 +48,7 @@ export async function getData(collectionName, query) {
   // dexie
   if (IS_DEXIE) {
     if (sortBy) {
-      data = await table.filter(() => true)
-                        .sortBy(sortBy)
+      data = await table.filter(() => true).sortBy(sortBy)
     } else {
       data = await data.toArray()
     }
@@ -73,22 +72,18 @@ export async function putData(
   if (!table) {
     return
   }
-  const { description, sortBy } = collections.find(collection =>
-    collection.name === collectionName)
+  const { description, sortBy } = collections.find(
+    collection => collection.name === collectionName
+  )
   const result = { collectionName }
   // check format
-  let data = Array.isArray(dataOrDatum)
-    ? dataOrDatum
-    : [dataOrDatum]
+  let data = Array.isArray(dataOrDatum) ? dataOrDatum : [dataOrDatum]
   // update is when we want to update certain elements in the array
-  let storedData = IS_DEXIE
-    ? await table.toArray()
-    : table.data
+  let storedData = IS_DEXIE ? await table.toArray() : table.data
   // look for deprecation
   result.deprecatedData = []
   for (let datum of data) {
-    const storedDatum = storedData.find(({ id }) =>
-      id === datum.id)
+    const storedDatum = storedData.find(({ id }) => id === datum.id)
     if (storedDatum) {
       // bind temporaly the storedDatum
       datum._storedDatum = storedDatum
@@ -117,12 +112,11 @@ export async function putData(
     })
     if (IS_DEXIE) {
       await table.bulkPut(bulkData)
-        //.catch(error =>
-        // console.log('BULK ERROR', error))
+      //.catch(error =>
+      // console.log('BULK ERROR', error))
       result.data = table
       if (sortBy) {
-        result.data = await result.data.filter(() => true)
-                                        .sortBy(sortBy)
+        result.data = await result.data.filter(() => true).sortBy(sortBy)
       } else {
         result.data = await result.data.toArray()
       }
@@ -143,19 +137,18 @@ export async function putData(
       delete datum._storedDatum
       if (putDatum[description]) {
         if (IS_DEXIE) {
-          await table
-            .put(putDatum[description], putDatum)
-            //.catch(error => {})
+          await table.put(putDatum[description], putDatum)
+          //.catch(error => {})
         } else {
-          localStoredDatum = Object.assign(localStoredDatum,  putDatum)
+          localStoredDatum = Object.assign(localStoredDatum, putDatum)
         }
       }
     } else {
       if (IS_DEXIE) {
         await table.add(datum)
-           //.catch(error => {
-          //   console.log('YA UNE ERROR', error.message, collectionName, datum)
-          // })
+        //.catch(error => {
+        //   console.log('YA UNE ERROR', error.message, collectionName, datum)
+        // })
       } else {
         table.data.push(datum)
       }
@@ -170,9 +163,7 @@ export async function putData(
     })
   }
   // get again
-  result.data = IS_DEXIE
-    ? await table.toArray()
-    : table.data
+  result.data = IS_DEXIE ? await table.toArray() : table.data
   return result
 }
 
@@ -181,16 +172,14 @@ export async function clear() {
     const tables = db.tables.filter(table => !table.differences)
     return Promise.all(tables.map(async table => table.clear()))
   } else {
-    config.collections.forEach(({ name }) => db[name].data = [])
+    config.collections.forEach(({ name }) => (db[name].data = []))
   }
 }
 
 export async function fetch(config = {}) {
   const tables = db.tables.filter(table => !table.differences)
   const results = IS_DEXIE
-    ? await Promise.all(
-      tables.map(async table => await table.toArray())
-    )
+    ? await Promise.all(tables.map(async table => await table.toArray()))
     : tables.map(table => table.data)
   if (config.console) {
     console.log(results)
@@ -213,66 +202,60 @@ export async function setUser(state = {}) {
 
 export async function pushPull(state = {}) {
   return Promise.all(
-    config.collections.map(async ({
-      isPullOnly,
-      isSync,
-      name,
-      query,
-      orderBy
-    }) => {
-      // just do that for the collection with isSync or isPullOnly
-      if (!isSync && !isPullOnly) {
-        return
-      }
-      // table
-      const table = db[name]
-      // push
-      if (IS_DEXIE && isSync) {
-        const differences = await db.differences
-          .filter(difference => difference.name === name)
-          .toArray()
-        const entityIds = uniq(
-          flatten(differences.map(difference => difference.ids))
-        )
-        await db.differences
-          .filter(difference => difference.name === name)
-          .delete()
-        const entities = await table
-          .filter(entity => entityIds.includes(entity.id))
-          .toArray()
-        let config = {}
-        if (entities) {
-          config.body = entities
+    config.collections.map(
+      async ({ isPullOnly, isSync, name, query, orderBy }) => {
+        // just do that for the collection with isSync or isPullOnly
+        if (!isSync && !isPullOnly) {
+          return
         }
-      }
-      // fetch
-      const method = isPullOnly ? 'GET' : 'PUT'
-      let path = table.name
-      if (query) {
-        const pathQuery = typeof query === 'function'
-          ? query(state)
-          : query
-        if (pathQuery && pathQuery !== '') {
-          path = `${path}?${pathQuery}`
+        // table
+        const table = db[name]
+        // push
+        if (IS_DEXIE && isSync) {
+          const differences = await db.differences
+            .filter(difference => difference.name === name)
+            .toArray()
+          const entityIds = uniq(
+            flatten(differences.map(difference => difference.ids))
+          )
+          await db.differences
+            .filter(difference => difference.name === name)
+            .delete()
+          const entities = await table
+            .filter(entity => entityIds.includes(entity.id))
+            .toArray()
+          let config = {}
+          if (entities) {
+            config.body = entities
+          }
         }
-      }
-      const result = await fetchData(method, path, config)
-      // bulk
-      if (result.data) {
-        const pathWithoutQuery = path.split('?')[0]
-        const collectionName = pathWithoutQuery.split('/')[0]
-        if (IS_DEXIE) {
-          return await putData('bulk', collectionName, result.data, {
+        // fetch
+        const method = isPullOnly ? 'GET' : 'PUT'
+        let path = table.name
+        if (query) {
+          const pathQuery = typeof query === 'function' ? query(state) : query
+          if (pathQuery && pathQuery !== '') {
+            path = `${path}?${pathQuery}`
+          }
+        }
+        const result = await fetchData(method, path, config)
+        // bulk
+        if (result.data) {
+          const pathWithoutQuery = path.split('?')[0]
+          const collectionName = pathWithoutQuery.split('/')[0]
+          if (IS_DEXIE) {
+            return await putData('bulk', collectionName, result.data, {
               isClear: true,
-              orderBy
+              orderBy,
             })
+          } else {
+            db[collectionName].data = result.data
+          }
         } else {
-          db[collectionName].data = result.data
+          return result
         }
-      } else {
-        return result
       }
-    })
+    )
   )
 }
 

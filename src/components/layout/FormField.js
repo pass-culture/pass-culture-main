@@ -38,20 +38,29 @@ class FormField extends Component {
           aria-describedby={`${inputId}-error`}
         />
       ) : (
-        <FormInput {...this.props} {...extraProps} id={inputId} key={inputId} aria-describedby={`${inputId}-error`} />
+        <FormInput
+          {...this.props}
+          {...extraProps}
+          id={inputId}
+          key={inputId}
+          aria-describedby={`${inputId}-error`}
+        />
       )
     return [
       <div
         className={classnames('form-input', {
           checkbox: type === 'checkbox',
         })}
-        key={0}
-      >
+        key={0}>
         {type === 'checkbox'
           ? [inputMarkup, labelMarkup]
           : [labelMarkup, inputMarkup]}
       </div>,
-      <ul role='alert' id={`${inputId}-error`} className={classnames('errors', { pop: errors })} key={1}>
+      <ul
+        role="alert"
+        id={`${inputId}-error`}
+        className={classnames('errors', { pop: errors })}
+        key={1}>
         {errors &&
           errors.map((e, index) => (
             <li key={index}>

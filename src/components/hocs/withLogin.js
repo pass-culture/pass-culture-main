@@ -25,7 +25,7 @@ const withLogin = (config = {}) => WrappedComponent => {
       if (!user) {
         requestData('GET', `users/current`, {
           key: 'users',
-          local: IS_DEXIE
+          local: IS_DEXIE,
         })
       } else if (redirectTo) {
         this.setState({ redirectTo })
@@ -33,11 +33,7 @@ const withLogin = (config = {}) => WrappedComponent => {
     }
 
     componentWillReceiveProps = nextProps => {
-      const {
-        history,
-        isModalActive,
-        requestData
-      } = this.props
+      const { history, isModalActive, requestData } = this.props
       if (nextProps.user && nextProps.user !== this.props.user) {
         // BUT ACTUALLY IT IS A SUCCESS FROM THE LOCAL USER
         // NOW BETTER IS TO ALSO TO DO A QUICK CHECK

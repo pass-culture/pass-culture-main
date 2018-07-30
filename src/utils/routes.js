@@ -24,13 +24,14 @@ export const getDiscoveryPath = (offer, mediation = '', toVerso = false) => {
       : typeof mediation === 'object'
         ? mediation.id
         : ''
-  const eventId = offer
-                  && typeof offer === 'object'
-                  && offer.eventOccurence
-                  && offer.eventOccurence.eventId
+  const eventId =
+    offer &&
+    typeof offer === 'object' &&
+    offer.eventOccurence &&
+    offer.eventOccurence.eventId
   let url = `/decouverte/${offerId}/${mediationId}`
   if (toVerso) {
-    url += "?to=verso"
+    url += '?to=verso'
   }
   if (eventId !== undefined) {
     url += `#${eventId}`

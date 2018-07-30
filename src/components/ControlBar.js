@@ -17,7 +17,6 @@ import selectIsFinished from '../selectors/isFinished'
 import { showModal } from '../reducers/modal'
 import { IS_DEXIE } from '../utils/config'
 
-
 class ControlBar extends Component {
   onClickDisable = event => {
     alert('Pas encore disponible')
@@ -32,7 +31,7 @@ class ControlBar extends Component {
         isFavorite: !isFavorite,
       },
       local: IS_DEXIE,
-      key: 'recommendations'
+      key: 'recommendations',
     })
   }
 
@@ -54,12 +53,7 @@ class ControlBar extends Component {
   }
 
   render() {
-    const {
-      bookings,
-      offer,
-      offerer,
-      recommendation
-    } = this.props
+    const { bookings, offer, offerer, recommendation } = this.props
     const isFavorite = recommendation && recommendation.isFavorite
     return (
       <ul className="control-bar">
@@ -70,10 +64,9 @@ class ControlBar extends Component {
         <li>
           <button
             className="button is-secondary"
-            onClick={this.onClickFavorite}
-          >
+            onClick={this.onClickFavorite}>
             <Icon
-              alt={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }
+              alt={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
               svg={isFavorite ? 'ico-like-w-on' : 'ico-like-w'}
             />
           </button>
@@ -82,17 +75,15 @@ class ControlBar extends Component {
           <button
             disabled
             className="button is-secondary"
-            onClick={this.onClickDisable}
-          >
-            <Icon svg="ico-share-w" alt='Partager' />
+            onClick={this.onClickDisable}>
+            <Icon svg="ico-share-w" alt="Partager" />
           </button>
         </li>
         <li>
           {bookings.length > 0 ? (
             <Link
               to="/reservations"
-              className="button is-primary is-go is-medium"
-            >
+              className="button is-primary is-go is-medium">
               <Icon name="Check" />
               {' Réservé'}
             </Link>
@@ -100,8 +91,7 @@ class ControlBar extends Component {
             <Finishable finished={this.props.isFinished}>
               <button
                 className="button is-primary is-go is-medium"
-                onClick={this.onClickJyVais}
-              >
+                onClick={this.onClickJyVais}>
                 <Price
                   value={get(offer, 'price') || get(offer, 'displayPrice')}
                   free="——"
@@ -118,7 +108,7 @@ class ControlBar extends Component {
 }
 
 export default connect(
-  function (state) {
+  function(state) {
     const eventOrThingId = selectCurrentEventOrThingId(state)
     return {
       bookings: selectBookings(state, eventOrThingId),

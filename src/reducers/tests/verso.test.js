@@ -7,7 +7,7 @@ import verso, {
   LOCATION_CHANGE,
   MAKE_DRAGGABLE,
   MAKE_UNDRAGGABLE,
-  SHOW_VERSO
+  SHOW_VERSO,
 } from '../verso'
 
 describe('src | reducers | verso  ', () => {
@@ -58,7 +58,7 @@ describe('src | reducers | verso  ', () => {
 
       // when
       const queriesReducer = verso(state, action)
-      const expected = { draggable: false}
+      const expected = { draggable: false }
 
       // then
       expect(queriesReducer).toEqual(expected)
@@ -72,7 +72,7 @@ describe('src | reducers | verso  ', () => {
 
       // when
       const queriesReducer = verso(state, action)
-      const expected = { draggable: true}
+      const expected = { draggable: true }
 
       // then
       expect(queriesReducer).toEqual(expected)
@@ -89,9 +89,9 @@ describe('src | reducers | verso  ', () => {
           search: '',
           hash: '#AM',
           state: undefined,
-          key: '0upzvj'
-        }
-       }
+          key: '0upzvj',
+        },
+      }
 
       // when
       const queriesReducer = verso(state, action)
@@ -99,7 +99,7 @@ describe('src | reducers | verso  ', () => {
         draggable: true,
         isActive: false,
         isFlipped: false,
-        unFlippable: false
+        unFlippable: false,
       }
 
       // then
@@ -113,7 +113,7 @@ describe('src | reducers | verso  ', () => {
         // when
         const action = flip({})
         const expected = {
-          type: SHOW_VERSO
+          type: SHOW_VERSO,
         }
 
         // then
@@ -126,7 +126,7 @@ describe('src | reducers | verso  ', () => {
         // when
         const action = makeDraggable({})
         const expected = {
-          type: MAKE_DRAGGABLE
+          type: MAKE_DRAGGABLE,
         }
 
         // then
@@ -139,7 +139,7 @@ describe('src | reducers | verso  ', () => {
         // when
         const action = makeUndraggable({})
         const expected = {
-          type: MAKE_UNDRAGGABLE
+          type: MAKE_UNDRAGGABLE,
         }
 
         // then
@@ -152,7 +152,7 @@ describe('src | reducers | verso  ', () => {
         // when
         const action = unFlip({})
         const expected = {
-          type: CLOSE_VERSO
+          type: CLOSE_VERSO,
         }
 
         // then

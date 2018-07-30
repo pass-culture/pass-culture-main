@@ -8,14 +8,22 @@ import selectCurrentOffer from '../selectors/currentOffer'
 import selectIsCurrentTuto from '../selectors/isCurrentTuto'
 import selectIsFinished from '../selectors/isFinished'
 
-const Clue = ({ distance, offer, isHidden, transitionTimeout, isCurrentTuto, isFinished }) => {
+const Clue = ({
+  distance,
+  offer,
+  isHidden,
+  transitionTimeout,
+  isCurrentTuto,
+  isFinished,
+}) => {
   return (
     <div
       className="clue"
-      style={{ transition: `opacity ${transitionTimeout}ms` }}
-    >
-      <Finishable finished={isFinished && !isCurrentTuto // Hard coded to prevent a weird bug to arise, should be eventually removed
-                           }>
+      style={{ transition: `opacity ${transitionTimeout}ms` }}>
+      <Finishable
+        finished={
+          isFinished && !isCurrentTuto // Hard coded to prevent a weird bug to arise, should be eventually removed
+        }>
         <Price value={offer && offer.price} />
         <div className="separator">{offer ? '\u00B7' : ' '}</div>
         <div>{offer ? distance : ' '}</div>

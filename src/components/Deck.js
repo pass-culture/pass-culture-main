@@ -112,18 +112,18 @@ class Deck extends Component {
       currentRecommendation,
       isFlipped,
       readTimeout,
-      requestData
+      requestData,
     } = this.props
     const { isRead } = this.state
 
     // we don't need to go further if we are still on the same reco
-    if (!currentRecommendation ||
-      (
-        prevProps &&
+    if (
+      !currentRecommendation ||
+      (prevProps &&
         prevProps.currentRecommendation &&
         currentRecommendation &&
         prevProps.currentRecommendation.id === currentRecommendation.id)
-      ) {
+    ) {
       return
     }
 
@@ -147,13 +147,15 @@ class Deck extends Component {
           this.props.currentRecommendation &&
           !this.props.currentRecommendation.dateRead
         ) {
-          requestData('PATCH', `recommendations/${this.props.currentRecommendation.id}`,
+          requestData(
+            'PATCH',
+            `recommendations/${this.props.currentRecommendation.id}`,
             {
               body: {
                 dateRead: moment().toISOString(),
               },
               key: 'recommendations',
-              local: IS_DEXIE
+              local: IS_DEXIE,
             }
           )
           // this.setState({ isRead: true })
@@ -161,7 +163,11 @@ class Deck extends Component {
           delete this.readTimeout
         }
       }, readTimeout)
-    } else if (!isRead && currentRecommendation && currentRecommendation.dateRead) {
+    } else if (
+      !isRead &&
+      currentRecommendation &&
+      currentRecommendation.dateRead
+    ) {
       // this.setState({ isRead: true })
     }
   }
@@ -207,11 +213,11 @@ class Deck extends Component {
     this.handleDeprecatedData(nextProps)
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     //this.handleSetDateRead(prevProps)
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.readTimeout && clearTimeout(this.readTimeout)
     this.noDataTimeout && clearTimeout(this.noDataTimeout)
   }
@@ -230,7 +236,7 @@ class Deck extends Component {
     } = this.props
     const {
       // isRead,
-      refreshKey
+      refreshKey,
     } = this.state
 
     const index = get(this.props, 'currentRecommendation.index', 0)
@@ -245,37 +251,46 @@ class Deck extends Component {
         id="deck"
         style={{
           backgroundColor: headerColor,
-        }}
-      >
+        }}>
         {!unFlippable && (
           <button
             className={classnames('close-button', {
               'is-hidden': !isFlipped,
             })}
-            onClick={this.handleUnFlip}
-          >
+            onClick={this.handleUnFlip}>
             <Icon svg="ico-close" alt="Fermer" />
           </button>
         )}
         <div
           className={classnames('loading', {
             'is-invisibile': currentRecommendation,
-          })}
-        >
+          })}>
           <div>
-            <Icon draggable={false} svg="ico-loading-card" alt="Chargement ..." />
+            <Icon
+              draggable={false}
+              svg="ico-loading-card"
+              alt="Chargement ..."
+            />
             <h2 className="subtitle is-2">chargement des offres</h2>
           </div>
         </div>
         <Draggable
           axis={isFlipped ? 'none' : 'exclude'}
-          speed={{x: 5}}
+          speed={{ x: 5 }}
           key={refreshKey}
           position={position}
           onStop={this.onStop}
-          bounds={isFlipped ? {} : { bottom: 0, top: -100, left: position.x - width, right: position.x + width }}
-          enableUserSelectHack={false}
-        >
+          bounds={
+            isFlipped
+              ? {}
+              : {
+                  bottom: 0,
+                  top: -100,
+                  left: position.x - width,
+                  right: position.x + width,
+                }
+          }
+          enableUserSelectHack={false}>
           <div>
             {previousRecommendation && (
               <Card
@@ -290,8 +305,9 @@ class Deck extends Component {
           </div>
         </Draggable>
         <div
-          className={classnames('board-wrapper', { 'is-invisible': isFlipped })}
-        >
+          className={classnames('board-wrapper', {
+            'is-invisible': isFlipped,
+          })}>
           <div
             className="board-bg"
             style={{
@@ -302,15 +318,13 @@ class Deck extends Component {
             className={classnames('controls', {
               'is-invisible': isFlipped,
             })}
-            style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
-          >
+            style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}>
             <li>
               <button
                 className={classnames('button before', {
                   'is-invisible': !previousRecommendation,
                 })}
-                onClick={this.handleGoPrevious}
-              >
+                onClick={this.handleGoPrevious}>
                 <Icon svg="ico-prev-w-group" alt="Précédent" />
               </button>
             </li>
@@ -320,8 +334,7 @@ class Deck extends Component {
                   'is-invisible': isFlipDisabled,
                 })}
                 disabled={isFlipDisabled}
-                onClick={this.handleFlip}
-              >
+                onClick={this.handleFlip}>
                 <Icon svg="ico-slideup-w" alt="Plus d'infos" />
               </button>
               <Clue />
@@ -331,8 +344,7 @@ class Deck extends Component {
                 className={classnames('button after', {
                   'is-invisible': !nextRecommendation,
                 })}
-                onClick={this.handleGoNext}
-              >
+                onClick={this.handleGoNext}>
                 <Icon svg="ico-next-w-group" alt="Suivant" />
               </button>
             </li>

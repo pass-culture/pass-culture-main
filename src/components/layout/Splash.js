@@ -12,8 +12,7 @@ const Splash = ({ isActive, transitionTimeout }) => {
       })}
       style={{
         transition: `opacity ${transitionTimeout}ms, z-index 10ms ${transitionTimeout}ms`,
-      }}
-    >
+      }}>
       <Icon svg="logo-group" alt="Logo Pass Culture" />
     </div>
   )

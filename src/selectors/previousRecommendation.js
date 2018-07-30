@@ -12,8 +12,9 @@ export default createSelector(
       currentRecommendation &&
       recommendations &&
       recommendations[
-        recommendations.findIndex(reco =>
-          reco.id === currentRecommendation.id) - 1
+        recommendations.findIndex(
+          reco => reco.id === currentRecommendation.id
+        ) - 1
       ]
     return getRecommendation({ recommendation: previousRecommendation })
   }

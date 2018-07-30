@@ -7,7 +7,7 @@ const initialState = {
   closeTimeout: 2000,
   isActive:
     window.location.pathname === '/' ||
-    window.location.pathname.substr(0,5) ==='/beta'
+    window.location.pathname.substr(0, 5) === '/beta',
 }
 
 // REDUCER

@@ -16,13 +16,16 @@ class FavoritesPage extends Component {
         name="favorites"
         redBg
         menuButton={{ borderTop: true }}
-        backButton
-      >
-        <header><h1>Mes favoris</h1></header>
+        backButton>
+        <header>
+          <h1>Mes favoris</h1>
+        </header>
         {favorites.length > 0 && (
           <div>
             <ul className="favorites">
-              {favorites.map((b, index) => <BookingItem key={index} {...b} />)}
+              {favorites.map((b, index) => (
+                <BookingItem key={index} {...b} />
+              ))}
             </ul>
           </div>
         )}

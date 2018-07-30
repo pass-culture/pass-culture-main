@@ -1,15 +1,13 @@
 import { takeEvery, fork } from 'redux-saga/effects'
 
-import watchModalActions,
-{
+import {
   fromWatchCloseModalAction,
-  fromWatchShowModalAction
-}
- from '../modal'
+  fromWatchShowModalAction,
+  watchModalActions,
+} from '../modal'
 import { CLOSE_MODAL, SHOW_MODAL } from '../../reducers/modal'
 
 describe('src | sagas | modal', () => {
-
   describe('fromWatchCloseModalAction', () => {
     // when
     fromWatchCloseModalAction()
@@ -17,7 +15,6 @@ describe('src | sagas | modal', () => {
     // then
     expect(document.body.style.overflow).toEqual('auto')
   })
-
 
   describe('fromWatchShowModalAction', () => {
     // when
@@ -34,22 +31,26 @@ describe('src | sagas | modal', () => {
 
       // when
       const descriptor = generator.next().value
-      const expected = JSON.stringify(fork(takeEvery, CLOSE_MODAL, fromWatchCloseModalAction))
+      const expected = JSON.stringify(
+        fork(takeEvery, CLOSE_MODAL, fromWatchCloseModalAction)
+      )
 
       // then
       expect(JSON.stringify(descriptor)).toEqual(expected)
     })
   })
-    it('should do call fromWatchShowModalAction with SHOW_MODAL action', () => {
-      // given
-      const generator = watchModalActions()
-      generator.next()
+  it('should do call fromWatchShowModalAction with SHOW_MODAL action', () => {
+    // given
+    const generator = watchModalActions()
+    generator.next()
 
-      // when
-      const descriptor = generator.next().value
-      const expected = JSON.stringify(fork(takeEvery, SHOW_MODAL, fromWatchShowModalAction))
+    // when
+    const descriptor = generator.next().value
+    const expected = JSON.stringify(
+      fork(takeEvery, SHOW_MODAL, fromWatchShowModalAction)
+    )
 
-      // then
-      expect(JSON.stringify(descriptor)).toBe(expected)
-    })
+    // then
+    expect(JSON.stringify(descriptor)).toBe(expected)
   })
+})

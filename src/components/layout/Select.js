@@ -12,8 +12,7 @@ const Select = ({
     <select
       className={className || 'select'}
       onChange={onOptionClick}
-      value={value || defaultLabel}
-    >
+      value={value || defaultLabel}>
       <option key={-1} disabled>
         {defaultLabel}
       </option>

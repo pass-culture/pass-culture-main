@@ -31,20 +31,17 @@ class Booking extends Component {
   }
 
   makeBooking = event => {
-    const {
-      offer,
-      recommendation,
-      requestData
-    } = this.props
+    const { offer, recommendation, requestData } = this.props
     const { occurences } = this.state
     this.setState({
       bookingInProgress: true,
     })
-    const selectedOffer = occurences && occurences[0] &&
-      occurences[0].offer && occurences[0].offer[0]
-    const offerId = selectedOffer
-      ? selectedOffer.id
-      : offer.id
+    const selectedOffer =
+      occurences &&
+      occurences[0] &&
+      occurences[0].offer &&
+      occurences[0].offer[0]
+    const offerId = selectedOffer ? selectedOffer.id : offer.id
     requestData('POST', 'bookings', {
       add: 'append',
       body: {
@@ -72,8 +69,8 @@ class Booking extends Component {
     const { tz } = this.props
     const NOW = moment()
     const availableDates = mediatedOccurences
-                                   .filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW))
-                                   .map(o => moment(o.beginningDatetime).tz(tz))
+      .filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW))
+      .map(o => moment(o.beginningDatetime).tz(tz))
     const availableMediatedOccurences = []
     const availableHours = availableDates.filter((d, index) => {
       const isFiltered = d.isSame(selectedDate || this.state.date, 'day')
@@ -85,14 +82,14 @@ class Booking extends Component {
     return {
       availableDates,
       availableHours,
-      availableMediatedOccurences
+      availableMediatedOccurences,
     }
   }
 
   handleDateSelect = date => {
     const {
       availableMediatedOccurences,
-      availableHours
+      availableHours,
     } = this.getAvailableDateTimes(date)
     this.setState({
       date: date,
@@ -117,7 +114,7 @@ class Booking extends Component {
     const dateOk = dateRequired ? this.state.date && this.state.time : true
     const offerer = this.props.offerer
     const { availableDates, availableHours } = this.getAvailableDateTimes()
-    console.log("availableDates", availableDates)
+    console.log('availableDates', availableDates)
     return (
       <VersoWrapper>
         <div className="booking">
@@ -138,14 +135,18 @@ class Booking extends Component {
                       }
                       numberOfMonths={1}
                       noBorder={true}
-                      initialVisibleMonth={() => moment.min(availableDates.filter(d => d > moment.now()))}
+                      initialVisibleMonth={() =>
+                        moment.min(availableDates.filter(d => d > moment.now()))
+                      }
                       inputIconPosition="after"
                       anchorDirection="center"
                       isDayBlocked={date =>
                         !availableDates.find(d => d.isSame(date.tz(tz), 'day'))
                       }
-                      customInputIcon={<Icon svg="ico-calendar" alt="calendrier" />}
-                      customCloseIcon={<Icon svg='ico-close-b' alt="Fermer" />}
+                      customInputIcon={
+                        <Icon svg="ico-calendar" alt="calendrier" />
+                      }
+                      customCloseIcon={<Icon svg="ico-close-b" alt="Fermer" />}
                       displayFormat="LL"
                     />
                   </div>
@@ -158,17 +159,26 @@ class Booking extends Component {
                       value={this.state.time || ''}
                       className="input"
                       onChange={e => this.setState({ time: e.target.value })}
-                      disabled={!this.state.date}
-                    >
+                      disabled={!this.state.date}>
                       {availableHours.length === 0 && <option>hh:mm</option>}
                       {availableHours.map(d => (
-                        <option key={d} value={moment(d).tz(tz).format('H:mm')}>
-                          {moment(d).tz(tz).format('H:mm')}
+                        <option
+                          key={d}
+                          value={moment(d)
+                            .tz(tz)
+                            .format('H:mm')}>
+                          {moment(d)
+                            .tz(tz)
+                            .format('H:mm')}
                         </option>
                       ))}
                     </select>
                     <label htmlFor="time">
-                      <Icon svg="ico-hour-list" className="input-icon" alt='Horaires' />
+                      <Icon
+                        svg="ico-hour-list"
+                        className="input-icon"
+                        alt="Horaires"
+                      />
                     </label>
                   </div>
                 </div>
@@ -189,13 +199,14 @@ class Booking extends Component {
                       {price > 0 ? (
                         <div>
                           <p>
-                            Vous êtes sur le point de réserver cette offre{price >
-                              0 && (
+                            Vous êtes sur le point de réserver cette offre
+                            {price > 0 && (
                               <span>
                                 {' '}
                                 pour <Price value={price} />{' '}
                               </span>
-                            )}.
+                            )}
+                            .
                           </p>
                           <p>
                             <small>
@@ -222,7 +233,7 @@ class Booking extends Component {
           {step === 'loading' && <p>Réservation en cours ...</p>}
           {step === 'confirmation' && (
             <div className="section finished">
-              <Icon svg="picto-validation" alt='Réservation validée' />
+              <Icon svg="picto-validation" alt="Réservation validée" />
               <p>Votre réservation est validée.</p>
               <p>
                 {price > 0 && (
@@ -246,9 +257,17 @@ class Booking extends Component {
           )}
           {step === 'error' && (
             <div className="section finished">
-              <Icon svg="picto-echec" alt='Echec de réservation' />
+              <Icon svg="picto-echec" alt="Echec de réservation" />
               <p>Une erreur est survenue lors de la réservation :</p>
-              {error && <p><Capitalize>{Object.values(error).map(messages => messages.join(";")).join(";")}</Capitalize></p>}
+              {error && (
+                <p>
+                  <Capitalize>
+                    {Object.values(error)
+                      .map(messages => messages.join(';'))
+                      .join(';')}
+                  </Capitalize>
+                </p>
+              )}
             </div>
           )}
           <ul className="bottom-bar">
@@ -260,31 +279,28 @@ class Booking extends Component {
                     'is-primary': true,
                     'is-hidden': !dateOk,
                   })}
-                  onClick={this.makeBooking}
-                >
+                  onClick={this.makeBooking}>
                   Valider
                 </button>
               </li>,
               <li key="cancel">
                 <button
                   className="button is-secondary"
-                  onClick={this.closeBooking}
-                >
+                  onClick={this.closeBooking}>
                   Annuler
                 </button>
               </li>,
             ]}
             {step === 'loading' && (
               <li className="center">
-                <Icon svg="loader-w" alt='Chargement ...' />
+                <Icon svg="loader-w" alt="Chargement ..." />
               </li>
             )}
             {step === 'confirmation' && (
               <li>
                 <button
                   className="button is-secondary"
-                  onClick={this.closeBooking}
-                >
+                  onClick={this.closeBooking}>
                   OK
                 </button>
               </li>
@@ -293,8 +309,7 @@ class Booking extends Component {
               <li>
                 <button
                   className="button is-secondary"
-                  onClick={this.closeBooking}
-                >
+                  onClick={this.closeBooking}>
                   Retour
                 </button>
               </li>

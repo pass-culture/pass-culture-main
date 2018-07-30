@@ -35,10 +35,15 @@ class OfferInfo extends Component {
     const NOW = moment()
 
     const mediatedOccurences = get(recommendation, 'mediatedOccurences', [])
-    const bookedDates = bookings.map(b => get(b, 'offer.eventOccurence.beginningDatetime'))
+    const bookedDates = bookings.map(b =>
+      get(b, 'offer.eventOccurence.beginningDatetime')
+    )
     const bookedOfferIds = bookings.map(b => b.offerId)
-    const bookableOccurences = mediatedOccurences.filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW)
-                                                             && ! (o.id in bookedOfferIds))
+    const bookableOccurences = mediatedOccurences.filter(
+      o =>
+        moment(o.offer[0].bookingLimitDatetime).isAfter(NOW) &&
+        !(o.id in bookedOfferIds)
+    )
 
     const infos = {
       image: thumbUrl,
@@ -46,16 +51,22 @@ class OfferInfo extends Component {
       what: get(source, 'description')
         ? ''
         : get(offer, 'eventOccurence.event.description'),
-      when: uniq(bookableOccurences
-                 .map(o => o.beginningDatetime)
-                 .sort()
-                 .slice(0,7)
-                 .concat(bookedDates)
-                 .sort()),
+      when: uniq(
+        bookableOccurences
+          .map(o => o.beginningDatetime)
+          .sort()
+          .slice(0, 7)
+          .concat(bookedDates)
+          .sort()
+      ),
       where: {
         name: get(venue, 'name'),
-        address: get(venue, 'address') + ',' + (get(venue, 'postalCode') || '')
-                                       + ',' + (get(venue, 'city') || ''),
+        address:
+          get(venue, 'address') +
+          ',' +
+          (get(venue, 'postalCode') || '') +
+          ',' +
+          (get(venue, 'city') || ''),
       },
     }
 
@@ -67,9 +78,9 @@ class OfferInfo extends Component {
         {false && <img alt="" className="offerPicture" src={infos.image} />}
         {infos.description && (
           <div className="description">
-            {infos.description
-              .split('\n')
-              .map((p, index) => <p key={index}>{p}</p>)}
+            {infos.description.split('\n').map((p, index) => (
+              <p key={index}>{p}</p>
+            ))}
           </div>
         )}
         {infos.what && (
@@ -83,16 +94,20 @@ class OfferInfo extends Component {
             <h3>Quand ?</h3>
             <ul className="dates-info">
               {infos.when.length === 0 && <li>Plus de dates disponibles :(</li>}
-              {infos.when.map(
-                (occurence, index) =>
-                  (
-                    <li key={index}>
-                      <Capitalize>{tz && moment(occurence).tz(tz).format('dddd DD/MM/YYYY à H:mm')}</Capitalize>
-                      {bookedDates.indexOf(occurence)>-1 && ' (réservé)'}
-                    </li>
-                  )
+              {infos.when.map((occurence, index) => (
+                <li key={index}>
+                  <Capitalize>
+                    {tz &&
+                      moment(occurence)
+                        .tz(tz)
+                        .format('dddd DD/MM/YYYY à H:mm')}
+                  </Capitalize>
+                  {bookedDates.indexOf(occurence) > -1 && ' (réservé)'}
+                </li>
+              ))}
+              {bookableOccurences.length > 7 && (
+                <li>Cliquez sur "j'y vais" pour voir plus de dates.</li>
               )}
-              {bookableOccurences.length > 7 && <li>Cliquez sur "j'y vais" pour voir plus de dates.</li>}
             </ul>
           </div>
         )}
@@ -102,16 +117,17 @@ class OfferInfo extends Component {
               <h3>Où ?</h3>
               <a
                 className="distance"
-                href={navigationLink(venue.latitude, venue.longitude)}
-              >
+                href={navigationLink(venue.latitude, venue.longitude)}>
                 {distance}
                 <Icon svg="ico-geoloc-solid2" alt="Géolocalisation" />
               </a>
               <ul className="address-info">
                 <li>{infos.where.name}</li>
-                {infos.where.address
-                  .split(/[,\n\r]/)
-                  .map((el, index) => <li key={index}><Capitalize>{el}</Capitalize></li>)}
+                {infos.where.address.split(/[,\n\r]/).map((el, index) => (
+                  <li key={index}>
+                    <Capitalize>{el}</Capitalize>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
@@ -120,17 +136,17 @@ class OfferInfo extends Component {
   }
 }
 
-export default connect(function (state) {
+export default connect(function(state) {
   const eventOrThingId = selectCurrentEventOrThingId(state)
   return {
-      bookings: selectBookings(state, eventOrThingId),
-      distance: selectDistance(state),
-      offer: selectCurrentOffer(state),
-      offerer: selectCurrentOfferer(state),
-      source: selectCurrentSource(state),
-      thumbUrl: selectCurrentThumbUrl(state),
-      recommendation: selectCurrentRecommendation(state),
-      venue: selectVenue(state),
-      tz: selectTimezone(state),
-    }
+    bookings: selectBookings(state, eventOrThingId),
+    distance: selectDistance(state),
+    offer: selectCurrentOffer(state),
+    offerer: selectCurrentOfferer(state),
+    source: selectCurrentSource(state),
+    thumbUrl: selectCurrentThumbUrl(state),
+    recommendation: selectCurrentRecommendation(state),
+    venue: selectVenue(state),
+    tz: selectTimezone(state),
+  }
 })(OfferInfo)

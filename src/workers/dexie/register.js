@@ -29,7 +29,7 @@ export default function register(store) {
 export function syncRedux(store, payload) {
   config.collections.forEach(({ key, name }) => {
     const config = { key, local: true }
-    const result = (payload.results || []).find(
+    const result = (payload.results || []).find(
       result => result && result.collectionName === name
     )
     config.deprecatedData = result && result.deprecatedData
