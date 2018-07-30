@@ -92,7 +92,6 @@ def test_14_create_booking_should_work_if_user_can_book_and_enough_credit():
         'recommendationId': humanize(1),
     }
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
-    print(r_create.json())
     assert r_create.status_code == 201
 
 
@@ -162,7 +161,9 @@ def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFree
     assert 'cannotBookFreeOffers' in r_create.json()
 
 
-def test_16_create_booking_should_not_work_if_not_enough_credit(app):
+
+
+def test_17_create_booking_should_not_work_if_not_enough_credit(app):
     #Given
     user = User()
     user.publicName = 'Test'

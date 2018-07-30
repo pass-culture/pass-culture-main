@@ -2,7 +2,7 @@
 from datetime import datetime
 from sqlalchemy.sql import expression
 from sqlalchemy.orm import relationship
-from sqlalchemy import Binary, Boolean, Column, DateTime, String, func
+from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
 import bcrypt
 
 from models import Deposit, Booking
@@ -40,6 +40,9 @@ class User(PcObject,
                                default=True)
 
     isAdmin = Column(Boolean,
+                     CheckConstraint('("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
+                                     + 'OR ("isAdmin" IS FALSE)',
+                                     name='check_admin_cannot_book_free_offers'),
                      nullable=False,
                      server_default=expression.false(),
                      default=False)

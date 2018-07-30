@@ -230,28 +230,39 @@ def test_26_validate_offerer(app):
 
 def test_27_pro_signup_with_existing_offerer(app):
     "should create user and userOfferer"
-    with app.app_context():
-        data = BASE_DATA_PRO.copy()
-        data['email'] = 'toto_pro2@btmx.fr'
-        r_signup = req.post(API_URL + '/users',
-                            json=data)
-        assert r_signup.status_code == 201
-        assert 'Set-Cookie' in r_signup.headers
-        user = User.query\
-                             .filter_by(email='toto_pro2@btmx.fr')\
-                             .first()
-        assert user is not None
-        offerer = Offerer.query\
-                                   .filter_by(siren='349974931')\
-                                   .first()
-        assert offerer is not None
-        user_offerer = UserOfferer.query\
-                                            .filter_by(user=user,
-                                                       offerer=offerer)\
-                                            .first()
-        assert user_offerer is not None
-        assert user_offerer.validationToken is not None
-        assert user_offerer.rights == RightsType.editor
+    json_offerer = {
+            "name": "Test Offerer",
+            "siren": "418166096",
+            "address": "Test adresse",
+            "postalCode": "75000",
+            "city": "Paris"
+    }
+    offerer = Offerer(from_dict=json_offerer)
+    offerer.save()
+
+
+    data = BASE_DATA_PRO.copy()
+    data['email'] = 'toto_pro2@btmx.fr'
+    data['siren'] = '418166096'
+    r_signup = req.post(API_URL + '/users',
+                        json=data)
+    assert r_signup.status_code == 201
+    assert 'Set-Cookie' in r_signup.headers
+    user = User.query\
+                         .filter_by(email='toto_pro2@btmx.fr')\
+                         .first()
+    assert user is not None
+    offerer = Offerer.query\
+                               .filter_by(siren='418166096')\
+                               .first()
+    assert offerer is not None
+    user_offerer = UserOfferer.query\
+                                        .filter_by(user=user,
+                                                   offerer=offerer)\
+                                        .first()
+    assert user_offerer is not None
+    assert user_offerer.validationToken is not None
+    assert user_offerer.rights == RightsType.editor
 
 
 def test_28_user_should_have_its_waller_balance(app):
@@ -327,3 +338,22 @@ def test_28_user_should_have_its_waller_balance(app):
     print('json', r_create.json())
     #Then
     assert wallet_balance == 15
+
+
+def test_29_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
+    user_json = {
+        'email': 'pctest.isAdmin.canBook@btmx.fr',
+        'publicName': 'IsAdmin CanBook',
+        'password': 'toto12345678',
+        'contact_ok': 'true',
+        'isAdmin': True,
+        'canBookFreeOffers': True
+    }
+    r_signup = req.post(API_URL + '/users',
+                                  json=user_json)
+
+    assert r_signup.status_code == 400
+    print(r_signup)
+    error = r_signup.json()
+    pprint(error)
+    assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
