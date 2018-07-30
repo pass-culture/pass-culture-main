@@ -1,11 +1,11 @@
 // HOC THAT GATHERS COMMON TASK FOR SIGNIN AND SIGNUP PAGE
 // LIKE RESET DATA, FORM REDUCER / REDIRECT TO decouverte ON USER SUCCESS
+import { assignData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { assignData } from '../../reducers/data'
 import { resetForm } from '../../reducers/form'
 
 const withSign = WrappedComponent => {

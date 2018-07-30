@@ -1,3 +1,4 @@
+import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -6,7 +7,6 @@ import { Link } from 'react-router-dom'
 import BookingItem from '../BookingItem'
 import PageWrapper from '../layout/PageWrapper'
 import withLogin from '../hocs/withLogin'
-import { requestData } from '../../reducers/data'
 
 class FavoritesPage extends Component {
   render() {
