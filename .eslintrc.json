@@ -1,5 +1,6 @@
 {
   "extends": ["airbnb", "prettier"],
+  "parser": "babel-eslint",
   "env": {
     "jest": true,
     "node": true,
@@ -9,6 +10,29 @@
   },
   "rules": {
     "react/forbid-prop-types": [2, { "forbid": ["any"] }],
-    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }]
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+    "react/prop-types": 1,
+    "no-shadow": 1,
+    "no-nested-ternary": 1,
+    "react/jsx-tag-spacing": 1,
+    "import/no-named-as-default-member": 1,
+    "import/no-useless-path-segments": 1,
+    "no-param-reassign": 1,
+    "react/jsx-one-expression-per-line": 1,
+    "no-unused-vars": 1,
+    "react/sort-comp": 1,
+    "prefer-destructuring": 1,
+    "prefer-arrow-callback": 1,
+    "no-else-return": 1,
+    "prefer-template": 1,
+    "arrow-body-style": 1,
+    "react/destructuring-assignment": 1,
+    "no-irregular-whitespace": 1,
+    "vars-on-top": 1,
+    "no-var": 1,
+    "spaced-comment": 1,
+    "no-lonely-if": 1,
+    "object-shorthand": 1,
+    "react/button-has-type": 1
   }
 }
