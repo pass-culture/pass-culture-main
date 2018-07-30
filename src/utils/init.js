@@ -2,7 +2,6 @@ import {
   setGeolocationPosition,
   setGeolocationWatchId,
 } from '../reducers/geolocation'
-import { worker } from '../workers/dexie/register'
 
 const init = store => {
   window.log('Geoloc queried')
@@ -10,10 +9,6 @@ const init = store => {
     position => {
       window.log('Geoloc received', position)
       store.dispatch(setGeolocationPosition(position.coords))
-      worker.postMessage({
-        key: 'dexie-state',
-        state: { position },
-      })
     },
     err => {
       window.warn('Could not get geoloc', err)

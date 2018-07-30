@@ -2,13 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
-import './styles/index.scss'
-import 'typeface-barlow'
+import './utils/install'
 
 import Root from './Root'
-import store from './utils/store'
 import registerCacheWorker from './workers/cache'
-import registerDexieWorker from './workers/dexie/register'
 
 const initApp = () => {
   ReactDOM.render(<Root />, document.getElementById('root'))
@@ -24,7 +21,6 @@ const initApp = () => {
     })
   }
   registerCacheWorker()
-  registerDexieWorker(store)
 }
 
 if (window.cordova) {
