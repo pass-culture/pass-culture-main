@@ -1,9 +1,6 @@
-import { requestData } from 'pass-culture-shared'
+import { closeModal, Icon, requestData, showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-
-import Icon from './Icon'
-import { closeModal, showModal } from '../../reducers/modal'
 
 class DeleteButton extends Component {
   onCancelClick = () => {

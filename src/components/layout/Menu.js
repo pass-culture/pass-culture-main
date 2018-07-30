@@ -1,10 +1,8 @@
-import { requestData } from 'pass-culture-shared'
+import { closeModal, Icon, requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import Icon from '../layout/Icon'
-import { closeModal } from '../../reducers/modal'
 import { ROOT_PATH } from '../../utils/config'
 
 class Menu extends Component {
@@ -110,7 +108,10 @@ class Menu extends Component {
   }
 }
 
-export default connect(state => ({ user: state.user }), {
-  closeModal,
-  requestData,
-})(Menu)
+export default connect(
+  state => ({ user: state.user }),
+  {
+    closeModal,
+    requestData,
+  }
+)(Menu)

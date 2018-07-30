@@ -1,10 +1,10 @@
 import classnames from 'classnames'
+import { showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Menu from './Menu'
 import ProfilePicture from './ProfilePicture'
-import { showModal } from '../../reducers/modal'
 
 class MenuButton extends Component {
   onClick = () => {

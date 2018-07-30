@@ -2,16 +2,19 @@ import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
 import 'moment-locale-fr'
-import { requestData, removeDataError } from 'pass-culture-shared'
+import {
+  closeModal,
+  Icon,
+  removeDataError,
+  requestData,
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { SingleDatePicker } from 'react-dates'
 
 import VersoWrapper from './VersoWrapper'
 import Price from './Price'
-import Icon from './layout/Icon'
 import Capitalize from './utils/Capitalize'
-import { closeModal } from '../reducers/modal'
 import selectBooking from '../selectors/booking'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
