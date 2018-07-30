@@ -2,7 +2,6 @@ import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import get from 'lodash.get'
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 
 import Logo from '../layout/Logo'
