@@ -1,12 +1,11 @@
 import data from '../data'
 
 describe('src | reducers | data  ', () => {
-
   let state
   beforeEach(() => {
     state = {
       bookings: [],
-      recommendations: []
+      recommendations: [],
     }
   })
 
@@ -16,8 +15,6 @@ describe('src | reducers | data  ', () => {
 
     // when
     const updatedState = data(undefined, action)
-
-    console.log('updatedState', updatedState);
 
     // then
     expect(updatedState).toEqual(state)
