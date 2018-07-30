@@ -1,5 +1,4 @@
-"""Changed column name from canBook to canBookFreeOffers.
-Added a constraint, cannot book free offers if admin
+"""empty message
 
 Revision ID: 7ce5154d87e2
 Revises: 11d603462200
@@ -18,8 +17,9 @@ depends_on = None
 
 
 def upgrade():
+    op.add_column('user', )
     op.alter_column('user', 'canBook', new_column_name='canBookFreeOffers')
-    op.create_check_constraint(constraint_name='check_admin_cannot_book_free_offers',
+    op.create_check_constraint(name='check_admin_cannot_book_free_offers',
                                table_name='user',
                                condition='("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
                                      + 'OR ("isAdmin" IS FALSE)'
