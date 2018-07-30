@@ -1,11 +1,11 @@
 import {
   closeNotification,
   Icon,
-  Loading,
   Modal,
   requestData,
   resetForm,
   showNotification,
+  Spinner,
   withLogin,
 } from 'pass-culture-shared'
 import classnames from 'classnames'
@@ -161,7 +161,7 @@ class PageWrapper extends Component {
                   </NavLink>
                 )}
                 <div className="main-content">{content}</div>
-                {loading && <Loading />}
+                {loading && <Spinner />}
               </div>
             </div>
           </div>
