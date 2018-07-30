@@ -123,13 +123,12 @@ class TiteLiveOffers(LocalProvider):
         p_info_offer.idAtProviders = self.idAtProviders
         p_info_offer.dateModifiedAtProvider = self.dateModified
 
-        return p_info_offer, p_info_occasion
+        return p_info_occasion, p_info_offer
 
     def updateObject(self, obj):
         assert obj.idAtProviders == self.idAtProviders
         if isinstance(obj, Offer):
-            obj.thing = self.thing
-            obj.venue = self.venue
+            obj.occasion = self.providables[0]
             obj.offererId = self.venue.managingOffererId
             obj.price = self.price
         else:

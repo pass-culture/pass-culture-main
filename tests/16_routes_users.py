@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-from models import PcObject, Thing, Venue, Offer, Recommendation, Deposit, Booking
+from models import PcObject, Thing, Venue, Offer, Recommendation, Deposit, Booking, Occasion
 from pprint import pprint
 
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
-from utils.test_utils import API_URL, req, req_with_auth
+from utils.test_utils import API_URL, req, req_with_auth, create_thing_occasion
 
 BASE_DATA = {
               'email': 'toto@btmx.fr',
@@ -265,7 +265,7 @@ def test_27_pro_signup_with_existing_offerer(app):
     assert user_offerer.rights == RightsType.editor
 
 
-def test_28_user_should_have_its_waller_balance(app):
+def test_28_user_should_have_its_wallet_balance(app):
     # Given
     user = User()
     user.publicName = 'Test'
@@ -298,11 +298,11 @@ def test_28_user_should_have_its_waller_balance(app):
     PcObject.check_and_save(venue)
 
     offer = Offer()
-    offer.thingId = thing.id
     offer.offererId = offerer.id
     offer.price = 5
     offer.venueId = venue.id
     offer.available = 50
+    offer.occasion = create_thing_occasion()
     PcObject.check_and_save(offer)
 
     recommendation = Recommendation()

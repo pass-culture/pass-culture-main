@@ -24,6 +24,7 @@ def send_storage_file(bucketId, objectId):
         return "file not found", 404
     return send_file(open(path, "rb"), mimetype=mimetype)
 
+
 @app.route('/storage/thumb/<collectionName>/<id>/<index>', methods=['POST'])
 def post_storage_file(collectionName, id, index):
     model_name = inflect_engine.singular_noun(collectionName.title(), 1)
@@ -31,7 +32,7 @@ def post_storage_file(collectionName, id, index):
         model = app.model[model_name]
         entity = model.query.filter_by(id=dehumanize(id)).first_or_404()
         if model_name == 'Mediation':
-            offerer = entity.event.occurences[0].offer[0].offerer
+            offerer = entity.occasion.eventOccurences[0].offer[0].offerer
             if offerer not in current_user.offerers:
                 return jsonify({
                     'text': "user is not allowed to add mediation in this offerer"

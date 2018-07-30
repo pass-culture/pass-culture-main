@@ -7,16 +7,14 @@ from sqlalchemy.sql.expression import and_, or_
 from models.api_errors import ApiErrors
 from models.event import Event
 from models.event_occurence import EventOccurence
-from models.mediation import Mediation
+from models.occasion import Occasion
 from models.offer import Offer
-from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
 from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
-from utils.includes import OFFER_INCLUDES
 from utils.rest import delete, \
     ensure_provider_can_update, \
     ensure_current_user_has_rights, \
@@ -37,9 +35,9 @@ search_models = [
 def join_offers(query):
     for search_model in search_models:
         if search_model == Event:
-            query = query.outerjoin(EventOccurence).outerjoin(search_model)
+            query = query.outerjoin(EventOccurence).join(Occasion).outerjoin(search_model)
         else:
-            query = query.outerjoin(search_model)
+            query = query.join(Occasion).outerjoin(search_model)
     return query
 
 
@@ -59,11 +57,6 @@ def make_offer_query():
     query = Offer.query
     # FILTERS
     filters = request.args.copy()
-    # SEARCH
-    if 'search' in filters and filters['search'].strip() != '':
-        ts_queries = get_ts_queries(filters['search'])
-        query = join_offers(query)\
-                    .filter(and_(*map(query_offers, ts_queries)))
     if 'offererId' in filters:
         query = query.filter(Offer.offererId == dehumanize(filters['offererId']))
         check_offerer_user(query.first_or_404().offerer.query)
@@ -79,7 +72,6 @@ def make_offer_query():
 def list_offers():
     return handle_rest_get_list(Offer,
                                 query=make_offer_query(),
-                                include=OFFER_INCLUDES,
                                 paginate=50)
 
 @app.route('/offers/<offer_id>',
@@ -89,19 +81,13 @@ def list_offers():
 def get_offer(offer_id, mediation_id):
     query = make_offer_query().filter_by(id=dehumanize(offer_id))
     if offer_id == '0':
-        if mediation_id is None:
-            return "", 404
-        mediation = Mediation.query.filter_by(thingId=null,
-                                              eventId=null,
-                                              id=mediation_id)\
-                                   .first_or_404()
         offer = {'id': '0',
                  'thing': {'id': '0',
                            'mediations': [mediation]}}
         return jsonify(offer)
     else:
         offer = query.first_or_404()
-        return jsonify(offer._asdict(include=OFFER_INCLUDES))
+        return jsonify(offer._asdict())
 
 
 @app.route('/offers', methods=['POST'])
@@ -111,7 +97,7 @@ def create_offer():
     print('OFFER', request.json)
     new_offer = Offer(from_dict=request.json)
     PcObject.check_and_save(new_offer)
-    return jsonify(new_offer._asdict(include=OFFER_INCLUDES)), 201
+    return jsonify(new_offer._asdict()), 201
 
 
 @app.route('/offers/<offer_id>', methods=['PATCH'])
@@ -142,7 +128,7 @@ def edit_offer(offer_id):
             return jsonify(ae.errors), 400
         else:
             raise ie
-    return jsonify(offer._asdict(include=OFFER_INCLUDES)), 200
+    return jsonify(offer._asdict()), 200
 
 @app.route('/offers/<id>', methods=['DELETE'])
 @login_or_api_key_required

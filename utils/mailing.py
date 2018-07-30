@@ -30,7 +30,7 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
 
     email = make_booking_recap_email(offer, booking, is_cancellation)
 
-    venue = _get_offer_venue(offer)
+    venue = offer.resolvedOccasion.venue
 
     recipients = [venue.bookingEmail, 'passculture@beta.gouv.fr']
 
@@ -81,9 +81,9 @@ def _get_venue_description(venue):
 
 def make_booking_recap_email(offer, booking=None, is_cancellation=False):
     if booking == None:
-        venue = _get_offer_venue(offer)
+        venue = offer.resolvedOccasion.venue
     else:
-        venue = _get_offer_venue(booking.offer)
+        venue = booking.offer.resolvedOccasion.venue
     email_html = '<html><body>'
     email_html += '<p>Cher partenaire Pass Culture,</p>'
 
@@ -142,10 +142,10 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
 def _get_offer_description(offer):
     if offer.eventOccurence:
         date_in_tz = _get_event_datetime(offer)
-        description = '{} le {}'.format(offer.eventOccurence.event.name,
+        description = '{} le {}'.format(offer.eventOccurence.occasion.event.name,
                                         format_datetime(date_in_tz))
-    elif offer.thing:
-        description = str(offer.thing.name)
+    elif offer.resolvedOccasion.thing:
+        description = str(offer.resolvedOccasion.thing.name)
 
     return description
 
@@ -238,7 +238,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
 def _get_event_datetime(offer):
     date_in_utc = offer.eventOccurence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                               offer.eventOccurence.venue.departementCode)
+                                               offer.eventOccurence.occasion.venue.departementCode)
     return date_in_tz
 
 
@@ -280,7 +280,7 @@ def subscribe_newsletter(user):
 def _generate_reservation_email_html_subject(booking):
     offer = booking.offer
     user = booking.user
-    venue = _get_offer_venue(offer)
+    venue = offer.resolvedOccasion.venue
     offer_description = _get_offer_description(offer)
     email_html = '<html><body><p>Cher {},</p>'.format(user.publicName)
     if offer.eventOccurence == None:
@@ -292,7 +292,7 @@ def _generate_reservation_email_html_subject(booking):
     email_html += '<p>Nous vous confirmons votre {} pour {}'.format(confirmation_nature,
                                                                     offer_description)
     if offer.eventOccurence == None:
-        email_html += ' (Ref: {}),'.format(offer.thing.idAtProviders)
+        email_html += ' (Ref: {}),'.format(offer.resolvedOccasion.thing.idAtProviders)
         email_html += ' proposé par {}.'.format(venue.name)
     else:
         email_html += _get_venue_description(venue)
@@ -302,16 +302,16 @@ def _generate_reservation_email_html_subject(booking):
 
 
 def _generate_cancellation_email_html_and_subject(user, offer):
-    venue = _get_offer_venue(offer)
+    venue = offer.resolvedOccasion.venue
     email_html = '<html><body><p>Cher {},</p>'.format(user.publicName)
     if offer.eventOccurence == None:
         confirmation_nature = 'commande'
-        offer_name = offer.thing.name
-        thing_reference = ' (Ref: {})'.format(offer.thing.idAtProviders)
+        offer_name = offer.resolvedOccasion.thing.name
+        thing_reference = ' (Ref: {})'.format(offer.resolvedOccasion.thing.idAtProviders)
 
     else:
         confirmation_nature = 'réservation'
-        offer_name = offer.eventOccurence.event.name
+        offer_name = offer.eventOccurence.occasion.event.name
 
     email_html += '<p>Votre {} pour {}'.format(confirmation_nature,
                                                 offer_name)
@@ -333,16 +333,8 @@ def _generate_cancellation_email_html_and_subject(user, offer):
     return email_html, email_subject
 
 
-
 def _get_event_datetime(offer):
     date_in_utc = offer.eventOccurence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                               offer.eventOccurence.venue.departementCode)
+                                               offer.eventOccurence.occasion.venue.departementCode)
     return date_in_tz
-
-
-def _get_offer_venue(offer):
-    if offer.venue != None:
-        return offer.venue
-    else:
-        return offer.eventOccurence.venue

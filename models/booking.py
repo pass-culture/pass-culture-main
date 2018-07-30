@@ -67,7 +67,7 @@ class Booking(PcObject,
     @property
     def eventOccurenceBeginningDatetime(self):
         offer = self.offer
-        if offer.thingId:
+        if offer.eventOccurence is None:
             return None
         return offer.eventOccurence.beginningDatetime
 

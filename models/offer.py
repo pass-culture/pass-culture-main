@@ -18,6 +18,7 @@ from models.event_occurence import EventOccurence
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
+
 class Offer(PcObject,
             Model,
             DeactivableMixin,
@@ -35,8 +36,8 @@ class Offer(PcObject,
 
     eventOccurenceId = Column(BigInteger,
                               ForeignKey("event_occurence.id"),
-                              CheckConstraint('"eventOccurenceId" IS NOT NULL OR "thingId" IS NOT NULL',
-                                                    name='check_offer_has_event_occurence_or_thing'),
+                              CheckConstraint('"eventOccurenceId" IS NOT NULL OR "occasionId" IS NOT NULL',
+                                                    name='check_offer_has_event_occurence_or_occasion'),
                               index=True,
                               nullable=True)
 
@@ -44,35 +45,14 @@ class Offer(PcObject,
                                   foreign_keys=[eventOccurenceId],
                                   backref='offers')
 
-    thingId = Column(BigInteger,
-                     ForeignKey("thing.id"),
-                     index=True,
-                     nullable=True)
-
-    thing = relationship('Thing',
-                         foreign_keys=[thingId],
-                         backref='offers')
-
-    venueId = Column(BigInteger,
-                     ForeignKey("venue.id"),
-                     CheckConstraint('("venueId" IS NOT NULL AND "eventOccurenceId" IS NULL)'
-                                           + 'OR ("venueId" IS NULL AND "eventOccurenceId" IS NOT NULL)',
-                                           name='check_offer_has_venue_xor_event_occurence'),
+    occasionId = Column(BigInteger,
+                        ForeignKey('occasion.id'),
                         index=True,
                         nullable=True)
 
-    venue = relationship('Venue',
-                         foreign_keys=[venueId],
-                         backref='offers')
-
-    offererId = Column(BigInteger,
-                       ForeignKey("offerer.id"),
-                       index=True,
-                       nullable=False)
-
-    offerer = relationship('Offerer',
-                           foreign_keys=[offererId],
-                           backref='offers')
+    occasion = relationship('Occasion',
+                            foreign_keys=[occasionId],
+                            backref='offers')
 
     price = Column(Numeric(10, 2),
                    nullable=False)
@@ -96,9 +76,9 @@ class Offer(PcObject,
     bookingRecapSent = Column(DateTime,
                               nullable=True)
 
-    @hybrid_property
-    def object(self):
-        return self.thing or self.eventOccurence
+    @property
+    def resolvedOccasion(self):
+        return self.occasion or self.eventOccurence.occasion
 
 
 @event.listens_for(Offer, 'before_insert')

@@ -77,71 +77,23 @@ OCCASION_INCLUDES = [
     }
 ]
 
-OFFER_INCLUDES = [
-    {
-        "key": "eventOccurence",
-        "sub_joins": [
-            {
-                "key": "event",
-                "sub_joins": ['mediations']
-            },
-            "venue"
-        ]
-    },
-    "occurencesAtVenue",
-    {
-        "key": "offerer",
-        #"sub_joins": OFFERER_INCLUDES
-    },
-    {
-        "key": "thing",
-        "sub_joins": [
-            "mediations",
-            "venue"
-        ]
-    },
-    {
-        "key": "recommendationOffers",
-        "sub_joins": [
-            {
-                "key": "mediation"
-            }
-        ]
-    }
-]
 
 RECOMMENDATION_INCLUDES = [
+    "mediation",
     {
-        "key": "mediatedOccurences",
+        "key": "occasion",
         "sub_joins": [
+            "eventOrThing",
+            "mediation",
             {
-                "key": "offer",
-                "sub_joins": [
-                    {
-                        "key": "eventOccurence",
-                        "sub_joins": ["event", "venue"],
-                    },
-                    "thing",
-                    "venue"
-                ]
-            }
+                "key": "offers",
+                "sub_joins": ["eventOccurence"]
+            },
+            "venue",
         ]
     },
-    {
-        "key": "mediation",
-        "sub_joins": [
-            "event",
-            "thing"
-        ]
-    }
 ]
 
-RECOMMENDATION_OFFER_INCLUDES =  [
-    {
-        "key": "eventOccurence",
-        "sub_joins": ["event", "venue"]
-    }
-]
 
 BOOKING_INCLUDES = [
     {

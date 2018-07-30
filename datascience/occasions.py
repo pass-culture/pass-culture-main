@@ -1,52 +1,49 @@
 """ recommendations offers """
 from datetime import datetime
 from flask import current_app as app
-from itertools import cycle, islice
+from itertools import cycle
 from random import randint
-from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
-from models.booking import Booking
-from models.event import Event
-from models.event_occurence import EventOccurence
-from models.mediation import Mediation
-from models.offer import Offer
-from models.offerer import Offerer
-from models.recommendation import Recommendation
-from models.thing import Thing
-from models.venue import Venue
+from repository.occasion_queries import get_occasions_by_type
+from models import Event, EventOccurence, Occasion, Thing
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.logger import logger
 
-# --- SCORING ---
+
+roundrobin_predicates = [
+                          lambda occasion: occasion.thingId,
+                          lambda occasion: occasion.eventId
+                        ]
 
 
-def roundrobin(*iterables):
-    "roundrobin('ABC', 'D', 'EF') --> A D E B F C"
-    # Recipe credited to George Sakkis
-    pending = len(iterables)
-    nexts = cycle(iter(it).__next__ for it in iterables)
-    while pending:
-        try:
-            for next in nexts:
-                yield next()
-        except StopIteration:
-            pending -= 1
-            nexts = cycle(islice(nexts, pending))
+def roundrobin(occasions, limit):
+    result = []
+    for predicate in cycle(roundrobin_predicates):
+        if (len(result) == limit)\
+           or (len(occasions) == 0):
+            return result
+        for index, occasion in enumerate(occasions):
+            if predicate(occasion):
+                result.append(occasion)
+                occasions.pop(index)
+                break
+    return result
 
 
 def make_score_tuples(occasions, departement_codes):
     if len(occasions) == 0:
         return []
-    scored_occasions = list(map(lambda e: (e, score_occasion(e, departement_codes)),
+    scored_occasions = list(map(lambda o: (o, score_occasion(o, departement_codes)),
                                 occasions))
-    logger.debug(lambda: '(reco) scored occasions'+str([(se[0], se[1]) for se in scored_occasions]))
+    logger.debug(lambda: '(reco) scored occasions' + str([(so[0], so[1]) for so in scored_occasions]))
     return scored_occasions
 
 
-def sort_by_score(score_tuples):
+def sort_by_score(occasions, departement_codes):
+    occasion_tuples = make_score_tuples(occasions, departement_codes)
     return list(map(lambda st: st[0],
-                    sorted(filter(lambda st: st[1] is not None, score_tuples),
+                    sorted(filter(lambda st: st[1] is not None, occasion_tuples),
                            key=lambda st: st[1],
                            reverse=True)))
 
@@ -56,7 +53,7 @@ def score_occasion(occasion, departement_codes):
 
     if len(occasion.mediations) > 0:
         common_score += 20
-    elif occasion.thumbCount == 0:
+    elif occasion.eventOrThing.thumbCount == 0:
         # we don't want to recommend occasions that have neither their own
         # image nor a mediation
         return None
@@ -75,8 +72,11 @@ def score_occasion(occasion, departement_codes):
 def specific_score_event(event, departement_codes):
     score = 0
 
-    next_occurence = EventOccurence.query.filter((EventOccurence.event == event) &
-                                                 (EventOccurence.beginningDatetime > datetime.utcnow())).first()
+    next_occurence = EventOccurence.query \
+        .join(aliased(Occasion)) \
+        .filter((Occasion.event == event) & (EventOccurence.beginningDatetime > datetime.utcnow())) \
+        .first()
+
     if next_occurence is None:
         return None
 
@@ -92,88 +92,19 @@ def specific_score_thing(thing, departement_codes):
     return score
 
 
-# --- FILTERING ---
-
-def aliased_join_table(occasion_type):
-    if occasion_type == Event:
-        return aliased(EventOccurence)
-    else:
-        return aliased(Offer)
-
-
-def departement_or_national_occasions(query, occasion_type, departement_codes):
-    join_table = aliased_join_table(occasion_type)
-    condition = Venue.departementCode.in_(departement_codes)
-    if occasion_type == Event:
-        condition = (condition | (Event.isNational == True))
-    query = query.join(join_table)\
-                 .join(Venue)\
-                 .filter(condition)\
-                 .distinct(occasion_type.id)
-    logger.debug(lambda: '(reco) departement '+str(occasion_type)+'.count '+str(query.count()))
-    return query
-
-
-def bookable_occasions(query, occasion_type):
-    # remove events for which all occurences are in the past
-    # (crude filter to limit joins before the more complete one below)
-    if occasion_type == Event:
-        query = query.filter(Event.occurences.any(EventOccurence.beginningDatetime > datetime.utcnow()))
-        logger.debug(lambda: '(reco) future events.count '+str(query.count()))
-        join_table = aliased_join_table(occasion_type)
-        query = query.join(join_table)
-
-    bo_Offer = aliased(Offer)
-    query = query.join(bo_Offer)\
-                 .filter((bo_Offer.isActive == True)
-                         & ((bo_Offer.bookingLimitDatetime == None)
-                            | (bo_Offer.bookingLimitDatetime > datetime.utcnow()))
-                         & ((bo_Offer.available == None) |
-                            (bo_Offer.available > Booking.query.filter(Booking.offerId == bo_Offer.id)
-                                                         .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))\
-                 .distinct(occasion_type.id)
-    logger.debug(lambda: '(reco) bookable '+str(occasion_type)+'.count '+str(query.count()))
-    return query
-
-
-def with_active_and_validated_offerer(query, occasion_type):
-    query = query.join(Offerer)\
-                 .filter((Offerer.isActive == True)
-                         & (Offerer.validationToken == None))
-    logger.debug(lambda: '(reco) from active and validated offerer '+str(occasion_type)+'.count'+str(query.count()))
-    return query
-
-
-def not_currently_recommended_occasions(query, occasion_type, user):
-    query = query.filter(~ ((occasion_type.recommendations.any((Recommendation.userId == user.id)
-                                                               & (Recommendation.validUntilDate > datetime.utcnow())))
-                            | (occasion_type.mediations.any(Mediation.recommendations.any((Recommendation.userId == user.id)
-                                                                                          & (Recommendation.validUntilDate > datetime.utcnow()))))))
-    logger.debug(lambda: '(reco) not already used '+str(occasion_type)+'occasions.count '+str(query.count()))
-    return query
-
-
-# --- MAIN ---
-
-def get_occasions_by_type(occasion_type,
-                          limit=3,
-                          user=None,
-                          coords=None,
-                          departement_codes=None,
-                          occasion_id=None):
-    query = occasion_type.query
-    if occasion_id is not None:
-        query = query.filter_by(id=occasion_id)
-    logger.debug(lambda: '(reco) all '+str(occasion_type)+'.count '+str(query.count()))
-
-    query = departement_or_national_occasions(query, occasion_type, departement_codes)
-    query = bookable_occasions(query, occasion_type)
-    query = with_active_and_validated_offerer(query, occasion_type)
-    query = not_currently_recommended_occasions(query, occasion_type, user)
-
-    occasions = sort_by_score(make_score_tuples(query.all(),
-                                                departement_codes))
-    return occasions[:limit]
+def remove_duplicate_things_or_events(occasions):
+    seen_thing_ids = {}
+    seen_event_ids = {}
+    result = []
+    for occasion in occasions:
+        if occasion.thingId not in seen_thing_ids\
+           and occasion.eventId not in seen_event_ids:
+            if occasion.thingId:
+                seen_thing_ids[occasion.thingId] = True
+            else:
+                seen_event_ids[occasion.eventId] = True
+            result.append(occasion)
+    return result
 
 
 def get_occasions(limit=3, user=None, coords=None):
@@ -184,17 +115,19 @@ def get_occasions(limit=3, user=None, coords=None):
                           if user.departementCode == '93'\
                           else [user.departementCode]
 
-    events = get_occasions_by_type(Event,
-                                   limit=limit,
-                                   user=user,
-                                   coords=coords,
-                                   departement_codes=departement_codes)
-    things = get_occasions_by_type(Thing,
-                                   limit=limit,
-                                   user=user,
-                                   coords=coords,
-                                   departement_codes=departement_codes)
+    event_occasions = get_occasions_by_type(Event,
+                                            user=user,
+                                            coords=coords,
+                                            departement_codes=departement_codes)
+    thing_occasions = get_occasions_by_type(Thing,
+                                            user=user,
+                                            coords=coords,
+                                            departement_codes=departement_codes)
+    occasions = sort_by_score(event_occasions + thing_occasions,
+                              departement_codes)
+    occasions = remove_duplicate_things_or_events(occasions)
 
-    logger.info('(reco) final occasions (events + things) count (%i + %i)',
-             len(events), len(things))
-    return list(roundrobin(events, things))[:limit]
+    logger.info('(reco) final occasions (events + things) count (%i)',
+                len(occasions))
+
+    return roundrobin(occasions, limit)

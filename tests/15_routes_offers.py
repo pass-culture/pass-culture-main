@@ -31,9 +31,7 @@ def test_11_modify_offer():
 
 def test_12_create_offer():
     offer_data = {'price': 1222,
-                  'offererId': humanize(3),
-                  'venueId': humanize(3),
-                  'thingId': humanize(1)
+                  'occasionId': humanize(1)
                  }
     r_create = req_with_auth().post(API_URL + '/offers/',
                                   json=offer_data)
@@ -47,18 +45,9 @@ def test_12_create_offer():
     #TODO: check thumb presence
 
 
-def test_13_search_offers_by_author():
-    r = req_with_auth().get(API_URL + '/offers?search=Jules')
-    assert r.status_code == 200
-    offers = r.json()
-    assert len(offers) > 0
-
-
-def test_14_update_offer_available_should_check_bookings(app):
+def test_13_update_offer_available_should_check_bookings(app):
     offer = Offer()
-    offer.venueId = 1
-    offer.offererId = 1
-    offer.thingId = 1
+    offer.occasionId = 1
     offer.price = 0
     offer.available = 1
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
@@ -80,13 +69,13 @@ def test_14_update_offer_available_should_check_bookings(app):
     assert 'available' in r_update.json()
 
 
-def test_15_should_not_create_offer_if_event_occurence_before_booking_limit_datetime(app):
+def test_14_should_not_create_offer_if_event_occurence_before_booking_limit_datetime(app):
     #Given
     from models.pc_object import serialize
     event_occurence = EventOccurence()
     event_occurence.beginningDatetime = datetime.utcnow() + timedelta(days=10)
     event_occurence.endDatetime = event_occurence.beginningDatetime + timedelta(days=1)
-    event_occurence.eventId = 1
+    event_occurence.occasionId = 1
     event_occurence.accessibility = bytes([0])
     PcObject.check_and_save(event_occurence)
 
@@ -94,8 +83,7 @@ def test_15_should_not_create_offer_if_event_occurence_before_booking_limit_date
 
     offer = Offer()
     offer.eventOccurence = event_occurence
-    offer.offererId = 11
-    offer.thingId = 11
+    offer.occasionId = 11
     offer.eventOccurenceId = event_occurence_id
     offer.price = 0
     offer.available = 5

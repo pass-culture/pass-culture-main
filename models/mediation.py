@@ -42,31 +42,14 @@ class Mediation(PcObject,
                           foreign_keys=[authorId],
                           backref='mediations')
 
-    offererId = Column(BigInteger,
-                       ForeignKey("offerer.id"),
-                       nullable=True)
+    occasionId = Column(BigInteger,
+                        ForeignKey('occasion.id'),
+                        index=True,
+                        nullable=True)
 
-    offerer = relationship('Offerer',
-                           foreign_keys=[offererId],
-                           backref='mediations')
-
-    eventId = Column(BigInteger,
-                     ForeignKey("event.id"),
-                     index=True,
-                     nullable=True)
-
-    event = relationship('Event',
-                         foreign_keys=[eventId],
-                         backref='mediations')
-
-    thingId = Column(BigInteger,
-                     ForeignKey("thing.id"),
-                     index=True,
-                     nullable=True)
-
-    thing = relationship('Thing',
-                         foreign_keys=[thingId],
-                         backref='mediations')
+    occasion = relationship('Occasion',
+                            foreign_keys=[occasionId],
+                            backref='mediations')
 
     tutoIndex = Column(Integer,
                        nullable=True,
@@ -75,12 +58,12 @@ class Mediation(PcObject,
 
 Mediation.__table_args__ = (
     CheckConstraint('"thumbCount" <= 2',
-                       name='check_mediation_has_max_2_thumbs'),
+                    name='check_mediation_has_max_2_thumbs'),
     CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
-                       name='check_mediation_has_thumb_or_text'),
-    CheckConstraint('"eventId" IS NOT NULL OR thingId IS NOT NULL'
-                       + ' OR tutoIndex IS NOT NULL',
-                       name='check_mediation_has_event_or_thing_or_tutoIndex'),
+                    name='check_mediation_has_thumb_or_text'),
+    CheckConstraint('("occasionId" IS NOT NULL AND "tutoIndex" IS NULL)'
+                    + ' OR ("occasionId" IS NULL AND "tutoIndex" IS NOT NULL)',
+                    name='check_mediation_has_occasion_xor_tutoIndex'),
 )
 
 

@@ -1,17 +1,9 @@
 """ recommendations """
 from datetime import datetime, timedelta
-from sqlalchemy import desc
 from sqlalchemy.sql.expression import func
 
 from datascience.occasions import get_occasions, get_occasions_by_type
-from models import Event
-from models.db import db
-from models.event_occurence import EventOccurence
-from models.mediation import Mediation
-from models.offer import Offer
-from models.pc_object import PcObject
-from models.recommendation import Recommendation
-from models.thing import Thing
+from models import Mediation, PcObject, Recommendation
 
 __all__ = (
             'get_occasions',
@@ -20,48 +12,29 @@ __all__ = (
 
 
 def create_recommendation(user, occasion, mediation=None):
-
-    if occasion is None:
-        return None
-
     recommendation = Recommendation()
     recommendation.user = user
+    recommendation.occasion = occasion
 
     if mediation:
         recommendation.mediation = mediation
     else:
-        if isinstance(occasion, Thing):
-            query = Mediation.query.filter_by(thing=occasion)
-        else:
-            query = Mediation.query.filter_by(event=occasion)
-        with db.session.no_autoflush:
-            random_mediation = query.order_by(func.random())\
-                                    .first()
-        if random_mediation:
-            recommendation.mediation = random_mediation
-
-    if isinstance(occasion, Thing):
-        recommendation.thing = occasion
-    if isinstance(occasion, Event):
-        recommendation.event = occasion
-
-    if isinstance(occasion, Thing):
-        last_offer = Offer.query.filter(Offer.thing == occasion)\
-                                .order_by(desc(Offer.bookingLimitDatetime))\
-                                .first()
-    else:
-        last_offer = Offer.query.join(EventOccurence)\
-                                .filter(EventOccurence.eventId == occasion.id)\
-                                .order_by(desc(Offer.bookingLimitDatetime))\
-                                .first()
+        mediation = Mediation.query\
+            .filter(Mediation.occasion == occasion)\
+            .order_by(func.random())\
+            .first()
+        recommendation.mediation = mediation
 
     if recommendation.mediation:
         recommendation.validUntilDate = datetime.utcnow() + timedelta(days=3)
     else:
         recommendation.validUntilDate = datetime.utcnow() + timedelta(days=1)
-    if last_offer.bookingLimitDatetime:
-        recommendation.validUntilDate = min(recommendation.validUntilDate,
-                                            last_offer.bookingLimitDatetime - timedelta(minutes=1))
+
+    if occasion.lastOffer.bookingLimitDatetime:
+        recommendation.validUntilDate = min(
+            recommendation.validUntilDate,
+            occasion.lastOffer.bookingLimitDatetime - timedelta(minutes=1)
+        )
 
     PcObject.check_and_save(recommendation)
     return recommendation
@@ -69,8 +42,8 @@ def create_recommendation(user, occasion, mediation=None):
 
 def create_recommendations(limit=3, user=None, coords=None):
     if user and user.is_authenticated:
-        recommendation_count = Recommendation.query.filter_by(user=user)\
-                                .count()
+        recommendation_count = Recommendation.query.filter_by(user=user) \
+            .count()
 
     recommendations = []
     tuto_mediations = {}
@@ -81,8 +54,8 @@ def create_recommendations(limit=3, user=None, coords=None):
     inserted_tuto_mediations = 0
     for (index, occasion) in enumerate(get_occasions(limit, user=user, coords=coords)):
 
-        while recommendation_count + index + inserted_tuto_mediations\
-              in tuto_mediations:
+        while recommendation_count + index + inserted_tuto_mediations \
+                in tuto_mediations:
             insert_tuto_mediation(user,
                                   tuto_mediations[recommendation_count + index
                                                   + inserted_tuto_mediations])

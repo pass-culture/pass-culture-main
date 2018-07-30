@@ -1,14 +1,17 @@
 import json
+import random
+import string
 from datetime import datetime, timedelta, timezone
 from os import path
 from pathlib import Path
 
 import requests as req
 
-from models import Thing
+from models import Thing, Deposit
 from models.booking import Booking
 from models.event import Event
 from models.event_occurence import EventOccurence
+from models.occasion import Occasion
 from models.offer import Offer
 from models.offerer import Offerer
 from models.user import User
@@ -51,36 +54,44 @@ def create_user_for_booking_email_test():
     return user
 
 
-def create_event_offer_for_booking_email_test():
+def create_offer_with_event_occasion(price=10):
     offer = Offer()
+    offer.price = price
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     offer.eventOccurence = EventOccurence()
     offer.eventOccurence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-    offer.eventOccurence.event = Event()
-    offer.eventOccurence.event.name = 'Mains, sorts et papiers'
-    offer.eventOccurence.venue = _create_venue_for_booking_email_test()
-    offer.thing = None
+    offer.eventOccurence.occasion = Occasion()
+    offer.eventOccurence.occasion.event = Event()
+    offer.eventOccurence.occasion.event.name = 'Mains, sorts et papiers'
+    offer.eventOccurence.occasion.venue = _create_venue_for_booking_email_test()
     offer.isActive = True
 
     return offer
 
 
-def create_thing_offer_for_booking_email_test():
+def create_offer_with_thing_occasion(price=10):
     offer = Offer()
-    offer.eventOccurence = None
-    offer.thing = Thing()
-    offer.thing.type = 'Book'
-    offer.thing.name = 'Test Book'
-    offer.thing.mediaUrls = 'test/urls'
-    offer.thing.idAtProviders = '12345'
+    offer.price = price
+    offer.occasion = create_thing_occasion()
+    offer.occasion.venue = _create_venue_for_booking_email_test()
     offer.isActive = True
-    offer.venue = _create_venue_for_booking_email_test()
     return offer
 
 
-def create_offerer_for_booking_email_test():
+def create_thing_occasion():
+    occasion = Occasion()
+    occasion.thing = Thing()
+    occasion.thing.type = 'Book'
+    occasion.thing.name = 'Test Book'
+    occasion.thing.mediaUrls = 'test/urls'
+    occasion.thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
+    occasion.thing.extraData = {'author': 'Test Author'}
+    return occasion
+
+
+def create_offerer():
     offerer = Offerer()
-    offerer.isActive = 't'
+    offerer.isActive = True
     offerer.address = '123 rue test'
     offerer.postalCode = '93000'
     offerer.city = 'Test city'
@@ -90,9 +101,19 @@ def create_offerer_for_booking_email_test():
 
 def _create_venue_for_booking_email_test():
     venue = Venue()
+    venue.bookingEmail = 'reservations@test.fr'
     venue.address = '123 rue test'
     venue.postalCode = '93000'
     venue.city = 'Test city'
     venue.name = 'Test offerer'
     venue.departementCode = '93'
+    venue.managingOfferer = create_offerer()
     return venue
+
+
+def create_deposit(user, amount=50):
+    deposit = Deposit()
+    deposit.user = user
+    deposit.source = "Test money"
+    deposit.amount = amount
+    return deposit

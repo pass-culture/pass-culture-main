@@ -14,6 +14,7 @@ from utils.includes import BOOKING_INCLUDES
 from utils.mailing import send_booking_recap_emails, send_booking_confirmation_email_to_user
 from utils.rest import expect_json_data
 from utils.token import random_token
+from utils.logger import logger
 
 
 @app.route('/bookings', methods=['GET'])
@@ -28,6 +29,7 @@ def get_bookings():
 def get_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
+
 
 @app.route('/bookings', methods=['POST'])
 @login_required
@@ -49,11 +51,10 @@ def post_booking():
         ae.addError('offerId', 'offerId ne correspond à aucune offer')
         return jsonify(ae.errors), 400
 
+    managingOfferer = offer.resolvedOccasion.venue.managingOfferer
     if not offer.isActive or\
-       not offer.offerer.isActive or\
-       (offer.thing and not offer.thing.isActive) or\
-       (offer.eventOccurence and (not offer.eventOccurence.isActive or
-                                  not offer.eventOccurence.event.isActive)):
+       not managingOfferer.isActive or\
+       (offer.eventOccurence and (not offer.eventOccurence.isActive)):
         ae.addError('offerId', "Cette offre a été retirée. Elle n'est plus valable.")
         return jsonify(ae.errors), 400
 
