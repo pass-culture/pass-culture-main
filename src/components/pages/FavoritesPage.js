@@ -5,18 +5,14 @@ import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import withLogin from '../hocs/withLogin'
 
 class FavoritesPage extends Component {
   render() {
     const { favorites } = this.props
     return (
-      <PageWrapper
-        name="favorites"
-        redBg
-        menuButton={{ borderTop: true }}
-        backButton>
+      <Main name="favorites" redBg menuButton={{ borderTop: true }} backButton>
         <header>
           <h1>Mes favoris</h1>
         </header>
@@ -39,7 +35,7 @@ class FavoritesPage extends Component {
             </p>
           </div>
         )}
-      </PageWrapper>
+      </Main>
     )
   }
 }

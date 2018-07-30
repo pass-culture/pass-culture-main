@@ -5,7 +5,7 @@ import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import withLogin from '../hocs/withLogin'
 import selectBookingsByTime from '../../selectors/bookingsByTime'
 import { IS_DEXIE } from '../../utils/config'
@@ -22,11 +22,7 @@ class BookingsPage extends Component {
   render() {
     const { soonBookings, otherBookings } = this.props.bookingsByTime
     return (
-      <PageWrapper
-        name="bookings"
-        redBg
-        menuButton={{ borderTop: true }}
-        backButton>
+      <Main name="bookings" redBg menuButton={{ borderTop: true }} backButton>
         <header>
           <h1>Mes réservations</h1>
         </header>
@@ -61,7 +57,7 @@ class BookingsPage extends Component {
               </p>
             </div>
           )}
-      </PageWrapper>
+      </Main>
     )
   }
 }

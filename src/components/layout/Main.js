@@ -5,7 +5,7 @@ import React from 'react'
 import BackButton from './BackButton'
 import MenuButton from './MenuButton'
 
-const PageWrapper = props => {
+const Main = props => {
   const {
     Tag,
     name,
@@ -39,8 +39,8 @@ const PageWrapper = props => {
   )
 }
 
-PageWrapper.defaultProps = {
+Main.defaultProps = {
   Tag: 'main',
 }
 
-export default PageWrapper
+export default Main

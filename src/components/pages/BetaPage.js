@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import Icon from '../layout/Icon'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import withLogin from '../hocs/withLogin'
 import { closeSplash } from '../../reducers/splash'
 
@@ -16,7 +16,7 @@ class BetaPage extends Component {
 
   render() {
     return (
-      <PageWrapper name="beta" redBg>
+      <Main name="beta" redBg>
         <h1>
           <strong>Bienvenue dans la version beta</strong>
           <span>du Pass Culture</span>
@@ -30,7 +30,7 @@ class BetaPage extends Component {
             <Icon svg="ico-next" alt="Suivant" />
           </Link>
         </footer>
-      </PageWrapper>
+      </Main>
     )
   }
 }

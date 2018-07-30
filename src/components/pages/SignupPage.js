@@ -1,85 +1,98 @@
 import get from 'lodash.get'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
-import React from 'react'
+import React, { Component } from 'react'
+import { Portal } from 'react-portal'
 import { NavLink } from 'react-router-dom'
 
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 
-const SignupPage = () => {
-  return (
-    <PageWrapper name="sign-up" Tag="form">
-      <div className="section">
-        <h2 className="subtitle is-italic">
-          Une minute pour créer un compte, et puis c'est tout !
-        </h2>
+class SignupPage extends Component {
+  constructor() {
+    super()
+    this.state = { $footer: null }
+  }
 
-        <br />
-        <Form
-          name="user"
-          action="/users/signup"
-          layout="vertical"
-          handleSuccessNotification={null}
-          handleSuccessRedirect={() => '/decouverte'}>
-          <Field
-            autoComplete="name"
-            label="Identifiant"
-            name="publicName"
-            placeholder="Mon nom ou pseudo"
-            required
-            sublabel="que verront les autres utilisateurs"
-            type="text"
-          />
-          <Field
-            autoComplete="email"
-            label="Adresse e-mail"
-            name="email"
-            placeholder="nom@exemple.fr"
-            required
-            sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
-            type="email"
-          />
-          <Field
-            autoComplete="new-password"
-            label="Mot de passe"
-            name="password"
-            placeholder="Mon mot de passe"
-            required
-            sublabel="pour se connecter"
-            type="password"
-          />
+  componentDidMount() {
+    console.log('this.$footer ', this.$footer)
+    this.setState({ $footer: this.$footer })
+  }
+
+  render() {
+    return (
+      <Main name="sign-up">
+        <div className="section">
+          <h2 className="subtitle is-italic">
+            Une minute pour créer un compte, et puis c'est tout !
+          </h2>
+
           <br />
-          <Field
-            label={
-              <span className="subtitle">
-                {' '}
-                J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
-                <a
-                  href="http://passculture.beta.gouv.fr"
-                  style={{ textDecoration: 'underline' }}>
-                  Pass Culture
-                </a>
-                .
-              </span>
-            }
-            name="contact_ok"
-            required
-            type="checkbox"
-          />
-        </Form>
-      </div>
+          <Form
+            name="user"
+            action="/users/signup"
+            layout="vertical"
+            handleSuccessNotification={null}
+            handleSuccessRedirect={() => '/decouverte'}>
+            <Field
+              autoComplete="name"
+              label="Identifiant"
+              name="publicName"
+              placeholder="Mon nom ou pseudo"
+              required
+              sublabel="que verront les autres utilisateurs"
+              type="text"
+            />
+            <Field
+              autoComplete="email"
+              label="Adresse e-mail"
+              name="email"
+              placeholder="nom@exemple.fr"
+              required
+              sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
+              type="email"
+            />
+            <Field
+              autoComplete="new-password"
+              label="Mot de passe"
+              name="password"
+              placeholder="Mon mot de passe"
+              required
+              sublabel="pour se connecter"
+              type="password"
+            />
+            <br />
+            <Field
+              label={
+                <span className="subtitle">
+                  {' '}
+                  J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
+                  <a
+                    href="http://passculture.beta.gouv.fr"
+                    style={{ textDecoration: 'underline' }}>
+                    Pass Culture
+                  </a>
+                  .
+                </span>
+              }
+              name="contact_ok"
+              required
+              type="checkbox"
+            />
 
-      <footer>
-        <SubmitButton
-          action="/users/signup"
-          className="button is-primary is-inverted">
-          Créer
-        </SubmitButton>
-        <NavLink to="/connexion" className="button is-secondary">
-          J'ai déjà un compte
-        </NavLink>
-      </footer>
-    </PageWrapper>
-  )
+            <Portal node={this.state.$footer}>
+              <SubmitButton className="button is-primary is-inverted">
+                Créer
+              </SubmitButton>
+              <NavLink to="/connexion" className="button is-secondary">
+                J'ai déjà un compte
+              </NavLink>
+            </Portal>
+          </Form>
+        </div>
+
+        <footer ref={_e => (this.$footer = _e)} />
+      </Main>
+    )
+  }
 }
 
 export default SignupPage

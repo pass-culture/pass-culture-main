@@ -5,7 +5,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import Deck from '../Deck'
-import PageWrapper from '../layout/PageWrapper'
+import Main from '../layout/Main'
 import withLogin from '../hocs/withLogin'
 import selectCurrentEventOrThingId from '../../selectors/currentEventOrThingId'
 import selectCurrentRecommendation from '../../selectors/currentRecommendation'
@@ -75,13 +75,13 @@ class DiscoveryPage extends Component {
 
   render() {
     return (
-      <PageWrapper
+      <Main
         name="discovery"
         noPadding
         menuButton={{ borderTop: true }}
         backButton={this.props.backButton ? { className: 'discovery' } : null}>
         <Deck />
-      </PageWrapper>
+      </Main>
     )
   }
 }
