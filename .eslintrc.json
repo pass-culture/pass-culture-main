@@ -1,9 +1,14 @@
 {
-  "extends": "react-app",
-  "plugins": ["prettier"],
+  "extends": ["airbnb", "prettier"],
+  "env": {
+    "jest": true,
+    "node": true,
+    "mocha": true,
+    "browser": true,
+    "jasmine": true
+  },
   "rules": {
-    "no-else-return": [2, {
-      "allowElseIf": false
-    }]
+    "react/forbid-prop-types": [2, { "forbid": ["any"] }],
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }]
   }
 }

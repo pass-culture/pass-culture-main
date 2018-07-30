@@ -22,13 +22,7 @@
     "dexie": "^2.0.3",
     "dotenv": "4.0.0",
     "es5-shim": "^4.5.10",
-    "eslint": "4.10.0",
-    "eslint-config-react-app": "^2.0.1",
-    "eslint-loader": "1.9.0",
-    "eslint-plugin-flowtype": "2.39.1",
-    "eslint-plugin-import": "2.8.0",
-    "eslint-plugin-jsx-a11y": "5.1.1",
-    "eslint-plugin-react": "7.4.0",
+    "eslint-config-prettier": "^2.9.0",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.5",
     "fs-extra": "3.0.1",
@@ -49,8 +43,9 @@
     "phonegap-build-api": "^0.4.0",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
+    "prettier": "^1.14.0",
     "promise": "8.0.1",
-    "prop-types": "^15.6.0",
+    "prop-types": "^15.6.2",
     "query-string": "5",
     "raf": "3.4.0",
     "raven-js": "^3.26.3",
@@ -86,11 +81,14 @@
   "devDependencies": {
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "17.0.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.9.1",
     "husky": "^0.14.3",
     "jest": "20.0.4",
-    "lint-staged": "^7.0.4",
-    "prettier": "1.12.1",
-    "prettier-eslint": "^8.8.2",
+    "pretty-quick": "^1.6.0",
     "testcafe": "^0.20.4"
   },
   "scripts": {
@@ -103,11 +101,15 @@
     "start": "node scripts/start.js",
     "test": "node scripts/jesttest.js --env=jsdom",
     "testcafe": "testcafe 'chrome:headless' testcafe",
-    "precommit": "pretty-quick --staged"
+    "precommit": "./scripts/precommit.sh"
   },
   "jest": {
-    "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
-    "setupFiles": ["<rootDir>/config/polyfills.js"],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,mjs}"
+    ],
+    "setupFiles": [
+      "<rootDir>/config/polyfills.js"
+    ],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
       "<rootDir>/testcafe/**/*.{js,jsx,mjs}",
@@ -118,10 +120,11 @@
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
       "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|css|json)$)":
-        "<rootDir>/config/jest/fileTransform.js"
+      "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
     },
-    "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"],
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
+    ],
     "moduleNameMapper": {
       "^react-native$": "react-native-web"
     },
@@ -136,8 +139,12 @@
     ]
   },
   "babel": {
-    "plugins": ["react-hot-loader/babel"],
-    "presets": ["react-app"]
+    "plugins": [
+      "react-hot-loader/babel"
+    ],
+    "presets": [
+      "react-app"
+    ]
   },
   "homepage": "."
 }
