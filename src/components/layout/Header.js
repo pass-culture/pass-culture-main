@@ -97,7 +97,7 @@ class Header extends Component {
                       <span>Comptabilité</span>
                     </NavLink>
                   )}
-                  <SignoutButton tagName="a" className="navbar-item">
+                  <SignoutButton Tag="a" className="navbar-item">
                     <span className="icon">
                       <Icon svg={'ico-deconnect'} />
                     </span>

@@ -23,10 +23,10 @@ class SignoutButton extends Component {
   }
 
   render() {
-    const Tag = this.props.Tag
+    const { children, className, Tag } = this.props
     return (
-      <Tag onClick={this.onSignoutClick} className={this.props.className}>
-        {this.props.children}
+      <Tag onClick={this.onSignoutClick} className={className}>
+        {children}
       </Tag>
     )
   }
