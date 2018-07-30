@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 
-from models import User, Offerer, Thing, Recommendation, Offer, PcObject, Deposit, Venue
+from models import User, Offerer, Thing, Recommendation, Offer, PcObject, Deposit, Venue, Occasion
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth
+from utils.test_utils import API_URL, req_with_auth, create_offer_with_thing_occasion, \
+    create_offerer
 
 
 def test_10_create_booking():
@@ -63,22 +64,22 @@ def test_12_create_booking_should_work_before_limit_date(app):
 
 
 def test_13_create_booking_should_not_work_if_too_many_bookings(app):
-    too_many_bookings_offer = Offer()
-    too_many_bookings_offer.venueId = 1
-    too_many_bookings_offer.occasionId = 1
-    too_many_bookings_offer.price = 0
+    too_many_bookings_offer = create_offer_with_thing_occasion()
     too_many_bookings_offer.available = 0
-    too_many_bookings_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     PcObject.check_and_save(too_many_bookings_offer)
+
+    recommendation = Recommendation()
+    recommendation.user = User.query.filter_by(email='pctest.jeune.93@btmx.fr').first()
+    recommendation.occasion = too_many_bookings_offer.occasion
+    PcObject.check_and_save(recommendation)
 
     booking_json = {
         'offerId': humanize(too_many_bookings_offer.id),
-        'recommendationId': humanize(1)
+        'recommendationId': humanize(recommendation.id)
     }
 
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
     assert r_create.status_code == 400
-    print(r_create.json())
     assert 'global' in r_create.json()
     assert 'quantité disponible' in r_create.json()['global'][0]
 

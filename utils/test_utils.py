@@ -52,8 +52,9 @@ def create_user_for_booking_email_test():
     return user
 
 
-def create_event_offer_for_booking_email_test():
+def create_offer_with_event_occasion(price=10):
     offer = Offer()
+    offer.price = price
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     offer.eventOccurence = EventOccurence()
     offer.eventOccurence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -66,8 +67,9 @@ def create_event_offer_for_booking_email_test():
     return offer
 
 
-def create_thing_offer_for_booking_email_test():
+def create_offer_with_thing_occasion(price=10):
     offer = Offer()
+    offer.price = price
     offer.occasion = Occasion()
     offer.occasion.thing = Thing()
     offer.occasion.thing.type = 'Book'
@@ -79,9 +81,9 @@ def create_thing_offer_for_booking_email_test():
     return offer
 
 
-def create_offerer_for_booking_email_test():
+def create_offerer():
     offerer = Offerer()
-    offerer.isActive = 't'
+    offerer.isActive = True
     offerer.address = '123 rue test'
     offerer.postalCode = '93000'
     offerer.city = 'Test city'
@@ -91,9 +93,11 @@ def create_offerer_for_booking_email_test():
 
 def _create_venue_for_booking_email_test():
     venue = Venue()
+    venue.bookingEmail = 'reservations@test.fr'
     venue.address = '123 rue test'
     venue.postalCode = '93000'
     venue.city = 'Test city'
     venue.name = 'Test offerer'
     venue.departementCode = '93'
+    venue.managingOfferer = create_offerer()
     return venue
