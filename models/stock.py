@@ -36,7 +36,7 @@ class Stock(PcObject,
 
     eventOccurrenceId = Column(BigInteger,
                               ForeignKey("event_occurrence.id"),
-                              CheckConstraint('"eventOccurrenceId" IS NOT NULL OR "occasionId" IS NOT NULL',
+                              CheckConstraint('"eventOccurrenceId" IS NOT NULL OR "offerId" IS NOT NULL',
                                               name='check_stock_has_event_occurrence_or_occasion'),
                               index=True,
                               nullable=True)
