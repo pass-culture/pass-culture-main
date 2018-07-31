@@ -45,7 +45,7 @@ def post_booking():
     stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
 
     if stock is None:
-        ae.addError('stockId', 'stockId ne correspond à aucune stock')
+        ae.addError('stockId', 'stockId ne correspond à aucun stock')
         return jsonify(ae.errors), 400
 
     if (current_user.canBookFreeOffers == False) and (stock.price == 0):

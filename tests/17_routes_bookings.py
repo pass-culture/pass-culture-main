@@ -79,17 +79,6 @@ def test_14_create_booking_should_work_if_user_can_book_and_enough_credit(app):
 
 
 def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
-    # with default admin user
-    booking_json = {
-        'stockId': humanize(3),
-        'recommendationId': humanize(1),
-    }
-    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
-    assert r_create.json()['canBookFreeOffers'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
-    assert r_create.status_code == 400
-
-
-def test_16_create_booking_should_not_work_if_user_can_not_book(app):
     # Given
     user = User()
     user.publicName = 'Test'
@@ -140,8 +129,8 @@ def test_16_create_booking_should_not_work_if_user_can_not_book(app):
     PcObject.check_and_save(deposit)
 
     booking_json = {
-        'stockId': humanize(3),
-        'recommendationId': humanize(1),
+        'stockId': humanize(stock.id),
+        'recommendationId': humanize(recommendation.id),
         "userId": humanize(user.id)
     }
 
@@ -339,7 +328,7 @@ def test_18_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_h
     PcObject.check_and_save(deposit)
 
     booking_json = {
-        "offerId": humanize(offer.id),
+        "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
         "userId": humanize(user.id),
     }
