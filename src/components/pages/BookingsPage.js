@@ -9,18 +9,19 @@ import Main from '../layout/Main'
 import selectBookingsByTime from '../../selectors/bookingsByTime'
 
 class BookingsPage extends Component {
-  componentDidMount() {
-    this.handleRequestBookings()
-  }
-
-  handleRequestBookings = () => {
+  handleDataRequest = () => {
     this.props.requestData('GET', 'bookings')
   }
 
   render() {
     const { soonBookings, otherBookings } = this.props.bookingsByTime
     return (
-      <Main name="bookings" redBg menuButton={{ borderTop: true }} backButton>
+      <Main
+        backButton
+        handleDataRequest={this.handleDataRequest}
+        name="bookings"
+        menuButton={{ borderTop: true }}
+        redBg>
         <header>
           <h1>Mes réservations</h1>
         </header>
