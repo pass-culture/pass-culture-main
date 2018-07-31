@@ -12,6 +12,7 @@ import withSizes from 'react-sizes'
 import Card from './Card'
 import Clue from './Clue'
 import Icon from './layout/Icon'
+
 import { flip, unFlip } from '../reducers/verso'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
@@ -50,7 +51,6 @@ class Deck extends Component {
     history.push(
       getDiscoveryPath(nextRecommendation.offer, nextRecommendation.mediation)
     )
-    this.handleRefreshNext()
   }
 
   handleGoPrevious = () => {
@@ -62,33 +62,6 @@ class Deck extends Component {
         previousRecommendation.mediation
       )
     )
-    this.handleRefreshPrevious()
-  }
-
-  handleRefreshPrevious = () => {
-    const { currentRecommendation, previousLimit } = this.props
-    if (currentRecommendation.index <= previousLimit) {
-      // TODO replace by a requestData
-      /*
-      worker.postMessage({
-        key: 'dexie-push-pull',
-        state: { around: currentRecommendation.id },
-      })
-      */
-    }
-  }
-
-  handleRefreshNext = () => {
-    const { currentRecommendation, nextLimit } = this.props
-    if (currentRecommendation.index >= nextLimit) {
-      // TODO replace by a requestData
-      /*
-      worker.postMessage({
-        key: 'dexie-push-pull',
-        state: { around: currentRecommendation.id },
-      })
-      */
-    }
   }
 
   handleRefreshedData = nextProps => {
@@ -207,7 +180,7 @@ class Deck extends Component {
 
   componentDidMount() {
     this.handleRefreshedData()
-    //this.handleSetDateRead()
+    // this.handleSetDateRead()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -216,7 +189,7 @@ class Deck extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    //this.handleSetDateRead(prevProps)
+    // this.handleSetDateRead(prevProps)
   }
 
   componentWillUnmount() {
@@ -254,20 +227,23 @@ class Deck extends Component {
         id="deck"
         style={{
           backgroundColor: headerColor,
-        }}>
+        }}
+      >
         {!unFlippable && (
           <button
             className={classnames('close-button', {
               'is-hidden': !isFlipped,
             })}
-            onClick={this.handleUnFlip}>
+            onClick={this.handleUnFlip}
+          >
             <Icon svg="ico-close" alt="Fermer" />
           </button>
         )}
         <div
           className={classnames('loading', {
             'is-invisibile': currentRecommendation,
-          })}>
+          })}
+        >
           <div>
             <Icon
               draggable={false}
@@ -297,7 +273,8 @@ class Deck extends Component {
                   right: position.x + width,
                 }
           }
-          enableUserSelectHack={false}>
+          enableUserSelectHack={false}
+        >
           <div>
             {previousRecommendation && (
               <Card
@@ -314,7 +291,8 @@ class Deck extends Component {
         <div
           className={classnames('board-wrapper', {
             'is-invisible': isFlipped,
-          })}>
+          })}
+        >
           <div
             className="board-bg"
             style={{
@@ -325,13 +303,15 @@ class Deck extends Component {
             className={classnames('controls', {
               'is-invisible': isFlipped,
             })}
-            style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}>
+            style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
+          >
             <li>
               <button
                 className={classnames('button before', {
                   'is-invisible': !previousRecommendation,
                 })}
-                onClick={this.handleGoPrevious}>
+                onClick={this.handleGoPrevious}
+              >
                 <Icon svg="ico-prev-w-group" alt="Précédent" />
               </button>
             </li>
@@ -341,7 +321,8 @@ class Deck extends Component {
                   'is-invisible': isFlipDisabled,
                 })}
                 disabled={isFlipDisabled}
-                onClick={this.handleFlip}>
+                onClick={this.handleFlip}
+              >
                 <Icon svg="ico-slideup-w" alt="Plus d'infos" />
               </button>
               <Clue />
@@ -351,7 +332,8 @@ class Deck extends Component {
                 className={classnames('button after', {
                   'is-invisible': !nextRecommendation,
                 })}
-                onClick={this.handleGoNext}>
+                onClick={this.handleGoNext}
+              >
                 <Icon svg="ico-next-w-group" alt="Suivant" />
               </button>
             </li>
@@ -359,14 +341,24 @@ class Deck extends Component {
         </div>
         {IS_DEV && (
           <div className="debug debug-deck">
-            ({this.props.isLoadingBefore ? '?' : ' '}
-            {this.props.previousLimit}){' '}
+            (
+            {this.props.isLoadingBefore ? '?' : ' '}
+            {this.props.previousLimit}
+)
+            {' '}
             {this.props.currentRecommendation &&
               this.props.currentRecommendation.mediation &&
-              this.props.currentRecommendation.mediation.id}{' '}
+              this.props.currentRecommendation.mediation.id}
+            {' '}
             {this.props.currentRecommendation &&
-              this.props.currentRecommendation.index}{' '}
-            ({this.props.nextLimit} {this.props.isLoadingAfter ? '?' : ' '}) /{' '}
+              this.props.currentRecommendation.index}
+            {' '}
+            (
+            {this.props.nextLimit} 
+            {' '}
+            {this.props.isLoadingAfter ? '?' : ' '}
+) /
+            {' '}
             {this.props.recommendations &&
               this.props.recommendations.length - 1}
           </div>
