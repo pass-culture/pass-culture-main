@@ -17,6 +17,7 @@ class DiscoveryPage extends Component {
     const {
       closeLoading,
       currentRecommendation,
+      history,
       match: {
         params: { offerId, mediationId },
       },
@@ -32,9 +33,30 @@ class DiscoveryPage extends Component {
         .filter(param => param)
         .join('&')
 
+      console.log('query', query)
+
       requestData('PUT', 'recommendations?' + query, {
         handleSuccess: (state, action) => {
-          if (!get(action, 'data.length')) {
+          if (get(action, 'data.length')) {
+            if (!offerId) {
+              const firstOfferId = get(action, 'data.0.offerId')
+
+              if (!firstOfferId) {
+                console.warn('first recommendation has no offer id, weird...')
+              }
+
+              console.log(action.data[0])
+              const firstMediationId = get(action, 'data.0.mediationId') || ''
+              console.log('firstMediationId', firstMediationId)
+
+              console.log(
+                'WTFFF',
+                `/decouverte/${firstOfferId}/${firstMediationId}`
+              )
+
+              history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
+            }
+          } else {
             closeLoading({ isEmpty: true })
           }
         },
@@ -99,24 +121,16 @@ class DiscoveryPage extends Component {
 
 const mapStateToProps = state => ({
   backButton: state.router.location.search.indexOf('to=verso') > -1,
-  //currentRecommendation: selectCurrentRecommendation(state),
-  //eventOrThingId: selectCurrentEventOrThingId(state),
+  currentRecommendation: selectCurrentRecommendation(state),
+  eventOrThingId: selectCurrentEventOrThingId(state),
   isMenuOnTop: state.loading.isActive || get(state, 'loading.config.isEmpty'),
   recommendations: state.data.recommendations,
 })
-
-const mapDispatchToProps = dispatch => {
-  return {
-    closeLoading: (...args) => dispatch(closeLoading(...args)),
-    requestData: (...args) => dispatch(requestData(...args)),
-    showLoading: (...args) => dispatch(showLoading(...args)),
-  }
-}
 
 export default compose(
   withRouter,
   connect(
     mapStateToProps,
-    mapDispatchToProps
+    { closeLoading, requestData, showLoading }
   )
 )(DiscoveryPage)
