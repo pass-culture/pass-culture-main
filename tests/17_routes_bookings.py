@@ -85,7 +85,7 @@ def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFree
         'recommendationId': humanize(1),
     }
     r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
-    assert r_create.json()['canBook'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
+    assert r_create.json()['canBookFreeOffers'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
     assert r_create.status_code == 400
 
 
@@ -106,8 +106,8 @@ def test_16_create_booking_should_not_work_if_user_can_not_book(app):
     offerer.city = 'Test city'
     PcObject.check_and_save(offerer)
 
-    thing_occasion = create_thing_occasion()
-    PcObject.check_and_save(thing_occasion)
+    thing_offer = create_thing_offer()
+    PcObject.check_and_save(thing_offer)
 
     venue = Venue()
     venue.name = 'Venue name'
@@ -119,16 +119,16 @@ def test_16_create_booking_should_not_work_if_user_can_not_book(app):
     venue.managingOfferer = offerer
     PcObject.check_and_save(venue)
 
-    offer = Offer()
-    offer.occasion = thing_occasion
-    offer.occasion.venue = venue
-    offer.offerer = offerer
-    offer.price = 0
-    offer.available = 50
-    PcObject.check_and_save(offer)
+    stock = Stock()
+    stock.offer = thing_offer
+    stock.offer.venue = venue
+    stock.offerer = offerer
+    stock.price = 0
+    stock.available = 50
+    PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
-    recommendation.occasion = thing_occasion
+    recommendation.offer = thing_offer
     recommendation.user = user
     PcObject.check_and_save(recommendation)
 
