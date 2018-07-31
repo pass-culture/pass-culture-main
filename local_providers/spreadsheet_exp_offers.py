@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 
 from models.event import Event
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.mediation import Mediation
 from models.occasion import Occasion
@@ -102,7 +102,7 @@ class SpreadsheetExpOffers(LocalProvider):
                     print("Could not parse date : '"+horaire+"'")
 
                 p_info_evocc = ProvidableInfo()
-                p_info_evocc.type = EventOccurence
+                p_info_evocc.type = EventOccurrence
                 p_info_evocc.idAtProviders = str(int(self.line['Ref Évènement'])) + '_'\
                                              + evocc_dt.isoformat()
                 p_info_evocc.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
@@ -142,7 +142,7 @@ class SpreadsheetExpOffers(LocalProvider):
         elif isinstance(obj, Occasion):
             obj.venue = self.venue
             obj.event = self.providables[0]
-        elif isinstance(obj, EventOccurence):
+        elif isinstance(obj, EventOccurrence):
             eo_date = obj.idAtProviders.split('_')[1]
             date_settings = {'TIMEZONE': get_dept_timezone(self.venue.departementCode),
                              'TO_TIMEZONE': 'UTC'}
@@ -152,12 +152,12 @@ class SpreadsheetExpOffers(LocalProvider):
             obj.occasion = self.providables[1]
         elif isinstance(obj, Offer):
             for providable in self.providables[1:]:
-                if isinstance(providable, EventOccurence)\
+                if isinstance(providable, EventOccurrence)\
                    and providable.idAtProviders == obj.idAtProviders:
-                    obj.eventOccurence = providable
+                    obj.eventOccurrence = providable
                     break
-            if obj.eventOccurence is None:
-                raise ValueError("Can't find EventOccurence matching offer in updateObj")
+            if obj.eventOccurrence is None:
+                raise ValueError("Can't find EventOccurrence matching offer in updateObj")
             obj.price = 0
             obj.offerer = self.offerer
             if is_filled(self.line['Places Par Horaire']):

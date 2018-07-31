@@ -1,4 +1,4 @@
-""" event occurence """
+""" event occurrence """
 from sqlalchemy import Binary,\
                        BigInteger,\
                        Column,\
@@ -14,7 +14,7 @@ from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
 
-class EventOccurence(PcObject,
+class EventOccurrence(PcObject,
                      Model,
                      DeactivableMixin,
                      ProvidableMixin
@@ -33,7 +33,7 @@ class EventOccurence(PcObject,
 
     occasion = relationship('Occasion',
                             foreign_keys=[occasionId],
-                            backref='eventOccurences')
+                            backref='eventOccurrences')
 
     beginningDatetime = Column(DateTime,
                                index=True,

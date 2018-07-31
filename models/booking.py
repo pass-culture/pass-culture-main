@@ -65,11 +65,11 @@ class Booking(PcObject,
                    nullable=False)
 
     @property
-    def eventOccurenceBeginningDatetime(self):
+    def eventOccurrenceBeginningDatetime(self):
         offer = self.offer
-        if offer.eventOccurence is None:
+        if offer.eventOccurrence is None:
             return None
-        return offer.eventOccurence.beginningDatetime
+        return offer.eventOccurrence.beginningDatetime
 
 
 trig_ddl = DDL("""

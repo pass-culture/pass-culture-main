@@ -12,7 +12,7 @@ from flask import current_app as app
 
 from models.deposit import Deposit
 from models.booking import Booking
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.event import Event
 from models.pc_object import PcObject
 from models.offer import Offer
@@ -102,34 +102,34 @@ def do_sandbox():
             else:
                 events.append(query.one())
 
-    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'event_occurences.json'
-    event_occurences = []
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'event_occurrences.json'
+    event_occurrences = []
     with open(json_path) as json_file:
         for obj in json.load(json_file):
             event = events[obj['eventIndex']]
-            query = EventOccurence.query.filter_by(eventId=event.id)
+            query = EventOccurrence.query.filter_by(eventId=event.id)
             if query.count() == 0:
-                event_occurence = EventOccurence(from_dict=obj)
-                event_occurence.event = event
-                event_occurence.offerer = offerers[obj['offererIndex']]
-                event_occurence.beginningDatetime = datetime.now() + timedelta(days=1)
-                event_occurence.endDatetime = event_occurence.beginningDatetime + timedelta(hours=1)
-                event_occurence.save()
-                print("CREATED event_occurence")
-                pprint(vars(event_occurence))
-                event_occurences.append(event_occurence)
+                event_occurrence = EventOccurrence(from_dict=obj)
+                event_occurrence.event = event
+                event_occurrence.offerer = offerers[obj['offererIndex']]
+                event_occurrence.beginningDatetime = datetime.now() + timedelta(days=1)
+                event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(hours=1)
+                event_occurrence.save()
+                print("CREATED event_occurrence")
+                pprint(vars(event_occurrence))
+                event_occurrences.append(event_occurrence)
             else:
-                event_occurences.append(query.one())
+                event_occurrences.append(query.one())
 
     json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'offers.json'
     offers = []
     with open(json_path) as json_file:
         for obj in json.load(json_file):
-            event_occurence = event_occurences[obj['eventOccurenceIndex']]
-            query = Offer.query.filter_by(eventOccurenceId=event_occurence.id)
+            event_occurrence = event_occurrences[obj['eventOccurrenceIndex']]
+            query = Offer.query.filter_by(eventOccurrenceId=event_occurrence.id)
             if query.count() == 0:
                 offer = Offer(from_dict=obj)
-                offer.eventOccurence = event_occurence
+                offer.eventOccurrence = event_occurrence
                 offer.offerer = offerers[obj['offererIndex']]
                 offer.save()
                 print("CREATED offer")

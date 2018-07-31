@@ -5,7 +5,7 @@ from sqlalchemy.orm import aliased
 
 from models import Booking,\
                    Event,\
-                   EventOccurence,\
+                   EventOccurrence,\
                    Occasion,\
                    Offer,\
                    Offerer,\
@@ -24,11 +24,11 @@ def departement_or_national_occasions(query, occasion_type, departement_codes):
 
 
 def bookable_occasions(query, occasion_type):
-    # remove events for which all occurences are in the past
+    # remove events for which all occurrences are in the past
     # (crude filter to limit joins before the more complete one below)
     query = query.reset_joinpoint()
     if occasion_type == Event:
-        query = query.filter(Occasion.eventOccurences.any(EventOccurence.beginningDatetime > datetime.utcnow()))
+        query = query.filter(Occasion.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
     query = query.filter((Offer.isActive == True)
@@ -65,7 +65,7 @@ def get_occasions_by_type(occasion_type,
                           occasion_id=None):
     query = Occasion.query
     if occasion_type == Event:
-        query = query.join(aliased(EventOccurence))
+        query = query.join(aliased(EventOccurrence))
     query = query.join(Offer)\
                  .reset_joinpoint()\
                  .join(Venue)\

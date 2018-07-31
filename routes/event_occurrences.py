@@ -1,8 +1,8 @@
-""" event_occurences """
+""" event_occurrences """
 from flask import current_app as app, jsonify, request
 
-from models import Event, EventOccurence, Occasion, PcObject, RightsType, Venue
-from utils.includes import EVENT_OCCURENCE_INCLUDES
+from models import Event, EventOccurrence, Occasion, PcObject, RightsType, Venue
+from utils.includes import EVENT_OCCURRENCE_INCLUDES
 from utils.rest import delete, \
     ensure_current_user_has_rights, \
     expect_json_data, \
@@ -11,42 +11,42 @@ from utils.rest import delete, \
     handle_rest_get_list
 
 
-@app.route('/eventOccurences', methods=['GET'])
+@app.route('/eventOccurrences', methods=['GET'])
 @login_or_api_key_required
-def list_event_occurences():
-    return handle_rest_get_list(EventOccurence)
+def list_event_occurrences():
+    return handle_rest_get_list(EventOccurrence)
 
 
-@app.route('/eventOccurences/<id>', methods=['GET'])
+@app.route('/eventOccurrences/<id>', methods=['GET'])
 @login_or_api_key_required
-def get_event_occurence(id):
-    eo = load_or_404(EventOccurence, id)
-    return jsonify(eo._asdict(include=EVENT_OCCURENCE_INCLUDES))
+def get_event_occurrence(id):
+    eo = load_or_404(EventOccurrence, id)
+    return jsonify(eo._asdict(include=EVENT_OCCURRENCE_INCLUDES))
 
 
-@app.route('/eventOccurences', methods=['POST'])
+@app.route('/eventOccurrences', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
-def create_event_occurence():
+def create_event_occurrence():
     event = Event.query.join(Occasion)\
                        .filter(Occasion.id == request.json['occasionId'])\
                        .first_or_404()
     event.ensure_can_be_updated()
 
-    eo = EventOccurence(from_dict=request.json)
+    eo = EventOccurrence(from_dict=request.json)
     venue = load_or_404(Venue, request.json['venueId'])
     ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
 
     PcObject.check_and_save(eo)
-    return jsonify(eo._asdict(include=EVENT_OCCURENCE_INCLUDES)), 201
+    return jsonify(eo._asdict(include=EVENT_OCCURRENCE_INCLUDES)), 201
 
 
-@app.route('/eventOccurences/<id>', methods=['PATCH'])
+@app.route('/eventOccurrences/<id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
-def edit_event_occurence(id):
-    eo = load_or_404(EventOccurence, id)
+def edit_event_occurrence(id):
+    eo = load_or_404(EventOccurrence, id)
 
     eo.ensure_can_be_updated()
 
@@ -57,13 +57,13 @@ def edit_event_occurence(id):
     #TODO: Interdire la modification d'évenements passés
     PcObject.check_and_save(eo)
 
-    return jsonify(eo._asdict(include=EVENT_OCCURENCE_INCLUDES)), 200
+    return jsonify(eo._asdict(include=EVENT_OCCURRENCE_INCLUDES)), 200
 
 
-@app.route('/eventOccurences/<id>', methods=['DELETE'])
+@app.route('/eventOccurrences/<id>', methods=['DELETE'])
 @login_or_api_key_required
-def delete_event_occurence(id):
-    eo = load_or_404(EventOccurence, id)
+def delete_event_occurrence(id):
+    eo = load_or_404(EventOccurrence, id)
     ensure_current_user_has_rights(RightsType.editor,
                                    eo.venue.managingOffererId)
     return delete(eo)

@@ -11,13 +11,13 @@ OFFERER_INCLUDES = [
     "isValidated"
 ]
 
-EVENT_OCCURENCE_INCLUDES = [
+EVENT_OCCURRENCE_INCLUDES = [
     'offer'
 ]
 
 EVENT_INCLUDES = [
     {
-        "key": "occurences",
+        "key": "occurrences",
         "sub_joins": [
             {
                 "key": "offer",
@@ -45,7 +45,7 @@ OCCASION_INCLUDES = [
         "key": "event",
         "sub_joins": [
             {
-                "key": "occurences",
+                "key": "occurrences",
                 "sub_joins": [
                     {
                         "key": "offer"
@@ -87,7 +87,7 @@ RECOMMENDATION_INCLUDES = [
             "mediation",
             {
                 "key": "offers",
-                "sub_joins": ["eventOccurence"]
+                "sub_joins": ["eventOccurrence"]
             },
             "venue",
         ]
@@ -101,7 +101,7 @@ BOOKING_INCLUDES = [
         "sub_joins": 
             [
                 {
-                    "key": "eventOccurence",
+                    "key": "eventOccurrence",
                     "sub_joins": ["venue"]
                 },
                 "venue"
@@ -116,7 +116,7 @@ USER_INCLUDES = [
 
 VENUE_INCLUDES = [
     {
-        "key": "eventOccurences",
+        "key": "eventOccurrences",
         "sub_joins": ["event"]
     },
     {

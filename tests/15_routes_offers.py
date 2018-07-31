@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from models.booking import Booking
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from models.pc_object import PcObject
 from utils.human_ids import humanize
@@ -69,31 +69,31 @@ def test_13_update_offer_available_should_check_bookings(app):
     assert 'available' in r_update.json()
 
 
-def test_14_should_not_create_offer_if_event_occurence_before_booking_limit_datetime(app):
+def test_14_should_not_create_offer_if_event_occurrence_before_booking_limit_datetime(app):
     #Given
     from models.pc_object import serialize
-    event_occurence = EventOccurence()
-    event_occurence.beginningDatetime = datetime.utcnow() + timedelta(days=10)
-    event_occurence.endDatetime = event_occurence.beginningDatetime + timedelta(days=1)
-    event_occurence.occasionId = 1
-    event_occurence.accessibility = bytes([0])
-    PcObject.check_and_save(event_occurence)
+    event_occurrence = EventOccurrence()
+    event_occurrence.beginningDatetime = datetime.utcnow() + timedelta(days=10)
+    event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(days=1)
+    event_occurrence.occasionId = 1
+    event_occurrence.accessibility = bytes([0])
+    PcObject.check_and_save(event_occurrence)
 
-    event_occurence_id = event_occurence.id
+    event_occurrence_id = event_occurrence.id
 
     offer = Offer()
-    offer.eventOccurence = event_occurence
+    offer.eventOccurrence = event_occurrence
     offer.occasionId = 11
-    offer.eventOccurenceId = event_occurence_id
+    offer.eventOccurrenceId = event_occurrence_id
     offer.price = 0
     offer.available = 5
-    offer.bookingLimitDatetime = event_occurence.beginningDatetime - timedelta(days=1)
+    offer.bookingLimitDatetime = event_occurrence.beginningDatetime - timedelta(days=1)
 
     PcObject.check_and_save(offer)
 
     offerId = offer.id
 
-    serialized_date = serialize(event_occurence.beginningDatetime + timedelta(days=1))
+    serialized_date = serialize(event_occurrence.beginningDatetime + timedelta(days=1))
 
     #When
     r_update = req_with_auth().patch(API_URL + '/offers/'+humanize(offerId),

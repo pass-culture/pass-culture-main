@@ -3,7 +3,7 @@ from models.booking import Booking
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
 from models.event import Event
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -41,7 +41,7 @@ __all__ = (
     'ProvidableMixin',
     'Booking',
     'Event',
-    'EventOccurence',
+    'EventOccurrence',
     'Mediation',
     'Offer',
     'Offerer',

@@ -9,7 +9,7 @@ from models.needs_validation_mixin import NeedsValidationMixin
 from models.providable_mixin import ProvidableMixin
 from models.booking import Booking
 from models.event import Event
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.mediation import Mediation
 from models.offer import Offer
 from models.offerer import Offerer

@@ -10,7 +10,7 @@ import requests as req
 from models import Thing, Deposit
 from models.booking import Booking
 from models.event import Event
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.occasion import Occasion
 from models.offer import Offer
 from models.offerer import Offerer
@@ -58,12 +58,12 @@ def create_offer_with_event_occasion(price=10):
     offer = Offer()
     offer.price = price
     offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-    offer.eventOccurence = EventOccurence()
-    offer.eventOccurence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-    offer.eventOccurence.occasion = Occasion()
-    offer.eventOccurence.occasion.event = Event()
-    offer.eventOccurence.occasion.event.name = 'Mains, sorts et papiers'
-    offer.eventOccurence.occasion.venue = _create_venue_for_booking_email_test()
+    offer.eventOccurrence = EventOccurrence()
+    offer.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+    offer.eventOccurrence.occasion = Occasion()
+    offer.eventOccurrence.occasion.event = Event()
+    offer.eventOccurrence.occasion.event.name = 'Mains, sorts et papiers'
+    offer.eventOccurrence.occasion.venue = _create_venue_for_booking_email_test()
     offer.isActive = True
 
     return offer

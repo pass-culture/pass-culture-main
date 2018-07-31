@@ -10,7 +10,7 @@ from flask import current_app as app
 
 from models.db import db
 from models.event import Event
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.occasion import Occasion
 from models.venue import Venue
@@ -105,7 +105,7 @@ class OpenAgendaEvents(LocalProvider):
         durations_sum = 0
         for oa_timing in self.oa_event['timings']:
             p_info_eo = ProvidableInfo()
-            p_info_eo.type = EventOccurence
+            p_info_eo.type = EventOccurrence
             p_info_eo.idAtProviders = str(self.oa_event['uid'])+'_'+str(read_date(oa_timing['start']))
             p_info_eo.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
             p_info_eos.append(p_info_eo)
@@ -134,7 +134,7 @@ class OpenAgendaEvents(LocalProvider):
                                 else self.oa_event['description']['en']
             obj.durationMinutes = self.duration
             # obj.extraData['tags'] = list(map(lambda t: t['slug'], self.oa_event['tags']))
-        elif isinstance(obj, EventOccurence):
+        elif isinstance(obj, EventOccurrence):
             index = len(self.providables)-3
             oa_timing = self.oa_event['timings'][index]
             obj.beginningDatetime = read_date(oa_timing['start'])

@@ -24,9 +24,9 @@ def check_recos(recos):
            and 'tutoIndex' not in reco['mediation']:
             assert not all([offer['bookingLimitDatetime'] is not None and
                             parse_date(offer['bookingLimitDatetime']) <= datetime.utcnow()
-                            for offer in oc['offers'] for oc in reco['mediatedOccurences']])
+                            for offer in oc['offers'] for oc in reco['mediatedOccurrences']])
             if not reco['event']['isNational']:
-                assert not all([oc['venue']['departementCode'] != '93' for oc in reco['mediatedOccurences']])
+                assert not all([oc['venue']['departementCode'] != '93' for oc in reco['mediatedOccurrences']])
 
 
 def subtest_initial_recos():

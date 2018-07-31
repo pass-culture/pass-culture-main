@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from models.event import Event
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.occasion import Occasion
 from models.offer import Offer
 from models.offerer import Offerer

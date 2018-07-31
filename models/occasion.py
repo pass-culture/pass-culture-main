@@ -4,7 +4,7 @@ from itertools import chain
 from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey
 from sqlalchemy.orm import aliased, relationship
 
-from models import Event, EventOccurence
+from models import Event, EventOccurrence
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -62,7 +62,7 @@ class Occasion(PcObject,
             return self.thing.offers
         elif self.eventId:
             return chain(map(lambda eo: eo.offers,
-                             self.eventOccurences))
+                             self.eventOccurrences))
         else:
             return []
 
@@ -70,7 +70,7 @@ class Occasion(PcObject,
     def lastOffer(self):
         query = Offer.query
         if self.eventId:
-            query = query.join(EventOccurence)
+            query = query.join(EventOccurrence)
         return query.join(Occasion)\
                     .filter(Occasion.id == self.id)\
                     .order_by(desc(Offer.bookingLimitDatetime))\
@@ -81,9 +81,9 @@ class Occasion(PcObject,
         query = Occasion.query
         if occasionType == Event:
             query = query.filter(Occasion.eventId != None)\
-                         .join(aliased(EventOccurence))
+                         .join(aliased(EventOccurrence))
         else:
             query = query.filter(Occasion.thingId != None)\
-                         .join(aliased(EventOccurence))
+                         .join(aliased(EventOccurrence))
         offer_alias = aliased(Offer)
         return query.join(offer_alias), offer_alias

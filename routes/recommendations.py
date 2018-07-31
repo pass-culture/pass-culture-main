@@ -12,7 +12,7 @@ from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES,\
                            RECOMMENDATION_INCLUDES
-from models import EventOccurence,\
+from models import EventOccurrence,\
                    Mediation,\
                    Offer,\
                    PcObject,\
@@ -198,7 +198,7 @@ def dictify_reco(reco):
         booking_query = Booking.query\
                                .join(Offer)
         if reco.occasion.eventId:
-            booking_query = booking_query.join(EventOccurence)
+            booking_query = booking_query.join(EventOccurrence)
         booking_query = booking_query.join(Occasion)\
                                      .filter(Booking.user == current_user)\
                                      .filter(Occasion.id == reco.occasionId)

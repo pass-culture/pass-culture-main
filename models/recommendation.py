@@ -9,7 +9,7 @@ from sqlalchemy import BigInteger, \
     String
 from sqlalchemy.orm import relationship
 
-from models import Offer, EventOccurence
+from models import Offer, EventOccurrence
 from models.db import Model
 from models.pc_object import PcObject
 
@@ -49,12 +49,12 @@ class Recommendation(PcObject, Model):
     shareMedium = Column(String(20),
                          nullable=True)
 
-    inviteforEventOccurenceId = Column(BigInteger,
-                                       ForeignKey('event_occurence.id'),
+    inviteforEventOccurrenceId = Column(BigInteger,
+                                       ForeignKey('event_occurrence.id'),
                                        nullable=True)
 
-    inviteforEventOccurence = relationship('EventOccurence',
-                                           foreign_keys=[inviteforEventOccurenceId],
+    inviteforEventOccurrence = relationship('EventOccurrence',
+                                           foreign_keys=[inviteforEventOccurrenceId],
                                            backref='inviteRecommendations')
 
     dateCreated = Column(DateTime,

@@ -4,11 +4,11 @@ from pprint import pprint
 
 from flask import current_app as app
 
-from models.event_occurence import EventOccurence
+from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from utils.mailing import send_booking_recap_emails
 
-EventOccurence = EventOccurence
+EventOccurrence = EventOccurrence
 Offer = Offer
 
 
@@ -23,10 +23,10 @@ def send_final_booking_recaps():
 
 
 def do_send_final_booking_recaps():
-    for offer in Offer.query.outerjoin(EventOccurence)\
+    for offer in Offer.query.outerjoin(EventOccurrence)\
                             .filter((datetime.utcnow() > Offer.bookingLimitDatetime) &
-                                    ((Offer.eventOccurenceId == None) |
-                                     (EventOccurence.beginningDatetime > datetime.utcnow())) &
+                                    ((Offer.eventOccurrenceId == None) |
+                                     (EventOccurrence.beginningDatetime > datetime.utcnow())) &
                                     (Offer.bookingRecapSent == None)):
         print('Sending booking recap for ' + str(offer))
         send_booking_recap_emails(offer)

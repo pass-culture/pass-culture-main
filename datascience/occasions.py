@@ -6,7 +6,7 @@ from random import randint
 from sqlalchemy.orm import aliased
 
 from repository.occasion_queries import get_occasions_by_type
-from models import Event, EventOccurence, Occasion, Thing
+from models import Event, EventOccurrence, Occasion, Thing
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.logger import logger
 
@@ -72,17 +72,17 @@ def score_occasion(occasion, departement_codes):
 def specific_score_event(event, departement_codes):
     score = 0
 
-    next_occurence = EventOccurence.query \
+    next_occurrence = EventOccurrence.query \
         .join(aliased(Occasion)) \
-        .filter((Occasion.event == event) & (EventOccurence.beginningDatetime > datetime.utcnow())) \
+        .filter((Occasion.event == event) & (EventOccurrence.beginningDatetime > datetime.utcnow())) \
         .first()
 
-    if next_occurence is None:
+    if next_occurrence is None:
         return None
 
-    # If the next occurence of an event is less than 10 days away,
+    # If the next occurrence of an event is less than 10 days away,
     # it gets one more point for each day closer it is to now
-    score += max(0, 10 - (next_occurence.beginningDatetime - datetime.utcnow()).days)
+    score += max(0, 10 - (next_occurrence.beginningDatetime - datetime.utcnow()).days)
 
     return score
 
