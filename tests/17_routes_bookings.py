@@ -306,8 +306,8 @@ def test_18_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_h
     offerer.city = 'Test city'
     PcObject.check_and_save(offerer)
 
-    thing_occasion = create_thing_occasion()
-    PcObject.check_and_save(thing_occasion)
+    thing_offer = create_thing_offer()
+    PcObject.check_and_save(thing_offer)
 
     venue = Venue()
     venue.name = 'Venue name'
@@ -319,16 +319,16 @@ def test_18_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_h
     venue.managingOfferer = offerer
     PcObject.check_and_save(venue)
 
-    offer = Offer()
-    offer.occasion = thing_occasion
-    offer.occasion.venue = venue
-    offer.offerer = offerer
-    offer.price = 10
-    offer.available = 50
-    PcObject.check_and_save(offer)
+    stock = Stock()
+    stock.offer = thing_offer
+    stock.offer.venue = venue
+    stock.offerer = offerer
+    stock.price = 10
+    stock.available = 50
+    PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
-    recommendation.occasion = thing_occasion
+    recommendation.occasion = thing_offer
     recommendation.user = user
     PcObject.check_and_save(recommendation)
     deposit = Deposit()
