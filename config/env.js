@@ -1,18 +1,18 @@
-'use strict';
+'use strict'
 
-const fs = require('fs');
-const path = require('path');
-const paths = require('./paths');
-const { version } = require('../package.json');
+const fs = require('fs')
+const path = require('path')
+const paths = require('./paths')
+const { name, version } = require('../package.json')
 
 // Make sure that including paths.js after env.js will read .env variables.
-delete require.cache[require.resolve('./paths')];
+delete require.cache[require.resolve('./paths')]
 
-const NODE_ENV = process.env.NODE_ENV;
+const NODE_ENV = process.env.NODE_ENV
 if (!NODE_ENV) {
   throw new Error(
     'The NODE_ENV environment variable is required but was not specified.'
-  );
+  )
 }
 
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
@@ -24,7 +24,7 @@ var dotenvFiles = [
   // results for everyone
   NODE_ENV !== 'test' && `${paths.dotenv}.local`,
   paths.dotenv,
-].filter(Boolean);
+].filter(Boolean)
 
 // Load environment variables from .env* files. Suppress warnings using silent
 // if this file is missing. dotenv will never modify any environment variables
@@ -34,9 +34,9 @@ dotenvFiles.forEach(dotenvFile => {
   if (fs.existsSync(dotenvFile)) {
     require('dotenv').config({
       path: dotenvFile,
-    });
+    })
   }
-});
+})
 
 // We support resolving modules according to `NODE_PATH`.
 // This lets you use absolute paths in imports inside large monorepos:
@@ -47,28 +47,28 @@ dotenvFiles.forEach(dotenvFile => {
 // Otherwise, we risk importing Node.js core modules into an app instead of Webpack shims.
 // https://github.com/facebookincubator/create-react-app/issues/1023#issuecomment-265344421
 // We also resolve them to make sure all tools using them work consistently.
-const appDirectory = fs.realpathSync(process.cwd());
+const appDirectory = fs.realpathSync(process.cwd())
 process.env.NODE_PATH = (process.env.NODE_PATH || '')
   .split(path.delimiter)
   .filter(folder => folder && !path.isAbsolute(folder))
   .map(folder => path.resolve(appDirectory, folder))
-  .join(path.delimiter);
+  .join(path.delimiter)
 
 // Grab NODE_ENV and REACT_APP_* environment variables and prepare them to be
 // injected into the application via DefinePlugin in Webpack configuration.
-const REACT_APP = /^REACT_APP_/i;
+const REACT_APP = /^REACT_APP_/i
 
 function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
     .reduce(
       (env, key) => {
-        env[key] = process.env[key];
-        return env;
+        env[key] = process.env[key]
+        return env
       },
       {
-        // Determine which application it is
-        IS_PRO: process.env.IS_PRO || false,
+        // package name for api
+        NAME: name,
         // Useful for determining whether we’re running in production mode.
         // Most importantly, it switches React into the correct mode.
         NODE_ENV: process.env.NODE_ENV || 'development',
@@ -77,19 +77,19 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
-        // VERSION FOR API
-        VERSION: version
+        // package version for api
+        VERSION: version,
       }
-    );
+    )
   // Stringify all values so we can feed into Webpack DefinePlugin
   const stringified = {
     'process.env': Object.keys(raw).reduce((env, key) => {
-      env[key] = JSON.stringify(raw[key]);
-      return env;
+      env[key] = JSON.stringify(raw[key])
+      return env
     }, {}),
-  };
+  }
 
-  return { raw, stringified };
+  return { raw, stringified }
 }
 
-module.exports = getClientEnvironment;
+module.exports = getClientEnvironment
