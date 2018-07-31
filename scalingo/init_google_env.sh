@@ -6,7 +6,7 @@ set -o nounset
 
 
 if [ "$1" == "-h" ]; then
-    echo "$(basename "$0") [-h] [-n s1] -- program to set env var for connexion to Google API
+    echo "$(basename "$0") [-h] [-a s1 -j s2] -- program to set env var for connexion to Google API
 where:
     -h  show this help text
     -a  Scalingo app name

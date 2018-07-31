@@ -17,7 +17,8 @@ where:
     -d  set database plan size (default: free)
     -b  set number of backends to deploy (default: 1)
     -j  set the env var MAILJET_API_SECRET (required)
-    -k  set the env var MAILJET_API_KEY (required)"
+    -k  set the env var MAILJET_API_KEY (required)
+    -e  set env variable ENV (optionnal)"
     exit 0
 fi
 
@@ -92,6 +93,14 @@ else
   exit 1
 fi
 
+# IF PROVIDED ADD ENV VAR
+if [[ $# -gt 1 ]] && [[ "$1" == "-e" ]]; then
+  scalingo -a "$APP_NAME" env-set ENV="$2"
+  shift 2
+else
+  echo "No env var ENV provided."
+fi
+
 # DEPLOY CURRENT GIT BRANCH TO SCALINGO
 readonly GIT_LOCAL_BRANCH_NAME=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 echo "Add remote in local git..."
@@ -112,5 +121,6 @@ if [ "$APP_CUSTOM_DNS" != "" ]; then
     echo "Registering new custom DNS..."
     scalingo -a "$APP_NAME" domains-add "$APP_CUSTOM_DNS"
 fi
+
 
 echo "Operation completed."

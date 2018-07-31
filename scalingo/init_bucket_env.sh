@@ -6,7 +6,7 @@ set -o nounset
 
 
 if [ "$1" == "-h" ]; then
-    echo "$(basename "$0") [-h] [-n s1] -- program to set env var for connexion between
+    echo "$(basename "$0") [-h] [-a s1 -u s2 -p s3 -c s4] -- program to set env var for connexion between
     OVH Bucket and Scalingo
 where:
     -h  show this help text
