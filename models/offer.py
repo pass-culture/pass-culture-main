@@ -37,7 +37,7 @@ class Offer(PcObject,
     eventOccurrenceId = Column(BigInteger,
                               ForeignKey("event_occurrence.id"),
                               CheckConstraint('"eventOccurrenceId" IS NOT NULL OR "occasionId" IS NOT NULL',
-                                                    name='check_offer_has_event_occurrence_or_occasion'),
+                                              name='check_offer_has_event_occurrence_or_occasion'),
                               index=True,
                               nullable=True)
 
@@ -97,7 +97,7 @@ def page_defaults(mapper, configuration, target):
                                                     .replace(minute=59) - timedelta(days=3)
 
 
-trig_ddl = DDL("""
+Offer.trig_ddl = """
     CREATE OR REPLACE FUNCTION check_offer()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -118,10 +118,11 @@ trig_ddl = DDL("""
     END;
     $$ LANGUAGE plpgsql;
 
+    DROP TRIGGER IF EXISTS offer_update ON offer;
     CREATE CONSTRAINT TRIGGER offer_update AFTER INSERT OR UPDATE
     ON offer
-    FOR EACH ROW EXECUTE PROCEDURE check_offer()
-    """)
+    FOR EACH ROW EXECUTE PROCEDURE check_offer();
+    """
 event.listen(Offer.__table__,
              'after_create',
-             trig_ddl)
+             DDL(Offer.trig_ddl))

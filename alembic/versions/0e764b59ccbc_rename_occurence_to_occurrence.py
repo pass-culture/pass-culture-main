@@ -1,0 +1,49 @@
+"""empty message
+
+Revision ID: 0e764b59ccbc
+Revises: b0522cd8247f
+Create Date: 2018-07-31 08:07:39.614788
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+from models import Offer
+
+# revision identifiers, used by Alembic.
+revision = '0e764b59ccbc'
+down_revision = 'e8c43e6dc0d8'
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    op.execute(
+      'BEGIN TRANSACTION;'
+        'ALTER TABLE "event_occurence" RENAME TO "event_occurrence";'
+        'ALTER SEQUENCE "event_occurence_id_seq" RENAME TO "event_occurrence_id_seq";'
+        'ALTER TABLE "offer" RENAME COLUMN "eventOccurenceId" TO "eventOccurrenceId";'
+        'ALTER TABLE "recommendation" RENAME COLUMN "inviteforEventOccurenceId" TO "inviteforEventOccurrenceId";'
+
+        'ALTER INDEX "ix_event_occurence_beginningDatetime" RENAME TO "ix_event_occurrence_beginningDatetime";'
+        'ALTER INDEX "ix_event_occurence_occasionId" RENAME TO "ix_event_occurrence_occasionId";'
+        'ALTER INDEX "ix_offer_eventOccurenceId" RENAME TO "ix_offer_eventOccurrenceId";'
+
+        'ALTER TABLE event_occurrence RENAME CONSTRAINT "event_occurence_idAtProviders_key"   TO "event_occurrence_idAtProviders_key"  ;'
+        'ALTER TABLE event_occurrence RENAME CONSTRAINT "event_occurence_pkey"                TO "event_occurrence_pkey"               ;'
+        'ALTER TABLE event_occurrence RENAME CONSTRAINT "event_occurence_lastProviderId_fkey" TO "event_occurrence_lastProviderId_fkey";'
+        'ALTER TABLE event_occurrence RENAME CONSTRAINT "event_occurence_occasionId_fkey"     TO "event_occurrence_occasionId_fkey"    ;'
+
+        'ALTER TABLE offer DROP CONSTRAINT "check_offer_has_event_occurence_or_occasion";'
+        'ALTER TABLE offer ADD CONSTRAINT "check_offer_has_event_occurrence_or_occasion" CHECK ((("eventOccurrenceId" IS NOT NULL) OR ("occasionId" IS NOT NULL)));'
+
+        'ALTER TABLE offer RENAME CONSTRAINT "offer_eventOccurenceId_fkey" TO "offer_eventOccurrenceId_fkey";'
+        'ALTER TABLE recommendation RENAME CONSTRAINT "recommendation_inviteforEventOccurenceId_fkey" TO "recommendation_inviteforEventOccurrenceId_fkey";'
+        + Offer.trig_ddl + ';'
+      'COMMIT;'
+    )
+    pass
+
+
+def downgrade():
+    pass
