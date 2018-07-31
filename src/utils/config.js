@@ -105,6 +105,6 @@ if (typeof window !== 'undefined' && window.cordova) {
   }
 }
 
-export const ROOT_PATH = CALC_ROOT_PATH || 'http://localhost:3000/'
+export const ROOT_PATH = CALC_ROOT_PATH || 'http://localhost:3001/'
 
 export const DEFAULT_TO = '/accueil'
