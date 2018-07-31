@@ -10,7 +10,7 @@ import Main from '../layout/Main'
 import selectCurrentEventOrThingId from '../../selectors/currentEventOrThingId'
 import selectCurrentRecommendation from '../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../utils/normalizers'
-import { getDiscoveryPath } from '../../utils/routes'
+import { getDiscoveryPath } from '../../utils/getDiscoveryPath'
 
 class DiscoveryPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
@@ -28,12 +28,12 @@ class DiscoveryPage extends Component {
         query += 'occasionType=event'
       }
       if (mediationId) {
-        query += '&mediationId=' + mediationId
+        query += `&mediationId=${mediationId}`
       }
       if (eventOrThingId) {
-        query += '&occasionId=' + eventOrThingId
+        query += `&occasionId=${eventOrThingId}`
       }
-      requestData('PUT', 'recommendations?' + query, {
+      requestData('PUT', `recommendations?${  query}`, {
         handleSuccess: (state, action) => {
           if (!get(action, 'data.length')) {
             closeLoading({ isEmpty: true })
@@ -70,14 +70,14 @@ class DiscoveryPage extends Component {
   }
 
   componentWillMount() {
-    //this.handleRedirectFromLoading(this.props)
-    //this.ensureRecommendations(this.props)
+    // this.handleRedirectFromLoading(this.props)
+    // this.ensureRecommendations(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
-    //this.handleRedirectFromLoading(nextProps)
+    // this.handleRedirectFromLoading(nextProps)
     if (nextProps.offerId && nextProps.offerId !== this.props.offerId) {
-      //this.ensureRecommendations(nextProps)
+      // this.ensureRecommendations(nextProps)
     }
   }
 
@@ -90,7 +90,8 @@ class DiscoveryPage extends Component {
         handleDataRequest={this.handleDataRequest}
         menuButton={{ borderTop: true, onTop: isMenuOnTop }}
         name="discovery"
-        noPadding>
+        noPadding
+      >
         <Deck />
       </Main>
     )

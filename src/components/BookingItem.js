@@ -9,7 +9,7 @@ import getVenue from '../getters/venue'
 import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
 import Capitalize from './utils/Capitalize'
-import { getDiscoveryPath } from '../utils/routes'
+import { getDiscoveryPath } from '../utils/getDiscoveryPath'
 
 const BookingItem = props => {
   const { mediation, offer, thumbUrl, token } = props
@@ -33,7 +33,9 @@ const BookingItem = props => {
                 .format('dddd DD/MM/YYYY à H:mm')}
             </Capitalize>
           </div>
-          <div className="token">{token}</div>
+          <div className="token">
+            {token}
+          </div>
         </div>
         <div className="arrow">
           <Icon svg="ico-next-S" className="Suivant" />

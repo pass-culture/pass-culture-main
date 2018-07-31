@@ -23,7 +23,7 @@ import selectNextRecommendation from '../selectors/nextRecommendation'
 import selectPreviousLimit from '../selectors/previousLimit'
 import selectPreviousRecommendation from '../selectors/previousRecommendation'
 import { IS_DEV, ROOT_PATH } from '../utils/config'
-import { getDiscoveryPath } from '../utils/routes'
+import { getDiscoveryPath } from '../utils/getDiscoveryPath'
 
 class Deck extends Component {
   constructor() {
