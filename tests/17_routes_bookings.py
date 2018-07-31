@@ -141,7 +141,7 @@ def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFree
     assert 'cannotBookFreeOffers' in r_create.json()
 
 
-def test_17_create_booking_should_not_work_if_not_enough_credit(app):
+def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     # Given
     user = User()
     user.publicName = 'Test'
@@ -278,7 +278,7 @@ def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffe
     assert r_create_json['quantity'] == 1
 
 
-def test_15_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
+def test_18_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
     user = User()
     user.publicName = 'Test'
     user.email = 'can_book_paid_offers@email.com'
