@@ -12,6 +12,7 @@ from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer, RightsType
 
+
 class User(PcObject,
            Model,
            HasThumbMixin,

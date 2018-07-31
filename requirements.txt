@@ -25,6 +25,7 @@ pytest
 pytest-flask
 pytest-mock
 python-geoip
+PyMemoize
 requests
 simplejson
 wetransferpy
