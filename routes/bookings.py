@@ -52,7 +52,6 @@ def post_booking():
         ae.addError('cannotBookFreeOffers', 'L\'utilisateur n\'a pas le droit de réserver d\'offres gratuites')
         return jsonify(ae.errors), 400
 
-    managingOfferer = stock.resolvedOccasion.venue.managingOfferer
     managingOfferer = stock.resolvedOffer.venue.managingOfferer
     if not stock.isActive or\
        not managingOfferer.isActive or\
