@@ -5,7 +5,7 @@ from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, Fore
 from sqlalchemy.orm import aliased, relationship
 
 from models import Event, EventOccurrence
-from models.offer import Offer
+from models.stock import Stock
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.db import Model
@@ -57,27 +57,27 @@ class Occasion(PcObject,
         return self.event or self.thing
 
     @property
-    def offers(self):
+    def stocks(self):
         if self.thingId:
-            return self.thing.offers
+            return self.thing.stocks
         elif self.eventId:
-            return chain(map(lambda eo: eo.offers,
+            return chain(map(lambda eo: eo.stocks,
                              self.eventOccurrences))
         else:
             return []
 
     @property
-    def lastOffer(self):
-        query = Offer.query
+    def lastStock(self):
+        query = Stock.query
         if self.eventId:
             query = query.join(EventOccurrence)
         return query.join(Occasion)\
                     .filter(Occasion.id == self.id)\
-                    .order_by(desc(Offer.bookingLimitDatetime))\
+                    .order_by(desc(Stock.bookingLimitDatetime))\
                     .first()
 
     @staticmethod
-    def joinWithAliasedOffer(query, occasionType):
+    def joinWithAliasedStock(query, occasionType):
         query = Occasion.query
         if occasionType == Event:
             query = query.filter(Occasion.eventId != None)\
@@ -85,5 +85,5 @@ class Occasion(PcObject,
         else:
             query = query.filter(Occasion.thingId != None)\
                          .join(aliased(EventOccurrence))
-        offer_alias = aliased(Offer)
-        return query.join(offer_alias), offer_alias
+        stock_alias = aliased(Stock)
+        return query.join(stock_alias), stock_alias

@@ -8,7 +8,7 @@ from flask import current_app as app
 
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.occasion import Occasion
-from models.offer import Offer
+from models.stock import Stock
 from models.thing import Thing
 from models.venue import Venue
 
@@ -23,28 +23,28 @@ def read_date(date):
 def read_datetime(date):
     return datetime.strptime(date, DATETIME_FORMAT)
 
-class TiteLiveOffers(LocalProvider):
+class TiteLiveStocks(LocalProvider):
 
     help = ""
     identifierDescription = "Code Titelive de la librairie"
     identifierRegexp = "^\d+$"
-    name = "TiteLive Offers (Epagine / Place des libraires.com)"
-    objectType = Offer
+    name = "TiteLive Stocks (Epagine / Place des libraires.com)"
+    objectType = Stock
     canCreate = True
 
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'mock' / 'providers' / 'titelive_offers'
+                            / '..' / 'mock' / 'providers' / 'titelive_stocks'
         else:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'ftp_mirrors' / 'titelive_offers'
+                            / '..' / 'ftp_mirrors' / 'titelive_stocks'
         if not os.path.isdir(data_root_path):
             raise ValueError('File not found : '+str(data_root_path)
                              + '\nDid you run "pc ftp_mirrors" ?')
         self.zip = ZipFile(str(data_root_path / 'StockGroupes.zip'))
-        self.offer_files = iter(filter(lambda i: i.filename.startswith('association'), self.zip.infolist()))
+        self.stock_files = iter(filter(lambda i: i.filename.startswith('association'), self.zip.infolist()))
 
         self.data_lines = None
         with open(data_root_path / "Date_export.txt", "r") as f:
@@ -54,10 +54,10 @@ class TiteLiveOffers(LocalProvider):
         if match:
             self.dateModified = datetime.strptime(match.group(1), "%d/%m/%Y %H:%M")
         else:
-            raise ValueError('Invalid Date_export.txt file format in titelive_offers')
+            raise ValueError('Invalid Date_export.txt file format in titelive_stocks')
 
     def open_next_file(self):
-        f = self.offer_files.__next__()
+        f = self.stock_files.__next__()
         print("  Importing from file "+str(f.filename))
         lines = pd.read_csv(self.zip.open(f),
                             header=None,
@@ -117,17 +117,17 @@ class TiteLiveOffers(LocalProvider):
         p_info_occasion.idAtProviders = self.idAtProviders
         p_info_occasion.dateModifiedAtProvider = self.dateModified
 
-        p_info_offer = ProvidableInfo()
-        p_info_offer.type = Offer
+        p_info_stock = ProvidableInfo()
+        p_info_stock.type = Stock
         self.idAtProviders = str(line[1])+':'+str(line[2])
-        p_info_offer.idAtProviders = self.idAtProviders
-        p_info_offer.dateModifiedAtProvider = self.dateModified
+        p_info_stock.idAtProviders = self.idAtProviders
+        p_info_stock.dateModifiedAtProvider = self.dateModified
 
-        return p_info_occasion, p_info_offer
+        return p_info_occasion, p_info_stock
 
     def updateObject(self, obj):
         assert obj.idAtProviders == self.idAtProviders
-        if isinstance(obj, Offer):
+        if isinstance(obj, Stock):
             obj.occasion = self.providables[0]
             obj.offererId = self.venue.managingOffererId
             obj.price = self.price
@@ -141,4 +141,4 @@ class TiteLiveOffers(LocalProvider):
         return []
 
 
-app.local_providers.TiteLiveOffers = TiteLiveOffers
+app.local_providers.TiteLiveStocks = TiteLiveStocks

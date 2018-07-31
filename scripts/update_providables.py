@@ -5,7 +5,7 @@ from flask import current_app as app
 
 from models.db import db
 from models.event import Event
-from models.offer import Offer
+from models.stock import Stock
 from models.offerer import Offerer
 from models.thing import Thing
 from models.venue import Venue
@@ -43,7 +43,7 @@ def do_update(provider, limit):
 @app.manager.option('-t',
                     '--type',
                     help='Sync only this type of object'
-                         + ' (offer, thing or venue)')
+                         + ' (stock, thing or venue)')
 
 def update_providables(provider, venue, venueProvider, limit, type, mock=False):
 
@@ -57,12 +57,12 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
 
     # order matters ! An item appears later in this list
     # if it requires items named before it
-    # For instance, Offers require Events or Things
+    # For instance, Stocks require Events or Things
     PROVIDABLE_TYPES = [Offerer,
                         Venue,
                         Event,
                         Thing,
-                        Offer]
+                        Stock]
     if not venue:
         for providable_type in [app.model[type.capitalize()]]\
                                if type else PROVIDABLE_TYPES:

@@ -24,13 +24,13 @@ if MAILJET_API_SECRET is None or MAILJET_API_SECRET == '':
     raise ValueError("Missing environment variable MAILJET_API_SECRET")
 
 
-def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
-    if booking is None and len(offer.bookings)==0:
-        print("Not sending recap for  "+offer+" as it has no bookings")
+def send_booking_recap_emails(stock, booking=None, is_cancellation=False):
+    if booking is None and len(stock.bookings)==0:
+        print("Not sending recap for  "+stock+" as it has no bookings")
 
-    email = make_booking_recap_email(offer, booking, is_cancellation)
+    email = make_booking_recap_email(stock, booking, is_cancellation)
 
-    venue = offer.resolvedOccasion.venue
+    venue = stock.resolvedOccasion.venue
 
     recipients = [venue.bookingEmail, 'passculture@beta.gouv.fr']
 
@@ -48,8 +48,8 @@ def send_booking_recap_emails(offer, booking=None, is_cancellation=False):
         raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
 
     if booking is None:
-        offer.bookingRecapSent = datetime.utcnow()
-        PcObject.check_and_save(offer)
+        stock.bookingRecapSent = datetime.utcnow()
+        PcObject.check_and_save(stock)
 
 
 def send_booking_confirmation_email_to_user(booking, is_cancellation=False):
@@ -79,15 +79,15 @@ def _get_venue_description(venue):
                                                             venue.city)
 
 
-def make_booking_recap_email(offer, booking=None, is_cancellation=False):
+def make_booking_recap_email(stock, booking=None, is_cancellation=False):
     if booking == None:
-        venue = offer.resolvedOccasion.venue
+        venue = stock.resolvedOccasion.venue
     else:
-        venue = booking.offer.resolvedOccasion.venue
+        venue = booking.stock.resolvedOccasion.venue
     email_html = '<html><body>'
     email_html += '<p>Cher partenaire Pass Culture,</p>'
 
-    offer_description = _get_offer_description(offer)
+    stock_description = _get_stock_description(stock)
     venue_description = _get_venue_description(venue)
 
     email_subject = '[Reservations] '
@@ -95,31 +95,31 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
         user = booking.user
         email_html += '<p>%s (%s)' % (user.publicName, user.email)
         if is_cancellation:
-            email_subject += 'Annulation pour ' + offer_description
+            email_subject += 'Annulation pour ' + stock_description
             email_html += ' vient d\'annuler sa réservation'
         else:
-            email_subject += 'Nouvelle reservation pour ' + offer_description
+            email_subject += 'Nouvelle reservation pour ' + stock_description
             email_html += ' vient de faire une nouvelle réservation.</p>'
     else:
-        email_subject += 'Récapitulatif pour ' + offer_description
+        email_subject += 'Récapitulatif pour ' + stock_description
 
-    if offer.bookingLimitDatetime is not None:
-        if offer.bookingLimitDatetime < datetime.utcnow():
+    if stock.bookingLimitDatetime is not None:
+        if stock.bookingLimitDatetime < datetime.utcnow():
             email_html += '<p>Voici le récapitulatif final des réservations (total '
         else:
             email_html += '<p>Voici le récapitulatif des réservations à ce jour (total '
-        email_html += '%s) pour %s' % (len(offer.bookings), offer_description)
+        email_html += '%s) pour %s' % (len(stock.bookings), stock_description)
 
         if venue is not None:
             email_html += venue_description
 
-        if len(offer.bookings) > 0:
+        if len(stock.bookings) > 0:
             email_html += '</p><table>'
             email_html += '<tr><th>Nom ou pseudo</th>' \
                           + '<th>Email</th>' \
                           + '<th>Code réservation</th>' \
                             '</tr>'
-            for a_booking in offer.bookings:
+            for a_booking in stock.bookings:
                 email_html += '<tr>' \
                               + '<td>%s</td>' % a_booking.user.publicName \
                               + '<td>%s</td>' % a_booking.user.email \
@@ -139,13 +139,13 @@ def make_booking_recap_email(offer, booking=None, is_cancellation=False):
     }
 
 
-def _get_offer_description(offer):
-    if offer.eventOccurrence:
-        date_in_tz = _get_event_datetime(offer)
-        description = '{} le {}'.format(offer.eventOccurrence.occasion.event.name,
+def _get_stock_description(stock):
+    if stock.eventOccurrence:
+        date_in_tz = _get_event_datetime(stock)
+        description = '{} le {}'.format(stock.eventOccurrence.occasion.event.name,
                                         format_datetime(date_in_tz))
-    elif offer.resolvedOccasion.thing:
-        description = str(offer.resolvedOccasion.thing.name)
+    elif stock.resolvedOccasion.thing:
+        description = str(stock.resolvedOccasion.thing.name)
 
     return description
 
@@ -219,11 +219,11 @@ def send_dev_email(subject, html_text):
 
 
 def make_user_booking_recap_email(booking, is_cancellation=False):
-    offer = booking.offer
+    stock = booking.stock
     user = booking.user
     if is_cancellation:
         email_html, email_subject = _generate_cancellation_email_html_and_subject(user,
-                                                                                  offer)
+                                                                                  stock)
     else:
         email_html, email_subject = _generate_reservation_email_html_subject(booking)
 
@@ -235,10 +235,10 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
     }
 
 
-def _get_event_datetime(offer):
-    date_in_utc = offer.eventOccurrence.beginningDatetime
+def _get_event_datetime(stock):
+    date_in_utc = stock.eventOccurrence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                               offer.eventOccurrence.occasion.venue.departementCode)
+                                               stock.eventOccurrence.occasion.venue.departementCode)
     return date_in_tz
 
 
@@ -278,21 +278,21 @@ def subscribe_newsletter(user):
 
 
 def _generate_reservation_email_html_subject(booking):
-    offer = booking.offer
+    stock = booking.stock
     user = booking.user
-    venue = offer.resolvedOccasion.venue
-    offer_description = _get_offer_description(offer)
+    venue = stock.resolvedOccasion.venue
+    stock_description = _get_stock_description(stock)
     email_html = '<html><body><p>Cher {},</p>'.format(user.publicName)
-    if offer.eventOccurrence == None:
+    if stock.eventOccurrence == None:
         confirmation_nature = 'commande'
     else:
         confirmation_nature = 'réservation'
     email_subject = 'Confirmation de votre {} pour {}'.format(confirmation_nature,
-                                                              offer_description)
+                                                              stock_description)
     email_html += '<p>Nous vous confirmons votre {} pour {}'.format(confirmation_nature,
-                                                                    offer_description)
-    if offer.eventOccurrence == None:
-        email_html += ' (Ref: {}),'.format(offer.resolvedOccasion.thing.idAtProviders)
+                                                                    stock_description)
+    if stock.eventOccurrence == None:
+        email_html += ' (Ref: {}),'.format(stock.resolvedOccasion.thing.idAtProviders)
         email_html += ' proposé par {}.'.format(venue.name)
     else:
         email_html += _get_venue_description(venue)
@@ -301,30 +301,30 @@ def _generate_reservation_email_html_subject(booking):
     return email_html, email_subject
 
 
-def _generate_cancellation_email_html_and_subject(user, offer):
-    venue = offer.resolvedOccasion.venue
+def _generate_cancellation_email_html_and_subject(user, stock):
+    venue = stock.resolvedOccasion.venue
     email_html = '<html><body><p>Cher {},</p>'.format(user.publicName)
-    if offer.eventOccurrence == None:
+    if stock.eventOccurrence == None:
         confirmation_nature = 'commande'
-        offer_name = offer.resolvedOccasion.thing.name
-        thing_reference = ' (Ref: {})'.format(offer.resolvedOccasion.thing.idAtProviders)
+        stock_name = stock.resolvedOccasion.thing.name
+        thing_reference = ' (Ref: {})'.format(stock.resolvedOccasion.thing.idAtProviders)
 
     else:
         confirmation_nature = 'réservation'
-        offer_name = offer.eventOccurrence.occasion.event.name
+        stock_name = stock.eventOccurrence.occasion.event.name
 
     email_html += '<p>Votre {} pour {}'.format(confirmation_nature,
-                                                offer_name)
+                                                stock_name)
 
-    if offer.eventOccurrence == None:
+    if stock.eventOccurrence == None:
         email_html += thing_reference
 
     email_html += ','
     email_subject = 'Annulation de votre {} pour {}'.format(confirmation_nature,
-                                                            offer_name)
+                                                            stock_name)
     email_html += ' proposé par {}'.format(venue.name)
-    if offer.eventOccurrence != None:
-        date_in_tz = _get_event_datetime(offer)
+    if stock.eventOccurrence != None:
+        date_in_tz = _get_event_datetime(stock)
         datetime_information = ' le {}'.format(format_datetime(date_in_tz))
         email_html += '{},'.format(datetime_information)
         email_subject += datetime_information
@@ -333,8 +333,8 @@ def _generate_cancellation_email_html_and_subject(user, offer):
     return email_html, email_subject
 
 
-def _get_event_datetime(offer):
-    date_in_utc = offer.eventOccurrence.beginningDatetime
+def _get_event_datetime(stock):
+    date_in_utc = stock.eventOccurrence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                               offer.eventOccurrence.occasion.venue.departementCode)
+                                               stock.eventOccurrence.occasion.venue.departementCode)
     return date_in_tz

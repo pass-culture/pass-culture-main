@@ -4,7 +4,7 @@ from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
     make_booking_recap_email
 
-from utils.test_utils import create_offer_with_event_occasion, create_offer_with_thing_occasion, \
+from utils.test_utils import create_stock_with_event_occasion, create_stock_with_thing_occasion, \
     create_user_for_booking_email_test, create_booking_for_booking_email_test
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
@@ -74,9 +74,9 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
 
 def test_01_make_user_booking_event_recap_email_should_have_standard_subject():
     # Given
-    offer = create_offer_with_event_occasion()
+    stock = create_stock_with_event_occasion()
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
@@ -86,9 +86,9 @@ def test_01_make_user_booking_event_recap_email_should_have_standard_subject():
 
 def test_02_make_user_booking_event_recap_email_should_have_standard_body():
     # Given
-    offer = create_offer_with_event_occasion()
+    stock = create_stock_with_event_occasion()
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
@@ -98,9 +98,9 @@ def test_02_make_user_booking_event_recap_email_should_have_standard_body():
 
 def test_03_make_user_booking_event_recap_email_should_have_standard_subject_cancellation():
     # Given
-    offer = create_offer_with_event_occasion()
+    stock = create_stock_with_event_occasion()
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=True)
@@ -110,9 +110,9 @@ def test_03_make_user_booking_event_recap_email_should_have_standard_subject_can
 
 def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancellation():
     # Given
-    offer = create_offer_with_event_occasion()
+    stock = create_stock_with_event_occasion()
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=True)
@@ -122,9 +122,9 @@ def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancel
 
 def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app):
     # Given
-    offer = create_offer_with_event_occasion()
+    stock = create_stock_with_event_occasion()
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
     mail_html = HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL
 
     if IS_DEV or IS_STAGING:
@@ -154,14 +154,14 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
 def test_06_booking_recap_email_html_should_have_place_and_structure():
     # Given
-    offer = create_offer_with_event_occasion()
+    stock = create_stock_with_event_occasion()
 
     user = create_user_for_booking_email_test()
 
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
-    recap_email = make_booking_recap_email(offer, booking)
+    recap_email = make_booking_recap_email(stock, booking)
 
     # Then
     assert recap_email['Html-part'] == HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL
@@ -169,22 +169,22 @@ def test_06_booking_recap_email_html_should_have_place_and_structure():
 
 def test_07_booking_recap_email_subject_should_have_defined_structure():
     # Given
-    offer = create_offer_with_event_occasion()
+    stock = create_stock_with_event_occasion()
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
-    recap_email = make_booking_recap_email(offer, booking)
+    recap_email = make_booking_recap_email(stock, booking)
 
     # Then
     assert recap_email['Subject'] == SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL
 
 
 def test_08_maker_user_booking_thing_recap_email_should_have_standard_body():
-    offer = create_offer_with_thing_occasion()
-    offer.occasion.thing.idAtProviders = '12345'
+    stock = create_stock_with_thing_occasion()
+    stock.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
@@ -193,10 +193,10 @@ def test_08_maker_user_booking_thing_recap_email_should_have_standard_body():
 
 
 def test_09_maker_user_booking_thing_recap_email_should_have_standard_subject():
-    offer = create_offer_with_thing_occasion()
-    offer.occasion.thing.idAtProviders = '12345'
+    stock = create_stock_with_thing_occasion()
+    stock.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
@@ -206,10 +206,10 @@ def test_09_maker_user_booking_thing_recap_email_should_have_standard_subject():
 
 def test_10_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation():
     # Given
-    offer = create_offer_with_thing_occasion()
-    offer.occasion.thing.idAtProviders = '12345'
+    stock = create_stock_with_thing_occasion()
+    stock.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=True)
@@ -219,10 +219,10 @@ def test_10_make_user_booking_thing_recap_email_should_have_standard_subject_can
 
 def test_11_make_user_booking_thing_recap_email_should_have_standard_body_cancellation():
     # Given
-    offer = create_offer_with_thing_occasion()
-    offer.occasion.thing.idAtProviders = '12345'
+    stock = create_stock_with_thing_occasion()
+    stock.occasion.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
-    booking = create_booking_for_booking_email_test(user, offer)
+    booking = create_booking_for_booking_email_test(user, stock)
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=True)

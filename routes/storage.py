@@ -32,7 +32,7 @@ def post_storage_file(collectionName, id, index):
         model = app.model[model_name]
         entity = model.query.filter_by(id=dehumanize(id)).first_or_404()
         if model_name == 'Mediation':
-            offerer = entity.occasion.eventOccurrences[0].offer[0].offerer
+            offerer = entity.occasion.eventOccurrences[0].stock[0].offerer
             if offerer not in current_user.offerers:
                 return jsonify({
                     'text': "user is not allowed to add mediation in this offerer"

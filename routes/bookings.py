@@ -7,7 +7,7 @@ from sqlalchemy.exc import InternalError
 
 from models import Booking, Venue
 from models.api_errors import ApiErrors
-from models.offer import Offer
+from models.stock import Stock
 from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES
@@ -35,39 +35,44 @@ def get_booking(booking_id):
 @login_required
 @expect_json_data
 def post_booking():
-    offer_id = request.json.get('offerId')
+    stock_id = request.json.get('stockId')
     ae = ApiErrors()
-    if offer_id is None:
-        ae.addError('offerId', 'Vous devez préciser un identifiant d\'offre')
+
+    if current_user.canBook == False:
+        ae.addError('canBook', 'L\'utilisateur n\'a pas le droit de réserver d\'offre')
         return jsonify(ae.errors), 400
 
-    offer = Offer.query.filter_by(id=dehumanize(offer_id)).first()
+    if stock_id is None:
+        ae.addError('stockId', 'Vous devez préciser un identifiant d\'offre')
+        return jsonify(ae.errors), 400
 
-    if offer is None:
-        ae.addError('offerId', 'offerId ne correspond à aucune offer')
+    stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
+
+    if stock is None:
+        ae.addError('stockId', 'stockId ne correspond à aucune stock')
         return jsonify(ae.errors), 400
 
     if (current_user.canBookFreeOffers == False) and (offer.price == 0):
         ae.addError('cannotBookFreeOffers', 'L\'utilisateur n\'a pas le droit de réserver d\'offres gratuites')
         return jsonify(ae.errors), 400
 
-    managingOfferer = offer.resolvedOccasion.venue.managingOfferer
-    if not offer.isActive or\
+    managingOfferer = stock.resolvedOccasion.venue.managingOfferer
+    if not stock.isActive or\
        not managingOfferer.isActive or\
-       (offer.eventOccurrence and (not offer.eventOccurrence.isActive)):
-        ae.addError('offerId', "Cette offre a été retirée. Elle n'est plus valable.")
+       (stock.eventOccurrence and (not stock.eventOccurrence.isActive)):
+        ae.addError('stockId', "Cette offre a été retirée. Elle n'est plus valable.")
         return jsonify(ae.errors), 400
 
-    if offer.bookingLimitDatetime is not None and\
-       offer.bookingLimitDatetime < datetime.utcnow():
+    if stock.bookingLimitDatetime is not None and\
+       stock.bookingLimitDatetime < datetime.utcnow():
         ae.addError('global', 'La date limite de réservation de cette offre'
                               + ' est dépassée')
         return jsonify(ae.errors), 400
 
     new_booking = Booking()
-    new_booking.offerId = dehumanize(offer_id)
+    new_booking.stockId = dehumanize(stock_id)
 
-    amount = offer.price
+    amount = stock.price
     new_booking.amount = amount
 
     token = random_token()
@@ -92,8 +97,8 @@ def post_booking():
         else:
             raise ie
 
-    new_booking_offer = Offer.query.get(new_booking.offerId)
-    send_booking_recap_emails(new_booking_offer, new_booking)
+    new_booking_stock = Stock.query.get(new_booking.stockId)
+    send_booking_recap_emails(new_booking_stock, new_booking)
     send_booking_confirmation_email_to_user(new_booking)
 
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201

@@ -15,7 +15,7 @@ from models.booking import Booking
 from models.event_occurrence import EventOccurrence
 from models.event import Event
 from models.pc_object import PcObject
-from models.offer import Offer
+from models.stock import Stock
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer
@@ -121,22 +121,22 @@ def do_sandbox():
             else:
                 event_occurrences.append(query.one())
 
-    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'offers.json'
-    offers = []
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'stocks.json'
+    stocks = []
     with open(json_path) as json_file:
         for obj in json.load(json_file):
             event_occurrence = event_occurrences[obj['eventOccurrenceIndex']]
-            query = Offer.query.filter_by(eventOccurrenceId=event_occurrence.id)
+            query = Stock.query.filter_by(eventOccurrenceId=event_occurrence.id)
             if query.count() == 0:
-                offer = Offer(from_dict=obj)
-                offer.eventOccurrence = event_occurrence
-                offer.offerer = offerers[obj['offererIndex']]
-                offer.save()
-                print("CREATED offer")
-                pprint(vars(offer))
-                offers.append(offer)
+                stock = Stock(from_dict=obj)
+                stock.eventOccurrence = event_occurrence
+                stock.offerer = offerers[obj['offererIndex']]
+                stock.save()
+                print("CREATED stock")
+                pprint(vars(stock))
+                stocks.append(stock)
             else:
-                offers.append(query.one())
+                stocks.append(query.one())
 
     json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'deposits.json'
     deposits = []
@@ -156,12 +156,12 @@ def do_sandbox():
     bookings = []
     with open(json_path) as json_file:
         for obj in json.load(json_file):
-            offer = offers[obj['offerIndex']]
+            stock = stocks[obj['offerIndex']]
             user = User.query.filter_by(email=obj['userEmail']).one()
-            query = Booking.query.filter_by(offerId=offer.id)
+            query = Booking.query.filter_by(stockId=stock.id)
             if query.count() == 0:
                 booking = Booking(from_dict=obj)
-                booking.offer = offer
+                booking.stock = stock
                 booking.user = user
                 booking.amount = offer.price
                 booking.save()

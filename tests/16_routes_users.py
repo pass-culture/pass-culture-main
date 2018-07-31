@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from models import PcObject, Thing, Venue, Offer, Recommendation, Deposit, Booking, Occasion
+from models import PcObject, Thing, Venue, Stock, Recommendation, Deposit, Booking, Occasion
 from pprint import pprint
 
 from models.offerer import Offerer
@@ -297,13 +297,13 @@ def test_28_user_should_have_its_wallet_balance(app):
     venue.managingOffererId = offerer.id
     PcObject.check_and_save(venue)
 
-    offer = Offer()
-    offer.offererId = offerer.id
-    offer.price = 5
-    offer.venueId = venue.id
-    offer.available = 50
-    offer.occasion = create_thing_occasion()
-    PcObject.check_and_save(offer)
+    stock = Stock()
+    stock.offererId = offerer.id
+    stock.price = 5
+    stock.venueId = venue.id
+    stock.available = 50
+    stock.occasion = create_thing_occasion()
+    PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
     recommendation.userId = user.id
@@ -325,11 +325,11 @@ def test_28_user_should_have_its_wallet_balance(app):
     PcObject.check_and_save(deposit)
 
     booking = Booking()
-    booking.offerId = offer.id
+    booking.stockId = stock.id
     booking.recommendationId = recommendation.id
     booking.userId = user.id
     booking.token = '2ALUY5'
-    booking.amount = offer.price
+    booking.amount = stock.price
     PcObject.check_and_save(booking)
 
     r_create = req_with_auth('wallet_test@email.com', 'testpsswd').get(API_URL + '/users/current')

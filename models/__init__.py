@@ -12,7 +12,7 @@ from models.local_provider_event import LocalProviderEvent
 from models.mediation import Mediation
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.occasion import Occasion
-from models.offer import Offer
+from models.stock import Stock
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -43,7 +43,7 @@ __all__ = (
     'Event',
     'EventOccurrence',
     'Mediation',
-    'Offer',
+    'Stock',
     'Offerer',
     'VenueProvider',
     'LocalProviderEvent',

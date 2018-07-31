@@ -9,7 +9,7 @@ from sqlalchemy import BigInteger, \
     String
 from sqlalchemy.orm import relationship
 
-from models import Offer, EventOccurrence
+from models import Stock, EventOccurrence
 from models.db import Model
 from models.pc_object import PcObject
 

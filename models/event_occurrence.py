@@ -47,5 +47,5 @@ class EventOccurrence(PcObject,
                            default=bytes([0]))
 
     @property
-    def offer(self):
-        return self.offers
+    def stock(self):
+        return self.stocks

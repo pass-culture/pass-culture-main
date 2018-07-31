@@ -4,18 +4,18 @@ from random import randint
 def get_mediation (recommendation):
     return recommendation.get('mediation')
 
-def get_offer (offer_id, recommendation):
-    return [o for o in recommendation.get('recommendationOffers', []) if o['id'] == offer_id][0]
+def get_stock (stock_id, recommendation):
+    return [o for o in recommendation.get('recommendationStocks', []) if o['id'] == stock_id][0]
 
-def get_source(mediation, offer):
-    return offer.get('eventOccurrence', {"event": None}).get('event') or\
-           offer.get('thing') or\
+def get_source(mediation, stock):
+    return stock.get('eventOccurrence', {"event": None}).get('event') or\
+           stock.get('thing') or\
            mediation.get('event') or\
            mediation.get('thing')
 
-def get_thumb_url(mediation, source, offer):
-    source_collection_name = (offer.get('eventOccurrence') and 'events') or\
-        (offer.get('thing') and 'things') or\
+def get_thumb_url(mediation, source, stock):
+    source_collection_name = (stock.get('eventOccurrence') and 'events') or\
+        (stock.get('thing') and 'things') or\
         (mediation.get('event') and 'events') or\
         (mediation.get('thing') and 'things') or ''
     if mediation and mediation.get('thumbCount') > 0:
@@ -23,25 +23,25 @@ def get_thumb_url(mediation, source, offer):
     elif source and source.get('thumbCount') > 0:
         return source_collection_name + '/' + source['id']
 
-def get_venue(offer, source):
-    return offer.get('eventOccurrence', {'venue': None}).get('venue') or\
-    offer.get('venue') or\
+def get_venue(stock, source):
+    return stock.get('eventOccurrence', {'venue': None}).get('venue') or\
+    stock.get('venue') or\
     source.get('eventOccurrence', {'venue': None}).get('venue') or\
     source.get('venue')
 
 def get_content(recommendation):
     content = {}
     mediation = recommendation.get('mediation')
-    recommendation_offers = recommendation['recommendationOffers']
-    offer_index = randint(0, len(recommendation_offers) - 1)
-    offer_id = recommendation_offers[offer_index]['id']
+    recommendation_stocks = recommendation['recommendationStocks']
+    stock_index = randint(0, len(recommendation_stocks) - 1)
+    stock_id = recommendation_stocks[stock_index]['id']
     mediation = get_mediation(recommendation)
-    offer = get_offer(offer_id, recommendation)
-    source = get_source(mediation, offer)
-    venue = get_venue(offer, source)
-    content['thumbUrl'] = get_thumb_url(mediation, source, offer)
+    stock = get_stock(stock_id, recommendation)
+    source = get_source(mediation, stock)
+    venue = get_venue(stock, source)
+    content['thumbUrl'] = get_thumb_url(mediation, source, stock)
     content.update({
-        "offer": offer,
+        "stock": stock,
         "mediation": mediation,
         "source": source,
         "venue": venue

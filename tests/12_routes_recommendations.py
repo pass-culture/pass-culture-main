@@ -18,13 +18,13 @@ def check_recos(recos):
                           recos)))
     assert len(list(filter(lambda v: v>1, Counter(ids).values()))) == 0
 
-    # ensure we have no mediations for which all offers are past their bookingLimitDatetime
+    # ensure we have no mediations for which all stocks are past their bookingLimitDatetime
     for reco in recos:
         if 'mediation' in reco\
            and 'tutoIndex' not in reco['mediation']:
-            assert not all([offer['bookingLimitDatetime'] is not None and
-                            parse_date(offer['bookingLimitDatetime']) <= datetime.utcnow()
-                            for offer in oc['offers'] for oc in reco['mediatedOccurrences']])
+            assert not all([stock['bookingLimitDatetime'] is not None and
+                            parse_date(stock['bookingLimitDatetime']) <= datetime.utcnow()
+                            for stock in oc['stocks'] for oc in reco['mediatedOccurrences']])
             if not reco['event']['isNational']:
                 assert not all([oc['venue']['departementCode'] != '93' for oc in reco['mediatedOccurrences']])
 

@@ -14,7 +14,7 @@ from utils.includes import BOOKING_INCLUDES,\
                            RECOMMENDATION_INCLUDES
 from models import EventOccurrence,\
                    Mediation,\
-                   Offer,\
+                   Stock,\
                    PcObject,\
                    Recommendation
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, \
@@ -196,7 +196,7 @@ def dictify_reco(reco):
     dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
     if reco.occasion:
         booking_query = Booking.query\
-                               .join(Offer)
+                               .join(Stock)
         if reco.occasion.eventId:
             booking_query = booking_query.join(EventOccurrence)
         booking_query = booking_query.join(Occasion)\

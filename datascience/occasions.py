@@ -1,4 +1,4 @@
-""" recommendations offers """
+""" recommendations stocks """
 from datetime import datetime
 from flask import current_app as app
 from itertools import cycle

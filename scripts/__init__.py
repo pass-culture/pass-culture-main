@@ -11,7 +11,7 @@ from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.mediation import Mediation
-from models.offer import Offer
+from models.stock import Stock
 from models.offerer import Offerer
 from models.venue_provider import VenueProvider
 from models.local_provider_event import LocalProviderEvent

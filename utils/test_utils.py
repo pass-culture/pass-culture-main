@@ -12,7 +12,7 @@ from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.occasion import Occasion
-from models.offer import Offer
+from models.stock import Stock
 from models.offerer import Offerer
 from models.user import User
 from models.venue import Venue
@@ -39,11 +39,11 @@ def req_with_auth(email=None, password=None):
     return r
 
 
-def create_booking_for_booking_email_test(user, offer):
+def create_booking_for_booking_email_test(user, stock):
     booking = Booking()
     booking.user = user
     booking.token = '56789'
-    offer.bookings = [booking]
+    stock.bookings = [booking]
     return booking
 
 
@@ -54,28 +54,28 @@ def create_user_for_booking_email_test():
     return user
 
 
-def create_offer_with_event_occasion(price=10):
-    offer = Offer()
-    offer.price = price
-    offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-    offer.eventOccurrence = EventOccurrence()
-    offer.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-    offer.eventOccurrence.occasion = Occasion()
-    offer.eventOccurrence.occasion.event = Event()
-    offer.eventOccurrence.occasion.event.name = 'Mains, sorts et papiers'
-    offer.eventOccurrence.occasion.venue = _create_venue_for_booking_email_test()
-    offer.isActive = True
+def create_stock_with_event_occasion(price=10):
+    stock = Stock()
+    stock.price = price
+    stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+    stock.eventOccurrence = EventOccurrence()
+    stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+    stock.eventOccurrence.occasion = Occasion()
+    stock.eventOccurrence.occasion.event = Event()
+    stock.eventOccurrence.occasion.event.name = 'Mains, sorts et papiers'
+    stock.eventOccurrence.occasion.venue = _create_venue_for_booking_email_test()
+    stock.isActive = True
 
-    return offer
+    return stock
 
 
-def create_offer_with_thing_occasion(price=10):
-    offer = Offer()
-    offer.price = price
-    offer.occasion = create_thing_occasion()
-    offer.occasion.venue = _create_venue_for_booking_email_test()
-    offer.isActive = True
-    return offer
+def create_stock_with_thing_occasion(price=10):
+    stock = Stock()
+    stock.price = price
+    stock.occasion = create_thing_occasion()
+    stock.occasion.venue = _create_venue_for_booking_email_test()
+    stock.isActive = True
+    return stock
 
 
 def create_thing_occasion():

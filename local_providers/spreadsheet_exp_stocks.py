@@ -1,4 +1,4 @@
-""" spreadsheet exp offers"""
+""" spreadsheet exp stocks"""
 from datetime import datetime, timedelta
 import dateparser
 from flask import current_app as app
@@ -12,7 +12,7 @@ from models.event_occurrence import EventOccurrence
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.mediation import Mediation
 from models.occasion import Occasion
-from models.offer import Offer
+from models.stock import Stock
 from models.offerer import Offerer
 from models.venue import Venue
 from utils.date import get_dept_timezone, format_duration
@@ -30,13 +30,13 @@ def is_filled(info):
     info = str(info)
     return info != 'nan' and info.replace(' ', '') != ''
 
-class SpreadsheetExpOffers(LocalProvider):
+class SpreadsheetExpStocks(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "Experimentation Spreadsheet (Offres)"
-    objectType = Offer
+    objectType = Stock
     canCreate = True
 
     def __init__(self, offerer, mock=False):
@@ -109,13 +109,13 @@ class SpreadsheetExpOffers(LocalProvider):
 
                 providables.append(p_info_evocc)
 
-                p_info_offer = ProvidableInfo()
-                p_info_offer.type = Offer
-                p_info_offer.idAtProviders = str(int(self.line['Ref Évènement'])) + '_'\
+                p_info_stock = ProvidableInfo()
+                p_info_stock.type = Stock
+                p_info_stock.idAtProviders = str(int(self.line['Ref Évènement'])) + '_'\
                                              + evocc_dt.isoformat()
-                p_info_offer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+                p_info_stock.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
-                providables.append(p_info_offer)
+                providables.append(p_info_stock)
 
         if is_filled(self.line['Lien Image Accroche']) or\
            is_filled(self.line['Texte Accroche']):
@@ -150,14 +150,14 @@ class SpreadsheetExpOffers(LocalProvider):
             obj.endDatetime = obj.beginningDatetime\
                               + timedelta(minutes=self.providables[0].durationMinutes)
             obj.occasion = self.providables[1]
-        elif isinstance(obj, Offer):
+        elif isinstance(obj, Stock):
             for providable in self.providables[1:]:
                 if isinstance(providable, EventOccurrence)\
                    and providable.idAtProviders == obj.idAtProviders:
                     obj.eventOccurrence = providable
                     break
             if obj.eventOccurrence is None:
-                raise ValueError("Can't find EventOccurrence matching offer in updateObj")
+                raise ValueError("Can't find EventOccurrence matching stock in updateObj")
             obj.price = 0
             obj.offerer = self.offerer
             if is_filled(self.line['Places Par Horaire']):
@@ -198,4 +198,4 @@ class SpreadsheetExpOffers(LocalProvider):
             return []
 
 
-app.local_providers.SpreadsheetExpOffers = SpreadsheetExpOffers
+app.local_providers.SpreadsheetExpStocks = SpreadsheetExpStocks

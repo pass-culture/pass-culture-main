@@ -7,7 +7,7 @@ import routes.export
 import routes.mediations
 import routes.occasions
 import routes.offerers
-import routes.offers
+import routes.stocks
 import routes.providers
 import routes.recommendations
 # TODO

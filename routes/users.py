@@ -108,7 +108,7 @@ def signup():
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.admin)
             # offerer.bookingEmail = new_user.email
-            # Don't validate the first user / offerer link so that the user can immediately start loading offers
+            # Don't validate the first user / offerer link so that the user can immediately start loading stocks
             objects_to_save = [new_user, offerer, user_offerer]
         else:
             offerer = existing_offerer

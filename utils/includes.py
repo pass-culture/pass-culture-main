@@ -12,7 +12,7 @@ OFFERER_INCLUDES = [
 ]
 
 EVENT_OCCURRENCE_INCLUDES = [
-    'offer'
+    'stock'
 ]
 
 EVENT_INCLUDES = [
@@ -20,7 +20,7 @@ EVENT_INCLUDES = [
         "key": "occurrences",
         "sub_joins": [
             {
-                "key": "offer",
+                "key": "stock",
                 "sub_joins": [
                     {
                         "key": "offerer",
@@ -48,7 +48,7 @@ OCCASION_INCLUDES = [
                 "key": "occurrences",
                 "sub_joins": [
                     {
-                        "key": "offer"
+                        "key": "stock"
                     },
                     'venue'
                 ]
@@ -60,7 +60,7 @@ OCCASION_INCLUDES = [
         "key": "thing",
         "sub_joins": [
             {
-                "key": "offer"
+                "key": "stock"
             },
             'venue',
             'mediations'
@@ -86,7 +86,7 @@ RECOMMENDATION_INCLUDES = [
             "eventOrThing",
             "mediation",
             {
-                "key": "offers",
+                "key": "stocks",
                 "sub_joins": ["eventOccurrence"]
             },
             "venue",
@@ -97,7 +97,7 @@ RECOMMENDATION_INCLUDES = [
 
 BOOKING_INCLUDES = [
     {
-        "key": "offer",
+        "key": "stock",
         "sub_joins": 
             [
                 {
@@ -128,7 +128,7 @@ VENUE_INCLUDES = [
         "sub_joins": ["provider"]
     },
     {
-        "key": "offers",
+        "key": "stocks",
         "sub_joins": ["thing"]
     }
 ]

@@ -1,18 +1,18 @@
 from datetime import datetime, timedelta
 
-from models import User, Offerer, Recommendation, Offer, PcObject, Deposit, Venue
+from models import User, Offerer, Recommendation, Stock, PcObject, Deposit, Venue
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth, create_offer_with_thing_occasion, \
+from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_occasion, \
     create_thing_occasion, create_deposit
 
 
 def test_11_create_booking_should_not_work_past_limit_date(app):
-    expired_offer = create_offer_with_thing_occasion(price=0)
-    expired_offer.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
-    PcObject.check_and_save(expired_offer)
+    expired_stock = create_stock_with_thing_occasion(price=0)
+    expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
+    PcObject.check_and_save(expired_stock)
 
     booking_json = {
-        'offerId': humanize(expired_offer.id),
+        'stockId': humanize(expired_stock.id),
         'recommendationId': humanize(1)
     }
 
@@ -23,15 +23,15 @@ def test_11_create_booking_should_not_work_past_limit_date(app):
 
 
 def test_12_create_booking_should_work_before_limit_date(app):
-    ok_offer = Offer()
-    ok_offer.venueId = 1
-    ok_offer.occasionId = 1
-    ok_offer.price = 0
-    ok_offer.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-    PcObject.check_and_save(ok_offer)
+    ok_stock = Stock()
+    ok_stock.venueId = 1
+    ok_stock.occasionId = 1
+    ok_stock.price = 0
+    ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+    PcObject.check_and_save(ok_stock)
 
     booking_json = {
-        'offerId': humanize(ok_offer.id),
+        'stockId': humanize(ok_stock.id),
         'recommendationId': humanize(1)
     }
 
@@ -45,17 +45,17 @@ def test_12_create_booking_should_work_before_limit_date(app):
 
 
 def test_13_create_booking_should_not_work_if_too_many_bookings(app):
-    too_many_bookings_offer = create_offer_with_thing_occasion()
-    too_many_bookings_offer.available = 0
-    PcObject.check_and_save(too_many_bookings_offer)
+    too_many_bookings_stock = create_stock_with_thing_occasion()
+    too_many_bookings_stock.available = 0
+    PcObject.check_and_save(too_many_bookings_stock)
 
     recommendation = Recommendation()
     recommendation.user = User.query.filter_by(email='pctest.jeune.93@btmx.fr').first()
-    recommendation.occasion = too_many_bookings_offer.occasion
+    recommendation.occasion = too_many_bookings_stock.occasion
     PcObject.check_and_save(recommendation)
 
     booking_json = {
-        'offerId': humanize(too_many_bookings_offer.id),
+        'stockId': humanize(too_many_bookings_stock.id),
         'recommendationId': humanize(recommendation.id)
     }
 
@@ -67,7 +67,7 @@ def test_13_create_booking_should_not_work_if_too_many_bookings(app):
 
 def test_14_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     booking_json = {
-        'offerId': humanize(2),
+        'stockId': humanize(2),
         'recommendationId': humanize(1),
     }
     user = User.query.filter_by(email='pctest.jeune.93@btmx.fr').first()
@@ -79,6 +79,18 @@ def test_14_create_booking_should_work_if_user_can_book_and_enough_credit(app):
 
 
 def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
+    # with default admin user
+    booking_json = {
+        'stockId': humanize(3),
+        'recommendationId': humanize(1),
+    }
+    r_create = req_with_auth().post(API_URL + '/bookings', json=booking_json)
+    assert r_create.json()['canBook'] == ["L'utilisateur n'a pas le droit de réserver d'offre"]
+    assert r_create.status_code == 400
+
+
+def test_16_create_booking_should_not_work_if_user_can_not_book(app):
+    # Given
     user = User()
     user.publicName = 'Test'
     user.email = 'cannotBook_freeOffers@email.com'
@@ -128,9 +140,9 @@ def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFree
     PcObject.check_and_save(deposit)
 
     booking_json = {
-        "offerId": humanize(offer.id),
-        "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        'stockId': humanize(3),
+        'recommendationId': humanize(1),
+        "userId": humanize(user.id)
     }
 
     # When
@@ -170,13 +182,13 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     venue.managingOfferer = offerer
     PcObject.check_and_save(venue)
 
-    offer = Offer()
-    offer.occasion = thing_occasion
-    offer.occasion.venue = venue
-    offer.offerer = offerer
-    offer.price = 200
-    offer.available = 50
-    PcObject.check_and_save(offer)
+    stock = Stock()
+    stock.occasion = thing_occasion
+    stock.occasion.venue = venue
+    stock.offerer = offerer
+    stock.price = 200
+    stock.available = 50
+    PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
     recommendation.occasion = thing_occasion
@@ -191,7 +203,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     PcObject.check_and_save(deposit)
 
     booking_json = {
-        "offerId": humanize(offer.id),
+        "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
         "userId": humanize(user.id),
     }
@@ -206,7 +218,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
 
     PcObject.delete(deposit)
     PcObject.delete(recommendation)
-    PcObject.delete(offer)
+    PcObject.delete(stock)
     PcObject.delete(venue)
     PcObject.delete(thing_occasion)
     PcObject.delete(offerer)
@@ -242,13 +254,13 @@ def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffe
     venue.managingOfferer = offerer
     PcObject.check_and_save(venue)
 
-    offer = Offer()
-    offer.occasion = thing_occasion
-    offer.occasion.venue = venue
-    offer.offerer = offerer
-    offer.price = 5
-    offer.available = 50
-    PcObject.check_and_save(offer)
+    stock = Stock()
+    stock.occasion = thing_occasion
+    stock.occasion.venue = venue
+    stock.offerer = offerer
+    stock.price = 5
+    stock.available = 50
+    PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
     recommendation.occasion = thing_occasion
@@ -263,7 +275,7 @@ def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffe
     PcObject.check_and_save(deposit)
 
     booking_json = {
-        "offerId": humanize(offer.id),
+        "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
         "userId": humanize(user.id),
     }

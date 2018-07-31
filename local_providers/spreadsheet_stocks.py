@@ -7,7 +7,7 @@ from pandas import read_excel
 
 from models.event import Event
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.offer import Offer
+from models.stock import Stock
 from utils.human_ids import humanize
 from utils.object_storage import local_path
 from utils.string_processing import get_date_time_range, get_matched_string_index, get_price_value, read_date
@@ -17,12 +17,12 @@ image_extension_regex = re.compile(r'jpg|JPG|png|PNG')
 thumb_target_keys = ['Titre', 'Artiste']
 
 
-class SpreadsheetOffers(LocalProvider):
+class SpreadsheetStocks(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Nom de la librairie"
     identifierRegexp = "^\w+$"
-    name = "Spreadsheet Offers"
-    objectType = Offer
+    name = "Spreadsheet Stocks"
+    objectType = Stock
     canCreate = True
 
     def __init__(self, offerer):
@@ -95,16 +95,16 @@ class SpreadsheetOffers(LocalProvider):
         p_info_event.idAtProviders = str(self.dateModified + '-' + str(self.index))
         p_info_event.dateModifiedAtProvider = read_date(self.dateModified)
 
-        p_info_offer = ProvidableInfo()
-        p_info_offer.type = Offer
-        p_info_offer.idAtProviders = str(self.dateModified + '-' + str(self.index))
-        p_info_offer.dateModifiedAtProvider = read_date(self.dateModified)
+        p_info_stock = ProvidableInfo()
+        p_info_stock.type = Stock
+        p_info_stock.idAtProviders = str(self.dateModified + '-' + str(self.index))
+        p_info_stock.dateModifiedAtProvider = read_date(self.dateModified)
 
-        return p_info_event, p_info_offer
+        return p_info_event, p_info_stock
 
-    def updateObject(self, offerOrEvent, providableObjs):
-        if isinstance(offerOrEvent, Event):
-            event = offerOrEvent
+    def updateObject(self, stockOrEvent, providableObjs):
+        if isinstance(stockOrEvent, Event):
+            event = stockOrEvent
             event.description = self.sp_event.get('description')
             event.lastProvider = self.dbObject
             event.idAtProviders = str(self.dateModified + '-' + str(self.index))
@@ -117,12 +117,12 @@ class SpreadsheetOffers(LocalProvider):
                 self.sp_event.get('Durée')
             )
         else:
-            offer = offerOrEvent
+            stock = stockOrEvent
 
-            offer.price = get_price_value(self.sp_event.get('Tarif'))
-            offer.event = providableObjs[0]
-            offer.idAtProviders = event.idAtProvider
-            offer.name = event.name
+            stock.price = get_price_value(self.sp_event.get('Tarif'))
+            stock.event = providableObjs[0]
+            stock.idAtProviders = event.idAtProvider
+            stock.name = event.name
 
     def getDeactivatedObjectIds(self):
         return []
@@ -138,4 +138,4 @@ class SpreadsheetOffers(LocalProvider):
         return [self.dateNow]
 
 
-app.local_providers.SpreadsheetOffers = SpreadsheetOffers
+app.local_providers.SpreadsheetStocks = SpreadsheetStocks

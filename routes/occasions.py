@@ -5,7 +5,7 @@ from flask_login import current_user
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.occasion import Occasion
-from models.offer import Offer
+from models.stock import Stock
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.thing import Thing

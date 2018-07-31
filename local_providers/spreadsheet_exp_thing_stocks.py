@@ -6,7 +6,7 @@ from flask import current_app as app
 from pandas import read_csv
 
 from models.local_provider import LocalProvider, ProvidableInfo
-from models import Occasion, Mediation, Offer, Offerer, Provider, Thing, ThingType, Venue
+from models import Occasion, Mediation, Stock, Offerer, Provider, Thing, ThingType, Venue
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
 HOUR_REGEX = re.compile(r"(\d)h(\d?)$", re.IGNORECASE)
@@ -21,13 +21,13 @@ def is_filled(info):
     return info != 'nan' and info.replace(' ', '') != ''
 
 
-class SpreadsheetExpThingOffers(LocalProvider):
+class SpreadsheetExpThingStocks(LocalProvider):
     help = "Pas d'aide pour le moment"
     identifierDescription = "Pas d'identifiant nécessaire"\
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "Experimentation Spreadsheet (Offres 'Things')"
-    objectType = Offer
+    objectType = Stock
     canCreate = True
 
     def __init__(self, offerer, mock=False):
@@ -78,12 +78,12 @@ class SpreadsheetExpThingOffers(LocalProvider):
 
         providables.append(p_info_thing)
 
-        p_info_offer = ProvidableInfo()
-        p_info_offer.type = Offer
-        p_info_offer.idAtProviders = str(self.line['Ref Objet'])
-        p_info_offer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+        p_info_stock = ProvidableInfo()
+        p_info_stock.type = Stock
+        p_info_stock.idAtProviders = str(self.line['Ref Objet'])
+        p_info_stock.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
-        providables.append(p_info_offer)
+        providables.append(p_info_stock)
 
         if is_filled(self.line['Lien Image Accroche']) or\
            is_filled(self.line['Texte Accroche']):
@@ -106,7 +106,7 @@ class SpreadsheetExpThingOffers(LocalProvider):
             obj.mediaUrls = [self.line['Lien Internet']]
             obj.type = ThingType[self.line['Type']]
             self.thing = obj
-        elif isinstance(obj, Offer):
+        elif isinstance(obj, Stock):
             obj.occasion = self.occasion
             obj.price = 0
             obj.offerer = self.offerer
@@ -148,4 +148,4 @@ class SpreadsheetExpThingOffers(LocalProvider):
             return []
 
 
-app.local_providers.SpreadsheetExpThingOffers = SpreadsheetExpThingOffers
+app.local_providers.SpreadsheetExpThingStocks = SpreadsheetExpThingStocks

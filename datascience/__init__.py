@@ -30,10 +30,10 @@ def create_recommendation(user, occasion, mediation=None):
     else:
         recommendation.validUntilDate = datetime.utcnow() + timedelta(days=1)
 
-    if occasion.lastOffer.bookingLimitDatetime:
+    if occasion.lastStock.bookingLimitDatetime:
         recommendation.validUntilDate = min(
             recommendation.validUntilDate,
-            occasion.lastOffer.bookingLimitDatetime - timedelta(minutes=1)
+            occasion.lastStock.bookingLimitDatetime - timedelta(minutes=1)
         )
 
     PcObject.check_and_save(recommendation)

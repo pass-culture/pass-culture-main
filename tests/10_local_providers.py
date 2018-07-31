@@ -80,7 +80,7 @@ def test_10_titelive_venues_provider(app):
                   erroredThumbs=0,
                   Venue=2,
                   Offerer=2)
-    provider = Provider.getByClassName('TiteLiveOffers')
+    provider = Provider.getByClassName('TiteLiveStocks')
     for vp in VenueProvider.query\
                                      .filter_by(provider=provider)\
                                      .all():
@@ -139,13 +139,13 @@ def test_13_titelive_thing_desc_provider(app):
                   )
 
 
-def test_14_titelive_offer_provider(app):
+def test_14_titelive_stock_provider(app):
     venueProvider = VenueProvider.query\
                           .filter_by(venueIdAtOfferProvider='2949')\
                           .one_or_none()
     assert venueProvider is not None
     provider_test(app,
-                  app.local_providers.TiteLiveOffers,
+                  app.local_providers.TiteLiveStocks,
                   venueProvider,
                   checkedObjects=388,
                   createdObjects=370,
@@ -156,7 +156,7 @@ def test_14_titelive_offer_provider(app):
                   updatedThumbs=0,
                   erroredThumbs=0,
                   Occasion=185,
-                  Offer=185
+                  Stock=185
                   )
 
     venueProvider = VenueProvider.query\
@@ -164,7 +164,7 @@ def test_14_titelive_offer_provider(app):
                           .one_or_none()
     assert venueProvider is not None
     provider_test(app,
-                  app.local_providers.TiteLiveOffers,
+                  app.local_providers.TiteLiveStocks,
                   venueProvider,
                   checkedObjects=370,
                   createdObjects=332,
@@ -175,7 +175,7 @@ def test_14_titelive_offer_provider(app):
                   updatedThumbs=0,
                   erroredThumbs=0,
                   Occasion=166,
-                  Offer=166
+                  Stock=166
                   )
 
 
@@ -195,9 +195,9 @@ def test_15_spreadsheet_exp_venues_provider(app):
                   Offerer=9)
 
 
-def test_15_spreadsheet_exp_offers_provider(app):
+def test_15_spreadsheet_exp_stocks_provider(app):
     provider_test(app,
-                  app.local_providers.SpreadsheetExpOffers,
+                  app.local_providers.SpreadsheetExpStocks,
                   None,
                   checkedObjects=489,
                   createdObjects=489,
@@ -209,7 +209,7 @@ def test_15_spreadsheet_exp_offers_provider(app):
                   erroredThumbs=0,
                   Event=7,
                   EventOccurrence=234,
-                  Offer=234,
+                  Stock=234,
                   Offerer=0,
                   Occasion=7,
                   Venue=0
@@ -241,7 +241,7 @@ def test_16_openagenda_events_provider(app):
                   Event=3,
                   EventOccurrence=12,
                   Occasion=3,
-                  Offer=0,
+                  Stock=0,
                   Venue=0,
                   Offerer=0)
 

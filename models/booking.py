@@ -35,13 +35,13 @@ class Booking(PcObject,
                                   foreign_keys=[recommendationId],
                                   backref='bookings')
 
-    offerId = Column(BigInteger,
-                     ForeignKey("offer.id"),
+    stockId = Column(BigInteger,
+                     ForeignKey("stock.id"),
                      index=True,
                      nullable=False)
 
-    offer = relationship('Offer',
-                         foreign_keys=[offerId],
+    stock = relationship('Stock',
+                         foreign_keys=[stockId],
                          backref='bookings')
 
     quantity = Column(Integer,
@@ -66,10 +66,10 @@ class Booking(PcObject,
 
     @property
     def eventOccurrenceBeginningDatetime(self):
-        offer = self.offer
-        if offer.eventOccurrence is None:
+        stock = self.stock
+        if stock.eventOccurrence is None:
             return None
-        return offer.eventOccurrence.beginningDatetime
+        return stock.eventOccurrence.beginningDatetime
 
 
 trig_ddl = DDL("""
@@ -86,11 +86,11 @@ trig_ddl = DDL("""
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
     BEGIN
-      IF EXISTS (SELECT "available" FROM offer WHERE id=NEW."offerId" AND "available" IS NOT NULL)
-         AND ((SELECT "available" FROM offer WHERE id=NEW."offerId")
-              < (SELECT COUNT(*) FROM booking WHERE "offerId"=NEW."offerId")) THEN
+      IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
+         AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")
+              < (SELECT COUNT(*) FROM booking WHERE "stockId"=NEW."stockId")) THEN
           RAISE EXCEPTION 'tooManyBookings'
-                USING HINT = 'Number of bookings cannot exceed "offer.available"';
+                USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;
       
       IF (SELECT get_wallet_balance(NEW."userId") < 0)

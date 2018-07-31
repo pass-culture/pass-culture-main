@@ -7,7 +7,7 @@ from models import Booking,\
                    Event,\
                    EventOccurrence,\
                    Occasion,\
-                   Offer,\
+                   Stock,\
                    Offerer,\
                    Recommendation,\
                    Venue
@@ -31,11 +31,11 @@ def bookable_occasions(query, occasion_type):
         query = query.filter(Occasion.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
-    query = query.filter((Offer.isActive == True)
-                         & ((Offer.bookingLimitDatetime == None)
-                            | (Offer.bookingLimitDatetime > datetime.utcnow()))
-                         & ((Offer.available == None) |
-                            (Offer.available > Booking.query.filter(Booking.offerId == Offer.id)
+    query = query.filter((Stock.isActive == True)
+                         & ((Stock.bookingLimitDatetime == None)
+                            | (Stock.bookingLimitDatetime > datetime.utcnow()))
+                         & ((Stock.available == None) |
+                            (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
                              .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))
     logger.debug(lambda: '(reco) bookable .count ' + str(query.count()))
     return query
@@ -66,7 +66,7 @@ def get_occasions_by_type(occasion_type,
     query = Occasion.query
     if occasion_type == Event:
         query = query.join(aliased(EventOccurrence))
-    query = query.join(Offer)\
+    query = query.join(Stock)\
                  .reset_joinpoint()\
                  .join(Venue)\
                  .join(Offerer)\

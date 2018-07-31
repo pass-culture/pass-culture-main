@@ -27,10 +27,10 @@ class TiteLiveVenues(LocalProvider):
         super().__init__(venueProvider, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'mock' / 'providers' / 'titelive_offers'
+                            / '..' / 'mock' / 'providers' / 'titelive_stocks'
         else:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'ftp_mirrors' / 'titelive_offers'
+                            / '..' / 'ftp_mirrors' / 'titelive_stocks'
         titelive_venues_zip = data_root_path / 'StockGroupes.zip'
         if not os.path.isfile(titelive_venues_zip):
             raise ValueError('File not found : '+str(titelive_venues_zip)
@@ -50,11 +50,11 @@ class TiteLiveVenues(LocalProvider):
         if match:
             self.dateModified = datetime.strptime(match.group(1), "%d/%m/%Y %H:%M")
         else:
-            raise ValueError('Invalid Date_export.txt file format in titelive_offers')
-        self.titelive_offer_provider = Provider.query\
-                                        .filter_by(localClass='TiteLiveOffers')\
+            raise ValueError('Invalid Date_export.txt file format in titelive_stocks')
+        self.titelive_stock_provider = Provider.query\
+                                        .filter_by(localClass='TiteLiveStocks')\
                                         .one_or_none()
-        assert self.titelive_offer_provider is not None
+        assert self.titelive_stock_provider is not None
 
     def __next__(self):
 
@@ -101,7 +101,7 @@ class TiteLiveVenues(LocalProvider):
             obj.city = row[5]
             obj.siren = str(row[1])[:9]
         elif isinstance(obj, VenueProvider):
-            obj.provider = self.titelive_offer_provider
+            obj.provider = self.titelive_stock_provider
             obj.venue = self.providables[1]
             obj.venueIdAtOfferProvider = str(row[0])
             obj.isActive = False

@@ -19,7 +19,7 @@ def listify (query, include, resolve=None, **kwargs):
     return elements
 
 # helpful
-""" magic call like get('offers', Offer.price > 10, lambda obj: obj['id']) """
+""" magic call like get('stocks', Stock.price > 10, lambda obj: obj['id']) """
 def get(collection_name, filter = None, resolve = None, **kwargs):
     if resolve is None:
         resolve = lambda obj: obj
