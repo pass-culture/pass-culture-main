@@ -7,6 +7,7 @@ import {
 import { all } from 'redux-saga/effects'
 
 import { watchFormActions } from './form'
+import { watchUserActions as watchProActions } from './user'
 
 function* rootSaga() {
   yield all([
@@ -14,6 +15,7 @@ function* rootSaga() {
     watchErrorsActions(),
     watchFormActions(),
     watchModalActions(),
+    watchProActions(),
     watchUserActions(),
   ])
 }
