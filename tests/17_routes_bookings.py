@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 
 from models import User, Offerer, Recommendation, Stock, PcObject, Deposit, Venue
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_occasion, \
-    create_thing_occasion, create_deposit
+from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_offer, \
+    create_thing_offer, create_deposit
 
 
 def test_11_create_booking_should_not_work_past_limit_date(app):
-    expired_stock = create_stock_with_thing_occasion(price=0)
+    expired_stock = create_stock_with_thing_offer(price=0)
     expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
     PcObject.check_and_save(expired_stock)
 
@@ -25,7 +25,7 @@ def test_11_create_booking_should_not_work_past_limit_date(app):
 def test_12_create_booking_should_work_before_limit_date(app):
     ok_stock = Stock()
     ok_stock.venueId = 1
-    ok_stock.occasionId = 1
+    ok_stock.offerId = 1
     ok_stock.price = 0
     ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     PcObject.check_and_save(ok_stock)
@@ -45,13 +45,13 @@ def test_12_create_booking_should_work_before_limit_date(app):
 
 
 def test_13_create_booking_should_not_work_if_too_many_bookings(app):
-    too_many_bookings_stock = create_stock_with_thing_occasion()
+    too_many_bookings_stock = create_stock_with_thing_offer()
     too_many_bookings_stock.available = 0
     PcObject.check_and_save(too_many_bookings_stock)
 
     recommendation = Recommendation()
     recommendation.user = User.query.filter_by(email='pctest.jeune.93@btmx.fr').first()
-    recommendation.occasion = too_many_bookings_stock.occasion
+    recommendation.offer = too_many_bookings_stock.offer
     PcObject.check_and_save(recommendation)
 
     booking_json = {
@@ -169,8 +169,8 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     offerer.city = 'Test city'
     PcObject.check_and_save(offerer)
 
-    thing_occasion = create_thing_occasion()
-    PcObject.check_and_save(thing_occasion)
+    thing_offer = create_thing_offer()
+    PcObject.check_and_save(thing_offer)
 
     venue = Venue()
     venue.name = 'Venue name'
@@ -183,15 +183,15 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     PcObject.check_and_save(venue)
 
     stock = Stock()
-    stock.occasion = thing_occasion
-    stock.occasion.venue = venue
+    stock.offer = thing_offer
+    stock.offer.venue = venue
     stock.offerer = offerer
     stock.price = 200
     stock.available = 50
     PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
-    recommendation.occasion = thing_occasion
+    recommendation.offer = thing_offer
     recommendation.user = user
     PcObject.check_and_save(recommendation)
 
@@ -220,7 +220,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
     PcObject.delete(recommendation)
     PcObject.delete(stock)
     PcObject.delete(venue)
-    PcObject.delete(thing_occasion)
+    PcObject.delete(thing_offer)
     PcObject.delete(offerer)
     PcObject.delete(user)
 
@@ -241,8 +241,8 @@ def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffe
     offerer.city = 'Test city'
     PcObject.check_and_save(offerer)
 
-    thing_occasion = create_thing_occasion()
-    PcObject.check_and_save(thing_occasion)
+    thing_offer = create_thing_offer()
+    PcObject.check_and_save(thing_offer)
 
     venue = Venue()
     venue.name = 'Venue name'
@@ -255,15 +255,15 @@ def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffe
     PcObject.check_and_save(venue)
 
     stock = Stock()
-    stock.occasion = thing_occasion
-    stock.occasion.venue = venue
+    stock.offer = thing_offer
+    stock.offer.venue = venue
     stock.offerer = offerer
     stock.price = 5
     stock.available = 50
     PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
-    recommendation.occasion = thing_occasion
+    recommendation.offer = thing_offer
     recommendation.user = user
     PcObject.check_and_save(recommendation)
 

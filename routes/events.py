@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify, request
 
 from models.event import Event
-from models.occasion import Occasion
+from models.offer import Offer
 from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
@@ -25,7 +25,7 @@ def get_event(id):
 def post_event():
     event = Event()
     event.populateFromDict(request.json)
-    ocas = Occasion()
+    ocas = Offer()
     ocas.venueId = dehumanize(request.json['venueId'])
     ocas.event = event
     PcObject.check_and_save(event, ocas)

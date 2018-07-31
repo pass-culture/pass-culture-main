@@ -12,7 +12,7 @@ from models.db import db
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.occasion import Occasion
+from models.offer import Offer
 from models.venue import Venue
 
 
@@ -96,10 +96,10 @@ class OpenAgendaEvents(LocalProvider):
         p_info_event.idAtProviders = str(self.oa_event['uid'])
         p_info_event.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
 
-        p_info_occasion = ProvidableInfo()
-        p_info_occasion.type = Occasion
-        p_info_occasion.idAtProviders = str(self.oa_event['uid'])
-        p_info_occasion.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
+        p_info_offer = ProvidableInfo()
+        p_info_offer.type = Offer
+        p_info_offer.idAtProviders = str(self.oa_event['uid'])
+        p_info_offer.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
 
         p_info_eos = []
         durations_sum = 0
@@ -115,7 +115,7 @@ class OpenAgendaEvents(LocalProvider):
 
         self.duration = int(durations_sum / len(p_info_eos))
 
-        return [p_info_event, p_info_occasion] + p_info_eos
+        return [p_info_event, p_info_offer] + p_info_eos
 
     def getDeactivatedObjectIds(self):
         return db.session.query(Event.idAtProviders)\
@@ -139,8 +139,8 @@ class OpenAgendaEvents(LocalProvider):
             oa_timing = self.oa_event['timings'][index]
             obj.beginningDatetime = read_date(oa_timing['start'])
             obj.endDatetime = read_date(oa_timing['end'])
-            obj.occasion = self.providables[1]
-        elif isinstance(obj, Occasion):
+            obj.offer = self.providables[1]
+        elif isinstance(obj, Offer):
             obj.event = self.providables[0]
             obj.venueId = self.venueId
         else:

@@ -30,7 +30,7 @@ def check_recos(recos):
 
 
 def subtest_initial_recos():
-    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenOccasionIds': []})
+    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
     assert r.status_code == 200
     recos = r.json()
     assert len(recos) == 55
@@ -49,7 +49,7 @@ def subtest_initial_recos():
 def subtest_recos_with_params(params,
                               expected_status=200,
                               expected_mediation_id=None,
-                              expected_occasion_id=None,
+                              expected_offer_id=None,
                               is_tuto=False):
     r = req_with_auth().put(RECOMMENDATION_URL+'?'+params, json={})
     assert r.status_code == expected_status
@@ -62,8 +62,8 @@ def subtest_recos_with_params(params,
                                recos))) == (1 if is_tuto else 0)
         if expected_mediation_id:
             assert recos[0]['mediationId'] == expected_mediation_id
-        if expected_occasion_id:
-            assert recos[0]['occasionId'] == expected_occasion_id
+        if expected_offer_id:
+            assert recos[0]['offerId'] == expected_offer_id
         check_recos(recos)
         return recos
 
@@ -76,7 +76,7 @@ def test_10_put_recommendations_should_work_only_when_logged_in():
 def test_11_put_recommendations_should_return_a_list_of_recos():
     recos1 = subtest_initial_recos()
     assert len(list(filter(lambda reco: 'mediationId' in reco and
-                                        'occasionId' in reco,
+                                        'offerId' in reco,
                            recos1))) > 0
     recos2 = subtest_initial_recos()
     assert len(recos1) == len(recos2)
@@ -86,53 +86,53 @@ def test_11_put_recommendations_should_return_a_list_of_recos():
 
 def test_12_if_i_request_a_specific_reco_it_should_be_first():
     # Full request
-    subtest_recos_with_params('occasionId=AFQA&mediationId=AM',  # AM=1 AFQA=352
+    subtest_recos_with_params('offerId=AFQA&mediationId=AM',  # AM=1 AFQA=352
                               expected_status=200,
                               expected_mediation_id='AM',
-                              expected_occasion_id='AFQA')
-    # No mediationId but occasionId
-    subtest_recos_with_params('occasionId=AFQA',
+                              expected_offer_id='AFQA')
+    # No mediationId but offerId
+    subtest_recos_with_params('offerId=AFQA',
                               expected_status=200,
                               expected_mediation_id='AM',
-                              expected_occasion_id='AFQA')
-    # No occasionId but mediationId
+                              expected_offer_id='AFQA')
+    # No offerId but mediationId
     subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
                               expected_mediation_id='AM',
-                              expected_occasion_id='AFQA')
+                              expected_offer_id='AFQA')
 
 
 def test_13_requesting_a_reco_with_bad_params_should_return_404():
-    # occasionId correct and mediationId correct but not the same event
-    subtest_recos_with_params('occasionId=AQ&mediationId=AE',
+    # offerId correct and mediationId correct but not the same event
+    subtest_recos_with_params('offerId=AQ&mediationId=AE',
                               expected_status=404)
-    # invalid (not matching an object) occasionId with valid mediationId
-    subtest_recos_with_params('occasionId=ABCDE&mediationId=AM',
+    # invalid (not matching an object) offerId with valid mediationId
+    subtest_recos_with_params('offerId=ABCDE&mediationId=AM',
                               expected_status=404)
-    # invalid (not matching an object) mediationId with valid occasionId
-    subtest_recos_with_params('occasionId=AE&mediationId=ABCDE',
+    # invalid (not matching an object) mediationId with valid offerId
+    subtest_recos_with_params('offerId=AE&mediationId=ABCDE',
                               expected_status=404)
-    # invalid (not matching an object) mediationId with invalid (not matching an object) occasionId
-    subtest_recos_with_params('occasionId=ABCDE&mediationId=ABCDE',
+    # invalid (not matching an object) mediationId with invalid (not matching an object) offerId
+    subtest_recos_with_params('offerId=ABCDE&mediationId=ABCDE',
                               expected_status=404)
 
 
 def test_14_actual_errors_should_generate_a_400():
     pass
     #TODO
-    # invalid (not dehumanizable) occasionId with valid mediationId
-    # subtest_recos_with_params('occasionId=00&mediationId=AE',
+    # invalid (not dehumanizable) offerId with valid mediationId
+    # subtest_recos_with_params('offerId=00&mediationId=AE',
     #                          expected_status=400)
-    # invalid (not dehumanizable) mediationId with valid occasionId
-    #subtest_recos_with_params('occasionId=AE&mediationId=00',
+    # invalid (not dehumanizable) mediationId with valid offerId
+    #subtest_recos_with_params('offerId=AE&mediationId=00',
     #                          expected_status=400)
-    # invalid (not dehumanizable) mediationId with invalid (not dehumanizable) occasionId
-    #subtest_recos_with_params('occasionId=00&mediationId=00',
+    # invalid (not dehumanizable) mediationId with invalid (not dehumanizable) offerId
+    #subtest_recos_with_params('offerId=00&mediationId=00',
     #                          expected_status=400)
 
 
 #def test_15_if_i_request_a_specific_reco_with_singleReco_it_should_be_single():
-#    r = req_with_auth().put(RECOMMENDATION_URL+'?occasionType=event&occasionId=AE&singleReco=true', json={})
+#    r = req_with_auth().put(RECOMMENDATION_URL+'?offerType=event&offerId=AE&singleReco=true', json={})
 #    assert r.status_code == 200
 #    recos = r.json()
 #    assert len(recos) == 1

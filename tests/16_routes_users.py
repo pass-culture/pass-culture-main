@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-from models import PcObject, Thing, Venue, Stock, Recommendation, Deposit, Booking, Occasion
+from models import PcObject, Thing, Venue, Stock, Recommendation, Deposit, Booking, Offer
 from pprint import pprint
 
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
-from utils.test_utils import API_URL, req, req_with_auth, create_thing_occasion
+from utils.test_utils import API_URL, req, req_with_auth, create_thing_offer
 
 BASE_DATA = {
               'email': 'toto@btmx.fr',
@@ -302,7 +302,7 @@ def test_28_user_should_have_its_wallet_balance(app):
     stock.price = 5
     stock.venueId = venue.id
     stock.available = 50
-    stock.occasion = create_thing_occasion()
+    stock.offer = create_thing_offer()
     PcObject.check_and_save(stock)
 
     recommendation = Recommendation()

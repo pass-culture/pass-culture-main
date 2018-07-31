@@ -7,7 +7,7 @@ from sqlalchemy.sql.expression import and_, or_
 from models.api_errors import ApiErrors
 from models.event import Event
 from models.event_occurrence import EventOccurrence
-from models.occasion import Occasion
+from models.offer import Offer
 from models.stock import Stock
 from models.pc_object import PcObject
 from models.thing import Thing
@@ -35,9 +35,9 @@ search_models = [
 def join_stocks(query):
     for search_model in search_models:
         if search_model == Event:
-            query = query.outerjoin(EventOccurrence).join(Occasion).outerjoin(search_model)
+            query = query.outerjoin(EventOccurrence).join(Offer).outerjoin(search_model)
         else:
-            query = query.join(Occasion).outerjoin(search_model)
+            query = query.join(Offer).outerjoin(search_model)
     return query
 
 

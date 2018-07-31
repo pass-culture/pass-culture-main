@@ -30,7 +30,7 @@ def send_booking_recap_emails(stock, booking=None, is_cancellation=False):
 
     email = make_booking_recap_email(stock, booking, is_cancellation)
 
-    venue = stock.resolvedOccasion.venue
+    venue = stock.resolvedOffer.venue
 
     recipients = [venue.bookingEmail, 'passculture@beta.gouv.fr']
 
@@ -81,9 +81,9 @@ def _get_venue_description(venue):
 
 def make_booking_recap_email(stock, booking=None, is_cancellation=False):
     if booking == None:
-        venue = stock.resolvedOccasion.venue
+        venue = stock.resolvedOffer.venue
     else:
-        venue = booking.stock.resolvedOccasion.venue
+        venue = booking.stock.resolvedOffer.venue
     email_html = '<html><body>'
     email_html += '<p>Cher partenaire Pass Culture,</p>'
 
@@ -142,10 +142,10 @@ def make_booking_recap_email(stock, booking=None, is_cancellation=False):
 def _get_stock_description(stock):
     if stock.eventOccurrence:
         date_in_tz = _get_event_datetime(stock)
-        description = '{} le {}'.format(stock.eventOccurrence.occasion.event.name,
+        description = '{} le {}'.format(stock.eventOccurrence.offer.event.name,
                                         format_datetime(date_in_tz))
-    elif stock.resolvedOccasion.thing:
-        description = str(stock.resolvedOccasion.thing.name)
+    elif stock.resolvedOffer.thing:
+        description = str(stock.resolvedOffer.thing.name)
 
     return description
 
@@ -238,7 +238,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
 def _get_event_datetime(stock):
     date_in_utc = stock.eventOccurrence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                               stock.eventOccurrence.occasion.venue.departementCode)
+                                               stock.eventOccurrence.offer.venue.departementCode)
     return date_in_tz
 
 
@@ -280,7 +280,7 @@ def subscribe_newsletter(user):
 def _generate_reservation_email_html_subject(booking):
     stock = booking.stock
     user = booking.user
-    venue = stock.resolvedOccasion.venue
+    venue = stock.resolvedOffer.venue
     stock_description = _get_stock_description(stock)
     email_html = '<html><body><p>Cher {},</p>'.format(user.publicName)
     if stock.eventOccurrence == None:
@@ -292,7 +292,7 @@ def _generate_reservation_email_html_subject(booking):
     email_html += '<p>Nous vous confirmons votre {} pour {}'.format(confirmation_nature,
                                                                     stock_description)
     if stock.eventOccurrence == None:
-        email_html += ' (Ref: {}),'.format(stock.resolvedOccasion.thing.idAtProviders)
+        email_html += ' (Ref: {}),'.format(stock.resolvedOffer.thing.idAtProviders)
         email_html += ' proposé par {}.'.format(venue.name)
     else:
         email_html += _get_venue_description(venue)
@@ -302,16 +302,16 @@ def _generate_reservation_email_html_subject(booking):
 
 
 def _generate_cancellation_email_html_and_subject(user, stock):
-    venue = stock.resolvedOccasion.venue
+    venue = stock.resolvedOffer.venue
     email_html = '<html><body><p>Cher {},</p>'.format(user.publicName)
     if stock.eventOccurrence == None:
         confirmation_nature = 'commande'
-        stock_name = stock.resolvedOccasion.thing.name
-        thing_reference = ' (Ref: {})'.format(stock.resolvedOccasion.thing.idAtProviders)
+        stock_name = stock.resolvedOffer.thing.name
+        thing_reference = ' (Ref: {})'.format(stock.resolvedOffer.thing.idAtProviders)
 
     else:
         confirmation_nature = 'réservation'
-        stock_name = stock.eventOccurrence.occasion.event.name
+        stock_name = stock.eventOccurrence.offer.event.name
 
     email_html += '<p>Votre {} pour {}'.format(confirmation_nature,
                                                 stock_name)
@@ -336,5 +336,5 @@ def _generate_cancellation_email_html_and_subject(user, stock):
 def _get_event_datetime(stock):
     date_in_utc = stock.eventOccurrence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                               stock.eventOccurrence.occasion.venue.departementCode)
+                                               stock.eventOccurrence.offer.venue.departementCode)
     return date_in_tz

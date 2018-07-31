@@ -2,7 +2,7 @@
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
-from models.occasion import Occasion
+from models.offer import Offer
 from models.pc_object import PcObject
 from models.thing import Thing
 from utils.includes import THING_INCLUDES
@@ -33,7 +33,7 @@ def list_things():
 def post_thing():
     thing = Thing()
     thing.populateFromDict(request.json)
-    ocas = Occasion()
+    ocas = Offer()
     ocas.venue = request.json['venueId']
     ocas.thing = thing
     PcObject.check_and_save(thing, ocas)

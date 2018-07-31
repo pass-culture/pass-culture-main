@@ -12,7 +12,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
 # without XXX being evaluated when not at debug level
 # this allows args to log.debug & co. to be lambdas that will
 # get called when the loglevel is right
-# cf. datascience/occasions, in which the data printed in
+# cf. datascience/offers, in which the data printed in
 # debug calls is costly to compute.
 def pc_logging(level, *args):
     global logging

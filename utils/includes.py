@@ -4,10 +4,10 @@ OFFERER_INCLUDES = [
     {
         "key": "managedVenues",
         "sub_joins": [
-            "nOccasions"
+            "nOffers"
         ]
     },
-    "nOccasions",
+    "nOffers",
     "isValidated"
 ]
 
@@ -32,15 +32,15 @@ EVENT_INCLUDES = [
         ]
     },
     "mediations",
-    "occasions"
+    "offers"
 ]
 
 THING_INCLUDES = [
     "mediations",
-    "occasions"
+    "offers"
 ]
 
-OCCASION_INCLUDES = [
+OFFER_INCLUDES = [
     {
         "key": "event",
         "sub_joins": [
@@ -81,7 +81,7 @@ OCCASION_INCLUDES = [
 RECOMMENDATION_INCLUDES = [
     "mediation",
     {
-        "key": "occasion",
+        "key": "offer",
         "sub_joins": [
             "eventOrThing",
             "mediation",

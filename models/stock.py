@@ -37,11 +37,7 @@ class Stock(PcObject,
     eventOccurrenceId = Column(BigInteger,
                               ForeignKey("event_occurrence.id"),
                               CheckConstraint('"eventOccurrenceId" IS NOT NULL OR "occasionId" IS NOT NULL',
-<<<<<<< HEAD:models/offer.py
-                                              name='check_offer_has_event_occurrence_or_occasion'),
-=======
-                                                    name='check_stock_has_event_occurrence_or_occasion'),
->>>>>>> Offer → Stock:models/stock.py
+                                              name='check_stock_has_event_occurrence_or_occasion'),
                               index=True,
                               nullable=True)
 
@@ -49,13 +45,13 @@ class Stock(PcObject,
                                   foreign_keys=[eventOccurrenceId],
                                   backref='stocks')
 
-    occasionId = Column(BigInteger,
-                        ForeignKey('occasion.id'),
+    offerId = Column(BigInteger,
+                        ForeignKey('offer.id'),
                         index=True,
                         nullable=True)
 
-    occasion = relationship('Occasion',
-                            foreign_keys=[occasionId],
+    offer = relationship('Offer',
+                            foreign_keys=[offerId],
                             backref='stocks')
 
     price = Column(Numeric(10, 2),
@@ -81,8 +77,8 @@ class Stock(PcObject,
                               nullable=True)
 
     @property
-    def resolvedOccasion(self):
-        return self.occasion or self.eventOccurrence.occasion
+    def resolvedOffer(self):
+        return self.offer or self.eventOccurrence.offer
 
 
 @event.listens_for(Stock, 'before_insert')

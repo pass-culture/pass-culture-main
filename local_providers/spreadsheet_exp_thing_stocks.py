@@ -6,7 +6,7 @@ from flask import current_app as app
 from pandas import read_csv
 
 from models.local_provider import LocalProvider, ProvidableInfo
-from models import Occasion, Mediation, Stock, Offerer, Provider, Thing, ThingType, Venue
+from models import Offer, Mediation, Stock, Offerer, Provider, Thing, ThingType, Venue
 
 DATE_FORMAT = "%d/%m/%Y %Hh%M"
 HOUR_REGEX = re.compile(r"(\d)h(\d?)$", re.IGNORECASE)
@@ -67,7 +67,7 @@ class SpreadsheetExpThingStocks(LocalProvider):
                   + ' not found, skipping line')
             self.__next__()
 
-        self.occasion = None
+        self.offer = None
 
         providables = []
 
@@ -97,8 +97,8 @@ class SpreadsheetExpThingStocks(LocalProvider):
         return providables
 
     def updateObject(self, obj):
-        if not isinstance(obj, Thing) and self.occasion is None:
-            self.occasion = Occasion.query.filter_by(idAtProviders=obj.idAtProviders, lastProviderId=Provider.getByClassName(self.__class__.__name__).id).first()
+        if not isinstance(obj, Thing) and self.offer is None:
+            self.offer = Offer.query.filter_by(idAtProviders=obj.idAtProviders, lastProviderId=Provider.getByClassName(self.__class__.__name__).id).first()
         if isinstance(obj, Thing):
             obj.name = self.line['Titre']
             obj.extraData = {'author': self.line['Auteur']}
@@ -107,13 +107,13 @@ class SpreadsheetExpThingStocks(LocalProvider):
             obj.type = ThingType[self.line['Type']]
             self.thing = obj
         elif isinstance(obj, Stock):
-            obj.occasion = self.occasion
+            obj.offer = self.offer
             obj.price = 0
             obj.offerer = self.offerer
             obj.venue = self.venue
             obj.available = int(self.line['Stock'])
         elif isinstance(obj, Mediation):
-            obj.occasion = self.occasion
+            obj.offer = self.offer
             obj.offerer = self.offerer
             if is_filled(self.line['Texte Accroche']):
                 obj.text = str(self.line['Texte Accroche'])

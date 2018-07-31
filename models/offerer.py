@@ -15,7 +15,7 @@ from models.deactivable_mixin import DeactivableMixin
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
-from models.occasion import Occasion
+from models.offer import Offer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.user_offerer import UserOfferer
@@ -61,9 +61,9 @@ class Offerer(PcObject,
         return errors
 
     @property
-    def nOccasions(self):
-        return Occasion.query\
-                  .filter(Occasion.venueId.in_(list(map(lambda v: v.id,
+    def nOffers(self):
+        return Offer.query\
+                  .filter(Offer.venueId.in_(list(map(lambda v: v.id,
                                                                   self.managedVenues)))).count()
 
 Offerer.__ts_vector__ = create_tsvector(

@@ -155,7 +155,7 @@ def test_14_titelive_stock_provider(app):
                   createdThumbs=0,
                   updatedThumbs=0,
                   erroredThumbs=0,
-                  Occasion=185,
+                  Offer=185,
                   Stock=185
                   )
 
@@ -174,7 +174,7 @@ def test_14_titelive_stock_provider(app):
                   createdThumbs=0,
                   updatedThumbs=0,
                   erroredThumbs=0,
-                  Occasion=166,
+                  Offer=166,
                   Stock=166
                   )
 
@@ -211,7 +211,7 @@ def test_15_spreadsheet_exp_stocks_provider(app):
                   EventOccurrence=234,
                   Stock=234,
                   Offerer=0,
-                  Occasion=7,
+                  Offer=7,
                   Venue=0
                   )
 
@@ -240,7 +240,7 @@ def test_16_openagenda_events_provider(app):
                   erroredThumbs=0,
                   Event=3,
                   EventOccurrence=12,
-                  Occasion=3,
+                  Offer=3,
                   Stock=0,
                   Venue=0,
                   Offerer=0)

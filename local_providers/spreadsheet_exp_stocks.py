@@ -11,7 +11,7 @@ from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.mediation import Mediation
-from models.occasion import Occasion
+from models.offer import Offer
 from models.stock import Stock
 from models.offerer import Offerer
 from models.venue import Venue
@@ -85,12 +85,12 @@ class SpreadsheetExpStocks(LocalProvider):
 
         providables.append(p_info_event)
 
-        p_info_occasion = ProvidableInfo()
-        p_info_occasion.type = Occasion
-        p_info_occasion.idAtProviders = str(int(self.line['Ref Évènement']))
-        p_info_occasion.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
+        p_info_offer = ProvidableInfo()
+        p_info_offer.type = Offer
+        p_info_offer.idAtProviders = str(int(self.line['Ref Évènement']))
+        p_info_offer.dateModifiedAtProvider = read_date(self.line['Date MAJ'])
 
-        providables.append(p_info_occasion)
+        providables.append(p_info_offer)
 
         for index, horaire in enumerate(self.line['Horaires'].split(';')):
             if is_filled(horaire):
@@ -139,7 +139,7 @@ class SpreadsheetExpStocks(LocalProvider):
                                   or str(self.line["Territoire\n(Reporting)"]) == '0.0')
 
             self.eos = {}
-        elif isinstance(obj, Occasion):
+        elif isinstance(obj, Offer):
             obj.venue = self.venue
             obj.event = self.providables[0]
         elif isinstance(obj, EventOccurrence):
@@ -149,7 +149,7 @@ class SpreadsheetExpStocks(LocalProvider):
             obj.beginningDatetime = dateparser.parse(eo_date, settings=date_settings)
             obj.endDatetime = obj.beginningDatetime\
                               + timedelta(minutes=self.providables[0].durationMinutes)
-            obj.occasion = self.providables[1]
+            obj.offer = self.providables[1]
         elif isinstance(obj, Stock):
             for providable in self.providables[1:]:
                 if isinstance(providable, EventOccurrence)\
@@ -163,7 +163,7 @@ class SpreadsheetExpStocks(LocalProvider):
             if is_filled(self.line['Places Par Horaire']):
                 obj.available = int(self.line['Places Par Horaire'])
         elif isinstance(obj, Mediation):
-            obj.occasion = self.providables[1]
+            obj.offer = self.providables[1]
             obj.offerer = self.offerer
             if is_filled(self.line['Texte Accroche']):
                 obj.text = str(self.line['Texte Accroche'])

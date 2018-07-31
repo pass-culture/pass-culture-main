@@ -6,7 +6,7 @@ from sqlalchemy.orm import aliased
 from models import Booking,\
                    Event,\
                    EventOccurrence,\
-                   Occasion,\
+                   Offer,\
                    Stock,\
                    Offerer,\
                    Recommendation,\
@@ -14,21 +14,21 @@ from models import Booking,\
 from utils.logger import logger
 
 
-def departement_or_national_occasions(query, occasion_type, departement_codes):
+def departement_or_national_offers(query, offer_type, departement_codes):
     condition = Venue.departementCode.in_(departement_codes)
-    if occasion_type == Event:
+    if offer_type == Event:
         condition = (condition | (Event.isNational == True))
     query = query.filter(condition)
     logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
     return query
 
 
-def bookable_occasions(query, occasion_type):
+def bookable_offers(query, offer_type):
     # remove events for which all occurrences are in the past
     # (crude filter to limit joins before the more complete one below)
     query = query.reset_joinpoint()
-    if occasion_type == Event:
-        query = query.filter(Occasion.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
+    if offer_type == Event:
+        query = query.filter(Offer.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
     query = query.filter((Stock.isActive == True)
@@ -48,38 +48,38 @@ def with_active_and_validated_offerer(query):
     return query
 
 
-def not_currently_recommended_occasions(query, user):
+def not_currently_recommended_offers(query, user):
     valid_recommendation_for_user = (Recommendation.userId == user.id) \
                                     & (Recommendation.validUntilDate > datetime.utcnow())
 
-    query = query.filter(~(Occasion.recommendations.any(valid_recommendation_for_user)))
+    query = query.filter(~(Offer.recommendations.any(valid_recommendation_for_user)))
 
-    logger.debug(lambda: '(reco) not already used occasions.count ' + str(query.count()))
+    logger.debug(lambda: '(reco) not already used offers.count ' + str(query.count()))
     return query
 
 
-def get_occasions_by_type(occasion_type,
+def get_offers_by_type(offer_type,
                           user=None,
                           coords=None,
                           departement_codes=None,
-                          occasion_id=None):
-    query = Occasion.query
-    if occasion_type == Event:
+                          offer_id=None):
+    query = Offer.query
+    if offer_type == Event:
         query = query.join(aliased(EventOccurrence))
     query = query.join(Stock)\
                  .reset_joinpoint()\
                  .join(Venue)\
                  .join(Offerer)\
                  .reset_joinpoint()\
-                 .join(occasion_type)
+                 .join(offer_type)
                  
-    if occasion_id is not None:
-        query = query.filter_by(id=occasion_id)
-    logger.debug(lambda: '(reco) all ' + str(occasion_type) + '.count ' + str(query.count()))
+    if offer_id is not None:
+        query = query.filter_by(id=offer_id)
+    logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
 
-    query = departement_or_national_occasions(query, occasion_type, departement_codes)
-    query = bookable_occasions(query, occasion_type)
+    query = departement_or_national_offers(query, offer_type, departement_codes)
+    query = bookable_offers(query, offer_type)
     query = with_active_and_validated_offerer(query)
-    query = not_currently_recommended_occasions(query, user)
-    query = query.distinct(occasion_type.id)
+    query = not_currently_recommended_offers(query, user)
+    query = query.distinct(offer_type.id)
     return query.all()

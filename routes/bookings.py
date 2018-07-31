@@ -52,11 +52,12 @@ def post_booking():
         ae.addError('stockId', 'stockId ne correspond à aucune stock')
         return jsonify(ae.errors), 400
 
-    if (current_user.canBookFreeOffers == False) and (offer.price == 0):
+    if (current_user.canBookFreeOffers == False) and (stock.price == 0):
         ae.addError('cannotBookFreeOffers', 'L\'utilisateur n\'a pas le droit de réserver d\'offres gratuites')
         return jsonify(ae.errors), 400
 
     managingOfferer = stock.resolvedOccasion.venue.managingOfferer
+    managingOfferer = stock.resolvedOffer.venue.managingOfferer
     if not stock.isActive or\
        not managingOfferer.isActive or\
        (stock.eventOccurrence and (not stock.eventOccurrence.isActive)):

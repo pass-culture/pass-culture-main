@@ -31,7 +31,7 @@ def test_11_modify_stock():
 
 def test_12_create_stock():
     stock_data = {'price': 1222,
-                  'occasionId': humanize(1)
+                  'offerId': humanize(1)
                  }
     r_create = req_with_auth().post(API_URL + '/stocks/',
                                   json=stock_data)
@@ -47,7 +47,7 @@ def test_12_create_stock():
 
 def test_13_update_stock_available_should_check_bookings(app):
     stock = Stock()
-    stock.occasionId = 1
+    stock.offerId = 1
     stock.price = 0
     stock.available = 1
     stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
@@ -75,7 +75,7 @@ def test_14_should_not_create_stock_if_event_occurrence_before_booking_limit_dat
     event_occurrence = EventOccurrence()
     event_occurrence.beginningDatetime = datetime.utcnow() + timedelta(days=10)
     event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(days=1)
-    event_occurrence.occasionId = 1
+    event_occurrence.offerId = 1
     event_occurrence.accessibility = bytes([0])
     PcObject.check_and_save(event_occurrence)
 
@@ -83,7 +83,7 @@ def test_14_should_not_create_stock_if_event_occurrence_before_booking_limit_dat
 
     stock = Stock()
     stock.eventOccurrence = event_occurrence
-    stock.occasionId = 11
+    stock.offerId = 11
     stock.eventOccurrenceId = event_occurrence_id
     stock.price = 0
     stock.available = 5

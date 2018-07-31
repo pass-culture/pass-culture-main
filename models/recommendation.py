@@ -37,13 +37,13 @@ class Recommendation(PcObject, Model):
                              foreign_keys=[mediationId],
                              backref='recommendations')
 
-    occasionId = Column(BigInteger,
-                        ForeignKey('occasion.id'),
+    offerId = Column(BigInteger,
+                        ForeignKey('offer.id'),
                         index=True,
                         nullable=True)
 
-    occasion = relationship('Occasion',
-                            foreign_keys=[occasionId],
+    offer = relationship('Offer',
+                            foreign_keys=[offerId],
                             backref='recommendations')
 
     shareMedium = Column(String(20),

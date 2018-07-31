@@ -11,7 +11,7 @@ from models import Thing, Deposit
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
-from models.occasion import Occasion
+from models.offer import Offer
 from models.stock import Stock
 from models.offerer import Offerer
 from models.user import User
@@ -54,39 +54,39 @@ def create_user_for_booking_email_test():
     return user
 
 
-def create_stock_with_event_occasion(price=10):
+def create_stock_with_event_offer(price=10):
     stock = Stock()
     stock.price = price
     stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     stock.eventOccurrence = EventOccurrence()
     stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-    stock.eventOccurrence.occasion = Occasion()
-    stock.eventOccurrence.occasion.event = Event()
-    stock.eventOccurrence.occasion.event.name = 'Mains, sorts et papiers'
-    stock.eventOccurrence.occasion.venue = _create_venue_for_booking_email_test()
+    stock.eventOccurrence.offer = Offer()
+    stock.eventOccurrence.offer.event = Event()
+    stock.eventOccurrence.offer.event.name = 'Mains, sorts et papiers'
+    stock.eventOccurrence.offer.venue = _create_venue_for_booking_email_test()
     stock.isActive = True
 
     return stock
 
 
-def create_stock_with_thing_occasion(price=10):
+def create_stock_with_thing_offer(price=10):
     stock = Stock()
     stock.price = price
-    stock.occasion = create_thing_occasion()
-    stock.occasion.venue = _create_venue_for_booking_email_test()
+    stock.offer = create_thing_offer()
+    stock.offer.venue = _create_venue_for_booking_email_test()
     stock.isActive = True
     return stock
 
 
-def create_thing_occasion():
-    occasion = Occasion()
-    occasion.thing = Thing()
-    occasion.thing.type = 'Book'
-    occasion.thing.name = 'Test Book'
-    occasion.thing.mediaUrls = 'test/urls'
-    occasion.thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
-    occasion.thing.extraData = {'author': 'Test Author'}
-    return occasion
+def create_thing_offer():
+    offer = Offer()
+    offer.thing = Thing()
+    offer.thing.type = 'Book'
+    offer.thing.name = 'Test Book'
+    offer.thing.mediaUrls = 'test/urls'
+    offer.thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
+    offer.thing.extraData = {'author': 'Test Author'}
+    return offer
 
 
 def create_offerer():

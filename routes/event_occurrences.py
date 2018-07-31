@@ -1,7 +1,7 @@
 """ event_occurrences """
 from flask import current_app as app, jsonify, request
 
-from models import Event, EventOccurrence, Occasion, PcObject, RightsType, Venue
+from models import Event, EventOccurrence, Offer, PcObject, RightsType, Venue
 from utils.includes import EVENT_OCCURRENCE_INCLUDES
 from utils.rest import delete, \
     ensure_current_user_has_rights, \
@@ -28,8 +28,8 @@ def get_event_occurrence(id):
 @login_or_api_key_required
 @expect_json_data
 def create_event_occurrence():
-    event = Event.query.join(Occasion)\
-                       .filter(Occasion.id == request.json['occasionId'])\
+    event = Event.query.join(Offer)\
+                       .filter(Offer.id == request.json['offerId'])\
                        .first_or_404()
     event.ensure_can_be_updated()
 

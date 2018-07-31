@@ -39,7 +39,7 @@ def create_mediation():
 
     new_mediation = Mediation()
     new_mediation.author = current_user
-    new_mediation.occasionId = dehumanize(request.form['occasionId'])
+    new_mediation.offerId = dehumanize(request.form['offerId'])
     new_mediation.offererId = offererId
     PcObject.check_and_save(new_mediation)
 

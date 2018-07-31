@@ -1,10 +1,10 @@
-"""occasions"""
+"""offers"""
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from models.event import Event
 from models.event_occurrence import EventOccurrence
-from models.occasion import Occasion
+from models.offer import Offer
 from models.stock import Stock
 from models.offerer import Offerer
 from models.pc_object import PcObject
@@ -12,7 +12,7 @@ from models.thing import Thing
 from models.user_offerer import UserOfferer, RightsType
 from models.venue import Venue
 from utils.human_ids import dehumanize
-from utils.includes import OCCASION_INCLUDES
+from utils.includes import OFFER_INCLUDES
 from utils.rest import delete, \
     ensure_current_user_has_rights, \
     expect_json_data, \
@@ -22,12 +22,12 @@ from utils.rest import delete, \
 from utils.search import get_search_filter
 
 
-@app.route('/occasions', methods=['GET'])
+@app.route('/offers', methods=['GET'])
 @login_or_api_key_required
-def list_occasions():
+def list_offers():
     offererId = dehumanize(request.args.get('offererId'))
     venueId = dehumanize(request.args.get('venueId'))
-    query = Occasion.query
+    query = Offer.query
 
     if venueId is not None:
         venue = Venue.query.filter_by(id=venueId)\
@@ -53,36 +53,36 @@ def list_occasions():
                      .outerjoin(Thing)\
                      .filter(get_search_filter([Event, Thing], search))
 
-    return handle_rest_get_list(Occasion,
-                                include=OCCASION_INCLUDES,
+    return handle_rest_get_list(Offer,
+                                include=OFFER_INCLUDES,
                                 query=query,
                                 page=request.args.get('page'),
                                 paginate=10,
-                                order_by='occasion.id desc')
+                                order_by='offer.id desc')
 
 
-@app.route('/occasions/<id>', methods=['GET'])
+@app.route('/offers/<id>', methods=['GET'])
 @login_or_api_key_required
-def get_occasion(id):
-    occasion = load_or_404(Occasion, id)
-    return jsonify(occasion._asdict(include=OCCASION_INCLUDES))
+def get_offer(id):
+    offer = load_or_404(Offer, id)
+    return jsonify(offer._asdict(include=OFFER_INCLUDES))
 
-@app.route('/occasions', methods=['POST'])
+@app.route('/offers', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
-def post_occasion():
-    ocas = Occasion()
+def post_offer():
+    ocas = Offer()
     venue = load_or_404(Venue, request.json['venueId'])
     ensure_current_user_has_rights(RightsType.editor,
                                    venue.managingOffererId)
     ocas.populateFromDict(request.json)
     PcObject.check_and_save(ocas)
-    return jsonify(ocas._asdict(include=OCCASION_INCLUDES)), 201
+    return jsonify(ocas._asdict(include=OFFER_INCLUDES)), 201
 
-@app.route('/occasions/<id>', methods=['DELETE'])
+@app.route('/offers/<id>', methods=['DELETE'])
 @login_or_api_key_required
-def delete_occasion(id):
-    ocas = load_or_404(Occasion, id)
+def delete_offer(id):
+    ocas = load_or_404(Offer, id)
     ensure_current_user_has_rights(RightsType.editor,
                                    ocas.venue.managingOffererId)
     return delete(ocas)

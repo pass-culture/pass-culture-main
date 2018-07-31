@@ -42,13 +42,13 @@ class Mediation(PcObject,
                           foreign_keys=[authorId],
                           backref='mediations')
 
-    occasionId = Column(BigInteger,
-                        ForeignKey('occasion.id'),
+    offerId = Column(BigInteger,
+                        ForeignKey('offer.id'),
                         index=True,
                         nullable=True)
 
-    occasion = relationship('Occasion',
-                            foreign_keys=[occasionId],
+    offer = relationship('Offer',
+                            foreign_keys=[offerId],
                             backref='mediations')
 
     tutoIndex = Column(Integer,
@@ -61,9 +61,9 @@ Mediation.__table_args__ = (
                     name='check_mediation_has_max_2_thumbs'),
     CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
                     name='check_mediation_has_thumb_or_text'),
-    CheckConstraint('("occasionId" IS NOT NULL AND "tutoIndex" IS NULL)'
-                    + ' OR ("occasionId" IS NULL AND "tutoIndex" IS NOT NULL)',
-                    name='check_mediation_has_occasion_xor_tutoIndex'),
+    CheckConstraint('("offerId" IS NOT NULL AND "tutoIndex" IS NULL)'
+                    + ' OR ("offerId" IS NULL AND "tutoIndex" IS NOT NULL)',
+                    name='check_mediation_has_offer_xor_tutoIndex'),
 )
 
 

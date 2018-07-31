@@ -14,7 +14,7 @@ from sqlalchemy.sql.functions import coalesce
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
-from models.occasion import Occasion
+from models.offer import Offer
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -79,8 +79,8 @@ class Venue(PcObject,
         return errors
 
     @property
-    def nOccasions(self):
-        return Occasion.query.filter_by(venue=self).count()
+    def nOffers(self):
+        return Offer.query.filter_by(venue=self).count()
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):

@@ -7,7 +7,7 @@ import pandas as pd
 from flask import current_app as app
 
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.occasion import Occasion
+from models.offer import Offer
 from models.stock import Stock
 from models.thing import Thing
 from models.venue import Venue
@@ -111,11 +111,11 @@ class TiteLiveStocks(LocalProvider):
 
         self.price = thing.extraData['prix_livre']
 
-        p_info_occasion = ProvidableInfo()
-        p_info_occasion.type = Occasion
+        p_info_offer = ProvidableInfo()
+        p_info_offer.type = Offer
         self.idAtProviders = str(line[1])+':'+str(line[2])
-        p_info_occasion.idAtProviders = self.idAtProviders
-        p_info_occasion.dateModifiedAtProvider = self.dateModified
+        p_info_offer.idAtProviders = self.idAtProviders
+        p_info_offer.dateModifiedAtProvider = self.dateModified
 
         p_info_stock = ProvidableInfo()
         p_info_stock.type = Stock
@@ -123,12 +123,12 @@ class TiteLiveStocks(LocalProvider):
         p_info_stock.idAtProviders = self.idAtProviders
         p_info_stock.dateModifiedAtProvider = self.dateModified
 
-        return p_info_occasion, p_info_stock
+        return p_info_offer, p_info_stock
 
     def updateObject(self, obj):
         assert obj.idAtProviders == self.idAtProviders
         if isinstance(obj, Stock):
-            obj.occasion = self.providables[0]
+            obj.offer = self.providables[0]
             obj.offererId = self.venue.managingOffererId
             obj.price = self.price
         else:

@@ -5,7 +5,7 @@ import routes.event_occurrences
 import routes.events
 import routes.export
 import routes.mediations
-import routes.occasions
+import routes.offers
 import routes.offerers
 import routes.stocks
 import routes.providers

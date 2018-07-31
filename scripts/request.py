@@ -16,7 +16,7 @@ from models.offerer import Offerer
 from models.venue_provider import VenueProvider
 from models.local_provider_event import LocalProviderEvent
 from models.local_provider import LocalProvider
-from models.occasion import Occasion
+from models.offer import Offer
 from models.provider import Provider
 from models.recommendation import Recommendation
 from models.thing import Thing
