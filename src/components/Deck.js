@@ -1,19 +1,20 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
-import { requestData } from 'pass-culture-shared'
+import { requestData as requestDataAction } from 'pass-culture-shared'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
+import PropTypes from 'prop-types'
 
 import Card from './Card'
 import Clue from './Clue'
 import Icon from './layout/Icon'
 
-import { flip, unFlip } from '../reducers/verso'
+import { flip as flipAction, unFlip as unFlipAction } from '../reducers/verso'
 import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
 import selectCurrentRecommendation from '../selectors/currentRecommendation'
 import selectIsFlipDisabled from '../selectors/isFlipDisabled'
@@ -33,55 +34,56 @@ class Deck extends Component {
     }
   }
 
-  handleDeprecatedData = nextProps => {
-    // DEPRECATION HANDLING
-    // IF THE RECO ARE DEPRECATED, WE GO TO DECOUVERTE
-    const { deprecatedRecommendations } = nextProps
-    if (
-      deprecatedRecommendations &&
-      deprecatedRecommendations !== this.props.deprecatedRecommendations
-    ) {
-      // nextProps.history.push('/decouverte')
+  componentDidMount() {
+    this.handleRefreshedData()
+    // this.handleSetDateRead()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.handleRefreshedData(nextProps)
+    this.handleDeprecatedData(nextProps)
+  }
+
+  // componentDidUpdate(prevProps) {
+  // this.handleSetDateRead(prevProps)
+  // }
+
+  componentWillUnmount() {
+    if (this.readTimeout) clearTimeout(this.readTimeout)
+    if (this.noDataTimeout) clearTimeout(this.noDataTimeout)
+  }
+
+  onStop = (e, data) => {
+    const {
+      draggable,
+      horizontalSlideRatio,
+      verticalSlideRatio,
+      height,
+      width,
+    } = this.props
+    const index = get(this.props, 'currentRecommendation.index', 0)
+    const offset = (data.x + width * index) / width
+    if (draggable && data.y > height * verticalSlideRatio) {
+      this.handleUnFlip()
+    } else if (data.y < -height * verticalSlideRatio) {
+      this.handleFlip()
+    } else if (offset > horizontalSlideRatio) {
+      this.handleGoPrevious()
+    } else if (-offset > horizontalSlideRatio) {
+      this.handleGoNext()
     }
   }
 
-  handleGoNext = () => {
-    const { history, isFlipped, nextRecommendation } = this.props
-    if (!nextRecommendation || isFlipped) return
-    history.push(
-      getDiscoveryPath(nextRecommendation.offer, nextRecommendation.mediation)
-    )
+  handleFlip = () => {
+    const { isFlipDisabled, flip } = this.props
+    if (isFlipDisabled) return
+    flip()
   }
 
-  handleGoPrevious = () => {
-    const { history, isFlipped, previousRecommendation } = this.props
-    if (!previousRecommendation || isFlipped) return
-    history.push(
-      getDiscoveryPath(
-        previousRecommendation.offer,
-        previousRecommendation.mediation
-      )
-    )
-  }
-
-  handleRefreshedData = nextProps => {
-    // REFRESH HANDLING
-    // (ie kill the transition the short time we change the blob)
-    // WE CHANGE THE KEY OF THE DRAGGABLE
-    // TO FORCE IT TO REMOUNT AGAIN
-    if (
-      nextProps &&
-      (!nextProps.recommendations ||
-        !this.props.recommendations ||
-        nextProps.recommendations === this.props.recommendations ||
-        (!nextProps.currentRecommendation ||
-          !this.props.currentRecommendation) ||
-        nextProps.currentRecommendation.index ===
-          this.props.currentRecommendation.index)
-    ) {
-      return
-    }
-    this.setState({ refreshKey: this.state.refreshKey + 1 })
+  handleUnFlip = () => {
+    const { unFlippable, unFlip } = this.props
+    if (unFlippable) return
+    unFlip()
   }
 
   handleSetDateRead = prevProps => {
@@ -147,54 +149,52 @@ class Deck extends Component {
     }
   }
 
-  handleFlip = () => {
-    if (this.props.isFlipDisabled) return
-    this.props.flip()
-  }
-
-  handleUnFlip = () => {
-    if (this.props.unFlippable) return
-    this.props.unFlip()
-  }
-
-  onStop = (e, data) => {
-    const {
-      draggable,
-      horizontalSlideRatio,
-      verticalSlideRatio,
-      height,
-      width,
-    } = this.props
-    const index = get(this.props, 'currentRecommendation.index', 0)
-    const offset = (data.x + width * index) / width
-    if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleUnFlip()
-    } else if (data.y < -height * verticalSlideRatio) {
-      this.handleFlip()
-    } else if (offset > horizontalSlideRatio) {
-      this.handleGoPrevious()
-    } else if (-offset > horizontalSlideRatio) {
-      this.handleGoNext()
+  handleRefreshedData = nextProps => {
+    const { recommendations, currentRecommendation } = this.props
+    // REFRESH HANDLING
+    // (ie kill the transition the short time we change the blob)
+    // WE CHANGE THE KEY OF THE DRAGGABLE
+    // TO FORCE IT TO REMOUNT AGAIN
+    if (
+      nextProps &&
+      (!nextProps.recommendations ||
+        !recommendations ||
+        nextProps.recommendations === recommendations ||
+        (!nextProps.currentRecommendation || !currentRecommendation) ||
+        nextProps.currentRecommendation.index === currentRecommendation.index)
+    ) {
+      return
     }
+    this.setState(prev => ({ refreshKey: prev.refreshKey + 1 }))
   }
 
-  componentDidMount() {
-    this.handleRefreshedData()
-    // this.handleSetDateRead()
+  handleGoPrevious = () => {
+    const { history, isFlipped, previousRecommendation } = this.props
+    if (!previousRecommendation || isFlipped) return
+    history.push(
+      getDiscoveryPath(
+        previousRecommendation.offer,
+        previousRecommendation.mediation
+      )
+    )
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.handleRefreshedData(nextProps)
-    this.handleDeprecatedData(nextProps)
+  handleGoNext = () => {
+    const { history, isFlipped, nextRecommendation } = this.props
+    if (!nextRecommendation || isFlipped) return
+    history.push(
+      getDiscoveryPath(nextRecommendation.offer, nextRecommendation.mediation)
+    )
   }
 
-  componentDidUpdate(prevProps) {
-    // this.handleSetDateRead(prevProps)
-  }
-
-  componentWillUnmount() {
-    this.readTimeout && clearTimeout(this.readTimeout)
-    this.noDataTimeout && clearTimeout(this.noDataTimeout)
+  handleDeprecatedData = nextProps => {
+    // DEPRECATION HANDLING
+    // IF THE RECO ARE DEPRECATED, WE GO TO DECOUVERTE
+    const { deprecatedRecommendations: nextdeprecated } = nextProps
+    const { deprecatedRecommendations: currdeprecated } = this.props
+    if (nextdeprecated && nextdeprecated !== currdeprecated) {
+      // nextProps.history.push('/decouverte')
+    }
   }
 
   render() {
@@ -204,11 +204,16 @@ class Deck extends Component {
       isEmpty,
       isFlipDisabled,
       isFlipped,
+      recommendations,
       nextRecommendation,
       previousRecommendation,
       unFlippable,
       headerColor,
+      previousLimit,
+      isLoadingAfter,
+      isLoadingBefore,
       width,
+      nextLimit,
     } = this.props
     const {
       // isRead,
@@ -231,6 +236,7 @@ class Deck extends Component {
       >
         {!unFlippable && (
           <button
+            type="button"
             className={classnames('close-button', {
               'is-hidden': !isFlipped,
             })}
@@ -307,6 +313,7 @@ class Deck extends Component {
           >
             <li>
               <button
+                type="button"
                 className={classnames('button before', {
                   'is-invisible': !previousRecommendation,
                 })}
@@ -317,6 +324,7 @@ class Deck extends Component {
             </li>
             <li>
               <button
+                type="button"
                 className={classnames('button to-recto', {
                   'is-invisible': isFlipDisabled,
                 })}
@@ -329,6 +337,7 @@ class Deck extends Component {
             </li>
             <li>
               <button
+                type="button"
                 className={classnames('button after', {
                   'is-invisible': !nextRecommendation,
                 })}
@@ -369,14 +378,47 @@ class Deck extends Component {
 }
 
 Deck.defaultProps = {
-  flipRatio: 0.25,
+  // flipRatio: 0.25,
   horizontalSlideRatio: 0.2,
   verticalSlideRatio: 0.1,
-  isDebug: false,
-  noDataTimeout: 20000,
+  // isDebug: false,
+  // noDataTimeout: 20000,
   readTimeout: 2000,
-  resizeTimeout: 250,
-  transitionTimeout: 500,
+  // resizeTimeout: 250,
+  // transitionTimeout: 500,
+  currentRecommendation: null,
+}
+
+Deck.propTypes = {
+  // isDebug: PropTypes.bool,
+  // resizeTimeout: PropTypes.number,
+  // transitionTimeout: PropTypes.number,
+  // noDataTimeout: PropTypes.number,
+  height: PropTypes.func.isRequired,
+  width: PropTypes.func.isRequired,
+  flip: PropTypes.func.isRequired,
+  unFlip: PropTypes.func.isRequired,
+  draggable: PropTypes.bool.isRequired,
+  requestData: PropTypes.func.isRequired,
+  // flipRatio: PropTypes.number,
+  verticalSlideRatio: PropTypes.number,
+  readTimeout: PropTypes.number,
+  horizontalSlideRatio: PropTypes.number,
+  isFlipDisabled: PropTypes.bool.isRequired,
+  unFlippable: PropTypes.bool.isRequired,
+  history: PropTypes.object.isRequired,
+  isFlipped: PropTypes.bool.isRequired,
+  isLoadingBefore: PropTypes.bool.isRequired,
+  nextLimit: PropTypes.bool.isRequired,
+  isLoadingAfter: PropTypes.bool.isRequired,
+  previousLimit: PropTypes.bool.isRequired,
+  currentRecommendation: PropTypes.object,
+  recommendations: PropTypes.array.isRequired,
+  headerColor: PropTypes.object.isRequired,
+  currentHeaderColor: PropTypes.object.isRequired,
+  nextRecommendation: PropTypes.object.isRequired,
+  deprecatedRecommendations: PropTypes.object.isRequired,
+  previousRecommendation: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -401,6 +443,6 @@ export default compose(
       unFlippable: state.verso.unFlippable,
       draggable: state.verso.draggable,
     }),
-    { flip, requestData, unFlip }
+    { flip: flipAction, requestData: requestDataAction, unFlip: unFlipAction }
   )
 )(Deck)
