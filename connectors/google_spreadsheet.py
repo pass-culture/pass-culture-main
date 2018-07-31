@@ -3,6 +3,7 @@ from memoize import Memoizer
 from os import path
 from oauth2client.service_account import ServiceAccountCredentials
 import json
+import os
 from pathlib import Path
 
 user_spreadsheet_store = {}
