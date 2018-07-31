@@ -137,7 +137,7 @@ def signup():
     # we don't validate users yet
     # new_user.generate_validation_token()
     if is_pro_signup(request.json):
-        new_user.canBook = False
+        new_user.canBookFreeOffers = False
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
             offerer = Offerer()
@@ -170,8 +170,8 @@ def signup():
         PcObject.check_and_save(*objects_to_save)
     except IntegrityError as ie:
         e = ApiErrors()
-        if "check_admin_cannot_book" in str(ie.orig):
-            e.addError('canBook', 'Admin ne peut pas booker')
+        if "check_admin_cannot_book_free_offers" in str(ie.orig):
+            e.addError('canBookFreeOffers', 'Admin ne peut pas booker')
         raise e
 
 

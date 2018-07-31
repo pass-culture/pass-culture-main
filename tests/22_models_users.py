@@ -12,7 +12,7 @@ def test_01_cannot_create_admin_that_can_book(app):
     user.setPassword('testpsswd')
     user.departementCode = '93'
     user.isAdmin = True
-    user.canBook = True
+    user.canBookFreeOffers = True
 
     #When
     with pytest.raises(IntegrityError):

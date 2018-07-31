@@ -34,19 +34,18 @@ class User(PcObject,
 
     departementCode = Column(String(3), nullable=False)
 
-    canBook = Column(Boolean,
-                     nullable=False,
-                     server_default=expression.true(),
-                     default=True)
+    canBookFreeOffers = Column(Boolean,
+                               nullable=False,
+                               server_default=expression.true(),
+                               default=True)
 
     isAdmin = Column(Boolean,
-                     CheckConstraint('("canBook" IS FALSE AND "isAdmin" IS TRUE)'
+                     CheckConstraint('("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
                                      + 'OR ("isAdmin" IS FALSE)',
-                                     name='check_admin_cannot_book'),
+                                     name='check_admin_cannot_book_free_offers'),
                      nullable=False,
                      server_default=expression.false(),
-                     default=False,
-                     )
+                     default=False)
 
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
