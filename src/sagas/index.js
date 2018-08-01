@@ -6,10 +6,12 @@ import {
 } from 'pass-culture-shared'
 import { all } from 'redux-saga/effects'
 
+import { API_URL } from '../utils/config'
+
 function* rootSaga() {
   yield all([
     watchModalActions(),
-    watchDataActions(),
+    watchDataActions({ url: API_URL }),
     watchErrorsActions(),
     watchUserActions(),
   ])
