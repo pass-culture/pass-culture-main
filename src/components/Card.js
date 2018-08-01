@@ -1,64 +1,80 @@
-import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import { requestData } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import withSizes from 'react-sizes'
 import { compose } from 'redux'
 
 import Recto from './Recto'
 import Verso from './Verso'
-import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
-import { IS_DEXIE } from '../utils/config'
 
-class Card extends Component {
+class Card extends React.PureComponent {
   componentDidUpdate(prevProps) {
-    const { isFlipped, position, recommendation, requestData } = this.props
-    if (recommendation && position === 'current') {
-      if (!prevProps.isFlipped && isFlipped && !recommendation.isClicked) {
-        requestData('PATCH', `recommendations/${recommendation.id}`, {
-          body: {
-            isClicked: true,
-          },
-          key: 'recommendations',
-          local: IS_DEXIE,
-        })
-      }
+    const {
+      position,
+      isFlipped,
+      recommendation,
+      requestDataAction,
+    } = this.props
+
+    const isCurrent = recommendation && position === 'current'
+    if (!isCurrent) return
+
+    const shouldRequest =
+      !prevProps.isFlipped && isFlipped && !recommendation.isClicked
+    if (!shouldRequest) return
+
+    const options = {
+      key: 'recommendations',
+      body: { isClicked: true },
     }
+    requestDataAction('PATCH', `recommendations/${recommendation.id}`, options)
   }
 
   render() {
     const { currentHeaderColor, recommendation, position, width } = this.props
+    const iscurrent = position === 'current'
+    const translateTo = get(recommendation, 'index') * width
     return (
       <div
-        className={classnames('card', {
-          current: position === 'current',
-        })}
+        className={`card ${iscurrent ? 'current' : ''}`}
         style={{
-          transform: `translate(${get(recommendation, 'index') * width}px, 0)`,
           backgroundColor: currentHeaderColor,
-        }}>
+          transform: `translate(${translateTo}px, 0)`,
+        }}
+      >
         <Recto {...recommendation} />
-        {position === 'current' && <Verso />}
+        {iscurrent && <Verso />}
       </div>
     )
   }
 }
 
 Card.defaultProps = {
-  readTimeout: 3000,
+  isFlipped: false,
+  recommendation: null,
+  currentHeaderColor: '#000',
 }
 
+Card.propTypes = {
+  isFlipped: PropTypes.bool,
+  recommendation: PropTypes.object,
+  width: PropTypes.number.isRequired,
+  currentHeaderColor: PropTypes.string,
+  position: PropTypes.string.isRequired,
+  requestDataAction: PropTypes.func.isRequired,
+}
+
+const mapSizeToProps = ({ width, height }) => ({
+  width: Math.min(width, 500), // body{max-width: 500px;}
+  height,
+})
+
 export default compose(
-  withSizes(({ width, height }) => ({
-    width: Math.min(width, 500), // body{max-width: 500px;}
-    height,
-  })),
+  withSizes(mapSizeToProps),
   connect(
-    state => ({
-      currentHeaderColor: selectCurrentHeaderColor(state),
-      isFlipped: state.verso.isFlipped,
-    }),
-    { requestData }
+    null,
+    { requestDataAction: requestData }
   )
 )(Card)

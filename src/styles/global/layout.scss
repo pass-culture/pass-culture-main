@@ -4,7 +4,10 @@
   padding: 0;
 }
 
-html, body, #root, .app {
+html,
+body,
+#root,
+.app {
   height: 100%;
   min-height: 100%;
 }
@@ -28,7 +31,6 @@ body {
   overscroll-behavior: contain;
 }
 
-
 #android-statusbar-overlay {
   display: none;
   width: 100%;
@@ -42,6 +44,7 @@ body {
 
 .app {
   position: relative;
+
   .beta {
     position: absolute;
     bottom: 0;
