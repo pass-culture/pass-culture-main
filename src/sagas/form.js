@@ -9,6 +9,22 @@ const fromWatchSirenInput = sireType =>
   function*(action) {
     const { name, patch } = action
 
+    console.log('sireType', sireType)
+
+    if (!sireType) {
+      yield put(
+        mergeForm(name, {
+          address: null,
+          city: null,
+          latitude: null,
+          longitude: null,
+          name: null,
+          postalCode: null,
+        })
+      )
+      return
+    }
+
     try {
       const response = yield call(
         fetch,
@@ -30,7 +46,7 @@ const fromWatchSirenInput = sireType =>
             longitude: null,
             name: null,
             postalCode: null,
-            [sireType]: null,
+            //[sireType]: null,
           })
         )
       } else {
@@ -76,8 +92,8 @@ export function* watchFormActions() {
     ({ type, config, patch }) =>
       type === 'MERGE_FORM' &&
       get(config, 'isSagaCalling') &&
-      get(config, 'type') === 'siren' &&
       !get(config, 'calledFromSaga') &&
+      get(config, 'type') === 'siren' &&
       get(patch, `${SIREN}.length`) === 9,
     fromWatchSirenInput(SIREN)
   )
@@ -85,9 +101,20 @@ export function* watchFormActions() {
     ({ type, config, patch }) =>
       type === 'MERGE_FORM' &&
       get(config, 'isSagaCalling') &&
-      get(config, 'type') === 'siret' &&
       !get(config, 'calledFromSaga') &&
+      get(config, 'type') === 'siret' &&
       get(patch, `${SIRET}.length`) === 14,
     fromWatchSirenInput(SIRET)
+  )
+  yield takeEvery(
+    ({ type, config, patch }) =>
+      type === 'MERGE_FORM' &&
+      get(config, 'isSagaCalling') &&
+      !get(config, 'calledFromSaga') &&
+      ((get(config, 'type') === 'siren' &&
+        get(patch, `${SIREN}.length`) !== 9) ||
+        (get(config, 'type') === 'siret' &&
+          get(patch, `${SIRET}.length`) !== 14)),
+    fromWatchSirenInput(null)
   )
 }

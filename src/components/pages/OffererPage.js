@@ -20,28 +20,6 @@ import venuesSelector from '../../selectors/venues'
 import { offererNormalizer } from '../../utils/normalizers'
 
 class OffererPage extends Component {
-  constructor() {
-    super()
-    this.state = {
-      isNew: false,
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps) {
-    const {
-      offerer,
-      match: { params },
-    } = nextProps
-    const offererId = get(offerer, 'id')
-    const isNew = params.offererId === 'nouveau'
-    const method = isNew ? 'POST' : 'PATCH'
-    return {
-      apiPath: isNew ? `offerers/` : `offerers/${offererId}`,
-      isNew,
-      method,
-    }
-  }
-
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       match: {
@@ -49,16 +27,15 @@ class OffererPage extends Component {
       },
       requestData,
     } = this.props
-    const { isNew } = this.state
-    if (!isNew) {
+    if (offererId !== 'nouveau') {
       requestData('GET', `offerers/${offererId}`, {
         handleSuccess,
         handleFail,
-        key: 'offerers',
         normalizer: offererNormalizer,
       })
       return
     }
+
     // prevent loading
     handleSuccess()
   }
@@ -80,7 +57,6 @@ class OffererPage extends Component {
   render() {
     const { offerer, venues, fetchedName } = this.props
 
-    const { isNew } = this.state
     return (
       <Main
         backTo={{ label: 'Vos structures', path: '/structures' }}
@@ -100,13 +76,20 @@ class OffererPage extends Component {
         <Form
           name="offerer"
           className="section"
-          action={`/offerers/${isNew ? '' : get(offerer, 'id')}`}
+          action={`/offerers/${get(offerer, 'id') ? '' : get(offerer, 'id')}`}
           handleSuccess={this.handleSuccess}
           patch={offerer}>
           <div className="field-group">
-            <Field name="siren" label="SIREN" required readOnly={!isNew} />
+            <Field
+              label="SIREN"
+              name="siren"
+              readOnly={get(offerer, 'id')}
+              required
+              type="siren"
+            />
             {(get(offerer, 'name') || fetchedName) && [
               <Field
+                className="is-hidden"
                 key={0}
                 label="Désignation"
                 name="name"
@@ -115,6 +98,7 @@ class OffererPage extends Component {
                 isExpanded
               />,
               <Field
+                className="is-hidden"
                 key={1}
                 label="Siège social"
                 name="address"
@@ -125,7 +109,7 @@ class OffererPage extends Component {
             ]}
           </div>
 
-          {isNew ? (
+          {!get(offerer, 'id') ? (
             <div>
               <hr />
               <div

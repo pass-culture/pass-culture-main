@@ -47,7 +47,7 @@
     "node-env-file": "^0.1.8",
     "node-sass": "^4.9.0",
     "object-assign": "4.1.1",
-    "pass-culture-shared": "^0.0.3",
+    "pass-culture-shared": "^0.0.7",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "promise": "8.0.1",
@@ -77,6 +77,7 @@
     "sass-loader": "^7.0.1",
     "style-loader": "0.19.0",
     "sw-precache-webpack-plugin": "0.11.4",
+    "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",
     "url-loader": "0.6.2",
     "util.promisify": "^1.0.0",
@@ -95,8 +96,7 @@
     "prettier": "1.12.1",
     "prettier-eslint": "^8.8.2",
     "pretty-quick": "^1.6.0",
-    "react-test-renderer": "^16.4.1",
-    "testcafe": "^0.20.4"
+    "react-test-renderer": "^16.4.1"
   },
   "scripts": {
     "build": "node scripts/build.js",

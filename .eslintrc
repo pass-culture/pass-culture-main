@@ -1,4 +1,7 @@
 {
+  "globals": {
+    "fixture": true
+  },
   "extends": "react-app",
   "plugins": ["prettier"],
   "rules": {
