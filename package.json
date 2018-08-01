@@ -94,6 +94,8 @@
     "jest": "20.0.4",
     "prettier": "^1.14.0",
     "prettier-eslint-cli": "^4.7.1",
+    "prettier-stylelint": "^0.4.2",
+    "stylelint-config-standard": "^18.2.0",
     "testcafe": "^0.20.4"
   },
   "scripts": {
