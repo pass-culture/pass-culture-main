@@ -15,6 +15,7 @@ const middlewares = [sagaMiddleware, routerMiddleware(history)]
 const enhancers = []
 const composeEnhancers =
   (typeof window !== 'undefined' &&
+    // eslint-disable-next-line no-underscore-dangle
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
   compose
 

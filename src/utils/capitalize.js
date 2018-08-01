@@ -1,4 +1,6 @@
 export default text => {
-  text = text.trim()
-  return text.charAt(0).toUpperCase() + text.slice(1)
+  const isstring = text && typeof text === 'string'
+  if (!isstring) return ''
+  const str = text.trim()
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
