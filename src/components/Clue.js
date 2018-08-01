@@ -6,18 +6,15 @@ import { compose } from 'redux'
 import Price from './Price'
 import Finishable from './layout/Finishable'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
-import isCurrentTutoSelector from '../selectors/isCurrentTuto'
-import isFinishedSelector from '../selectors/isFinished'
 
 const Clue = ({
   currentRecommendation,
   isHidden,
   transitionTimeout,
-  isCurrentTuto,
-  isFinished,
 }) => {
   const {
     distance,
+    isFinished,
     mediation,
     offer
   } = (currentRecommendation || {})
@@ -60,7 +57,6 @@ export default compose(
     const { mediationId, offerId } = ownProps.match.params
     return {
       currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
-      isFinished: isFinishedSelector(state),
       isFlipped: state.verso.isFlipped,
     }
   })

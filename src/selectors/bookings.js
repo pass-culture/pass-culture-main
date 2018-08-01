@@ -6,7 +6,7 @@ export default createSelector(
   (state, eventOrThingId) => eventOrThingId,
   (bookings, eventOrThingId) => {
 
-    let filteredBookings
+    let filteredBookings = bookings
 
     // by eventOrThingId
     if (eventOrThingId) {

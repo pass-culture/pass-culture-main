@@ -18,9 +18,7 @@ import { compose } from 'redux'
 import Price from './Price'
 import VersoWrapper from './VersoWrapper'
 import bookingSelector from '../selectors/booking'
-import currentOfferSelector from '../selectors/currentOffer'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
-import timezoneSelector from '../selectors/currentTimezone'
 moment.locale('fr')
 
 class Booking extends Component {
@@ -126,13 +124,13 @@ class Booking extends Component {
       booking,
       currentRecommendation,
       error,
-      tz
     } = this.props
     const {
       token
     } = (booking || {})
     const {
-      offer
+      offer,
+      tz
     } = (currentRecommendation || {})
     const {
       price,
@@ -361,8 +359,7 @@ export default compose(
       return {
         booking: bookingSelector(state),
         currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
-        error: state.errors.booking,
-        tz: timezoneSelector(state),
+        error: state.errors.booking
       }
     },
     { closeModal, removeDataError, requestData }

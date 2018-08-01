@@ -15,7 +15,6 @@ import DeckNavigation from './layout/DeckNavigation'
 import Icon from './layout/Icon'
 import { flip as flipAction, unFlip as unFlipAction } from '../reducers/verso'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
-import isFlipDisabledSelector from '../selectors/isFlipDisabled'
 import nextLimitSelector from '../selectors/nextLimit'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousLimitSelector from '../selectors/previousLimit'
@@ -383,17 +382,26 @@ Deck.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
+  const currentRecommendation = currentRecommendationSelector(state,
+    offerId, mediationId)
+  const {
+    mediation
+  } = (currentRecommendation || {})
+  const {
+    thumbCount,
+    tutoIndex
+  } = (mediation || {})
   return {
-    currentRecommendation: currentRecommendationSelector(state,
-      offerId, mediationId),
+    currentRecommendation,
     isEmpty: get(state, 'loading.config.isEmpty'),
-    isFlipDisabled: isFlipDisabledSelector(state, offerId, mediationId),
+    isFlipDisabled: !currentRecommendation ||
+      (typeof tutoIndex === 'number' && thumbCount === 1),
     isFlipped: state.verso.isFlipped,
     nextLimit: nextLimitSelector(state),
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
     previousLimit: previousLimitSelector(state),
     previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
-    recommendations: recommendationsSelector(state),
+    recommendations: state.data.recommendations || [],
     unFlippable: state.verso.unFlippable,
     draggable: state.verso.draggable,
   }
