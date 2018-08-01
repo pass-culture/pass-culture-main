@@ -23,8 +23,6 @@ const Recto = ({
     thumbUrl,
   } = (recommendation || {})
 
-  console.log('recommendation', recommendation)
-
   const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` }
   const thumbStyle = Object.assign({}, backgroundStyle)
   if (mediation) {

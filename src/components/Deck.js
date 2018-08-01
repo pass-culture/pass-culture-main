@@ -104,13 +104,43 @@ class Deck extends Component {
   handleGoNext = () => {
     const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
-    history.push(nextRecommendation.path)
+    const { offerId, mediationId } = nextRecommendation
+    history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
+    this.handleRefreshNext()
   }
 
   handleGoPrevious = () => {
     const { history, isFlipped, previousRecommendation } = this.props
     if (!previousRecommendation || isFlipped) return
-    history.push(previousRecommendation.path)
+    const { offerId, mediationId } = previousRecommendation
+    history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
+    this.handleRefreshPrevious()
+  }
+
+  handleRefreshPrevious = () => {
+    const { currentRecommendation, previousLimit } = this.props
+    if (currentRecommendation.index <= previousLimit) {
+      // TODO replace by a requestData
+      /*
+      worker.postMessage({
+        key: 'dexie-push-pull',
+        state: { around: currentRecommendation.id },
+      })
+      */
+    }
+  }
+
+  handleRefreshNext = () => {
+    const { currentRecommendation, nextLimit } = this.props
+    if (currentRecommendation.index >= nextLimit) {
+      // TODO replace by a requestData
+      /*
+      worker.postMessage({
+        key: 'dexie-push-pull',
+        state: { around: currentRecommendation.id },
+      })
+      */
+    }
   }
 
   handleRefreshedData = () => {
@@ -239,7 +269,6 @@ class Deck extends Component {
 
   render() {
     const {
-      currentHeaderColor,
       currentRecommendation,
       nextRecommendation,
       isEmpty,
@@ -250,6 +279,7 @@ class Deck extends Component {
       width,
     } = this.props
     const {
+      headerColor,
       index
     } = (currentRecommendation || 0)
 
@@ -292,7 +322,6 @@ class Deck extends Component {
         {this.renderDraggableCards()}
         {showNavigation && (
           <DeckNavigation
-            currentHeaderColor={currentHeaderColor}
             flipHandler={(!isFlipDisabled && this.handleFlip) || null}
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={
@@ -346,7 +375,6 @@ Deck.propTypes = {
   isFlipped: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.object,
   recommendations: PropTypes.array.isRequired,
-  currentHeaderColor: PropTypes.string.isRequired,
   nextRecommendation: PropTypes.object,
   deprecatedRecommendations: PropTypes.object,
   previousRecommendation: PropTypes.object,

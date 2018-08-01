@@ -6,9 +6,12 @@ export default createSelector(
   recommendationsSelector,
   recommendations => {
     let recosById = {}
-    let recoUid = r =>
-      r.mediation ? r.mediationId : 'nomed_' + (r.thingId || r.eventId)
-    recommendations.forEach(r => (recosById[recoUid(r)] = r))
+    let recoUid = recommendation =>
+      recommendation.mediation
+        ? recommendation.mediationId
+        : 'nomed_' + (recommendation.offer.eventOrThing.id)
+    recommendations.forEach(recommendation =>
+      (recosById[recoUid(recommendation)] = recommendation))
     return Object.values(recosById)
   }
 )

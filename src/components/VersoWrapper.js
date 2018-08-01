@@ -6,8 +6,7 @@ import { compose } from 'redux'
 
 import ControlBar from './ControlBar'
 import currentHeaderColorSelector from '../selectors/currentHeaderColor'
-import currentEventOrThingSelector from '../selectors/currentEventOrThing'
-import currentVenueSelector from '../selectors/currentVenue'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
 import isCurrentTutoSelector from '../selectors/isCurrentTuto'
 import { ROOT_PATH } from '../utils/config'
 
@@ -16,7 +15,7 @@ import { makeDraggable, makeUndraggable } from '../reducers/verso'
 class VersoWrapper extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (!this.props.isFlipped && prevProps.isFlipped) {
-      this.element.scrollTo && this.element.scrollTo(0, 0)
+      this.$header.scrollTo && this.$header.scrollTo(0, 0)
     }
   }
 
@@ -42,12 +41,21 @@ class VersoWrapper extends Component {
     const {
       children,
       className,
-      eventOrThing,
+      currentRecommendation,
       hasControlBar,
       headerColor,
       isCurrentTuto,
-      venue,
     } = this.props
+    const {
+      offer
+    } = (currentRecommendation || {})
+    const {
+      eventOrThing,
+      venue
+    } = (offer || {})
+
+
+
     const contentStyle = {}
     if (isCurrentTuto) {
       contentStyle.backgroundColor = headerColor
@@ -62,13 +70,13 @@ class VersoWrapper extends Component {
         <div
           className="verso-header"
           style={{ backgroundColor: headerColor }}
-          ref={element => (this.element = element)}>
+          ref={$el => { this.$header = $el }}>
           <h1>
             {' '}
-            {eventOrThing && eventOrThing.name}
+            {get(eventOrThing, 'name')}
             {author && ', de ' + author}{' '}
           </h1>
-          <h2> {venue && venue.name} </h2>
+          <h2> {get(venue, 'name')} </h2>
         </div>
         {hasControlBar && <ControlBar />}
         <div className="verso-content" style={{ ...contentStyle }}>
@@ -85,12 +93,11 @@ export default compose(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
       return {
+        currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
         headerColor: currentHeaderColorSelector(state, offerId, mediationId),
         isFlipped: state.verso.isFlipped,
         draggable: state.verso.draggable,
-        isCurrentTuto: isCurrentTutoSelector(state),
-        eventOrThing: currentEventOrThingSelector(state, offerId, mediationId),
-        venue: currentVenueSelector(state, offerId, mediationId),
+        isCurrentTuto: isCurrentTutoSelector(state)
       }
     },
     { makeDraggable, makeUndraggable }

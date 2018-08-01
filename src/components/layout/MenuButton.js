@@ -28,9 +28,10 @@ class MenuButton extends Component {
           colored: colored,
           'on-top': onTop,
         })}
-        style={style}>
+        style={style}
+      >
         <div className="button-wrapper">
-          <button className="profile-button" onClick={this.onClick}>
+          <button className="profile-button" onClick={this.onClick} type="button">
             <ProfilePicture alt="Mon menu" {...maybeColored} />
           </button>
         </div>

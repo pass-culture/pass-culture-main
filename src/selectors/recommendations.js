@@ -1,19 +1,48 @@
 import get from 'lodash.get'
+import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
 
 import { THUMBS_URL } from '../utils/config'
 
 export default createSelector(
   state => state.data.recommendations,
-  recommendations =>
-    recommendations.map((r, index) => {
+  recommendations => {
+
+    let filteredRecommendations = uniqBy(recommendations, recommendation => {
+      const {
+        mediation,
+        offer
+      } = recommendation
+      const {
+        eventId,
+        thingId,
+      } = (offer || {})
+      const {
+        tutoIndex
+      } = (mediation || {})
+      if (eventId) {
+        return `event_${eventId}`
+      }
+      if (thingId) {
+        return `thing_${thingId}`
+      }
+      if (tutoIndex) {
+        return `tuto_${tutoIndex}`
+      }
+      console.warn('weird this recommendation is with no thing or event or tuto')
+      return ''
+    })
+
+    filteredRecommendations = filteredRecommendations.map((r, index) => {
 
       const {
         mediation,
         offer
       } = r
-
-      // console.log('offer', offer, 'mediation', mediationId)
+      const {
+        eventId,
+        thingId,
+      } = (offer || {})
 
       // thumbUrl
       let thumbUrl
@@ -23,15 +52,11 @@ export default createSelector(
       ) {
         thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
       } else {
-
-        const eventId = get(offer, 'eventId')
         if (eventId
           //  && get(offer, 'eventOrThing.thumbCount')
         ) {
           thumbUrl = `${THUMBS_URL}/events/${eventId}`
         } else {
-
-          const thingId = get(offer, 'thingId')
           thumbUrl = thingId
             // && get(offer, 'eventOrThing.thumbCount')
             && `${THUMBS_URL}/things/${thingId}`
@@ -44,4 +69,8 @@ export default createSelector(
       }, r)
 
     })
+
+    return filteredRecommendations
+
+  }
 )

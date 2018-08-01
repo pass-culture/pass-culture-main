@@ -147,7 +147,6 @@ class Booking extends Component {
       get(this.props, 'currentRecommendation.mediatedOccurences', []).length > 1
     const dateOk = dateRequired ? this.state.date && this.state.time : true
     const { availableDates, availableHours } = this.getAvailableDateTimes()
-    console.log('availableDates', availableDates)
     return (
       <VersoWrapper>
         <div className="booking">
