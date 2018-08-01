@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
-import bookingsSelector from '../../selectors/bookings'
+import otherBookingsSelector from '../../selectors/otherBookings'
+import soonBookingsSelector from '../../selectors/soonBookings'
 
 class BookingsPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
@@ -19,7 +20,7 @@ class BookingsPage extends Component {
 
   render() {
 
-    const { soonBookings, otherBookings } = this.props.bookingsByTime
+    const { soonBookings, otherBookings } = this.props
     return (
       <Main
         backButton
@@ -69,7 +70,8 @@ class BookingsPage extends Component {
 export default compose(
   connect(
     state => ({
-      bookingsByTime: bookingsSelector(state),
+      otherBookings: otherBookingsSelector(state),
+      soonBookings: soonBookingsSelector(state),
     }),
     { requestData }
   )

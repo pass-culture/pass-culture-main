@@ -33,6 +33,7 @@ export default createSelector(
     }
 
     // add dates
+    const twoDaysFromNow = moment().subtract(2, 'days')
     filteredBookings = filteredBookings.filter(booking => {
       const {
         offer,
@@ -42,25 +43,13 @@ export default createSelector(
       } = (offer || {})
       const { beginningDatetime } = (eventOccurence || {})
 
+      const date = moment(beginningDatetime)
+
       return Object.assign({
-        date: moment(beginningDatetime)
+        isSoon: date < twoDaysFromNow,
+        date
       })
     })
-
-    // sort
-    const twoDaysFromNow = moment().subtract(2, 'days')
-    filteredBookings.sort((b1, b2) => b1.date - b2.date)
-      .reduce((result, booking) => {
-          const isSoon = booking.date < twoDaysFromNow
-          return {
-            soonBookings: result.soonBookings.concat(isSoon ? booking : []),
-            otherBookings: result.otherBookings.concat(isSoon ? [] : booking),
-          }
-        },
-        {
-          soonBookings: [],
-          otherBookings: [],
-        })
 
     // return
     return filteredBookings

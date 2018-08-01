@@ -8,6 +8,9 @@
     "browser": true,
     "jasmine": true
   },
+  "globals": {
+    "fixture": true
+  },
   "rules": {
     "react/forbid-prop-types": [2, { "forbid": ["any"] }],
     "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],

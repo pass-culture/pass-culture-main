@@ -92,16 +92,6 @@ class Deck extends Component {
     }
   }
 
-  handleDeprecatedData = nextProps => {
-    // DEPRECATION HANDLING
-    // IF THE RECO ARE DEPRECATED, WE GO TO DECOUVERTE
-    const { deprecatedRecommendations: nextDeprecated } = nextProps
-    const { deprecatedRecommendations: currDeprecated } = this.props
-    if (nextDeprecated && nextDeprecated !== currDeprecated) {
-      // nextProps.history.push('/decouverte')
-    }
-  }
-
   handleGoNext = () => {
     const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
@@ -220,13 +210,9 @@ class Deck extends Component {
   renderDraggableCards() {
     const {
       currentRecommendation,
-      draggable,
-      height,
-      horizontalSlideRatio,
       isFlipped,
       nextRecommendation,
       previousRecommendation,
-      verticalSlideRatio,
       width,
     } = this.props
     const {
@@ -277,21 +263,11 @@ class Deck extends Component {
       isFlipped,
       previousRecommendation,
       unFlippable,
-      width,
     } = this.props
-    const {
-      headerColor,
-      index
-    } = (currentRecommendation || 0)
 
     const showLoader = !currentRecommendation
     const showCloseButton = isFlipped && !unFlippable
     const showNavigation = !isFlipped || isFlipDisabled
-
-    const position = {
-      x: -1 * width * index,
-      y: 0,
-    }
 
     return (
       <div className="deck" id="deck">
