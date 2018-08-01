@@ -5,7 +5,7 @@ from utils.test_utils import API_URL, req_with_auth
 
 
 def test_10_create_mediation():
-    with open(Path(path.dirname(path.realpath(__file__))) / '../..'
+    with open(Path(path.dirname(path.realpath(__file__))) / '..'
               / 'mock' / 'thumbs' / 'mediations' / '1', 'rb') as thumb_file:
         data = {
                 'offerId': 'AE',
