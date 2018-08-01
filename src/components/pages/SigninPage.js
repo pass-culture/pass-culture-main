@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { Portal } from 'react-portal'

@@ -44,11 +44,7 @@ const routes = [
     exact: true,
     path: '/decouverte/:offerId/:mediationId?',
     title: 'Les offres',
-    render: ({
-      match: {
-        params: { mediationId, offerId },
-      },
-    }) => <DiscoveryPage mediationId={mediationId} offerId={offerId} />,
+    render: () => <DiscoveryPage />,
   },
   {
     exact: true,

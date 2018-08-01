@@ -1,37 +1,63 @@
 import get from 'lodash.get'
+import moment from 'moment'
+import {
+  capitalize,
+  Icon
+} from 'pass-culture-shared'
 import React from 'react'
+import { connect } from 'react-redux'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
-import moment from 'moment'
 
-import getTimezone from '../getters/timezone'
-import getVenue from '../getters/venue'
-import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
-import Capitalize from './utils/Capitalize'
-import { getDiscoveryPath } from '../utils/getDiscoveryPath'
+import recommendationSelector from '../selectors/recommendation'
+import { getTimezone } from '../utils/timezone'
 
-const BookingItem = props => {
-  const { mediation, offer, thumbUrl, token } = props
-  const venue = getVenue(null, offer)
-  const tz = getTimezone(venue)
-  const date = get(offer, 'eventOccurence.beginningDatetime')
+const BookingItem = ({ booking, recommendation }) => {
+  const {
+    mediation,
+    mediationId,
+    offer,
+    offerId,
+    token
+  } = (booking || {})
+  const {
+    eventOccurence,
+    eventOrThing,
+    venue
+  } = (offer || {})
+  const {
+    name
+  } = (eventOrThing || {})
+  const {
+    departementCode
+  } = (venue || {})
+  const {
+    thumbUrl
+  } = (recommendation || {})
+
+  const tz = getTimezone(departementCode)
+  const date = get(eventOccurence, 'beginningDatetime')
   return (
     <li className="booking-item">
-      <Link to={`${getDiscoveryPath(offer, mediation, true)}`}>
+      <Link to={`/decouverte/${offerId}/${mediationId}?onVerso`}>
         <Thumb src={thumbUrl} withMediation={mediation} />
         <div className="infos">
           <div className="top">
-            <h5 title={get(props, 'source.name')}>
+            <h5 title={name}>
               <Dotdotdot clamp={date ? 2 : 3}>
-                {get(props, 'source.name')}
+                {name}
               </Dotdotdot>
             </h5>
-            <Capitalize>
-              {moment(date)
-                .tz(tz)
-                .format('dddd DD/MM/YYYY à H:mm')}
-            </Capitalize>
+            <span>
+              {
+                capitalize(
+                  moment(date)
+                    .tz(tz)
+                    .format('dddd DD/MM/YYYY à H:mm')
+                )
+              }
+            </span>
           </div>
           <div className="token">
             {token}
@@ -45,4 +71,8 @@ const BookingItem = props => {
   )
 }
 
-export default BookingItem
+export default connect(
+  (state, ownProps) => ({
+    recommendation: recommendationSelector(state, ownProps.booking.recommendationId)
+  })
+)(BookingItem)

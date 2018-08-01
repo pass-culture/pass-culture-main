@@ -1,21 +1,34 @@
+import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import selectCurrentRecommendation from './currentRecommendation'
-import getRecommendation from '../getters/recommendation'
-import selectUniqueRecommendations from './uniqueRecommendations'
+import currentRecommendationSelector from './currentRecommendation'
+import recommendationsSelector from './recommendations'
+import { getHeaderColor } from '../utils/colors'
 
 export default createSelector(
-  selectUniqueRecommendations,
-  selectCurrentRecommendation,
+  recommendationsSelector,
+  currentRecommendationSelector,
   (recommendations, currentRecommendation) => {
-    const previousRecommendation =
-      currentRecommendation &&
-      recommendations &&
-      recommendations[
-        recommendations.findIndex(
-          reco => reco.id === currentRecommendation.id
-        ) - 1
-      ]
-    return getRecommendation({ recommendation: previousRecommendation })
+
+    const previousRecommendation = currentRecommendation &&
+      get(recommendations, recommendations.findIndex(recommendation =>
+        recommendation.id === currentRecommendation.id) - 1)
+
+    if (!previousRecommendation) {
+      return undefined
+    }
+
+    // path
+    const { mediationId, offerId } = previousRecommendation
+    const path = `/decouverte/${offerId}/${mediationId || ''}`
+
+    // headerColor
+    const headerColor = getHeaderColor(currentRecommendation.firstThumbDominantColor)
+
+    // return
+    return Object.assign({
+      path
+    }, previousRecommendation)
+
   }
 )

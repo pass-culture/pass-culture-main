@@ -1,22 +1,37 @@
 import classnames from 'classnames'
 import React from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import OfferInfo from './OfferInfo'
 import VersoWrapper from './VersoWrapper'
 import MenuButton from './layout/MenuButton'
-import selectCurrentMediation from '../selectors/currentMediation'
-import selectIsCurrentTuto from '../selectors/isCurrentTuto'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { THUMBS_URL } from '../utils/config'
 
-const Verso = ({ mediation, isFlipped, isCurrentTuto }) => {
+const Verso = ({
+  currentRecommendation,
+  isFlipped,
+}) => {
+  const {
+    mediation
+  } = (currentRecommendation || {})
+  const {
+    tutoIndex
+  } = (mediation || {})
+
+  console.log('VERSO', currentRecommendation)
+  console.log('typeof tutoIndex', typeof tutoIndex)
+
   return (
     <div
       className={classnames('verso', {
         flipped: isFlipped,
-      })}>
-      <VersoWrapper hasControlBar={!isCurrentTuto} className="with-padding-top">
-        {isCurrentTuto ? (
+      })}
+    >
+      <VersoWrapper className="with-padding-top">
+        {typeof tutoIndex === 'number' ? (
           mediation && (
             <img
               alt="verso"
@@ -28,17 +43,18 @@ const Verso = ({ mediation, isFlipped, isCurrentTuto }) => {
           <OfferInfo />
         )}
       </VersoWrapper>
-      {isCurrentTuto ? (
-        <MenuButton borderTop />
-      ) : (
-        <MenuButton borderTop colored />
-      )}
+      <MenuButton borderTop colored={typeof tutoIndex !== 'number'} />
     </div>
   )
 }
 
-export default connect(state => ({
-  mediation: selectCurrentMediation(state),
-  isFlipped: state.verso.isFlipped,
-  isCurrentTuto: selectIsCurrentTuto(state),
-}))(Verso)
+export default compose(
+  withRouter,
+  connect((state, ownProps) => {
+    const { mediationId, offerId } = ownProps.match.params
+    return {
+      currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
+      isFlipped: state.verso.isFlipped,
+    }
+  })
+)(Verso)

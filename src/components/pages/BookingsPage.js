@@ -6,14 +6,19 @@ import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
-import selectBookingsByTime from '../../selectors/bookingsByTime'
+import bookingsSelector from '../../selectors/bookings'
 
 class BookingsPage extends Component {
-  handleDataRequest = () => {
-    this.props.requestData('GET', 'bookings')
+  handleDataRequest = (handleSuccess, handleFail) => {
+    this.props.requestData('GET',
+      'bookings', {
+        handleSuccess,
+        handleFail
+      })
   }
 
   render() {
+
     const { soonBookings, otherBookings } = this.props.bookingsByTime
     return (
       <Main
@@ -29,8 +34,8 @@ class BookingsPage extends Component {
           <div>
             <h4>C'est bientôt !</h4>
             <ul className="bookings">
-              {soonBookings.map((b, index) => (
-                <BookingItem key={index} {...b} />
+              {soonBookings.map(booking => (
+                <BookingItem key={booking.id} booking={booking} />
               ))}
             </ul>
           </div>
@@ -39,8 +44,8 @@ class BookingsPage extends Component {
           <div>
             <h4>Réservations</h4>
             <ul className="bookings">
-              {otherBookings.map((b, index) => (
-                <BookingItem key={index} {...b} />
+              {otherBookings.map(booking => (
+                <BookingItem key={booking.id} booking={booking} />
               ))}
             </ul>
           </div>
@@ -64,7 +69,7 @@ class BookingsPage extends Component {
 export default compose(
   connect(
     state => ({
-      bookingsByTime: selectBookingsByTime(state),
+      bookingsByTime: bookingsSelector(state),
     }),
     { requestData }
   )

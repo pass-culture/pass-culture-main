@@ -1,48 +1,56 @@
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-import selectRecommendationQuery from './recommendationQuery'
-import selectRecommendationsWithIndex from './recommendationsWithIndex'
-import getRecommendation from '../getters/recommendation'
+import recommendationsSelector from './recommendations'
+import { getHeaderColor } from '../utils/colors'
 
 export default createSelector(
-  state => state.router.location.pathname,
-  selectRecommendationsWithIndex,
-  selectRecommendationQuery,
-  (pathname, recommendations, recommendationQuery) => {
-    // NOTE: you will see that recommendationQuery is not actually
-    // used in the body of this function, but it is still necessary
-    // to trigger this selector again when /recommendations/<recommendationId>
-    // requests has been called
-    // (as the state.data.recommendations is not mutated through these kinds of calls)
-
-    const [, , offerId, mediationId] = pathname.split('/')
+  recommendationsSelector,
+  (state, offerId) => offerId,
+  (state, offerId, mediationId) => mediationId,
+  (currentRecommendations, offerId, mediationId) => {
     let filteredRecommendations
-    // NORMALY mediationId is ENOUGH TO FIND THE MATCHING
-    // USER MEDIATION (BECAUSE WE PROPOSE ONLY ONE OFFER PER MEDIATION)
-    // BUT TO BE SURE WE GET ALL THE AVAILABLES
-    // (IF AT ANY CASE BACKEND ALGO SENT BACK DOUBLONS...BECAUSE OF SOME MISTAKES)
+
+    // prefilter by mediation
     if (mediationId) {
-      filteredRecommendations = recommendations.filter(
+      filteredRecommendations = currentRecommendations.filter(
         m => m.mediationId === mediationId
       )
     } else {
-      filteredRecommendations = recommendations
+      filteredRecommendations = currentRecommendations
     }
-    // THEN DESAMBIGUATE WITH OFFER ID
-    let recommendation
+
+    // special tuto case
+    let currentRecommendation
     if (offerId === 'tuto') {
-      recommendation = filteredRecommendations[0]
+      currentRecommendation = get(filteredRecommendations, '0')
     } else {
-      recommendation = filteredRecommendations.find(m =>
-        get(m, 'recommendationOffers', []).find(o => o.id === offerId)
-      )
+      currentRecommendation = filteredRecommendations.find(r => r.offerId === offerId)
     }
-    const hydratedRecommendation = getRecommendation({
-      offerId,
-      recommendation,
-      recommendations,
-    })
-    return hydratedRecommendation
+
+    // undefined
+    if (!currentRecommendation) {
+      return undefined
+    }
+
+    // is finished
+    // console.log('currentRecommendation', currentRecommendation)
+    const isFinished = false
+    /*
+    const {}
+    const offers = get(currentRecommendation, 'currentRecommendationOffers', [])
+    const now = moment()
+    return offers.every(o => moment(o.bookingLimitDatetime).isBefore(now))
+    */
+    // FIXME: also check that nbooking < available
+
+    // colors
+    const headerColor = getHeaderColor(currentRecommendation.firstThumbDominantColor)
+
+    // return
+    return Object.assign({
+      isFinished,
+      headerColor
+    }, currentRecommendation)
   }
 )

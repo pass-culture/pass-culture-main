@@ -1,12 +1,11 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import ControlBar from './ControlBar'
-import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
-import selectCurrentSource from '../selectors/currentSource'
-import selectCurrentVenue from '../selectors/currentVenue'
-import selectIsCurrentTuto from '../selectors/isCurrentTuto'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
 import { makeDraggable, makeUndraggable } from '../reducers/verso'
@@ -14,7 +13,7 @@ import { makeDraggable, makeUndraggable } from '../reducers/verso'
 class VersoWrapper extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (!this.props.isFlipped && prevProps.isFlipped) {
-      this.element.scrollTo && this.element.scrollTo(0, 0)
+      this.$header.scrollTo && this.$header.scrollTo(0, 0)
     }
   }
 
@@ -40,35 +39,49 @@ class VersoWrapper extends Component {
     const {
       children,
       className,
+      currentRecommendation,
       headerColor,
-      source,
-      venue,
-      hasControlBar,
-      isCurrentTuto,
     } = this.props
+    const {
+      mediation,
+      offer
+    } = (currentRecommendation || {})
+    const {
+      eventOrThing,
+      venue
+    } = (offer || {})
+    const {
+      tutoIndex
+    } = (mediation || {})
+
     const contentStyle = {}
-    if (isCurrentTuto) {
+    /*
+    if (typeof tutoIndex === 'number') {
       contentStyle.backgroundColor = headerColor
     } else {
       contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     }
-    const author = get(source, 'extraData.author')
+    */
+    const author = get(eventOrThing, 'extraData.author')
+
+    console.log('WRAPPER', eventOrThing)
+
     return (
       <div
-        ref={$el => (this.$el = $el)}
+        ref={$el => { this.$el = $el }}
         className={`verso-wrapper ${className || ''}`}>
         <div
           className="verso-header"
           style={{ backgroundColor: headerColor }}
-          ref={element => (this.element = element)}>
+          ref={$el => { this.$header = $el }}>
           <h1>
             {' '}
-            {source && source.name}
+            {get(eventOrThing, 'name')}
             {author && ', de ' + author}{' '}
           </h1>
-          <h2> {venue && venue.name} </h2>
+          <h2> {get(venue, 'name')} </h2>
         </div>
-        {hasControlBar && <ControlBar />}
+        {typeof tutoIndex !== 'number' && <ControlBar />}
         <div className="verso-content" style={{ ...contentStyle }}>
           {children}
         </div>
@@ -77,14 +90,17 @@ class VersoWrapper extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    headerColor: selectCurrentHeaderColor(state),
-    isFlipped: state.verso.isFlipped,
-    draggable: state.verso.draggable,
-    isCurrentTuto: selectIsCurrentTuto(state),
-    source: selectCurrentSource(state),
-    venue: selectCurrentVenue(state),
-  }),
-  { makeDraggable, makeUndraggable }
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => {
+      const { mediationId, offerId } = ownProps.match.params
+      return {
+        currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
+        isFlipped: state.verso.isFlipped,
+        draggable: state.verso.draggable
+      }
+    },
+    { makeDraggable, makeUndraggable }
+  )
 )(VersoWrapper)
