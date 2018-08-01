@@ -1,6 +1,7 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import { matchPath, Redirect, Route, Switch } from 'react-router-dom'
+import { ConnectedRouter } from 'react-router-redux'
 import Raven from 'raven-js'
 
 import { version } from '../package.json'
@@ -9,8 +10,6 @@ import { API_URL, IS_DEV } from './utils/config'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
 
-import { ConnectedRouter } from 'react-router-redux'
-
 import App from './App'
 import routes from './utils/routes'
 import store from './utils/store'
@@ -18,7 +17,7 @@ import history from './utils/history'
 
 const Root = () => {
   if (!IS_DEV) {
-    Raven.config(API_URL + '/client_errors', {
+    Raven.config(`${API_URL}/client_errors`, {
       release: version,
       environment: process.env.NODE_ENV,
       logger: 'javascript',
@@ -29,25 +28,26 @@ const Root = () => {
       <ConnectedRouter history={history}>
         <App>
           <Switch>
-            {routes.map((route, index) => (
+            {routes.map(route => (
               <Route
-                key={index}
+                key={route.path}
                 {...route}
                 render={match => {
-                  document.title =
-                    (route.title ? `${route.title} - ` : '') + 'Pass Culture'
+                  document.title = `${
+                    route.title ? `${route.title} - ` : ''
+                  }Pass Culture`
                   return route.render(match)
                 }}
               />
             ))}
             <Route
               path="/:active?"
-              render={props => {
+              render={({ match, location }) => {
                 const matchedRoute = routes.find(route =>
-                  matchPath(`/${props.match.params.active}`, route)
+                  matchPath(`/${match.params.active}`, route)
                 )
                 return (
-                  props.location.pathname !== '/' &&
+                  location.pathname !== '/' &&
                   !matchedRoute && <Redirect to="/" />
                 )
               }}

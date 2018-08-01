@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import Debug from './components/layout/Debug'
 import Splash from './components/layout/Splash'
@@ -17,5 +18,9 @@ const App = ({ children }) => (
     <Splash />
   </Debug>
 )
+
+App.propTypes = {
+  children: PropTypes.node.isRequired,
+}
 
 export default App

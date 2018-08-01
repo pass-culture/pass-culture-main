@@ -7,11 +7,12 @@ import './utils/install'
 import Root from './Root'
 import registerCacheWorker from './workers/cache'
 
+const NextRoot = require('./Root').default
+
 const initApp = () => {
   ReactDOM.render(<Root />, document.getElementById('root'))
   if (module.hot) {
     module.hot.accept('./Root', () => {
-      const NextRoot = require('./Root').default
       ReactDOM.render(
         <AppContainer>
           <NextRoot />
