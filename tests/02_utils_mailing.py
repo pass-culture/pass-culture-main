@@ -137,7 +137,7 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
     expected_email = {
       "FromName": 'Pass Culture',
-      'FromEmail': 'passculture@beta.gouv.fr',
+      'FromEmail': 'passculture-dev@beta.gouv.fr',
       'To': recipients,
       'Subject': SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL,
       'Html-part': mail_html
