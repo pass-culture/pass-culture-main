@@ -1,6 +1,9 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { requestData as requestDataAction } from 'pass-culture-shared'
+import {
+  Icon,
+  requestData
+} from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
@@ -10,17 +13,15 @@ import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
 
 import Card from './Card'
-import DeckDebugger from './layout/DeckDebugger'
-import DeckNavigation from './layout/DeckNavigation'
-import Icon from './layout/Icon'
-import { flip as flipAction, unFlip as unFlipAction } from '../reducers/verso'
+import DeckDebugger from './DeckDebugger'
+import DeckNavigation from './DeckNavigation'
+import { flip, unFlip } from '../reducers/verso'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
-import nextLimitSelector from '../selectors/nextLimit'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
-import previousLimitSelector from '../selectors/previousLimit'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
 import recommendationsSelector from '../selectors/recommendations'
 import { IS_DEV } from '../utils/config'
+import { PREVIOUS_NEXT_LIMIT } from '../utils/deck'
 
 class Deck extends Component {
   constructor(props) {
@@ -150,10 +151,10 @@ class Deck extends Component {
 
   handleSetDateRead(prevProps) {
     const {
+      currentRecommendation,
+      dispatchRequestData,
       isFlipped,
       readTimeout,
-      requestData,
-      currentRecommendation,
     } = this.props
     const { isRead } = this.state
 
@@ -185,7 +186,7 @@ class Deck extends Component {
       this.currentReadRecommendationId = currentRecommendation.id
       this.readTimeout = setTimeout(() => {
         if (currentRecommendation && !currentRecommendation.dateRead) {
-          requestData('PATCH', `recommendations/${currentRecommendation.id}`, {
+          dispatchRequestData('PATCH', `recommendations/${currentRecommendation.id}`, {
             body: {
               dateRead: moment().toISOString(),
             },
@@ -205,15 +206,15 @@ class Deck extends Component {
   }
 
   handleFlip() {
-    const { isFlipDisabled, flip } = this.props
+    const { dispatchFlip, isFlipDisabled } = this.props
     if (isFlipDisabled) return
-    flip()
+    dispatchFlip()
   }
 
   handleUnFlip() {
-    const { unFlippable, unFlip } = this.props
+    const { dispatchUnFlip, unFlippable } = this.props
     if (unFlippable) return
-    unFlip()
+    dispatchUnFlip()
   }
 
   renderDraggableCards() {
@@ -338,46 +339,39 @@ class Deck extends Component {
 }
 
 Deck.defaultProps = {
+  currentRecommendation: null,
   // flipRatio: 0.25,
   isEmpty: false,
   horizontalSlideRatio: 0.2,
-  verticalSlideRatio: 0.1,
-  // isDebug: false,
-  // noDataTimeout: 20000,
-  readTimeout: 2000,
-  // resizeTimeout: 250,
-  // transitionTimeout: 500,
   nextRecommendation: null,
-  currentRecommendation: null,
   previousRecommendation: null,
-  deprecatedRecommendations: null,
+  readTimeout: 2000,
+  verticalSlideRatio: 0.1,
+  // noDataTimeout: 20000,
 }
 
 Deck.propTypes = {
-  // isDebug: PropTypes.bool,
-  // resizeTimeout: PropTypes.number,
-  // transitionTimeout: PropTypes.number,
-  // noDataTimeout: PropTypes.number,
-  isEmpty: PropTypes.bool,
-  height: PropTypes.number.isRequired,
-  width: PropTypes.number.isRequired,
-  flip: PropTypes.func.isRequired,
-  unFlip: PropTypes.func.isRequired,
-  draggable: PropTypes.bool.isRequired,
-  requestData: PropTypes.func.isRequired,
-  // flipRatio: PropTypes.number,
-  verticalSlideRatio: PropTypes.number,
-  readTimeout: PropTypes.number,
-  horizontalSlideRatio: PropTypes.number,
-  isFlipDisabled: PropTypes.bool.isRequired,
-  unFlippable: PropTypes.bool.isRequired,
-  history: PropTypes.object.isRequired,
-  isFlipped: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.object,
-  recommendations: PropTypes.array.isRequired,
+  dispatchFlip: PropTypes.func.isRequired,
+  dispatchRequestData: PropTypes.func.isRequired,
+  dispatchUnFlip: PropTypes.func.isRequired,
+  draggable: PropTypes.bool.isRequired,
+  // flipRatio: PropTypes.number,
+  history: PropTypes.object.isRequired,
+  horizontalSlideRatio: PropTypes.number,
+  // isDebug: PropTypes.bool,
+  isEmpty: PropTypes.bool,
+  isFlipDisabled: PropTypes.bool.isRequired,
+  isFlipped: PropTypes.bool.isRequired,
+  height: PropTypes.number.isRequired,
   nextRecommendation: PropTypes.object,
-  deprecatedRecommendations: PropTypes.object,
+  // noDataTimeout: PropTypes.number,
+  recommendations: PropTypes.array.isRequired,
   previousRecommendation: PropTypes.object,
+  readTimeout: PropTypes.number,
+  unFlippable: PropTypes.bool.isRequired,
+  verticalSlideRatio: PropTypes.number,
+  width: PropTypes.number.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -391,19 +385,28 @@ const mapStateToProps = (state, ownProps) => {
     thumbCount,
     tutoIndex
   } = (mediation || {})
+
+  const recommendations = recommendationsSelector(state)
+
   return {
     currentRecommendation,
+    draggable: state.verso.draggable,
     isEmpty: get(state, 'loading.config.isEmpty'),
     isFlipDisabled: !currentRecommendation ||
       (typeof tutoIndex === 'number' && thumbCount === 1),
     isFlipped: state.verso.isFlipped,
-    nextLimit: nextLimitSelector(state),
+    nextLimit: recommendations &&
+      (PREVIOUS_NEXT_LIMIT >= recommendations.length - 1
+        ? recommendations.length - 1
+        : recommendations.length - 1 - PREVIOUS_NEXT_LIMIT),
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
-    previousLimit: previousLimitSelector(state),
+    previousLimit: recommendations &&
+    (PREVIOUS_NEXT_LIMIT < recommendations.length - 1
+      ? PREVIOUS_NEXT_LIMIT + 1
+      : 0),
     previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
-    recommendations: state.data.recommendations || [],
+    recommendations,
     unFlippable: state.verso.unFlippable,
-    draggable: state.verso.draggable,
   }
 }
 
@@ -414,9 +417,9 @@ const mapSizeToProps = ({ width, height }) => ({
 })
 
 const mapDispatchToProps = {
-  flip: flipAction,
-  requestData: requestDataAction,
-  unFlip: unFlipAction
+  dispatchFlip: flip,
+  dispatchRequestData: requestData,
+  dispatchUnFlip: unFlip
 }
 
 export default compose(

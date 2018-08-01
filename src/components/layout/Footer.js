@@ -3,8 +3,8 @@ import { showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Menu from './Menu'
 import ProfilePicture from './ProfilePicture'
+import Menu from '../Menu'
 
 class MenuButton extends Component {
   onClick = () => {
@@ -23,9 +23,9 @@ class MenuButton extends Component {
     }
     return (
       <footer
-        className={classnames('menu-button', {
+        className={classnames('footer', {
           bordered: borderTop,
-          colored: colored,
+          colored,
           'on-top': onTop,
         })}
         style={style}

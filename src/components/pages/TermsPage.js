@@ -21,7 +21,7 @@ class TermsPage extends Component {
     return (
       <Main
         name="terms"
-        menuButton={{ borderTop: true, colored: true }}
+        footer={{ borderTop: true, colored: true }}
         backButton>
         <header>Mentions légales</header>
         <div className="content">

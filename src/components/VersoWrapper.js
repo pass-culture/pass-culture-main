@@ -55,16 +55,12 @@ class VersoWrapper extends Component {
     } = (mediation || {})
 
     const contentStyle = {}
-    /*
     if (typeof tutoIndex === 'number') {
       contentStyle.backgroundColor = headerColor
     } else {
       contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     }
-    */
     const author = get(eventOrThing, 'extraData.author')
-
-    console.log('WRAPPER', eventOrThing)
 
     return (
       <div

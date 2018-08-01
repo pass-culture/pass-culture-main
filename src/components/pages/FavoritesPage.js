@@ -10,7 +10,7 @@ class FavoritesPage extends Component {
   render() {
     const { favorites } = this.props
     return (
-      <Main name="favorites" redBg menuButton={{ borderTop: true }} backButton>
+      <Main name="favorites" redBg footer={{ borderTop: true }} backButton>
         <header>
           <h1>Mes favoris</h1>
         </header>

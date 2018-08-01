@@ -27,7 +27,7 @@ class ProfilePage extends Component {
     return (
       <Main
         name="profile"
-        menuButton={{ borderTop: true, colored: true }}
+        footer={{ borderTop: true, colored: true }}
         backButton>
         <header>Mon profil</header>
         <h2 className="title is-2">Bienvenue !</h2>

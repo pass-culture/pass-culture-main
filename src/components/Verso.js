@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import Footer from './layout/Footer'
 import OfferInfo from './OfferInfo'
 import VersoWrapper from './VersoWrapper'
-import MenuButton from './layout/MenuButton'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { THUMBS_URL } from '../utils/config'
 
@@ -20,9 +20,6 @@ const Verso = ({
   const {
     tutoIndex
   } = (mediation || {})
-
-  console.log('VERSO', currentRecommendation)
-  console.log('typeof tutoIndex', typeof tutoIndex)
 
   return (
     <div
@@ -43,7 +40,7 @@ const Verso = ({
           <OfferInfo />
         )}
       </VersoWrapper>
-      <MenuButton borderTop colored={typeof tutoIndex !== 'number'} />
+      <Footer borderTop colored={typeof tutoIndex !== 'number'} />
     </div>
   )
 }

@@ -3,8 +3,8 @@ import { Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
 import regularUser from './helpers/roles'
 
-const menuButton = Selector('.menu-button').filterVisible()
-const rectoDivProfileButton = menuButton.find('button.profile-button')
+const footer = Selector('.footer').filterVisible()
+const rectoDivProfileButton = footer.find('button.profile-button')
 const profileModal = Selector('.modal')
 const profilePic = Selector('.modal').find('profile-pic')
 const closeButton = Selector('.close')

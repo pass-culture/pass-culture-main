@@ -1,9 +1,10 @@
-import React from 'react'
+import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+import React from 'react'
 
-import { ROOT_PATH } from '../../utils/config'
-import Icon from './Icon'
-import Clue from '../Clue'
+import Clue from './Clue'
+import { ROOT_PATH } from '../utils/config'
+
 
 const DeckNavigation = ({
   flipHandler,

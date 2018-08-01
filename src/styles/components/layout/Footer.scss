@@ -1,4 +1,6 @@
-.menu-button {
+.footer {
+
+  background-color: transparent;
 
   .button-wrapper {
     margin: 5px 0;
@@ -49,6 +51,6 @@
   }
 }
 
-body.cordova-android .menu-button {
+body.cordova-android .footer {
   bottom: 1px;
 }

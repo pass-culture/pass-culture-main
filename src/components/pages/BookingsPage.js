@@ -25,7 +25,7 @@ class BookingsPage extends Component {
         backButton
         handleDataRequest={this.handleDataRequest}
         name="bookings"
-        menuButton={{ borderTop: true }}
+        footer={{ borderTop: true }}
         redBg>
         <header>
           <h1>Mes réservations</h1>

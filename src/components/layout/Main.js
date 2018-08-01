@@ -2,7 +2,6 @@ import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   closeNotification,
-  Icon,
   Modal,
   requestData,
   resetForm,
@@ -15,7 +14,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import BackButton from './BackButton'
-import MenuButton from './MenuButton'
+import Footer from './Footer'
 
 class Main extends Component {
   constructor() {
@@ -106,7 +105,7 @@ class Main extends Component {
     const {
       backButton,
       children,
-      menuButton,
+      footer: footerProps,
       name,
       noPadding,
       redBg,
@@ -124,15 +123,18 @@ class Main extends Component {
           page: true,
           [`${name}-page`]: true,
           'with-header': Boolean(header),
-          'with-footer': Boolean(footer) || Boolean(menuButton),
+          'with-footer': Boolean(footer) || Boolean(footerProps),
           'red-bg': redBg,
           'no-padding': noPadding,
         })}
-        key="main">
+        key="main"
+      >
         {header}
         {backButton && <BackButton {...backButton} />}
-        <div className="page-content">{content}</div>
-        {footer || (menuButton && <MenuButton {...menuButton} />)}
+        <div className="page-content">
+          {content}
+        </div>
+        {footer || (footerProps && <Footer {...footerProps} />)}
       </Tag>,
       <Modal key="modal" />,
     ]

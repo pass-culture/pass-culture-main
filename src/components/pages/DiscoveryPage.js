@@ -104,7 +104,7 @@ class DiscoveryPage extends Component {
       <Main
         backButton={backButton ? { className: 'discovery' } : null}
         handleDataRequest={this.handleDataRequest}
-        menuButton={{ borderTop: true, onTop: isMenuOnTop }}
+        footer={{ borderTop: true, onTop: isMenuOnTop }}
         name="discovery"
         noPadding
       >

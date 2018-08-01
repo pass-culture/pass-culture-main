@@ -5,7 +5,7 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { ROOT_PATH } from '../../utils/config'
+import { ROOT_PATH } from '../utils/config'
 
 class Menu extends Component {
   onDisableClick = event => {

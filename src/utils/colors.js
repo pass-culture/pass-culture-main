@@ -1,9 +1,9 @@
 import { rgb_to_hsv } from 'colorsys'
 
-export function getHeaderColor(firstThumbDominantColor = []) {
-
-  console.log('firstThumbDominantColor', firstThumbDominantColor)
-
+export function getHeaderColor(firstThumbDominantColor) {
+  if (!firstThumbDominantColor) {
+    return 'black'
+  }
   const [red, green, blue] = firstThumbDominantColor
   const { h } = rgb_to_hsv(red, green, blue)
   if (h) {

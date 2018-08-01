@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import selectNextLimit from '../../selectors/nextLimit'
-import selectPreviousLimit from '../../selectors/previousLimit'
+import recommendationsSelector from '../selectors/recommendations'
+import { PREVIOUS_NEXT_LIMIT } from '../utils/deck'
 
 const DeckDebugger = ({
   nextLimit,
@@ -43,10 +43,19 @@ DeckDebugger.propTypes = {
   recommendations: PropTypes.array.isRequired,
 }
 
-const mapStateToProps = state => ({
-  nextLimit: selectNextLimit(state),
-  previousLimit: selectPreviousLimit(state),
-  recommendations: state.data.recommendations || [],
-})
+const mapStateToProps = state => {
+  const recommendations = recommendationsSelector(state)
+  return {
+    nextLimit: recommendations &&
+      (PREVIOUS_NEXT_LIMIT >= recommendations.length - 1
+        ? recommendations.length - 1
+        : recommendations.length - 1 - PREVIOUS_NEXT_LIMIT),
+    previousLimit: recommendations &&
+    (PREVIOUS_NEXT_LIMIT < recommendations.length - 1
+      ? PREVIOUS_NEXT_LIMIT + 1
+      : 0),
+    recommendations
+  }
+}
 
 export default connect(mapStateToProps)(DeckDebugger)
