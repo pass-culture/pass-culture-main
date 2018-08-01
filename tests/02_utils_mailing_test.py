@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
-    make_booking_recap_email, make_final_recap_email_for_offer_with_event
+    make_booking_recap_email, make_final_recap_email_for_stock_with_event
 
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user_for_booking_email_test, create_booking_for_booking_email_test
@@ -171,7 +171,7 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
 def test_06_maker_user_booking_thing_recap_email_should_have_standard_body(app):
     stock = create_stock_with_thing_offer()
-    stock.occasion.thing.idAtProviders = '12345'
+    stock.offer.thing.idAtProviders = '12345'
     user = create_user_for_booking_email_test()
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL, 'html.parser')
@@ -260,7 +260,7 @@ def test_12_offerer_recap_email_subject_past_offer_without_booking(app):
     stock = create_stock_with_event_offer(beginning_datetime_future=False)
 
     #When
-    recap_email = make_final_recap_email_for_offer_with_event(stock)
+    recap_email = make_final_recap_email_for_stock_with_event(stock)
 
     assert recap_email['Subject'] == expected_subject
 
@@ -282,7 +282,7 @@ def test_13_offerer_recap_email_past_offer_without_booking(app):
     stock = create_stock_with_event_offer(beginning_datetime_future=False)
 
     #When
-    recap_email = make_final_recap_email_for_offer_with_event(stock)
+    recap_email = make_final_recap_email_for_stock_with_event(stock)
     recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
 
     #Then
@@ -319,7 +319,7 @@ def test_14_offerer_recap_email_past_offer_with_booking(app):
     offer.bookings = [booking]
 
     # When
-    recap_email = make_final_recap_email_for_offer_with_event(offer)
+    recap_email = make_final_recap_email_for_stock_with_event(offer)
     recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
 
     # Then

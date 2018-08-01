@@ -379,7 +379,7 @@ def _generate_cancellation_email_html_and_subject(user, stock):
 def _get_event_datetime(stock):
     date_in_utc = stock.eventOccurrence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                               stock.eventOccurrence.stock.venue.departementCode)
+                                               stock.eventOccurrence.offer.venue.departementCode)
     return date_in_tz
 
 

@@ -71,6 +71,7 @@ def create_stock_with_event_offer(price=10, beginning_datetime_future=True):
     stock.eventOccurrence.offer.event.name = 'Mains, sorts et papiers'
     stock.eventOccurrence.offer.venue = _create_venue_for_booking_email_test()
     stock.isActive = True
+    return stock
 
 
 def create_stock_with_thing_offer(price=10):
