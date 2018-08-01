@@ -15,12 +15,18 @@ import { getTimezone } from '../utils/timezone'
 
 const BookingItem = ({ booking, recommendation }) => {
   const {
-    mediation,
-    mediationId,
-    offer,
-    offerId,
+    stock,
     token
   } = (booking || {})
+  const {
+    offer,
+    offerId,
+  } = (stock || {})
+  const {
+    mediation,
+    mediationId,
+    thumbUrl
+  } = (recommendation || {})
   const {
     eventOccurence,
     eventOrThing,
@@ -32,9 +38,7 @@ const BookingItem = ({ booking, recommendation }) => {
   const {
     departementCode
   } = (venue || {})
-  const {
-    thumbUrl
-  } = (recommendation || {})
+
 
   const tz = getTimezone(departementCode)
   const date = get(eventOccurence, 'beginningDatetime')

@@ -1,2 +1,3 @@
 export const recommendationNormalizer = { bookings: 'bookings' }
-export default recommendationNormalizer
+
+export const bookingNormalizer = { recommendation: 'recommendations' }

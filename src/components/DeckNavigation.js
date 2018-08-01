@@ -1,18 +1,23 @@
 import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import Clue from './Clue'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
 
 const DeckNavigation = ({
+  currentRecommendation,
   flipHandler,
   handleGoNext,
   handleGoPrevious,
-  currentHeaderColor,
 }) => {
-  const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${currentHeaderColor} 30%,${currentHeaderColor} 100%)`
+  const { headerColor } = (currentRecommendation || {})
+  const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor || '#000'} 30%,${headerColor || '#000'} 100%)`
   return (
     <div id="deck-navigation" style={{ background: backgroundGradient }}>
       <div
@@ -55,17 +60,25 @@ const DeckNavigation = ({
 }
 
 DeckNavigation.defaultProps = {
+  currentRecommendation: null,
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
-  currentHeaderColor: '#000',
 }
 
 DeckNavigation.propTypes = {
+  currentRecommendation: PropTypes.object,
   flipHandler: PropTypes.func,
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
-  currentHeaderColor: PropTypes.string,
 }
 
-export default DeckNavigation
+export default compose(
+  withRouter,
+  connect((state, ownProps) => {
+    const { mediationId, offerId } = ownProps.match.params
+    return {
+      currentRecommendation: currentRecommendationSelector(state, offerId, mediationId)
+    }
+  })
+)(DeckNavigation)

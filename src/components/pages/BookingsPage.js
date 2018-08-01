@@ -8,18 +8,19 @@ import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
 import otherBookingsSelector from '../../selectors/otherBookings'
 import soonBookingsSelector from '../../selectors/soonBookings'
+import { bookingNormalizer } from '../../utils/normalizers'
 
 class BookingsPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     this.props.requestData('GET',
       'bookings', {
         handleSuccess,
-        handleFail
+        handleFail,
+        normalizer: bookingNormalizer
       })
   }
 
   render() {
-
     const { soonBookings, otherBookings } = this.props
     return (
       <Main
@@ -27,13 +28,18 @@ class BookingsPage extends Component {
         handleDataRequest={this.handleDataRequest}
         name="bookings"
         footer={{ borderTop: true }}
-        redBg>
+        redBg
+      >
         <header>
-          <h1>Mes réservations</h1>
+          <h1>
+            Mes réservations
+          </h1>
         </header>
         {soonBookings.length > 0 && (
           <div>
-            <h4>C'est bientôt !</h4>
+            <h4>
+              C'est bientôt !
+            </h4>
             <ul className="bookings">
               {soonBookings.map(booking => (
                 <BookingItem key={booking.id} booking={booking} />
@@ -43,7 +49,9 @@ class BookingsPage extends Component {
         )}
         {otherBookings.length > 0 && (
           <div>
-            <h4>Réservations</h4>
+            <h4>
+              Réservations
+            </h4>
             <ul className="bookings">
               {otherBookings.map(booking => (
                 <BookingItem key={booking.id} booking={booking} />
@@ -54,7 +62,9 @@ class BookingsPage extends Component {
         {soonBookings.length === 0 &&
           otherBookings.length === 0 && (
             <div>
-              <p className="nothing">Pas encore de réservation.</p>
+              <p className="nothing">
+                Pas encore de réservation.
+              </p>
               <p className="nothing">
                 <Link to="/decouverte" className="button is-primary">
                   Allez-y !
