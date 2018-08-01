@@ -1,8 +1,7 @@
-"""Changed column name from canBook to canBookFreeOffers.
-Added a constraint, cannot book free offers if admin
+"""Changed column name from canBook to canBookFreeOffers. Added a constraint, cannot book free offers if admin
 
 Revision ID: 7ce5154d87e2
-Revises: 11d603462200
+Revises: e8c43e6dc0d8
 Create Date: 2018-07-30 12:17:55.225619
 
 """
@@ -12,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '7ce5154d87e2'
-down_revision = None
+down_revision = 'e8c43e6dc0d8'
 branch_labels = None
 depends_on = None
 

@@ -1,7 +1,7 @@
-"""empty message
+"""Rename occurence to occurrence
 
 Revision ID: 0e764b59ccbc
-Revises: b0522cd8247f
+Revises: 7ce5154d87e2
 Create Date: 2018-07-31 08:07:39.614788
 
 """
@@ -12,7 +12,7 @@ from models import Offer
 
 # revision identifiers, used by Alembic.
 revision = '0e764b59ccbc'
-down_revision = 'e8c43e6dc0d8'
+down_revision = '7ce5154d87e2'
 branch_labels = None
 depends_on = None
 
