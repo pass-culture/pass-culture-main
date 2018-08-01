@@ -1,19 +1,33 @@
 # Tests automatisés
 
-Les tests automatisés sont écrits avec pytest.
-On reconnaît 3 types de tests : unitaire, integration, functionnel.
+Les tests automatisés sont écrits et exécutés avec pytest.
 
-## Unitaires
+## Indépendance des tests
+
+Aujourd'hui, la plupart des tests ne sont pas réellement indépendants : ils dépendant des données générées par d'autres tests
+exécutés plus tôt. Le souhait est de les rendre exécutable indépendamment des autres.
+
+* Pour ce faire, on peut décorer une fonction de test avec `@clean_database` qui va s'occuper de vider toutes les tables dans la base de donnée.
+Un test décoré de cette manière va donc devoir se préoccuper d'enregistrer les données dont il a besoin.
+* Les tests considérés comme indépendants (ceux qui n'utilisent pas la fixture `app`, donc qui sont naturellement unitaires) peuvent être décorés
+avec un marqueur pytest `@pytest.mark.standalone` : ils seront alors exécutés *après* tous les tests qui sont dépendants.
+* Lorsqu'on n'aura plus de tests dépendants les uns des autres, on pourra supprimer ce marqueur pytest.
+
+## Niveaux de tests
+
+On reconnaît 3 niveaux de tests : unitaire, integration, fonctionnel.
+
+### Unitaires
 
 Un test unitaire est défini comme un test qui s'applique à une portion du code que l'on a écrit tout en étant totalement
 indépendant de tout système externe à l'application : base de donnée, web service, horloge système, etc.
 
-## Integration
+### Integration
 
 Un test d'intégration est défini comme un test qui s'applique à une portion du code que l'on a écrit tout en étant
 dépendant d'un ou plusieurs systèmes externes à l'application : base de donnée, web service, horloge système, etc.
 
-## Fonctionnel
+### Fonctionnel
 
 Un test fonctionnel est défini comme un test qui s'applique à une portion du code que l'on a écrit tout en étant
 dépendant d'un ou plusieurs systèmes externes à l'application : base de donnée, web service, horloge système, etc.
