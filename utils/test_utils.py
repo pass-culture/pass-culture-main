@@ -39,11 +39,13 @@ def req_with_auth(email=None, password=None):
     return r
 
 
-def create_booking_for_booking_email_test(user, stock):
+def create_booking_for_booking_email_test(user, stock, is_cancellation=False):
     booking = Booking()
+    booking.stock = stock
     booking.user = user
     booking.token = '56789'
-    stock.bookings = [booking]
+    if not is_cancellation:
+        stock.bookings = [booking]
     return booking
 
 
@@ -54,20 +56,30 @@ def create_user_for_booking_email_test():
     return user
 
 
-def create_stock_with_event_offer(price=10):
+def create_stock_with_event_offer(price=10, beginning_datetime_future=True):
     stock = Stock()
     stock.price = price
-    stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     stock.eventOccurrence = EventOccurrence()
-    stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+    if beginning_datetime_future:
+        stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+    else:
+        stock.eventOccurrence.beginningDatetime = datetime(2017, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=800)
     stock.eventOccurrence.offer = Offer()
     stock.eventOccurrence.offer.event = Event()
     stock.eventOccurrence.offer.event.name = 'Mains, sorts et papiers'
     stock.eventOccurrence.offer.venue = _create_venue_for_booking_email_test()
     stock.isActive = True
 
-    return stock
 
+def create_stock_with_thing_offer(price=10):
+    stock = Stock()
+    stock.price = price
+    stock.offer = create_thing_offer()
+    stock.offer.venue = _create_venue_for_booking_email_test()
+    stock.isActive = True
+    return stock
 
 def create_stock_with_thing_offer(price=10):
     stock = Stock()

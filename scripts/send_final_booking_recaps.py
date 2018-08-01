@@ -6,10 +6,7 @@ from flask import current_app as app
 
 from models.event_occurrence import EventOccurrence
 from models.stock import Stock
-from utils.mailing import send_booking_recap_emails
-
-EventOccurrence = EventOccurrence
-Stock = Stock
+from utils.mailing import send_final_booking_recap_email
 
 
 @app.manager.command
@@ -29,4 +26,4 @@ def do_send_final_booking_recaps():
                                      (EventOccurrence.beginningDatetime > datetime.utcnow())) &
                                     (Stock.bookingRecapSent == None)):
         print('Sending booking recap for ' + str(stock))
-        send_booking_recap_emails(stock)
+        send_final_booking_recap_email(stock)
