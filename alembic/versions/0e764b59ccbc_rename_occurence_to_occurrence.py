@@ -1,18 +1,17 @@
-"""empty message
+"""Rename occurence to occurrence
 
 Revision ID: 0e764b59ccbc
-Revises: b0522cd8247f
+Revises: 7ce5154d87e2
 Create Date: 2018-07-31 08:07:39.614788
 
 """
 from alembic import op
-import sqlalchemy as sa
 
-from models import Offer
+from models import Stock
 
 # revision identifiers, used by Alembic.
 revision = '0e764b59ccbc'
-down_revision = 'e8c43e6dc0d8'
+down_revision = '7ce5154d87e2'
 branch_labels = None
 depends_on = None
 
@@ -39,7 +38,7 @@ def upgrade():
 
         'ALTER TABLE offer RENAME CONSTRAINT "offer_eventOccurenceId_fkey" TO "offer_eventOccurrenceId_fkey";'
         'ALTER TABLE recommendation RENAME CONSTRAINT "recommendation_inviteforEventOccurenceId_fkey" TO "recommendation_inviteforEventOccurrenceId_fkey";'
-        + Offer.trig_ddl + ';'
+        + Stock.trig_ddl + ';'
       'COMMIT;'
     )
     pass
