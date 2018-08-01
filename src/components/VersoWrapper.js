@@ -42,19 +42,20 @@ class VersoWrapper extends Component {
       children,
       className,
       currentRecommendation,
-      hasControlBar,
       headerColor,
       isCurrentTuto,
     } = this.props
     const {
+      mediation,
       offer
     } = (currentRecommendation || {})
     const {
       eventOrThing,
       venue
     } = (offer || {})
-
-
+    const {
+      tutoIndex
+    } = (mediation || {})
 
     const contentStyle = {}
     if (isCurrentTuto) {
@@ -78,7 +79,7 @@ class VersoWrapper extends Component {
           </h1>
           <h2> {get(venue, 'name')} </h2>
         </div>
-        {hasControlBar && <ControlBar />}
+        {typeof tutoIndex !== 'number' && <ControlBar />}
         <div className="verso-content" style={{ ...contentStyle }}>
           {children}
         </div>

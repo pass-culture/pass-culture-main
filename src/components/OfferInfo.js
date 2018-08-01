@@ -11,7 +11,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import bookingsSelector from '../selectors/bookings'
-import distanceSelector from '../selectors/distance'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import currentEventOrThingSelector from '../selectors/currentEventOrThing'
 import timezoneSelector from '../selectors/currentTimezone'
@@ -19,11 +18,11 @@ import { navigationLink } from '../utils/geolocation'
 
 const OfferInfo = ({
   bookings,
-  distance,
   recommendation,
   tz,
 }) => {
   const {
+    distance,
     offer,
     thumbUrl
   } = (recommendation || {})
@@ -154,7 +153,6 @@ export default compose(
       const eventOrThing = currentEventOrThingSelector(state, offerId, mediationId)
       return {
         bookings: bookingsSelector(state, get(eventOrThing, 'id')),
-        distance: distanceSelector(state, offerId, mediationId),
         recommendation: currentRecommendationSelector(state, offerId, mediationId),
         tz: timezoneSelector(state),
       }

@@ -3,10 +3,13 @@ import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
 
 import { THUMBS_URL } from '../utils/config'
+import { distanceInMeters } from '../utils/geolocation'
 
 export default createSelector(
   state => state.data.recommendations,
-  recommendations => {
+  state => state.geolocation.latitude,
+  state => state.geolocation.longitude,
+  (recommendations, latitude, longitude) => {
 
     let filteredRecommendations = uniqBy(recommendations, recommendation => {
       const {
@@ -42,6 +45,7 @@ export default createSelector(
       const {
         eventId,
         thingId,
+        venue
       } = (offer || {})
 
       // thumbUrl
@@ -63,7 +67,31 @@ export default createSelector(
         }
       }
 
+      // distance
+      let distance
+      if (!latitude || !longitude || !offer || !venue) {
+        distance = '-'
+      }
+      distance = distanceInMeters(
+        latitude,
+        longitude,
+        venue.latitude,
+        venue.longitude
+      )
+      if (distance < 30) {
+        distance = Math.round(distance) + ' m'
+      } else if (distance < 100) {
+        distance = Math.round(distance / 5) * 5 + ' m'
+      } else if (distance < 1000) {
+        distance = Math.round(distance / 10) * 10 + ' m'
+      } else if (distance < 5000) {
+        distance = Math.round(distance / 100) / 10 + ' km'
+      } else {
+        distance = Math.round(distance / 1000) + ' km'
+      }
+
       return Object.assign({
+        distance,
         index,
         thumbUrl
       }, r)

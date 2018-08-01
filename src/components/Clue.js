@@ -5,25 +5,28 @@ import { compose } from 'redux'
 
 import Price from './Price'
 import Finishable from './layout/Finishable'
-import distanceSelector from '../selectors/distance'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import isCurrentTutoSelector from '../selectors/isCurrentTuto'
 import isFinishedSelector from '../selectors/isFinished'
 
 const Clue = ({
   currentRecommendation,
-  distance,
   isHidden,
   transitionTimeout,
   isCurrentTuto,
   isFinished,
 }) => {
   const {
+    distance,
+    mediation,
     offer
   } = (currentRecommendation || {})
   const {
     price
   } = (offer || {})
+  const {
+    tutoIndex
+  } = (mediation || {})
   return (
     <div
       className="clue"
@@ -31,7 +34,8 @@ const Clue = ({
     >
       <Finishable
         finished={
-          isFinished && !isCurrentTuto // Hard coded to prevent a weird bug to arise, should be eventually removed
+          isFinished && typeof tutoIndex === 'undefined'
+          // Hard coded to prevent a weird bug to arise, should be eventually removed
         }
       >
         <Price value={price} />
@@ -56,8 +60,6 @@ export default compose(
     const { mediationId, offerId } = ownProps.match.params
     return {
       currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
-      distance: distanceSelector(state),
-      isCurrentTuto: isCurrentTutoSelector(state),
       isFinished: isFinishedSelector(state),
       isFlipped: state.verso.isFlipped,
     }

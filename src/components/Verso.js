@@ -7,18 +7,31 @@ import { compose } from 'redux'
 import OfferInfo from './OfferInfo'
 import VersoWrapper from './VersoWrapper'
 import MenuButton from './layout/MenuButton'
-import currentMediationSelector from '../selectors/currentMediation'
-import isCurrentTutoSelector from '../selectors/isCurrentTuto'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { THUMBS_URL } from '../utils/config'
 
-const Verso = ({ isCurrentTuto, isFlipped, mediation }) => {
+const Verso = ({
+  currentRecommendation,
+  isFlipped,
+}) => {
+  const {
+    mediation
+  } = (currentRecommendation || {})
+  const {
+    tutoIndex
+  } = (mediation || {})
+
+  console.log('VERSO', currentRecommendation)
+  console.log('typeof tutoIndex', typeof tutoIndex)
+
   return (
     <div
       className={classnames('verso', {
         flipped: isFlipped,
-      })}>
-      <VersoWrapper hasControlBar={!isCurrentTuto} className="with-padding-top">
-        {isCurrentTuto ? (
+      })}
+    >
+      <VersoWrapper className="with-padding-top">
+        {typeof tutoIndex === 'number' ? (
           mediation && (
             <img
               alt="verso"
@@ -30,20 +43,18 @@ const Verso = ({ isCurrentTuto, isFlipped, mediation }) => {
           <OfferInfo />
         )}
       </VersoWrapper>
-      {isCurrentTuto ? (
-        <MenuButton borderTop />
-      ) : (
-        <MenuButton borderTop colored />
-      )}
+      <MenuButton borderTop colored={typeof tutoIndex !== 'number'} />
     </div>
   )
 }
 
 export default compose(
   withRouter,
-  connect(state => ({
-    isCurrentTuto: isCurrentTutoSelector(state),
-    isFlipped: state.verso.isFlipped,
-    mediation: currentMediationSelector(state),
-  }))
+  connect((state, ownProps) => {
+    const { mediationId, offerId } = ownProps.match.params
+    return {
+      isFlipped: state.verso.isFlipped,
+      mediation: currentRecommendationSelector(state, offerId, mediationId),
+    }
+  })
 )(Verso)

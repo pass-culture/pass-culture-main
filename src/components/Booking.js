@@ -94,8 +94,8 @@ class Booking extends Component {
   }
 
   makeBooking = event => {
-    const { currentRecommendation,
-      // offer,
+    const {
+      currentRecommendation,
       requestData
     } = this.props
     const {
@@ -112,12 +112,12 @@ class Booking extends Component {
       occurences[0].offer[0]
     const offerId = selectedOffer ? selectedOffer.id : offer.id
     requestData('POST', 'bookings', {
-      add: 'append',
       body: {
         currentRecommendationId: currentRecommendation.id,
         offerId,
         quantity: 1,
       },
+      name: 'booking'
     })
   }
 
@@ -361,8 +361,7 @@ export default compose(
       return {
         booking: bookingSelector(state),
         currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
-        error: get(state.data, 'errors'),
-        offer: currentOfferSelector(state),
+        error: state.errors.booking,
         tz: timezoneSelector(state),
       }
     },

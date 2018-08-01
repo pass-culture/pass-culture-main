@@ -10,6 +10,7 @@ export default createSelector(
   (recommendations, offerId, mediationId) => {
     let filteredRecommendations
 
+    // prefilter by mediation
     if (mediationId) {
       filteredRecommendations = recommendations.filter(
         m => m.mediationId === mediationId
@@ -25,6 +26,21 @@ export default createSelector(
     } else {
       recommendation = filteredRecommendations.find(r => r.offerId === offerId)
     }
+
+    // undefined
+    if (!recommendation) {
+      return undefined
+    }
+
+    // is finished
+    // console.log('recommendation', recommendation)
+    /*
+    const {}
+    const offers = get(recommendation, 'recommendationOffers', [])
+    const now = moment()
+    return offers.every(o => moment(o.bookingLimitDatetime).isBefore(now))
+    */
+    // FIXME: also check that nbooking < available
 
     return recommendation
   }
