@@ -1,11 +1,10 @@
 import get from 'lodash.get'
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect'
 
 import currentRecommendationSelector from './currentRecommendation'
 import recommendationsSelector from './recommendations'
-import { getHeaderColor } from '../utils/colors'
 
-export default createSelector(
+export default createCachedSelector(
   recommendationsSelector,
   currentRecommendationSelector,
   (recommendations, currentRecommendation) => {
@@ -22,13 +21,10 @@ export default createSelector(
     const { mediationId, offerId } = previousRecommendation
     const path = `/decouverte/${offerId}/${mediationId || ''}`
 
-    // headerColor
-    const headerColor = getHeaderColor(currentRecommendation.firstThumbDominantColor)
-
     // return
     return Object.assign({
       path
     }, previousRecommendation)
 
   }
-)
+)((state, offerId, mediationId, position) => `${offerId || ''}/${mediationId || ''}/${position || ''}`)

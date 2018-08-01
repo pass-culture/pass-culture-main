@@ -1,10 +1,10 @@
 import get from 'lodash.get'
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect'
 
 import recommendationsSelector from './recommendations'
 import { getHeaderColor } from '../utils/colors'
 
-export default createSelector(
+export default createCachedSelector(
   recommendationsSelector,
   (state, offerId) => offerId,
   (state, offerId, mediationId) => mediationId,
@@ -53,4 +53,4 @@ export default createSelector(
       headerColor
     }, currentRecommendation)
   }
-)
+)((state, offerId, mediationId, position) => `${offerId || ''}/${mediationId || ''}/${position || ''}`)

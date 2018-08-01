@@ -90,10 +90,10 @@ export default compose(
       const { mediationId, offerId } = ownProps.match.params
       return {
         recommendation: ownProps.position === 'current'
-          ? currentRecommendationSelector(state, offerId, mediationId)
+          ? currentRecommendationSelector(state, offerId, mediationId, ownProps.position)
           : ownProps.position === 'previous'
-            ? previousRecommendationSelector(state, offerId, mediationId)
-            : ownProps.position === 'next' && nextRecommendationSelector(state, offerId, mediationId),
+            ? previousRecommendationSelector(state, offerId, mediationId, ownProps.position)
+            : ownProps.position === 'next' && nextRecommendationSelector(state, offerId, mediationId, ownProps.position),
         isFlipped: state.verso.isFlipped,
       }
     },
