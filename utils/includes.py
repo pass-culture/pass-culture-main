@@ -98,7 +98,7 @@ RECOMMENDATION_INCLUDES = [
 BOOKING_INCLUDES = [
     {
         "key": "stock",
-        "sub_joins": 
+        "sub_joins":
             [
                 {
                     "key": "eventOccurrence",
@@ -106,7 +106,8 @@ BOOKING_INCLUDES = [
                 },
                 "venue"
             ]
-    }
+    },
+    "recommendation"
 ]
 
 USER_INCLUDES = [
