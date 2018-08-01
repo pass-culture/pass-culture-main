@@ -4,6 +4,7 @@ import { createSelector } from 'reselect'
 
 import { THUMBS_URL } from '../utils/config'
 import { distanceInMeters } from '../utils/geolocation'
+import { getTimezone } from '../utils/timezone'
 
 export default createSelector(
   state => state.data.recommendations,
@@ -43,6 +44,7 @@ export default createSelector(
         offer
       } = r
       const {
+        eventOrThing,
         eventId,
         thingId,
         venue
@@ -50,20 +52,24 @@ export default createSelector(
 
       // thumbUrl
       let thumbUrl
+      let firstThumbDominantColor
       const mediationId = get(mediation, 'id')
       if (mediationId
         // && get(mediation, 'thumbCount')
       ) {
         thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
+        firstThumbDominantColor = get(mediation, 'firstThumbDominantColor')
       } else {
         if (eventId
           //  && get(offer, 'eventOrThing.thumbCount')
         ) {
           thumbUrl = `${THUMBS_URL}/events/${eventId}`
+          firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
         } else {
           thumbUrl = thingId
             // && get(offer, 'eventOrThing.thumbCount')
             && `${THUMBS_URL}/things/${thingId}`
+          firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
         }
       }
 
@@ -90,10 +96,16 @@ export default createSelector(
         distance = Math.round(distance / 1000) + ' km'
       }
 
+      // timezone
+      const tz = getTimezone(get(venue, 'departementCode'))
+
+      // return
       return Object.assign({
         distance,
+        firstThumbDominantColor,
         index,
-        thumbUrl
+        thumbUrl,
+        tz
       }, r)
 
     })

@@ -10,10 +10,8 @@ import Price from './Price'
 import Booking from './Booking'
 import Finishable from './layout/Finishable'
 import Icon from './layout/Icon'
-import selectBookings from '../selectors/bookings'
-import selectCurrentEventOrThingId from '../selectors/currentEventOrThingId'
-import currentRecommendation from '../selectors/currentRecommendation'
-import selectIsFinished from '../selectors/isFinished'
+import bookingsSelector from '../selectors/bookings'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { IS_DEXIE } from '../utils/config'
 
 class ControlBar extends Component {
@@ -40,10 +38,13 @@ class ControlBar extends Component {
 
   onClickJyVais = event => {
     const {
-      isFinished,
+      currentRecommendation,
       offer,
       showModal
     } = this.props
+    const {
+      isFinished
+    } = (currentRecommendation || {})
 
     if (isFinished) return
     if (offer) {
@@ -61,15 +62,27 @@ class ControlBar extends Component {
     const {
       bookings,
       offer,
-      offerer,
       currentRecommendation
     } = this.props
+    const {
+      isFinished
+    } = (currentRecommendation || {})
+    const {
+      venue
+    } = (offer || {})
+    const {
+      managingOfferer
+    } = (venue || {})
     const isFavorite = currentRecommendation && currentRecommendation.isFavorite
     return (
       <ul className="control-bar">
         <li>
-          <small className="pass-label">Mon Pass</small>
-          <span className="pass-value">——€</span>
+          <small className="pass-label">
+            Mon Pass
+          </small>
+          <span className="pass-value">
+            ——€
+          </span>
         </li>
         <li>
           <button
@@ -98,14 +111,14 @@ class ControlBar extends Component {
               {' Réservé'}
             </Link>
           ) : (
-            <Finishable finished={this.props.isFinished}>
+            <Finishable finished={isFinished}>
               <button
                 className="button is-primary is-go is-medium"
                 onClick={this.onClickJyVais}>
                 <Price
                   value={get(offer, 'price') || get(offer, 'displayPrice')}
                   free="——"
-                  className={offerer ? 'strike' : ''}
+                  className={managingOfferer ? 'strike' : ''}
                 />
                 J'y vais!
               </button>
@@ -120,12 +133,12 @@ class ControlBar extends Component {
 export default compose(
   withRouter,
   connect((state, ownProps) => {
-    const eventOrThingId = selectCurrentEventOrThingId(state)
     const { mediationId, offerId } = ownProps.match.params
+    const currentRecommendation = currentRecommendationSelector(state, offerId, mediationId)
+    const eventOrThingId = get(currentRecommendation, 'offer.eventOrThing.id')
     return {
-      bookings: selectBookings(state, eventOrThingId),
-      currentRecommendation: currentRecommendation(state, offerId, mediationId),
-      isFinished: selectIsFinished(state),
+      bookings: bookingsSelector(state, eventOrThingId),
+      currentRecommendation
     }
   },
   {

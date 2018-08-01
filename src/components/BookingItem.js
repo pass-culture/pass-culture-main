@@ -1,22 +1,24 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { capitalize } from 'pass-culture-shared'
+import {
+  capitalize,
+  Icon
+} from 'pass-culture-shared'
 import React from 'react'
+import { connect } from 'react-redux'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
-import getTimezone from '../getters/timezone'
-import Icon from './layout/Icon'
 import Thumb from './layout/Thumb'
-import { getDiscoveryPath } from '../utils/getDiscoveryPath'
+import recommendationSelector from '../selectors/recommendation'
+import { getTimezone } from '../utils/timezone'
 
-const BookingItem = ({ booking }) => {
+const BookingItem = ({ booking, recommendation }) => {
   const {
     mediation,
     mediationId,
     offer,
     offerId,
-    thumbUrl,
     token
   } = (booking || {})
   const {
@@ -27,7 +29,14 @@ const BookingItem = ({ booking }) => {
   const {
     name
   } = (eventOrThing || {})
-  const tz = getTimezone(venue)
+  const {
+    departementCode
+  } = (venue || {})
+  const {
+    thumbUrl
+  } = (recommendation || {})
+
+  const tz = getTimezone(departementCode)
   const date = get(eventOccurence, 'beginningDatetime')
   return (
     <li className="booking-item">
@@ -62,4 +71,8 @@ const BookingItem = ({ booking }) => {
   )
 }
 
-export default BookingItem
+export default connect(
+  (state, ownProps) => ({
+    recommendation: recommendationSelector(state, ownProps.booking.recommendationId)
+  })
+)(BookingItem)

@@ -5,9 +5,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import ControlBar from './ControlBar'
-import currentHeaderColorSelector from '../selectors/currentHeaderColor'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
-import isCurrentTutoSelector from '../selectors/isCurrentTuto'
 import { ROOT_PATH } from '../utils/config'
 
 import { makeDraggable, makeUndraggable } from '../reducers/verso'
@@ -43,7 +41,6 @@ class VersoWrapper extends Component {
       className,
       currentRecommendation,
       headerColor,
-      isCurrentTuto,
     } = this.props
     const {
       mediation,
@@ -58,12 +55,17 @@ class VersoWrapper extends Component {
     } = (mediation || {})
 
     const contentStyle = {}
-    if (isCurrentTuto) {
+    /*
+    if (typeof tutoIndex === 'number') {
       contentStyle.backgroundColor = headerColor
     } else {
       contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     }
+    */
     const author = get(eventOrThing, 'extraData.author')
+
+    console.log('WRAPPER', eventOrThing)
+
     return (
       <div
         ref={$el => { this.$el = $el }}
@@ -95,10 +97,8 @@ export default compose(
       const { mediationId, offerId } = ownProps.match.params
       return {
         currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
-        headerColor: currentHeaderColorSelector(state, offerId, mediationId),
         isFlipped: state.verso.isFlipped,
-        draggable: state.verso.draggable,
-        isCurrentTuto: isCurrentTutoSelector(state)
+        draggable: state.verso.draggable
       }
     },
     { makeDraggable, makeUndraggable }

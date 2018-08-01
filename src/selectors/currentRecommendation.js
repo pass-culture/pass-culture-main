@@ -2,46 +2,55 @@ import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
 import recommendationsSelector from './recommendations'
+import { getHeaderColor } from '../utils/colors'
 
 export default createSelector(
   recommendationsSelector,
   (state, offerId) => offerId,
   (state, offerId, mediationId) => mediationId,
-  (recommendations, offerId, mediationId) => {
+  (currentRecommendations, offerId, mediationId) => {
     let filteredRecommendations
 
     // prefilter by mediation
     if (mediationId) {
-      filteredRecommendations = recommendations.filter(
+      filteredRecommendations = currentRecommendations.filter(
         m => m.mediationId === mediationId
       )
     } else {
-      filteredRecommendations = recommendations
+      filteredRecommendations = currentRecommendations
     }
 
     // special tuto case
-    let recommendation
+    let currentRecommendation
     if (offerId === 'tuto') {
-      recommendation = get(filteredRecommendations, '0')
+      currentRecommendation = get(filteredRecommendations, '0')
     } else {
-      recommendation = filteredRecommendations.find(r => r.offerId === offerId)
+      currentRecommendation = filteredRecommendations.find(r => r.offerId === offerId)
     }
 
     // undefined
-    if (!recommendation) {
+    if (!currentRecommendation) {
       return undefined
     }
 
     // is finished
-    // console.log('recommendation', recommendation)
+    // console.log('currentRecommendation', currentRecommendation)
+    const isFinished = false
     /*
     const {}
-    const offers = get(recommendation, 'recommendationOffers', [])
+    const offers = get(currentRecommendation, 'currentRecommendationOffers', [])
     const now = moment()
     return offers.every(o => moment(o.bookingLimitDatetime).isBefore(now))
     */
     // FIXME: also check that nbooking < available
 
-    return recommendation
+    // colors
+    const headerColor = getHeaderColor(currentRecommendation.firstThumbDominantColor)
+
+    // return
+    return Object.assign({
+      isFinished,
+      headerColor
+    }, currentRecommendation)
   }
 )

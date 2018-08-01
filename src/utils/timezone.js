@@ -1,6 +1,5 @@
-export default function getTimezone(venue) {
-  if (!venue) return
-  switch (venue.departementCode) {
+export function getTimezone(departementCode) {
+  switch (departementCode) {
     case '97':
       return 'America/Cayenne'
     case '973':

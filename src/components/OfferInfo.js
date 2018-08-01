@@ -12,20 +12,18 @@ import { compose } from 'redux'
 
 import bookingsSelector from '../selectors/bookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
-import currentEventOrThingSelector from '../selectors/currentEventOrThing'
-import timezoneSelector from '../selectors/currentTimezone'
 import { navigationLink } from '../utils/geolocation'
 
 const OfferInfo = ({
   bookings,
-  recommendation,
-  tz,
+  currentRecommendation
 }) => {
   const {
     distance,
     offer,
-    thumbUrl
-  } = (recommendation || {})
+    thumbUrl,
+    tz
+  } = (currentRecommendation || {})
   const {
     eventOrThing,
     venue
@@ -43,7 +41,7 @@ const OfferInfo = ({
 
   const NOW = moment()
 
-  const mediatedOccurences = get(recommendation, 'mediatedOccurences', [])
+  const mediatedOccurences = get(currentRecommendation, 'mediatedOccurences', [])
   const bookedDates = bookings.map(b =>
     get(b, 'offer.eventOccurence.beginningDatetime')
   )
@@ -150,11 +148,11 @@ export default compose(
   connect(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
-      const eventOrThing = currentEventOrThingSelector(state, offerId, mediationId)
+      const currentRecommendation = currentRecommendationSelector(state, offerId, mediationId)
+      const eventOrThingId = get(currentRecommendation, 'offer.eventOrThing.id')
       return {
-        bookings: bookingsSelector(state, get(eventOrThing, 'id')),
-        recommendation: currentRecommendationSelector(state, offerId, mediationId),
-        tz: timezoneSelector(state),
+        bookings: bookingsSelector(state, eventOrThingId),
+        currentRecommendation
       }
   })
 )(OfferInfo)

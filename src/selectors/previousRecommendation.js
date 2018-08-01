@@ -3,7 +3,7 @@ import { createSelector } from 'reselect'
 
 import currentRecommendationSelector from './currentRecommendation'
 import recommendationsSelector from './recommendations'
-// import uniqueRecommendationsSelector from './uniqueRecommendations'
+import { getHeaderColor } from '../utils/colors'
 
 export default createSelector(
   recommendationsSelector,
@@ -18,10 +18,16 @@ export default createSelector(
       return undefined
     }
 
+    // path
     const { mediationId, offerId } = previousRecommendation
+    const path = `/decouverte/${offerId}/${mediationId || ''}`
 
+    // headerColor
+    const headerColor = getHeaderColor(currentRecommendation.firstThumbDominantColor)
+
+    // return
     return Object.assign({
-      path: `/decouverte/${offerId}/${mediationId || ''}`
+      path
     }, previousRecommendation)
 
   }

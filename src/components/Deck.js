@@ -1,13 +1,13 @@
 import get from 'lodash.get'
 import moment from 'moment'
 import { requestData as requestDataAction } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
-import PropTypes from 'prop-types'
 
 import Card from './Card'
 import DeckDebugger from './layout/DeckDebugger'
@@ -20,6 +20,7 @@ import nextLimitSelector from '../selectors/nextLimit'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousLimitSelector from '../selectors/previousLimit'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
+import recommendationsSelector from '../selectors/recommendations'
 import { IS_DEV } from '../utils/config'
 
 class Deck extends Component {
@@ -392,7 +393,7 @@ const mapStateToProps = (state, ownProps) => {
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
     previousLimit: previousLimitSelector(state),
     previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
-    recommendations: state.data.recommendations || [],
+    recommendations: recommendationsSelector(state),
     unFlippable: state.verso.unFlippable,
     draggable: state.verso.draggable,
   }

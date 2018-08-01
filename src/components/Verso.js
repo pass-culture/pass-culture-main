@@ -53,8 +53,8 @@ export default compose(
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
     return {
+      currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
       isFlipped: state.verso.isFlipped,
-      mediation: currentRecommendationSelector(state, offerId, mediationId),
     }
   })
 )(Verso)
