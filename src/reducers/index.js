@@ -10,7 +10,6 @@ import { combineReducers } from 'redux'
 
 import data from './data'
 import geolocation from './geolocation'
-import queries from './queries'
 import verso from './verso'
 import splash from './splash'
 
@@ -22,7 +21,6 @@ const rootReducer = combineReducers({
   geolocation,
   loading,
   modal,
-  queries,
   splash,
   verso,
   user

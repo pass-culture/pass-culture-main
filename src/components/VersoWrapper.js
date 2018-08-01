@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import ControlBar from './ControlBar'
+import VersoControl from './VersoControl'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
@@ -77,7 +77,7 @@ class VersoWrapper extends Component {
           </h1>
           <h2> {get(venue, 'name')} </h2>
         </div>
-        {typeof tutoIndex !== 'number' && <ControlBar />}
+        {typeof tutoIndex !== 'number' && <VersoControl />}
         <div className="verso-content" style={{ ...contentStyle }}>
           {children}
         </div>

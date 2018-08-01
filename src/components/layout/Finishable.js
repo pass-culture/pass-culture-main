@@ -1,5 +1,5 @@
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
-import Icon from '../layout/Icon'
 
 export default ({ finished, children }) => {
   if (finished) {

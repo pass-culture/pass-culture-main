@@ -1,5 +1,9 @@
 import get from 'lodash.get'
-import { requestData, showModal } from 'pass-culture-shared'
+import {
+  Icon,
+  requestData,
+  showModal
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -9,12 +13,10 @@ import { compose } from 'redux'
 import Price from './Price'
 import Booking from './Booking'
 import Finishable from './layout/Finishable'
-import Icon from './layout/Icon'
 import bookingsSelector from '../selectors/bookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
-import { IS_DEXIE } from '../utils/config'
 
-class ControlBar extends Component {
+class VersoControl extends Component {
   onClickDisable = event => {
     alert('Pas encore disponible')
     event.preventDefault()
@@ -27,7 +29,6 @@ class ControlBar extends Component {
       body: {
         isFavorite: !isFavorite,
       },
-      local: IS_DEXIE,
       key: 'currentRecommendations',
     })
   }
@@ -75,7 +76,7 @@ class ControlBar extends Component {
     } = (venue || {})
     const isFavorite = currentRecommendation && currentRecommendation.isFavorite
     return (
-      <ul className="control-bar">
+      <ul className="verso-control">
         <li>
           <small className="pass-label">
             Mon Pass
@@ -145,4 +146,4 @@ export default compose(
     requestData,
     showModal,
   })
-)(ControlBar)
+)(VersoControl)

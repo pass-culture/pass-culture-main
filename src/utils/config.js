@@ -8,15 +8,6 @@ const NODE_ENV = process.env.NODE_ENV || 'development'
 
 export const IS_DEBUG = true
 
-/*
-export const IS_DEXIE = Boolean(window.indexedDB ||
-                                window.webkitIndexedDB ||
-                                window.mozIndexedDB ||
-                                window.msIndexedDB ||
-                                window.openDatabase)
-*/
-export const IS_DEXIE = false
-
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 
@@ -110,4 +101,3 @@ if (typeof window !== 'undefined' && window.cordova) {
 }
 
 export const ROOT_PATH = CALC_ROOT_PATH || 'http://localhost:3000/'
-console.log('ROOT_PATH in CONFIG', ROOT_PATH)

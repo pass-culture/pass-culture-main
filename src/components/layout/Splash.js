@@ -1,8 +1,8 @@
 import classnames from 'classnames'
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Icon from './Icon'
 
 const Splash = ({ isActive, transitionTimeout }) => {
   return (
@@ -12,7 +12,8 @@ const Splash = ({ isActive, transitionTimeout }) => {
       })}
       style={{
         transition: `opacity ${transitionTimeout}ms, z-index 10ms ${transitionTimeout}ms`,
-      }}>
+      }}
+    >
       <Icon svg="logo-group" alt="Logo Pass Culture" />
     </div>
   )

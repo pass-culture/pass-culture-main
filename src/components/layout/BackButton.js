@@ -1,9 +1,8 @@
 import classnames from 'classnames'
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
-
-import Icon from '../layout/Icon'
 
 const BackButton = ({
   history,
