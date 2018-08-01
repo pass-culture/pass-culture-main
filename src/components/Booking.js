@@ -12,14 +12,14 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { SingleDatePicker } from 'react-dates'
 
-import VersoWrapper from './VersoWrapper'
 import Price from './Price'
+import VersoWrapper from './VersoWrapper'
 import Capitalize from './utils/Capitalize'
-import selectBooking from '../selectors/booking'
-import selectCurrentOffer from '../selectors/currentOffer'
-import selectCurrentOfferer from '../selectors/currentOfferer'
-import selectCurrentRecommendation from '../selectors/currentRecommendation'
-import selectTimezone from '../selectors/currentTimezone'
+import bookingSelector from '../selectors/booking'
+import currentOfferSelector from '../selectors/currentOffer'
+import currentOffererSelector from '../selectors/currentOfferer'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
+import timezoneSelector from '../selectors/currentTimezone'
 moment.locale('fr')
 
 class Booking extends Component {
@@ -33,29 +33,12 @@ class Booking extends Component {
     }
   }
 
-  makeBooking = event => {
-    const { offer, recommendation, requestData } = this.props
-    const { occurences } = this.state
-    this.setState({
-      bookingInProgress: true,
-    })
-    const selectedOffer =
-      occurences &&
-      occurences[0] &&
-      occurences[0].offer &&
-      occurences[0].offer[0]
-    const offerId = selectedOffer ? selectedOffer.id : offer.id
-    requestData('POST', 'bookings', {
-      add: 'append',
-      body: {
-        recommendationId: recommendation.id,
-        offerId,
-        quantity: 1,
-      },
-    })
+  closeBooking = () => {
+    this.props.removeDataError()
+    this.props.closeModal()
   }
 
-  currentStep() {
+  currentStep = () => {
     const token = get(this.props, 'booking.token')
     if (this.props.error) return 'error'
     if (token) return 'confirmation'
@@ -63,10 +46,10 @@ class Booking extends Component {
     return 'confirm'
   }
 
-  getAvailableDateTimes(selectedDate) {
+  getAvailableDateTimes = (selectedDate) => {
     const mediatedOccurences = get(
       this.props,
-      'recommendation.mediatedOccurences',
+      'currentRecommendation.mediatedOccurences',
       []
     )
     const { tz } = this.props
@@ -101,19 +84,54 @@ class Booking extends Component {
     })
   }
 
-  closeBooking = () => {
-    this.props.removeDataError()
-    this.props.closeModal()
+  makeBooking = event => {
+    const { currentRecommendation,
+      // offer,
+      requestData
+    } = this.props
+    const {
+      offer
+    } = (currentRecommendation || {})
+    const { occurences } = this.state
+    this.setState({
+      bookingInProgress: true,
+    })
+    const selectedOffer =
+      occurences &&
+      occurences[0] &&
+      occurences[0].offer &&
+      occurences[0].offer[0]
+    const offerId = selectedOffer ? selectedOffer.id : offer.id
+    requestData('POST', 'bookings', {
+      add: 'append',
+      body: {
+        currentRecommendationId: currentRecommendation.id,
+        offerId,
+        quantity: 1,
+      },
+    })
   }
 
   render() {
-    const token = get(this.props, 'booking.token')
-    const price = get(this.props, 'offer.price')
-    const tz = this.props.tz
-    const error = this.props.error
+    const {
+      booking,
+      currentRecommendation,
+      error,
+      tz
+    } = this.props
+    const {
+      token
+    } = (booking || {})
+    const {
+      offer
+    } = (currentRecommendation || {})
+    const {
+      price
+    } = (offer || {})
+
     const step = this.currentStep()
     const dateRequired =
-      get(this.props, 'recommendation.mediatedOccurences', []).length > 1
+      get(this.props, 'currentRecommendation.mediatedOccurences', []).length > 1
     const dateOk = dateRequired ? this.state.date && this.state.time : true
     const offerer = this.props.offerer
     const { availableDates, availableHours } = this.getAvailableDateTimes()
@@ -326,12 +344,12 @@ class Booking extends Component {
 
 export default connect(
   state => ({
-    booking: selectBooking(state),
+    booking: bookingSelector(state),
+    currentRecommendation: currentRecommendationSelector(state),
     error: get(state.data, 'errors'),
-    offer: selectCurrentOffer(state),
-    offerer: selectCurrentOfferer(state),
-    recommendation: selectCurrentRecommendation(state),
-    tz: selectTimezone(state),
+    offer: currentOfferSelector(state),
+    offerer: currentOffererSelector(state),
+    tz: timezoneSelector(state),
   }),
   {
     requestData,

@@ -1,12 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import Price from './Price'
 import Finishable from './layout/Finishable'
-import selectDistance from '../selectors/distance'
-import selectCurrentOffer from '../selectors/currentOffer'
-import selectIsCurrentTuto from '../selectors/isCurrentTuto'
-import selectIsFinished from '../selectors/isFinished'
+import distanceSelector from '../selectors/distance'
+import currentOfferSelector from '../selectors/currentOffer'
+import isCurrentTutoSelector from '../selectors/isCurrentTuto'
+import isFinishedSelector from '../selectors/isFinished'
 
 const Clue = ({
   distance,
@@ -36,10 +38,13 @@ Clue.defaultProps = {
   transitionTimeout: 250,
 }
 
-export default connect(state => ({
-  distance: selectDistance(state),
-  isCurrentTuto: selectIsCurrentTuto(state),
-  isFinished: selectIsFinished(state),
-  isFlipped: state.verso.isFlipped,
-  offer: selectCurrentOffer(state),
-}))(Clue)
+export default compose(
+  withRouter,
+  connect(state => ({
+    distance: distanceSelector(state),
+    isCurrentTuto: isCurrentTutoSelector(state),
+    isFinished: isFinishedSelector(state),
+    isFlipped: state.verso.isFlipped,
+    offer: currentOfferSelector(state),
+  }))
+)(Clue)

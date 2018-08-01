@@ -1,12 +1,14 @@
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import ControlBar from './ControlBar'
-import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
-import selectCurrentSource from '../selectors/currentSource'
-import selectCurrentVenue from '../selectors/currentVenue'
-import selectIsCurrentTuto from '../selectors/isCurrentTuto'
+import currentHeaderColorSelector from '../selectors/currentHeaderColor'
+import currentEventOrThingSelector from '../selectors/currentEventOrThing'
+import currentVenueSelector from '../selectors/currentVenue'
+import isCurrentTutoSelector from '../selectors/isCurrentTuto'
 import { ROOT_PATH } from '../utils/config'
 
 import { makeDraggable, makeUndraggable } from '../reducers/verso'
@@ -40,11 +42,11 @@ class VersoWrapper extends Component {
     const {
       children,
       className,
-      headerColor,
-      source,
-      venue,
+      eventOrThing,
       hasControlBar,
+      headerColor,
       isCurrentTuto,
+      venue,
     } = this.props
     const contentStyle = {}
     if (isCurrentTuto) {
@@ -52,10 +54,10 @@ class VersoWrapper extends Component {
     } else {
       contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     }
-    const author = get(source, 'extraData.author')
+    const author = get(eventOrThing, 'extraData.author')
     return (
       <div
-        ref={$el => (this.$el = $el)}
+        ref={$el => { this.$el = $el }}
         className={`verso-wrapper ${className || ''}`}>
         <div
           className="verso-header"
@@ -63,7 +65,7 @@ class VersoWrapper extends Component {
           ref={element => (this.element = element)}>
           <h1>
             {' '}
-            {source && source.name}
+            {eventOrThing && eventOrThing.name}
             {author && ', de ' + author}{' '}
           </h1>
           <h2> {venue && venue.name} </h2>
@@ -77,14 +79,20 @@ class VersoWrapper extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    headerColor: selectCurrentHeaderColor(state),
-    isFlipped: state.verso.isFlipped,
-    draggable: state.verso.draggable,
-    isCurrentTuto: selectIsCurrentTuto(state),
-    source: selectCurrentSource(state),
-    venue: selectCurrentVenue(state),
-  }),
-  { makeDraggable, makeUndraggable }
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => {
+      const { mediationId, offerId } = ownProps.match.params
+      return {
+        headerColor: currentHeaderColorSelector(state, offerId, mediationId),
+        isFlipped: state.verso.isFlipped,
+        draggable: state.verso.draggable,
+        isCurrentTuto: isCurrentTutoSelector(state),
+        eventOrThing: currentEventOrThingSelector(state, offerId, mediationId),
+        venue: currentVenueSelector(state, offerId, mediationId),
+      }
+    },
+    { makeDraggable, makeUndraggable }
+  )
 )(VersoWrapper)

@@ -2,20 +2,22 @@ import get from 'lodash.get'
 import uniq from 'lodash.uniq'
 import moment from 'moment'
 import React, { Component } from 'react'
+import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import Icon from './layout/Icon'
 import Capitalize from './utils/Capitalize'
-import selectBookings from '../selectors/bookings'
-import selectDistance from '../selectors/distance'
-import selectCurrentEventOrThingId from '../selectors/currentEventOrThingId'
-import selectCurrentOffer from '../selectors/currentOffer'
-import selectCurrentOfferer from '../selectors/currentOfferer'
-import selectCurrentRecommendation from '../selectors/currentRecommendation'
-import selectCurrentSource from '../selectors/currentSource'
-import selectCurrentThumbUrl from '../selectors/currentThumbUrl'
-import selectTimezone from '../selectors/currentTimezone'
-import selectVenue from '../selectors/currentVenue'
+import bookingsSelector from '../selectors/bookings'
+import distanceSelector from '../selectors/distance'
+// import currentEventOrThingIdSelector from '../selectors/currentEventOrThingId'
+// import currentOfferSelector from '../selectors/currentOffer'
+// import currentOffererSelector from '../selectors/currentOfferer'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
+import currentEventOrThingSelector from '../selectors/currentEventOrThing'
+import currentThumbUrlSelector from '../selectors/currentThumbUrl'
+import timezoneSelector from '../selectors/currentTimezone'
+// import venueSelector from '../selectors/currentVenue'
 import { navigationLink } from '../utils/geolocation'
 
 class OfferInfo extends Component {
@@ -23,14 +25,27 @@ class OfferInfo extends Component {
     const {
       bookings,
       distance,
-      offer,
-      offerer,
       recommendation,
-      source,
       thumbUrl,
       tz,
-      venue,
     } = this.props
+    const {
+      offer
+    } = (recommendation || {})
+    const {
+      eventOrThing,
+      venue
+    } = (offer || {})
+    const {
+      description,
+    } = (eventOrThing || {})
+    const {
+      address,
+      city,
+      managingOfferer,
+      name,
+      postalCode
+    } = (venue || {})
 
     const NOW = moment()
 
@@ -47,8 +62,8 @@ class OfferInfo extends Component {
 
     const infos = {
       image: thumbUrl,
-      description: get(source, 'description'),
-      what: get(source, 'description')
+      description,
+      what: description
         ? ''
         : get(offer, 'eventOccurence.event.description'),
       when: uniq(
@@ -60,20 +75,20 @@ class OfferInfo extends Component {
           .sort()
       ),
       where: {
-        name: get(venue, 'name'),
+        name,
         address:
-          get(venue, 'address') +
+          address +
           ',' +
-          (get(venue, 'postalCode') || '') +
+          (postalCode || '') +
           ',' +
-          (get(venue, 'city') || ''),
+          (city || ''),
       },
     }
 
     return (
       <div className="offer-info">
-        {offerer && (
-          <div className="offerer">Ce livre vous est offert par {offerer}.</div>
+        {managingOfferer && (
+          <div className="offerer">Ce livre vous est offert par {managingOfferer}.</div>
         )}
         {false && <img alt="" className="offerPicture" src={infos.image} />}
         {infos.description && (
@@ -136,17 +151,22 @@ class OfferInfo extends Component {
   }
 }
 
-export default connect(function(state) {
-  const eventOrThingId = selectCurrentEventOrThingId(state)
-  return {
-    bookings: selectBookings(state, eventOrThingId),
-    distance: selectDistance(state),
-    offer: selectCurrentOffer(state),
-    offerer: selectCurrentOfferer(state),
-    source: selectCurrentSource(state),
-    thumbUrl: selectCurrentThumbUrl(state),
-    recommendation: selectCurrentRecommendation(state),
-    venue: selectVenue(state),
-    tz: selectTimezone(state),
-  }
-})(OfferInfo)
+export default compose(
+  withRouter,
+  connect(
+    (state, ownProps) => {
+      const { mediationId, offerId } = ownProps.match.params
+      const eventOrThing = currentEventOrThingSelector(state, offerId, mediationId)
+      return {
+        bookings: bookingsSelector(state, get(eventOrThing, 'id')),
+        distance: distanceSelector(state, offerId, mediationId),
+        // offer: currentOfferSelector(state),
+        // offerer: currentOffererSelector(state),
+        // eventOrThing: currentEventOrThingSelector(state, offerId, mediationId),
+        thumbUrl: currentThumbUrlSelector(state, offerId, mediationId),
+        recommendation: currentRecommendationSelector(state, offerId, mediationId),
+        // venue: venueSelector(state, offerId, mediationId),
+        tz: timezoneSelector(state),
+      }
+  })
+)(OfferInfo)

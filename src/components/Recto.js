@@ -1,22 +1,30 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import Thumb from './layout/Thumb'
-import selectCurrentRecommendation from '../selectors/currentRecommendation'
-import selectNextRecommendation from '../selectors/nextRecommendation'
-import selectPreviousRecommendation from '../selectors/previousRecommendation'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
+import nextRecommendationSelector from '../selectors/nextRecommendation'
+import previousRecommendationSelector from '../selectors/previousRecommendation'
 import { IS_DEV } from '../utils/config'
 
 const Recto = ({
-  dateRead,
-  mediation,
-  id,
-  index,
-  isClicked,
   isFlipped,
-  offer,
-  thumbUrl,
+  recommendation,
 }) => {
+  const {
+    dateRead,
+    mediation,
+    id,
+    index,
+    isClicked,
+    offer,
+    thumbUrl,
+  } = (recommendation || {})
+
+  console.log('thumbUrl', thumbUrl)
+
   const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` }
   const thumbStyle = Object.assign({}, backgroundStyle)
   if (mediation) {
@@ -38,15 +46,17 @@ const Recto = ({
   )
 }
 
-export default connect((state, ownProps) =>
-  Object.assign(
-    {
+export default compose(
+  withRouter,
+  connect((state, ownProps) => {
+    const { mediationId, offerId } = ownProps.match.params
+    return {
       isFlipped: state.verso.isFlipped,
-    },
-    ownProps.position === 'current'
-      ? selectCurrentRecommendation(state)
-      : ownProps.position === 'previous'
-        ? selectPreviousRecommendation(state)
-        : ownProps.position === 'next' && selectNextRecommendation(state)
-  )
+      recommendation: ownProps.position === 'current'
+        ? currentRecommendationSelector(state, offerId, mediationId)
+        : ownProps.position === 'previous'
+          ? previousRecommendationSelector(state, offerId, mediationId)
+          : ownProps.position === 'next' && nextRecommendationSelector(state, offerId, mediationId)
+    }
+  })
 )(Recto)

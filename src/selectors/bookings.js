@@ -9,7 +9,7 @@ export default createSelector(
     if (!bookings) {
       return []
     }
-    return bookings.filter(function(booking) {
+    return bookings.filter(booking => {
       const stock = booking.stock
       const thingId = get(stock, 'offer.thingId')
       if (thingId) {

@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { Portal } from 'react-portal'
@@ -13,7 +12,6 @@ class SignupPage extends Component {
   }
 
   componentDidMount() {
-    console.log('this.$footer ', this.$footer)
     this.setState({ $footer: this.$footer })
   }
 
@@ -22,7 +20,7 @@ class SignupPage extends Component {
       <Main name="sign-up">
         <div className="section">
           <h2 className="subtitle is-italic">
-            Une minute pour créer un compte, et puis c'est tout !
+            Une minute pour créer un compte, et puis c'est tout&nbsp;!
           </h2>
 
           <br />
@@ -31,7 +29,8 @@ class SignupPage extends Component {
             action="/users/signup"
             layout="vertical"
             handleSuccessNotification={null}
-            handleSuccessRedirect={() => '/decouverte'}>
+            handleSuccessRedirect={() => '/decouverte'}
+          >
             <Field
               autoComplete="name"
               label="Identifiant"
@@ -89,7 +88,7 @@ class SignupPage extends Component {
           </Form>
         </div>
 
-        <footer ref={_e => (this.$footer = _e)} />
+        <footer ref={_e => { this.$footer = _e}} />
       </Main>
     )
   }

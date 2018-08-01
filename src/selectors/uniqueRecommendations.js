@@ -1,7 +1,9 @@
 import { createSelector } from 'reselect'
 
+import recommendationsSelector from './recommendations'
+
 export default createSelector(
-  state => state.data.recommendations || [],
+  recommendationsSelector,
   recommendations => {
     let recosById = {}
     let recoUid = r =>

@@ -1,21 +1,17 @@
 import { createSelector } from 'reselect'
 
-import selectCurrentRecommendation from './currentRecommendation'
-import getRecommendation from '../getters/recommendation'
-import selectUniqueRecommendations from './uniqueRecommendations'
+import currentRecommendationSelector from './currentRecommendation'
+import uniqueRecommendationsSelector from './uniqueRecommendations'
 
 export default createSelector(
-  selectUniqueRecommendations,
-  selectCurrentRecommendation,
-  (recommendations, currentRecommendation) => {
-    const previousRecommendation =
-      currentRecommendation &&
-      recommendations &&
-      recommendations[
-        recommendations.findIndex(
-          reco => reco.id === currentRecommendation.id
-        ) - 1
-      ]
-    return getRecommendation({ recommendation: previousRecommendation })
-  }
+  uniqueRecommendationsSelector,
+  currentRecommendationSelector,
+  (recommendations, currentRecommendation) =>
+    currentRecommendation &&
+    recommendations &&
+    recommendations[
+      recommendations.findIndex(
+        reco => reco.id === currentRecommendation.id
+      ) - 1
+    ]
 )

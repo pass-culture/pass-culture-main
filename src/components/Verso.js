@@ -1,15 +1,17 @@
 import classnames from 'classnames'
 import React from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
 
 import OfferInfo from './OfferInfo'
 import VersoWrapper from './VersoWrapper'
 import MenuButton from './layout/MenuButton'
-import selectCurrentMediation from '../selectors/currentMediation'
-import selectIsCurrentTuto from '../selectors/isCurrentTuto'
+import currentMediationSelector from '../selectors/currentMediation'
+import isCurrentTutoSelector from '../selectors/isCurrentTuto'
 import { THUMBS_URL } from '../utils/config'
 
-const Verso = ({ mediation, isFlipped, isCurrentTuto }) => {
+const Verso = ({ isCurrentTuto, isFlipped, mediation }) => {
   return (
     <div
       className={classnames('verso', {
@@ -37,8 +39,11 @@ const Verso = ({ mediation, isFlipped, isCurrentTuto }) => {
   )
 }
 
-export default connect(state => ({
-  mediation: selectCurrentMediation(state),
-  isFlipped: state.verso.isFlipped,
-  isCurrentTuto: selectIsCurrentTuto(state),
-}))(Verso)
+export default compose(
+  withRouter,
+  connect(state => ({
+    isCurrentTuto: isCurrentTutoSelector(state),
+    isFlipped: state.verso.isFlipped,
+    mediation: currentMediationSelector(state),
+  }))
+)(Verso)

@@ -7,10 +7,8 @@ import { compose } from 'redux'
 
 import Deck from '../Deck'
 import Main from '../layout/Main'
-import selectCurrentEventOrThingId from '../../selectors/currentEventOrThingId'
-import selectCurrentRecommendation from '../../selectors/currentRecommendation'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../utils/normalizers'
-import { getDiscoveryPath } from '../../utils/getDiscoveryPath'
 
 class DiscoveryPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
@@ -33,8 +31,6 @@ class DiscoveryPage extends Component {
         .filter(param => param)
         .join('&')
 
-      console.log('query', query)
-
       requestData('PUT', 'recommendations?' + query, {
         handleSuccess: (state, action) => {
           if (get(action, 'data.length')) {
@@ -45,14 +41,7 @@ class DiscoveryPage extends Component {
                 console.warn('first recommendation has no offer id, weird...')
               }
 
-              console.log(action.data[0])
               const firstMediationId = get(action, 'data.0.mediationId') || ''
-              console.log('firstMediationId', firstMediationId)
-
-              console.log(
-                'WTFFF',
-                `/decouverte/${firstOfferId}/${firstMediationId}`
-              )
 
               history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
             }
@@ -66,6 +55,7 @@ class DiscoveryPage extends Component {
     }
   }
 
+  /*
   handleRedirectFromLoading(props) {
     const { history, mediationId, offerId, recommendations } = props
     if (
@@ -89,18 +79,23 @@ class DiscoveryPage extends Component {
     const path = getDiscoveryPath(chosenOffer, targetRecommendation.mediation)
     history.push(path)
   }
+  */
 
+  /*
   componentWillMount() {
     // this.handleRedirectFromLoading(this.props)
     // this.ensureRecommendations(this.props)
   }
+  */
 
+  /*
   componentWillReceiveProps(nextProps) {
     // this.handleRedirectFromLoading(nextProps)
     if (nextProps.offerId && nextProps.offerId !== this.props.offerId) {
       // this.ensureRecommendations(nextProps)
     }
   }
+  */
 
   render() {
     const { backButton, isMenuOnTop } = this.props
@@ -119,13 +114,15 @@ class DiscoveryPage extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  backButton: state.router.location.search.indexOf('to=verso') > -1,
-  currentRecommendation: selectCurrentRecommendation(state),
-  eventOrThingId: selectCurrentEventOrThingId(state),
-  isMenuOnTop: state.loading.isActive || get(state, 'loading.config.isEmpty'),
-  recommendations: state.data.recommendations,
-})
+const mapStateToProps = (state, ownProps) => {
+  const { mediationId, offerId } = ownProps.match.params
+  return {
+    backButton: state.router.location.search.indexOf('to=verso') > -1,
+    currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
+    isMenuOnTop: state.loading.isActive || get(state, 'loading.config.isEmpty'),
+    recommendations: state.data.recommendations,
+  }
+}
 
 export default compose(
   withRouter,

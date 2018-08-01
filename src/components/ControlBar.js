@@ -2,7 +2,9 @@ import get from 'lodash.get'
 import { requestData, showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { Link } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Price from './Price'
 import Booking from './Booking'
@@ -12,7 +14,7 @@ import selectBookings from '../selectors/bookings'
 import selectCurrentEventOrThingId from '../selectors/currentEventOrThingId'
 import selectCurrentOffer from '../selectors/currentOffer'
 import selectCurrentOfferer from '../selectors/currentOfferer'
-import selectCurrentRecommendation from '../selectors/currentRecommendation'
+import currentRecommendation from '../selectors/currentRecommendation'
 import selectIsFinished from '../selectors/isFinished'
 import { IS_DEXIE } from '../utils/config'
 
@@ -106,19 +108,21 @@ class ControlBar extends Component {
   }
 }
 
-export default connect(
-  function(state) {
+export default compose(
+  withRouter,
+  connect((state, ownProps) => {
     const eventOrThingId = selectCurrentEventOrThingId(state)
+    const { mediationId, offerId } = ownProps.match.params
     return {
       bookings: selectBookings(state, eventOrThingId),
       isFinished: selectIsFinished(state),
       offer: selectCurrentOffer(state),
       offerer: selectCurrentOfferer(state),
-      recommendation: selectCurrentRecommendation(state),
+      recommendation: currentRecommendation(state, offerId, mediationId),
     }
   },
   {
     requestData,
     showModal,
-  }
+  })
 )(ControlBar)
