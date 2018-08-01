@@ -5,7 +5,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import Footer from './layout/Footer'
-import OfferInfo from './OfferInfo'
+import VersoInfo from './VersoInfo'
 import VersoWrapper from './VersoWrapper'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { THUMBS_URL } from '../utils/config'
@@ -37,7 +37,7 @@ const Verso = ({
             />
           )
         ) : (
-          <OfferInfo />
+          <VersoInfo />
         )}
       </VersoWrapper>
       <Footer borderTop colored={typeof tutoIndex !== 'number'} />

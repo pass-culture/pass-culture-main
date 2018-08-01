@@ -5,7 +5,8 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import Clue from './Clue'
+import Price from './Price'
+import Finishable from './layout/Finishable'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
@@ -15,8 +16,24 @@ const DeckNavigation = ({
   flipHandler,
   handleGoNext,
   handleGoPrevious,
+  transitionTimeout
 }) => {
-  const { headerColor } = (currentRecommendation || {})
+  const {
+    distance,
+    headerColor,
+    isFinished,
+    mediation,
+    offer
+  } = (currentRecommendation || {})
+  const {
+    stock
+  } = (offer || {})
+  const {
+    price
+  } = (stock || {})
+  const {
+    tutoIndex
+  } = (mediation || {})
   const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor || '#000'} 30%,${headerColor || '#000'} 100%)`
   return (
     <div id="deck-navigation" style={{ background: backgroundGradient }}>
@@ -45,7 +62,25 @@ const DeckNavigation = ({
             >
               <Icon svg="ico-slideup-w" alt="Plus d'infos" />
             </button>
-            <Clue />
+            <div
+              className="clue"
+              style={{ transition: `opacity ${transitionTimeout}ms` }}
+            >
+              <Finishable
+                finished={
+                  isFinished && typeof tutoIndex === 'undefined'
+                  // Hard coded to prevent a weird bug to arise, should be eventually removed
+                }
+              >
+                <Price value={price} />
+                <div className="separator">
+                  {offer ? '\u00B7' : ' '}
+                </div>
+                <div>
+                  {offer ? distance : ' '}
+                </div>
+              </Finishable>
+            </div>
           </div>
         )) || <span />}
         {/* next button */}
@@ -64,6 +99,7 @@ DeckNavigation.defaultProps = {
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
+  transitionTimeout: 250,
 }
 
 DeckNavigation.propTypes = {
@@ -78,7 +114,7 @@ export default compose(
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
     return {
-      currentRecommendation: currentRecommendationSelector(state, offerId, mediationId)
+      currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
     }
   })
 )(DeckNavigation)

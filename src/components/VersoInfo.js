@@ -14,7 +14,7 @@ import bookingsSelector from '../selectors/bookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { navigationLink } from '../utils/geolocation'
 
-const OfferInfo = ({
+const VersoInfo = ({
   bookings,
   currentRecommendation
 }) => {
@@ -78,7 +78,7 @@ const OfferInfo = ({
   }
 
   return (
-    <div className="offer-info">
+    <div className="verso-info">
       {managingOfferer && (
         <div className="offerer">Ce livre vous est offert par {managingOfferer}.</div>
       )}
@@ -155,4 +155,4 @@ export default compose(
         currentRecommendation
       }
   })
-)(OfferInfo)
+)(VersoInfo)
