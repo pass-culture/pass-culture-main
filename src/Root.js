@@ -1,19 +1,19 @@
+import Raven from 'raven-js'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { matchPath, Redirect, Route, Switch } from 'react-router-dom'
-import { ConnectedRouter } from 'react-router-redux'
-import Raven from 'raven-js'
-
-import { version } from '../package.json'
-import { API_URL, IS_DEV } from './utils/config'
-
-import 'react-dates/initialize'
-import 'react-dates/lib/css/_datepicker.css'
+import {
+  BrowserRouter,
+  matchPath,
+  Redirect,
+  Route,
+  Switch
+} from 'react-router-dom'
 
 import App from './App'
 import routes from './utils/routes'
 import store from './utils/store'
-import history from './utils/history'
+import { API_URL, IS_DEV } from './utils/config'
+import { version } from '../package.json'
 
 const Root = () => {
   if (!IS_DEV) {
@@ -25,7 +25,7 @@ const Root = () => {
   }
   return (
     <Provider store={store}>
-      <ConnectedRouter history={history}>
+      <BrowserRouter>
         <App>
           <Switch>
             {routes.map(route => (
@@ -54,7 +54,7 @@ const Root = () => {
             />
           </Switch>
         </App>
-      </ConnectedRouter>
+      </BrowserRouter>
     </Provider>
   )
 }

@@ -7,7 +7,6 @@ import {
   user,
 } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
-import { routerReducer } from 'react-router-redux'
 
 import data from './data'
 import geolocation from './geolocation'
@@ -26,8 +25,7 @@ const rootReducer = combineReducers({
   queries,
   splash,
   verso,
-  user,
-  router: routerReducer,
+  user
 })
 
 export default rootReducer

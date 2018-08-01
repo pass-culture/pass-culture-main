@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
 import './utils/install'
-
 import Root from './Root'
 import registerCacheWorker from './workers/cache'
 

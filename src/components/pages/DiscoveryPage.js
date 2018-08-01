@@ -117,7 +117,7 @@ class DiscoveryPage extends Component {
 const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
   return {
-    backButton: state.router.location.search.indexOf('to=verso') > -1,
+    backButton: ownProps.location.search.indexOf('to=verso') > -1,
     currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
     isMenuOnTop: state.loading.isActive || get(state, 'loading.config.isEmpty'),
     recommendations: state.data.recommendations,

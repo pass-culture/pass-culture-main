@@ -59,41 +59,40 @@ export default createSelector(
       ) {
         thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
         firstThumbDominantColor = get(mediation, 'firstThumbDominantColor')
-      } else {
-        if (eventId
+      } else if (eventId
           //  && get(offer, 'eventOrThing.thumbCount')
         ) {
-          thumbUrl = `${THUMBS_URL}/events/${eventId}`
-          firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
-        } else {
-          thumbUrl = thingId
-            // && get(offer, 'eventOrThing.thumbCount')
-            && `${THUMBS_URL}/things/${thingId}`
-          firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
-        }
+        thumbUrl = `${THUMBS_URL}/events/${eventId}`
+        firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
+      } else {
+        thumbUrl = thingId
+          // && get(offer, 'eventOrThing.thumbCount')
+          && `${THUMBS_URL}/things/${thingId}`
+        firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
       }
 
       // distance
       let distance
       if (!latitude || !longitude || !offer || !venue) {
         distance = '-'
-      }
-      distance = distanceInMeters(
-        latitude,
-        longitude,
-        venue.latitude,
-        venue.longitude
-      )
-      if (distance < 30) {
-        distance = Math.round(distance) + ' m'
-      } else if (distance < 100) {
-        distance = Math.round(distance / 5) * 5 + ' m'
-      } else if (distance < 1000) {
-        distance = Math.round(distance / 10) * 10 + ' m'
-      } else if (distance < 5000) {
-        distance = Math.round(distance / 100) / 10 + ' km'
       } else {
-        distance = Math.round(distance / 1000) + ' km'
+        distance = distanceInMeters(
+          latitude,
+          longitude,
+          venue.latitude,
+          venue.longitude
+        )
+        if (distance < 30) {
+          distance = `${Math.round(distance)} m`
+        } else if (distance < 100) {
+          distance = `${Math.round(distance / 5) * 5} m`
+        } else if (distance < 1000) {
+          distance = `${Math.round(distance / 10) * 10} m`
+        } else if (distance < 5000) {
+          distance = `${Math.round(distance / 100) / 10} km`
+        } else {
+          distance = `${Math.round(distance / 1000)} km`
+        }
       }
 
       // timezone
