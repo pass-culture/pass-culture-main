@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types'
-import get from 'lodash.get'
 import { requestData } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
