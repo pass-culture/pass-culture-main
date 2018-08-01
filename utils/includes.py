@@ -100,6 +100,7 @@ BOOKING_INCLUDES = [
         "key": "stock",
         "sub_joins":
             [
+                "offer",
                 {
                     "key": "eventOccurrence",
                     "sub_joins": ["venue"]
