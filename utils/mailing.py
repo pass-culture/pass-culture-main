@@ -133,7 +133,7 @@ def make_booking_recap_email(stock, booking=None, is_cancellation=False):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'passculture@beta.gouv.fr',
+        'FromEmail': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING else 'passculture@beta.gouv.fr',
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -194,11 +194,10 @@ def maybe_send_offerer_validation_email(user, *objects_to_validate):
 
     email = {
         'FromName': 'Pass Culture',
-        'FromEmail': 'passculture@beta.gouv.fr',
+        'FromEmail': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING else 'passculture@beta.gouv.fr',
         'Subject': "Inscription PRO à valider",
         'Html-part': email_html,
-        'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING
-        else 'passculture@beta.gouv.fr'
+        'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING else 'passculture@beta.gouv.fr'
     }
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
@@ -229,7 +228,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'passculture@beta.gouv.fr',
+        'FromEmail': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING else 'passculture@beta.gouv.fr',
         'Subject': email_subject,
         'Html-part': email_html,
     }
