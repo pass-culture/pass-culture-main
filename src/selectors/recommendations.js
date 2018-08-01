@@ -13,23 +13,28 @@ export default createSelector(
         offer
       } = r
 
+      // console.log('offer', offer, 'mediation', mediationId)
+
       // thumbUrl
       let thumbUrl
       const mediationId = get(mediation, 'id')
-      if (mediationId && get(mediation, 'thumbCount')) {
+      if (mediationId
+        // && get(mediation, 'thumbCount')
+      ) {
         thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
       } else {
 
         const eventId = get(offer, 'eventId')
-        if (eventId && get(offer, 'eventOrThing.thumbCount')) {
+        if (eventId
+          //  && get(offer, 'eventOrThing.thumbCount')
+        ) {
           thumbUrl = `${THUMBS_URL}/events/${eventId}`
         } else {
 
           const thingId = get(offer, 'thingId')
-          thumbUrl = thingId &&
-            get(offer, 'eventOrThing.thumbCount') &&
-            `${THUMBS_URL}/things/${thingId}`
-
+          thumbUrl = thingId
+            // && get(offer, 'eventOrThing.thumbCount')
+            && `${THUMBS_URL}/things/${thingId}`
         }
       }
 

@@ -38,25 +38,27 @@ class Card extends PureComponent {
   }
 
   render() {
-    const { currentHeaderColor, recommendation, position, width } = this.props
-    const iscurrent = position === 'current'
-    const translateTo = get(recommendation, 'index') * width
     const {
-      currentHeaderColor,
       position,
       recommendation,
       width
     } = this.props
+    const {
+      headerColor,
+      index
+    } = (recommendation || {})
+    const iscurrent = position === 'current'
+    const translateTo = index * width
     return (
       <div
         className={`card ${iscurrent ? 'current' : ''}`}
         style={{
-          backgroundColor: currentHeaderColor,
+          backgroundColor: headerColor || '#000',
           transform: `translate(${translateTo}px, 0)`,
         }}
       >
-        <Recto {...recommendation} />
         {iscurrent && <Verso />}
+        <Recto position={position} />
       </div>
     )
   }
@@ -64,15 +66,13 @@ class Card extends PureComponent {
 
 Card.defaultProps = {
   isFlipped: false,
-  recommendation: null,
-  currentHeaderColor: '#000',
+  recommendation: null
 }
 
 Card.propTypes = {
   isFlipped: PropTypes.bool,
   recommendation: PropTypes.object,
   width: PropTypes.number.isRequired,
-  currentHeaderColor: PropTypes.string,
   position: PropTypes.string.isRequired,
   requestDataAction: PropTypes.func.isRequired,
 }
@@ -89,7 +89,6 @@ export default compose(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
       return {
-        currentHeaderColor: currentHeaderColorSelector(state, offerId, mediationId),
         recommendation: ownProps.position === 'current'
           ? currentRecommendationSelector(state, offerId, mediationId)
           : ownProps.position === 'previous'

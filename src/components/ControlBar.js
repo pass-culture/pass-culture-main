@@ -12,8 +12,6 @@ import Finishable from './layout/Finishable'
 import Icon from './layout/Icon'
 import selectBookings from '../selectors/bookings'
 import selectCurrentEventOrThingId from '../selectors/currentEventOrThingId'
-import selectCurrentOffer from '../selectors/currentOffer'
-import selectCurrentOfferer from '../selectors/currentOfferer'
 import currentRecommendation from '../selectors/currentRecommendation'
 import selectIsFinished from '../selectors/isFinished'
 import { IS_DEXIE } from '../utils/config'
@@ -25,14 +23,14 @@ class ControlBar extends Component {
   }
 
   onClickFavorite = () => {
-    const { recommendation, requestData } = this.props
-    const { id, isFavorite } = recommendation
-    requestData('PATCH', `recommendations/${id}`, {
+    const { currentRecommendation, requestData } = this.props
+    const { id, isFavorite } = currentRecommendation
+    requestData('PATCH', `currentRecommendations/${id}`, {
       body: {
         isFavorite: !isFavorite,
       },
       local: IS_DEXIE,
-      key: 'recommendations',
+      key: 'currentRecommendations',
     })
   }
 
@@ -41,9 +39,15 @@ class ControlBar extends Component {
   }
 
   onClickJyVais = event => {
-    if (this.props.isFinished) return
-    if (this.props.offer) {
-      this.props.showModal(<Booking />, {
+    const {
+      isFinished,
+      offer,
+      showModal
+    } = this.props
+
+    if (isFinished) return
+    if (offer) {
+      showModal(<Booking />, {
         fullscreen: true,
         maskColor: 'transparent',
         hasCloseButton: false,
@@ -54,8 +58,13 @@ class ControlBar extends Component {
   }
 
   render() {
-    const { bookings, offer, offerer, recommendation } = this.props
-    const isFavorite = recommendation && recommendation.isFavorite
+    const {
+      bookings,
+      offer,
+      offerer,
+      currentRecommendation
+    } = this.props
+    const isFavorite = currentRecommendation && currentRecommendation.isFavorite
     return (
       <ul className="control-bar">
         <li>
@@ -115,10 +124,8 @@ export default compose(
     const { mediationId, offerId } = ownProps.match.params
     return {
       bookings: selectBookings(state, eventOrThingId),
+      currentRecommendation: currentRecommendation(state, offerId, mediationId),
       isFinished: selectIsFinished(state),
-      offer: selectCurrentOffer(state),
-      offerer: selectCurrentOfferer(state),
-      recommendation: currentRecommendation(state, offerId, mediationId),
     }
   },
   {

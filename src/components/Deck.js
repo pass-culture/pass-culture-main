@@ -10,31 +10,17 @@ import withSizes from 'react-sizes'
 import PropTypes from 'prop-types'
 
 import Card from './Card'
-import Icon from './layout/Icon'
-<<<<<<< HEAD
-
-import { flip as flipAction, unFlip as unFlipAction } from '../reducers/verso'
-import selectCurrentHeaderColor from '../selectors/currentHeaderColor'
-import selectCurrentRecommendation from '../selectors/currentRecommendation'
-import selectIsFlipDisabled from '../selectors/isFlipDisabled'
-import selectNextRecommendation from '../selectors/nextRecommendation'
-import selectPreviousRecommendation from '../selectors/previousRecommendation'
-import { IS_DEV } from '../utils/config'
 import DeckDebugger from './layout/DeckDebugger'
 import DeckNavigation from './layout/DeckNavigation'
-import { getDiscoveryPath } from '../utils/getDiscoveryPath'
-=======
-import { flip, unFlip } from '../reducers/verso'
-import currentHeaderColorSelector from '../selectors/currentHeaderColor'
+import Icon from './layout/Icon'
+import { flip as flipAction, unFlip as unFlipAction } from '../reducers/verso'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import isFlipDisabledSelector from '../selectors/isFlipDisabled'
 import nextLimitSelector from '../selectors/nextLimit'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousLimitSelector from '../selectors/previousLimit'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
-import { IS_DEV, ROOT_PATH } from '../utils/config'
-import { getDiscoveryPath } from '../utils/routes'
->>>>>>> renamed selectors
+import { IS_DEV } from '../utils/config'
 
 class Deck extends Component {
   constructor(props) {
@@ -51,18 +37,32 @@ class Deck extends Component {
   }
 
   componentDidMount() {
-    this.handleRefreshedData()
+    const {
+      currentRecommendation,
+      recommendations
+    } = this.props
+    if (!recommendations || !currentRecommendation) {
+      // this.handleRefreshedData()
+    }
     // this.handleSetDateRead()
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.handleRefreshedData(nextProps)
-    this.handleDeprecatedData(nextProps)
+  componentDidUpdate (previousProps) {
+    const {
+      currentRecommendation,
+      recommendations
+    } = this.props
+    if (
+      (!recommendations ||
+        !previousProps.recommendations ||
+        recommendations === previousProps.recommendations ||
+        !currentRecommendation ||
+        !previousProps.currentRecommendation) ||
+        currentRecommendation.index === previousProps.currentRecommendation.index
+    ) {
+      // this.handleRefreshedData()
+    }
   }
-
-  // componentDidUpdate(prevProps) {
-  // this.handleSetDateRead(prevProps)
-  // }
 
   componentWillUnmount() {
     if (this.readTimeout) clearTimeout(this.readTimeout)
@@ -101,41 +101,21 @@ class Deck extends Component {
     }
   }
 
-  navigateToRecommendation(reco) {
-    const { history } = this.props
-    const path = getDiscoveryPath(reco.offer, reco.mediation)
-    history.push(path)
-  }
-
-  handleGoPrevious() {
-    const { isFlipped, previousRecommendation } = this.props
-    if (!previousRecommendation || isFlipped) return
-    this.navigateToRecommendation(previousRecommendation)
-  }
-
-  handleGoNext() {
-    const { isFlipped, nextRecommendation } = this.props
+  handleGoNext = () => {
+    const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
-    this.navigateToRecommendation(nextRecommendation)
+    history.push(nextRecommendation.path)
   }
 
-  handleRefreshedData(nextProps) {
-    const { recommendations, currentRecommendation } = this.props
-    // REFRESH HANDLING
-    // (ie kill the transition the short time we change the blob)
-    // WE CHANGE THE KEY OF THE DRAGGABLE
-    // TO FORCE IT TO REMOUNT AGAIN
-    if (
-      nextProps &&
-      (!nextProps.recommendations ||
-        !recommendations ||
-        nextProps.recommendations === recommendations ||
-        (!nextProps.currentRecommendation || !currentRecommendation) ||
-        nextProps.currentRecommendation.index === currentRecommendation.index)
-    ) {
-      return
-    }
-    this.setState(prev => ({ refreshKey: prev.refreshKey + 1 }))
+  handleGoPrevious = () => {
+    const { history, isFlipped, previousRecommendation } = this.props
+    if (!previousRecommendation || isFlipped) return
+    history.push(previousRecommendation.path)
+  }
+
+  handleRefreshedData = () => {
+    this.setState(previousState =>
+      ({ refreshKey: previousState.refreshKey + 1 }))
   }
 
   handleSetDateRead(prevProps) {
@@ -174,28 +154,12 @@ class Deck extends Component {
       // this.setState({ isRead: false })
       this.currentReadRecommendationId = currentRecommendation.id
       this.readTimeout = setTimeout(() => {
-<<<<<<< HEAD
         if (currentRecommendation && !currentRecommendation.dateRead) {
           requestData('PATCH', `recommendations/${currentRecommendation.id}`, {
             body: {
               dateRead: moment().toISOString(),
             },
           })
-=======
-        if (
-          currentRecommendation &&
-          !currentRecommendation.dateRead
-        ) {
-          requestData(
-            'PATCH',
-            `recommendations/${currentRecommendation.id}`,
-            {
-              body: {
-                dateRead: moment().toISOString(),
-              },
-            }
-          )
->>>>>>> renamed selectors
           // this.setState({ isRead: true })
           clearTimeout(this.readTimeout)
           delete this.readTimeout
@@ -223,39 +187,25 @@ class Deck extends Component {
   }
 
   renderDraggableCards() {
-    const { refreshKey } = this.state
     const {
-<<<<<<< HEAD
-=======
       currentRecommendation,
       draggable,
-      horizontalSlideRatio,
-      verticalSlideRatio,
       height,
->>>>>>> renamed selectors
-      width,
+      horizontalSlideRatio,
       isFlipped,
-      currentHeaderColor,
       nextRecommendation,
-      currentRecommendation,
       previousRecommendation,
+      verticalSlideRatio,
+      width,
     } = this.props
-    const index = get(currentRecommendation, 'index', 0)
-<<<<<<< HEAD
+    const {
+      index
+    } = (currentRecommendation || {})
+    const { refreshKey } = this.state
+
     const position = {
       x: -1 * width * index,
       y: 0,
-=======
-    const offset = (data.x + width * index) / width
-    if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleUnFlip()
-    } else if (data.y < -height * verticalSlideRatio) {
-      this.handleFlip()
-    } else if (offset > horizontalSlideRatio) {
-      this.handleGoPrevious()
-    } else if (-offset > horizontalSlideRatio) {
-      this.handleGoNext()
->>>>>>> renamed selectors
     }
     const draggableBounds = (isFlipped && {}) || {
       top: -100,
@@ -263,10 +213,7 @@ class Deck extends Component {
       left: position.x - width,
       right: position.x + width,
     }
-    const cardProps = {
-      isFlipped,
-      currentHeaderColor,
-    }
+
     return (
       <Draggable
         speed={{ x: 5 }}
@@ -279,23 +226,11 @@ class Deck extends Component {
       >
         <div>
           {previousRecommendation && (
-            <Card
-              {...cardProps}
-              position="previous"
-              recommendation={previousRecommendation}
-            />
+            <Card position="previous" />
           )}
-          <Card
-            {...cardProps}
-            position="current"
-            recommendation={currentRecommendation}
-          />
+          <Card position="current" />
           {nextRecommendation && (
-            <Card
-              {...cardProps}
-              position="next"
-              recommendation={nextRecommendation}
-            />
+            <Card position="next" />
           )}
         </div>
       </Draggable>
@@ -304,19 +239,28 @@ class Deck extends Component {
 
   render() {
     const {
-      isEmpty,
-      isFlipped,
-      unFlippable,
-      isFlipDisabled,
       currentHeaderColor,
-      nextRecommendation,
       currentRecommendation,
+      nextRecommendation,
+      isEmpty,
+      isFlipDisabled,
+      isFlipped,
       previousRecommendation,
+      unFlippable,
+      width,
     } = this.props
+    const {
+      index
+    } = (currentRecommendation || 0)
 
     const showLoader = !currentRecommendation
     const showCloseButton = isFlipped && !unFlippable
     const showNavigation = !isFlipped || isFlipDisabled
+
+    const position = {
+      x: -1 * width * index,
+      y: 0,
+    }
 
     return (
       <div className="deck" id="deck">
@@ -345,7 +289,6 @@ class Deck extends Component {
             <Icon svg="ico-close" alt="Fermer" />
           </button>
         )}
-<<<<<<< HEAD
         {this.renderDraggableCards()}
         {showNavigation && (
           <DeckNavigation
@@ -355,80 +298,10 @@ class Deck extends Component {
             handleGoPrevious={
               (previousRecommendation && this.handleGoPrevious) || null
             }
-=======
-        <div
-          className={classnames('loading', {
-            'is-invisibile': currentRecommendation,
-          })}>
-          <div>
-            <Icon
-              draggable={false}
-              svg="ico-loading-card"
-              alt="Chargement ..."
-            />
-            <h2 className="subtitle is-2">
-              {isEmpty
-                ? 'aucune offre pour le moment'
-                : 'chargement des offres'}
-            </h2>
-          </div>
-        </div>
-        <Draggable
-          axis={isFlipped ? 'none' : 'exclude'}
-          speed={{ x: 5 }}
-          key={refreshKey}
-          position={position}
-          onStop={this.onStop}
-          bounds={
-            isFlipped
-              ? {}
-              : {
-                  bottom: 0,
-                  top: -100,
-                  left: position.x - width,
-                  right: position.x + width,
-                }
-          }
-          enableUserSelectHack={false}>
-          <div>
-            {previousRecommendation && (
-              <Card position="previous" />
-            )}
-            <Card position="current"  />
-            {nextRecommendation && (
-              <Card position="next" />
-            )}
-          </div>
-        </Draggable>
-        <div
-          className={classnames('board-wrapper', {
-            'is-invisible': isFlipped,
-          })}>
-          <div
-            className="board-bg"
-            style={{
-              background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${currentHeaderColor} 30%,${currentHeaderColor} 100%)`,
-            }}
->>>>>>> renamed selectors
           />
         )}
         {IS_DEV && (
-<<<<<<< HEAD
           <DeckDebugger currentRecommendation={currentRecommendation} />
-=======
-          <div className="debug debug-deck">
-            ({this.props.isLoadingBefore ? '?' : ' '}
-            {this.props.previousLimit}){' '}
-            {currentRecommendation &&
-              currentRecommendation.mediation &&
-              currentRecommendation.mediation.id}{' '}
-            {currentRecommendation &&
-              currentRecommendation.index}{' '}
-            ({this.props.nextLimit} {this.props.isLoadingAfter ? '?' : ' '}) /{' '}
-            {this.props.recommendations &&
-              this.props.recommendations.length - 1}
-          </div>
->>>>>>> renamed selectors
         )}
       </div>
     )
@@ -479,19 +352,23 @@ Deck.propTypes = {
   previousRecommendation: PropTypes.object,
 }
 
-const mapStateToProps = state => ({
-  currentHeaderColor: selectCurrentHeaderColor(state),
-  currentRecommendation: selectCurrentRecommendation(state),
-  deprecatedRecommendations: state.data.deprecatedRecommendations,
-  isEmpty: get(state, 'loading.config.isEmpty'),
-  isFlipDisabled: selectIsFlipDisabled(state),
-  isFlipped: state.verso.isFlipped,
-  nextRecommendation: selectNextRecommendation(state),
-  previousRecommendation: selectPreviousRecommendation(state),
-  recommendations: state.data.recommendations || [],
-  unFlippable: state.verso.unFlippable,
-  draggable: state.verso.draggable,
-})
+const mapStateToProps = (state, ownProps) => {
+  const { mediationId, offerId } = ownProps.match.params
+  return {
+    currentRecommendation: currentRecommendationSelector(state,
+      offerId, mediationId),
+    isEmpty: get(state, 'loading.config.isEmpty'),
+    isFlipDisabled: isFlipDisabledSelector(state, offerId, mediationId),
+    isFlipped: state.verso.isFlipped,
+    nextLimit: nextLimitSelector(state),
+    nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
+    previousLimit: previousLimitSelector(state),
+    previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
+    recommendations: state.data.recommendations || [],
+    unFlippable: state.verso.unFlippable,
+    draggable: state.verso.draggable,
+  }
+}
 
 const mapSizeToProps = ({ width, height }) => ({
   // body{max-width: 500px;}
@@ -499,34 +376,14 @@ const mapSizeToProps = ({ width, height }) => ({
   height,
 })
 
+const mapDispatchToProps = {
+  flip: flipAction,
+  requestData: requestDataAction,
+  unFlip: unFlipAction
+}
+
 export default compose(
   withRouter,
   withSizes(mapSizeToProps),
-  connect(
-<<<<<<< HEAD
-    mapStateToProps,
-    { flip: flipAction, requestData: requestDataAction, unFlip: unFlipAction }
-=======
-    (state, ownProps) => {
-      const { mediationId, offerId } = ownProps.match.params
-      return {
-        currentHeaderColor: currentHeaderColorSelector(state, offerId, mediationId),
-        currentRecommendation: currentRecommendationSelector(state,
-          offerId, mediationId),
-        // deprecatedRecommendations: state.data.deprecatedRecommendations,
-        isEmpty: get(state, 'loading.config.isEmpty'),
-        isFlipDisabled: isFlipDisabledSelector(state, offerId, mediationId),
-        isFlipped: state.verso.isFlipped,
-        nextLimit: nextLimitSelector(state),
-        nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
-        previousLimit: previousLimitSelector(state),
-        previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
-        recommendations: state.data.recommendations || [],
-        unFlippable: state.verso.unFlippable,
-        draggable: state.verso.draggable,
-      }
-    },
-    { flip, requestData, unFlip }
->>>>>>> renamed selectors
-  )
+  connect(mapStateToProps, mapDispatchToProps)
 )(Deck)

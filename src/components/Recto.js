@@ -23,7 +23,7 @@ const Recto = ({
     thumbUrl,
   } = (recommendation || {})
 
-  console.log('thumbUrl', thumbUrl)
+  console.log('recommendation', recommendation)
 
   const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` }
   const thumbStyle = Object.assign({}, backgroundStyle)
