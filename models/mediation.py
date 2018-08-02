@@ -43,13 +43,13 @@ class Mediation(PcObject,
                           backref='mediations')
 
     offerId = Column(BigInteger,
-                        ForeignKey('offer.id'),
-                        index=True,
-                        nullable=True)
+                     ForeignKey('offer.id'),
+                     index=True,
+                     nullable=True)
 
     offer = relationship('Offer',
-                            foreign_keys=[offerId],
-                            backref='mediations')
+                         foreign_keys=[offerId],
+                         backref='mediations')
 
     tutoIndex = Column(Integer,
                        nullable=True,

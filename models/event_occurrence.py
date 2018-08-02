@@ -15,10 +15,10 @@ from models.providable_mixin import ProvidableMixin
 
 
 class EventOccurrence(PcObject,
-                     Model,
-                     DeactivableMixin,
-                     ProvidableMixin
-                    ):
+                      Model,
+                      DeactivableMixin,
+                      ProvidableMixin
+                     ):
 
     id = Column(BigInteger,
                 primary_key=True)
@@ -27,13 +27,13 @@ class EventOccurrence(PcObject,
                   nullable=True)
 
     offerId = Column(BigInteger,
-                        ForeignKey('offer.id'),
-                        index=True,
-                        nullable=False)
+                     ForeignKey('offer.id'),
+                     index=True,
+                     nullable=False)
 
     offer = relationship('Offer',
-                            foreign_keys=[offerId],
-                            backref='eventOccurrences')
+                         foreign_keys=[offerId],
+                         backref='eventOccurrences')
 
     beginningDatetime = Column(DateTime,
                                index=True,
@@ -45,7 +45,3 @@ class EventOccurrence(PcObject,
     accessibility = Column(Binary(1),
                            nullable=False,
                            default=bytes([0]))
-
-    @property
-    def stock(self):
-        return self.stocks
