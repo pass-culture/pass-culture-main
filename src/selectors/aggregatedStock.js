@@ -3,7 +3,7 @@ import createCachedSelector from 're-reselect'
 import offersSelector from './offers'
 
 export default createCachedSelector(
-  (state, venueId, eventId) => offersSelector(state, venueId, eventId),
+  (state, venueId) => offersSelector(state, null, venueId),
   offers =>
     offers.reduce(
       (aggreged, offer) => ({

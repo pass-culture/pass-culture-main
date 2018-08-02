@@ -11,11 +11,11 @@ import { compose } from 'redux'
 
 import Price from './Price'
 import Thumb from './layout/Thumb'
+import aggregatedStockSelector from '../selectors/aggregatedStock'
 import eventSelector from '../selectors/event'
 import maxDateSelector from '../selectors/maxDate'
 import mediationsSelector from '../selectors/mediations'
 import occurrencesSelector from '../selectors/occurrences'
-import stockSelector from '../selectors/stock'
 import thingSelector from '../selectors/thing'
 import thumbUrlSelector from '../selectors/thumbUrl'
 import typeSelector from '../selectors/type'
@@ -48,13 +48,13 @@ class OccasionItem extends Component {
       mediations,
       offer,
       occurrences,
-      stock,
+      aggregatedStock,
       thing,
       thumbUrl,
       type,
     } = this.props
     const { available, groupSizeMin, groupSizeMax, priceMin, priceMax } =
-      stock || {}
+      aggregatedStock || {}
     const { name, createdAt, isActive } = event || thing || {}
 
     const mediationsLength = get(mediations, 'length')
@@ -179,13 +179,13 @@ export default compose(
   connect(
     () => {
       return (state, ownProps) => {
-        const { id, eventId, thingId } = ownProps.offer
+        const { id, eventId, thingId, venueId } = ownProps.offer
         return {
+          aggregatedStock: aggregatedStockSelector(state, venueId),
           event: eventSelector(state, eventId),
+          maxDate: maxDateSelector(state, id),
           mediations: mediationsSelector(state, id),
           occurrences: occurrencesSelector(state, id),
-          maxDate: maxDateSelector(state, id),
-          stock: stockSelector(state, id),
           thing: thingSelector(state, thingId),
           thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
           type: typeSelector(state, eventId, thingId),
