@@ -179,15 +179,15 @@ export default compose(
   connect(
     () => {
       return (state, ownProps) => {
-        const { eventId, thingId, venueId } = ownProps.offer
+        const { id, eventId, thingId } = ownProps.offer
         return {
           event: eventSelector(state, eventId),
-          mediations: mediationsSelector(state, eventId, thingId),
-          occurrences: occurrencesSelector(state, venueId, eventId),
-          maxDate: maxDateSelector(state, venueId, eventId),
-          stock: stockSelector(state, venueId, eventId),
+          mediations: mediationsSelector(state, id),
+          occurrences: occurrencesSelector(state, id),
+          maxDate: maxDateSelector(state, id),
+          stock: stockSelector(state, id),
           thing: thingSelector(state, thingId),
-          thumbUrl: thumbUrlSelector(state, eventId, thingId),
+          thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
           type: typeSelector(state, eventId, thingId),
         }
       }

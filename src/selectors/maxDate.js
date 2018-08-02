@@ -3,7 +3,7 @@ import createCachedSelector from 're-reselect'
 import occurrencesSelector from './occurrences'
 
 export default createCachedSelector(
-  (state, venueId, eventId) => occurrencesSelector(state, venueId, eventId),
+  (state, offerId) => occurrencesSelector(state, offerId),
   occurrences => {
     return occurrences.reduce(
       (max, d) =>
@@ -13,4 +13,4 @@ export default createCachedSelector(
       null
     )
   }
-)((state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`)
+)((state, offerId) => offerId || '')
