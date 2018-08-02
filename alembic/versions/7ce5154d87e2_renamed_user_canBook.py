@@ -18,6 +18,7 @@ depends_on = None
 
 def upgrade():
     op.alter_column('user', 'canBook', new_column_name='canBookFreeOffers')
+    op.execute('UPDATE "user" SET "canBookFreeOffers"=False WHERE "isAdmin"=True;')
     op.create_check_constraint(constraint_name='check_admin_cannot_book_free_offers',
                                table_name='user',
                                condition='("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
