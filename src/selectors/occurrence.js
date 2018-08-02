@@ -4,15 +4,15 @@ import createCachedSelector from 're-reselect'
 
 export default createCachedSelector(
   (state, occurrence) => occurrence,
-  (state, occurrence, eventId) => eventId,
-  (state, occurrence, eventId, venueId) => venueId,
-  (occurrence, eventId, venueId) => {
+  (state, occurrence, offerId) => offerId,
+  (state, occurrence, offerId, venueId) => venueId,
+  (occurrence, offerId, venueId) => {
     return Object.assign({}, occurrence, {
       beginningDatetime: moment(
         get(occurrence, 'beginningDatetime')
       ).toISOString(),
       endDatetime: moment(get(occurrence, 'endDatetime')).toISOString(),
-      eventId,
+      offerId,
       venueId,
     })
   }

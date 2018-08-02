@@ -424,7 +424,10 @@ export default compose(
       const offerers = offerersSelector(state)
       const offerer = offererSelector(state, offererId)
 
-      const occurrences = occurrencesSelector(state, venueId, eventId)
+      const occurrences = occurrencesSelector(
+        state,
+        ownProps.match.params.offerId
+      )
 
       const user = state.user
 

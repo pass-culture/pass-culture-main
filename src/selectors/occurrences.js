@@ -3,13 +3,10 @@ import createCachedSelector from 're-reselect'
 
 export default createCachedSelector(
   state => state.data.eventOccurrences,
-  (state, venueId) => venueId,
-  (state, venueId, eventId) => eventId,
-  (eventOccurrences, venueId, eventId) => {
-    if (venueId)
-      eventOccurrences = eventOccurrences.filter(o => o.venueId === venueId)
-    if (eventId)
-      eventOccurrences = eventOccurrences.filter(o => o.eventId === eventId)
+  (state, offerId) => offerId,
+  (eventOccurrences, offerId) => {
+    if (offerId)
+      eventOccurrences = eventOccurrences.filter(o => o.offerId === offerId)
 
     return eventOccurrences.sort(
       (o1, o2) =>
@@ -17,4 +14,4 @@ export default createCachedSelector(
         moment(o1.beginningDatetime).unix()
     )
   }
-)((state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`)
+)((state, offerId) => offerId || '')

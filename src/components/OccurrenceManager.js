@@ -133,9 +133,12 @@ export default compose(
       const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
 
       const offer = offerSelector(state, ownProps.match.params.offerId)
-      const { eventId, venueId } = offer || {}
+      const { eventId } = offer || {}
       const event = eventSelector(state, eventId)
-      const occurrences = occurrencesSelector(state, venueId, eventId)
+      const occurrences = occurrencesSelector(
+        state,
+        ownProps.match.params.offerId
+      )
 
       const errors = occurrenceErrorsSelector(state)
 

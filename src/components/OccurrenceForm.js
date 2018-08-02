@@ -206,7 +206,7 @@ class OccurrenceForm extends Component {
           size="small"
           Tag={null}>
           <td>
-            <Field name="eventId" type="hidden" />
+            <Field name="offerId" type="hidden" />
             <Field name="venueId" type="hidden" />
             <Field
               minDate={beginningDatetime}
@@ -268,7 +268,7 @@ class OccurrenceForm extends Component {
           Tag={null}>
           <td title="Vide si gratuit">
             <Field name="eventOccurrenceId" type="hidden" />
-            <Field name="stockerId" type="hidden" />
+            <Field name="offerId" type="hidden" />
             <Field
               displayValue={(value, { readOnly }) =>
                 value === 0
@@ -353,7 +353,7 @@ export default compose(
       const occurrence = occurrenceSelector(
         state,
         ownProps.occurrence,
-        eventId,
+        ownProps.match.params.offerId,
         venueId
       )
       const occurrenceId = get(occurrence, 'id')
