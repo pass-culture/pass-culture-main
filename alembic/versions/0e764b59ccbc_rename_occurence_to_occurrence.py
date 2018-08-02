@@ -19,6 +19,7 @@ depends_on = None
 def upgrade():
     op.execute(
       'BEGIN TRANSACTION;'
+        'DROP TABLE IF EXISTS "event_occurrence" CASCADE;'  # automatically created by SQLAlchemy
         'ALTER TABLE "event_occurence" RENAME TO "event_occurrence";'
         'ALTER SEQUENCE "event_occurence_id_seq" RENAME TO "event_occurrence_id_seq";'
         'ALTER TABLE "offer" RENAME COLUMN "eventOccurenceId" TO "eventOccurrenceId";'

@@ -7,7 +7,7 @@ Create Date: 2018-08-01 06:52:54.926305
 """
 from alembic import op
 
-from models import Stock
+from models import Booking, Stock
 
 
 # revision identifiers, used by Alembic.
@@ -29,8 +29,8 @@ def upgrade():
         'ALTER TABLE "stock" RENAME CONSTRAINT "offer_lastProviderId_fkey" TO "stock_lastProviderId_fkey";'
         'ALTER TABLE "stock" RENAME CONSTRAINT "offer_occasionId_fkey" TO "stock_offerId_fkey";'
         'ALTER TABLE "stock" RENAME CONSTRAINT "offer_eventOccurrenceId_fkey" TO "stock_eventOccurrenceId_fkey";'
-        'ALTER TABLE "stock" RENAME CONSTRAINT "check_offer_has_event_occurrence_or_occasion" TO "check_offer_has_event_occurrence_or_offer";'
-        'ALTER INDEX "ix_stock_occasionId" RENAME TO "ix_stock_offerId";'
+        'ALTER TABLE "stock" RENAME CONSTRAINT "check_offer_has_event_occurrence_or_occasion" TO "check_stock_has_event_occurrence_or_offer";'
+        'ALTER INDEX "ix_offer_occasionId" RENAME TO "ix_stock_offerId";'
 
         'ALTER TABLE "occasion" RENAME TO "offer";'
         'ALTER SEQUENCE "occasion_id_seq" RENAME TO "offer_id_seq";'
@@ -48,7 +48,6 @@ def upgrade():
         'ALTER INDEX "ix_occasion_venueId" RENAME TO "ix_offer_venueId";'
         'ALTER INDEX "ix_offer_available" RENAME TO "ix_stock_available";'
         'ALTER INDEX "ix_offer_eventOccurrenceId" RENAME TO "ix_stock_eventOccurrenceId";'
-        'ALTER INDEX "ix_offer_occasionId" RENAME TO "ix_stock_occasionId";'
 
         'ALTER TABLE "booking" RENAME COLUMN "offerId" TO "stockId";'
         'ALTER TABLE "booking" RENAME CONSTRAINT "booking_offerId_fkey" TO "booking_stockId_fkey";'
@@ -63,6 +62,7 @@ def upgrade():
         'DROP TRIGGER offer_update ON stock;'
         'DROP FUNCTION check_offer;'
         + Stock.trig_ddl + ';'
+        + Booking.trig_ddl + ';'
       'COMMIT;')
 
 

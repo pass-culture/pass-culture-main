@@ -72,7 +72,7 @@ class Booking(PcObject,
         return stock.eventOccurrence.beginningDatetime
 
 
-trig_ddl = DDL("""
+Booking.trig_ddl = """
     CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT)
     RETURNS NUMERIC(10,2) AS $$
     BEGIN
@@ -102,12 +102,13 @@ trig_ddl = DDL("""
     END;
     $$ LANGUAGE plpgsql;
 
+    DROP TRIGGER IF EXISTS booking_update ON booking;
     CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
-    """)
+    """
 event.listen(Booking.__table__,
              'after_create',
-             trig_ddl)
+             DDL(Booking.trig_ddl))
 
 
