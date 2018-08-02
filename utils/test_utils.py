@@ -62,13 +62,16 @@ def create_stock_with_event_offer(price=10, beginning_datetime_future=True):
     stock.eventOccurrence = EventOccurrence()
     if beginning_datetime_future:
         stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        stock.eventOccurrence.endDatetime = datetime(2019, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
         stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     else:
         stock.eventOccurrence.beginningDatetime = datetime(2017, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        stock.eventOccurrence.endDatetime = datetime(2017, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
         stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=800)
     stock.eventOccurrence.offer = Offer()
-    stock.eventOccurrence.offer.event = Event()
-    stock.eventOccurrence.offer.event.name = 'Mains, sorts et papiers'
+    stock.eventOccurrence.offer.event = Event(
+        from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
+    )
     stock.eventOccurrence.offer.venue = _create_venue_for_booking_email_test()
     stock.isActive = True
     return stock

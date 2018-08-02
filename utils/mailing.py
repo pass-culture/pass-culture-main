@@ -111,14 +111,21 @@ def make_final_recap_email_for_stock_with_event(stock):
 def make_booking_recap_email(stock, booking):
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
-    date_in_tz = _get_event_datetime(stock)
-    formatted_datetime = format_datetime(date_in_tz)
-    email_subject = '[Reservations] Nouvelle reservation pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
-                                                                        formatted_datetime)
-    print('bookings', stock.bookings)
+
+    if stock.eventOccurrence is None:
+        stock_name = stock.offer.thing.name
+        email_subject = '[Reservations] Nouvelle reservation pour {}'.format(stock_name)
+        formatted_datetime=None
+    else:
+        date_in_tz = _get_event_datetime(stock)
+        formatted_datetime = format_datetime(date_in_tz)
+        stock_name = stock.eventOccurrence.offer.event.name
+        email_subject = '[Reservations] Nouvelle reservation pour {} le {}'.format(stock_name,
+                                                                                   formatted_datetime)
+
     email_html = render_template('offerer_booking_recap_email.html',
                                  number_of_bookings=len(stock.bookings),
-                                 stock_name=stock.eventOccurrence.offer.event.name,
+                                 stock_name=stock_name,
                                  stock_date_time=formatted_datetime,
                                  venue_name=venue.name,
                                  venue_address=venue.address,
@@ -127,6 +134,8 @@ def make_booking_recap_email(stock, booking):
                                  stock_bookings=stock.bookings,
                                  user_name=user.publicName,
                                  user_email=user.email)
+
+    print(email_html)
 
     return {
         'FromName': 'Pass Culture',

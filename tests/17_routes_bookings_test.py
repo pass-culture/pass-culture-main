@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from models import User, Offerer, Recommendation, Stock, PcObject, Deposit, Venue
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_offer, \
-    create_thing_offer, create_deposit
+    create_thing_offer, create_deposit, create_stock_with_event_offer
 
 
 def test_11_create_booking_should_not_work_past_limit_date(app):
@@ -23,19 +23,23 @@ def test_11_create_booking_should_not_work_past_limit_date(app):
 
 
 def test_12_create_booking_should_work_before_limit_date(app):
-    ok_stock = Stock()
-    ok_stock.venueId = 1
-    ok_stock.offerId = 1
-    ok_stock.price = 0
+    ok_stock = create_stock_with_event_offer(0)
+    ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     PcObject.check_and_save(ok_stock)
 
+    recommendation = Recommendation()
+    recommendation.user = User.query.filter_by(email='pctest.jeune.93@btmx.fr').first()
+    recommendation.offer = ok_stock.offer
+    PcObject.check_and_save(recommendation)
+
     booking_json = {
         'stockId': humanize(ok_stock.id),
-        'recommendationId': humanize(1)
+        'recommendationId': humanize(recommendation.id)
     }
 
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
+    print(r_create.json())
     assert r_create.status_code == 201
     id = r_create.json()['id']
     r_check = req_with_auth().get(API_URL + '/bookings/' + id)
@@ -75,6 +79,7 @@ def test_14_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     deposit.save()
 
     r_create = req_with_auth('pctest.jeune.93@btmx.fr').post(API_URL + '/bookings', json=booking_json)
+    print(r_create.json())
     assert r_create.status_code == 201
 
 
