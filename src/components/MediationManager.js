@@ -53,12 +53,8 @@ const MediationManager = ({ mediations, offer }) => {
 
 export default compose(
   withRouter,
-  connect((state, ownProps) => {
-    const offer = offerSelector(state, ownProps.match.params.offerId)
-    const { eventId, thingId } = offer || {}
-    return {
-      mediations: mediationsSelector(state, eventId, thingId),
-      offer,
-    }
-  })
+  connect((state, ownProps) => ({
+    mediations: mediationsSelector(state, ownProps.match.params.offerId),
+    offer: offerSelector(state, ownProps.match.params.offerId),
+  }))
 )(MediationManager)

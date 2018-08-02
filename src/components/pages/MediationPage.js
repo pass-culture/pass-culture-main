@@ -85,8 +85,6 @@ class MediationPage extends Component {
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
-
-      // TODO
       showNotification({
         text: 'Votre accroche a bien été enregistrée',
         type: 'success',
@@ -144,28 +142,25 @@ class MediationPage extends Component {
   }
 
   onSubmit = () => {
-    const { mediation, offer, offerId, offerer, requestData } = this.props
+    const { match, mediation, offerer, requestData } = this.props
     const { croppingRect, image, isNew } = this.state
 
-    const eventId = get(offer, 'eventId')
     const offererId = get(offerer, 'id')
-    const thingId = get(offer, 'thingId')
+    const offerId = match.params.offerId
 
     let body
     if (typeof image === 'string') {
       body = {
         croppingRect,
-        eventId: offerId,
         offererId,
-        thingId,
+        offerId,
         thumb: image,
       }
     } else {
       const formData = new FormData()
-      formData.append('thumb', image)
-      formData.append('eventId', eventId)
-      formData.append('thingId', thingId)
       formData.append('offererId', offererId)
+      formData.append('offerId', offerId)
+      formData.append('thumb', image)
       formData.append('croppingRect[x]', croppingRect.x)
       formData.append('croppingRect[y]', croppingRect.y)
       formData.append('croppingRect[width]', croppingRect.width)

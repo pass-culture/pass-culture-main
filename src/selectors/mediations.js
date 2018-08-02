@@ -3,24 +3,21 @@ import createCachedSelector from 're-reselect'
 
 export default createCachedSelector(
   state => state.data.mediations,
-  (state, optionalEventId, optionalThingId) => optionalEventId,
-  (state, optionalEventId, optionalThingId) => optionalThingId,
-  (mediations, optionalEventId, optionalThingId) => {
+  (state, offerId) => offerId,
+  (mediations, offerId) => {
     let selectedMediations = mediations
-    if (optionalEventId)
-      selectedMediations = mediations.filter(m => m.eventId === optionalEventId)
 
-    if (optionalThingId)
-      selectedMediations = mediations.filter(m => m.thingId === optionalThingId)
+    // optional offerId
+    if (offerId)
+      selectedMediations = mediations.filter(m => m.offerId === offerId)
 
+    // sort by creation date
     selectedMediations &&
       selectedMediations.sort(
         (m1, m2) => moment(m1.dateCreated) - moment(m2.dateCreated)
       )
 
+    // return
     return selectedMediations
   }
-)(
-  (state, optionalEventId, optionalThingId) =>
-    `${optionalEventId || ''}/${optionalThingId || ''}`
-)
+)((state, offerId) => offerId || '')
