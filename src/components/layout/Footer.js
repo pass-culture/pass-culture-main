@@ -1,12 +1,12 @@
 import classnames from 'classnames'
 import { showModal } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import ProfilePicture from './ProfilePicture'
 import Menu from '../Menu'
 
-class MenuButton extends Component {
+class MenuButton extends React.PureComponent {
   onClick = () => {
     this.props.showModal(<Menu />, { zIndex: 10002 })
   }
@@ -31,7 +31,11 @@ class MenuButton extends Component {
         style={style}
       >
         <div className="button-wrapper">
-          <button className="profile-button" onClick={this.onClick} type="button">
+          <button
+            className="profile-button"
+            onClick={this.onClick}
+            type="button"
+          >
             <ProfilePicture alt="Mon menu" {...maybeColored} />
           </button>
         </div>

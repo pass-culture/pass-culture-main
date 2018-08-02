@@ -17,15 +17,15 @@ import BackButton from './BackButton'
 import Footer from './Footer'
 
 class Main extends Component {
-  constructor() {
-    super()
+  static defaultProps = {
+    Tag: 'main',
+  }
+
+  constructor(props) {
+    super(props)
     this.state = {
       loading: false,
     }
-  }
-
-  static defaultProps = {
-    Tag: 'main',
   }
 
   handleDataFail = (state, action) => {
@@ -64,7 +64,7 @@ class Main extends Component {
         return
       }
       // test all the blockers
-      for (let blocker of blockers) {
+      for (const blocker of blockers) {
         const { block } = blocker || {}
         const shouldBlock = block && block(this.props)
         if (shouldBlock) {

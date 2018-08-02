@@ -1,23 +1,25 @@
 // Warning: this component is volontarily impure.
 // Don't use it as an example unless you know what you are doing.
 import moment from 'moment'
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import { showModal } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import '../../utils/debugInitializer'
 
-class Debug extends Component {
-  static defaultProps = {
-    timeoutDuration: 3000,
-  }
-
+class Debug extends React.PureComponent {
   showDebug = () => {
-    this.props.showModal(
+    const { dispatchShowModal } = this.props
+    dispatchShowModal(
       <div className="debug-modal">
-        <h1 className="title">Pass Culture Debug</h1>
-        <pre>{get(window, 'logContent', []).map(this.renderLine)}</pre>
+        <h1 className="title">
+          {'Pass Culture Debug'}
+        </h1>
+        <pre>
+          {get(window, 'logContent', []).map(this.renderLine)}
+        </pre>
       </div>,
       {
         fullscreen: true,
@@ -27,11 +29,12 @@ class Debug extends Component {
   }
 
   handleTouchPress = e => {
-    if (get(e, 'touches', []).length >= 2) {
-      this.buttonPressTimer = setTimeout(() => {
-        this.showDebug()
-      }, this.props.timeoutDuration)
-    }
+    const isTouched = get(e, 'touches', []).length >= 2
+    if (!isTouched) return
+    const { timeoutDuration } = this.props
+    this.buttonPressTimer = setTimeout(() => {
+      this.showDebug()
+    }, timeoutDuration)
   }
 
   handleTouchRelease = () => {
@@ -43,33 +46,48 @@ class Debug extends Component {
     return JSON.stringify(value, null, 2).replace(/"([^(")"]+)":/g, '$1:') // remove quotes
   }
 
-  renderLine = ({ time, method, hash, values }) => {
-    return (
-      <code key={hash} title={time}>
-        <div className="header">
-          {`${method.toUpperCase()} | `}
-          <time dateTime={time}>{moment(time).format('h:mm:ss')}</time>
-        </div>
-        <div className="log">{values.map(this.displayVariable).join('\n')}</div>
-      </code>
-    )
-  }
+  renderLine = ({ time, method, hash, values }) => (
+    <code key={hash} title={time}>
+      <div className="header">
+        {`${method.toUpperCase()} | `}
+        <time dateTime={time}>
+          {moment(time).format('h:mm:ss')}
+        </time>
+      </div>
+      <div className="log">
+        {values.map(this.displayVariable).join('\n')}
+      </div>
+    </code>
+  )
 
   render() {
+    const { children, className } = this.props
     return (
       <div
-        className={this.props.className}
+        className={className}
         onTouchStart={this.handleTouchPress}
         onTouchEnd={this.handleTouchRelease}
-        onClick={e => e.detail === 3 && e.shiftKey && this.showDebug(e)}>
-        {this.props.children}
+        onClick={e => e.detail === 3 && e.shiftKey && this.showDebug(e)}
+      >
+        {children}
       </div>
     )
   }
 }
+
+Debug.defaultProps = {
+  className: '',
+  timeoutDuration: 3000,
+}
+
+Debug.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  dispatchShowModal: PropTypes.func.isRequired,
+  timeoutDuration: PropTypes.number,
+}
+
 export default connect(
-  state => ({}),
-  {
-    showModal,
-  }
+  null,
+  { dispatchShowModal: showModal }
 )(Debug)
