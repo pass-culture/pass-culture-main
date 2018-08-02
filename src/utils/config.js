@@ -22,7 +22,7 @@ if (process.env.API_URL) {
 } else {
   CALCULATED_API_URL = IS_DEV
     ? 'http://localhost'
-    : 'https://' + document.location.host.replace('app', 'api')
+    : `https://${document.location.host.replace('app', 'api')}`
 }
 export const API_URL = CALCULATED_API_URL
 
@@ -32,7 +32,7 @@ export const THUMBS_URL = IS_DEV
 
 function getMobileOperatingSystem() {
   if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera
 
     // Windows Phone must come first because its UA also contains "Android"
     if (/windows phone/i.test(userAgent)) {
@@ -48,9 +48,8 @@ function getMobileOperatingSystem() {
       return 'ios'
     }
     return 'unknown'
-  } else {
-    return 'unknown'
   }
+  return 'unknown'
 }
 
 export const MOBILE_OS = getMobileOperatingSystem()
@@ -69,35 +68,33 @@ if (typeof window !== 'undefined') {
 
 export const IS_LOCALHOST = Boolean(calculatedLocalhost)
 
-var CALC_ROOT_PATH = ''
+let CALC_ROOT_PATH = ''
 if (typeof window !== 'undefined' && window.cordova) {
   document.body.className += ' cordova'
   if (MOBILE_OS === 'android') {
     CALC_ROOT_PATH = 'file:///android_asset/www'
     document.body.className += ' cordova-android'
-    //document.body.className += ' android-with-statusbar'
+    // document.body.className += ' android-with-statusbar'
   } else if (MOBILE_OS === 'ios') {
-    //TODO
+    // TODO
     document.body.className += ' cordova-ios'
     // CALC_ROOT_PATH = window.location.href.split('/').slice(0, 10).join('/')
     CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
   }
-  window.addEventListener('keyboardWillShow', function(e) {
+  window.addEventListener('keyboardWillShow', () => {
     window.log('Keyboard show')
     document.body.className += ' softkeyboard'
   })
-  window.addEventListener('keyboardWillHide', function(e) {
+  window.addEventListener('keyboardWillHide', () => {
     window.log('Keyboard Hide')
     document.body.className = document.body.className
       .split(' ')
       .filter(c => c !== 'softkeyboard')
       .join(' ')
   })
-} else {
-  if (typeof window !== 'undefined') {
-    document.body.className += ' web'
-    CALC_ROOT_PATH = window.location.protocol + '//' + document.location.host
-  }
+} else if (typeof window !== 'undefined') {
+  document.body.className += ' web'
+  CALC_ROOT_PATH = `${window.location.protocol}//${document.location.host}`
 }
 
 export const ROOT_PATH = CALC_ROOT_PATH || 'http://localhost:3000/'

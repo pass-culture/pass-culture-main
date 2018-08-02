@@ -1,3 +1,4 @@
+// eslint-disable-next-line camelcase
 import { rgb_to_hsv } from 'colorsys'
 
 export function getHeaderColor(firstThumbDominantColor) {
@@ -11,3 +12,5 @@ export function getHeaderColor(firstThumbDominantColor) {
   }
   return 'black'
 }
+
+export default getHeaderColor

@@ -8,3 +8,5 @@ export function getTimezone(departementCode) {
       return 'Europe/Paris'
   }
 }
+
+export default getTimezone
