@@ -25,7 +25,9 @@ export default createCachedSelector(
     if (offerId === 'tuto') {
       currentRecommendation = get(filteredRecommendations, '0')
     } else {
-      currentRecommendation = filteredRecommendations.find(r => r.offerId === offerId)
+      currentRecommendation = filteredRecommendations.find(
+        r => r.offerId === offerId
+      )
     }
 
     // undefined
@@ -45,12 +47,20 @@ export default createCachedSelector(
     // FIXME: also check that nbooking < available
 
     // colors
-    const headerColor = getHeaderColor(currentRecommendation.firstThumbDominantColor)
+    const headerColor = getHeaderColor(
+      currentRecommendation.firstThumbDominantColor
+    )
 
     // return
-    return Object.assign({
-      isFinished,
-      headerColor
-    }, currentRecommendation)
+    return Object.assign(
+      {
+        isFinished,
+        headerColor,
+      },
+      currentRecommendation
+    )
   }
-)((state, offerId, mediationId, position) => `${offerId || ''}/${mediationId || ''}/${position || ''}`)
+)(
+  (state, offerId, mediationId, position) =>
+    `${offerId || ''}/${mediationId || ''}/${position || ''}`
+)

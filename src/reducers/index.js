@@ -23,7 +23,7 @@ const rootReducer = combineReducers({
   modal,
   splash,
   verso,
-  user
+  user,
 })
 
 export default rootReducer

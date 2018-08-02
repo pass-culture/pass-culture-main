@@ -11,19 +11,10 @@ export default createSelector(
   state => state.geolocation.latitude,
   state => state.geolocation.longitude,
   (recommendations, latitude, longitude) => {
-
     let filteredRecommendations = uniqBy(recommendations, recommendation => {
-      const {
-        mediation,
-        offer
-      } = recommendation
-      const {
-        eventId,
-        thingId,
-      } = (offer || {})
-      const {
-        tutoIndex
-      } = (mediation || {})
+      const { mediation, offer } = recommendation
+      const { eventId, thingId } = offer || {}
+      const { tutoIndex } = mediation || {}
       if (eventId) {
         return `event_${eventId}`
       }
@@ -33,41 +24,37 @@ export default createSelector(
       if (tutoIndex) {
         return `tuto_${tutoIndex}`
       }
-      console.warn('weird this recommendation is with no thing or event or tuto')
+      console.warn(
+        'weird this recommendation is with no thing or event or tuto'
+      )
       return ''
     })
 
     filteredRecommendations = filteredRecommendations.map((r, index) => {
-
-      const {
-        mediation,
-        offer
-      } = r
-      const {
-        eventOrThing,
-        eventId,
-        thingId,
-        venue
-      } = (offer || {})
+      const { mediation, offer } = r
+      const { eventOrThing, eventId, thingId, venue } = offer || {}
 
       // thumbUrl
       let thumbUrl
       let firstThumbDominantColor
       const mediationId = get(mediation, 'id')
-      if (mediationId
+      if (
+        mediationId
         // && get(mediation, 'thumbCount')
       ) {
         thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
         firstThumbDominantColor = get(mediation, 'firstThumbDominantColor')
-      } else if (eventId
-          //  && get(offer, 'eventOrThing.thumbCount')
-        ) {
+      } else if (
+        eventId
+        //  && get(offer, 'eventOrThing.thumbCount')
+      ) {
         thumbUrl = `${THUMBS_URL}/events/${eventId}`
         firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
       } else {
-        thumbUrl = thingId
+        thumbUrl =
+          thingId &&
           // && get(offer, 'eventOrThing.thumbCount')
-          && `${THUMBS_URL}/things/${thingId}`
+          `${THUMBS_URL}/things/${thingId}`
         firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
       }
 
@@ -99,17 +86,18 @@ export default createSelector(
       const tz = getTimezone(get(venue, 'departementCode'))
 
       // return
-      return Object.assign({
-        distance,
-        firstThumbDominantColor,
-        index,
-        thumbUrl,
-        tz
-      }, r)
-
+      return Object.assign(
+        {
+          distance,
+          firstThumbDominantColor,
+          index,
+          thumbUrl,
+          tz,
+        },
+        r
+      )
     })
 
     return filteredRecommendations
-
   }
 )

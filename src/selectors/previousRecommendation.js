@@ -8,10 +8,14 @@ export default createCachedSelector(
   recommendationsSelector,
   currentRecommendationSelector,
   (recommendations, currentRecommendation) => {
-
-    const previousRecommendation = currentRecommendation &&
-      get(recommendations, recommendations.findIndex(recommendation =>
-        recommendation.id === currentRecommendation.id) - 1)
+    const previousRecommendation =
+      currentRecommendation &&
+      get(
+        recommendations,
+        recommendations.findIndex(
+          recommendation => recommendation.id === currentRecommendation.id
+        ) - 1
+      )
 
     if (!previousRecommendation) {
       return undefined
@@ -22,9 +26,14 @@ export default createCachedSelector(
     const path = `/decouverte/${offerId}/${mediationId || ''}`
 
     // return
-    return Object.assign({
-      path
-    }, previousRecommendation)
-
+    return Object.assign(
+      {
+        path,
+      },
+      previousRecommendation
+    )
   }
-)((state, offerId, mediationId, position) => `${offerId || ''}/${mediationId || ''}/${position || ''}`)
+)(
+  (state, offerId, mediationId, position) =>
+    `${offerId || ''}/${mediationId || ''}/${position || ''}`
+)

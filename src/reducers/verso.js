@@ -35,19 +35,19 @@ function verso(state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function flip(action = {}) {
+export function flip() {
   return { type: SHOW_VERSO }
 }
 
-export function makeDraggable(action = {}) {
+export function makeDraggable() {
   return { type: MAKE_DRAGGABLE }
 }
 
-export function makeUndraggable(action = {}) {
+export function makeUndraggable() {
   return { type: MAKE_UNDRAGGABLE }
 }
 
-export function unFlip(action = {}) {
+export function unFlip() {
   return { type: CLOSE_VERSO }
 }
 
