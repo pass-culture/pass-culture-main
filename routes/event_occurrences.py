@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 
 from models import Event, EventOccurrence, Offer, PcObject, RightsType, Venue
+from utils.human_ids import dehumanize
 from utils.includes import EVENT_OCCURRENCE_INCLUDES
 from utils.rest import delete, \
     ensure_current_user_has_rights, \
@@ -29,7 +30,7 @@ def get_event_occurrence(id):
 @expect_json_data
 def create_event_occurrence():
     event = Event.query.join(Offer)\
-                       .filter(Offer.id == request.json['offerId'])\
+                       .filter(Offer.id == dehumanize(request.json['offerId']))\
                        .first_or_404()
     event.ensure_can_be_updated()
 
@@ -51,7 +52,7 @@ def edit_event_occurrence(id):
     eo.ensure_can_be_updated()
 
     ensure_current_user_has_rights(RightsType.editor,
-                                   eo.venue.managingOffererId)
+                                   eo.offer.venue.managingOffererId)
     eo.populateFromDict(request.json)
     #TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
     #TODO: Interdire la modification d'évenements passés

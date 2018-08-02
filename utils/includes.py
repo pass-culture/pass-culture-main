@@ -44,17 +44,16 @@ OFFER_INCLUDES = [
     {
         "key": "event",
         "sub_joins": [
-            {
-                "key": "occurrences",
-                "sub_joins": [
-                    {
-                        "key": "stock"
-                    },
-                    'venue'
-                ]
-            },
             "mediations"
         ],
+    },
+    {
+        "key": "eventOccurrences",
+        "sub_joins": [
+            {
+                "key": "stock"
+            }
+        ]
     },
     {
         "key": "thing",
@@ -62,7 +61,6 @@ OFFER_INCLUDES = [
             {
                 "key": "stock"
             },
-            'venue',
             'mediations'
         ]
     },
@@ -71,7 +69,10 @@ OFFER_INCLUDES = [
         "sub_joins": [
             {
                 "key": "managingOfferer",
-                "sub_joins": OFFERER_INCLUDES
+                "sub_joins": [
+                    "nOffers",
+                    "isValidated"
+                ]
             }
         ]
     }

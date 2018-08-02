@@ -120,8 +120,8 @@ def signup():
         maybe_send_offerer_validation_email(new_user, offerer, user_offerer)
     else:
         objects_to_save = [new_user]
-    try:
 
+    try:
         PcObject.check_and_save(*objects_to_save)
     except IntegrityError as ie:
         e = ApiErrors()
