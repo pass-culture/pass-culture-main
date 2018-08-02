@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import {
@@ -143,6 +144,11 @@ class Main extends Component {
 
 Main.defaultProps = {
   Tag: 'main',
+  backButton: false,
+}
+
+Main.propTypes = {
+  backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
 export default compose(
