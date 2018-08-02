@@ -12,10 +12,14 @@ from sqlalchemy import CHAR,\
                        Integer,\
                        Numeric,\
                        String
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
 from models.db import db
+from utils.errors import restize_integrity_error,\
+                         restize_type_error,\
+                         restize_value_error
 from utils.human_ids import dehumanize, humanize
 
 
@@ -171,8 +175,16 @@ class PcObject():
                 errors.addError(key, 'doit être un nombre')
         return errors
 
-    def abortIfErrors(self):
+    def addOrAbortIfErrors(self):
         apiErrors = self.errors()
+        try:
+            db.session.add(self)
+        except IntegrityError:
+            apiErrors.add(*restize_integrity_error(IntegrityError))
+        except TypeError:
+            apiErrors.add(*restize_type_error(TypeError))
+        except ValueError:
+            apiErrors.add(*restize_value_error(ValueError))
         if apiErrors.errors:
             print(apiErrors.errors)
             raise apiErrors
@@ -211,17 +223,15 @@ class PcObject():
 
     @staticmethod
     def check_and_save(*objects):
-        if len(objects)==0:
+        if not objects:
             raise ValueError('Objects to save need to be passed as arguments'
                              + ' to check_and_save')
         for obj in objects:
-            obj.abortIfErrors()
-            db.session.add(obj)
+            obj.addOrAbortIfErrors()
         db.session.commit()
 
     def save(self):
-        self.abortIfErrors()
-        db.session.add(self)
+        self.addOrAbortIfErrors()
         db.session.commit()
 
     @staticmethod

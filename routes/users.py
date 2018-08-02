@@ -65,7 +65,7 @@ def signup():
 
     departement_code = None
     if 'email' in request.json and not is_pro_signup(request.json):
-        
+
         authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
         try:
             email_index = authorized_emails.index(request.json['email'])
@@ -128,8 +128,6 @@ def signup():
         if "check_admin_cannot_book_free_offers" in str(ie.orig):
             e.addError('canBookFreeOffers', 'Admin ne peut pas booker')
         raise e
-
-
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
