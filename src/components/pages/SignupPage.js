@@ -60,18 +60,20 @@ class SignupPage extends Component {
             />
             <br />
             <Field
-              label={
+              label={(
                 <span className="subtitle">
                   {' '}
-                  J'accepte d'être contacté par mail pour donner mon avis sur le{' '}
+                  J'accepte d'être contacté par mail pour donner mon avis sur le
+                  {' '}
                   <a
                     href="http://passculture.beta.gouv.fr"
-                    style={{ textDecoration: 'underline' }}>
+                    style={{ textDecoration: 'underline' }}
+                  >
                     Pass Culture
                   </a>
                   .
                 </span>
-              }
+)}
               name="contact_ok"
               required
               type="checkbox"
@@ -88,7 +90,11 @@ class SignupPage extends Component {
           </Form>
         </div>
 
-        <footer ref={_e => { this.$footer = _e}} />
+        <footer
+          ref={_e => {
+            this.$footer = _e
+          }}
+        />
       </Main>
     )
   }

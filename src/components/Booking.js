@@ -19,6 +19,7 @@ import Price from './Price'
 import VersoWrapper from './VersoWrapper'
 import bookingSelector from '../selectors/booking'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
+
 moment.locale('fr')
 
 class Booking extends Component {
@@ -38,14 +39,9 @@ class Booking extends Component {
   }
 
   currentStep = () => {
-    const {
-      booking,
-      error
-    } = this.props
-    const {
-      token
-    } = (booking || {})
-    const { bookingInProgress  } = this.state
+    const { booking, error } = this.props
+    const { token } = booking || {}
+    const { bookingInProgress } = this.state
 
     if (error) return 'error'
     if (token) return 'confirmation'
@@ -53,7 +49,7 @@ class Booking extends Component {
     return 'confirm'
   }
 
-  getAvailableDateTimes = (selectedDate) => {
+  getAvailableDateTimes = selectedDate => {
     const mediatedOccurences = get(
       this.props,
       'currentRecommendation.mediatedOccurences',
@@ -85,20 +81,15 @@ class Booking extends Component {
       availableHours,
     } = this.getAvailableDateTimes(date)
     this.setState({
-      date: date,
+      date,
       occurences: availableMediatedOccurences,
       time: availableHours[0],
     })
   }
 
   makeBooking = event => {
-    const {
-      currentRecommendation,
-      requestData
-    } = this.props
-    const {
-      offer
-    } = (currentRecommendation || {})
+    const { currentRecommendation, requestData } = this.props
+    const { offer } = currentRecommendation || {}
     const { occurences } = this.state
     this.setState({
       bookingInProgress: true,
@@ -115,30 +106,16 @@ class Booking extends Component {
         offerId,
         quantity: 1,
       },
-      name: 'booking'
+      name: 'booking',
     })
   }
 
   render() {
-    const {
-      booking,
-      currentRecommendation,
-      error,
-    } = this.props
-    const {
-      token
-    } = (booking || {})
-    const {
-      offer,
-      tz
-    } = (currentRecommendation || {})
-    const {
-      price,
-      venue
-    } = (offer || {})
-    const {
-      managingOfferer
-    } = (venue || {})
+    const { booking, currentRecommendation, error } = this.props
+    const { token } = booking || {}
+    const { offer, tz } = currentRecommendation || {}
+    const { price, venue } = offer || {}
+    const { managingOfferer } = venue || {}
 
     const step = this.currentStep()
     const dateRequired =
@@ -153,7 +130,9 @@ class Booking extends Component {
               {dateRequired && (
                 <div>
                   <label htmlFor="date">
-                    <h6>Choisissez une date :</h6>
+                    <h6>
+Choisissez une date :
+                    </h6>
                   </label>
                   <div className="input-field date-picker">
                     <SingleDatePicker
@@ -164,7 +143,7 @@ class Booking extends Component {
                         this.setState({ focused })
                       }
                       numberOfMonths={1}
-                      noBorder={true}
+                      noBorder
                       initialVisibleMonth={() =>
                         moment.min(availableDates.filter(d => d > moment.now()))
                       }
@@ -181,7 +160,9 @@ class Booking extends Component {
                     />
                   </div>
                   <label htmlFor="time">
-                    <h6>Choisissez une heure :</h6>
+                    <h6>
+Choisissez une heure :
+                    </h6>
                   </label>
                   <div className="input-field" htmlFor="time">
                     <select
@@ -189,14 +170,20 @@ class Booking extends Component {
                       value={this.state.time || ''}
                       className="input"
                       onChange={e => this.setState({ time: e.target.value })}
-                      disabled={!this.state.date}>
-                      {availableHours.length === 0 && <option>hh:mm</option>}
+                      disabled={!this.state.date}
+                    >
+                      {availableHours.length === 0 && (
+                      <option>
+hh:mm
+                      </option>
+)}
                       {availableHours.map(d => (
                         <option
                           key={d}
                           value={moment(d)
                             .tz(tz)
-                            .format('H:mm')}>
+                            .format('H:mm')}
+                        >
                           {moment(d)
                             .tz(tz)
                             .format('H:mm')}
@@ -218,11 +205,20 @@ class Booking extends Component {
                   {managingOfferer ? (
                     <div>
                       <p>
-                        Cette réservation d'une valeur de{' '}
-                        <Price value={price} /> vous est offerte par :<br />
-                        <strong>{managingOfferer.name}</strong>.
+                        Cette réservation d'une valeur de
+                        {' '}
+                        <Price value={price} />
+                        {' '}
+vous est offerte par :
+                        <br />
+                        <strong>
+                          {managingOfferer.name}
+                        </strong>
+.
                       </p>
-                      <p>Nous comptons sur vous pour en profiter !</p>
+                      <p>
+Nous comptons sur vous pour en profiter !
+                      </p>
                     </div>
                   ) : (
                     <div>
@@ -233,7 +229,10 @@ class Booking extends Component {
                             {price > 0 && (
                               <span>
                                 {' '}
-                                pour <Price value={price} />{' '}
+                                pour 
+                                {' '}
+                                <Price value={price} />
+                                {' '}
                               </span>
                             )}
                             .
@@ -241,7 +240,11 @@ class Booking extends Component {
                           <p>
                             <small>
                               Le montant sera déduit de votre pass. Il vous
-                              restera <Price value={0} free="——€" /> après cette
+                              restera 
+                              {' '}
+                              <Price value={0} free="——€" />
+                              {' '}
+après cette
                               réservation.
                             </small>
                           </p>
@@ -260,22 +263,34 @@ class Booking extends Component {
               )}
             </div>
           )}
-          {step === 'loading' && <p>Réservation en cours ...</p>}
+          {step === 'loading' && (
+          <p>
+Réservation en cours ...
+          </p>
+)}
           {step === 'confirmation' && (
             <div className="section finished">
               <Icon svg="picto-validation" alt="Réservation validée" />
-              <p>Votre réservation est validée.</p>
+              <p>
+Votre réservation est validée.
+              </p>
               <p>
                 {price > 0 && (
                   <small>
-                    <Price value={price} /> ont été déduits de votre pass.
+                    <Price value={price} />
+                    {' '}
+ont été déduits de votre pass.
                   </small>
                 )}
                 <br />
-                <small>Présentez le code suivant sur place :</small>
+                <small>
+Présentez le code suivant sur place :
+                </small>
               </p>
               <p>
-                <big>{token}</big>
+                <big>
+                  {token}
+                </big>
               </p>
               <p>
                 <small>
@@ -288,14 +303,16 @@ class Booking extends Component {
           {step === 'error' && (
             <div className="section finished">
               <Icon svg="picto-echec" alt="Echec de réservation" />
-              <p>Une erreur est survenue lors de la réservation :</p>
+              <p>
+Une erreur est survenue lors de la réservation :
+              </p>
               {error && (
                 <p>
                   {capitalize(
                     Object.values(error)
                       .map(messages => messages.join(';'))
-                      .join(';'))
-                  }
+                      .join(';')
+                  )}
                 </p>
               )}
             </div>
@@ -309,14 +326,16 @@ class Booking extends Component {
                     'is-primary': true,
                     'is-hidden': !dateOk,
                   })}
-                  onClick={this.makeBooking}>
+                  onClick={this.makeBooking}
+                >
                   Valider
                 </button>
               </li>,
               <li key="cancel">
                 <button
                   className="button is-secondary"
-                  onClick={this.closeBooking}>
+                  onClick={this.closeBooking}
+                >
                   Annuler
                 </button>
               </li>,
@@ -330,7 +349,8 @@ class Booking extends Component {
               <li>
                 <button
                   className="button is-secondary"
-                  onClick={this.closeBooking}>
+                  onClick={this.closeBooking}
+                >
                   OK
                 </button>
               </li>
@@ -339,7 +359,8 @@ class Booking extends Component {
               <li>
                 <button
                   className="button is-secondary"
-                  onClick={this.closeBooking}>
+                  onClick={this.closeBooking}
+                >
                   Retour
                 </button>
               </li>
@@ -358,8 +379,12 @@ export default compose(
       const { mediationId, offerId } = ownProps.match.params
       return {
         booking: bookingSelector(state),
-        currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
-        error: state.errors.booking
+        currentRecommendation: currentRecommendationSelector(
+          state,
+          offerId,
+          mediationId
+        ),
+        error: state.errors.booking,
       }
     },
     { closeModal, removeDataError, requestData }

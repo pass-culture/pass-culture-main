@@ -13,12 +13,12 @@ import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
 
 class Card extends PureComponent {
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const {
       isFlipped,
       recommendation,
       position,
-      requestDataAction
+      requestDataAction,
     } = this.props
 
     const isCurrent = recommendation && position === 'current'
@@ -30,22 +30,15 @@ class Card extends PureComponent {
 
     const options = {
       key: 'recommendations',
-      body: { isClicked: true }
+      body: { isClicked: true },
     }
 
     requestDataAction('PATCH', `recommendations/${recommendation.id}`, options)
   }
 
   render() {
-    const {
-      position,
-      recommendation,
-      width
-    } = this.props
-    const {
-      headerColor,
-      index
-    } = (recommendation || {})
+    const { position, recommendation, width } = this.props
+    const { headerColor, index } = recommendation || {}
     const iscurrent = position === 'current'
     const translateTo = index * width
     return (
@@ -65,7 +58,7 @@ class Card extends PureComponent {
 
 Card.defaultProps = {
   isFlipped: false,
-  recommendation: null
+  recommendation: null,
 }
 
 Card.propTypes = {
@@ -88,11 +81,28 @@ export default compose(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
       return {
-        recommendation: ownProps.position === 'current'
-          ? currentRecommendationSelector(state, offerId, mediationId, ownProps.position)
-          : ownProps.position === 'previous'
-            ? previousRecommendationSelector(state, offerId, mediationId, ownProps.position)
-            : ownProps.position === 'next' && nextRecommendationSelector(state, offerId, mediationId, ownProps.position),
+        recommendation:
+          ownProps.position === 'current'
+            ? currentRecommendationSelector(
+                state,
+                offerId,
+                mediationId,
+                ownProps.position
+              )
+            : ownProps.position === 'previous'
+              ? previousRecommendationSelector(
+                  state,
+                  offerId,
+                  mediationId,
+                  ownProps.position
+                )
+              : ownProps.position === 'next' &&
+                nextRecommendationSelector(
+                  state,
+                  offerId,
+                  mediationId,
+                  ownProps.position
+                ),
         isFlipped: state.verso.isFlipped,
       }
     },

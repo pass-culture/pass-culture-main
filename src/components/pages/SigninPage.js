@@ -21,9 +21,13 @@ class SigninPage extends Component {
     return (
       <Main name="sign-in" redBg>
         <div className="section form-container">
-          <h1 className="title is-1 is-italic">Bonjour&nbsp;!</h1>
+          <h1 className="title is-1 is-italic">
+Bonjour&nbsp;!
+          </h1>
           <h2 className="subtitle is-2 is-italic">
-            Identifiez-vous <br />
+            Identifiez-vous 
+            {' '}
+            <br />
             pour accéder aux offres.
           </h2>
 
@@ -33,7 +37,8 @@ class SigninPage extends Component {
             layout="vertical"
             name="user"
             handleSuccessNotification={null}
-            handleSuccessRedirect={() => '/decouverte'}>
+            handleSuccessRedirect={() => '/decouverte'}
+          >
             <Field
               autoComplete="email"
               className={inputClassName}

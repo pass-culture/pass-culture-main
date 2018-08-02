@@ -42,17 +42,9 @@ class VersoWrapper extends Component {
       currentRecommendation,
       headerColor,
     } = this.props
-    const {
-      mediation,
-      offer
-    } = (currentRecommendation || {})
-    const {
-      eventOrThing,
-      venue
-    } = (offer || {})
-    const {
-      tutoIndex
-    } = (mediation || {})
+    const { mediation, offer } = currentRecommendation || {}
+    const { eventOrThing, venue } = offer || {}
+    const { tutoIndex } = mediation || {}
 
     const contentStyle = {}
     if (typeof tutoIndex === 'number') {
@@ -64,18 +56,29 @@ class VersoWrapper extends Component {
 
     return (
       <div
-        ref={$el => { this.$el = $el }}
-        className={`verso-wrapper ${className || ''}`}>
+        ref={$el => {
+          this.$el = $el
+        }}
+        className={`verso-wrapper ${className || ''}`}
+      >
         <div
           className="verso-header"
           style={{ backgroundColor: headerColor }}
-          ref={$el => { this.$header = $el }}>
+          ref={$el => {
+            this.$header = $el
+          }}
+        >
           <h1>
             {' '}
             {get(eventOrThing, 'name')}
-            {author && ', de ' + author}{' '}
+            {author && `, de ${author}`}
+            {' '}
           </h1>
-          <h2> {get(venue, 'name')} </h2>
+          <h2> 
+            {' '}
+            {get(venue, 'name')}
+            {' '}
+          </h2>
         </div>
         {typeof tutoIndex !== 'number' && <VersoControl />}
         <div className="verso-content" style={{ ...contentStyle }}>
@@ -92,9 +95,13 @@ export default compose(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
       return {
-        currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
+        currentRecommendation: currentRecommendationSelector(
+          state,
+          offerId,
+          mediationId
+        ),
         isFlipped: state.verso.isFlipped,
-        draggable: state.verso.draggable
+        draggable: state.verso.draggable,
       }
     },
     { makeDraggable, makeUndraggable }

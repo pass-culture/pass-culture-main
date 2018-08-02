@@ -12,7 +12,9 @@ class FavoritesPage extends Component {
     return (
       <Main name="favorites" redBg footer={{ borderTop: true }} backButton>
         <header>
-          <h1>Mes favoris</h1>
+          <h1>
+Mes favoris
+          </h1>
         </header>
         {favorites.length > 0 && (
           <div>
@@ -25,7 +27,9 @@ class FavoritesPage extends Component {
         )}
         {favorites.length === 0 && (
           <div>
-            <p className="nothing">Pas encore de favoris.</p>
+            <p className="nothing">
+Pas encore de favoris.
+            </p>
             <p className="nothing">
               <Link to="/decouverte" className="button is-primary">
                 Allez-y !

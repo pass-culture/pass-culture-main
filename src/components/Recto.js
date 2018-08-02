@@ -9,19 +9,9 @@ import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
 import { IS_DEV } from '../utils/config'
 
-const Recto = ({
-  isFlipped,
-  recommendation,
-}) => {
-  const {
-    dateRead,
-    mediation,
-    id,
-    index,
-    isClicked,
-    offer,
-    thumbUrl,
-  } = (recommendation || {})
+const Recto = ({ isFlipped, recommendation }) => {
+  const { dateRead, mediation, id, index, isClicked, offer, thumbUrl } =
+    recommendation || {}
 
   const backgroundStyle = { backgroundImage: `url('${thumbUrl}')` }
   const thumbStyle = Object.assign({}, backgroundStyle)
@@ -34,10 +24,26 @@ const Recto = ({
       {IS_DEV && (
         <div className="debug debug-recto">
           <div>
-            {id} {offer && offer.id} {index}
+            {id} 
+            {' '}
+            {offer && offer.id} 
+            {' '}
+            {index}
           </div>
-          {dateRead && <div> déjà lue </div>}
-          {isClicked && <div> déjà retournée </div>}
+          {dateRead && (
+          <div>
+            {' '}
+déjà lue
+            {' '}
+          </div>
+)}
+          {isClicked && (
+          <div>
+            {' '}
+déjà retournée
+            {' '}
+          </div>
+)}
         </div>
       )}
     </div>
@@ -50,11 +56,13 @@ export default compose(
     const { mediationId, offerId } = ownProps.match.params
     return {
       isFlipped: state.verso.isFlipped,
-      recommendation: ownProps.position === 'current'
-        ? currentRecommendationSelector(state, offerId, mediationId)
-        : ownProps.position === 'previous'
-          ? previousRecommendationSelector(state, offerId, mediationId)
-          : ownProps.position === 'next' && nextRecommendationSelector(state, offerId, mediationId)
+      recommendation:
+        ownProps.position === 'current'
+          ? currentRecommendationSelector(state, offerId, mediationId)
+          : ownProps.position === 'previous'
+            ? previousRecommendationSelector(state, offerId, mediationId)
+            : ownProps.position === 'next' &&
+              nextRecommendationSelector(state, offerId, mediationId),
     }
   })
 )(Recto)

@@ -1,9 +1,6 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import {
-  Icon,
-  requestData
-} from 'pass-culture-shared'
+import { Icon, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
@@ -38,28 +35,22 @@ class Deck extends Component {
   }
 
   componentDidMount() {
-    const {
-      currentRecommendation,
-      recommendations
-    } = this.props
+    const { currentRecommendation, recommendations } = this.props
     if (!recommendations || !currentRecommendation) {
       // this.handleRefreshedData()
     }
     // this.handleSetDateRead()
   }
 
-  componentDidUpdate (previousProps) {
-    const {
-      currentRecommendation,
-      recommendations
-    } = this.props
+  componentDidUpdate(previousProps) {
+    const { currentRecommendation, recommendations } = this.props
     if (
-      (!recommendations ||
-        !previousProps.recommendations ||
-        recommendations === previousProps.recommendations ||
-        !currentRecommendation ||
-        !previousProps.currentRecommendation) ||
-        currentRecommendation.index === previousProps.currentRecommendation.index
+      !recommendations ||
+      !previousProps.recommendations ||
+      recommendations === previousProps.recommendations ||
+      !currentRecommendation ||
+      !previousProps.currentRecommendation ||
+      currentRecommendation.index === previousProps.currentRecommendation.index
     ) {
       // this.handleRefreshedData()
     }
@@ -135,8 +126,9 @@ class Deck extends Component {
   }
 
   handleRefreshedData = () => {
-    this.setState(previousState =>
-      ({ refreshKey: previousState.refreshKey + 1 }))
+    this.setState(previousState => ({
+      refreshKey: previousState.refreshKey + 1,
+    }))
   }
 
   handleSetDateRead(prevProps) {
@@ -176,11 +168,15 @@ class Deck extends Component {
       this.currentReadRecommendationId = currentRecommendation.id
       this.readTimeout = setTimeout(() => {
         if (currentRecommendation && !currentRecommendation.dateRead) {
-          dispatchRequestData('PATCH', `recommendations/${currentRecommendation.id}`, {
-            body: {
-              dateRead: moment().toISOString(),
-            },
-          })
+          dispatchRequestData(
+            'PATCH',
+            `recommendations/${currentRecommendation.id}`,
+            {
+              body: {
+                dateRead: moment().toISOString(),
+              },
+            }
+          )
           // this.setState({ isRead: true })
           clearTimeout(this.readTimeout)
           delete this.readTimeout
@@ -215,9 +211,7 @@ class Deck extends Component {
       previousRecommendation,
       width,
     } = this.props
-    const {
-      index
-    } = (currentRecommendation || {})
+    const { index } = currentRecommendation || {}
     const { refreshKey } = this.state
 
     const position = {
@@ -242,13 +236,9 @@ class Deck extends Component {
         axis={isFlipped ? 'none' : 'exclude'}
       >
         <div>
-          {previousRecommendation && (
-            <Card position="previous" />
-          )}
+          {previousRecommendation && <Card position="previous" />}
           <Card position="current" />
-          {nextRecommendation && (
-            <Card position="next" />
-          )}
+          {nextRecommendation && <Card position="next" />}
         </div>
       </Draggable>
     )
@@ -352,15 +342,13 @@ Deck.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
-  const currentRecommendation = currentRecommendationSelector(state,
-    offerId, mediationId)
-  const {
-    mediation
-  } = (currentRecommendation || {})
-  const {
-    thumbCount,
-    tutoIndex
-  } = (mediation || {})
+  const currentRecommendation = currentRecommendationSelector(
+    state,
+    offerId,
+    mediationId
+  )
+  const { mediation } = currentRecommendation || {}
+  const { thumbCount, tutoIndex } = mediation || {}
 
   const recommendations = recommendationsSelector(state)
 
@@ -368,19 +356,26 @@ const mapStateToProps = (state, ownProps) => {
     currentRecommendation,
     draggable: state.verso.draggable,
     isEmpty: get(state, 'loading.config.isEmpty'),
-    isFlipDisabled: !currentRecommendation ||
+    isFlipDisabled:
+      !currentRecommendation ||
       (typeof tutoIndex === 'number' && thumbCount === 1),
     isFlipped: state.verso.isFlipped,
-    nextLimit: recommendations &&
+    nextLimit:
+      recommendations &&
       (PREVIOUS_NEXT_LIMIT >= recommendations.length - 1
         ? recommendations.length - 1
         : recommendations.length - 1 - PREVIOUS_NEXT_LIMIT),
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
-    previousLimit: recommendations &&
-    (PREVIOUS_NEXT_LIMIT < recommendations.length - 1
-      ? PREVIOUS_NEXT_LIMIT + 1
-      : 0),
-    previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
+    previousLimit:
+      recommendations &&
+      (PREVIOUS_NEXT_LIMIT < recommendations.length - 1
+        ? PREVIOUS_NEXT_LIMIT + 1
+        : 0),
+    previousRecommendation: previousRecommendationSelector(
+      state,
+      offerId,
+      mediationId
+    ),
     recommendations,
     unFlippable: state.verso.unFlippable,
   }
@@ -395,11 +390,14 @@ const mapSizeToProps = ({ width, height }) => ({
 const mapDispatchToProps = {
   dispatchFlip: flip,
   dispatchRequestData: requestData,
-  dispatchUnFlip: unFlip
+  dispatchUnFlip: unFlip,
 }
 
 export default compose(
   withRouter,
   withSizes(mapSizeToProps),
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Deck)

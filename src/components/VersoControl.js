@@ -1,9 +1,5 @@
 import get from 'lodash.get'
-import {
-  Icon,
-  requestData,
-  showModal
-} from 'pass-culture-shared'
+import { Icon, requestData, showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -38,14 +34,8 @@ class VersoControl extends Component {
   }
 
   onClickJyVais = event => {
-    const {
-      currentRecommendation,
-      offer,
-      showModal
-    } = this.props
-    const {
-      isFinished
-    } = (currentRecommendation || {})
+    const { currentRecommendation, offer, showModal } = this.props
+    const { isFinished } = currentRecommendation || {}
 
     if (isFinished) return
     if (offer) {
@@ -60,35 +50,26 @@ class VersoControl extends Component {
   }
 
   render() {
-    const {
-      bookings,
-      offer,
-      currentRecommendation
-    } = this.props
-    const {
-      isFinished
-    } = (currentRecommendation || {})
-    const {
-      venue
-    } = (offer || {})
-    const {
-      managingOfferer
-    } = (venue || {})
+    const { bookings, offer, currentRecommendation } = this.props
+    const { isFinished } = currentRecommendation || {}
+    const { venue } = offer || {}
+    const { managingOfferer } = venue || {}
     const isFavorite = currentRecommendation && currentRecommendation.isFavorite
     return (
       <ul className="verso-control">
         <li>
           <small className="pass-label">
-            Mon Pass
+Mon Pass
           </small>
           <span className="pass-value">
-            ——€
+——€
           </span>
         </li>
         <li>
           <button
             className="button is-secondary"
-            onClick={this.onClickFavorite}>
+            onClick={this.onClickFavorite}
+          >
             <Icon
               alt={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
               svg={isFavorite ? 'ico-like-w-on' : 'ico-like-w'}
@@ -99,7 +80,8 @@ class VersoControl extends Component {
           <button
             disabled
             className="button is-secondary"
-            onClick={this.onClickDisable}>
+            onClick={this.onClickDisable}
+          >
             <Icon svg="ico-share-w" alt="Partager" />
           </button>
         </li>
@@ -107,7 +89,8 @@ class VersoControl extends Component {
           {bookings.length > 0 ? (
             <Link
               to="/reservations"
-              className="button is-primary is-go is-medium">
+              className="button is-primary is-go is-medium"
+            >
               <Icon name="Check" />
               {' Réservé'}
             </Link>
@@ -115,7 +98,8 @@ class VersoControl extends Component {
             <Finishable finished={isFinished}>
               <button
                 className="button is-primary is-go is-medium"
-                onClick={this.onClickJyVais}>
+                onClick={this.onClickJyVais}
+              >
                 <Price
                   value={get(offer, 'price') || get(offer, 'displayPrice')}
                   free="——"
@@ -133,17 +117,23 @@ class VersoControl extends Component {
 
 export default compose(
   withRouter,
-  connect((state, ownProps) => {
-    const { mediationId, offerId } = ownProps.match.params
-    const currentRecommendation = currentRecommendationSelector(state, offerId, mediationId)
-    const eventOrThingId = get(currentRecommendation, 'offer.eventOrThing.id')
-    return {
-      bookings: bookingsSelector(state, eventOrThingId),
-      currentRecommendation
+  connect(
+    (state, ownProps) => {
+      const { mediationId, offerId } = ownProps.match.params
+      const currentRecommendation = currentRecommendationSelector(
+        state,
+        offerId,
+        mediationId
+      )
+      const eventOrThingId = get(currentRecommendation, 'offer.eventOrThing.id')
+      return {
+        bookings: bookingsSelector(state, eventOrThingId),
+        currentRecommendation,
+      }
+    },
+    {
+      requestData,
+      showModal,
     }
-  },
-  {
-    requestData,
-    showModal,
-  })
+  )
 )(VersoControl)

@@ -28,13 +28,19 @@ class ProfilePage extends Component {
       <Main
         name="profile"
         footer={{ borderTop: true, colored: true }}
-        backButton>
-        <header>Mon profil</header>
-        <h2 className="title is-2">Bienvenue !</h2>
+        backButton
+      >
+        <header>
+Mon profil
+        </header>
+        <h2 className="title is-2">
+Bienvenue !
+        </h2>
         <button
           className="button is-default"
           disabled={!user}
-          onClick={this.onSignOutClick}>
+          onClick={this.onSignOutClick}
+        >
           Déconnexion
         </button>
       </Main>

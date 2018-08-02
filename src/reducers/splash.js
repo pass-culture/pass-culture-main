@@ -23,11 +23,11 @@ function splash(state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function closeSplash(action = {}) {
+export function closeSplash() {
   return { type: CLOSE_SPLASH }
 }
 
-export function showSplash(action = {}) {
+export function showSplash() {
   return { type: SHOW_SPLASH }
 }
 

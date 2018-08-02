@@ -1,9 +1,6 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import {
-  capitalize,
-  Icon
-} from 'pass-culture-shared'
+import { capitalize, Icon } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
 import Dotdotdot from 'react-dotdotdot'
@@ -14,31 +11,12 @@ import recommendationSelector from '../selectors/recommendation'
 import { getTimezone } from '../utils/timezone'
 
 const BookingItem = ({ booking, recommendation }) => {
-  const {
-    stock,
-    token
-  } = (booking || {})
-  const {
-    offer,
-    offerId,
-  } = (stock || {})
-  const {
-    mediation,
-    mediationId,
-    thumbUrl
-  } = (recommendation || {})
-  const {
-    eventOccurence,
-    eventOrThing,
-    venue
-  } = (offer || {})
-  const {
-    name
-  } = (eventOrThing || {})
-  const {
-    departementCode
-  } = (venue || {})
-
+  const { stock, token } = booking || {}
+  const { offer, offerId } = stock || {}
+  const { mediation, mediationId, thumbUrl } = recommendation || {}
+  const { eventOccurence, eventOrThing, venue } = offer || {}
+  const { name } = eventOrThing || {}
+  const { departementCode } = venue || {}
 
   const tz = getTimezone(departementCode)
   const date = get(eventOccurence, 'beginningDatetime')
@@ -54,13 +32,11 @@ const BookingItem = ({ booking, recommendation }) => {
               </Dotdotdot>
             </h5>
             <span>
-              {
-                capitalize(
-                  moment(date)
-                    .tz(tz)
-                    .format('dddd DD/MM/YYYY à H:mm')
-                )
-              }
+              {capitalize(
+                moment(date)
+                  .tz(tz)
+                  .format('dddd DD/MM/YYYY à H:mm')
+              )}
             </span>
           </div>
           <div className="token">
@@ -75,8 +51,9 @@ const BookingItem = ({ booking, recommendation }) => {
   )
 }
 
-export default connect(
-  (state, ownProps) => ({
-    recommendation: recommendationSelector(state, ownProps.booking.recommendationId)
-  })
-)(BookingItem)
+export default connect((state, ownProps) => ({
+  recommendation: recommendationSelector(
+    state,
+    ownProps.booking.recommendationId
+  ),
+}))(BookingItem)

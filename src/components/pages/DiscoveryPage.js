@@ -31,7 +31,7 @@ class DiscoveryPage extends Component {
         .filter(param => param)
         .join('&')
 
-      requestData('PUT', 'recommendations?' + query, {
+      requestData('PUT', `recommendations?${query}`, {
         handleSuccess: (state, action) => {
           if (get(action, 'data.length')) {
             if (!offerId) {
@@ -118,7 +118,11 @@ const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
   return {
     backButton: ownProps.location.search.indexOf('to=verso') > -1,
-    currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
+    currentRecommendation: currentRecommendationSelector(
+      state,
+      offerId,
+      mediationId
+    ),
     isMenuOnTop: state.loading.isActive || get(state, 'loading.config.isEmpty'),
     recommendations: state.data.recommendations,
   }

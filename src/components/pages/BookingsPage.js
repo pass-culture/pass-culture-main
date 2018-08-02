@@ -12,12 +12,11 @@ import { bookingNormalizer } from '../../utils/normalizers'
 
 class BookingsPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    this.props.requestData('GET',
-      'bookings', {
-        handleSuccess,
-        handleFail,
-        normalizer: bookingNormalizer
-      })
+    this.props.requestData('GET', 'bookings', {
+      handleSuccess,
+      handleFail,
+      normalizer: bookingNormalizer,
+    })
   }
 
   render() {
@@ -32,13 +31,13 @@ class BookingsPage extends Component {
       >
         <header>
           <h1>
-            Mes réservations
+Mes réservations
           </h1>
         </header>
         {soonBookings.length > 0 && (
           <div>
             <h4>
-              C'est bientôt !
+C'est bientôt !
             </h4>
             <ul className="bookings">
               {soonBookings.map(booking => (
@@ -50,7 +49,7 @@ class BookingsPage extends Component {
         {otherBookings.length > 0 && (
           <div>
             <h4>
-              Réservations
+Réservations
             </h4>
             <ul className="bookings">
               {otherBookings.map(booking => (
@@ -63,7 +62,7 @@ class BookingsPage extends Component {
           otherBookings.length === 0 && (
             <div>
               <p className="nothing">
-                Pas encore de réservation.
+Pas encore de réservation.
               </p>
               <p className="nothing">
                 <Link to="/decouverte" className="button is-primary">

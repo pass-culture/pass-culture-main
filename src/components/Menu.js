@@ -37,9 +37,13 @@ class Menu extends Component {
             {user && user.publicName}
           </div>
           <div className="account">
-            <div>Mon Pass</div>
             <div>
-              <strong>——&nbsp;€</strong>
+Mon Pass
+            </div>
+            <div>
+              <strong>
+——&nbsp;€
+              </strong>
             </div>
           </div>
         </div>

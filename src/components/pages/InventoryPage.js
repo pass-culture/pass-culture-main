@@ -4,9 +4,11 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 class InventoryPage extends Component {
-  render = () => {
-    return <main className="page">PINS</main>
-  }
+  render = () => (
+    <main className="page">
+PINS
+    </main>
+)
 }
 
 export default connect(

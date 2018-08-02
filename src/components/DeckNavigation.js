@@ -10,31 +10,20 @@ import Finishable from './layout/Finishable'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
-
 const DeckNavigation = ({
   currentRecommendation,
   flipHandler,
   handleGoNext,
   handleGoPrevious,
-  transitionTimeout
+  transitionTimeout,
 }) => {
-  const {
-    distance,
-    headerColor,
-    isFinished,
-    mediation,
-    offer
-  } = (currentRecommendation || {})
-  const {
-    stock
-  } = (offer || {})
-  const {
-    price
-  } = (stock || {})
-  const {
-    tutoIndex
-  } = (mediation || {})
-  const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor || '#000'} 30%,${headerColor || '#000'} 100%)`
+  const { distance, headerColor, isFinished, mediation, offer } =
+    currentRecommendation || {}
+  const { stock } = offer || {}
+  const { price } = stock || {}
+  const { tutoIndex } = mediation || {}
+  const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor ||
+    '#000'} 30%,${headerColor || '#000'} 100%)`
   return (
     <div id="deck-navigation" style={{ background: backgroundGradient }}>
       <div
@@ -114,7 +103,11 @@ export default compose(
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
     return {
-      currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
+      currentRecommendation: currentRecommendationSelector(
+        state,
+        offerId,
+        mediationId
+      ),
     }
   })
 )(DeckNavigation)

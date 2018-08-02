@@ -10,16 +10,9 @@ import VersoWrapper from './VersoWrapper'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { THUMBS_URL } from '../utils/config'
 
-const Verso = ({
-  currentRecommendation,
-  isFlipped,
-}) => {
-  const {
-    mediation
-  } = (currentRecommendation || {})
-  const {
-    tutoIndex
-  } = (mediation || {})
+const Verso = ({ currentRecommendation, isFlipped }) => {
+  const { mediation } = currentRecommendation || {}
+  const { tutoIndex } = mediation || {}
 
   return (
     <div
@@ -50,7 +43,11 @@ export default compose(
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
     return {
-      currentRecommendation: currentRecommendationSelector(state, offerId, mediationId),
+      currentRecommendation: currentRecommendationSelector(
+        state,
+        offerId,
+        mediationId
+      ),
       isFlipped: state.verso.isFlipped,
     }
   })
