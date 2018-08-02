@@ -7,6 +7,7 @@ import { NavLink } from 'react-router-dom'
 import Main from '../layout/Main'
 import OffererItem from '../OffererItem'
 import offerersSelector from '../../selectors/offerers'
+import { offererNormalizer } from '../../utils/normalizers'
 
 class OfferersPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
@@ -14,19 +15,7 @@ class OfferersPage extends Component {
     requestData('GET', 'offerers', {
       handleSuccess,
       handleFail,
-      normalizer: {
-        managedVenues: {
-          key: 'venues',
-          normalizer: {
-            eventOccurences: {
-              key: 'eventOccurences',
-              normalizer: {
-                event: 'occasions',
-              },
-            },
-          },
-        },
-      },
+      normalizer: offererNormalizer,
     })
   }
 

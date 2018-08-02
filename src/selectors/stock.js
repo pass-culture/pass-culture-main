@@ -1,32 +1,31 @@
+import get from 'lodash.get'
+import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
-import offersSelector from './offers'
+import stocksSelector from './stocks'
 
 export default createCachedSelector(
-  (state, venueId, eventId) => offersSelector(state, venueId, eventId),
-  offers =>
-    offers.reduce(
-      (aggreged, offer) => ({
-        available: aggreged.available + offer.available,
-        groupSizeMin: aggreged.groupSizeMin
-          ? Math.min(aggreged.groupSizeMin, offer.groupSize)
-          : offer.groupSize,
-        groupSizeMax: aggreged.groupSizeMax
-          ? Math.max(aggreged.groupSizeMax, offer.groupSize)
-          : offer.groupSize,
-        priceMin: aggreged.priceMin
-          ? Math.min(aggreged.priceMin, offer.price)
-          : offer.price,
-        priceMax: aggreged.priceMax
-          ? Math.max(aggreged.priceMax, offer.price)
-          : offer.price,
-      }),
-      {
-        available: 0,
-        groupSizeMin: 0,
-        groupSizeMax: 0,
-        priceMin: 0,
-        priceMax: 0,
-      }
+  state => stocksSelector(state),
+  (state, eventOccurrenceId) => eventOccurrenceId,
+  (state, eventOccurrenceId, offererId) => offererId,
+  (stocks, eventOccurrenceId, offererId) => {
+    const stock = stocks.find(
+      stock => stock.eventOccurrenceId === eventOccurrenceId
     )
-)((state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`)
+    if (stock) {
+      return Object.assign(
+        {
+          bookingLimitDatetime: moment(get(stock, 'bookingLimitDatetime'))
+            .add(1, 'day')
+            .toISOString(),
+          offererId,
+        },
+        stock
+      )
+    }
+    return {
+      eventOccurrenceId,
+      offererId,
+    }
+  }
+)((state, eventOccurrenceId) => eventOccurrenceId || '')

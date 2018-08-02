@@ -17,11 +17,11 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import MediationManager from '../MediationManager'
-import OccurenceManager from '../OccurenceManager'
+import OccurrenceManager from '../OccurrenceManager'
 import Main from '../layout/Main'
 import eventSelector from '../../selectors/event'
-import occasionSelector from '../../selectors/occasion'
-import occurencesSelector from '../../selectors/occurences'
+import occurrencesSelector from '../../selectors/occurrences'
+import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
@@ -31,10 +31,10 @@ import typesSelector from '../../selectors/types'
 import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
-import { occasionNormalizer } from '../../utils/normalizers'
+import { offerNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
 
-class OccasionPage extends Component {
+class OfferPage extends Component {
   constructor() {
     super()
     this.state = {
@@ -48,15 +48,15 @@ class OccasionPage extends Component {
     const {
       location: { search },
       match: {
-        params: { occasionId },
+        params: { offerId },
       },
-      occasion,
+      offer,
       type,
     } = nextProps
-    const { eventId, thingId } = occasion || {}
+    const { eventId, thingId } = offer || {}
 
     const isEdit = search.indexOf('modifie') > -1
-    const isNew = occasionId === 'nouveau'
+    const isNew = offerId === 'nouveau'
     const isEventType = get(type, 'type') === 'Event' || eventId
     const isReadOnly = !isNew && !isEdit
 
@@ -75,21 +75,21 @@ class OccasionPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       match: {
-        params: { occasionId },
+        params: { offerId },
       },
       history,
-      occasion,
+      offer,
       offerers,
       providers,
       requestData,
       showModal,
       types,
     } = this.props
-    !occasion &&
-      occasionId !== 'nouveau' &&
-      requestData('GET', `occasions/${occasionId}`, {
-        key: 'occasions',
-        normalizer: occasionNormalizer,
+    !offer &&
+      offerId !== 'nouveau' &&
+      requestData('GET', `offers/${offerId}`, {
+        key: 'offers',
+        normalizer: offerNormalizer,
       })
     offerers.length === 0 &&
       requestData('GET', 'offerers', {
@@ -124,7 +124,7 @@ class OccasionPage extends Component {
 
   handleSuccess = (state, action) => {
     const { data, method } = action
-    const { history, occasion, showNotification, venue } = this.props
+    const { history, offer, showNotification, venue } = this.props
     const { isEventType } = this.state
 
     showNotification({
@@ -134,56 +134,55 @@ class OccasionPage extends Component {
 
     // PATCH
     if (method === 'PATCH') {
-      history.push(`/offres/${occasion.id}`)
+      history.push(`/offres/${offer.id}`)
       return
     }
 
     // POST
     if (isEventType && method === 'POST') {
-      const { occasions } = data || {}
-      const occasion =
-        occasions && occasions.find(o => o.venueId === get(venue, 'id'))
-      if (!occasion) {
+      const { offers } = data || {}
+      const offer = offers && offers.find(o => o.venueId === get(venue, 'id'))
+      if (!offer) {
         console.warn(
-          'Something wrong with returned data, we should retrieve the created occasion here'
+          'Something wrong with returned data, we should retrieve the created offer here'
         )
         return
       }
-      history.push(`/offres/${occasion.id}?gestion`)
+      history.push(`/offres/${offer.id}?gestion`)
     }
   }
 
-  handleShowOccurencesModal = () => {
+  handleShowOccurrencesModal = () => {
     const {
       location: { search },
       showModal,
     } = this.props
     search.indexOf('gestion') > -1
-      ? showModal(<OccurenceManager />, {
+      ? showModal(<OccurrenceManager />, {
           isUnclosable: true,
         })
       : closeModal()
   }
 
   componentDidMount() {
-    this.handleShowOccurencesModal()
+    this.handleShowOccurrencesModal()
   }
 
   componentDidUpdate(prevProps) {
     const {
       location: { pathname, search },
-      occasion,
-      occurences,
+      offer,
+      occurrences,
     } = this.props
 
     if (search.indexOf('gestion') > -1) {
       if (
-        prevProps.occasion !== occasion ||
-        prevProps.occurences !== occurences ||
+        prevProps.offer !== offer ||
+        prevProps.occurrences !== occurrences ||
         prevProps.location.pathname !== pathname ||
         prevProps.location.search !== search
       ) {
-        this.handleShowOccurencesModal()
+        this.handleShowOccurrencesModal()
       }
     }
   }
@@ -192,8 +191,8 @@ class OccasionPage extends Component {
     const {
       event,
       location: { search },
-      occasion,
-      occurences,
+      occurrences,
+      offer,
       offerer,
       offerers,
       thing,
@@ -221,7 +220,7 @@ class OccasionPage extends Component {
           </p>
           <Form
             action={apiPath}
-            name="occasion"
+            name="offer"
             handleSuccess={this.handleSuccess}
             handleFail={this.handleFail}
             patch={event || thing}
@@ -244,18 +243,18 @@ class OccasionPage extends Component {
                 {event && (
                   <div className="field form-field is-horizontal">
                     <div className="field-label">
-                      <label className="label" htmlFor="input_occasions_name">
+                      <label className="label" htmlFor="input_offers_name">
                         <div className="subtitle">Dates :</div>
                       </label>
                     </div>
                     <div className="field-body">
                       <div className="field">
                         <div className="nb-dates">
-                          {pluralize(get(occurences, 'length'), 'date')}
+                          {pluralize(get(occurrences, 'length'), 'date')}
                         </div>
                         <NavLink
                           className="button is-primary is-outlined is-small"
-                          to={`/offres/${get(occasion, 'id')}?gestion`}>
+                          to={`/offres/${get(offer, 'id')}?gestion`}>
                           <span className="icon">
                             <Icon svg="ico-calendar" />
                           </span>
@@ -354,14 +353,14 @@ class OccasionPage extends Component {
               <div className="control">
                 {isReadOnly ? (
                   <NavLink
-                    to={`/offres/${get(occasion, 'id')}?modifie`}
+                    to={`/offres/${get(offer, 'id')}?modifie`}
                     className="button is-secondary is-medium">
                     Modifier l'offre
                   </NavLink>
                 ) : (
                   <CancelButton
                     className="button is-secondary is-medium"
-                    to={isNew ? '/offres' : `/offres/${get(occasion, 'id')}`}>
+                    to={isNew ? '/offres' : `/offres/${get(offer, 'id')}`}>
                     Annuler
                   </CancelButton>
                 )}
@@ -393,28 +392,28 @@ export default compose(
 
       const providers = providersSelector(state)
 
-      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
+      const offer = offerSelector(state, ownProps.match.params.offerId)
 
-      const eventId = get(occasion, 'eventId')
+      const eventId = get(offer, 'eventId')
       const event = eventSelector(state, eventId)
 
-      const thingId = get(occasion, 'thingId')
+      const thingId = get(offer, 'thingId')
       const thing = thingSelector(state, thingId)
 
       const types = typesSelector(state)
 
       const typeValue =
-        get(state, 'form.occasion.type') ||
+        get(state, 'form.offer.type') ||
         get(event, 'type') ||
         get(thing, 'type')
 
       const type = typeSelector(state, typeValue)
 
-      let offererId = get(state, 'form.occasion.offererId') || search.offererId
+      let offererId = get(state, 'form.offer.offererId') || search.offererId
 
       const venues = venuesSelector(state, offererId)
       const venueId =
-        get(state, 'form.occasion.venueId') ||
+        get(state, 'form.offer.venueId') ||
         search.venueId ||
         get(event, 'venueId') ||
         get(thing, 'venueId')
@@ -425,7 +424,7 @@ export default compose(
       const offerers = offerersSelector(state)
       const offerer = offererSelector(state, offererId)
 
-      const occurences = occurencesSelector(state, venueId, eventId)
+      const occurrences = occurrencesSelector(state, venueId, eventId)
 
       const user = state.user
 
@@ -434,8 +433,8 @@ export default compose(
         providers,
         event,
         thing,
-        occasion,
-        occurences,
+        occurrences,
+        offer,
         venues,
         venue,
         offerers,
@@ -452,4 +451,4 @@ export default compose(
       showNotification,
     }
   )
-)(OccasionPage)
+)(OfferPage)

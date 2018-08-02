@@ -14,26 +14,26 @@ import Thumb from './layout/Thumb'
 import eventSelector from '../selectors/event'
 import maxDateSelector from '../selectors/maxDate'
 import mediationsSelector from '../selectors/mediations'
-import occurencesSelector from '../selectors/occurences'
+import occurrencesSelector from '../selectors/occurrences'
 import stockSelector from '../selectors/stock'
 import thingSelector from '../selectors/thing'
 import thumbUrlSelector from '../selectors/thumbUrl'
 import typeSelector from '../selectors/type'
-import { occasionNormalizer } from '../utils/normalizers'
+import { offerNormalizer } from '../utils/normalizers'
 import { pluralize } from '../utils/string'
 
 class OccasionItem extends Component {
   onDeactivateClick = event => {
-    const { occasion, requestData } = this.props
-    const { id, isActive } = occasion || {}
-    requestData('PATCH', `occasions/${id}`, {
+    const { offer, requestData } = this.props
+    const { id, isActive } = offer || {}
+    requestData('PATCH', `offers/${id}`, {
       body: {
-        occasion: {
+        offer: {
           isActive: !isActive,
         },
       },
-      key: 'occasions',
-      normalizer: occasionNormalizer,
+      key: 'offers',
+      normalizer: offerNormalizer,
       isMergingDatum: true,
       isMutatingDatum: true,
       isMutaginArray: false,
@@ -46,8 +46,8 @@ class OccasionItem extends Component {
       location: { search },
       maxDate,
       mediations,
-      occasion,
-      occurences,
+      offer,
+      occurrences,
       stock,
       thing,
       thumbUrl,
@@ -60,12 +60,12 @@ class OccasionItem extends Component {
     const mediationsLength = get(mediations, 'length')
 
     return (
-      <li className={classnames('occasion-item', { active: isActive })}>
+      <li className={classnames('offer-item', { active: isActive })}>
         <Thumb alt="offre" src={thumbUrl} />
         <div className="list-content">
           <NavLink
             className="name"
-            to={`/offres/${occasion.id}${search}`}
+            to={`/offres/${offer.id}${search}`}
             title={name}>
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
@@ -83,8 +83,8 @@ class OccasionItem extends Component {
               <li>
                 <NavLink
                   className="has-text-primary"
-                  to={`/offres/${occasion.id}?gestion`}>
-                  {pluralize(get(occurences, 'length'), 'dates')}
+                  to={`/offres/${offer.id}?gestion`}>
+                  {pluralize(get(occurrences, 'length'), 'dates')}
                 </NavLink>
               </li>
             )}
@@ -128,7 +128,7 @@ class OccasionItem extends Component {
           <ul className="actions">
             <li>
               <NavLink
-                to={`/offres/${occasion.id}${
+                to={`/offres/${offer.id}${
                   mediationsLength ? '' : `/accroches/nouveau${search}`
                 }`}
                 className={`button is-small ${
@@ -158,7 +158,7 @@ class OccasionItem extends Component {
                 )}
               </button>
               <NavLink
-                to={`/offres/${occasion.id}`}
+                to={`/offres/${offer.id}`}
                 className="button is-secondary is-small">
                 <Icon svg="ico-pen-r" />
               </NavLink>
@@ -179,11 +179,11 @@ export default compose(
   connect(
     () => {
       return (state, ownProps) => {
-        const { eventId, thingId, venueId } = ownProps.occasion
+        const { eventId, thingId, venueId } = ownProps.offer
         return {
           event: eventSelector(state, eventId),
           mediations: mediationsSelector(state, eventId, thingId),
-          occurences: occurencesSelector(state, venueId, eventId),
+          occurrences: occurrencesSelector(state, venueId, eventId),
           maxDate: maxDateSelector(state, venueId, eventId),
           stock: stockSelector(state, venueId, eventId),
           thing: thingSelector(state, thingId),

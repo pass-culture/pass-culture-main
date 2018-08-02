@@ -2,16 +2,16 @@ import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
 export default createCachedSelector(
-  state => state.data.eventOccurences,
+  state => state.data.eventOccurrences,
   (state, venueId) => venueId,
   (state, venueId, eventId) => eventId,
-  (eventOccurences, venueId, eventId) => {
+  (eventOccurrences, venueId, eventId) => {
     if (venueId)
-      eventOccurences = eventOccurences.filter(o => o.venueId === venueId)
+      eventOccurrences = eventOccurrences.filter(o => o.venueId === venueId)
     if (eventId)
-      eventOccurences = eventOccurences.filter(o => o.eventId === eventId)
+      eventOccurrences = eventOccurrences.filter(o => o.eventId === eventId)
 
-    return eventOccurences.sort(
+    return eventOccurrences.sort(
       (o1, o2) =>
         moment(o2.beginningDatetime).unix() -
         moment(o1.beginningDatetime).unix()

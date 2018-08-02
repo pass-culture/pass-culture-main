@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import mediationsSelector from '../selectors/mediations'
-import occasionSelector from '../selectors/occasion'
+import offerSelector from '../selectors/offer'
 import { THUMBS_URL } from '../utils/config'
 
 const mediationExplanation = `
@@ -17,7 +17,7 @@ const mediationExplanation = `
   Les accroches font la **spécificité du Pass Culture**. Prenez le temps de les choisir avec soin !
 `
 
-const MediationManager = ({ mediations, occasion }) => {
+const MediationManager = ({ mediations, offer }) => {
   const mediationsLength = get(mediations, 'length')
 
   return (
@@ -34,12 +34,12 @@ const MediationManager = ({ mediations, occasion }) => {
         ))}
       </ul>
       <p>
-        {occasion && (
+        {offer && (
           <NavLink
             className={`button is-primary ${
               mediationsLength > 0 ? 'is-outlined' : ''
             }`}
-            to={`/offres/${get(occasion, 'id')}/accroches/nouveau`}>
+            to={`/offres/${get(offer, 'id')}/accroches/nouveau`}>
             <span className="icon">
               <Icon svg={mediationsLength > 0 ? 'ico-stars' : 'ico-stars-w'} />
             </span>
@@ -54,11 +54,11 @@ const MediationManager = ({ mediations, occasion }) => {
 export default compose(
   withRouter,
   connect((state, ownProps) => {
-    const occasion = occasionSelector(state, ownProps.match.params.occasionId)
-    const { eventId, thingId } = occasion || {}
+    const offer = offerSelector(state, ownProps.match.params.offerId)
+    const { eventId, thingId } = offer || {}
     return {
       mediations: mediationsSelector(state, eventId, thingId),
-      occasion,
+      offer,
     }
   })
 )(MediationManager)

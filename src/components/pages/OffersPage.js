@@ -11,13 +11,13 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OccasionItem from '../OccasionItem'
+import OfferItem from '../OfferItem'
 import Main from '../layout/Main'
-import occasionsSelector from '../../selectors/occasions'
+import offersSelector from '../../selectors/offers'
 import offererSelector from '../../selectors/offerer'
 import searchSelector from '../../selectors/search'
 import venueSelector from '../../selectors/venue'
-import { occasionNormalizer } from '../../utils/normalizers'
+import { offerNormalizer } from '../../utils/normalizers'
 import { objectToQueryString } from '../../utils/string'
 
 const ASC = 'asc'
@@ -30,7 +30,7 @@ const defaultQueryParams = {
   offererId: null,
 }
 
-class OccasionsPage extends Component {
+class OffersPage extends Component {
   constructor() {
     super()
     this.state = {
@@ -56,7 +56,7 @@ class OccasionsPage extends Component {
     const { requestData, types } = this.props
     requestData(
       'GET',
-      `occasions?${objectToQueryString(
+      `offers?${objectToQueryString(
         Object.assign({}, this.state.queryParams, { page: this.state.page })
       )}`,
       {
@@ -67,7 +67,7 @@ class OccasionsPage extends Component {
           })
         },
         handleFail,
-        normalizer: occasionNormalizer,
+        normalizer: offerNormalizer,
       }
     )
     types.length === 0 && requestData('GET', 'types')
@@ -77,7 +77,7 @@ class OccasionsPage extends Component {
     const newPath = `${this.props.location.pathname}?${objectToQueryString(
       Object.assign({}, this.state.queryParams, newValue)
     )}`
-    this.props.assignData({ occasions: [] })
+    this.props.assignData({ offers: [] })
     this.setState({
       page: 1,
     })
@@ -108,7 +108,7 @@ class OccasionsPage extends Component {
   }
 
   render() {
-    const { occasions, offerer, venue } = this.props
+    const { offers, offerer, venue } = this.props
 
     const { search, order_by } = this.state.queryParams || {}
 
@@ -208,9 +208,9 @@ class OccasionsPage extends Component {
             </div>
             {
               <InfiniteScroller
-                className="occasions-list main-list"
+                className="offers-list main-list"
                 handleLoadMore={this.handleDataRequest}>
-                {occasions.map(o => <OccasionItem key={o.id} occasion={o} />)}
+                {offers.map(o => <OfferItem key={o.id} offer={o} />)}
               </InfiniteScroller>
             }
           </div>
@@ -226,7 +226,7 @@ export default compose(
     (state, ownProps) => {
       const queryParams = searchSelector(state, ownProps.location.search)
       return {
-        occasions: occasionsSelector(
+        offers: offersSelector(
           state,
           queryParams.offererId,
           queryParams.venueId
@@ -240,4 +240,4 @@ export default compose(
     },
     { showModal, requestData, assignData }
   )
-)(OccasionsPage)
+)(OffersPage)

@@ -1,9 +1,8 @@
 {
   "data": {
     "events": [],
-    "eventOccurences": [],
+    "eventOccurrences": [],
     "mediations": [],
-    "occasions": [],
     "offers": [],
     "offerers": [
       {
@@ -335,6 +334,7 @@
         "thumbCount": 0
       }
     ],
+    "stocks": [],
     "venueProviders": [],
     "users": [
       {

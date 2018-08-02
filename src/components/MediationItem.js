@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
@@ -5,30 +6,15 @@ import { NavLink } from 'react-router-dom'
 import { THUMBS_URL } from '../utils/config'
 
 class MediationItem extends Component {
-  constructor() {
-    super()
-    this.state = {
-      routePath: null,
-      thumbUrl: null,
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps) {
-    const { id, occasionRoutePath } = nextProps
-    return {
-      routePath: `${occasionRoutePath}/accroches/${id}`,
-      thumbUrl: `${THUMBS_URL}/mediations/${id}`,
-    }
-  }
-
   render() {
-    const { backText } = this.props
+    const { mediation, offer } = this.props
+    const { backText, id } = mediation || {}
     const { routePath, thumbUrl } = this.state
     return (
       <article className="mediation-item media box">
         <figure className="media-left">
           <p className="image is-96x96">
-            <img alt="thumbnail" src={thumbUrl} />
+            <img alt="thumbnail" src={`${THUMBS_URL}/mediations/${id}`} />
           </p>
         </figure>
         <div className="media-content">
@@ -39,7 +25,7 @@ class MediationItem extends Component {
           </div>
           <nav className="level is-mobile">
             <div className="level-left">
-              <NavLink to={routePath}>
+              <NavLink to={`/offers/${get(offer, 'id')}/accroches/${id}`}>
                 <button className="button is-primary level-item">
                   Modifier
                 </button>
