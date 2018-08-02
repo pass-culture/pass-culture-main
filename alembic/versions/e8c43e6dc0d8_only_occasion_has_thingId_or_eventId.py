@@ -1,7 +1,6 @@
 """Occasion is the only table to reference things and events
 
 Revision ID: e8c43e6dc0d8
-Revises: 11d603462200
 Create Date: 2018-07-26 11:52:17.853134
 
 """
@@ -11,7 +10,7 @@ import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 
 revision = 'e8c43e6dc0d8'
-down_revision = None
+down_revision = '1ccdca2e1e6e'
 branch_labels = None
 depends_on = None
 

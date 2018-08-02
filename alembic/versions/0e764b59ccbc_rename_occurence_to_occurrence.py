@@ -34,7 +34,7 @@ def upgrade():
         'ALTER TABLE event_occurrence RENAME CONSTRAINT "event_occurence_lastProviderId_fkey" TO "event_occurrence_lastProviderId_fkey";'
         'ALTER TABLE event_occurrence RENAME CONSTRAINT "event_occurence_occasionId_fkey"     TO "event_occurrence_occasionId_fkey"    ;'
 
-        'ALTER TABLE offer DROP CONSTRAINT "check_offer_has_event_occurence_or_occasion";'
+        'ALTER TABLE offer DROP CONSTRAINT IF EXISTS "check_offer_has_event_occurence_or_occasion";'
         'ALTER TABLE offer ADD CONSTRAINT "check_offer_has_event_occurrence_or_occasion" CHECK ((("eventOccurrenceId" IS NOT NULL) OR ("occasionId" IS NOT NULL)));'
 
         'ALTER TABLE offer RENAME CONSTRAINT "offer_eventOccurenceId_fkey" TO "offer_eventOccurrenceId_fkey";'
