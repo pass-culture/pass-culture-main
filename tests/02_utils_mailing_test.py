@@ -374,6 +374,47 @@ def test_15_offerer_recap_email_future_offer_when_new_booking_with_old_booking(a
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
+def test_17_offerer_booking_recap_email_book(app):
+    # Given
+    expected_html = '''
+    <html>
+        <body>
+            <p>Cher partenaire Pass Culture,</p>
+            <p>Test (test@email.com) vient de faire une nouvelle réservation.</p>
+            <p>
+            Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
+            </p>
+            <table>
+                <tr>
+                    <th>Nom ou pseudo</th>
+                    <th>Email</th>
+                    <th>Code réservation</th>
+                </tr> 
+                 
+                <tr>
+                    <td>Test</td>
+                    <td>test@email.com</td>
+                    <td>56789</td>
+                </tr>
+                 
+            </table>
+ 
+        </body>
+    </html>'''
+    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
+    stock = create_stock_with_thing_offer()
+    user = create_user_for_booking_email_test()
+    booking = create_booking_for_booking_email_test(user, stock)
+
+    # When
+    recap_email = make_booking_recap_email(stock, booking)
+    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
+
+    # Then
+    print(recap_email_soup.prettify())
+    assert recap_email_soup.prettify() == expected_html_soup.prettify()
+
+
 # def test_16_offerer_recap_email_future_offer_when_cancellation_with_one_booking(app):
 #     # Given
 #     expected_html = '''
