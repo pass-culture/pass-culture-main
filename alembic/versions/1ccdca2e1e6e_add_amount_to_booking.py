@@ -19,7 +19,7 @@ def upgrade():
         'ALTER TABLE "booking" ADD COLUMN amount numeric(10,2);'
         'UPDATE booking b SET amount=(SELECT o.price FROM offer o WHERE o.id=b."offerId");'
         'ALTER TABLE "booking" ALTER COLUMN "amount" SET NOT NULL;'
-        'ALTER TABLE "booking" ALTER COLUMN "stockId" SET NOT NULL;'
+        'ALTER TABLE "booking" ALTER COLUMN "offerId" SET NOT NULL;'
     )
 
 
