@@ -7,13 +7,13 @@
   &:focus:not(:active) {
     box-shadow: none;
   }
-  
+
   &:not(.is-outlined) {
     border-width: 0;
   }
 
   &.is-primary {
-    box-shadow: inset 0 -2px 0 1px rgba(153,0,38,0.6);
+    box-shadow: inset 0 -2px 0 1px rgba(153, 0, 38, 0.6);
   }
 
   &.is-outlined {

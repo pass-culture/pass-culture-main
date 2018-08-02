@@ -28,7 +28,6 @@
       }
     }
 
-
     footer {
       position: absolute;
       bottom: 0;
@@ -42,7 +41,8 @@
       align-items: center;
       flex-direction: row-reverse;
 
-      a, button {
+      a,
+      button {
         font-size: $size-medium;
       }
     }
@@ -57,27 +57,7 @@
       margin: 0 5rem;
       z-index: 10;
       background: white;
-      box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
-
-      .notification {
-        margin: 2px;
-        position: relative;
-        button.close {
-          float: right;
-          padding: 0;
-          font-size: $font-size;
-          height: auto;
-          font-weight: $weight-normal;
-          background: none;
-          border: none;
-          text-decoration: underline;
-          cursor: pointer;
-          &:hover {
-            text-decoration: none;
-            opacity: 0.75;
-          }
-        }
-      }
+      box-shadow: 0 0 3.75rem rgba(0, 0, 0, 0.2);
 
       .after-notification-content {
         padding: (3 * $page-padding / 4) $page-padding;

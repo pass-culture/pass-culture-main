@@ -1,11 +1,10 @@
 // TODO: eventually remove unused dependencies
-@import "~bulma/sass/utilities/_all";
-@import "~bulma/sass/base/_all";
-@import "~bulma/sass/elements/_all";
-@import "~bulma/sass/components/_all";
-@import "~bulma/sass/grid/_all";
-@import "~bulma/sass/layout/_all";
-
+@import '~bulma/sass/utilities/_all';
+@import '~bulma/sass/base/_all';
+@import '~bulma/sass/elements/_all';
+@import '~bulma/sass/components/_all';
+@import '~bulma/sass/grid/_all';
+@import '~bulma/sass/layout/_all';
 
 .button {
   // height: auto;
@@ -18,7 +17,8 @@
   opacity: $button-disabled-opacity;
 }
 
-input[type="checkbox"], input[type="radio"] {
+input[type='checkbox'],
+input[type='radio'] {
   vertical-align: middle;
 }
 
@@ -29,7 +29,6 @@ input[type="checkbox"], input[type="radio"] {
         background: transparent !important; // Bug?
       }
     }
-
   }
   .icon {
     margin-right: 0.5rem;
@@ -66,10 +65,37 @@ input[type="checkbox"], input[type="radio"] {
       border-color: $input-focus-border-color;
     }
   }
-
 }
 
-.field-group .field.is-horizontal .field-body .field:not(.is-expanded) input[type=checkbox] {
+.field-group
+  .field.is-horizontal
+  .field-body
+  .field:not(.is-expanded)
+  input[type='checkbox'] {
   width: 1.1875em;
   margin-top: 0.5rem;
+}
+
+.notification {
+  margin: 2px;
+  overflow-y: hidden;
+  position: relative;
+  span {
+    margin-right: 0.25rem;
+  }
+  button.close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    float: right;
+    font-size: $font-size;
+    font-weight: $weight-normal;
+    height: auto;
+    padding: 0;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: none;
+      opacity: 0.75;
+    }
+  }
 }

@@ -139,15 +139,27 @@ class Main extends Component {
         })}
         key="main">
         {fullscreen ? (
-          content
+          [
+            notification && (
+              <div className={`notification is-${notification.type || 'info'}`}>
+                <div className="is-pulled-right">
+                  <span> {notification.text} </span>
+                  <button className="close" onClick={closeNotification}>
+                    OK
+                  </button>
+                </div>
+              </div>
+            ),
+            content,
+          ]
         ) : (
           <div className="columns is-gapless">
             <div className="page-content column is-10 is-offset-1">
               {notification && (
                 <div
                   className={`notification is-${notification.type || 'info'}`}>
-                  {notification.text}
-                  <button className="close" onClick={closeNotification}>
+                  <span> {notification.text} </span>
+                  <button className="close-button" onClick={closeNotification}>
                     OK
                   </button>
                 </div>
