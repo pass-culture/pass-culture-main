@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   closeNotification,
@@ -57,6 +58,8 @@ class OffererPage extends Component {
   render() {
     const { offerer, venues, fetchedName } = this.props
 
+    const hasOffererName = get(offerer, 'name') || fetchedName
+
     return (
       <Main
         backTo={{ label: 'Vos structures', path: '/structures' }}
@@ -76,7 +79,7 @@ class OffererPage extends Component {
         <Form
           name="offerer"
           className="section"
-          action={`/offerers/${get(offerer, 'id') ? '' : get(offerer, 'id')}`}
+          action={`/offerers/${get(offerer, 'id') || ''}`}
           handleSuccess={this.handleSuccess}
           patch={offerer}>
           <div className="field-group">
@@ -87,26 +90,22 @@ class OffererPage extends Component {
               required
               type="siren"
             />
-            {(get(offerer, 'name') || fetchedName) && [
-              <Field
-                className="is-hidden"
-                key={0}
-                label="Désignation"
-                name="name"
-                required
-                readOnly
-                isExpanded
-              />,
-              <Field
-                className="is-hidden"
-                key={1}
-                label="Siège social"
-                name="address"
-                required
-                readOnly
-                isExpanded
-              />,
-            ]}
+            <Field
+              className={classnames({ 'is-invisible': hasOffererName })}
+              isExpanded
+              label="Désignation"
+              name="name"
+              readOnly
+              required
+            />
+            <Field
+              className={classnames({ 'is-invisible': hasOffererName })}
+              isExpanded
+              label="Siège social"
+              name="address"
+              readOnly
+              required
+            />
           </div>
 
           {!get(offerer, 'id') ? (
