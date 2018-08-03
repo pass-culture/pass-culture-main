@@ -23,7 +23,6 @@
     "react/sort-comp": 1,
     "prefer-destructuring": 1,
     "react/destructuring-assignment": 1,
-    "react/button-has-type": 1,
     "no-unused-expressions": 1,
     "import/no-cycle": 1,
     "react/no-array-index-key": 1,

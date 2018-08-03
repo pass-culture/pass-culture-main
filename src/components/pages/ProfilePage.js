@@ -38,6 +38,7 @@ Mon profil
 Bienvenue !
         </h2>
         <button
+          type="button"
           className="button is-default"
           disabled={!user}
           onClick={this.onSignOutClick}

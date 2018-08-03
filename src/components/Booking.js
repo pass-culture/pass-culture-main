@@ -323,6 +323,7 @@ Une erreur est survenue lors de la réservation :
             {step === 'confirm' && [
               <li key="submit">
                 <button
+                  type="button"
                   className={classnames({
                     button: true,
                     'is-primary': true,
@@ -335,6 +336,7 @@ Une erreur est survenue lors de la réservation :
               </li>,
               <li key="cancel">
                 <button
+                  type="button"
                   className="button is-secondary"
                   onClick={this.closeBooking}
                 >
@@ -350,6 +352,7 @@ Une erreur est survenue lors de la réservation :
             {step === 'confirmation' && (
               <li>
                 <button
+                  type="button"
                   className="button is-secondary"
                   onClick={this.closeBooking}
                 >
@@ -360,6 +363,7 @@ Une erreur est survenue lors de la réservation :
             {step === 'error' && (
               <li>
                 <button
+                  type="button"
                   className="button is-secondary"
                   onClick={this.closeBooking}
                 >

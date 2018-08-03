@@ -69,6 +69,7 @@ Mon Pass
         </li>
         <li>
           <button
+            type="button"
             className="button is-secondary"
             onClick={this.onClickFavorite}
           >
@@ -80,6 +81,7 @@ Mon Pass
         </li>
         <li>
           <button
+            type="button"
             disabled
             className="button is-secondary"
             onClick={this.onClickDisable}
@@ -99,6 +101,7 @@ Mon Pass
           ) : (
             <Finishable finished={isFinished}>
               <button
+                type="button"
                 className="button is-primary is-go is-medium"
                 onClick={this.onClickJyVais}
               >
