@@ -72,7 +72,6 @@
     "react/no-unused-state": 1,
     "react/no-access-state-in-setstate": 1,
     "react/jsx-boolean-value": 1,
-    "react/no-typos": 1,
     "react/jsx-indent": 1,
     "no-return-await": 1,
     "dot-notation": 1,

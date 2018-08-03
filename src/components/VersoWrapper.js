@@ -12,28 +12,35 @@ import { ROOT_PATH } from '../utils/config'
 import { makeDraggable, makeUndraggable } from '../reducers/verso'
 
 class VersoWrapper extends Component {
+  constructor(props) {
+    super(props)
+    this.toucheMoveHandler = this.toucheMoveHandler.bind(this)
+  }
+
+  componentDidMount() {
+    if (!this.$el) return
+    const opts = { passive: true }
+    this.$el.addEventListener('touchmove', this.toucheMoveHandler, opts)
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (!this.props.isFlipped && prevProps.isFlipped) {
       this.$header.scrollTo && this.$header.scrollTo(0, 0)
     }
   }
 
-  componentDidMount() {
-    this.$el.addEventListener(
-      'touchmove',
-      e => {
-        if (this.props.draggable && this.$el.scrollTop > 0) {
-          this.props.makeUndraggable()
-        } else if (!this.props.draggable && this.$el.scrollTop <= 0) {
-          this.props.makeDraggable()
-        }
-      },
-      { passive: true }
-    )
+  componentWillUnmount() {
+    if (!this.$el) return
+    this.$el.removeEventListener('touchmove', this.toucheMoveHandler)
   }
 
-  componentWillUnMount() {
-    this.$el.removeEventListener('touchmove')
+  toucheMoveHandler() {
+    const { draggable, makeUndraggable, makeDraggable } = this.props
+    if (draggable && this.$el.scrollTop > 0) {
+      makeUndraggable()
+    } else if (!draggable && this.$el.scrollTop <= 0) {
+      makeDraggable()
+    }
   }
 
   render() {
@@ -75,10 +82,8 @@ class VersoWrapper extends Component {
             {author && `, de ${author}`}
             {' '}
           </h1>
-          <h2> 
-            {' '}
+          <h2>
             {get(venue, 'name')}
-            {' '}
           </h2>
         </div>
         {typeof tutoIndex !== 'number' && <VersoControl />}
