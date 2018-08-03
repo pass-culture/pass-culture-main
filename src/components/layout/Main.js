@@ -62,7 +62,7 @@ class Main extends Component {
     this.unblock && this.unblock()
     this.unblock = history.block(() => {
       if (!blockers) {
-        return
+        return false
       }
       // test all the blockers
       for (const blocker of blockers) {

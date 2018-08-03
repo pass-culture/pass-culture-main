@@ -26,7 +26,6 @@
     "react/button-has-type": 1,
     "no-unused-expressions": 1,
     "import/no-cycle": 1,
-    "consistent-return": 1,
     "react/no-array-index-key": 1,
     "jsx-a11y/click-events-have-key-events": 1,
     "jsx-a11y/anchor-is-valid": 1,

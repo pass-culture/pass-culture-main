@@ -44,7 +44,7 @@ const error = (...values) =>
   })
 
 const initialize = () => {
-  if (window.logContent) return
+  if (window.logContent) return false
   window.debug = debug
   window.log = log
   window.warn = warn
