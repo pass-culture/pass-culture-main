@@ -52,7 +52,7 @@ def create_offerer():
         user_offerer = offerer.give_rights(current_user,
                                            RightsType.admin)
         PcObject.check_and_save(offerer, user_offerer)
-    maybe_send_offerer_validation_email(current_user, offerer)
+    maybe_send_offerer_validation_email(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 201
 
 
