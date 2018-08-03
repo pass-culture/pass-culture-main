@@ -10,31 +10,6 @@ import { IS_PROD, IS_LOCALHOST, ROOT_PATH } from '../utils/config'
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
 
-export default function register() {
-  if (IS_PROD && 'serviceWorker' in navigator) {
-    // The URL constructor is available in all browsers that support SW.
-    const publicUrl = new URL(process.env.PUBLIC_URL, window.location)
-    if (publicUrl.origin !== window.location.origin) {
-      // Our service worker won't work if PUBLIC_URL is on a different origin
-      // from what our page is served on. This might happen if a CDN is used to
-      // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
-      return
-    }
-
-    window.addEventListener('load', () => {
-      const swUrl = `${ROOT_PATH}/service-worker.js`
-
-      if (IS_LOCALHOST) {
-        // This is running on localhost. Lets check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl)
-      } else {
-        // Is not local host. Just register service worker
-        registerValidSW(swUrl)
-      }
-    })
-  }
-}
-
 function registerValidSW(swUrl) {
   navigator.serviceWorker
     .register(swUrl)
@@ -90,6 +65,31 @@ function checkValidServiceWorker(swUrl) {
         'No internet connection found. App is running in offline mode.'
       )
     })
+}
+
+export default function register() {
+  if (IS_PROD && 'serviceWorker' in navigator) {
+    // The URL constructor is available in all browsers that support SW.
+    const publicUrl = new URL(process.env.PUBLIC_URL, window.location)
+    if (publicUrl.origin !== window.location.origin) {
+      // Our service worker won't work if PUBLIC_URL is on a different origin
+      // from what our page is served on. This might happen if a CDN is used to
+      // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
+      return
+    }
+
+    window.addEventListener('load', () => {
+      const swUrl = `${ROOT_PATH}/service-worker.js`
+
+      if (IS_LOCALHOST) {
+        // This is running on localhost. Lets check if a service worker still exists or not.
+        checkValidServiceWorker(swUrl)
+      } else {
+        // Is not local host. Just register service worker
+        registerValidSW(swUrl)
+      }
+    })
+  }
 }
 
 export function unregister() {

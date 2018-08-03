@@ -10,6 +10,7 @@ const inputClassName = 'input block col-12 mb2 red'
 class SigninPage extends Component {
   constructor() {
     super()
+    this.$footer = null
     this.state = { $footer: null }
   }
 
@@ -67,7 +68,11 @@ Bonjour&nbsp;!
           </Form>
         </div>
 
-        <footer ref={_e => (this.$footer = _e)} />
+        <footer
+          ref={elt => {
+            this.$footer = elt
+          }}
+        />
       </Main>
     )
   }
