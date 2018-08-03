@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
@@ -111,6 +112,7 @@ class Booking extends Component {
   }
 
   render() {
+    console.log('render render render renderrender renderrenderrenderrender')
     const { booking, currentRecommendation, error } = this.props
     const { token } = booking || {}
     const { offer, tz } = currentRecommendation || {}
@@ -370,6 +372,20 @@ Une erreur est survenue lors de la réservation :
       </VersoWrapper>
     )
   }
+}
+
+Booking.defaultProps = {
+  currentRecommendation: null,
+}
+
+Booking.propTypes = {
+  booking: PropTypes.object.isRequired,
+  closeModal: PropTypes.func.isRequired,
+  currentRecommendation: PropTypes.object,
+  error: PropTypes.object.isRequired,
+  removeDataError: PropTypes.func.isRequired,
+  requestData: PropTypes.func.isRequired,
+  tz: PropTypes.string.isRequired,
 }
 
 export default compose(

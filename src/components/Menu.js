@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { closeModal, Icon, requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -116,6 +117,13 @@ Mon Pass
       </div>
     )
   }
+}
+
+Menu.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  requestData: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
 }
 
 export default compose(

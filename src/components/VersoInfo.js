@@ -1,7 +1,8 @@
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import uniq from 'lodash.uniq'
 import moment from 'moment'
-import { capitalize, Icon } from 'pass-culture-shared'
+import { capitalize, Icon, Logger } from 'pass-culture-shared'
 import React from 'react'
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
@@ -51,7 +52,7 @@ const VersoInfo = ({ bookings, currentRecommendation }) => {
       address: `${address},${postalCode || ''},${city || ''}`,
     },
   }
-
+  Logger.fixme('Verso info is mounted but not visible')
   return (
     <div className="verso-info">
       {managingOfferer && (
@@ -139,6 +140,15 @@ Où ?
         )}
     </div>
   )
+}
+
+VersoInfo.defaultProps = {
+  currentRecommendation: null,
+}
+
+VersoInfo.propTypes = {
+  bookings: PropTypes.array.isRequired,
+  currentRecommendation: PropTypes.object,
 }
 
 export default compose(

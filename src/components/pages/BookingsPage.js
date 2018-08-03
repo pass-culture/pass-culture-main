@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -74,6 +75,12 @@ Pas encore de réservation.
       </Main>
     )
   }
+}
+
+BookingsPage.propTypes = {
+  otherBookings: PropTypes.array.isRequired,
+  requestData: PropTypes.func.isRequired,
+  soonBookings: PropTypes.array.isRequired,
 }
 
 export default compose(

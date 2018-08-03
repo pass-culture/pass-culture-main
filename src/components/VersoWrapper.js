@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -87,6 +88,22 @@ class VersoWrapper extends Component {
       </div>
     )
   }
+}
+
+VersoWrapper.defaultProps = {
+  currentRecommendation: null,
+  headerColor: null,
+}
+
+VersoWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string.isRequired,
+  currentRecommendation: PropTypes.object,
+  draggable: PropTypes.bool.isRequired,
+  headerColor: PropTypes.string,
+  isFlipped: PropTypes.bool.isRequired,
+  makeDraggable: PropTypes.func.isRequired,
+  makeUndraggable: PropTypes.func.isRequired,
 }
 
 export default compose(

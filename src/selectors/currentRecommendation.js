@@ -36,7 +36,6 @@ export default createCachedSelector(
     }
 
     // is finished
-    // console.log('currentRecommendation', currentRecommendation)
     const isFinished = false
     /*
     const {}

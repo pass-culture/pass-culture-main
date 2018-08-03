@@ -1,5 +1,11 @@
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
-import { closeLoading, requestData, showLoading } from 'pass-culture-shared'
+import {
+  closeLoading,
+  requestData,
+  showLoading,
+  Logger,
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -38,7 +44,7 @@ class DiscoveryPage extends Component {
               const firstOfferId = get(action, 'data.0.offerId')
 
               if (!firstOfferId) {
-                console.warn('first recommendation has no offer id, weird...')
+                Logger.warn('first recommendation has no offer id, weird...')
               }
 
               const firstMediationId = get(action, 'data.0.mediationId') || ''
@@ -112,6 +118,22 @@ class DiscoveryPage extends Component {
       </Main>
     )
   }
+}
+
+DiscoveryPage.defaultProps = {
+  currentRecommendation: null,
+  isMenuOnTop: false,
+}
+
+DiscoveryPage.propTypes = {
+  backButton: PropTypes.bool.isRequired,
+  closeLoading: PropTypes.func.isRequired,
+  currentRecommendation: PropTypes.object,
+  history: PropTypes.object.isRequired,
+  isMenuOnTop: PropTypes.bool,
+  match: PropTypes.object.isRequired,
+  requestData: PropTypes.func.isRequired,
+  showLoading: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {

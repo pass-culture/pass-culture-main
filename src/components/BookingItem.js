@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import moment from 'moment'
 import { capitalize, Icon } from 'pass-culture-shared'
@@ -49,6 +50,16 @@ const BookingItem = ({ booking, recommendation }) => {
       </Link>
     </li>
   )
+}
+
+BookingItem.defaultProps = {
+  booking: null,
+  recommendation: null,
+}
+
+BookingItem.propTypes = {
+  booking: PropTypes.object,
+  recommendation: PropTypes.object,
 }
 
 export default connect((state, ownProps) => ({

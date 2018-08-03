@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -46,6 +47,12 @@ Bienvenue !
       </Main>
     )
   }
+}
+
+ProfilePage.propTypes = {
+  history: PropTypes.object.isRequired,
+  requestData: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
 }
 
 export default compose(

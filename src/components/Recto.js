@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
@@ -48,6 +49,15 @@ déjà retournée
       )}
     </div>
   )
+}
+
+Recto.defaultProps = {
+  recommendation: null,
+}
+
+Recto.propTypes = {
+  isFlipped: PropTypes.bool.isRequired,
+  recommendation: PropTypes.object,
 }
 
 export default compose(

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -40,6 +41,10 @@ Pas encore de favoris.
       </Main>
     )
   }
+}
+
+FavoritesPage.propTypes = {
+  favorites: PropTypes.array.isRequired,
 }
 
 export default connect(

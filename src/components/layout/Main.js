@@ -143,12 +143,32 @@ class Main extends Component {
 }
 
 Main.defaultProps = {
-  Tag: 'main',
   backButton: false,
+  footer: null,
+  handleDataRequest: null,
+  noPadding: false,
+  redBg: false,
+  Tag: 'main',
+  user: null,
 }
 
 Main.propTypes = {
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  blockers: PropTypes.array.isRequired,
+  children: PropTypes.node.isRequired,
+  closeNotification: PropTypes.func.isRequired,
+  footer: PropTypes.object,
+  handleDataRequest: PropTypes.func,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  name: PropTypes.string.isRequired,
+  noPadding: PropTypes.bool,
+  redBg: PropTypes.bool,
+  requestData: PropTypes.func.isRequired,
+  resetForm: PropTypes.func.isRequired,
+  showNotification: PropTypes.func.isRequired,
+  Tag: PropTypes.string,
+  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
 export default compose(

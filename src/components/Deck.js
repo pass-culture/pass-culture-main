@@ -317,6 +317,8 @@ Deck.defaultProps = {
 }
 
 Deck.propTypes = {
+  nextLimit: PropTypes.number.isRequired,
+  previousLimit: PropTypes.number.isRequired,
   currentRecommendation: PropTypes.object,
   dispatchFlip: PropTypes.func.isRequired,
   dispatchRequestData: PropTypes.func.isRequired,

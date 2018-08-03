@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
-import { Icon, requestData, showModal } from 'pass-culture-shared'
+import { Logger, Icon, requestData, showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -55,6 +56,7 @@ class VersoControl extends Component {
     const { venue } = offer || {}
     const { managingOfferer } = venue || {}
     const isFavorite = currentRecommendation && currentRecommendation.isFavorite
+    Logger.fixme('VersoControl is mounted but not visible')
     return (
       <ul className="verso-control">
         <li>
@@ -113,6 +115,19 @@ Mon Pass
       </ul>
     )
   }
+}
+
+VersoControl.defaultProps = {
+  currentRecommendation: null,
+  offer: null,
+}
+
+VersoControl.propTypes = {
+  bookings: PropTypes.array.isRequired,
+  currentRecommendation: PropTypes.object,
+  offer: PropTypes.object,
+  requestData: PropTypes.func.isRequired,
+  showModal: PropTypes.func.isRequired,
 }
 
 export default compose(

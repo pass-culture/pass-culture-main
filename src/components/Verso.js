@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -13,7 +14,6 @@ import { THUMBS_URL } from '../utils/config'
 const Verso = ({ currentRecommendation, isFlipped }) => {
   const { mediation } = currentRecommendation || {}
   const { tutoIndex } = mediation || {}
-
   return (
     <div
       className={classnames('verso', {
@@ -36,6 +36,15 @@ const Verso = ({ currentRecommendation, isFlipped }) => {
       <Footer borderTop colored={typeof tutoIndex !== 'number'} />
     </div>
   )
+}
+
+Verso.defaultProps = {
+  currentRecommendation: null,
+}
+
+Verso.propTypes = {
+  currentRecommendation: PropTypes.object,
+  isFlipped: PropTypes.bool.isRequired,
 }
 
 export default compose(

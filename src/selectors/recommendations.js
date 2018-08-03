@@ -1,6 +1,7 @@
 import get from 'lodash.get'
 import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
+import { Logger } from 'pass-culture-shared'
 
 import { THUMBS_URL } from '../utils/config'
 import { distanceInMeters } from '../utils/geolocation'
@@ -24,9 +25,7 @@ export default createSelector(
       if (tutoIndex) {
         return `tuto_${tutoIndex}`
       }
-      console.warn(
-        'weird this recommendation is with no thing or event or tuto'
-      )
+      Logger.warn('weird this recommendation is with no thing or event or tuto')
       return ''
     })
 

@@ -12,9 +12,10 @@
     "fixture": true
   },
   "rules": {
+    "sort-keys": [1],
+    "sort-vars": [1, { "ignoreCase": true }],
     "react/forbid-prop-types": [2, { "forbid": ["any"] }],
     "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
-    "react/prop-types": 1,
     "no-shadow": 1,
     "no-nested-ternary": 1,
     "react/jsx-tag-spacing": 1,

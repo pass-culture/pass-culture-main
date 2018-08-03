@@ -96,6 +96,7 @@ DeckNavigation.propTypes = {
   flipHandler: PropTypes.func,
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
+  transitionTimeout: PropTypes.number,
 }
 
 export default compose(

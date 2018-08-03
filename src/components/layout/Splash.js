@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { Icon } from 'pass-culture-shared'
 import React from 'react'
@@ -15,6 +16,15 @@ const Splash = ({ isActive, transitionTimeout }) => (
     <Icon svg="logo-group" alt="Logo Pass Culture" />
   </div>
 )
+
+Splash.defaultProps = {
+  transitionTimeout: '',
+}
+
+Splash.propTypes = {
+  isActive: PropTypes.bool.isRequired,
+  transitionTimeout: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+}
 
 export default connect(state => ({
   isActive: state.splash.isActive,

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -39,6 +40,11 @@ Et merci de votre participation pour nous aider à l'améliorer !
       </Main>
     )
   }
+}
+
+BetaPage.propTypes = {
+  closeSplash: PropTypes.func.isRequired,
+  closeSplashTimeout: PropTypes.number.isRequired,
 }
 
 export default compose(
