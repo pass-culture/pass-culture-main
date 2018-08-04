@@ -4,6 +4,7 @@ import {
   InfiniteScroller,
   requestData,
   showModal,
+  withSearch,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -31,88 +32,34 @@ const defaultQueryParams = {
 }
 
 class OffersPage extends Component {
-  constructor() {
-    super()
-    this.state = {
-      queryParams: defaultQueryParams,
-      page: 1,
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const queryParams = Object.assign(
-      {},
-      defaultQueryParams,
-      nextProps.queryParams
-    )
-
-    return {
-      queryParams,
-      page: prevState.page,
-    }
-  }
-
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const { requestData, types } = this.props
-    requestData(
-      'GET',
-      `offers?${objectToQueryString(
-        Object.assign({}, this.state.queryParams, { page: this.state.page })
-      )}`,
-      {
-        handleSuccess: (state, action) => {
-          handleSuccess(state, action)
-          this.setState({
-            page: this.state.page + 1,
-          })
-        },
-        handleFail,
-        normalizer: offerNormalizer,
-      }
-    )
+    const { goToNextSearchPage, querySearch, requestData, types } = this.props
+    requestData('GET', `offers?${querySearch}`, {
+      handleSuccess: (state, action) => {
+        handleSuccess(state, action)
+        goToNextSearchPage()
+      },
+      handleFail,
+      normalizer: offerNormalizer,
+    })
     types.length === 0 && requestData('GET', 'types')
   }
 
-  handleQueryParamsChange(newValue) {
-    const newPath = `${this.props.location.pathname}?${objectToQueryString(
-      Object.assign({}, this.state.queryParams, newValue)
-    )}`
-    this.props.assignData({ offers: [] })
-    this.setState({
-      page: 1,
-    })
-    this.props.history.push(newPath)
-  }
-
-  handleOrderDirectionChange = e => {
-    const [by, direction] = this.state.queryParams.order_by.split('+')
-    this.handleQueryParamsChange({
-      order_by: [by, direction === DESC ? ASC : DESC].join('+'),
-    })
-  }
-
-  handleOrderByChange = e => {
-    const [, direction] = this.state.queryParams.order_by.split('+')
-    this.handleQueryParamsChange({
-      order_by: [e.target.value, direction].join('+'),
-    })
-  }
-
-  handleRemoveFilter = key => e => {
-    this.handleQueryParamsChange({ [key]: null })
-  }
-
-  handleSearchChange = e => {
-    e.preventDefault()
-    this.handleQueryParamsChange({ search: e.target.elements.search.value })
-  }
-
   render() {
-    const { offers, offerer, venue } = this.props
+    const {
+      handleOrderByChange,
+      handleOrderDirectionChange,
+      handleRemoveFilter,
+      handleSearchChange,
+      offers,
+      offerer,
+      queryParams,
+      venue,
+    } = this.props
 
-    const { search, order_by } = this.state.queryParams || {}
+    const { search, order_by } = queryParams || {}
 
-    const [orderBy, orderDirection] = order_by.split('+')
+    const [orderBy, orderDirection] = (order_by || '').split('+')
     return (
       <Main name="offers" handleDataRequest={this.handleDataRequest}>
         <div className="section">
@@ -126,7 +73,7 @@ class OffersPage extends Component {
           </NavLink>
           <h1 className="main-title">Vos offres</h1>
         </div>
-        <form className="section" onSubmit={this.handleSearchChange}>
+        <form className="section" onSubmit={handleSearchChange}>
           <label className="label">Rechercher une offre :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
@@ -156,7 +103,7 @@ class OffersPage extends Component {
               <span className="has-text-weight-semibold"> {offerer.name} </span>
               <button
                 className="delete is-small"
-                onClick={this.handleRemoveFilter('offererId')}
+                onClick={handleRemoveFilter('offererId')}
               />
             </li>
           ) : (
@@ -166,7 +113,7 @@ class OffersPage extends Component {
                 <span className="has-text-weight-semibold">{venue.name}</span>
                 <button
                   className="delete is-small"
-                  onClick={this.handleRemoveFilter('venueId')}
+                  onClick={handleRemoveFilter('venueId')}
                 />
               </li>
             )
@@ -184,7 +131,7 @@ class OffersPage extends Component {
                 Trier par:
                 <span className="select is-rounded is-small">
                   <select
-                    onChange={this.handleOrderByChange}
+                    onChange={handleOrderByChange}
                     className=""
                     value={orderBy}>
                     <option value="sold">Offres écoulées</option>
@@ -194,7 +141,7 @@ class OffersPage extends Component {
               </div>
               <div>
                 <button
-                  onClick={this.handleOrderDirectionChange}
+                  onClick={handleOrderDirectionChange}
                   className="button is-secondary">
                   <Icon
                     svg={
@@ -222,6 +169,15 @@ class OffersPage extends Component {
 
 export default compose(
   withRouter,
+  withSearch({
+    dataKey: 'offers',
+    defaultQueryParams: {
+      search: undefined,
+      order_by: `createdAt+desc`,
+      venueId: null,
+      offererId: null,
+    },
+  }),
   connect(
     (state, ownProps) => {
       const queryParams = searchSelector(state, ownProps.location.search)
