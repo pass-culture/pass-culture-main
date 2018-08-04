@@ -1,24 +1,18 @@
 export const eventNormalizer = {
-  mediations: 'mediations',
-  occasions: 'occasions',
-  occurences: {
-    key: 'eventOccurences',
-    normalizer: {
-      offer: 'offers',
-    },
-  },
+  offers: 'offers',
 }
 
 export const thingNormalizer = {
-  mediations: 'mediations',
-  occasions: 'occasions',
+  offers: 'offers',
 }
 
-export const occasionNormalizer = {
+export const offerNormalizer = {
   event: {
     key: 'events',
     normalizer: eventNormalizer,
   },
+  eventOccurrences: 'eventOccurrences',
+  mediations: 'mediations',
   thing: {
     key: 'things',
     normalizer: thingNormalizer,
@@ -46,14 +40,14 @@ export const offererNormalizer = {
   managedVenues: {
     key: 'venues',
     normalizer: {
-      occasions: 'occasions',
+      offers: 'offers',
     },
   },
 }
 
 export const venueNormalizer = {
-  eventOccurences: {
-    key: 'eventOccurences',
+  eventOccurrences: {
+    key: 'eventOccurrences',
     normalizer: {
       event: 'events',
     },
@@ -66,7 +60,7 @@ export const venueNormalizer = {
   },
 }
 
-export const eventOccurenceNormalize = {
+export const eventOccurrenceNormalizer = {
   venue: {
     key: 'venues',
     normalizer: venueNormalizer,

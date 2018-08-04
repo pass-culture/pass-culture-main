@@ -8,9 +8,6 @@ const SIREN = 'siren'
 const fromWatchSirenInput = sireType =>
   function*(action) {
     const { name, patch } = action
-
-    console.log('sireType', sireType)
-
     if (!sireType) {
       yield put(
         mergeForm(name, {

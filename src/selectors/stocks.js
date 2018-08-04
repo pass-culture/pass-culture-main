@@ -3,14 +3,10 @@ import createCachedSelector from 're-reselect'
 import occurrencesSelector from './occurrences'
 
 export default createCachedSelector(
+  state => state.data.stocks,
   (state, offerId) => occurrencesSelector(state, offerId),
-  occurrences => {
-    return occurrences.reduce(
-      (max, d) =>
-        max && max.isAfter(d.beginningDatetimeMoment)
-          ? max
-          : d.beginningDatetimeMoment,
-      null
+  (stocks, occurrences) =>
+    stocks.filter(offer =>
+      occurrences.some(occurrence => offer.eventOccurrenceId === occurrence.id)
     )
-  }
 )((state, offerId) => offerId || '')

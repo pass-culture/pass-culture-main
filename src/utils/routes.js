@@ -7,8 +7,8 @@ import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import MediationsPage from '../components/pages/MediationsPage'
 import NotFoundPage from '../components/pages/NotFoundPage'
-import OccasionsPage from '../components/pages/OccasionsPage'
-import OccasionPage from '../components/pages/OccasionPage'
+import OffersPage from '../components/pages/OffersPage'
+import OfferPage from '../components/pages/OfferPage'
 import OffererPage from '../components/pages/OffererPage'
 import OfferersPage from '../components/pages/OfferersPage'
 import ProfilePage from '../components/pages/ProfilePage'
@@ -81,53 +81,41 @@ const routes = [
     exact: true,
     path: '/structures/:offererId/lieux/:venueId/offres',
     title: 'Offres',
-    render: () => <OccasionsPage />,
+    render: () => <OffersPage />,
   },
   {
     exact: true,
     path: '/offres',
     title: 'Offres',
-    render: () => <OccasionsPage />,
+    render: () => <OffersPage />,
   },
   {
     exact: true,
-    path: '/offres/:occasionId',
+    path: '/offres/:offerId',
     title: 'Offre',
-    render: () => <OccasionPage />,
+    render: () => <OfferPage />,
   },
   {
     exact: true,
-    path: '/offres/:occasionId/accroches/:mediationId',
+    path: '/offres/:offerId/accroches/:mediationId',
     title: 'Accroche',
     render: () => <MediationPage />,
   },
-  // {
-  //   exact: true,
-  //   path: '/offres/:occasionId/dates',
-  //   title: 'Editeur de dates',
-  //   render: () => <OccasionPage />,
-  // },
-  // {
-  //   exact: true,
-  //   path: '/offres/:occasionId/dates/:eventOccurenceId',
-  //   title: 'Modifier une date',
-  //   render: () => <OccasionPage />,
-  // },
   {
     exact: true,
-    path: '/structures/:offererId/offres/:occasionId',
+    path: '/structures/:offererId/offres/:offerId',
     title: 'Offres',
-    render: () => <OccasionPage />,
+    render: () => <OfferPage />,
   },
   {
     exact: true,
-    path: '/structures/:offererId/lieux/:venueId/offres/:occasionId',
+    path: '/structures/:offererId/lieux/:venueId/offres/:offerId',
     title: 'Offres',
-    render: () => <OccasionPage />,
+    render: () => <OfferPage />,
   },
   {
     exact: true,
-    path: '/offres/:occasionId/accroches',
+    path: '/offres/:offerId/accroches',
     title: 'Accroches',
     render: () => <MediationsPage />,
   },

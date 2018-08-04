@@ -1,16 +1,6 @@
-import { Selector, RequestLogger } from 'testcafe'
-import { API_URL } from '../src/utils/config'
+import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
-
-const LOGGER_URL = API_URL + '/offerers'
-
-const logger = RequestLogger(LOGGER_URL, {
-  logResponseBody: true,
-  stringifyResponseBody: true,
-  logRequestBody: true,
-  stringifyRequestBody: true,
-})
 
 const adressInput = Selector('input#offerer-address')
 const nameInput = Selector('input#offerer-name')
@@ -20,7 +10,7 @@ const newOffererButton = Selector(
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const sirenInput = Selector('#offerer-siren')
-const sirenErrorInput = Selector('p#offerer-siren-error span')
+const sirenErrorInput = Selector('#offerer-siren-error')
 const submitButton = Selector('button.button.is-primary') //connexion
 
 fixture`04_01 OffererPage | Créer une nouvelle structure`.beforeEach(
@@ -52,32 +42,27 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
   await t.expect(sirenErrorInput.innerText).eql('Ce code SIREN est invalide')
 })
 
-test.requestHooks(logger)(
-  'Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base',
-  async t => {
-    // navigation
-    let location = await t.eval(() => window.location)
-    await t
-      .expect(location.pathname)
-      .eql('/structures/nouveau')
+test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base', async t => {
+  // navigation
+  let location = await t.eval(() => window.location)
+  await t
+    .expect(location.pathname)
+    .eql('/structures/nouveau')
 
-      // input
-      .typeText(sirenInput, '692 039 514')
-      .wait(1000)
+    // input
+    .typeText(sirenInput, '692 039 514')
+    .wait(1000)
 
-    // submit
-    await t.click(submitButton).wait(2000)
+  // submit
+  await t.click(submitButton).wait(2000)
 
-    console.log('logger.requests', logger.requests)
-
-    // api return an error message
-    await t
-      .expect(sirenErrorInput.innerText)
-      .eql(
-        '\nUne entrée avec cet identifiant existe déjà dans notre base de données\n'
-      )
-  }
-)
+  // api return an error message
+  await t
+    .expect(sirenErrorInput.innerText)
+    .eql(
+      'Une entrée avec cet identifiant existe déjà dans notre base de données'
+    )
+})
 
 test('Je rentre une nouvelle structure via son siren', async t => {
   // navigation

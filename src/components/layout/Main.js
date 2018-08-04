@@ -141,7 +141,9 @@ class Main extends Component {
         {fullscreen ? (
           [
             notification && (
-              <div className={`notification is-${notification.type || 'info'}`}>
+              <div
+                className={`notification is-${notification.type || 'info'}`}
+                key="notification">
                 <div className="is-pulled-right">
                   <span> {notification.text} </span>
                   <button className="close" onClick={closeNotification}>

@@ -6,35 +6,35 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OccurenceForm from './OccurenceForm'
+import OccurrenceForm from './OccurrenceForm'
 import eventSelector from '../selectors/event'
-import occasionSelector from '../selectors/occasion'
-import occurenceErrorsSelector from '../selectors/occurenceErrors'
-import occurencesSelector from '../selectors/occurences'
+import occurrenceErrorsSelector from '../selectors/occurrenceErrors'
+import occurrencesSelector from '../selectors/occurrences'
+import offerSelector from '../selectors/offer'
 import searchSelector from '../selectors/search'
 import providerSelector from '../selectors/provider'
 
-class OccurenceManager extends Component {
+class OccurrenceManager extends Component {
   onCloseClick = e => {
-    const { occasion, history, closeModal } = this.props
+    const { offer, history, closeModal } = this.props
     closeModal()
-    history.push(`/offres/${get(occasion, 'id')}`)
+    history.push(`/offres/${get(offer, 'id')}`)
   }
 
   render() {
     const {
       errors,
       event,
-      eventOccurenceIdOrNew,
+      eventOccurrenceIdOrNew,
       isEditing,
       location,
       provider,
-      occasion,
-      occurences,
+      offer,
+      occurrences,
     } = this.props
 
     return (
-      <div className="occurence-manager">
+      <div className="occurrence-manager">
         {errors && (
           <div className="notification is-danger">
             {Object.keys(errors).map(key => (
@@ -45,14 +45,14 @@ class OccurenceManager extends Component {
             ))}
           </div>
         )}
-        <div className="occurence-table-wrapper">
+        <div className="occurrence-table-wrapper">
           <div className="subtitle has-text-weight-bold has-text-left is-uppercase">
             {get(event, 'name')}
           </div>
           <div className="main-title has-text-left">
             Dates, horaires et prix
           </div>
-          <table className="table is-hoverable occurence-table">
+          <table className="table is-hoverable occurrence-table">
             <thead>
               <tr>
                 <td>Date</td>
@@ -80,28 +80,25 @@ class OccurenceManager extends Component {
                       to={
                         isEditing
                           ? `${location.pathname}${location.search}`
-                          : `/offres/${get(
-                              occasion,
-                              'id'
-                            )}?gestion&date=nouvelle`
+                          : `/offres/${get(offer, 'id')}?gestion&date=nouvelle`
                       }>
                       + Ajouter un horaire
                     </NavLink>
                   )}
                 </td>
               </tr>
-              {eventOccurenceIdOrNew === 'nouvelle' && (
-                <OccurenceForm isFullyEditable={!provider} />
+              {eventOccurrenceIdOrNew === 'nouvelle' && (
+                <OccurrenceForm isFullyEditable={!provider} />
               )}
-              {occurences.map(o => (
-                <OccurenceForm
+              {occurrences.map(o => (
+                <OccurrenceForm
                   key={o.id}
                   isFullyEditable={!provider}
-                  occurence={o}
+                  occurrence={o}
                 />
               ))}
             </tbody>
-            {occurences.length > 12 && (
+            {occurrences.length > 12 && (
               <thead>
                 <tr>
                   <td>Date</td>
@@ -132,26 +129,29 @@ export default compose(
   connect(
     (state, ownProps) => {
       const search = searchSelector(state, ownProps.location.search)
-      const { eventOccurenceIdOrNew, offerIdOrNew } = search || {}
-      const isEditing = eventOccurenceIdOrNew || offerIdOrNew
+      const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
+      const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
 
-      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
-      const { eventId, venueId } = occasion || {}
+      const offer = offerSelector(state, ownProps.match.params.offerId)
+      const { eventId } = offer || {}
       const event = eventSelector(state, eventId)
-      const occurences = occurencesSelector(state, venueId, eventId)
+      const occurrences = occurrencesSelector(
+        state,
+        ownProps.match.params.offerId
+      )
 
-      const errors = occurenceErrorsSelector(state)
+      const errors = occurrenceErrorsSelector(state)
 
       return {
         errors,
         event,
-        eventOccurenceIdOrNew,
+        eventOccurrenceIdOrNew,
         isEditing,
-        occasion,
-        occurences,
+        occurrences,
+        offer,
         provider: providerSelector(state, get(event, 'lastProviderId')),
       }
     },
     { closeModal, mergeForm }
   )
-)(OccurenceManager)
+)(OccurrenceManager)

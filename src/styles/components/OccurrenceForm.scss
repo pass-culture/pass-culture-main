@@ -1,14 +1,14 @@
-.occurence-manager {
-
-  .occurence-table-wrapper {
+.occurrence-manager {
+  .occurrence-table-wrapper {
     position: relative;
     max-height: 60vh;
     min-height: 500px;
     overflow-y: auto;
 
-    table.occurence-table {
+    table.occurrence-table {
       // width: 80vw;
-      thead, tbody {
+      thead,
+      tbody {
         // display: block;
         width: 100%;
         tr {
@@ -25,7 +25,7 @@
           }
         }
 
-        .occurence-form {
+        .occurrence-form {
           display: table-row;
           td {
             vertical-align: baseline;
@@ -34,7 +34,7 @@
               &.date-picker {
                 min-width: 100px;
               }
-              &[type="time"] {
+              &[type='time'] {
                 padding-left: 2rem;
               }
             }
@@ -51,6 +51,5 @@
         }
       }
     }
-
   }
 }

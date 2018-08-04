@@ -11,13 +11,10 @@ import { compose } from 'redux'
 import Main from '../layout/Main'
 import UploadThumb from '../layout/UploadThumb'
 import mediationSelector from '../../selectors/mediation'
-import occasionSelector from '../../selectors/occasion'
+import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
-import {
-  mediationNormalizer,
-  occasionNormalizer,
-} from '../../utils/normalizers'
+import { mediationNormalizer, offerNormalizer } from '../../utils/normalizers'
 
 const uploadExplanation = `
 **Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
@@ -60,16 +57,16 @@ class MediationPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       match: {
-        params: { mediationId, occasionId },
+        params: { mediationId, offerId },
       },
-      occasion,
+      offer,
       requestData,
     } = this.props
     const { isNew } = this.state
-    !occasion &&
-      requestData('GET', `occasions/${occasionId}`, {
-        key: 'occasions',
-        normalizer: occasionNormalizer,
+    !offer &&
+      requestData('GET', `offers/${offerId}`, {
+        key: 'offers',
+        normalizer: offerNormalizer,
       })
     if (!isNew) {
       requestData('GET', `mediations/${mediationId}`, {
@@ -84,12 +81,10 @@ class MediationPage extends Component {
   }
 
   handleSuccessData = (state, action) => {
-    const { history, showNotification, occasion } = this.props
+    const { history, showNotification, offer } = this.props
 
     this.setState({ isLoading: false }, () => {
-      history.push(`/offres/${occasion.id}`)
-
-      // TODO
+      history.push(`/offres/${offer.id}`)
       showNotification({
         text: 'Votre accroche a bien été enregistrée',
         type: 'success',
@@ -147,28 +142,25 @@ class MediationPage extends Component {
   }
 
   onSubmit = () => {
-    const { mediation, occasion, occasionId, offerer, requestData } = this.props
+    const { match, mediation, offerer, requestData } = this.props
     const { croppingRect, image, isNew } = this.state
 
-    const eventId = get(occasion, 'eventId')
     const offererId = get(offerer, 'id')
-    const thingId = get(occasion, 'thingId')
+    const offerId = match.params.offerId
 
     let body
     if (typeof image === 'string') {
       body = {
         croppingRect,
-        eventId: occasionId,
         offererId,
-        thingId,
+        offerId,
         thumb: image,
       }
     } else {
       const formData = new FormData()
-      formData.append('thumb', image)
-      formData.append('eventId', eventId)
-      formData.append('thingId', thingId)
       formData.append('offererId', offererId)
+      formData.append('offerId', offerId)
+      formData.append('thumb', image)
       formData.append('croppingRect[x]', croppingRect.x)
       formData.append('croppingRect[y]', croppingRect.y)
       formData.append('croppingRect[width]', croppingRect.width)
@@ -195,14 +187,14 @@ class MediationPage extends Component {
       imageUploadSize,
       imageUploadBorder,
       match: {
-        params: { occasionId },
+        params: { offerId },
       },
       mediation,
-      occasion,
+      offer,
     } = this.props
-    const { name } = occasion || {}
+    const { name } = offer || {}
     const { image, imageUrl, inputUrl, isLoading, isNew } = this.state
-    const backPath = `/offres/${occasionId}`
+    const backPath = `/offres/${offerId}`
 
     return (
       <Main
@@ -308,10 +300,10 @@ export default compose(
   withRouter,
   connect(
     (state, ownProps) => {
-      const occasion = occasionSelector(state, ownProps.match.params.occasionId)
-      const venue = venueSelector(state, get(occasion, 'venueId'))
+      const offer = offerSelector(state, ownProps.match.params.offerId)
+      const venue = venueSelector(state, get(offer, 'venueId'))
       return {
-        occasion,
+        offer,
         offerer: offererSelector(state, get(venue, 'managingOffererId')),
         mediation: mediationSelector(state, ownProps.match.params.mediationId),
       }
