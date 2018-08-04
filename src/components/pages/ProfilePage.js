@@ -8,11 +8,6 @@ import { compose } from 'redux'
 import Main from '../layout/Main'
 
 class ProfilePage extends Component {
-  onSignOutClick = () => {
-    const { dispatchRequestData } = this.props
-    dispatchRequestData('GET', 'users/signout')
-  }
-
   componentWillReceiveProps(nextProps) {
     const {
       history: { push },
@@ -21,6 +16,11 @@ class ProfilePage extends Component {
     if (user === false && this.props.user) {
       push('/')
     }
+  }
+
+  onSignOutClick = () => {
+    const { dispatchRequestData } = this.props
+    dispatchRequestData('GET', 'users/signout')
   }
 
   render() {

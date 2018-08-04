@@ -34,22 +34,6 @@ class Booking extends Component {
     }
   }
 
-  closeBooking = () => {
-    this.props.removeDataError()
-    this.props.closeModal()
-  }
-
-  currentStep = () => {
-    const { booking, error } = this.props
-    const { token } = booking || {}
-    const { bookingInProgress } = this.state
-
-    if (error) return 'error'
-    if (token) return 'confirmation'
-    if (bookingInProgress) return 'loading'
-    return 'confirm'
-  }
-
   getAvailableDateTimes = selectedDate => {
     const mediatedOccurences = get(
       this.props,
@@ -74,6 +58,22 @@ class Booking extends Component {
       availableHours,
       availableMediatedOccurences,
     }
+  }
+
+  closeBooking = () => {
+    this.props.removeDataError()
+    this.props.closeModal()
+  }
+
+  currentStep = () => {
+    const { booking, error } = this.props
+    const { token } = booking || {}
+    const { bookingInProgress } = this.state
+
+    if (error) return 'error'
+    if (token) return 'confirmation'
+    if (bookingInProgress) return 'loading'
+    return 'confirm'
   }
 
   handleDateSelect = date => {

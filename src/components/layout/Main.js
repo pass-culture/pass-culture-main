@@ -29,6 +29,30 @@ class Main extends Component {
     }
   }
 
+  componentDidMount() {
+    this.handleHistoryBlock()
+    if (this.props.user) this.handleDataRequest()
+  }
+
+  componentDidUpdate(prevProps) {
+    const blockersChanged = prevProps.blockers !== this.props.blockers
+    const userChanged = !prevProps.user && this.props.user // User just loaded
+    const searchChanged =
+      this.props.location.search !== prevProps.location.search
+
+    if (blockersChanged) {
+      this.handleHistoryBlock()
+    }
+    if (userChanged || searchChanged) {
+      this.handleDataRequest()
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.unblock) this.unblock()
+    this.props.resetForm()
+  }
+
   handleDataFail = (state, action) => {
     this.setState({
       loading: false,
@@ -76,30 +100,6 @@ class Main extends Component {
       // the change of pathname
       return true
     })
-  }
-
-  componentDidMount() {
-    this.handleHistoryBlock()
-    if (this.props.user) this.handleDataRequest()
-  }
-
-  componentDidUpdate(prevProps) {
-    const blockersChanged = prevProps.blockers !== this.props.blockers
-    const userChanged = !prevProps.user && this.props.user // User just loaded
-    const searchChanged =
-      this.props.location.search !== prevProps.location.search
-
-    if (blockersChanged) {
-      this.handleHistoryBlock()
-    }
-    if (userChanged || searchChanged) {
-      this.handleDataRequest()
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.unblock) this.unblock()
-    this.props.resetForm()
   }
 
   render() {
