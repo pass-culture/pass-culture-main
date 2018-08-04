@@ -1,14 +1,12 @@
 import { requestData } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
-class InventoryPage extends Component {
-  render = () => (
-    <main className="page">
+const InventoryPage = () => (
+  <main className="page">
 PINS
-    </main>
+  </main>
 )
-}
 
 export default connect(
   null,
