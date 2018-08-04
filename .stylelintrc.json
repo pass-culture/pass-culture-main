@@ -1,12 +1,15 @@
 {
   "extends": "stylelint-config-standard",
+  "plugins": [
+    "stylelint-scss"
+  ],
   "rules": {
     "color-hex-case": "upper",
     "color-hex-length": "long",
     "declaration-colon-newline-after": "always-multi-line",
     "at-rule-no-unknown": [
       true, {
-      "ignoreAtRules": ["extend", "if", "else", "elseif", "each"]
+      "ignoreAtRules": ["extend", "include", "if", "else", "elseif", "each"]
       }
     ]
   }

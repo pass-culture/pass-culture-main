@@ -106,12 +106,16 @@ Mon Pass
             </a>
           </li>
           <li>
-            <a onClick={this.onSignOutClick}>
+            <button
+              type="button"
+              onClick={this.onSignOutClick}
+              className="button-as-link"
+            >
               <div className="menu-icon">
                 <Icon svg="ico-deconnect-w" alt="Déconnexion" />
               </div>
               Déconnexion
-            </a>
+            </button>
           </li>
         </ul>
       </div>

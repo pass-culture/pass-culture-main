@@ -112,7 +112,6 @@ class Booking extends Component {
   }
 
   render() {
-    console.log('render render render renderrender renderrenderrenderrender')
     const { booking, currentRecommendation, error } = this.props
     const { token } = booking || {}
     const { offer, tz } = currentRecommendation || {}
