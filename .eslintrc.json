@@ -16,7 +16,6 @@
     "sort-vars": [1, { "ignoreCase": true }],
     "react/forbid-prop-types": [2, { "forbid": ["any"] }],
     "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
-    "no-shadow": 1,
     "no-nested-ternary": 1,
     "no-param-reassign": 1,
     "no-unused-vars": 1,

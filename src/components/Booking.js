@@ -89,7 +89,7 @@ class Booking extends Component {
   }
 
   makeBooking = event => {
-    const { currentRecommendation, requestData } = this.props
+    const { currentRecommendation, dispatchRequestData } = this.props
     const { offer } = currentRecommendation || {}
     const { occurences } = this.state
     this.setState({
@@ -101,7 +101,7 @@ class Booking extends Component {
       occurences[0].offer &&
       occurences[0].offer[0]
     const offerId = selectedOffer ? selectedOffer.id : offer.id
-    requestData('POST', 'bookings', {
+    dispatchRequestData('POST', 'bookings', {
       body: {
         currentRecommendationId: currentRecommendation.id,
         offerId,
@@ -387,7 +387,7 @@ Booking.propTypes = {
   currentRecommendation: PropTypes.object,
   error: PropTypes.object.isRequired,
   removeDataError: PropTypes.func.isRequired,
-  requestData: PropTypes.func.isRequired,
+  dispatchRequestData: PropTypes.func.isRequired,
   tz: PropTypes.string.isRequired,
 }
 
@@ -406,6 +406,6 @@ export default compose(
         error: state.errors.booking,
       }
     },
-    { closeModal, removeDataError, requestData }
+    { closeModal, removeDataError, dispatchRequestData: requestData }
   )
 )(Booking)

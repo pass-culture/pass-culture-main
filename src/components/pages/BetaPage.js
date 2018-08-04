@@ -10,8 +10,8 @@ import { closeSplash } from '../../reducers/splash'
 
 class BetaPage extends Component {
   componentDidMount() {
-    const { closeSplash, closeSplashTimeout } = this.props
-    setTimeout(closeSplash, closeSplashTimeout)
+    const { dispatchCloseSplash, closeSplashTimeout } = this.props
+    setTimeout(dispatchCloseSplash, closeSplashTimeout)
   }
 
   render() {
@@ -43,7 +43,7 @@ Et merci de votre participation pour nous aider à l'améliorer !
 }
 
 BetaPage.propTypes = {
-  closeSplash: PropTypes.func.isRequired,
+  dispatchCloseSplash: PropTypes.func.isRequired,
   closeSplashTimeout: PropTypes.number.isRequired,
 }
 
@@ -51,7 +51,7 @@ export default compose(
   connect(
     state => ({ closeSplashTimeout: state.splash.closeTimeout }),
     {
-      closeSplash,
+      dispatchCloseSplash: closeSplash,
     }
   )
 )(BetaPage)

@@ -19,14 +19,14 @@ import { recommendationNormalizer } from '../../utils/normalizers'
 class DiscoveryPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
-      closeLoading,
+      dispatchCloseLoading,
       currentRecommendation,
       history,
       match: {
         params: { offerId, mediationId },
       },
-      requestData,
-      showLoading,
+      dispatchRequestData,
+      dispatchShowLoading,
     } = this.props
 
     if (!currentRecommendation) {
@@ -37,7 +37,7 @@ class DiscoveryPage extends Component {
         .filter(param => param)
         .join('&')
 
-      requestData('PUT', `recommendations?${query}`, {
+      dispatchRequestData('PUT', `recommendations?${query}`, {
         handleSuccess: (state, action) => {
           if (get(action, 'data.length')) {
             if (!offerId) {
@@ -52,12 +52,12 @@ class DiscoveryPage extends Component {
               history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
             }
           } else {
-            closeLoading({ isEmpty: true })
+            dispatchCloseLoading({ isEmpty: true })
           }
         },
         normalizer: recommendationNormalizer,
       })
-      showLoading({ isEmpty: false })
+      dispatchShowLoading({ isEmpty: false })
     }
   }
 
@@ -127,13 +127,13 @@ DiscoveryPage.defaultProps = {
 
 DiscoveryPage.propTypes = {
   backButton: PropTypes.bool.isRequired,
-  closeLoading: PropTypes.func.isRequired,
+  dispatchCloseLoading: PropTypes.func.isRequired,
   currentRecommendation: PropTypes.object,
   history: PropTypes.object.isRequired,
   isMenuOnTop: PropTypes.bool,
   match: PropTypes.object.isRequired,
-  requestData: PropTypes.func.isRequired,
-  showLoading: PropTypes.func.isRequired,
+  dispatchRequestData: PropTypes.func.isRequired,
+  dispatchShowLoading: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -154,6 +154,10 @@ export default compose(
   withRouter,
   connect(
     mapStateToProps,
-    { closeLoading, requestData, showLoading }
+    {
+      dispatchCloseLoading: closeLoading,
+      dispatchRequestData: requestData,
+      dispatchShowLoading: showLoading,
+    }
   )
 )(DiscoveryPage)

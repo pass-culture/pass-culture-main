@@ -15,11 +15,11 @@ class Menu extends Component {
   }
 
   onSignOutClick = () => {
-    const { closeModal, history, requestData } = this.props
-    requestData('GET', 'users/signout', {
+    const { dispatchCloseModal, history, dispatchRequestData } = this.props
+    dispatchRequestData('GET', 'users/signout', {
       handleSuccess: () => {
         history.push('/connexion')
-        closeModal()
+        dispatchCloseModal()
       },
     })
   }
@@ -124,9 +124,9 @@ Mon Pass
 }
 
 Menu.propTypes = {
-  closeModal: PropTypes.func.isRequired,
+  dispatchCloseModal: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  requestData: PropTypes.func.isRequired,
+  dispatchRequestData: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
 }
 
@@ -135,8 +135,8 @@ export default compose(
   connect(
     state => ({ user: state.user }),
     {
-      closeModal,
-      requestData,
+      dispatchCloseModal: closeModal,
+      dispatchRequestData: requestData,
     }
   )
 )(Menu)

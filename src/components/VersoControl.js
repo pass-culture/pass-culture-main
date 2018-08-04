@@ -20,9 +20,9 @@ class VersoControl extends Component {
   }
 
   onClickFavorite = () => {
-    const { currentRecommendation, requestData } = this.props
+    const { currentRecommendation, dispatchRequestData } = this.props
     const { id, isFavorite } = currentRecommendation
-    requestData('PATCH', `currentRecommendations/${id}`, {
+    dispatchRequestData('PATCH', `currentRecommendations/${id}`, {
       body: {
         isFavorite: !isFavorite,
       },
@@ -35,12 +35,12 @@ class VersoControl extends Component {
   }
 
   onClickJyVais = event => {
-    const { currentRecommendation, offer, showModal } = this.props
+    const { currentRecommendation, offer, dispatchShowModal } = this.props
     const { isFinished } = currentRecommendation || {}
 
     if (isFinished) return
     if (offer) {
-      showModal(<Booking />, {
+      dispatchShowModal(<Booking />, {
         fullscreen: true,
         maskColor: 'transparent',
         hasCloseButton: false,
@@ -129,8 +129,8 @@ VersoControl.propTypes = {
   bookings: PropTypes.array.isRequired,
   currentRecommendation: PropTypes.object,
   offer: PropTypes.object,
-  requestData: PropTypes.func.isRequired,
-  showModal: PropTypes.func.isRequired,
+  dispatchRequestData: PropTypes.func.isRequired,
+  dispatchShowModal: PropTypes.func.isRequired,
 }
 
 export default compose(
@@ -150,8 +150,8 @@ export default compose(
       }
     },
     {
-      requestData,
-      showModal,
+      dispatchRequestData: requestData,
+      dispatchShowModal: showModal,
     }
   )
 )(VersoControl)

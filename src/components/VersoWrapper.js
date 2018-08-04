@@ -35,11 +35,15 @@ class VersoWrapper extends Component {
   }
 
   toucheMoveHandler() {
-    const { draggable, makeUndraggable, makeDraggable } = this.props
+    const {
+      draggable,
+      dispatchMakeUndraggable,
+      dispatchMakeDraggable,
+    } = this.props
     if (draggable && this.$el.scrollTop > 0) {
-      makeUndraggable()
+      dispatchMakeUndraggable()
     } else if (!draggable && this.$el.scrollTop <= 0) {
-      makeDraggable()
+      dispatchMakeDraggable()
     }
   }
 
@@ -107,8 +111,8 @@ VersoWrapper.propTypes = {
   draggable: PropTypes.bool.isRequired,
   headerColor: PropTypes.string,
   isFlipped: PropTypes.bool.isRequired,
-  makeDraggable: PropTypes.func.isRequired,
-  makeUndraggable: PropTypes.func.isRequired,
+  dispatchMakeDraggable: PropTypes.func.isRequired,
+  dispatchMakeUndraggable: PropTypes.func.isRequired,
 }
 
 export default compose(
@@ -126,6 +130,9 @@ export default compose(
         draggable: state.verso.draggable,
       }
     },
-    { makeDraggable, makeUndraggable }
+    {
+      dispatchMakeDraggable: makeDraggable,
+      dispatchMakeUndraggable: makeUndraggable,
+    }
   )
 )(VersoWrapper)
