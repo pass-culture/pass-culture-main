@@ -21,7 +21,6 @@
     "react/sort-comp": 1,
     "prefer-destructuring": 1,
     "react/destructuring-assignment": 1,
-    "no-unused-expressions": 1,
     "import/no-cycle": 1,
     "react/no-array-index-key": 1,
     "jsx-a11y/click-events-have-key-events": 1,

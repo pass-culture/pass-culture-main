@@ -59,7 +59,7 @@ class Main extends Component {
 
   handleHistoryBlock = () => {
     const { blockers, history } = this.props
-    this.unblock && this.unblock()
+    if (this.unblock) this.unblock()
     this.unblock = history.block(() => {
       if (!blockers) {
         return false
@@ -80,7 +80,7 @@ class Main extends Component {
 
   componentDidMount() {
     this.handleHistoryBlock()
-    this.props.user && this.handleDataRequest()
+    if (this.props.user) this.handleDataRequest()
   }
 
   componentDidUpdate(prevProps) {
@@ -98,7 +98,7 @@ class Main extends Component {
   }
 
   componentWillUnmount() {
-    this.unblock && this.unblock()
+    if (this.unblock) this.unblock()
     this.props.resetForm()
   }
 

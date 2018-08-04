@@ -24,9 +24,10 @@ class VersoWrapper extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!this.props.isFlipped && prevProps.isFlipped) {
-      this.$header.scrollTo && this.$header.scrollTo(0, 0)
-    }
+    const shouldScroll =
+      !this.props.isFlipped && prevProps.isFlipped && this.$header.scrollTo
+    if (!shouldScroll) return
+    this.$header.scrollTo(0, 0)
   }
 
   componentWillUnmount() {
