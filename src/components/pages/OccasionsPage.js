@@ -6,10 +6,10 @@ import {
   showModal,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
-import { withRouter } from 'react-router'
-import { connect } from 'react-redux'
 
 import OccasionItem from '../OccasionItem'
 import Main from '../layout/Main'
@@ -45,6 +45,7 @@ class OccasionsPage extends Component {
       defaultQueryParams,
       nextProps.queryParams
     )
+
     return {
       queryParams,
       page: prevState.page,
