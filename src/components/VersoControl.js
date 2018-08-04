@@ -34,7 +34,7 @@ class VersoControl extends Component {
     // TODO
   }
 
-  onClickJyVais = event => {
+  onClickJyVais = () => {
     const { currentRecommendation, offer, dispatchShowModal } = this.props
     const { isFinished } = currentRecommendation || {}
 

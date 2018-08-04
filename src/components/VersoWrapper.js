@@ -23,7 +23,7 @@ class VersoWrapper extends Component {
     this.$el.addEventListener('touchmove', this.toucheMoveHandler, opts)
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (!this.props.isFlipped && prevProps.isFlipped) {
       this.$header.scrollTo && this.$header.scrollTo(0, 0)
     }

@@ -51,7 +51,7 @@ class Main extends Component {
     }
   }
 
-  handleDataSuccess = (state, action) => {
+  handleDataSuccess = () => {
     this.setState({
       loading: false,
     })

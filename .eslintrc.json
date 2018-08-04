@@ -18,7 +18,6 @@
     "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
     "no-nested-ternary": 1,
     "no-param-reassign": 1,
-    "no-unused-vars": 1,
     "react/sort-comp": 1,
     "prefer-destructuring": 1,
     "react/destructuring-assignment": 1,

@@ -17,7 +17,7 @@ import currentRecommendationSelector from '../../selectors/currentRecommendation
 import { recommendationNormalizer } from '../../utils/normalizers'
 
 class DiscoveryPage extends Component {
-  handleDataRequest = (handleSuccess, handleFail) => {
+  handleDataRequest = () => {
     const {
       dispatchCloseLoading,
       currentRecommendation,

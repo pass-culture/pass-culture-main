@@ -1,7 +1,6 @@
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 
 class InventoryPage extends Component {
   render = () => (

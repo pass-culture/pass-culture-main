@@ -88,7 +88,7 @@ class Booking extends Component {
     })
   }
 
-  makeBooking = event => {
+  makeBooking = () => {
     const { currentRecommendation, dispatchRequestData } = this.props
     const { offer } = currentRecommendation || {}
     const { occurences } = this.state
