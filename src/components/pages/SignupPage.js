@@ -20,7 +20,7 @@ class SignupPage extends Component {
       <Main name="sign-up">
         <div className="section">
           <h2 className="subtitle is-italic">
-            Une minute pour créer un compte, et puis c'est tout&nbsp;!
+            {"Une minute pour créer un compte, et puis c'est tout !"}
           </h2>
 
           <br />
@@ -63,7 +63,9 @@ class SignupPage extends Component {
               label={(
                 <span className="subtitle">
                   {' '}
-                  J'accepte d'être contacté par mail pour donner mon avis sur le
+                  {
+                    "J'accepte d'être contacté par mail pour donner mon avis sur le"
+                  }
                   {' '}
                   <a
                     href="http://passculture.beta.gouv.fr"
@@ -84,7 +86,7 @@ class SignupPage extends Component {
                 Créer
               </SubmitButton>
               <NavLink to="/connexion" className="button is-secondary">
-                J'ai déjà un compte
+                {"J'ai déjà un compte"}
               </NavLink>
             </Portal>
           </Form>

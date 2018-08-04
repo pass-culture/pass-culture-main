@@ -26,14 +26,14 @@ du Pass Culture
           </span>
         </h1>
         <p>
-Et merci de votre participation pour nous aider à l'améliorer !
+          {"Et merci de votre participation pour nous aider à l'améliorer !"}
         </p>
         <footer>
           <Link
             to="/inscription"
             className="button is-secondary has-text-weight-light is-italic"
           >
-            C'est par là
+            {"C'est par là"}
             <Icon svg="ico-next" alt="Suivant" />
           </Link>
         </footer>

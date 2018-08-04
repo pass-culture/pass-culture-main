@@ -206,11 +206,11 @@ hh:mm
                   {managingOfferer ? (
                     <div>
                       <p>
-                        Cette réservation d'une valeur de
+                        {"Cette réservation d'une valeur de"}
                         {' '}
-                        <Price value={price} />
+                        <Price value={price} /> 
                         {' '}
-vous est offerte par :
+                        {'vous est offerte par :'}
                         <br />
                         <strong>
                           {managingOfferer.name}
@@ -295,8 +295,9 @@ Présentez le code suivant sur place :
               </p>
               <p>
                 <small>
-                  Retrouvez ce code et les détails de l'offre dans la rubrique
-                  "Mes réservations" de votre compte.
+                  {
+                    'Retrouvez ce code et les détails de l\'offre dans la rubrique "Mes réservations" de votre compte.'
+                  }
                 </small>
               </p>
             </div>

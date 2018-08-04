@@ -38,7 +38,7 @@ Mes réservations
         {soonBookings.length > 0 && (
           <div>
             <h4>
-C'est bientôt !
+              {"C'est bientôt !"}
             </h4>
             <ul className="bookings">
               {soonBookings.map(booking => (

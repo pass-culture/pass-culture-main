@@ -29,7 +29,6 @@
     "jsx-a11y/no-noninteractive-element-interactions": 1,
     "jsx-a11y/label-has-for": 1,
     "no-await-in-loop": 1,
-    "react/no-unescaped-entities": 1,
     "react/no-unused-state": 1,
     "no-return-await": 1,
     "no-restricted-syntax": 1

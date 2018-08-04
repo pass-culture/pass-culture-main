@@ -107,7 +107,7 @@ Plus de dates disponibles :(
             ))}
             {bookableOccurences.length > 7 && (
               <li>
-Cliquez sur "j'y vais" pour voir plus de dates.
+                {'Cliquez sur "j\'y vais" pour voir plus de dates.'}
               </li>
             )}
           </ul>

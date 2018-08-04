@@ -110,7 +110,7 @@ Mon Pass
                   free="——"
                   className={managingOfferer ? 'strike' : ''}
                 />
-                J'y vais!
+                {"J'y vais!"}
               </button>
             </Finishable>
           )}
