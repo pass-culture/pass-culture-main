@@ -6406,17 +6406,21 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
-pass-culture-shared@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.3.tgz#f2abf01501b2ef25355ce64ac14e38f44caad5e7"
+pass-culture-shared@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.11.tgz#682829216addea7b1b3560d01f65cab9e0a95098"
   dependencies:
     lodash.set "^4.3.2"
     lodash.uniqby "^4.7.0"
     moment "^2.18.1"
     moment-locale-fr "^1.0.0"
     moment-timezone "^0.5.21"
+    react "^0.14||^15.5.4||^16.1.1"
+    react-autocomplete "^1.8.1"
     react-autosize-textarea "^4.0.0"
     react-datepicker "^1.5.0"
+    react-dom "^0.14||^15.5.4||^16.1.1"
+    react-dotdotdot "^1.2.3"
     redux-saga "^0.15.3"
     uuid "^3.3.2"
 
@@ -7442,6 +7446,10 @@ reduce-function-call@^1.0.1:
   resolved "https://registry.yarnpkg.com/reduce-function-call/-/reduce-function-call-1.0.2.tgz#5a200bf92e0e37751752fe45b0ab330fd4b6be99"
   dependencies:
     balanced-match "^0.4.2"
+
+redux-persist@^5.10.0:
+  version "5.10.0"
+  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
 
 redux-saga@^0.15.3:
   version "0.15.6"
