@@ -2,9 +2,7 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import {
-  closeNotification,
   Modal,
-  requestData,
   resetForm,
   showNotification,
   withLogin,
@@ -141,7 +139,6 @@ Main.propTypes = {
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   blockers: PropTypes.array.isRequired,
   children: PropTypes.node.isRequired,
-  closeNotification: PropTypes.func.isRequired,
   dispatchResetForm: PropTypes.func.isRequired,
   dispatchShowNotification: PropTypes.func.isRequired,
   footer: PropTypes.object,
@@ -151,7 +148,6 @@ Main.propTypes = {
   name: PropTypes.string.isRequired,
   noPadding: PropTypes.bool,
   redBg: PropTypes.bool,
-  requestData: PropTypes.func.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
@@ -167,10 +163,8 @@ export default compose(
       user: state.user,
     }),
     {
-      closeNotification,
       dispatchResetForm: resetForm,
       dispatchShowNotification: showNotification,
-      requestData,
     }
   )
 )(Main)
