@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom'
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
 
+const getkey = index => `booking-item-${index}`
+
 const FavoritesPage = ({ favorites }) => (
   <Main name="favorites" redBg footer={{ borderTop: true }} backButton>
     <header>
@@ -18,7 +20,10 @@ Mes favoris
       <div>
         <ul className="favorites">
           {favorites.map((b, index) => (
-            <BookingItem key={index} {...b} />
+            // FIXME -> react/no-array-index-key
+            // il faut plutot s'appuyer sur l'id d'un booking
+            // https://reactjs.org/docs/lists-and-keys.html#keys
+            <BookingItem key={getkey(index)} {...b} />
           ))}
         </ul>
       </div>

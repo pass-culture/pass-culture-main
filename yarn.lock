@@ -6582,8 +6582,8 @@ pascalcase@^0.1.1:
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
 pass-culture-shared@^0.0.9:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.7.tgz#207a2914ce6f5029dee5d6844cd2ed14b0be8464"
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.11.tgz#682829216addea7b1b3560d01f65cab9e0a95098"
   dependencies:
     lodash.set "^4.3.2"
     lodash.uniqby "^4.7.0"
@@ -7624,7 +7624,7 @@ react-is@^16.4.1:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.1.tgz#d624c4650d2c65dbd52c72622bbf389435d9776e"
 
-react-markdown@^3.3.0:
+react-markdown@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/react-markdown/-/react-markdown-3.4.1.tgz#9fb726a94dfcb600d625fd06a5550629801303dc"
   dependencies:

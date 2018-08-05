@@ -7,10 +7,43 @@ import React from 'react'
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import ReactMarkdown from 'react-markdown'
 
 import bookingsSelector from '../selectors/bookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { navigationLink } from '../utils/geolocation'
+
+const renderDescription = desc => (
+  <div className="description">
+    <ReactMarkdown source={desc.split('\n').join('\n\n')} />
+  </div>
+)
+
+const renderVenueDetails = (venue, distance, where) => (
+  <div>
+    <h3>
+      {'Où ?'}
+    </h3>
+    <a
+      className="distance"
+      href={navigationLink(venue.latitude, venue.longitude)}
+    >
+      {distance}
+      <Icon svg="ico-geoloc-solid2" alt="Géolocalisation" />
+    </a>
+    <ul className="address-info">
+      <li>
+        {where.name}
+      </li>
+      {where.address.split(/[,\n\r]/).map((el, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <li key={index}>
+          {capitalize(el)}
+        </li>
+      ))}
+    </ul>
+  </div>
+)
 
 const VersoInfo = ({ bookings, currentRecommendation }) => {
   const { distance, offer, thumbUrl, tz } = currentRecommendation || {}
@@ -64,15 +97,7 @@ const VersoInfo = ({ bookings, currentRecommendation }) => {
         </div>
       )}
       {false && <img alt="" className="offerPicture" src={infos.image} />}
-      {infos.description && (
-        <div className="description">
-          {infos.description.split('\n').map((p, index) => (
-            <p key={index}>
-              {p}
-            </p>
-          ))}
-        </div>
-      )}
+      {infos.description && renderDescription(infos.description)}
       {infos.what && (
         <div>
           <h3>
@@ -95,6 +120,7 @@ Plus de dates disponibles :(
             </li>
 )}
             {infos.when.map((occurence, index) => (
+              // eslint-disable-next-line react/no-array-index-key
               <li key={index}>
                 {tz &&
                   capitalize(
@@ -114,30 +140,8 @@ Plus de dates disponibles :(
         </div>
       )}
       {infos.where.name &&
-        infos.where.address && (
-          <div>
-            <h3>
-Où ?
-            </h3>
-            <a
-              className="distance"
-              href={navigationLink(venue.latitude, venue.longitude)}
-            >
-              {distance}
-              <Icon svg="ico-geoloc-solid2" alt="Géolocalisation" />
-            </a>
-            <ul className="address-info">
-              <li>
-                {infos.where.name}
-              </li>
-              {infos.where.address.split(/[,\n\r]/).map((el, index) => (
-                <li key={index}>
-                  {capitalize(el)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        infos.where.address &&
+        renderVenueDetails(venue, distance, infos.where)}
     </div>
   )
 }
