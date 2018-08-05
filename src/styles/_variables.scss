@@ -8,7 +8,7 @@ $widescreen: 1152px + (2 * $gap); // 1280px
 $fullhd: 1344px + (2 * $gap); // 1472px
 
 // Colors
-$red: #e60039;
+$red: #E60039;
 
 $primary: $red;
 
@@ -72,4 +72,4 @@ $footer-height: 3.5rem;
 
 // Misc
 $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-$box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
+$box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);

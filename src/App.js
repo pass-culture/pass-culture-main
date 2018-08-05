@@ -10,9 +10,9 @@ const App = ({ children }) => (
   <Debug className="app">
     {children}
     <img
-      src={`${ROOT_PATH}/beta.png`}
-      className="beta"
       alt="beta"
+      className="beta"
+      src={`${ROOT_PATH}/beta.png`}
       srcSet={`${ROOT_PATH}/beta@2x.png`}
     />
     <Splash />

@@ -1,27 +1,15 @@
 .splash {
-  position: absolute;
   top: 0;
-  bottom: 0;
   left: 0;
   right: 0;
+  bottom: 0;
+  position: absolute;
+  //
   display: flex;
+  text-align: center;
   justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  //
   color: $white;
+  z-index: $zindex-splash;
   background-color: $primary;
-  transition: opacity 1s, z-index 10ms 0.75s;
-  z-index: 10000;
-
-  p {
-    font-size: 1.25rem;
-    margin: 2rem;
-    font-style: italic;
-    font-weight: 500;
-  }
-
-  &.is-invisible {
-    opacity: 0;
-    z-index: -10000;
-  }
 }
