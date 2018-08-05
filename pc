@@ -134,7 +134,7 @@ elif [[ "$CMD" == "install" ]]; then
 			 yarn global add concurrently;
        git submodule init;
        git submodule update;
-       git submodule foreach git checkout origin master;
+       git submodule foreach git checkout master;
 			 ./pc symlink;
        cd $ROOT_PATH/webapp && yarn;
 			 cd $ROOT_PATH/pro && yarn'
