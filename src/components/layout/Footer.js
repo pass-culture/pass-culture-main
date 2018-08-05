@@ -54,9 +54,9 @@ Footer.defaultProps = {
 Footer.propTypes = {
   borderTop: PropTypes.bool.isRequired,
   colored: PropTypes.bool,
+  dispatchShowModal: PropTypes.func.isRequired,
   isFlipped: PropTypes.bool.isRequired,
   onTop: PropTypes.bool,
-  dispatchShowModal: PropTypes.func.isRequired,
 }
 
 export default connect(

@@ -29,8 +29,8 @@ class Card extends PureComponent {
     if (!shouldRequest) return
 
     const options = {
-      key: 'recommendations',
       body: { isClicked: true },
+      key: 'recommendations',
     }
 
     requestDataAction('PATCH', `recommendations/${recommendation.id}`, options)
@@ -63,15 +63,15 @@ Card.defaultProps = {
 
 Card.propTypes = {
   isFlipped: PropTypes.bool,
-  recommendation: PropTypes.object,
-  width: PropTypes.number.isRequired,
   position: PropTypes.string.isRequired,
+  recommendation: PropTypes.object,
   requestDataAction: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
 }
 
 const mapSizeToProps = ({ width, height }) => ({
-  width: Math.min(width, 500), // body{max-width: 500px;}
   height,
+  width: Math.min(width, 500), // body{max-width: 500px;}
 })
 
 export default compose(
@@ -81,6 +81,7 @@ export default compose(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
       return {
+        isFlipped: state.verso.isFlipped,
         recommendation:
           ownProps.position === 'current'
             ? currentRecommendationSelector(
@@ -103,7 +104,6 @@ export default compose(
                   mediationId,
                   ownProps.position
                 ),
-        isFlipped: state.verso.isFlipped,
       }
     },
     { requestDataAction: requestData }

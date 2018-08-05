@@ -42,8 +42,8 @@ class VersoControl extends Component {
     if (offer) {
       dispatchShowModal(<Booking />, {
         fullscreen: true,
-        maskColor: 'transparent',
         hasCloseButton: false,
+        maskColor: 'transparent',
       })
     } else {
       alert("Ce bouton vous permet d'effectuer une reservation")
@@ -128,9 +128,9 @@ VersoControl.defaultProps = {
 VersoControl.propTypes = {
   bookings: PropTypes.array.isRequired,
   currentRecommendation: PropTypes.object,
-  offer: PropTypes.object,
   dispatchRequestData: PropTypes.func.isRequired,
   dispatchShowModal: PropTypes.func.isRequired,
+  offer: PropTypes.object,
 }
 
 export default compose(

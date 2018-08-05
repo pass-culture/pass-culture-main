@@ -12,7 +12,7 @@
     "fixture": true
   },
   "rules": {
-    "sort-keys": [1],
+    "sort-keys": [1, "asc", { "caseSensitive": true, "natural": false }],
     "sort-vars": [1, { "ignoreCase": true }],
     "react/forbid-prop-types": [2, { "forbid": ["any"] }],
     "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
@@ -20,9 +20,7 @@
     "no-param-reassign": 1,
     "prefer-destructuring": 1,
     "import/no-cycle": 1,
-    "react/no-array-index-key": 1,
     "jsx-a11y/click-events-have-key-events": 1,
-    "jsx-a11y/anchor-is-valid": 1,
     "jsx-a11y/no-static-element-interactions": 1,
     "jsx-a11y/no-noninteractive-element-interactions": 1,
     "jsx-a11y/label-has-for": 1,

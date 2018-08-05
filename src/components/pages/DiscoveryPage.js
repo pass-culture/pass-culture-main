@@ -127,13 +127,13 @@ DiscoveryPage.defaultProps = {
 
 DiscoveryPage.propTypes = {
   backButton: PropTypes.bool.isRequired,
-  dispatchCloseLoading: PropTypes.func.isRequired,
   currentRecommendation: PropTypes.object,
+  dispatchCloseLoading: PropTypes.func.isRequired,
+  dispatchRequestData: PropTypes.func.isRequired,
+  dispatchShowLoading: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isMenuOnTop: PropTypes.bool,
   match: PropTypes.object.isRequired,
-  dispatchRequestData: PropTypes.func.isRequired,
-  dispatchShowLoading: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {

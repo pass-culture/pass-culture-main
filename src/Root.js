@@ -18,9 +18,9 @@ import { version } from '../package.json'
 const Root = () => {
   if (!IS_DEV) {
     Raven.config(`${API_URL}/client_errors`, {
-      release: version,
       environment: process.env.NODE_ENV,
       logger: 'javascript',
+      release: version,
     }).install()
   }
   return (

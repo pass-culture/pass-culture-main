@@ -10,10 +10,10 @@ const appendToLog = ({ method, values }) => {
     .slice(-LOG_LENGTH)
     .concat([
       {
-        method,
-        values,
-        time: new Date(),
         hash: randomHash(),
+        method,
+        time: new Date(),
+        values,
       },
     ])
   return values[0]

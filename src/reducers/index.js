@@ -22,8 +22,8 @@ const rootReducer = combineReducers({
   loading,
   modal,
   splash,
-  verso,
   user,
+  verso,
 })
 
 export default rootReducer

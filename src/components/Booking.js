@@ -29,8 +29,8 @@ class Booking extends Component {
     this.state = {
       bookingInProgress: false,
       date: null,
-      time: null,
       focused: false,
+      time: null,
     }
   }
 
@@ -328,8 +328,8 @@ Une erreur est survenue lors de la réservation :
                   type="button"
                   className={classnames({
                     button: true,
-                    'is-primary': true,
                     'is-hidden': !dateOk,
+                    'is-primary': true,
                   })}
                   onClick={this.makeBooking}
                 >
@@ -386,11 +386,11 @@ Booking.defaultProps = {
 
 Booking.propTypes = {
   booking: PropTypes.object.isRequired,
-  dispatchCloseModal: PropTypes.func.isRequired,
   currentRecommendation: PropTypes.object,
-  error: PropTypes.object.isRequired,
+  dispatchCloseModal: PropTypes.func.isRequired,
   dispatchRemoveDataError: PropTypes.func.isRequired,
   dispatchRequestData: PropTypes.func.isRequired,
+  error: PropTypes.object.isRequired,
   tz: PropTypes.string.isRequired,
 }
 

@@ -43,8 +43,8 @@ du Pass Culture
 }
 
 BetaPage.propTypes = {
-  dispatchCloseSplash: PropTypes.func.isRequired,
   closeSplashTimeout: PropTypes.number.isRequired,
+  dispatchCloseSplash: PropTypes.func.isRequired,
 }
 
 export default compose(

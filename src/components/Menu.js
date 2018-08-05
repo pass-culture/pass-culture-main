@@ -125,8 +125,8 @@ Mon Pass
 
 Menu.propTypes = {
   dispatchCloseModal: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
   dispatchRequestData: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
 }
 

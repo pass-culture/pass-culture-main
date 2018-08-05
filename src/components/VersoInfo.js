@@ -69,8 +69,8 @@ const VersoInfo = ({ bookings, currentRecommendation }) => {
   )
 
   const infos = {
-    image: thumbUrl,
     description,
+    image: thumbUrl,
     what: description ? '' : get(offer, 'eventOccurence.event.description'),
     when: uniq(
       bookableOccurences
@@ -81,8 +81,8 @@ const VersoInfo = ({ bookings, currentRecommendation }) => {
         .sort()
     ),
     where: {
-      name,
       address: `${address},${postalCode || ''},${city || ''}`,
+      name,
     },
   }
   Logger.fixme('Verso info is mounted but not visible')

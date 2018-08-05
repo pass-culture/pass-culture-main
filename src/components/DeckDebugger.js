@@ -29,15 +29,15 @@ const DeckDebugger = ({
 )
 
 DeckDebugger.defaultProps = {
+  currentRecommendation: null,
   isLoadingAfter: false,
   isLoadingBefore: false,
-  currentRecommendation: null,
 }
 
 DeckDebugger.propTypes = {
+  currentRecommendation: PropTypes.object,
   isLoadingAfter: PropTypes.bool,
   isLoadingBefore: PropTypes.bool,
-  currentRecommendation: PropTypes.object,
   nextLimit: PropTypes.number.isRequired,
   previousLimit: PropTypes.number.isRequired,
   recommendations: PropTypes.array.isRequired,

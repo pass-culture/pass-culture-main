@@ -20,20 +20,20 @@ const routes = [
   {
     exact: true,
     path: '/beta',
-    title: "Bienvenue dans l'avant-première du Pass Culture",
     render: () => <BetaPage />,
+    title: "Bienvenue dans l'avant-première du Pass Culture",
   },
   {
     exact: true,
     path: '/connexion',
-    title: 'Connexion',
     render: () => <SigninPage />,
+    title: 'Connexion',
   },
   {
     exact: true,
     path: '/inscription',
-    title: 'Inscription',
     render: () => <SignupPage />,
+    title: 'Inscription',
   },
   {
     exact: true,
@@ -43,38 +43,38 @@ const routes = [
   {
     exact: true,
     path: '/decouverte/:offerId/:mediationId?',
-    title: 'Les offres',
     render: () => <DiscoveryPage />,
+    title: 'Les offres',
   },
   {
     exact: true,
     path: '/favoris',
-    title: 'Mes favoris',
     render: () => <FavoritesPage />,
+    title: 'Mes favoris',
   },
   {
     exact: true,
     path: '/inventaire',
-    title: 'Inventaire',
     render: () => <InventoryPage />,
+    title: 'Inventaire',
   },
   {
     exact: true,
     path: '/profil',
-    title: 'Profil',
     render: () => <ProfilePage />,
+    title: 'Profil',
   },
   {
     exact: true,
     path: '/reservations',
-    title: 'Réservations',
     render: () => <BookingsPage />,
+    title: 'Réservations',
   },
   {
     exact: true,
     path: '/mentions-legales',
-    title: 'Mentions Légales',
     render: () => <TermsPage />,
+    title: 'Mentions Légales',
   },
 ]
 

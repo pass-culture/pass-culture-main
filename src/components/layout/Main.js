@@ -51,9 +51,9 @@ class Main extends Component {
   handleDataFail = (state, action) => {
     const { dispatchShowNotification } = this.props
     dispatchShowNotification({
-      type: 'danger',
       text:
         get(action, 'errors.global', []).join('\n') || 'Erreur de chargement',
+      type: 'danger',
     })
   }
 
@@ -105,12 +105,12 @@ class Main extends Component {
     return [
       <Tag
         className={classnames({
-          page: true,
           [`${name}-page`]: true,
-          'with-header': Boolean(header),
-          'with-footer': Boolean(footer) || Boolean(footerProps),
-          'red-bg': redBg,
           'no-padding': noPadding,
+          page: true,
+          'red-bg': redBg,
+          'with-footer': Boolean(footer) || Boolean(footerProps),
+          'with-header': Boolean(header),
         })}
         key="main"
       >
@@ -127,20 +127,23 @@ class Main extends Component {
 }
 
 Main.defaultProps = {
+  Tag: 'main',
   backButton: false,
   footer: null,
   handleDataRequest: null,
   noPadding: false,
   redBg: false,
-  Tag: 'main',
   user: null,
 }
 
 Main.propTypes = {
+  Tag: PropTypes.string,
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   blockers: PropTypes.array.isRequired,
   children: PropTypes.node.isRequired,
   closeNotification: PropTypes.func.isRequired,
+  dispatchResetForm: PropTypes.func.isRequired,
+  dispatchShowNotification: PropTypes.func.isRequired,
   footer: PropTypes.object,
   handleDataRequest: PropTypes.func,
   history: PropTypes.object.isRequired,
@@ -149,9 +152,6 @@ Main.propTypes = {
   noPadding: PropTypes.bool,
   redBg: PropTypes.bool,
   requestData: PropTypes.func.isRequired,
-  dispatchResetForm: PropTypes.func.isRequired,
-  dispatchShowNotification: PropTypes.func.isRequired,
-  Tag: PropTypes.string,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
@@ -168,9 +168,9 @@ export default compose(
     }),
     {
       closeNotification,
-      requestData,
       dispatchResetForm: resetForm,
       dispatchShowNotification: showNotification,
+      requestData,
     }
   )
 )(Main)

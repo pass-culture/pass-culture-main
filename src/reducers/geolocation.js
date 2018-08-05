@@ -18,7 +18,7 @@ function geolocation(state = initialState, action) {
 }
 
 export function setGeolocationPosition({ latitude, longitude }) {
-  return { type: SET_GEOLOCATION_POSITION, latitude, longitude }
+  return { latitude, longitude, type: SET_GEOLOCATION_POSITION }
 }
 
 export function setGeolocationWatchId(watchId) {

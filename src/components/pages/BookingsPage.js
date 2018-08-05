@@ -15,8 +15,8 @@ class BookingsPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const { dispatchRequestData } = this.props
     dispatchRequestData('GET', 'bookings', {
-      handleSuccess,
       handleFail,
+      handleSuccess,
       normalizer: bookingNormalizer,
     })
   }
@@ -79,8 +79,8 @@ Pas encore de réservation.
 }
 
 BookingsPage.propTypes = {
-  otherBookings: PropTypes.array.isRequired,
   dispatchRequestData: PropTypes.func.isRequired,
+  otherBookings: PropTypes.array.isRequired,
   soonBookings: PropTypes.array.isRequired,
 }
 

@@ -110,11 +110,11 @@ VersoWrapper.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string.isRequired,
   currentRecommendation: PropTypes.object,
+  dispatchMakeDraggable: PropTypes.func.isRequired,
+  dispatchMakeUndraggable: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
   headerColor: PropTypes.string,
   isFlipped: PropTypes.bool.isRequired,
-  dispatchMakeDraggable: PropTypes.func.isRequired,
-  dispatchMakeUndraggable: PropTypes.func.isRequired,
 }
 
 export default compose(
@@ -128,8 +128,8 @@ export default compose(
           offerId,
           mediationId
         ),
-        isFlipped: state.verso.isFlipped,
         draggable: state.verso.draggable,
+        isFlipped: state.verso.isFlipped,
       }
     },
     {

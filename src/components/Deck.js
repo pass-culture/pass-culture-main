@@ -219,10 +219,10 @@ class Deck extends Component {
       y: 0,
     }
     const draggableBounds = (isFlipped && {}) || {
-      top: -100,
       bottom: 0,
       left: position.x - width,
       right: position.x + width,
+      top: -100,
     }
 
     return (
@@ -307,8 +307,8 @@ class Deck extends Component {
 Deck.defaultProps = {
   currentRecommendation: null,
   // flipRatio: 0.25,
-  isEmpty: false,
   horizontalSlideRatio: 0.2,
+  isEmpty: false,
   nextRecommendation: null,
   previousRecommendation: null,
   readTimeout: 2000,
@@ -317,26 +317,26 @@ Deck.defaultProps = {
 }
 
 Deck.propTypes = {
-  nextLimit: PropTypes.number.isRequired,
-  previousLimit: PropTypes.number.isRequired,
   currentRecommendation: PropTypes.object,
   dispatchFlip: PropTypes.func.isRequired,
   dispatchRequestData: PropTypes.func.isRequired,
   dispatchUnFlip: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
-  // flipRatio: PropTypes.number,
+  height: PropTypes.number.isRequired,
   history: PropTypes.object.isRequired,
   horizontalSlideRatio: PropTypes.number,
-  // isDebug: PropTypes.bool,
   isEmpty: PropTypes.bool,
   isFlipDisabled: PropTypes.bool.isRequired,
   isFlipped: PropTypes.bool.isRequired,
-  height: PropTypes.number.isRequired,
+  nextLimit: PropTypes.number.isRequired,
   nextRecommendation: PropTypes.object,
-  // noDataTimeout: PropTypes.number,
-  recommendations: PropTypes.array.isRequired,
+  previousLimit: PropTypes.number.isRequired,
   previousRecommendation: PropTypes.object,
+  // flipRatio: PropTypes.number,
+  // isDebug: PropTypes.bool,
+  // noDataTimeout: PropTypes.number,
   readTimeout: PropTypes.number,
+  recommendations: PropTypes.array.isRequired,
   unFlippable: PropTypes.bool.isRequired,
   verticalSlideRatio: PropTypes.number,
   width: PropTypes.number.isRequired,
@@ -385,8 +385,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapSizeToProps = ({ width, height }) => ({
   // body{max-width: 500px;}
-  width: Math.min(width, 500),
   height,
+  width: Math.min(width, 500),
 })
 
 const mapDispatchToProps = {

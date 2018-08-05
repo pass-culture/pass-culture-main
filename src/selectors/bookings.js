@@ -32,8 +32,8 @@ export default createSelector(
       const date = moment(beginningDatetime)
 
       return Object.assign({
-        isSoon: date < twoDaysFromNow,
         date,
+        isSoon: date < twoDaysFromNow,
       })
     })
 

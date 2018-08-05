@@ -48,8 +48,8 @@ Bienvenue !
 }
 
 ProfilePage.propTypes = {
-  history: PropTypes.object.isRequired,
   dispatchRequestData: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
 }
 

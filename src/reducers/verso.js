@@ -7,10 +7,10 @@ export const SHOW_VERSO = 'SHOW_VERSO'
 
 // INITIAL STATE
 const initialState = {
+  draggable: true,
   isActive: false,
   isFlipped: false,
   unFlippable: false,
-  draggable: true,
 }
 
 // REDUCER

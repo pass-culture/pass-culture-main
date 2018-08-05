@@ -13,9 +13,9 @@ const init = store => {
     },
     err => Logger.warn('Could not get geoloc', err),
     {
+      enableHighAccuracy: false,
       maximumAge: 10 * 60 * 1000, // 10 minutes
       timeout: 5 * 1000, // 5 seconds
-      enableHighAccuracy: false,
     }
   )
   store.dispatch(setGeolocationWatchId(watchId))

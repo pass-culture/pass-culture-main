@@ -53,8 +53,8 @@ export default createCachedSelector(
     // return
     return Object.assign(
       {
-        isFinished,
         headerColor,
+        isFinished,
       },
       currentRecommendation
     )

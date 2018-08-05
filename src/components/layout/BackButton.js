@@ -33,8 +33,8 @@ BackButton.defaultProps = {
 BackButton.propTypes = {
   className: PropTypes.string,
   history: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
 }
 
 export default compose(withRouter)(BackButton)
