@@ -22,13 +22,6 @@ class Main extends Component {
     Tag: 'main',
   }
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      loading: false,
-    }
-  }
-
   componentDidMount() {
     this.handleHistoryBlock()
     const { user } = this.props
@@ -57,9 +50,6 @@ class Main extends Component {
 
   handleDataFail = (state, action) => {
     const { dispatchShowNotification } = this.props
-    this.setState({
-      loading: false,
-    })
     dispatchShowNotification({
       type: 'danger',
       text:
@@ -72,16 +62,7 @@ class Main extends Component {
     if (!handleDataRequest) return
     // possibility of the handleDataRequest to return
     // false in order to not trigger the loading
-    this.setState({
-      loading: true,
-    })
     handleDataRequest(this.handleDataSuccess, this.handleDataFail)
-  }
-
-  handleDataSuccess = () => {
-    this.setState({
-      loading: false,
-    })
   }
 
   handleHistoryBlock = () => {
