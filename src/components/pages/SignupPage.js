@@ -16,6 +16,7 @@ class SignupPage extends Component {
   }
 
   render() {
+    const { $footer } = this.state
     return (
       <Main name="sign-up">
         <div className="section">
@@ -81,7 +82,7 @@ class SignupPage extends Component {
               type="checkbox"
             />
 
-            <Portal node={this.state.$footer}>
+            <Portal node={$footer}>
               <SubmitButton className="button is-primary is-inverted">
                 Créer
               </SubmitButton>

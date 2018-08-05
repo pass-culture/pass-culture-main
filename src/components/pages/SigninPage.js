@@ -19,6 +19,7 @@ class SigninPage extends Component {
   }
 
   render() {
+    const { $footer } = this.state
     return (
       <Main name="sign-in" redBg>
         <div className="section form-container">
@@ -57,7 +58,7 @@ Bonjour&nbsp;!
               type="password"
             />
 
-            <Portal node={this.state.$footer}>
+            <Portal node={$footer}>
               <SubmitButton className="button is-primary is-inverted">
                 Connexion
               </SubmitButton>

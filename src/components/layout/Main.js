@@ -31,48 +31,51 @@ class Main extends Component {
 
   componentDidMount() {
     this.handleHistoryBlock()
-    if (this.props.user) this.handleDataRequest()
+    const { user } = this.props
+    if (user) this.dataRequestHandler()
   }
 
   componentDidUpdate(prevProps) {
-    const blockersChanged = prevProps.blockers !== this.props.blockers
-    const userChanged = !prevProps.user && this.props.user // User just loaded
-    const searchChanged =
-      this.props.location.search !== prevProps.location.search
+    const { blockers, user, location } = this.props
+    const blockersChanged = prevProps.blockers !== blockers
+    const userChanged = !prevProps.user && user // User just loaded
+    const searchChanged = location.search !== prevProps.location.search
 
     if (blockersChanged) {
       this.handleHistoryBlock()
     }
     if (userChanged || searchChanged) {
-      this.handleDataRequest()
+      this.dataRequestHandler()
     }
   }
 
   componentWillUnmount() {
     if (this.unblock) this.unblock()
-    this.props.resetForm()
+    const { dispatchResetForm } = this.props
+    dispatchResetForm()
   }
 
   handleDataFail = (state, action) => {
+    const { dispatchShowNotification } = this.props
     this.setState({
       loading: false,
     })
-    this.props.showNotification({
+    dispatchShowNotification({
       type: 'danger',
       text:
         get(action, 'errors.global', []).join('\n') || 'Erreur de chargement',
     })
   }
 
-  handleDataRequest = () => {
-    if (this.props.handleDataRequest) {
-      // possibility of the handleDataRequest to return
-      // false in order to not trigger the loading
-      this.setState({
-        loading: true,
-      })
-      this.props.handleDataRequest(this.handleDataSuccess, this.handleDataFail)
-    }
+  dataRequestHandler = () => {
+    const { handleDataRequest } = this.props
+    if (!handleDataRequest) return
+    // possibility of the handleDataRequest to return
+    // false in order to not trigger the loading
+    this.setState({
+      loading: true,
+    })
+    handleDataRequest(this.handleDataSuccess, this.handleDataFail)
   }
 
   handleDataSuccess = () => {
@@ -165,8 +168,8 @@ Main.propTypes = {
   noPadding: PropTypes.bool,
   redBg: PropTypes.bool,
   requestData: PropTypes.func.isRequired,
-  resetForm: PropTypes.func.isRequired,
-  showNotification: PropTypes.func.isRequired,
+  dispatchResetForm: PropTypes.func.isRequired,
+  dispatchShowNotification: PropTypes.func.isRequired,
   Tag: PropTypes.string,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
@@ -185,8 +188,8 @@ export default compose(
     {
       closeNotification,
       requestData,
-      resetForm,
-      showNotification,
+      dispatchResetForm: resetForm,
+      dispatchShowNotification: showNotification,
     }
   )
 )(Main)

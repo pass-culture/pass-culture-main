@@ -13,7 +13,8 @@ import { bookingNormalizer } from '../../utils/normalizers'
 
 class BookingsPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    this.props.requestData('GET', 'bookings', {
+    const { dispatchRequestData } = this.props
+    dispatchRequestData('GET', 'bookings', {
       handleSuccess,
       handleFail,
       normalizer: bookingNormalizer,
@@ -79,7 +80,7 @@ Pas encore de réservation.
 
 BookingsPage.propTypes = {
   otherBookings: PropTypes.array.isRequired,
-  requestData: PropTypes.func.isRequired,
+  dispatchRequestData: PropTypes.func.isRequired,
   soonBookings: PropTypes.array.isRequired,
 }
 
@@ -89,6 +90,6 @@ export default compose(
       otherBookings: otherBookingsSelector(state),
       soonBookings: soonBookingsSelector(state),
     }),
-    { requestData }
+    { dispatchRequestData: requestData }
   )
 )(BookingsPage)

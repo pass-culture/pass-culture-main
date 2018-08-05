@@ -9,12 +9,9 @@ import Main from '../layout/Main'
 
 class ProfilePage extends Component {
   componentWillReceiveProps(nextProps) {
-    const {
-      history: { push },
-      user,
-    } = nextProps
-    if (user === false && this.props.user) {
-      push('/')
+    const { user } = this.props
+    if (nextProps.user === false && user) {
+      nextProps.history.push('/')
     }
   }
 

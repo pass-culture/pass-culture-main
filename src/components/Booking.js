@@ -42,12 +42,13 @@ class Booking extends Component {
     )
     const { tz } = this.props
     const NOW = moment()
+    const { date } = this.state
     const availableDates = mediatedOccurences
       .filter(o => moment(o.offer[0].bookingLimitDatetime).isAfter(NOW))
       .map(o => moment(o.beginningDatetime).tz(tz))
     const availableMediatedOccurences = []
     const availableHours = availableDates.filter((d, index) => {
-      const isFiltered = d.isSame(selectedDate || this.state.date, 'day')
+      const isFiltered = d.isSame(selectedDate || date, 'day')
       if (isFiltered) {
         availableMediatedOccurences.push(mediatedOccurences[index])
       }
@@ -61,8 +62,9 @@ class Booking extends Component {
   }
 
   closeBooking = () => {
-    this.props.removeDataError()
-    this.props.closeModal()
+    const { dispatchRemoveDataError, dispatchCloseModal } = this.props
+    dispatchRemoveDataError()
+    dispatchCloseModal()
   }
 
   currentStep = () => {
@@ -117,11 +119,11 @@ class Booking extends Component {
     const { offer, tz } = currentRecommendation || {}
     const { price, venue } = offer || {}
     const { managingOfferer } = venue || {}
-
+    const { date, time, focused } = this.state
     const step = this.currentStep()
     const dateRequired =
       get(this.props, 'currentRecommendation.mediatedOccurences', []).length > 1
-    const dateOk = dateRequired ? this.state.date && this.state.time : true
+    const dateOk = dateRequired ? date && time : true
     const { availableDates, availableHours } = this.getAvailableDateTimes()
     return (
       <VersoWrapper>
@@ -137,11 +139,11 @@ Choisissez une date :
                   </label>
                   <div className="input-field date-picker">
                     <SingleDatePicker
-                      date={this.state.date}
+                      date={date}
                       onDateChange={this.handleDateSelect}
-                      focused={this.state.focused}
-                      onFocusChange={({ focused }) =>
-                        this.setState({ focused })
+                      focused={focused}
+                      onFocusChange={evt =>
+                        this.setState({ focused: evt.focused })
                       }
                       numberOfMonths={1}
                       noBorder
@@ -150,8 +152,8 @@ Choisissez une date :
                       }
                       inputIconPosition="after"
                       anchorDirection="center"
-                      isDayBlocked={date =>
-                        !availableDates.find(d => d.isSame(date.tz(tz), 'day'))
+                      isDayBlocked={pdate =>
+                        !availableDates.find(d => d.isSame(pdate.tz(tz), 'day'))
                       }
                       customInputIcon={
                         <Icon svg="ico-calendar" alt="calendrier" />
@@ -168,10 +170,10 @@ Choisissez une heure :
                   <div className="input-field" htmlFor="time">
                     <select
                       id="time"
-                      value={this.state.time || ''}
+                      value={time || ''}
                       className="input"
                       onChange={e => this.setState({ time: e.target.value })}
-                      disabled={!this.state.date}
+                      disabled={!date}
                     >
                       {availableHours.length === 0 && (
                       <option>
@@ -384,10 +386,10 @@ Booking.defaultProps = {
 
 Booking.propTypes = {
   booking: PropTypes.object.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  dispatchCloseModal: PropTypes.func.isRequired,
   currentRecommendation: PropTypes.object,
   error: PropTypes.object.isRequired,
-  removeDataError: PropTypes.func.isRequired,
+  dispatchRemoveDataError: PropTypes.func.isRequired,
   dispatchRequestData: PropTypes.func.isRequired,
   tz: PropTypes.string.isRequired,
 }
@@ -407,6 +409,10 @@ export default compose(
         error: state.errors.booking,
       }
     },
-    { closeModal, removeDataError, dispatchRequestData: requestData }
+    {
+      dispatchCloseModal: closeModal,
+      dispatchRemoveDataError: removeDataError,
+      dispatchRequestData: requestData,
+    }
   )
 )(Booking)

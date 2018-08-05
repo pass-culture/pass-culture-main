@@ -9,7 +9,8 @@ import Menu from '../Menu'
 
 class Footer extends React.PureComponent {
   onClick = () => {
-    this.props.showModal(<Menu />, { zIndex: 10002 })
+    const { dispatchShowModal } = this.props
+    dispatchShowModal(<Menu />, { zIndex: 10002 })
   }
 
   render() {
@@ -55,12 +56,12 @@ Footer.propTypes = {
   colored: PropTypes.bool,
   isFlipped: PropTypes.bool.isRequired,
   onTop: PropTypes.bool,
-  showModal: PropTypes.func.isRequired,
+  dispatchShowModal: PropTypes.func.isRequired,
 }
 
 export default connect(
   state => ({ isFlipped: state.verso.isFlipped }),
   {
-    showModal,
+    dispatchShowModal: showModal,
   }
 )(Footer)
