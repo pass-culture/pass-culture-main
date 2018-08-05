@@ -80,6 +80,8 @@
     "whatwg-fetch": "2.0.3"
   },
   "devDependencies": {
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.19.1",
@@ -92,6 +94,7 @@
     "eslint-plugin-react": "^7.9.1",
     "husky": "^0.14.3",
     "jest": "20.0.4",
+    "mocha": "^5.2.0",
     "prettier": "^1.14.0",
     "prettier-eslint": "^8.8.2",
     "prettier-eslint-cli": "^4.7.1",
@@ -111,7 +114,8 @@
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
     "start": "node scripts/start.js",
     "test": "node scripts/jesttest.js --env=jsdom",
-    "testcafe": "testcafe 'chrome:headless' testcafe"
+    "testcafe": "testcafe 'chrome:headless' testcafe",
+    "spec": "NODE_ENV=development ./node_modules/.bin/_mocha -r babel-register -w ./src/**/*.spec.js"
   },
   "jest": {
     "collectCoverageFrom": [
