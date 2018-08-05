@@ -12,6 +12,9 @@ import currentRecommendationSelector from '../selectors/currentRecommendation'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
 
+// FIXME -> move to pass-culture-shared
+const noop = () => {}
+
 class Card extends PureComponent {
   componentDidUpdate(prevProps) {
     const {
@@ -74,36 +77,34 @@ const mapSizeToProps = ({ width, height }) => ({
   width: Math.min(width, 500), // body{max-width: 500px;}
 })
 
+const getSelectorByCardPosition = position => {
+  switch (position) {
+    case 'current':
+      return currentRecommendationSelector
+    case 'previous':
+      return previousRecommendationSelector
+    case 'next':
+      return nextRecommendationSelector
+    default:
+      return noop
+  }
+}
+
 export default compose(
   withSizes(mapSizeToProps),
   withRouter,
   connect(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
+      const recoSelector = getSelectorByCardPosition(ownProps.position)
       return {
         isFlipped: state.verso.isFlipped,
-        recommendation:
-          ownProps.position === 'current'
-            ? currentRecommendationSelector(
-                state,
-                offerId,
-                mediationId,
-                ownProps.position
-              )
-            : ownProps.position === 'previous'
-              ? previousRecommendationSelector(
-                  state,
-                  offerId,
-                  mediationId,
-                  ownProps.position
-                )
-              : ownProps.position === 'next' &&
-                nextRecommendationSelector(
-                  state,
-                  offerId,
-                  mediationId,
-                  ownProps.position
-                ),
+        recommendation: recoSelector(
+          state,
+          offerId,
+          mediationId,
+          ownProps.position
+        ),
       }
     },
     { requestDataAction: requestData }

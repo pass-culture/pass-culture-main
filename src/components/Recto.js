@@ -10,6 +10,9 @@ import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
 import { IS_DEV } from '../utils/config'
 
+// FIXME -> move to pass-culture-shared
+const noop = () => {}
+
 const Recto = ({ isFlipped, recommendation }) => {
   const { dateRead, mediation, id, index, isClicked, offer, thumbUrl } =
     recommendation || {}
@@ -60,19 +63,27 @@ Recto.propTypes = {
   recommendation: PropTypes.object,
 }
 
+const getSelectorByCardPosition = position => {
+  switch (position) {
+    case 'current':
+      return currentRecommendationSelector
+    case 'previous':
+      return previousRecommendationSelector
+    case 'next':
+      return nextRecommendationSelector
+    default:
+      return noop
+  }
+}
+
 export default compose(
   withRouter,
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
+    const recoSelector = getSelectorByCardPosition(ownProps.position)
     return {
       isFlipped: state.verso.isFlipped,
-      recommendation:
-        ownProps.position === 'current'
-          ? currentRecommendationSelector(state, offerId, mediationId)
-          : ownProps.position === 'previous'
-            ? previousRecommendationSelector(state, offerId, mediationId)
-            : ownProps.position === 'next' &&
-              nextRecommendationSelector(state, offerId, mediationId),
+      recommendation: recoSelector(state, offerId, mediationId),
     }
   })
 )(Recto)
