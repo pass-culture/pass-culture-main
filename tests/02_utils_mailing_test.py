@@ -592,6 +592,41 @@ def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_
     with pytest.raises(Exception):
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
+@patch('requests.get', return_value=get_mocked_response_status_200())
+def test_23_validation_email_should_not_return_clearTextPassword(mock, app):
+    # Given
+    validation_token = secrets.token_urlsafe(20)
+    offerer_data= {'validationToken': validation_token,
+                   'siren': '732075312',
+                   'address': '122 AVENUE DE FRANCE',
+                   'city': 'Paris',
+                   'postalCode': '75013',
+                   'name' : 'Accenture',
+                   }
+    offerer = Offerer(from_dict=offerer_data)
+
+    user_data = {
+        'canBookFreeOffers': False,
+        'departementCode': '75000',
+        'email': 'user@accenture.com',
+        'validationToken': validation_token
+    }
+    user = User(from_dict=user_data)
+    user.setPassword('totallysafepsswd')
+
+    user_offerer = UserOfferer()
+    user_offerer.user = user
+    user_offerer.offerer = offerer
+    user_offerer.validationToken = validation_token
+
+    # When
+    email = write_object_validation_email(offerer, user_offerer)
+    email_html_soup = BeautifulSoup(email['Html-part'], features="html.parser")
+
+    # Then
+    assert 'clearTextPassword' not in str(email_html_soup)
+    assert 'totallysafepsswd' not in str(email_html_soup)
+
 
 # def test_16_offerer_recap_email_future_offer_when_cancellation_with_one_booking(app):
 #     # Given

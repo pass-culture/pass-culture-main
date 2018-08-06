@@ -156,8 +156,10 @@ def write_object_validation_email(*objects_to_validate):
     for obj in objects_to_validate:
         classes_to_validate.append(obj.__class__.__name__)
         if isinstance(obj, UserOfferer):
+            vars_obj_user = vars(obj.user)
+            vars_obj_user.pop('clearTextPassword', None)
             user_offerers.append(obj)
-            user_vars = pformat(vars(obj.user))
+            user_vars = pformat(vars_obj_user)
             offerer_vars_user_offerer = pformat(vars(obj.offerer))
             users_vars_user_offerer.append(user_vars)
             offerers_vars_user_offerer.append(offerer_vars_user_offerer)
