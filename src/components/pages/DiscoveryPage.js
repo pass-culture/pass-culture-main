@@ -31,7 +31,7 @@ class DiscoveryPage extends Component {
 
     if (!currentRecommendation) {
       const query = [
-        offerId && `offerId=${offerId}`,
+        offerId && offerId !== 'tuto' && `offerId=${offerId}`,
         mediationId && `mediationId=${mediationId}`,
       ]
         .filter(param => param)
@@ -41,7 +41,7 @@ class DiscoveryPage extends Component {
         handleSuccess: (state, action) => {
           if (get(action, 'data.length')) {
             if (!offerId) {
-              const firstOfferId = get(action, 'data.0.offerId')
+              const firstOfferId = get(action, 'data.0.offerId') || 'tuto'
 
               if (!firstOfferId) {
                 Logger.warn('first recommendation has no offer id, weird...')
