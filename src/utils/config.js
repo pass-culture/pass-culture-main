@@ -2,16 +2,22 @@ import moment from 'moment'
 import 'moment/locale/fr'
 import 'moment-timezone'
 
+import { getMobileOperatingSystem } from '../helpers'
+
 moment.locale('fr-fr')
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
-export const IS_DEBUG = true
+// unused
+// export const IS_DEBUG = true
 
+export const PROJECT_NAME = 'Pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
+export const MOBILE_OS = getMobileOperatingSystem()
 
-export const NEW = '_new_'
+// unused
+// export const NEW = '_new_'
 
 let CALCULATED_API_URL
 
@@ -30,30 +36,6 @@ export const THUMBS_URL = IS_DEV
   ? `${API_URL}/storage/thumbs`
   : `${API_URL}/storage/thumbs`
 
-function getMobileOperatingSystem() {
-  if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera
-
-    // Windows Phone must come first because its UA also contains "Android"
-    if (/windows phone/i.test(userAgent)) {
-      return 'windows_phone'
-    }
-
-    if (/android/i.test(userAgent)) {
-      return 'android'
-    }
-
-    // iOS detection from: http://stackoverflow.com/a/9039885/177710
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      return 'ios'
-    }
-    return 'unknown'
-  }
-  return 'unknown'
-}
-
-export const MOBILE_OS = getMobileOperatingSystem()
-
 let calculatedLocalhost
 if (typeof window !== 'undefined') {
   calculatedLocalhost =
@@ -68,6 +50,7 @@ if (typeof window !== 'undefined') {
 
 export const IS_LOCALHOST = Boolean(calculatedLocalhost)
 
+// FIXME -> document.body.className should be removed using React.Helmet
 let CALC_ROOT_PATH = ''
 if (typeof window !== 'undefined' && window.cordova) {
   document.body.className += ' cordova'
@@ -78,6 +61,8 @@ if (typeof window !== 'undefined' && window.cordova) {
   } else if (MOBILE_OS === 'ios') {
     // TODO
     document.body.className += ' cordova-ios'
+    // FIXME -> Si ici on applique pas la regle des ';'
+    // L'application plante en respectant la regle eslint.prefer-destructuring
     // CALC_ROOT_PATH = window.location.href.split('/').slice(0, 10).join('/')
     CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
   }
@@ -93,7 +78,6 @@ if (typeof window !== 'undefined' && window.cordova) {
       .join(' ')
   })
 } else if (typeof window !== 'undefined') {
-  document.body.className += ' web'
   CALC_ROOT_PATH = `${window.location.protocol}//${document.location.host}`
 }
 

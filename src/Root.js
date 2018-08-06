@@ -15,6 +15,22 @@ import store from './utils/store'
 import { API_URL, IS_DEV } from './utils/config'
 import { version } from '../package.json'
 
+const buildRoute = route => (
+  <Route {...route} key={route.path} render={route.render} />
+)
+
+const buildNotFoundRoute = () => (
+  <Route
+    path="/:active?"
+    render={({ match, location }) => {
+      const matchedRoute = routes.find(route =>
+        matchPath(`/${match.params.active}`, route)
+      )
+      return location.pathname !== '/' && !matchedRoute && <Redirect to="/" />
+    }}
+  />
+)
+
 const Root = () => {
   if (!IS_DEV) {
     Raven.config(`${API_URL}/client_errors`, {
@@ -28,30 +44,8 @@ const Root = () => {
       <BrowserRouter>
         <App>
           <Switch>
-            {routes.map(route => (
-              <Route
-                key={route.path}
-                {...route}
-                render={match => {
-                  document.title = `${
-                    route.title ? `${route.title} - ` : ''
-                  }Pass Culture`
-                  return route.render(match)
-                }}
-              />
-            ))}
-            <Route
-              path="/:active?"
-              render={({ match, location }) => {
-                const matchedRoute = routes.find(route =>
-                  matchPath(`/${match.params.active}`, route)
-                )
-                return (
-                  location.pathname !== '/' &&
-                  !matchedRoute && <Redirect to="/" />
-                )
-              }}
-            />
+            {routes.map(buildRoute)}
+            {buildNotFoundRoute()}
           </Switch>
         </App>
       </BrowserRouter>
