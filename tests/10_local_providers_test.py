@@ -1,8 +1,16 @@
 import subprocess
 from inspect import isclass
 from glob import glob
-
 from sqlalchemy import func
+
+from local_providers import OpenAgendaEvents,\
+                            SpreadsheetExpStocks,\
+                            SpreadsheetExpVenues,\
+                            TiteLiveThingDescriptions,\
+                            TiteLiveThingThumbs,\
+                            TiteLiveThing,\
+                            TiteLiveStocks,\
+                            TiteLiveVenues
 
 from models.db import db
 from models.pc_object import PcObject
@@ -17,29 +25,32 @@ savedCounts = {}
 
 
 def saveCounts(app):
-    for modelName in app.model:
-        if isclass(app.model[modelName])\
-           and issubclass(app.model[modelName], PcObject)\
+    for modelName in model.__all__:
+        model = getattr(model, modelName)
+        if isclass(model)\
+           and issubclass(model, PcObject)\
            and modelName != "PcObject":
-            savedCounts[modelName] = app.model[modelName].query.count()
+            savedCounts[modelName] = model.query.count()
 
 
 def assertCreatedCounts(app, **counts):
     for modelName in counts:
         print(savedCounts)
-        print(app.model[modelName])
+        model = getattr(model, modelName)
+        print(model)
         print(savedCounts[modelName])
-        assert app.model[modelName].query.count() - savedCounts[modelName]\
+        assert model.query.count() - savedCounts[modelName]\
                == counts[modelName]
 
 
 def assertEmptyDb(app):
     for modelName in app.model:
-        if isinstance(app.model[modelName], PcObject):
+        model = getattr(model, modelName)
+        if isinstance(model, PcObject):
             if modelName == 'Mediation':
-                assert app.model[modelName].query.count() == 2
+                assert model.query.count() == 2
             else:
-                assert app.model[modelName].query.count() == 0
+                assert model.query.count() == 0
 
 def assert_created_thumbs():
     assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
@@ -68,7 +79,7 @@ def test_10_titelive_venues_provider(app):
     assertEmptyDb(app)
     assert_created_thumbs()
     provider_test(app,
-                  app.local_providers.TiteLiveVenues,
+                  TiteLiveVenues,
                   None,
                   checkedObjects=6,
                   createdObjects=6,
@@ -82,8 +93,8 @@ def test_10_titelive_venues_provider(app):
                   Offerer=2)
     provider = Provider.getByClassName('TiteLiveStocks')
     for vp in VenueProvider.query\
-                                     .filter_by(provider=provider)\
-                                     .all():
+                           .filter_by(provider=provider)\
+                           .all():
         assert not vp.isActive
         vp.isActive = True
         PcObject.check_and_save(vp)
@@ -91,7 +102,7 @@ def test_10_titelive_venues_provider(app):
 
 def test_11_titelive_things_provider(app):
     provider_test(app,
-                  app.local_providers.TiteLiveThings,
+                  TiteLiveThings,
                   None,
                   checkedObjects=422,
                   createdObjects=355,
@@ -102,12 +113,12 @@ def test_11_titelive_things_provider(app):
                   updatedThumbs=0,
                   erroredThumbs=0,
                   Thing=355
-                  )
+                 )
 
 
 def test_12_titelive_thing_thumbs_provider(app):
     provider_test(app,
-                  app.local_providers.TiteLiveBookThumbs,
+                  TiteLiveThingThumbs,
                   None,
                   checkedObjects=106,
                   createdObjects=0,
@@ -118,14 +129,14 @@ def test_12_titelive_thing_thumbs_provider(app):
                   updatedThumbs=0,
                   erroredThumbs=0,
                   Thing=0
-                  )
+                 )
     assert db.session.query(func.sum(Thing.thumbCount))\
                          .scalar() == 92
 
 
 def test_13_titelive_thing_desc_provider(app):
     provider_test(app,
-                  app.local_providers.TiteLiveBookDescriptions,
+                  TiteLiveThingDescriptions,
                   None,
                   checkedObjects=6,
                   createdObjects=0,
@@ -136,16 +147,16 @@ def test_13_titelive_thing_desc_provider(app):
                   updatedThumbs=0,
                   erroredThumbs=0,
                   Thing=0
-                  )
+                 )
 
 
 def test_14_titelive_stock_provider(app):
     venueProvider = VenueProvider.query\
-                          .filter_by(venueIdAtOfferProvider='2949')\
-                          .one_or_none()
+                                 .filter_by(venueIdAtOfferProvider='2949')\
+                                 .one_or_none()
     assert venueProvider is not None
     provider_test(app,
-                  app.local_providers.TiteLiveStocks,
+                  TiteLiveStocks,
                   venueProvider,
                   checkedObjects=388,
                   createdObjects=370,
@@ -157,14 +168,14 @@ def test_14_titelive_stock_provider(app):
                   erroredThumbs=0,
                   Offer=185,
                   Stock=185
-                  )
+                 )
 
     venueProvider = VenueProvider.query\
-                          .filter_by(venueIdAtOfferProvider='2921')\
-                          .one_or_none()
+                                 .filter_by(venueIdAtOfferProvider='2921')\
+                                 .one_or_none()
     assert venueProvider is not None
     provider_test(app,
-                  app.local_providers.TiteLiveStocks,
+                  TiteLiveStocks,
                   venueProvider,
                   checkedObjects=370,
                   createdObjects=332,
@@ -176,12 +187,12 @@ def test_14_titelive_stock_provider(app):
                   erroredThumbs=0,
                   Offer=166,
                   Stock=166
-                  )
+                 )
 
 
 def test_15_spreadsheet_exp_venues_provider(app):
     provider_test(app,
-                  app.local_providers.SpreadsheetExpVenues,
+                  SpreadsheetExpVenues,
                   None,
                   checkedObjects=18,
                   createdObjects=18,
@@ -195,9 +206,9 @@ def test_15_spreadsheet_exp_venues_provider(app):
                   Offerer=9)
 
 
-def test_15_spreadsheet_exp_stocks_provider(app):
+def test_16_spreadsheet_exp_stocks_provider(app):
     provider_test(app,
-                  app.local_providers.SpreadsheetExpStocks,
+                  SpreadsheetExpStocks,
                   None,
                   checkedObjects=489,
                   createdObjects=489,
@@ -213,10 +224,10 @@ def test_15_spreadsheet_exp_stocks_provider(app):
                   Offerer=0,
                   Offer=7,
                   Venue=0
-                  )
+                 )
 
 
-def test_16_openagenda_events_provider(app):
+def test_17_openagenda_events_provider(app):
     oa_provider = Provider.getByClassName('OpenAgendaEvents')
     venueProvider = VenueProvider()
     venueProvider.venueId = dehumanize('AE')
@@ -225,10 +236,10 @@ def test_16_openagenda_events_provider(app):
     venueProvider.venueIdAtOfferProvider = '49050769'
     PcObject.check_and_save(venueProvider)
     venueProvider = VenueProvider.query\
-                             .filter_by(venueIdAtOfferProvider='49050769')\
-                             .one_or_none()
+                                 .filter_by(venueIdAtOfferProvider='49050769')\
+                                 .one_or_none()
     provider_test(app,
-                  app.local_providers.OpenAgendaEvents,
+                  OpenAgendaEvents,
                   venueProvider,
                   checkedObjects=18,
                   createdObjects=18,

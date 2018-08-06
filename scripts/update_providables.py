@@ -3,6 +3,7 @@ from pprint import pprint
 
 from flask import current_app as app
 
+import local_providers
 from models.db import db
 from models.event import Event
 from models.stock import Stock
@@ -39,7 +40,7 @@ def do_update(provider, limit):
 @app.manager.option('-w',
                     '--venueProvider',
                     help='Limit update to this venueProvider')
-                    
+
 @app.manager.option('-t',
                     '--type',
                     help='Sync only this type of object'
@@ -66,12 +67,12 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
     if not venue:
         for providable_type in [app.model[type.capitalize()]]\
                                if type else PROVIDABLE_TYPES:
-            for provider_name in app.local_providers:
+            for provider_name in local_providers.__all__:
                 if provider and provider_name != provider:
                     print("Provider " + provider_name + " does not match provider"
                           + " name supplied in command line. Not updating")
                     continue
-                provider_type = app.local_providers[provider_name]
+                provider_type = getattr(local_providers, provider_name)
                 if provider_type.identifierRegexp is None\
                    and provider_type.objectType == providable_type:
                     providerObj = provider_type(None, mock=mock)
