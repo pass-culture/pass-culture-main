@@ -243,9 +243,9 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 	else
 		APP_PATH=$ROOT_PATH/pro
 	fi
+	confirm "Warning: your database will be wiped. Is this OK ?"
+	 "$ROOT_PATH"/pc -e $ENV reset-all-db && "$ROOT_PATH"/pc -e $ENV testcafe
 	if [[ $# == 0 ]]; then
-    confirm "Warning: your database will be wiped. Is this OK ?"
-     "$ROOT_PATH"/pc -e $ENV reset-all-db && pc testcafe
 		RUN='cd $APP_PATH && ./scripts/pc.js testcafe'
 	else
   	RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
