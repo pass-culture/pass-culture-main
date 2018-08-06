@@ -4,7 +4,6 @@ from datetime import datetime
 from pathlib import Path
 from zipfile import ZipFile
 import pandas as pd
-from flask import current_app as app
 
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.offer import Offer
@@ -139,6 +138,3 @@ class TiteLiveStocks(LocalProvider):
     def getDeactivatedObjectIds(self):
         #TODO
         return []
-
-
-app.local_providers.TiteLiveStocks = TiteLiveStocks

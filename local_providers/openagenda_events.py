@@ -6,7 +6,6 @@ import os
 from datetime import datetime
 from pathlib import Path
 import requests
-from flask import current_app as app
 
 from models.db import db
 from models.event import Event
@@ -200,6 +199,3 @@ class OpenAgendaEvents(LocalProvider):
                                                                + (l['longitude'] - float(venue.longitude)) ** 2))
         self.venueLocationUid = locations_by_distance[0]['uid']
         print("OpenAgenda location UID selected for venue :", self.venueLocationUid)
-
-
-app.local_providers.OpenAgendaEvents = OpenAgendaEvents

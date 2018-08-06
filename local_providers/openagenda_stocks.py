@@ -1,5 +1,4 @@
 import random
-from flask import current_app as app
 
 from models.db import db
 from models.event import Event
@@ -52,6 +51,3 @@ class OpenAgendaStocks(app.local_providers.OpenAgendaEvents):
             return super().getObjectThumbDates(eventOrStock)
         else:
             return []
-
-
-app.local_providers.OpenAgendaStocks = OpenAgendaStocks

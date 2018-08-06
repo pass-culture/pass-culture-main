@@ -26,7 +26,7 @@ with app.app_context():
     import models.install
     import utils.login_manager
     import utils.logger
-    import local_providers
+    import local_providers.install
     import routes
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
