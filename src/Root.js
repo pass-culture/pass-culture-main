@@ -8,16 +8,16 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
+import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
+import persistor from './utils/persistor'
 import routes from './utils/routes'
 import store from './utils/store'
 import { API_URL, IS_DEV } from './utils/config'
 import { version } from '../package.json'
 
-const buildRoute = route => (
-  <Route {...route} key={route.path} render={route.render} />
-)
+const buildRoute = route => <Route {...route} key={route.path} />
 
 const buildNotFoundRoute = () => (
   <Route
@@ -41,14 +41,16 @@ const Root = () => {
   }
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <App>
-          <Switch>
-            {routes.map(buildRoute)}
-            {buildNotFoundRoute()}
-          </Switch>
-        </App>
-      </BrowserRouter>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <App>
+            <Switch>
+              {routes.map(buildRoute)}
+              {buildNotFoundRoute()}
+            </Switch>
+          </App>
+        </BrowserRouter>
+      </PersistGate>
     </Provider>
   )
 }
