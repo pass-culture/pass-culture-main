@@ -30,7 +30,7 @@ def pytest_collection_modifyitems(config, items):
 
     print('\n************************************************************')
     print('*                                                          *')
-    print('*  %s tests are still depending on the execution order     *' % len(items_by_category['last']))
+    print('*  %s tests are still depending on the execution order     *' % len(items_by_category['first']))
     print('*                                                          *')
     print('************************************************************')
     items[:] = _sort_alphabetically('first') + _sort_alphabetically('last')
