@@ -8,7 +8,7 @@ from local_providers import OpenAgendaEvents,\
                             SpreadsheetExpVenues,\
                             TiteLiveThingDescriptions,\
                             TiteLiveThingThumbs,\
-                            TiteLiveThing,\
+                            TiteLiveThings,\
                             TiteLiveStocks,\
                             TiteLiveVenues
 
