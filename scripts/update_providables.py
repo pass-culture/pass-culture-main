@@ -49,7 +49,7 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
         venueProviderObj = VenueProvider.query\
                                                   .filter_by(id=venueProvider)\
                                                   .first()
-        provider_class = app.local_providers[venueProviderObj.provider.localClass]
+        provider_class = getattr(local_providers, venueProviderObj.provider.localClass)
         venueProviderProvider = provider_class(venueProviderObj, mock=mock)
         return do_update(venueProviderProvider, limit)
 
@@ -86,7 +86,7 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
             provider_name = venueProviderObj.provider.localClass
             if provider_name is None:
                 continue
-            provider_type = app.local_providers[provider_name]
+            provider_type = getattr(local_providers, provider_name)
             if provider and provider_name != provider:
                 print("  Provider " + provider_name + " for venue does not match provider name"
                       + " supplied in command line. Not updating.")

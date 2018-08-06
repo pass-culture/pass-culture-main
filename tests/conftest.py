@@ -45,7 +45,7 @@ def app():
 
     with app.app_context():
         import models.install
-        import local_providers
+        import local_providers.install
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
 
