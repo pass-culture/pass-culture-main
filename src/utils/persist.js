@@ -3,7 +3,7 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 const persist = {
   key: 'app-passculture',
   storage,
-  whitelist: ['data', 'errors', 'user'],
+  whitelist: ['data', 'user'],
 }
 
 export default persist
