@@ -1,13 +1,14 @@
 import os
 from functools import wraps
 from unittest.mock import Mock
-
 import pytest
 from flask import Flask
 from mailjet_rest import Client
 
+from local_providers.install import install_local_providers
 from models import User, Deposit, Booking, Mediation, Recommendation, UserOfferer
 from models.db import db
+from models.install import install_models
 
 items_by_category = {'first': [], 'last': []}
 
@@ -44,8 +45,8 @@ def app():
     db.init_app(app)
 
     with app.app_context():
-        import models.install
-        import local_providers.install
+        install_models()
+        install_local_providers()
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
 

@@ -4,8 +4,11 @@ from flask_cors import CORS
 from flask import Flask
 from mailjet_rest import Client
 
+from local_providers.install import install_local_providers
 from models.db import db
+from models.install import install_models
 from utils.config import IS_DEV
+import utils.logger
 from utils.mailing import get_contact, subscribe_newsletter, MAILJET_API_KEY, MAILJET_API_SECRET
 
 app = Flask(__name__, static_url_path='/static')
@@ -23,10 +26,9 @@ cors = CORS(app,
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    import models.install
+    install_models()
+    install_local_providers()
     import utils.login_manager
-    import utils.logger
-    import local_providers.install
     import routes
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')

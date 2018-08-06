@@ -6,8 +6,7 @@ from flask import current_app as app
 
 import local_providers
 import models
-from models.db import db
-from models import Event, Offerer, Stock, Thing, Venue, VenueProvider
+from models import db, Event, Offerer, Stock, Thing, Venue, VenueProvider
 
 
 def do_update(provider, limit):
