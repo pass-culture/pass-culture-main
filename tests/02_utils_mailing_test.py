@@ -144,6 +144,7 @@ def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancel
 
 def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app):
     # Given
+    app.mailjet_client.reset_mock()
     stock = create_stock_with_event_offer()
     user = create_user_for_booking_email_test()
     booking = create_booking_for_booking_email_test(user, stock)
@@ -421,7 +422,7 @@ def test_17_offerer_booking_recap_email_book(app):
 
 
 @patch('requests.get', return_value=get_mocked_response_status_200())
-def test_18_validation_email(mock, app):
+def test_18_write_object_validation_email_should_have_some_specific_information(mock, app):
     # Given
     validation_token = secrets.token_urlsafe(20)
     offerer_data= {'validationToken': validation_token,
@@ -482,7 +483,7 @@ def test_18_validation_email(mock, app):
 
 
 @patch('requests.get', return_value=get_mocked_response_status_400())
-def test_19_validation_email_raises_value_error_when_api_does_not_respond(mock, app):
+def test_19_write_object_validation_email_raises_value_error_when_siren_api_does_not_respond(mock, app):
     # Given
     validation_token = secrets.token_urlsafe(20)
     offerer_data = {'validationToken': validation_token,
@@ -514,7 +515,7 @@ def test_19_validation_email_raises_value_error_when_api_does_not_respond(mock, 
         assert 'Error getting API entreprise DATA for SIREN' in str(error.value)
 
 
-def test_20_validation_email_raises_value_error_when_object_to_validate_not_offerer_or_userOfferer(app):
+def test_20_write_object_validation_email_raises_value_error_when_object_to_validate_not_offerer_or_userOfferer(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
     user_data = {
@@ -533,6 +534,7 @@ def test_20_validation_email_raises_value_error_when_object_to_validate_not_offe
 
 def test_21_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
+    app.mailjet_client.reset_mock()
     offerer_data= {
                    'siren': '732075312',
                    'address': '122 AVENUE DE FRANCE',
@@ -563,6 +565,7 @@ def test_21_maybe_send_offerer_validation_email_does_not_send_email_if_all_valid
 
 def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_400(app):
     # Given
+    app.mailjet_client.reset_mock()
     validation_token = secrets.token_urlsafe(20)
     offerer_data = {'validationToken': validation_token,
                     'siren': '732075312',
