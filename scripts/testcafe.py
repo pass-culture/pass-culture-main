@@ -4,8 +4,8 @@ from pprint import pprint
 import traceback
 from flask import current_app as app
 
-from local_providers.openagenda_events import OpenAgendaEvents
 from models.pc_object import PcObject
+from models.provider import Provider
 
 @app.manager.command
 def testcafe():
@@ -17,6 +17,6 @@ def testcafe():
         pprint(vars(e))
 
 def do_testcafe():
-    providerObj = OpenAgendaEvents(None, mock=True)
-    providerObj.dbObject.isActive = True
-    PcObject.check_and_save(providerObj.dbObject)
+    provider = Provider.query.filter_by(localClass='OpenAgendaEvents').first()
+    provider.isActive = True
+    PcObject.check_and_save(provider)
