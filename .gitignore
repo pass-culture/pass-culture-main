@@ -2,3 +2,5 @@
 NOT_FORGET.md
 *.secret
 development_env_file
+.idea/
+*.pgdump
