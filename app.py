@@ -34,10 +34,6 @@ with app.app_context():
     app.get_contact = get_contact
     app.subscribe_newsletter = subscribe_newsletter
 
-    app.model = {}
-    for model_name in models.__all__:
-        app.model[model_name] = getattr(models, model_name)
-
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=IS_DEV, use_reloader=True)

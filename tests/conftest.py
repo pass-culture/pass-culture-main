@@ -49,10 +49,6 @@ def app():
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
 
-        app.model = {}
-        for model_name in models.__all__:
-            app.model[model_name] = getattr(models, model_name)
-
     return app
 
 

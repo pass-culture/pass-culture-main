@@ -1,16 +1,13 @@
+""" update providables """
 import traceback
 from pprint import pprint
 
 from flask import current_app as app
 
 import local_providers
+import models
 from models.db import db
-from models.event import Event
-from models.stock import Stock
-from models.offerer import Offerer
-from models.thing import Thing
-from models.venue import Venue
-from models.venue_provider import VenueProvider
+from models import Event, Offerer, Stock, Thing, Venue, VenueProvider
 
 
 def do_update(provider, limit):
@@ -65,8 +62,8 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
                         Thing,
                         Stock]
     if not venue:
-        for providable_type in [app.model[type.capitalize()]]\
-                               if type else PROVIDABLE_TYPES:
+        model = getattr(models, type.capitalize())
+        for providable_type in model if type else PROVIDABLE_TYPES:
             for provider_name in local_providers.__all__:
                 if provider and provider_name != provider:
                     print("Provider " + provider_name + " does not match provider"
@@ -82,8 +79,8 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
     venueProviderObjs = venueProviderQuery.filter_by(id=int(venue))\
                   if venue\
                   else venueProviderQuery.all()
-    for providable_type in [app.model[type.capitalize()]]\
-                           if type else PROVIDABLE_TYPES:
+    model = getattr(models, type.capitalize())
+    for providable_type in model if type else PROVIDABLE_TYPES:
         for venueProviderObj in venueProviderObjs:
             db.session.add(venueProviderObj)
             provider_name = venueProviderObj.provider.localClass

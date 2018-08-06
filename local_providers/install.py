@@ -13,4 +13,5 @@ for name in local_providers.__all__:
         p.localClass = name
         p.isActive = False
         db.session.add(p)
-        db.session.commit()
+
+db.session.commit()

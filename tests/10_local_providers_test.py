@@ -45,7 +45,7 @@ def assertCreatedCounts(app, **counts):
 
 
 def assertEmptyDb(app):
-    for modelName in app.model:
+    for modelName in models.__all__:
         model = getattr(models, modelName)
         if isinstance(model, PcObject):
             if modelName == 'Mediation':
