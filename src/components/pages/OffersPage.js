@@ -3,6 +3,7 @@ import {
   Icon,
   InfiniteScroller,
   requestData,
+  resolveIsNew,
   showModal,
   withSearch,
 } from 'pass-culture-shared'
@@ -19,17 +20,6 @@ import offererSelector from '../../selectors/offerer'
 import searchSelector from '../../selectors/search'
 import venueSelector from '../../selectors/venue'
 import { offerNormalizer } from '../../utils/normalizers'
-import { objectToQueryString } from '../../utils/string'
-
-const ASC = 'asc'
-const DESC = 'desc'
-
-const defaultQueryParams = {
-  search: undefined,
-  order_by: `createdAt+${DESC}`,
-  venueId: null,
-  offererId: null,
-}
 
 class OffersPage extends Component {
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
@@ -41,6 +31,7 @@ class OffersPage extends Component {
       },
       handleFail,
       normalizer: offerNormalizer,
+      resolve: resolveIsNew,
     })
     types.length === 0 && requestData('GET', 'types')
   }
@@ -145,7 +136,7 @@ class OffersPage extends Component {
                   className="button is-secondary">
                   <Icon
                     svg={
-                      orderDirection === ASC
+                      orderDirection === 'asc'
                         ? 'ico-sort-ascending'
                         : 'ico-sort-descending'
                     }

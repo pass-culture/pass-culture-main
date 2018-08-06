@@ -42,17 +42,18 @@ class OccasionItem extends Component {
 
   render() {
     const {
+      aggregatedStock,
       event,
       location: { search },
       maxDate,
       mediations,
       offer,
       occurrences,
-      aggregatedStock,
       thing,
       thumbUrl,
       type,
     } = this.props
+    const { isNew } = offer || {}
     const { available, groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
     const { name, createdAt, isActive } = event || thing || {}
@@ -70,6 +71,11 @@ class OccasionItem extends Component {
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className="infos">
+            {isNew && (
+              <li>
+                <div className="recently-added" />
+              </li>
+            )}
             {false &&
               moment(createdAt).isAfter(moment().add(-1, 'days')) && (
                 <li>

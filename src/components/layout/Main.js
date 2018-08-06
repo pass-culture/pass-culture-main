@@ -34,10 +34,10 @@ class Main extends Component {
     this.setState({
       loading: false,
     })
+    console.log('action', action)
     this.props.showNotification({
       type: 'danger',
-      text:
-        get(action, 'errors.global', []).join('\n') || 'Erreur de chargement',
+      text: get(action, 'errors.0.global') || 'Erreur de chargement',
     })
   }
 

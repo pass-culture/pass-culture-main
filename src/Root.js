@@ -7,43 +7,47 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
+import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
+import persistor from './utils/persistor'
 import routes from './utils/routes'
 import store from './utils/store'
 
 const Root = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <App>
-          <Switch>
-            {routes.map((route, index) => (
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <App>
+            <Switch>
+              {routes.map((route, index) => (
+                <Route
+                  key={index}
+                  {...route}
+                  render={match => {
+                    document.title =
+                      (route.title ? `${route.title} - ` : '') + 'Pass Culture'
+                    return route.render(match)
+                  }}
+                />
+              ))}
               <Route
-                key={index}
-                {...route}
-                render={match => {
-                  document.title =
-                    (route.title ? `${route.title} - ` : '') + 'Pass Culture'
-                  return route.render(match)
+                path="/:active?"
+                render={props => {
+                  const matchedRoute = routes.find(route =>
+                    matchPath(`/${props.match.params.active}`, route)
+                  )
+                  return (
+                    props.location.pathname !== '/' &&
+                    !matchedRoute && <Redirect to="/" />
+                  )
                 }}
               />
-            ))}
-            <Route
-              path="/:active?"
-              render={props => {
-                const matchedRoute = routes.find(route =>
-                  matchPath(`/${props.match.params.active}`, route)
-                )
-                return (
-                  props.location.pathname !== '/' &&
-                  !matchedRoute && <Redirect to="/" />
-                )
-              }}
-            />
-          </Switch>
-        </App>
-      </BrowserRouter>
+            </Switch>
+          </App>
+        </BrowserRouter>
+      </PersistGate>
     </Provider>
   )
 }

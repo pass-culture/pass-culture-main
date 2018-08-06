@@ -5,6 +5,7 @@ import {
   loading,
   modal,
   notification,
+  tracker,
   user,
 } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   loading,
   modal,
   notification,
+  tracker,
   user,
 })
 
