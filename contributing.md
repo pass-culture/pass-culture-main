@@ -41,6 +41,8 @@
 
 ## Frontend Javascript
 
+  - [AirBNB React Good Practices](https://github.com/airbnb/javascript/tree/master/react#naming)
+
   - Casse: camelCase pour les variables, sauf CamelCase pour les classes
 
   - Syntaxe des reducers:
