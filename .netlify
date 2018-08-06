@@ -1,1 +1,1 @@
-{"staging":{"site_id":"06e0e1fc-3714-4947-89bb-090a014be86e","path":"build"},"production":{"site_id":"5efa658a-4a29-488d-a009-1c787e064807","path":"build"}}
+{"dev":{"site_id":"cb3b0dbc-e891-47a6-8834-b9759f39af1d","path":"build"},"staging":{"site_id":"06e0e1fc-3714-4947-89bb-090a014be86e","path":"build"},"production":{"site_id":"5efa658a-4a29-488d-a009-1c787e064807","path":"build"}}
