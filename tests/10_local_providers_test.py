@@ -1,3 +1,4 @@
+""" local providers test """
 import subprocess
 from inspect import isclass
 from glob import glob
@@ -11,7 +12,7 @@ from local_providers import OpenAgendaEvents,\
                             TiteLiveThings,\
                             TiteLiveStocks,\
                             TiteLiveVenues
-
+import models
 from models.db import db
 from models.pc_object import PcObject
 from models.provider import Provider
@@ -25,8 +26,8 @@ savedCounts = {}
 
 
 def saveCounts(app):
-    for modelName in model.__all__:
-        model = getattr(model, modelName)
+    for modelName in models.__all__:
+        model = getattr(models, modelName)
         if isclass(model)\
            and issubclass(model, PcObject)\
            and modelName != "PcObject":
@@ -36,7 +37,7 @@ def saveCounts(app):
 def assertCreatedCounts(app, **counts):
     for modelName in counts:
         print(savedCounts)
-        model = getattr(model, modelName)
+        model = getattr(models, modelName)
         print(model)
         print(savedCounts[modelName])
         assert model.query.count() - savedCounts[modelName]\
@@ -45,7 +46,7 @@ def assertCreatedCounts(app, **counts):
 
 def assertEmptyDb(app):
     for modelName in app.model:
-        model = getattr(model, modelName)
+        model = getattr(models, modelName)
         if isinstance(model, PcObject):
             if modelName == 'Mediation':
                 assert model.query.count() == 2
