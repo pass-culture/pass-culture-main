@@ -1,5 +1,7 @@
 """ mailing """
 
+from connectors import api_entreprises
+
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer
@@ -145,7 +147,7 @@ def make_booking_recap_email(stock, booking):
     }
 
 
-def write_object_validation_email(*objects_to_validate):
+def write_object_validation_email(*objects_to_validate, get_by_siren=api_entreprises.get_by_siren):
     user_offerers = []
     offerers = []
     users_vars_user_offerer = []
@@ -166,12 +168,11 @@ def write_object_validation_email(*objects_to_validate):
         elif isinstance(obj, Offerer):
             offerer_vars_offerer = pformat(vars(obj))
             offerers_vars_offerer.append(offerer_vars_offerer)
-            api_entreprise = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/" + obj.siren,
-                                          verify=False)  # FIXME: add root cerficate on docker image ?
-            if api_entreprise.status_code != 200:
+            api_entreprise_response = get_by_siren(obj)
+            if api_entreprise_response.status_code != 200:
                 raise ValueError('Error getting API entreprise DATA for SIREN : '
                                  + obj.siren)
-            offerers_api.append(api_entreprise.json())
+            offerers_api.append(api_entreprise_response.json())
             offerers.append(obj)
         else:
             raise ValueError("Unexpected object type in"

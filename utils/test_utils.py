@@ -4,11 +4,10 @@ import string
 from datetime import datetime, timedelta, timezone
 from os import path
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import requests as req
 
-from models import Thing, Deposit
+from models import Thing, Deposit, UserOfferer, Recommendation
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -189,15 +188,21 @@ def create_booking_for_booking_email_test(user, stock, is_cancellation=False):
     return booking
 
 
-def create_user_for_booking_email_test():
+def create_user(email, publicName, departementCode, canBookFreeOffers=True, password='totallysafepsswd',
+                validationToken=None):
     user = User()
-    user.publicName = 'Test'
-    user.email = 'test@email.com'
+    user.publicName = publicName
+    user.email = email
+    user.canBookFreeOffers = canBookFreeOffers
+    user.departementCode = departementCode
+    user.validationToken = validationToken
+    user.setPassword(password)
     return user
 
 
-def create_stock_with_event_offer(price=10, beginning_datetime_future=True):
+def create_stock_with_event_offer(offerer, beginning_datetime_future=True, price=10):
     stock = Stock()
+    stock.offerer=offerer
     stock.price = price
     stock.eventOccurrence = EventOccurrence()
     if beginning_datetime_future:
@@ -212,25 +217,23 @@ def create_stock_with_event_offer(price=10, beginning_datetime_future=True):
     stock.eventOccurrence.offer.event = Event(
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
-    stock.eventOccurrence.offer.venue = _create_venue_for_booking_email_test()
+    stock.eventOccurrence.offer.venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city',
+                                                     'Test venue', '93')
     stock.isActive = True
     return stock
 
 
-def create_stock_with_thing_offer(price=10):
+def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50):
     stock = Stock()
+    stock.offerer=offerer
     stock.price = price
-    stock.offer = create_thing_offer()
-    stock.offer.venue = _create_venue_for_booking_email_test()
+    if thing_offer:
+        stock.offer = thing_offer
+    else:
+        stock.offer = create_thing_offer()
+    stock.offer.venue = venue
     stock.isActive = True
-    return stock
-
-def create_stock_with_thing_offer(price=10):
-    stock = Stock()
-    stock.price = price
-    stock.offer = create_thing_offer()
-    stock.offer.venue = _create_venue_for_booking_email_test()
-    stock.isActive = True
+    stock.available=available
     return stock
 
 
@@ -245,42 +248,48 @@ def create_thing_offer():
     return offer
 
 
-def create_offerer():
+def create_offerer(siren, address, city, postalCode, name, validationToken=None):
     offerer = Offerer()
+    offerer.siren=siren
     offerer.isActive = True
-    offerer.address = '123 rue test'
-    offerer.postalCode = '93000'
-    offerer.city = 'Test city'
-    offerer.name = 'Test offerer'
+    offerer.address = address
+    offerer.postalCode = postalCode
+    offerer.city = city
+    offerer.name = name
+    offerer.validationToken=validationToken
     return offerer
 
 
-def _create_venue_for_booking_email_test():
+def create_venue(offerer, bookingEmail, address, postalCode, city, name, departementCode):
     venue = Venue()
-    venue.bookingEmail = 'reservations@test.fr'
-    venue.address = '123 rue test'
-    venue.postalCode = '93000'
-    venue.city = 'Test city'
-    venue.name = 'Test offerer'
-    venue.departementCode = '93'
-    venue.managingOfferer = create_offerer()
+    venue.bookingEmail = bookingEmail
+    venue.address = address
+    venue.postalCode = postalCode
+    venue.city = city
+    venue.name = name
+    venue.departementCode = departementCode
+    venue.managingOfferer = offerer
     return venue
 
 
-def create_deposit(user, amount=50):
+def create_deposit(user, date, amount=50, source='public'):
     deposit = Deposit()
     deposit.user = user
-    deposit.source = "Test money"
+    deposit.source = source
     deposit.amount = amount
     return deposit
 
 
-def get_mocked_response_status_200():
-    response = MagicMock(status_code=200, text='')
-    response.json = MagicMock(return_value=MOCKED_SIREN_ENTREPRISES_API_RETURN)
-    return response
+def create_user_offerer(offerer, user, validation_token=None):
+    user_offerer = UserOfferer()
+    user_offerer.user = user
+    user_offerer.offerer = offerer
+    user_offerer.validationToken = validation_token
+    return user_offerer
 
-def get_mocked_response_status_400():
-    response = MagicMock(status_code=400, text='')
-    response.json = MagicMock(return_value=MOCKED_SIREN_ENTREPRISES_API_RETURN)
-    return response
+
+def create_recommendation(thing_offer, user):
+    recommendation = Recommendation()
+    recommendation.offer = thing_offer
+    recommendation.user = user
+    return recommendation

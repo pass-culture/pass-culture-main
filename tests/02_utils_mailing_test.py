@@ -1,5 +1,5 @@
 import secrets
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 
 import pytest
 from bs4 import BeautifulSoup
@@ -11,8 +11,20 @@ from utils.mailing import make_user_booking_recap_email, send_booking_confirmati
     maybe_send_offerer_validation_email
 
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
-    create_user_for_booking_email_test, create_booking_for_booking_email_test, MOCKED_SIREN_ENTREPRISES_API_RETURN, \
-    get_mocked_response_status_200, get_mocked_response_status_400
+    create_user, create_booking_for_booking_email_test, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
+    create_offerer
+
+
+def get_mocked_response_status_200(entity):
+    response = MagicMock(status_code=200, text='')
+    response.json = MagicMock(return_value=MOCKED_SIREN_ENTREPRISES_API_RETURN)
+    return response
+
+def get_mocked_response_status_400(entity):
+    response = MagicMock(status_code=400, text='')
+    response.json = MagicMock(return_value=MOCKED_SIREN_ENTREPRISES_API_RETURN)
+    return response
+
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -88,8 +100,8 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
 
 def test_01_make_user_booking_event_recap_email_should_have_standard_subject(app):
     # Given
-    stock = create_stock_with_event_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
     # When
@@ -100,8 +112,8 @@ def test_01_make_user_booking_event_recap_email_should_have_standard_subject(app
 
 def test_02_make_user_booking_event_recap_email_should_have_standard_body(app):
     # Given
-    stock = create_stock_with_event_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, 'html.parser')
 
@@ -115,8 +127,8 @@ def test_02_make_user_booking_event_recap_email_should_have_standard_body(app):
 
 def test_03_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
     # Given
-    stock = create_stock_with_event_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
     # When
@@ -127,8 +139,8 @@ def test_03_make_user_booking_event_recap_email_should_have_standard_subject_can
 
 def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
     # Given
-    stock = create_stock_with_event_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL, 'html.parser')
 
@@ -145,8 +157,8 @@ def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancel
 def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app):
     # Given
     app.mailjet_client.reset_mock()
-    stock = create_stock_with_event_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     mail_html = HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL
 
@@ -176,9 +188,9 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
 
 def test_06_maker_user_booking_thing_recap_email_should_have_standard_body(app):
-    stock = create_stock_with_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user_for_booking_email_test()
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL, 'html.parser')
 
@@ -191,9 +203,9 @@ def test_06_maker_user_booking_thing_recap_email_should_have_standard_body(app):
 
 
 def test_07_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
-    stock = create_stock_with_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user_for_booking_email_test()
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
     # When
@@ -204,9 +216,9 @@ def test_07_maker_user_booking_thing_recap_email_should_have_standard_subject(ap
 
 def test_8_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation(app):
     # Given
-    stock = create_stock_with_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user_for_booking_email_test()
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
     # When
@@ -217,9 +229,9 @@ def test_8_make_user_booking_thing_recap_email_should_have_standard_subject_canc
 
 def test_9_make_user_booking_thing_recap_email_should_have_standard_body_cancellation(app):
     # Given
-    stock = create_stock_with_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user_for_booking_email_test()
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_THING_CANCELLATION_EMAIL, 'html.parser')
 
@@ -233,8 +245,8 @@ def test_9_make_user_booking_thing_recap_email_should_have_standard_body_cancell
 
 def test_10_booking_recap_email_html_should_have_place_and_structure(app):
     # Given
-    stock = create_stock_with_event_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL, 'html.parser')
 
@@ -249,8 +261,8 @@ def test_10_booking_recap_email_html_should_have_place_and_structure(app):
 
 def test_11_booking_recap_email_subject_should_have_defined_structure(app):
     # Given
-    stock = create_stock_with_event_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
     # When
@@ -263,7 +275,7 @@ def test_11_booking_recap_email_subject_should_have_defined_structure(app):
 def test_12_offerer_recap_email_subject_past_offer_without_booking(app):
     # Given
     expected_subject = '[Reservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
-    stock = create_stock_with_event_offer(beginning_datetime_future=False)
+    stock = create_stock_with_event_offer(offerer=None, beginning_datetime_future=False)
 
     #When
     recap_email = make_final_recap_email_for_stock_with_event(stock)
@@ -285,7 +297,7 @@ def test_13_offerer_recap_email_past_offer_without_booking(app):
         </html>
         '''
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    stock = create_stock_with_event_offer(beginning_datetime_future=False)
+    stock = create_stock_with_event_offer(offerer=None, beginning_datetime_future=False)
 
     #When
     recap_email = make_final_recap_email_for_stock_with_event(stock)
@@ -319,8 +331,8 @@ def test_14_offerer_recap_email_past_offer_with_booking(app):
             </body>
         </html>'''
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    offer = create_stock_with_event_offer(beginning_datetime_future=False)
-    user = create_user_for_booking_email_test()
+    offer = create_stock_with_event_offer(offerer=None, beginning_datetime_future=False)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, offer)
     offer.bookings = [booking]
 
@@ -362,9 +374,9 @@ def test_15_offerer_recap_email_future_offer_when_new_booking_with_old_booking(a
             </body>
         </html>'''
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    stock = create_stock_with_event_offer(beginning_datetime_future=True)
-    user_1 = create_user_for_booking_email_test()
-    user_2 = create_user_for_booking_email_test()
+    stock = create_stock_with_event_offer(offerer=None, beginning_datetime_future=True)
+    user_1 = create_user('test@email.com', 'Test', 93, True)
+    user_2 = create_user('test@email.com', 'Test', 93, True)
     user_2.publicName = 'Test 2'
     user_2.email = 'other_test@email.com'
     booking_1 = create_booking_for_booking_email_test(user_1, stock)
@@ -408,8 +420,8 @@ def test_17_offerer_booking_recap_email_book(app):
         </body>
     </html>'''
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    stock = create_stock_with_thing_offer()
-    user = create_user_for_booking_email_test()
+    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
+    user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
     # When
@@ -421,35 +433,22 @@ def test_17_offerer_booking_recap_email_book(app):
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
-@patch('requests.get', return_value=get_mocked_response_status_200())
-def test_18_write_object_validation_email_should_have_some_specific_information(mock, app):
+def test_18_write_object_validation_email_should_have_some_specific_information(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
-    offerer_data= {'validationToken': validation_token,
-                   'siren': '732075312',
-                   'address': '122 AVENUE DE FRANCE',
-                   'city': 'Paris',
-                   'postalCode': '75013',
-                   'name' : 'Accenture',
-                   }
-    offerer = Offerer(from_dict=offerer_data)
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
+                             city='Paris', postalCode='75013', name='Accenture',
+                             validationToken=validation_token)
 
-    user_data = {
-        'canBookFreeOffers': False,
-        'departementCode': '75000',
-        'email': 'user@accenture.com',
-        'validationToken': validation_token
-    }
-    user = User(from_dict=user_data)
-    user.setPassword('totallysafepsswd')
+    user = create_user(email='user@accenture.com', publicName='Test', departementCode=75, canBookFreeOffers=False,
+                       validationToken=validation_token)
 
-    user_offerer = UserOfferer()
-    user_offerer.user = user
-    user_offerer.offerer = offerer
-    user_offerer.validationToken = validation_token
+    user_offerer = create_user_offerer(offerer, user, validation_token)
 
     # When
-    email = write_object_validation_email(offerer, user_offerer)
+    email = write_object_validation_email(offerer, user_offerer, get_by_siren=get_mocked_response_status_200)
+
+    # Then
     email_html_soup = BeautifulSoup(email['Html-part'], features="html.parser")
     all_paragraphs = email_html_soup.find_all('p')
     all_h3_user_offerer = email_html_soup.find_all('h3', "user_offerer")
@@ -459,9 +458,6 @@ def test_18_write_object_validation_email_should_have_some_specific_information(
     all_h3_offerer = email_html_soup.find_all('h3', "offerer")
     all_pre_offerer = email_html_soup.find_all('pre', "offerer")
     all_h4_offerer = email_html_soup.find_all('h4', "offerer")
-
-
-    # Then
     assert str(all_paragraphs[0]) == '<p>Inscription ou rattachement PRO à valider</p>'
     assert str(all_h3_offerer[0]) == '<h3 class="offerer">Nouvelle Structure : </h3>'
     assert str(all_h3_user_offerer[0]) == '<h3 class="user_offerer">Nouveau Rattachement : </h3>'
@@ -482,35 +478,22 @@ def test_18_write_object_validation_email_should_have_some_specific_information(
     assert 'siege_social' in str(all_pre_offerer[1])
 
 
-@patch('requests.get', return_value=get_mocked_response_status_400())
 def test_19_write_object_validation_email_raises_value_error_when_siren_api_does_not_respond(mock, app):
     # Given
     validation_token = secrets.token_urlsafe(20)
-    offerer_data = {'validationToken': validation_token,
-                    'siren': '732075312',
-                    'address': '122 AVENUE DE FRANCE',
-                    'offerer.city': 'Paris',
-                    'offerer.postalCode': '75013',
-                    'offerer.name': 'Accenture'}
-    offerer = Offerer(from_dict=offerer_data)
 
-    user_data = {
-        'canBookFreeOffers': False,
-        'departementCode': '75000',
-        'email': 'user@accenture.com',
-        'validationToken': validation_token
-    }
-    user = User(from_dict=user_data)
-    user.setPassword('totallysafepsswd')
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
+                             city='Paris', postalCode='75013', name='Accenture',
+                             validationToken=validation_token)
 
-    user_offerer = UserOfferer()
-    user_offerer.user = user
-    user_offerer.offerer = offerer
-    user_offerer.validationToken = validation_token
+    user = create_user(email='user@accenture.com', publicName='Test', departementCode=75, canBookFreeOffers=False,
+                       validationToken=validation_token)
+
+    user_offerer = create_user_offerer(offerer, user, validation_token)
 
     #When
     with pytest.raises(ValueError) as error:
-        write_object_validation_email(offerer, user_offerer)
+        write_object_validation_email(offerer, user_offerer, get_by_siren=get_mocked_response_status_400)
         #Then
         assert 'Error getting API entreprise DATA for SIREN' in str(error.value)
 
@@ -518,14 +501,9 @@ def test_19_write_object_validation_email_raises_value_error_when_siren_api_does
 def test_20_write_object_validation_email_raises_value_error_when_object_to_validate_not_offerer_or_userOfferer(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
-    user_data = {
-        'canBookFreeOffers': False,
-        'departementCode': '75000',
-        'email': 'user@accenture.com',
-        'validationToken': validation_token
-    }
-    user = User(from_dict=user_data)
-    user.setPassword('totallysafepsswd')
+
+    user = create_user(email='user@accenture.com', publicName='Test', departementCode=75, canBookFreeOffers=False,
+                       validationToken=validation_token)
 
     with pytest.raises(ValueError) as error:
         write_object_validation_email(user)
@@ -535,26 +513,14 @@ def test_20_write_object_validation_email_raises_value_error_when_object_to_vali
 def test_21_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
     app.mailjet_client.reset_mock()
-    offerer_data= {
-                   'siren': '732075312',
-                   'address': '122 AVENUE DE FRANCE',
-                   'city': 'Paris',
-                   'postalCode': '75013',
-                   'name' : 'Accenture',
-                   }
-    offerer = Offerer(from_dict=offerer_data)
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
+                             city='Paris', postalCode='75013', name='Accenture',
+                             validationToken=None)
 
-    user_data = {
-        'canBookFreeOffers': False,
-        'departementCode': '75000',
-        'email': 'user@accenture.com',
-    }
-    user = User(from_dict=user_data)
-    user.setPassword('totallysafepsswd')
+    user = create_user(email='user@accenture.com', publicName='Test', departementCode=75, canBookFreeOffers=False,
+                       validationToken=None)
 
-    user_offerer = UserOfferer()
-    user_offerer.user = user
-    user_offerer.offerer = offerer
+    user_offerer = create_user_offerer(offerer, user, validation_token=None)
 
     #When
     maybe_send_offerer_validation_email(offerer, user_offerer)
@@ -567,27 +533,14 @@ def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_
     # Given
     app.mailjet_client.reset_mock()
     validation_token = secrets.token_urlsafe(20)
-    offerer_data = {'validationToken': validation_token,
-                    'siren': '732075312',
-                    'address': '122 AVENUE DE FRANCE',
-                    'offerer.city': 'Paris',
-                    'offerer.postalCode': '75013',
-                    'offerer.name': 'Accenture'}
-    offerer = Offerer(from_dict=offerer_data)
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
+                             city='Paris', postalCode='75013', name='Accenture',
+                             validationToken=validation_token)
 
-    user_data = {
-        'canBookFreeOffers': False,
-        'departementCode': '75000',
-        'email': 'user@accenture.com',
-        'validationToken': validation_token
-    }
-    user = User(from_dict=user_data)
-    user.setPassword('totallysafepsswd')
+    user = create_user(email='user@accenture.com', publicName='Test', departementCode=75, canBookFreeOffers=False,
+                       validationToken=validation_token)
 
-    user_offerer = UserOfferer()
-    user_offerer.user = user
-    user_offerer.offerer = offerer
-    user_offerer.validationToken = validation_token
+    user_offerer = create_user_offerer(offerer, user, validation_token)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
@@ -595,38 +548,25 @@ def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_
     with pytest.raises(Exception):
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
-@patch('requests.get', return_value=get_mocked_response_status_200())
-def test_23_validation_email_should_not_return_clearTextPassword(mock, app):
+def test_23_validation_email_should_not_return_clearTextPassword(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
-    offerer_data= {'validationToken': validation_token,
-                   'siren': '732075312',
-                   'address': '122 AVENUE DE FRANCE',
-                   'city': 'Paris',
-                   'postalCode': '75013',
-                   'name' : 'Accenture',
-                   }
-    offerer = Offerer(from_dict=offerer_data)
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
+                             city='Paris', postalCode='75013', name='Accenture',
+                             validationToken=validation_token)
 
-    user_data = {
-        'canBookFreeOffers': False,
-        'departementCode': '75000',
-        'email': 'user@accenture.com',
-        'validationToken': validation_token
-    }
-    user = User(from_dict=user_data)
-    user.setPassword('totallysafepsswd')
+    user = create_user(email='user@accenture.com', publicName='Test', departementCode=75, canBookFreeOffers=False,
+                       password='totallysafepsswd', validationToken=validation_token)
 
-    user_offerer = UserOfferer()
-    user_offerer.user = user
-    user_offerer.offerer = offerer
-    user_offerer.validationToken = validation_token
+    user_offerer = create_user_offerer(offerer, user, validation_token)
+
+    mocked_api_entreprises = get_mocked_response_status_200
 
     # When
-    email = write_object_validation_email(offerer, user_offerer)
-    email_html_soup = BeautifulSoup(email['Html-part'], features="html.parser")
+    email = write_object_validation_email(offerer, user_offerer, get_by_siren=mocked_api_entreprises)
 
     # Then
+    email_html_soup = BeautifulSoup(email['Html-part'], features="html.parser")
     assert 'clearTextPassword' not in str(email_html_soup)
     assert 'totallysafepsswd' not in str(email_html_soup)
 
