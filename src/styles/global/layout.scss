@@ -1,21 +1,20 @@
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html,
-body,
-#root,
-.app {
+body {
   height: 100%;
   min-height: 100%;
 }
 
 body {
   width: 100%;
-  max-width: 500px;
   margin: 0 auto;
+  max-width: 500px;
+  max-height: 100%;
   font-size: $font-size;
   -webkit-tap-highlight-color: rgba($white, 0);
   -webkit-tap-highlight-color: transparent;
@@ -31,6 +30,23 @@ body {
   overscroll-behavior: contain;
 }
 
+a,
+button {
+  cursor: pointer;
+}
+
+button {
+  user-select: none;
+}
+
+#root,
+.app {
+  height: 100%;
+  overflow: hidden;
+  min-height: 100%;
+  max-height: 100%;
+}
+
 #android-statusbar-overlay {
   display: none;
   width: 100%;
@@ -42,15 +58,40 @@ body {
   z-index: 100000;
 }
 
-.app {
-  position: relative;
+.app .beta-corner {
+  bottom: 0;
+  left: 0;
+  height: $footer-height;
+  width: $footer-height;
+  z-index: $zindex-beta-corner;
+}
 
-  .beta {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: $footer-height;
-    width: $footer-height;
-    z-index: 10001;
-  }
+.hidden {
+  display: none;
+  visibility: hidden;
+}
+
+.visible {
+  display: inherit;
+  visibility: inherit;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-center {
+  text-align: center;
 }

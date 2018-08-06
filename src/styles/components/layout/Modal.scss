@@ -1,7 +1,22 @@
+#overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  position: absolute;
+  z-index: $zindex-overlay;
+  background-color: rgba($black, 0.8);
+}
 
 @keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .modal {
@@ -56,17 +71,20 @@
     margin-bottom: 0.75rem;
     margin-left: 0.75rem;
     margin-right: 0.75rem;
+
     @media (min-width: $widescreen) {
       // so we can avoid cropping things like dropdown lists inside modal.
       // Test that component if you're changing this value!
       overflow-y: visible;
     }
+
     &.fullscreen {
       margin: 0;
       padding: 0;
       border-radius: 0;
       height: 100%;
     }
+
     button.close {
       background-color: transparent;
       top: 1rem;

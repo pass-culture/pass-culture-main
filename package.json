@@ -50,6 +50,7 @@
     "raven-js": "^3.26.3",
     "re-reselect": "^2.1.0",
     "react": "^0.14||^15.5.4||^16.1.1",
+    "react-custom-scrollbars": "^4.2.1",
     "react-dates": "augnustin/react-dates#pass-culture",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^0.14||^15.5.4||^16.1.1",

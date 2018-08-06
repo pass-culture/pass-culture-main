@@ -1,11 +1,10 @@
 // TODO: eventually remove unused dependencies
-@import "~bulma/sass/utilities/_all";
-@import "~bulma/sass/base/_all";
-@import "~bulma/sass/elements/_all";
-@import "~bulma/sass/components/_all";
-@import "~bulma/sass/grid/_all";
-@import "~bulma/sass/layout/_all";
-
+@import '~bulma/sass/utilities/_all';
+@import '~bulma/sass/base/_all';
+@import '~bulma/sass/elements/_all';
+@import '~bulma/sass/components/_all';
+@import '~bulma/sass/grid/_all';
+@import '~bulma/sass/layout/_all';
 
 .button {
   height: auto;
@@ -34,11 +33,17 @@
   }
 }
 
+.disabled,
 [disabled] {
+  cursor: default;
   opacity: $button-disabled-opacity;
 }
 
-.field-group .field.is-horizontal .field-body .field:not(.is-expanded) input[type=checkbox] {
+.field-group
+.field.is-horizontal
+.field-body
+.field:not(.is-expanded)
+input[type='checkbox'] {
   width: 1.1875em;
   margin-top: 0.5rem;
 }

@@ -1,0 +1,51 @@
+$spaces: (0, 3, 5, 7, 8, 12, 16, 20, 28, 30, 32, 40, 48, 60);
+
+$sides: (all, topbottom, leftright, top, left, right, bottom);
+
+@each $space in $spaces {
+  @each $side in $sides {
+    @if $side == 'all' {
+      .m#{$space} {
+        margin: #{$space}px;
+      }
+
+      .p#{$space} {
+        padding: #{$space}px;
+      }
+    }
+
+    @else if $side == 'topbottom' {
+      .my#{$space} {
+        margin-top: #{$space}px;
+        margin-bottom: #{$space}px;
+      }
+
+      .py#{$space} {
+        padding-top: #{$space}px;
+        padding-bottom: #{$space}px;
+      }
+    }
+
+    @else if $side == 'leftright' {
+      .mx#{$space} {
+        margin-left: #{$space}px;
+        margin-right: #{$space}px;
+      }
+
+      .px#{$space} {
+        padding-left: #{$space}px;
+        padding-right: #{$space}px;
+      }
+    }
+
+    @else {
+      .m#{str-slice($side, 0, 1)}#{$space} {
+        margin-#{$side}: #{$space}px;
+      }
+
+      .p#{str-slice($side, 0, 1)}#{$space} {
+        padding-#{$side}: #{$space}px;
+      }
+    }
+  }
+}
