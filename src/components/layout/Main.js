@@ -73,27 +73,29 @@ class Main extends Component {
       .concat(children)
       .filter(e => e.type !== 'header' && e.type !== 'footer')
 
-    return [
-      <Tag
-        className={classnames({
-          [`${name}-page`]: true,
-          'no-padding': noPadding,
-          page: true,
-          'red-bg': redBg,
-          'with-footer': Boolean(footer) || Boolean(footerProps),
-          'with-header': Boolean(header),
-        })}
-        key="main"
-      >
-        {header}
-        {backButton && <BackButton {...backButton} />}
-        <div className="page-content">
-          {content}
-        </div>
-        {footer || (footerProps && <Footer {...footerProps} />)}
-      </Tag>,
-      <Modal key="modal" />,
-    ]
+    return (
+      <React.Fragment>
+        <Tag
+          className={classnames({
+            [`${name}-page`]: true,
+            'no-padding': noPadding,
+            page: true,
+            'red-bg': redBg,
+            'with-footer': Boolean(footer) || Boolean(footerProps),
+            'with-header': Boolean(header),
+          })}
+          key="main"
+        >
+          {header}
+          {backButton && <BackButton {...backButton} />}
+          <div className="page-content">
+            {content}
+          </div>
+          {footer || (footerProps && <Footer {...footerProps} />)}
+        </Tag>
+        <Modal key="modal" />
+      </React.Fragment>
+    )
   }
 }
 
