@@ -27,7 +27,7 @@ def test_11_create_venue_provider(app):
     read_json = create_json
     tries = 0
     while read_json['lastSyncDate'] is None:
-        assert tries < 10 
+        assert tries == 10 
         r_check = req_with_auth().get(API_URL + '/venueProviders/' + vp_id)
         assert r_check.status_code == 200
         read_json = r_check.json()
@@ -59,4 +59,3 @@ def test_14_get_venue_providers_by_venue():
 def test_15_get_all_venue_providers():
     r_list = req_with_auth().post(API_URL + '/venueProviders')
     assert r_list.status_code == 400
-
