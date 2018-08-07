@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 from os import path
 from zipfile import ZipFile
-from flask import current_app as app
 from pandas import read_excel
 
 from models.event import Event
@@ -136,6 +135,3 @@ class SpreadsheetStocks(LocalProvider):
 
     def getObjectThumbDates(self, obj):
         return [self.dateNow]
-
-
-app.local_providers.SpreadsheetStocks = SpreadsheetStocks

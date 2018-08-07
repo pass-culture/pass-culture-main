@@ -3,7 +3,6 @@ import re
 from datetime import datetime
 from pathlib import Path, PurePath
 from zipfile import ZipFile
-from flask import current_app as app
 
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
@@ -29,7 +28,7 @@ def read_date(date):
     return datetime.strptime(str(date), DATE_FORMAT)
 
 
-class TiteLiveBookDescriptions(LocalProvider):
+class TiteLiveThingDescriptions(LocalProvider):
 
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire"\
@@ -96,6 +95,3 @@ class TiteLiveBookDescriptions(LocalProvider):
     def updateObject(self, thing):
         with self.zip.open(self.desc_zipinfo) as f:
             thing.description = f.read().decode('iso-8859-1')
-
-
-app.local_providers.TiteLiveBookDescriptions = TiteLiveBookDescriptions

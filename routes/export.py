@@ -5,6 +5,7 @@ from inspect import isclass
 from io import BytesIO, StringIO
 from flask import current_app as app, jsonify, request, send_file
 
+import models
 from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 
@@ -25,9 +26,10 @@ def check_token():
 
 
 def is_exportable(model_name):
+    model = getattr(models, model_name)
     return not model_name == 'PcObject'\
-           and isclass(app.model[model_name])\
-           and issubclass(app.model[model_name], PcObject)
+           and isclass(model)\
+           and issubclass(model, PcObject)
 
 
 @app.route('/export/', methods=['GET'])
@@ -35,7 +37,7 @@ def list_export_urls():
     check_token()
     return "\n".join([request.host_url+'export/'+model_name
                                       +'?token='+request.args.get('token')
-                      for model_name in filter(is_exportable, app.model.keys())])
+                      for model_name in filter(is_exportable, models.__all__)])
 
 
 def clean_dict_for_export(model_name, dct):
@@ -50,7 +52,7 @@ def export_table(model_name):
     check_token()
     ae = ApiErrors()
     try:
-        model = app.model[model_name]
+        model = getattr(models, model_name)
     except KeyError:
         ae.addError('global', 'Nom de classe incorrect : '+model_name)
         return jsonify(ae.errors), 400

@@ -1,15 +1,12 @@
+""" update providables """
 import traceback
 from pprint import pprint
 
 from flask import current_app as app
 
-from models.db import db
-from models.event import Event
-from models.stock import Stock
-from models.offerer import Offerer
-from models.thing import Thing
-from models.venue import Venue
-from models.venue_provider import VenueProvider
+import local_providers
+import models
+from models import db, Event, Offerer, Stock, Thing, Venue, VenueProvider
 
 
 def do_update(provider, limit):
@@ -39,7 +36,7 @@ def do_update(provider, limit):
 @app.manager.option('-w',
                     '--venueProvider',
                     help='Limit update to this venueProvider')
-                    
+
 @app.manager.option('-t',
                     '--type',
                     help='Sync only this type of object'
@@ -51,7 +48,7 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
         venueProviderObj = VenueProvider.query\
                                                   .filter_by(id=venueProvider)\
                                                   .first()
-        provider_class = app.local_providers[venueProviderObj.provider.localClass]
+        provider_class = getattr(local_providers, venueProviderObj.provider.localClass)
         venueProviderProvider = provider_class(venueProviderObj, mock=mock)
         return do_update(venueProviderProvider, limit)
 
@@ -64,14 +61,14 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
                         Thing,
                         Stock]
     if not venue:
-        for providable_type in [app.model[type.capitalize()]]\
-                               if type else PROVIDABLE_TYPES:
-            for provider_name in app.local_providers:
+        model = getattr(models, type.capitalize())
+        for providable_type in model if type else PROVIDABLE_TYPES:
+            for provider_name in local_providers.__all__:
                 if provider and provider_name != provider:
                     print("Provider " + provider_name + " does not match provider"
                           + " name supplied in command line. Not updating")
                     continue
-                provider_type = app.local_providers[provider_name]
+                provider_type = getattr(local_providers, provider_name)
                 if provider_type.identifierRegexp is None\
                    and provider_type.objectType == providable_type:
                     providerObj = provider_type(None, mock=mock)
@@ -81,14 +78,14 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
     venueProviderObjs = venueProviderQuery.filter_by(id=int(venue))\
                   if venue\
                   else venueProviderQuery.all()
-    for providable_type in [app.model[type.capitalize()]]\
-                           if type else PROVIDABLE_TYPES:
+    model = getattr(models, type.capitalize())
+    for providable_type in model if type else PROVIDABLE_TYPES:
         for venueProviderObj in venueProviderObjs:
             db.session.add(venueProviderObj)
             provider_name = venueProviderObj.provider.localClass
             if provider_name is None:
                 continue
-            provider_type = app.local_providers[provider_name]
+            provider_type = getattr(local_providers, provider_name)
             if provider and provider_name != provider:
                 print("  Provider " + provider_name + " for venue does not match provider name"
                       + " supplied in command line. Not updating.")

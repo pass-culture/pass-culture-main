@@ -24,7 +24,8 @@ from models.user_offerer import UserOfferer
 from models.user import User
 from models.venue import Venue
 
-import scripts.sandbox
 import scripts.request
+import scripts.sandbox
 import scripts.send_final_booking_recaps
+import scripts.testcafe
 import scripts.update_providables

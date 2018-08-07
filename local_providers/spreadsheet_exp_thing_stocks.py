@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 from os import path
 from pathlib import Path
-from flask import current_app as app
 from pandas import read_csv
 
 from models.local_provider import LocalProvider, ProvidableInfo
@@ -146,6 +145,3 @@ class SpreadsheetExpThingStocks(LocalProvider):
             return [read_date(str(self.line['Date MAJ']))]
         else:
             return []
-
-
-app.local_providers.SpreadsheetExpThingStocks = SpreadsheetExpThingStocks

@@ -2,7 +2,6 @@
 from datetime import datetime
 from pathlib import Path
 from os import path
-from flask import current_app as app
 from pandas import read_csv
 import re
 
@@ -112,6 +111,3 @@ class SpreadsheetExpVenues(LocalProvider):
             return []
         if is_filled(self.line['Lien Image']) != '':
             return [read_date(self.line['Date MAJ'])]
-
-
-app.local_providers.SpreadsheetExpVenues = SpreadsheetExpVenues

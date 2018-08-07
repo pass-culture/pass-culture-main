@@ -1,12 +1,12 @@
 import random
-from flask import current_app as app
 
+from local_providers.openagenda_events import OpenAgendaEvents
 from models.db import db
 from models.event import Event
 from models.local_provider import ProvidableInfo
 from models.stock import Stock
 
-class OpenAgendaStocks(app.local_providers.OpenAgendaEvents):
+class OpenAgendaStocks(OpenAgendaEvents):
     name = "Open Agenda Stocks"
     objectType = Stock
 
@@ -52,6 +52,3 @@ class OpenAgendaStocks(app.local_providers.OpenAgendaEvents):
             return super().getObjectThumbDates(eventOrStock)
         else:
             return []
-
-
-app.local_providers.OpenAgendaStocks = OpenAgendaStocks
