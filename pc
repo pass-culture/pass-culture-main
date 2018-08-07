@@ -55,7 +55,7 @@ CMD="$1"
 shift
 
 if [[ "$CMD" == "alembic" ]]; then
-  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && alembic '"$*"'"'
+  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && PYTHONPATH=. alembic '"$*"'"'
 elif [[ "$CMD" == "build-pg" ]]; then
 	if [[ "$ENV" == "production" ]]; then
 		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild-prod'
