@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+
+import pytest
+
 from models import PcObject, Thing, Venue, Stock, Recommendation, Deposit, Booking, Offer
 from pprint import pprint
 
@@ -360,8 +363,10 @@ def test_29_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
     pprint(error)
     assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
 
+
 @clean_database
-def test_30_user_wallet_should_be_30_if_sum_deposit_50_and_two_bookings_amount_10(app):
+@pytest.mark.standalone
+def test_30_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
     # Given
     user = User()
     user.publicName = 'Test'
