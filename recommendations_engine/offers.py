@@ -9,18 +9,17 @@ from models import Event, EventOccurrence, Offer, Thing
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.logger import logger
 
-
 roundrobin_predicates = [
-                          lambda offer: offer.thingId,
-                          lambda offer: offer.eventId
-                        ]
+    lambda offer: offer.thingId,
+    lambda offer: offer.eventId
+]
 
 
 def roundrobin(offers, limit):
     result = []
     for predicate in cycle(roundrobin_predicates):
-        if (len(result) == limit)\
-           or (len(offers) == 0):
+        if (len(result) == limit) \
+                or (len(offers) == 0):
             return result
         for index, offer in enumerate(offers):
             if predicate(offer):
@@ -34,7 +33,7 @@ def make_score_tuples(offers, departement_codes):
     if len(offers) == 0:
         return []
     scored_offers = list(map(lambda o: (o, score_offer(o, departement_codes)),
-                                offers))
+                             offers))
     logger.debug(lambda: '(reco) scored offers' + str([(so[0], so[1]) for so in scored_offers]))
     return scored_offers
 
@@ -96,8 +95,8 @@ def remove_duplicate_things_or_events(offers):
     seen_event_ids = {}
     result = []
     for offer in offers:
-        if offer.thingId not in seen_thing_ids\
-           and offer.eventId not in seen_event_ids:
+        if offer.thingId not in seen_thing_ids \
+                and offer.eventId not in seen_event_ids:
             if offer.thingId:
                 seen_thing_ids[offer.thingId] = True
             else:
@@ -110,20 +109,20 @@ def get_offers(limit=3, user=None, coords=None):
     if not user or not user.is_authenticated():
         return []
 
-    departement_codes = ILE_DE_FRANCE_DEPT_CODES\
-                          if user.departementCode == '93'\
-                          else [user.departementCode]
+    departement_codes = ILE_DE_FRANCE_DEPT_CODES \
+        if user.departementCode == '93' \
+        else [user.departementCode]
 
     event_offers = get_offers_by_type(Event,
-                                            user=user,
-                                            coords=coords,
-                                            departement_codes=departement_codes)
+                                      user=user,
+                                      coords=coords,
+                                      departement_codes=departement_codes)
     thing_offers = get_offers_by_type(Thing,
-                                            user=user,
-                                            coords=coords,
-                                            departement_codes=departement_codes)
+                                      user=user,
+                                      coords=coords,
+                                      departement_codes=departement_codes)
     offers = sort_by_score(event_offers + thing_offers,
-                              departement_codes)
+                           departement_codes)
     offers = remove_duplicate_things_or_events(offers)
 
     logger.info('(reco) final offers (events + things) count (%i)',

@@ -7,7 +7,7 @@ from flask_login import current_user, login_required
 
 from models import Booking, Offer
 from models import EventOccurrence, Mediation, Stock, PcObject, Recommendation
-from recommendations_engine.recommendations import pick_random_offers_given_blob_size, find_or_make_recommendation, \
+from recommendations_engine import pick_random_offers_given_blob_size, find_or_make_recommendation, \
     create_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
