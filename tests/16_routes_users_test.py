@@ -430,7 +430,5 @@ def test_30_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_
 
     r_create = req_with_auth('wallet_2_bookings_test@email.com', 'testpsswd').get(API_URL + '/users/current')
     wallet_balance = r_create.json()['wallet_balance']
-    print('json', r_create.json())
-    print('wallet balance', wallet_balance)
     #Then
     assert wallet_balance == 30
