@@ -1,6 +1,5 @@
 """ recommendations stocks """
 from datetime import datetime
-from flask import current_app as app
 from itertools import cycle
 from random import randint
 from sqlalchemy.orm import aliased
