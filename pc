@@ -67,6 +67,12 @@ elif [[ "$CMD" == "bash" ]]; then
 elif [[ "$CMD" == "deploy-backend" ]]; then
   ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-backend\"."
   RUN='cd $ROOT_PATH && ./pc reset-git'
+elif [[ "$CMD" == "diff-schema" ]]; then
+  docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
+  RUN_PROD='ssh deploy@api.passculture.beta.gouv.fr docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -s'
+  echo "$RUN_PROD" | ssh deploy@api.passculture.beta.gouv.fr bash > /tmp/pc_schema_prod
+  diff /tmp/pc_schema_prod /tmp/pc_schema_local
+  exit
 elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-pro" ]]; then
   ensure_remote "Deploy fontend cannot be run on the local environment. Use (for example) \"pc -e staging "$CMD"\"."
 	if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
