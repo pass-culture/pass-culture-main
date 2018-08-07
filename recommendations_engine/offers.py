@@ -31,7 +31,7 @@ def roundrobin(offers, limit):
     return result
 
 
-def make_score_tuples(offers, departement_codes):
+def make_score_tuples(offers):
     if len(offers) == 0:
         return []
     scored_offers = list(map(lambda o: (o, score_offer(o)), offers))
@@ -40,7 +40,7 @@ def make_score_tuples(offers, departement_codes):
 
 
 def sort_by_score(offers, departement_codes):
-    offer_tuples = make_score_tuples(offers, departement_codes)
+    offer_tuples = make_score_tuples(offers)
     return list(map(lambda st: st[0],
                     sorted(filter(lambda st: st[1] is not None, offer_tuples),
                            key=lambda st: st[1],
