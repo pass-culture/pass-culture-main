@@ -53,7 +53,7 @@ def store_public_object(bucket, id, blob, content_type):
     if not IS_DEV and "SCALINGO_POSTGRESQL_URL" in os.environ:
         container_name = os.environ.get('OVH_BUCKET_NAME')
         # we want to store data with a special path
-        storage_path = 'storage/thumbs/' + id
+        storage_path = 'thumbs/' + id
         swift_con().put_object(container_name,
                                storage_path,
                                contents=blob,
