@@ -19,22 +19,8 @@ export const MOBILE_OS = getMobileOperatingSystem()
 // unused
 // export const NEW = '_new_'
 
-let CALCULATED_API_URL
-
-if (process.env.API_URL) {
-  CALCULATED_API_URL = process.env.API_URL
-} else if (typeof window !== 'undefined' && window.cordova) {
-  CALCULATED_API_URL = 'https://api.passculture.beta.gouv.fr' // This will be replaced by 'yarn pgbuild' for staging
-} else {
-  CALCULATED_API_URL = IS_DEV
-    ? 'http://localhost'
-    : `https://${document.location.host.replace('app', 'api')}`
-}
-export const API_URL = CALCULATED_API_URL
-
-export const THUMBS_URL = IS_DEV
-  ? `${API_URL}/storage/thumbs`
-  : `${API_URL}/storage/thumbs`
+export const API_URL = process.env.API_URL || 'http://localhost'
+export const THUMBS_URL = process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
 
 let calculatedLocalhost
 if (typeof window !== 'undefined') {
