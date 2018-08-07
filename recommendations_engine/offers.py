@@ -4,6 +4,8 @@ from itertools import cycle
 from random import randint
 from sqlalchemy.orm import aliased
 
+from repository.features import feature_paid_offers_enabled
+
 from repository.offer_queries import get_offers_by_type
 from models import Event, EventOccurrence, Offer, Thing
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
@@ -32,8 +34,7 @@ def roundrobin(offers, limit):
 def make_score_tuples(offers, departement_codes):
     if len(offers) == 0:
         return []
-    scored_offers = list(map(lambda o: (o, score_offer(o, departement_codes)),
-                             offers))
+    scored_offers = list(map(lambda o: (o, score_offer(o)), offers))
     logger.debug(lambda: '(reco) scored offers' + str([(so[0], so[1]) for so in scored_offers]))
     return scored_offers
 
@@ -46,7 +47,11 @@ def sort_by_score(offers, departement_codes):
                            reverse=True)))
 
 
-def score_offer(offer, departement_codes):
+def score_offer(offer):
+    if not feature_paid_offers_enabled():
+        if any(stock.price > 0 for stock in offer.stocks):
+            return None
+
     common_score = 0
 
     if len(offer.mediations) > 0:
@@ -59,15 +64,18 @@ def score_offer(offer, departement_codes):
     # a bit of randomness so we don't always return the same offers
     common_score += randint(0, 10)
 
-    if isinstance(offer, Event):
-        specific_score = specific_score_event(offer, departement_codes)
+    if isinstance(offer.eventOrThing, Event):
+        specific_score = specific_score_event(offer)
     else:
-        specific_score = specific_score_thing(offer, departement_codes)
+        specific_score = specific_score_thing(offer)
+
+    if specific_score is None:
+        return None
 
     return common_score + specific_score
 
 
-def specific_score_event(event, departement_codes):
+def specific_score_event(event):
     score = 0
 
     next_occurrence = EventOccurrence.query \
@@ -85,7 +93,7 @@ def specific_score_event(event, departement_codes):
     return score
 
 
-def specific_score_thing(thing, departement_codes):
+def specific_score_thing(thing):
     score = 0
     return score
 
@@ -121,8 +129,7 @@ def get_offers(limit=3, user=None, coords=None):
                                       user=user,
                                       coords=coords,
                                       departement_codes=departement_codes)
-    offers = sort_by_score(event_offers + thing_offers,
-                           departement_codes)
+    offers = sort_by_score(event_offers + thing_offers, departement_codes)
     offers = remove_duplicate_things_or_events(offers)
 
     logger.info('(reco) final offers (events + things) count (%i)',
