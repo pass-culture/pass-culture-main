@@ -17,20 +17,8 @@ export const NEW = '_new_'
 export const SEARCH = '_search_'
 export const SPACE = ' '
 
-var CALCULATED_API_URL
-
-if (typeof window !== 'undefined' && window.cordova) {
-  CALCULATED_API_URL = 'https://api.passculture.beta.gouv.fr' // This will be replaced by 'yarn pgbuild' for staging
-} else {
-  CALCULATED_API_URL = IS_DEV
-    ? 'http://localhost'
-    : 'https://' + document.location.host.replace('pro', 'api')
-}
-export const API_URL = CALCULATED_API_URL
-
-export const THUMBS_URL = IS_DEV
-  ? `${API_URL}/storage/thumbs`
-  : `${API_URL}/storage/thumbs`
+export const API_URL = process.env.API_URL || 'http://localhost'
+export const THUMBS_URL = process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
 
 export function apiUrl(path) {
   if (!path) return
