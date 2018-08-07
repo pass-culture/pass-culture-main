@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy.sql.expression import func
 
-from datascience.offers import get_offers, get_offers_by_type
+from recommendations_engine.offers import get_offers, get_offers_by_type
 from models import Mediation, PcObject, Recommendation
 
 __all__ = (

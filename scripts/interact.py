@@ -19,7 +19,7 @@ with app.app_context():
 
 # IMPORT A LOT OF TOOLS TO MAKE THEM AVAILABLE
 # IN THE PYTHON SHELL
-from datascience import *
+from recommendations_engine import *
 from local_providers import *
 from models import *
 from sqlalchemy import *

@@ -6,7 +6,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from sqlalchemy.sql.expression import func
 
-from datascience import create_recommendation, create_recommendations
+from recommendations_engine import create_recommendation, create_recommendations
 from models import Booking, Offer
 from models.api_errors import ApiErrors
 from utils.human_ids import dehumanize
