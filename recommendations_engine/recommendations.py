@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import func
 
 from models import Recommendation, Offer, Mediation, ApiErrors, PcObject
-from recommendations_engine import create_recommendation, get_offers
+from recommendations_engine import get_offers
 from utils.config import BLOB_SIZE
 from utils.logger import logger
 
