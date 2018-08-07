@@ -5,6 +5,7 @@ import pytest
 from bs4 import BeautifulSoup
 
 from models import Offerer, UserOfferer, User
+from tests.conftest import clean_database
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
     make_booking_recap_email, make_final_recap_email_for_stock_with_event, write_object_validation_email, \
@@ -12,7 +13,7 @@ from utils.mailing import make_user_booking_recap_email, send_booking_confirmati
 
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking_for_booking_email_test, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
-    create_offerer
+    create_offerer, create_venue, create_thing_offer
 
 
 def get_mocked_response_status_200(entity):
@@ -98,9 +99,13 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '</body></html>'
 
 
+@clean_database
+@pytest.mark.standalone
 def test_01_make_user_booking_event_recap_email_should_have_standard_subject(app):
     # Given
-    stock = create_stock_with_event_offer(offerer=None)
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
+                                                             'Test city', 'Test offerer', '93'))
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
@@ -110,9 +115,14 @@ def test_01_make_user_booking_event_recap_email_should_have_standard_subject(app
     assert recap_email['Subject'] == SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
 
 
+@clean_database
+@pytest.mark.standalone
 def test_02_make_user_booking_event_recap_email_should_have_standard_body(app):
     # Given
-    stock = create_stock_with_event_offer(offerer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
+                                                             'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, 'html.parser')
@@ -125,9 +135,14 @@ def test_02_make_user_booking_event_recap_email_should_have_standard_body(app):
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_03_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
     # Given
-    stock = create_stock_with_event_offer(offerer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
+                                                             'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
@@ -137,9 +152,14 @@ def test_03_make_user_booking_event_recap_email_should_have_standard_subject_can
     assert recap_email['Subject'] == SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL
 
 
+@clean_database
+@pytest.mark.standalone
 def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
     # Given
-    stock = create_stock_with_event_offer(offerer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
+                                                             'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL, 'html.parser')
@@ -154,10 +174,14 @@ def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancel
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app):
     # Given
     app.mailjet_client.reset_mock()
-    stock = create_stock_with_event_offer(offerer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     mail_html = HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL
@@ -187,8 +211,13 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
     app.mailjet_client.send.create.assert_called_once_with(data=expected_email)
 
 
+@clean_database
+@pytest.mark.standalone
 def test_06_maker_user_booking_thing_recap_email_should_have_standard_body(app):
-    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
+    #Given
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    thing_offer = create_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
@@ -202,8 +231,13 @@ def test_06_maker_user_booking_thing_recap_email_should_have_standard_body(app):
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_07_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
-    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
+    # Given
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    thing_offer = create_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
@@ -214,9 +248,13 @@ def test_07_maker_user_booking_thing_recap_email_should_have_standard_subject(ap
     assert recap_email['Subject'] == SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL
 
 
+@clean_database
+@pytest.mark.standalone
 def test_8_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation(app):
     # Given
-    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    thing_offer = create_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
@@ -227,9 +265,13 @@ def test_8_make_user_booking_thing_recap_email_should_have_standard_subject_canc
     assert recap_email['Subject'] == SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL
 
 
+@clean_database
+@pytest.mark.standalone
 def test_9_make_user_booking_thing_recap_email_should_have_standard_body_cancellation(app):
     # Given
-    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    thing_offer = create_thing_offer()
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
@@ -243,9 +285,13 @@ def test_9_make_user_booking_thing_recap_email_should_have_standard_body_cancell
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_10_booking_recap_email_html_should_have_place_and_structure(app):
     # Given
-    stock = create_stock_with_event_offer(offerer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
     expected_email_soup = BeautifulSoup(HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL, 'html.parser')
@@ -259,9 +305,13 @@ def test_10_booking_recap_email_html_should_have_place_and_structure(app):
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_11_booking_recap_email_subject_should_have_defined_structure(app):
     # Given
-    stock = create_stock_with_event_offer(offerer=None)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
@@ -272,10 +322,15 @@ def test_11_booking_recap_email_subject_should_have_defined_structure(app):
     assert recap_email['Subject'] == SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL
 
 
+@clean_database
+@pytest.mark.standalone
 def test_12_offerer_recap_email_subject_past_offer_without_booking(app):
     # Given
     expected_subject = '[Reservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
-    stock = create_stock_with_event_offer(offerer=None, beginning_datetime_future=False)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue,
+                                          beginning_datetime_future=False)
 
     #When
     recap_email = make_final_recap_email_for_stock_with_event(stock)
@@ -283,6 +338,8 @@ def test_12_offerer_recap_email_subject_past_offer_without_booking(app):
     assert recap_email['Subject'] == expected_subject
 
 
+@clean_database
+@pytest.mark.standalone
 def test_13_offerer_recap_email_past_offer_without_booking(app):
     #Given
     expected_html = '''
@@ -297,7 +354,10 @@ def test_13_offerer_recap_email_past_offer_without_booking(app):
         </html>
         '''
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    stock = create_stock_with_event_offer(offerer=None, beginning_datetime_future=False)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue,
+                                          beginning_datetime_future=False)
 
     #When
     recap_email = make_final_recap_email_for_stock_with_event(stock)
@@ -307,6 +367,8 @@ def test_13_offerer_recap_email_past_offer_without_booking(app):
     assert expected_html_soup.prettify() == recap_email_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_14_offerer_recap_email_past_offer_with_booking(app):
     # Given
     expected_html = '''
@@ -331,7 +393,10 @@ def test_14_offerer_recap_email_past_offer_with_booking(app):
             </body>
         </html>'''
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    offer = create_stock_with_event_offer(offerer=None, beginning_datetime_future=False)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    offer = create_stock_with_event_offer(offerer=None,
+                                          venue=venue,
+                                          beginning_datetime_future=False)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, offer)
     offer.bookings = [booking]
@@ -344,6 +409,8 @@ def test_14_offerer_recap_email_past_offer_with_booking(app):
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_15_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
     # Given
     expected_html = '''
@@ -374,7 +441,10 @@ def test_15_offerer_recap_email_future_offer_when_new_booking_with_old_booking(a
             </body>
         </html>'''
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    stock = create_stock_with_event_offer(offerer=None, beginning_datetime_future=True)
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue,
+                                          beginning_datetime_future=True)
     user_1 = create_user('test@email.com', 'Test', 93, True)
     user_2 = create_user('test@email.com', 'Test', 93, True)
     user_2.publicName = 'Test 2'
@@ -392,6 +462,8 @@ def test_15_offerer_recap_email_future_offer_when_new_booking_with_old_booking(a
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_17_offerer_booking_recap_email_book(app):
     # Given
     expected_html = '''
@@ -419,8 +491,10 @@ def test_17_offerer_booking_recap_email_book(app):
  
         </body>
     </html>'''
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    thing_offer = create_thing_offer()
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    stock = create_stock_with_thing_offer(offerer=None, venue=None, thing_offer=None)
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     user = create_user('test@email.com', 'Test', 93, True)
     booking = create_booking_for_booking_email_test(user, stock)
 
@@ -433,6 +507,8 @@ def test_17_offerer_booking_recap_email_book(app):
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
+@clean_database
+@pytest.mark.standalone
 def test_18_write_object_validation_email_should_have_some_specific_information(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -478,7 +554,9 @@ def test_18_write_object_validation_email_should_have_some_specific_information(
     assert 'siege_social' in str(all_pre_offerer[1])
 
 
-def test_19_write_object_validation_email_raises_value_error_when_siren_api_does_not_respond(mock, app):
+@clean_database
+@pytest.mark.standalone
+def test_19_write_object_validation_email_raises_value_error_when_siren_api_does_not_respond(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
 
@@ -498,6 +576,8 @@ def test_19_write_object_validation_email_raises_value_error_when_siren_api_does
         assert 'Error getting API entreprise DATA for SIREN' in str(error.value)
 
 
+@clean_database
+@pytest.mark.standalone
 def test_20_write_object_validation_email_raises_value_error_when_object_to_validate_not_offerer_or_userOfferer(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -510,6 +590,8 @@ def test_20_write_object_validation_email_raises_value_error_when_object_to_vali
         assert 'Unexpected object type in maybe_send_pro_validation_email :' in str(error.value)
 
 
+@clean_database
+@pytest.mark.standalone
 def test_21_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
     app.mailjet_client.reset_mock()
@@ -529,6 +611,8 @@ def test_21_maybe_send_offerer_validation_email_does_not_send_email_if_all_valid
     assert not app.mailjet_client.send.create.called
 
 
+@clean_database
+@pytest.mark.standalone
 def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_400(app):
     # Given
     app.mailjet_client.reset_mock()
@@ -548,6 +632,9 @@ def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_
     with pytest.raises(Exception):
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
+
+@clean_database
+@pytest.mark.standalone
 def test_23_validation_email_should_not_return_clearTextPassword(app):
     # Given
     validation_token = secrets.token_urlsafe(20)

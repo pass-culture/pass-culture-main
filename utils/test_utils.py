@@ -200,7 +200,7 @@ def create_user(email, publicName, departementCode, canBookFreeOffers=True, pass
     return user
 
 
-def create_stock_with_event_offer(offerer, beginning_datetime_future=True, price=10):
+def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10):
     stock = Stock()
     stock.offerer=offerer
     stock.price = price
@@ -217,8 +217,7 @@ def create_stock_with_event_offer(offerer, beginning_datetime_future=True, price
     stock.eventOccurrence.offer.event = Event(
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
-    stock.eventOccurrence.offer.venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                                     'Test venue', '93')
+    stock.eventOccurrence.offer.venue = venue
     stock.isActive = True
     return stock
 
@@ -288,8 +287,8 @@ def create_user_offerer(offerer, user, validation_token=None):
     return user_offerer
 
 
-def create_recommendation(thing_offer, user):
+def create_recommendation(offer, user):
     recommendation = Recommendation()
-    recommendation.offer = thing_offer
+    recommendation.offer = offer
     recommendation.user = user
     return recommendation

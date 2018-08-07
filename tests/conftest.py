@@ -6,7 +6,8 @@ import pytest
 from flask import Flask
 from mailjet_rest import Client
 
-from models import User, Deposit, Booking, Mediation, Recommendation, UserOfferer
+from models import User, Deposit, Booking, Mediation, Recommendation, UserOfferer, Offerer, Venue, VenueProvider, Offer, \
+    EventOccurrence, Stock
 from models.db import db
 
 items_by_category = {'first': [], 'last': []}
@@ -60,10 +61,17 @@ def clean_database(f):
     @wraps(f)
     def decorated_function(app, *args, **kwargs):
         """ Order of deletions matters because of foreign key constraints """
-        UserOfferer.query.delete()
+        VenueProvider.query.delete()
         Booking.query.delete()
+        Stock.query.delete()
+        EventOccurrence.query.delete()
         Recommendation.query.delete()
         Mediation.query.delete()
+        Recommendation.query.delete()
+        Offer.query.delete()
+        Venue.query.delete()
+        UserOfferer.query.delete()
+        Offerer.query.delete()
         Deposit.query.delete()
         User.query.delete()
         return f(app, *args, **kwargs)
