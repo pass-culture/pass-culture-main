@@ -12,7 +12,7 @@ from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_off
 
 @clean_database
 @pytest.mark.standalone
-def test_11_create_booking_should_not_work_past_limit_date(app):
+def test_create_booking_should_not_work_past_limit_date(app):
     offerer = create_offerer('987654321', 'Test address', 'Test city', '93000',
                              'Test name')
 
@@ -43,7 +43,7 @@ def test_11_create_booking_should_not_work_past_limit_date(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_12_create_booking_should_work_before_limit_date(app):
+def test_create_booking_should_work_before_limit_date(app):
     offerer = create_offerer('987654321', 'Test address', 'Test city', '93000',
                              'Test name')
     venue = create_venue(offerer, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
@@ -75,7 +75,7 @@ def test_12_create_booking_should_work_before_limit_date(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_13_create_booking_should_not_work_if_too_many_bookings(app):
+def test_create_booking_should_not_work_if_too_many_bookings(app):
     offerer = create_offerer('987654321', 'Test address', 'Test city', '93000',
                              'Test name')
     venue = create_venue(offerer, 'reservations@test.fr', '123 rue test', '93000', 'Test city',
@@ -104,7 +104,7 @@ def test_13_create_booking_should_not_work_if_too_many_bookings(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_14_create_booking_should_work_if_user_can_book_and_enough_credit(app):
+def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     # Given
     offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
     venue = create_venue(offerer, 'booking@email.com', '1 fake street', '93000', 'False city', 'venue name', '93')
@@ -133,7 +133,7 @@ def test_14_create_booking_should_work_if_user_can_book_and_enough_credit(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
+def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
     # Given
     user = create_user('cannotBook_freeOffers@email.com', 'Test', '93', canBookFreeOffers=False, password='testpsswd')
     PcObject.check_and_save(user)
@@ -173,7 +173,7 @@ def test_15_create_booking_should_not_work_for_free_offer_if_not_userCanBookFree
 
 @clean_database
 @pytest.mark.standalone
-def test_16_create_booking_should_not_work_if_not_enough_credit(app):
+def test_create_booking_should_not_work_if_not_enough_credit(app):
     # Given
     user = create_user('insufficient_funds_test@email.com', 'Test', '93', password='testpsswd')
     PcObject.check_and_save(user)
@@ -214,7 +214,7 @@ def test_16_create_booking_should_not_work_if_not_enough_credit(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(app):
+def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(app):
     #Given
     user = create_user('sufficient_funds@email.com', 'Test', '93', password='testpsswd')
     PcObject.check_and_save(user)
@@ -258,7 +258,7 @@ def test_17_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffe
 
 @clean_database
 @pytest.mark.standalone
-def test_18_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
+def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
     user = create_user('can_book_paid_offers@email.com', 'Test', '93', canBookFreeOffers=False, password='testpsswd')
     PcObject.check_and_save(user)
 

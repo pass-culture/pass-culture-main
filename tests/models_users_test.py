@@ -2,9 +2,12 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from models import User, PcObject
+from tests.conftest import clean_database
 
 
-def test_01_cannot_create_admin_that_can_book(app):
+@pytest.mark.standalone
+@clean_database
+def test_cannot_create_admin_that_can_book(app):
     #Given
     user = User()
     user.publicName = 'Admin CanBook'

@@ -4,12 +4,13 @@ from unittest.mock import Mock, patch, MagicMock
 import pytest
 from bs4 import BeautifulSoup
 
+from connectors.api_entreprises import ApiEntrepriseException
 from models import Offerer, UserOfferer, User
 from tests.conftest import clean_database
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
     make_booking_recap_email, make_final_recap_email_for_stock_with_event, write_object_validation_email, \
-    maybe_send_offerer_validation_email
+    maybe_send_offerer_validation_email, MailServiceException
 
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking_for_booking_email_test, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
@@ -18,11 +19,6 @@ from utils.test_utils import create_stock_with_event_offer, create_stock_with_th
 
 def get_mocked_response_status_200(entity):
     response = MagicMock(status_code=200, text='')
-    response.json = MagicMock(return_value=MOCKED_SIREN_ENTREPRISES_API_RETURN)
-    return response
-
-def get_mocked_response_status_400(entity):
-    response = MagicMock(status_code=400, text='')
     response.json = MagicMock(return_value=MOCKED_SIREN_ENTREPRISES_API_RETURN)
     return response
 
@@ -101,7 +97,7 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
 
 @clean_database
 @pytest.mark.standalone
-def test_01_make_user_booking_event_recap_email_should_have_standard_subject(app):
+def test_make_user_booking_event_recap_email_should_have_standard_subject(app):
     # Given
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
@@ -117,7 +113,7 @@ def test_01_make_user_booking_event_recap_email_should_have_standard_subject(app
 
 @clean_database
 @pytest.mark.standalone
-def test_02_make_user_booking_event_recap_email_should_have_standard_body(app):
+def test_make_user_booking_event_recap_email_should_have_standard_body(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
                                                              'Test city', 'Test offerer', '93')
@@ -137,7 +133,7 @@ def test_02_make_user_booking_event_recap_email_should_have_standard_body(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_03_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
+def test_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
                                                              'Test city', 'Test offerer', '93')
@@ -154,7 +150,7 @@ def test_03_make_user_booking_event_recap_email_should_have_standard_subject_can
 
 @clean_database
 @pytest.mark.standalone
-def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
+def test_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
                                                              'Test city', 'Test offerer', '93')
@@ -176,7 +172,7 @@ def test_04_make_user_booking_event_recap_email_should_have_standard_body_cancel
 
 @clean_database
 @pytest.mark.standalone
-def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app):
+def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app):
     # Given
     app.mailjet_client.reset_mock()
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
@@ -213,7 +209,7 @@ def test_05_send_booking_confirmation_email_to_user_should_call_mailjet_send_cre
 
 @clean_database
 @pytest.mark.standalone
-def test_06_maker_user_booking_thing_recap_email_should_have_standard_body(app):
+def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
     #Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     thing_offer = create_thing_offer()
@@ -233,7 +229,7 @@ def test_06_maker_user_booking_thing_recap_email_should_have_standard_body(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_07_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
+def test_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     thing_offer = create_thing_offer()
@@ -250,7 +246,7 @@ def test_07_maker_user_booking_thing_recap_email_should_have_standard_subject(ap
 
 @clean_database
 @pytest.mark.standalone
-def test_8_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation(app):
+def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     thing_offer = create_thing_offer()
@@ -267,7 +263,7 @@ def test_8_make_user_booking_thing_recap_email_should_have_standard_subject_canc
 
 @clean_database
 @pytest.mark.standalone
-def test_9_make_user_booking_thing_recap_email_should_have_standard_body_cancellation(app):
+def test_make_user_booking_thing_recap_email_should_have_standard_body_cancellation(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     thing_offer = create_thing_offer()
@@ -287,7 +283,7 @@ def test_9_make_user_booking_thing_recap_email_should_have_standard_body_cancell
 
 @clean_database
 @pytest.mark.standalone
-def test_10_booking_recap_email_html_should_have_place_and_structure(app):
+def test_booking_recap_email_html_should_have_place_and_structure(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     stock = create_stock_with_event_offer(offerer=None,
@@ -307,7 +303,7 @@ def test_10_booking_recap_email_html_should_have_place_and_structure(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_11_booking_recap_email_subject_should_have_defined_structure(app):
+def test_booking_recap_email_subject_should_have_defined_structure(app):
     # Given
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     stock = create_stock_with_event_offer(offerer=None,
@@ -324,7 +320,7 @@ def test_11_booking_recap_email_subject_should_have_defined_structure(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_12_offerer_recap_email_subject_past_offer_without_booking(app):
+def test_offerer_recap_email_subject_past_offer_without_booking(app):
     # Given
     expected_subject = '[Reservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
     venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
@@ -340,7 +336,7 @@ def test_12_offerer_recap_email_subject_past_offer_without_booking(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_13_offerer_recap_email_past_offer_without_booking(app):
+def test_offerer_recap_email_past_offer_without_booking(app):
     #Given
     expected_html = '''
         <html>
@@ -369,7 +365,7 @@ def test_13_offerer_recap_email_past_offer_without_booking(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_14_offerer_recap_email_past_offer_with_booking(app):
+def test_offerer_recap_email_past_offer_with_booking(app):
     # Given
     expected_html = '''
         <html>
@@ -411,7 +407,7 @@ def test_14_offerer_recap_email_past_offer_with_booking(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_15_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
+def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
     # Given
     expected_html = '''
         <html>
@@ -464,7 +460,7 @@ def test_15_offerer_recap_email_future_offer_when_new_booking_with_old_booking(a
 
 @clean_database
 @pytest.mark.standalone
-def test_17_offerer_booking_recap_email_book(app):
+def test_offerer_booking_recap_email_book(app):
     # Given
     expected_html = '''
     <html>
@@ -509,7 +505,7 @@ def test_17_offerer_booking_recap_email_book(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_18_write_object_validation_email_should_have_some_specific_information(app):
+def test_write_object_validation_email_should_have_some_specific_information(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
@@ -556,29 +552,7 @@ def test_18_write_object_validation_email_should_have_some_specific_information(
 
 @clean_database
 @pytest.mark.standalone
-def test_19_write_object_validation_email_raises_value_error_when_siren_api_does_not_respond(app):
-    # Given
-    validation_token = secrets.token_urlsafe(20)
-
-    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
-                             city='Paris', postalCode='75013', name='Accenture',
-                             validationToken=validation_token)
-
-    user = create_user(email='user@accenture.com', publicName='Test', departementCode=75, canBookFreeOffers=False,
-                       validationToken=validation_token)
-
-    user_offerer = create_user_offerer(offerer, user, validation_token)
-
-    #When
-    with pytest.raises(ValueError) as error:
-        write_object_validation_email(offerer, user_offerer, get_by_siren=get_mocked_response_status_400)
-        #Then
-        assert 'Error getting API entreprise DATA for SIREN' in str(error.value)
-
-
-@clean_database
-@pytest.mark.standalone
-def test_20_write_object_validation_email_raises_value_error_when_object_to_validate_not_offerer_or_userOfferer(app):
+def test_write_object_validation_email_raises_value_error_when_object_to_validate_not_offerer_or_userOfferer(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
 
@@ -592,7 +566,7 @@ def test_20_write_object_validation_email_raises_value_error_when_object_to_vali
 
 @clean_database
 @pytest.mark.standalone
-def test_21_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
+def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
     app.mailjet_client.reset_mock()
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
@@ -613,7 +587,7 @@ def test_21_maybe_send_offerer_validation_email_does_not_send_email_if_all_valid
 
 @clean_database
 @pytest.mark.standalone
-def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_400(app):
+def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400(app):
     # Given
     app.mailjet_client.reset_mock()
     validation_token = secrets.token_urlsafe(20)
@@ -629,13 +603,13 @@ def test_22_maybe_send_offerer_validation_email_raises_exception_if_status_code_
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     #When
-    with pytest.raises(Exception):
+    with pytest.raises(MailServiceException):
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
 
 @clean_database
 @pytest.mark.standalone
-def test_23_validation_email_should_not_return_clearTextPassword(app):
+def test_validation_email_should_not_return_clearTextPassword(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',

@@ -25,6 +25,10 @@ if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
 if MAILJET_API_SECRET is None or MAILJET_API_SECRET == '':
     raise ValueError("Missing environment variable MAILJET_API_SECRET")
 
+class MailServiceException(Exception):
+    pass
+
+
 def send_final_booking_recap_email(stock):
     if len(stock.bookings) == 0:
         print("Not sending recap for  " + stock + " as it has no bookings")
@@ -43,7 +47,7 @@ def send_final_booking_recap_email(stock):
 
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
-        raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
+        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
     stock.bookingRecapSent = datetime.utcnow()
     PcObject.check_and_save(stock)
@@ -65,7 +69,7 @@ def send_booking_recap_emails(stock, booking):
 
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
-        raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
+        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
 def send_booking_confirmation_email_to_user(booking, is_cancellation=False):
@@ -79,11 +83,10 @@ def send_booking_confirmation_email_to_user(booking, is_cancellation=False):
         email['To'] = 'passculture-dev@beta.gouv.fr'
     else:
         email['To'] = ", ".join(recipients)
-    print('EMAIL', email['To'])
 
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
-        raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
+        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
 def make_final_recap_email_for_stock_with_event(stock):
@@ -169,9 +172,6 @@ def write_object_validation_email(*objects_to_validate, get_by_siren=api_entrepr
             offerer_vars_offerer = pformat(vars(obj))
             offerers_vars_offerer.append(offerer_vars_offerer)
             api_entreprise_response = get_by_siren(obj)
-            if api_entreprise_response.status_code != 200:
-                raise ValueError('Error getting API entreprise DATA for SIREN : '
-                                 + obj.siren)
             offerers_api.append(api_entreprise_response.json())
             offerers.append(obj)
         else:
@@ -207,7 +207,7 @@ def maybe_send_offerer_validation_email(*objects_to_validate):
     email = write_object_validation_email(*unvalidated_objects)
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
-        raise Exception(": " + pformat(vars(mailjet_result)))
+        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
 def send_dev_email(subject, html_text):
@@ -220,7 +220,7 @@ def send_dev_email(subject, html_text):
     }
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
-        raise Exception("Email send failed: " + pformat(vars(mailjet_result)))
+        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
 def make_user_booking_recap_email(booking, is_cancellation=False):
