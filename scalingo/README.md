@@ -34,7 +34,7 @@ avec JSON_CREDENTIALS, les informations nécessaires au format json dans un cham
 
 Si l'environnement que vous souhaitez déployer a besoin de stocker des objets sur un disque OVH, un dernier script devra être lancé `init_bucket_env.sh`.
 
-`./init_bucket_env.sh -a pass-culture-api-dev -u [OPENSTACK_USER] -p [OPENSTACK_PASSWORD] -c storage-pc-dev`
+`./init_bucket_env.sh -a pass-culture-api-dev -u [OPENSTACK_USER] -p [OPENSTACK_PASSWORD] -c storage-pc-dev -t [TENANT_NAME]`
 
 
 

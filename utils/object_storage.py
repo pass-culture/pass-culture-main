@@ -11,8 +11,8 @@ import swiftclient
 def swift_con():
     user = os.environ.get('OVH_USER')
     key = os.environ.get('OVH_PASSWORD')
+    tenant_name = os.environ.get('OVH_TENANT_NAME')
 
-    tenant_name = '4754281319661209'
     auth_url = 'https://auth.cloud.ovh.net/v2.0/'
     options = {
         'region_name': 'GRA3'
