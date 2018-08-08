@@ -50,7 +50,7 @@ def store_public_object(bucket, id, blob, content_type):
     newTypeFile.write(content_type)
 
     # TODO: once the migration is fully done to scalingo, we can remove the second part of the condition
-    if not IS_DEV and "SCALINGO_POSTGRESQL_URL" in os.environ:
+    if not IS_DEV and "OVH_BUCKET_NAME" in os.environ:
         container_name = os.environ.get('OVH_BUCKET_NAME')
         # we want to store data with a special path
         storage_path = 'thumbs/' + id
