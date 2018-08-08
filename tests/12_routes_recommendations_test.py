@@ -5,6 +5,7 @@ from datetime import datetime
 import pytest
 from dateutil.parser import parse as parse_date
 
+from models import Recommendation
 from utils.config import BLOB_SIZE
 from utils.test_utils import API_URL, req, req_with_auth
 
@@ -118,10 +119,10 @@ def test_put_recommendations_returns_recos_with_venues_in_93_if_event_is_not_nat
 
 def test_put_recommendations_returns_at_least_one_reco_with_mediation_and_offer():
     # when
-    r = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
 
     # then
-    recos = r.json()
+    recos = response.json()
     assert len(list(filter(lambda reco: 'mediationId' in reco and 'offerId' in reco, recos))) > 0
 
 
@@ -139,21 +140,21 @@ def test_put_recommendations_returns_recos_in_identical_orders():
     assert any([recos1[i]['id'] != recos2[i]['id'] for i in range(2, len(recos1))])
 
 
-def test_put_recommendation_returns_a_specific_reco_first_if_requested_with_offer_and_mediation():
-    subtest_recos_with_params('offerId=AFQA&mediationId=AM',  # AM=1 AFQA=352
+def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_offer_and_mediation(app):
+    subtest_recos_with_params('offerId=AFQA&mediationId=AM',  # AM=3 AFQA=352
                               expected_status=200,
                               expected_mediation_id='AM',
                               expected_offer_id='AFQA')
 
 
-def test_put_recommendation_returns_a_specific_reco_first_if_requested_with_only_offer_and_no_mediation():
+def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_only_offer_and_no_mediation():
     subtest_recos_with_params('offerId=AFQA',
                               expected_status=200,
                               expected_mediation_id='AM',
                               expected_offer_id='AFQA')
 
 
-def test_put_recommendation_returns_a_specific_reco_first_if_requested_with_no_offer_and_only_mediation():
+def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_no_offer_and_only_mediation():
     subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
                               expected_mediation_id='AM',
@@ -193,11 +194,11 @@ def test_put_recommendations_returns_404_for_unknown_offer_and_unknown_mediation
 
 
 # def test_15_if_i_request_a_specific_reco_with_single_reco_it_should_be_single():
-    #    r = req_with_auth().put(RECOMMENDATION_URL+'?offerType=event&offerId=AE&singleReco=true', json={})
-    #    assert r.status_code == 200
-    #    recos = r.json()
-    #    assert len(recos) == 1
-    #    assert recos[0]['mediation']['eventId'] == 'AE'
+#    r = req_with_auth().put(RECOMMENDATION_URL+'?offerType=event&offerId=AE&singleReco=true', json={})
+#    assert r.status_code == 200
+#    recos = r.json()
+#    assert len(recos) == 1
+#    assert recos[0]['mediation']['eventId'] == 'AE'
 
 
 def test_put_recommendations_returns_no_tutos_once_they_are_marked_as_read():
@@ -206,13 +207,13 @@ def test_put_recommendations_returns_no_tutos_once_they_are_marked_as_read():
     recos_before = response.json()
     assert recos_before[0]['mediation']['tutoIndex'] == 0
     assert recos_before[1]['mediation']['tutoIndex'] == 1
+    payload = {'dateRead': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')}
 
     # when
-    payload = {'dateRead': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')}
     response_patch = req_with_auth().patch(API_URL + '/recommendations/' + recos_before[0]['id'], json=payload)
-    assert response_patch.status_code == 200
 
     # then
+    assert response_patch.status_code == 200
     response = req_with_auth().put(RECOMMENDATION_URL, json={})
     recos_after = response.json()
     assert recos_after[0]['mediation']['tutoIndex'] == 1

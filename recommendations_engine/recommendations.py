@@ -14,11 +14,9 @@ def pick_random_offers_given_blob_size(recos, limit=BLOB_SIZE):
         .all()
 
 
-def find_or_make_recommendation(user, offer_id,
-                                mediation_id, from_user_id=None):
+def find_or_make_recommendation(user, offer_id, mediation_id):
     query = Recommendation.query.join(Offer)
-    logger.info('(requested) offer_id=' + str(offer_id)
-                + ' mediation_id=' + str(mediation_id))
+    logger.info('(requested) offer_id=%s mediation_id=%s ' % (offer_id, mediation_id))
     if not mediation_id and not offer_id:
         return None
     if mediation_id:
