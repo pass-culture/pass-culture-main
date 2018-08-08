@@ -5,7 +5,6 @@ import luhn
 import pandas as pd
 from pathlib import Path
 from zipfile import ZipFile
-from flask import current_app as app
 
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.offerer import Offerer
@@ -108,6 +107,3 @@ class TiteLiveVenues(LocalProvider):
         else:
             raise ValueError('Unexpected object class in updateObj '
                              + obj.__class__.__name__)
-
-
-app.local_providers.TiteLiveVenues = TiteLiveVenues

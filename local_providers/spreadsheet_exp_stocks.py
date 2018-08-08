@@ -1,7 +1,6 @@
 """ spreadsheet exp stocks"""
 from datetime import datetime, timedelta
 import dateparser
-from flask import current_app as app
 from os import path
 from pandas import read_csv
 from pathlib import Path
@@ -196,6 +195,3 @@ class SpreadsheetExpStocks(LocalProvider):
             return [read_date(str(self.line['Date MAJ']))]
         else:
             return []
-
-
-app.local_providers.SpreadsheetExpStocks = SpreadsheetExpStocks

@@ -3,7 +3,6 @@ import re
 from datetime import datetime
 from pathlib import Path, PurePath
 from zipfile import ZipFile
-from flask import current_app as app
 
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
@@ -25,7 +24,7 @@ def file_date(filename_or_zipfile):
     return int(match.group(1))
 
 
-class TiteLiveBookThumbs(LocalProvider):
+class TiteLiveThingThumbs(LocalProvider):
 
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire"\
@@ -103,6 +102,3 @@ class TiteLiveBookThumbs(LocalProvider):
         assert index == expectedIndex
         with self.zip.open(self.thumb_zipinfo) as f:
             return f.read()
-
-
-app.local_providers.TiteLiveBookThumbs = TiteLiveBookThumbs

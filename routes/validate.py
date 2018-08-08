@@ -1,11 +1,9 @@
 """ validate """
 from flask import current_app as app, jsonify, request
 
-from models.api_errors import ApiErrors
-from models.offerer import Offerer
-from models.pc_object import PcObject
-from models.user import User
-from models.user_offerer import UserOfferer
+import models
+from models import ApiErrors,\
+                   PcObject
 
 
 @app.route("/validate", methods=["GET"])
@@ -28,7 +26,7 @@ def validate():
 
     objects_to_validate = []
     for model_name in model_names:
-        query = app.model[model_name]\
+        query = getattr(models, model_name)\
                 .query\
                 .filter_by(validationToken=token)
         objects_to_validate += query.all()

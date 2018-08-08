@@ -3,6 +3,7 @@ import os.path
 from flask import current_app as app, jsonify, request, send_file
 from flask_login import current_user
 
+import models
 from utils.human_ids import dehumanize
 from utils.object_storage import local_path
 from utils.string_processing import inflect_engine
@@ -29,7 +30,7 @@ def send_storage_file(bucketId, objectId):
 def post_storage_file(collectionName, id, index):
     model_name = inflect_engine.singular_noun(collectionName.title(), 1)
     if model_name in GENERIC_STORAGE_MODEL_NAMES:
-        model = app.model[model_name]
+        model = getattr(model, model_name)
         entity = model.query.filter_by(id=dehumanize(id)).first_or_404()
         if model_name == 'Mediation':
             offerer = entity.offer.eventOccurrences[0].stock[0].offerer

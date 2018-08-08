@@ -59,4 +59,3 @@ def test_14_get_venue_providers_by_venue():
 def test_15_get_all_venue_providers():
     r_list = req_with_auth().post(API_URL + '/venueProviders')
     assert r_list.status_code == 400
-

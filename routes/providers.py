@@ -1,6 +1,7 @@
 """providers"""
 from flask import current_app as app, jsonify
 
+import local_providers
 from models.provider import Provider
 
 @app.route('/providers', methods=['GET'])
@@ -11,8 +12,8 @@ def list_providers():
     result = []
     for p in providers:
         p_dict = p._asdict()
-        if p.localClass is not None and p.localClass in app.local_providers:
-            providerClass = app.local_providers[p.localClass]
+        if p.localClass is not None and hasattr(local_providers, p.localClass):
+            providerClass = getattr(local_providers, p.localClass)
             p_dict['identifierRegexp'] = providerClass.identifierRegexp
             p_dict['identifierDescription'] = providerClass.identifierDescription
         del p_dict['apiKey']

@@ -1,30 +1,24 @@
-from flask import current_app as app
+from local_providers.openagenda_events import OpenAgendaEvents
+#from local_providers.openagenda_stocks  import OpenAgendaStocks FOR DEMO PURPOSES ONLY
+from local_providers.spreadsheet_stocks import SpreadsheetStocks
+from local_providers.spreadsheet_exp_stocks import SpreadsheetExpStocks
+from local_providers.spreadsheet_exp_thing_stocks import SpreadsheetExpThingStocks
+from local_providers.spreadsheet_exp_venues import SpreadsheetExpVenues
+from local_providers.titelive_stocks import TiteLiveStocks
+from local_providers.titelive_venues import TiteLiveVenues
+from local_providers.titelive_things import TiteLiveThings
+from local_providers.titelive_thing_descriptions import TiteLiveThingDescriptions
+from local_providers.titelive_thing_thumbs import TiteLiveThingThumbs
 
-from models.db import db
-from models.provider import Provider
-from utils.attr_dict import AttrDict
-
-app.local_providers = AttrDict()
-import local_providers.openagenda_events
-#import local_providers.openagenda_stocks  FOR DEMO PURPOSES ONLY
-import local_providers.spreadsheet_stocks
-import local_providers.spreadsheet_exp_stocks
-import local_providers.spreadsheet_exp_thing_stocks
-import local_providers.spreadsheet_exp_venues
-import local_providers.titelive_stocks
-import local_providers.titelive_venues
-import local_providers.titelive_books
-import local_providers.titelive_book_descriptions
-import local_providers.titelive_book_thumbs
-
-for name in app.local_providers.keys():
-    provider = app.local_providers[name]
-    db_provider = Provider.getByClassName(name)
-
-    if not db_provider:
-        p = Provider()
-        p.name = provider.name
-        p.localClass = name
-        p.isActive = False
-        db.session.add(p)
-        db.session.commit()
+__all__ = (
+    'OpenAgendaEvents',
+    'SpreadsheetStocks',
+    'SpreadsheetExpStocks',
+    'SpreadsheetExpThingStocks',
+    'SpreadsheetExpVenues',
+    'TiteLiveStocks',
+    'TiteLiveVenues',
+    'TiteLiveThings',
+    'TiteLiveThingDescriptions',
+    'TiteLiveThingThumbs'
+)

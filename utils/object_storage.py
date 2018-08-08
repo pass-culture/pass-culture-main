@@ -1,17 +1,30 @@
 import os
 from datetime import datetime
 from pathlib import Path, PurePath
+from utils.config import IS_DEV, IS_STAGING
 
-#import swiftclient
-#
-#user = 'account_name:username'  # TODO (get from secrets)
-#key = 'your_api_key'
-#
-#def swift_con:
-#    return swiftclient.Connection(user=user,
-#                                  key=key,
-#                                  authurl='https://objects.dreamhost.com/auth'
-#                                 )
+from utils.human_ids import humanize
+
+import swiftclient
+
+
+def swift_con():
+    user = os.environ.get('OVH_USER')
+    key = os.environ.get('OVH_PASSWORD')
+
+    tenant_name = '4754281319661209'
+    auth_url = 'https://auth.cloud.ovh.net/v2.0/'
+    options = {
+        'region_name': 'GRA3'
+    }
+    auth_version = '2'
+    return swiftclient.Connection(user=user,
+                                  key=key,
+                                  authurl=auth_url,
+                                  os_options=options,
+                                  tenant_name=tenant_name,
+                                  auth_version=auth_version)
+
 
 STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__)))\
               / '..' / 'static' / 'object_store_data'
@@ -35,10 +48,16 @@ def store_public_object(bucket, id, blob, content_type):
     newFile.write(blob)
     newTypeFile = open(str(local_path(bucket, id))+".type", "w")
     newTypeFile.write(content_type)
-#    swift_con().put_object(bucket,
-#                           id,
-#                           contents=blob,
-#                           content_type=content_type)
+
+    # TODO: once the migration is fully done to scalingo, we can remove the second part of the condition
+    if not IS_DEV and "SCALINGO_POSTGRESQL_URL" in os.environ:
+        container_name = os.environ.get('OVH_BUCKET_NAME')
+        # we want to store data with a special path
+        storage_path = 'thumbs/' + id
+        swift_con().put_object(container_name,
+                               storage_path,
+                               contents=blob,
+                               content_type=content_type)
 
 
 def delete_public_object(bucket, id):

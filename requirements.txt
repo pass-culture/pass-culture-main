@@ -27,6 +27,8 @@ pytest-flask
 pytest-mock
 python-geoip
 PyMemoize
+python-keystoneclient
+python-swiftclient
 requests
 simplejson
 wetransferpy

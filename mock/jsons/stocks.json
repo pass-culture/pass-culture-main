@@ -1,8 +1,8 @@
 [
   {
     "available": 5,
-    "eventOccurenceIndex": 0,
-    "offererIndex": 0,
+    "eventOccurrenceIndex": 0,
+    "offerIndex": 0,
     "price": 10
   }
 ]

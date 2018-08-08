@@ -3,8 +3,6 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-from flask import current_app as app
-
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing, ThingType, BookFormat
@@ -257,6 +255,3 @@ class TiteLiveThings(LocalProvider):
 
         if infos['url_extrait_pdf'] != '':
             thing.mediaUrls.append(infos['url_extrait_pdf'])
-
-
-app.local_providers.TiteLiveThings = TiteLiveThings
