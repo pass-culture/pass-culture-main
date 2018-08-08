@@ -4,7 +4,7 @@ from models import Offer, Event, Mediation, Stock, Thing
 from recommendations_engine.offers import score_offer
 
 
-def test_score_offer_return_none_if_no_mediation_nor_thumbCount():
+def test_score_offer_returns_none_if_no_mediation_nor_thumbCount():
     # given
     offer = Offer()
     offer.mediations = []
@@ -19,7 +19,7 @@ def test_score_offer_return_none_if_no_mediation_nor_thumbCount():
 
 
 @patch('recommendations_engine.offers.specific_score_event')
-def test_score_offer_return_none_if_specific_score_event_is_none(specific_score_event):
+def test_score_offer_returns_none_if_specific_score_event_is_none(specific_score_event):
     # given
     specific_score_event.return_value = None
     offer = Offer()
@@ -35,7 +35,7 @@ def test_score_offer_return_none_if_specific_score_event_is_none(specific_score_
 
 @patch('recommendations_engine.offers.randint')
 @patch('recommendations_engine.offers.specific_score_event')
-def test_score_offer_return_27_for_an_event(specific_score_event, randint):
+def test_score_offer_returns_27_for_an_event(specific_score_event, randint):
     # given
     specific_score_event.return_value = 4
     randint.return_value = 3
@@ -51,7 +51,7 @@ def test_score_offer_return_27_for_an_event(specific_score_event, randint):
 
 
 @patch('recommendations_engine.offers.feature_paid_offers_enabled')
-def test_score_offer_return_none_given_a_paid_offer_if_feature_is_disabled(feature_paid_offers_enabled):
+def test_score_offer_returns_none_given_a_paid_offer_if_feature_is_disabled(feature_paid_offers_enabled):
     # given
     stock = Stock()
     stock.price = 100
@@ -71,7 +71,7 @@ def test_score_offer_return_none_given_a_paid_offer_if_feature_is_disabled(featu
 
 @patch('recommendations_engine.offers.randint')
 @patch('recommendations_engine.offers.feature_paid_offers_enabled')
-def test_score_offer_return_a_score_given_a_paid_offer_if_feature_is_enabled(feature_paid_offers_enabled, randint):
+def test_score_offer_returns_a_score_given_a_paid_offer_if_feature_is_enabled(feature_paid_offers_enabled, randint):
     # given
     randint.return_value = 4
     stock = Stock()
@@ -92,7 +92,7 @@ def test_score_offer_return_a_score_given_a_paid_offer_if_feature_is_enabled(fea
 
 @patch('recommendations_engine.offers.randint')
 @patch('recommendations_engine.offers.feature_paid_offers_enabled')
-def test_score_offer_return_a_score_given_a_free_offer_if_feature_is_disabled(feature_paid_offers_enabled, randint):
+def test_score_offer_returns_a_score_given_a_free_offer_if_feature_is_disabled(feature_paid_offers_enabled, randint):
     # given
     randint.return_value = 4
     stock = Stock()
