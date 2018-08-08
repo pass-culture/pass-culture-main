@@ -40,9 +40,8 @@ def subtest_recos_with_params(params,
                               expected_offer_id=None,
                               is_tuto=False):
     response = req_with_auth().put(RECOMMENDATION_URL + '?' + params, json={})
-    recos = response.json()
-
     assert response.status_code == expected_status
+    recos = response.json()
     assert len(recos) <= BLOB_SIZE + (2 if expected_mediation_id is None else 3)
     recos_for_tutos = filter(lambda reco: 'mediation' in reco and reco['mediation']['tutoIndex'] is not None, recos)
     assert len(list(recos_for_tutos)) == (1 if is_tuto else 0)
@@ -80,14 +79,14 @@ def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
     assert len(list(recos_with_tutos)) == 2
 
 
-def test_put_recommendations_returns_a_list_of_55_recos():
+def test_put_recommendations_returns_a_list_of_48_recos():
     # when
     response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
 
     # then
     recos = response.json()
     assert response.status_code == 200
-    assert len(recos) == 55
+    assert len(recos) == 48
 
 
 def test_put_recommendations_returns_no_duplicate_mediations_in_recos():
@@ -140,21 +139,21 @@ def test_put_recommendations_returns_recos_in_identical_orders():
     assert any([recos1[i]['id'] != recos2[i]['id'] for i in range(2, len(recos1))])
 
 
-def test_12_put_recommendation_returns_a_specific_reco_first_if_requested_with_offer_and_mediation():
+def test_put_recommendation_returns_a_specific_reco_first_if_requested_with_offer_and_mediation():
     subtest_recos_with_params('offerId=AFQA&mediationId=AM',  # AM=1 AFQA=352
                               expected_status=200,
                               expected_mediation_id='AM',
                               expected_offer_id='AFQA')
 
 
-def test_12_put_recommendation_returns_a_specific_reco_first_if_requested_with_only_offer_and_no_mediation():
+def test_put_recommendation_returns_a_specific_reco_first_if_requested_with_only_offer_and_no_mediation():
     subtest_recos_with_params('offerId=AFQA',
                               expected_status=200,
                               expected_mediation_id='AM',
                               expected_offer_id='AFQA')
 
 
-def test_12_put_recommendation_returns_a_specific_reco_first_if_requested_with_no_offer_and_only_mediation():
+def test_put_recommendation_returns_a_specific_reco_first_if_requested_with_no_offer_and_only_mediation():
     subtest_recos_with_params('mediationId=AM',
                               expected_status=200,
                               expected_mediation_id='AM',
@@ -193,8 +192,7 @@ def test_put_recommendations_returns_404_for_unknown_offer_and_unknown_mediation
     assert response.status_code == 404
 
 
-def test_15_if_i_request_a_specific_reco_with_single_reco_it_should_be_single():
-    pass
+# def test_15_if_i_request_a_specific_reco_with_single_reco_it_should_be_single():
     #    r = req_with_auth().put(RECOMMENDATION_URL+'?offerType=event&offerId=AE&singleReco=true', json={})
     #    assert r.status_code == 200
     #    recos = r.json()
