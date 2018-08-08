@@ -8,10 +8,9 @@ from tests.conftest import clean_database
 from utils.test_utils import create_offerer
 
 
-@clean_database
 @pytest.mark.standalone
 @patch('connectors.api_entreprises.requests.get')
-def test_write_object_validation_email_raises_ApiEntrepriseException_when_siren_api_does_not_respond(requests_get, app):
+def test_write_object_validation_email_raises_ApiEntrepriseException_when_siren_api_does_not_respond(requests_get):
     # Given
     requests_get.return_value = MagicMock(status_code=400)
     validation_token = secrets.token_urlsafe(20)

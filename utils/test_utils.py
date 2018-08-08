@@ -178,11 +178,18 @@ def req_with_auth(email=None, password=None):
     return request
 
 
-def create_booking_for_booking_email_test(user, stock, is_cancellation=False):
+def create_booking(user, stock, recommendation, is_cancellation=False, quantity=1):
     booking = Booking()
     booking.stock = stock
     booking.user = user
     booking.token = '56789'
+    booking.amount = stock.price
+    booking.quantity = quantity
+    if recommendation:
+        booking.recommendation = recommendation
+    else:
+        offer = create_thing_offer()
+        booking.recommendation = create_recommendation(offer, user)
     if not is_cancellation:
         stock.bookings = [booking]
     return booking
