@@ -17,18 +17,22 @@ def pick_random_offers_given_blob_size(recos, limit=BLOB_SIZE):
 def find_or_make_recommendation(user, offer_id, mediation_id):
     query = Recommendation.query.join(Offer)
     logger.info('(requested) offer_id=%s mediation_id=%s ' % (offer_id, mediation_id))
+    mediation = Mediation.query.filter_by(id=mediation_id).first()
+    offer = Offer.query.filter_by(id=offer_id).first()
     if not mediation_id and not offer_id:
         return None
     if mediation_id:
+        if mediation is None:
+            return None
+        if offer_id and (mediation.offerId != offer_id):
+            return None
         query = query.filter(Recommendation.mediationId == mediation_id)
     if offer_id:
+        if offer is None:
+            return None
         query = query.filter(Offer.id == offer_id)
     requested_recommendation = query.first()
     if requested_recommendation is None:
-        if mediation_id:
-            return None
-        offer = Offer.query.filter_by(id=offer_id).first()
-        mediation = Mediation.query.filter_by(id=mediation_id).first()
         requested_recommendation = create_recommendation(user, offer, mediation=mediation)
 
     if requested_recommendation is None:
