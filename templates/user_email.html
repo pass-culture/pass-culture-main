@@ -1,0 +1,15 @@
+<html>
+    <body>
+        <p id="mail-greeting">Cher {{ user_public_name }},</p>
+
+        <div id="mail-content">
+            {% block mail_content %}{% endblock %}
+        </div>
+
+        <p id="mail-salutation">
+            Cordialement,
+            <br>L'équipe pass culture
+        </p>
+
+    </body>
+</html>

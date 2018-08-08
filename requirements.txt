@@ -1,6 +1,7 @@
 alembic
 babel
 bcrypt
+beautifulsoup4
 colorthief
 dateparser
 Flask
