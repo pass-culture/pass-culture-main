@@ -7,7 +7,5 @@ from utils.health_checker import check_database_connection
 @app.route('/health', methods=['GET'])
 def health():
     result = check_database_connection()
-    if result.database_working:
-        return jsonify(result.output), 200
-    else:
-        return jsonify(result.output), 500
+    return_code = 200 if result[0] else 500
+    return jsonify(result[1]), return_code

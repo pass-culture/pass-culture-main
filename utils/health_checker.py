@@ -9,6 +9,7 @@ def check_database_connection():
         database_working = True
         output = "ok"
     except Exception as e:
-        output = str(e)
+        print(str(e))
+        output = "Database connection failed"
 
     return database_working, output
