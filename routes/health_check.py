@@ -8,6 +8,6 @@ from utils.health_checker import check_database_connection
 def health():
     result = check_database_connection()
     if result.database_working:
-        return jsonify("ok"), 200
+        return jsonify(result.output), 200
     else:
         return jsonify(result.output), 500
