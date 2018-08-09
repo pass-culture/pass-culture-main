@@ -5,7 +5,25 @@ from sqlalchemy import func
 from models import Recommendation, Offer, Mediation, ApiErrors, PcObject
 from recommendations_engine import get_offers
 from utils.config import BLOB_SIZE
+from utils.human_ids import dehumanize
 from utils.logger import logger
+
+
+class RecommendationNotFoundException(Exception):
+    pass
+
+
+def give_requested_recommendation_to_user(user, offer_id, mediation_id):
+    recommendation = None
+
+    if mediation_id or offer_id:
+        recommendation = find_recommendation(dehumanize(offer_id), dehumanize(mediation_id))
+
+        if recommendation is None:
+            recommendation = create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
+            logger.info('Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
+
+    return recommendation
 
 
 def pick_random_offers_given_blob_size(recos, limit=BLOB_SIZE):
@@ -14,11 +32,9 @@ def pick_random_offers_given_blob_size(recos, limit=BLOB_SIZE):
         .all()
 
 
-def find_or_make_recommendation(user, offer_id, mediation_id):
+def find_recommendation(offer_id, mediation_id):
     logger.info('Requested Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
-
     query = Recommendation.query.join(Offer)
-
     mediation = Mediation.query.filter_by(id=mediation_id).first()
     offer = Offer.query.filter_by(id=offer_id).first()
 
@@ -26,24 +42,24 @@ def find_or_make_recommendation(user, offer_id, mediation_id):
         if _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
             logger.info('Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
                         % (offer.id, mediation.id))
-            return None
+            raise RecommendationNotFoundException()
 
         query = query.filter(Recommendation.mediationId == mediation_id)
 
     if offer_id:
         if offer is None:
             logger.info('Offer not found for offer_id=%s' % (offer_id, ))
-            return None
+            raise RecommendationNotFoundException()
 
         query = query.filter(Offer.id == offer_id)
 
-    requested_recommendation = query.first()
+    return query.first()
 
-    if requested_recommendation is None:
-        requested_recommendation = create_recommendation(user, offer, mediation=mediation)
-        logger.info('Creating Recommendation with offer_id=%s mediation_id=%s' % (offer.id, mediation.id))
 
-    return requested_recommendation
+def create_recommendation_from_ids(user, offer_id, mediation_id=None):
+    mediation = Mediation.query.filter_by(id=mediation_id).first()
+    offer = Offer.query.filter_by(id=offer_id).first()
+    return create_recommendation(user, offer, mediation=mediation)
 
 
 def create_recommendation(user, offer, mediation=None):

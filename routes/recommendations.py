@@ -7,8 +7,10 @@ from flask_login import current_user, login_required
 
 from models import Booking, Offer
 from models import EventOccurrence, Mediation, Stock, PcObject, Recommendation
-from recommendations_engine import pick_random_offers_given_blob_size, find_or_make_recommendation, \
+from recommendations_engine import pick_random_offers_given_blob_size, find_recommendation, \
     create_recommendations
+from recommendations_engine.recommendations import RecommendationNotFoundException, create_recommendation, \
+    create_recommendation_from_ids, give_requested_recommendation_to_user
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -39,17 +41,11 @@ def put_recommendations():
 
     offer_id = request.args.get('offerId')
     mediation_id = request.args.get('mediationId')
-    requested_recommendation = None
 
-    if mediation_id or offer_id:
-        requested_recommendation = find_or_make_recommendation(
-            current_user,
-            dehumanize(offer_id),
-            dehumanize(mediation_id)
-        )
-
-        if requested_recommendation is None:
-            return "Offer or mediation not found", 404
+    try:
+        requested_recommendation = give_requested_recommendation_to_user(current_user, offer_id, mediation_id)
+    except RecommendationNotFoundException:
+        return "Offer or mediation not found", 404
 
     logger.info('(special) requested_recommendation %s' % (requested_recommendation, ))
 
