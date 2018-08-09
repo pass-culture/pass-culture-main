@@ -15,7 +15,7 @@ from sqlalchemy import CHAR,\
                        Integer,\
                        Numeric,\
                        String
-from sqlalchemy.exc import IntegrityError, InternalError
+from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
@@ -182,9 +182,24 @@ class PcObject():
         return ["global", "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
 
     @staticmethod
-    def restize_value_error(e):
-        if len(e.args)>1 and e.args[1] == 'enum':
-            return [e.args[2], ' doit etre dans cette liste : '+",".join(map(lambda x : '"'+x+'"', e.args[3]))]
+    def restize_data_error(e):
+        if e.args and len(e.args) > 0 and e.args[0].startswith('(psycopg2.DataError) value too long for type'):
+            max_length = re.search('\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)', e.args[0], re.IGNORECASE).group(2)
+            return ['global', "La valeur d'une entrée est trop longue (max " + max_length + ")"]
+        else:
+            return PcObject.restize_global_error(e)
+
+    @staticmethod
+    def restize_integrity_error(e):
+        if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23505':
+            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
+            return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
+        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23503':
+            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
+            return [field, 'Aucun objet ne correspond à cet identifiant dans notre base de données']
+        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23502':
+            field = re.search('column "(.*?)"', e.orig.pgerror, re.IGNORECASE).group(1)
+            return [field, 'Ce champ est obligatoire']
         else:
             return PcObject.restize_global_error(e)
 
@@ -200,16 +215,9 @@ class PcObject():
             return PcObject.restize_global_error(e)
 
     @staticmethod
-    def restize_integrity_error(e):
-        if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23505':
-            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
-            return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
-        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23503':
-            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
-            return [field, 'Aucun objet ne correspond à cet identifiant dans notre base de données']
-        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23502':
-            field = re.search('column "(.*?)"', e.orig.pgerror, re.IGNORECASE).group(1)
-            return [field, 'Ce champ est obligatoire']
+    def restize_value_error(e):
+        if len(e.args)>1 and e.args[1] == 'enum':
+            return [e.args[2], ' doit etre dans cette liste : '+",".join(map(lambda x : '"'+x+'"', e.args[3]))]
         else:
             return PcObject.restize_global_error(e)
 
@@ -260,6 +268,9 @@ class PcObject():
         # COMMIT
         try:
             db.session.commit()
+        except DataError as de:
+            api_errors.addError(*PcObject.restize_data_error(de))
+            raise api_errors
         except IntegrityError as ie:
             api_errors.addError(*PcObject.restize_integrity_error(ie))
             raise api_errors
