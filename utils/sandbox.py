@@ -25,14 +25,14 @@ def do_sandbox():
     json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'users.json'
 
     with open(json_path) as json_file:
-        for user_dict in json.load(json_file):
+        for (user_index, user_dict) in enumerate(json.load(json_file)):
             query = User.query.filter_by(email=user_dict['email'])
-            print("QUERY COUNT", query.count())
             if query.count() == 0:
                 user = User(from_dict=user_dict)
                 user.validationToken = None
-                pprint(vars(user))
                 PcObject.check_and_save(user)
+                pprint(vars(user))
+                print("CREATED user")
                 if 'isAdmin' in user_dict and user_dict['isAdmin']:
                     # un acteur culturel qui peut jouer à rajouter des offres partout
                     # TODO: a terme, le flag isAdmin lui donne tous les droits sans
@@ -43,9 +43,7 @@ def do_sandbox():
                         userOfferer.user = user
                         userOfferer.offerer = offerer
                         PcObject.check_and_save(userOfferer)
-                    set_from_mock("thumbs", user, 2)
-                else:
-                    set_from_mock("thumbs", user, 1)
+                set_from_mock("thumbs", user, user_index)
 
 
     json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'offerers.json'

@@ -36,10 +36,7 @@ def saveCounts(app):
 
 def assertCreatedCounts(app, **counts):
     for modelName in counts:
-        print(savedCounts)
         model = getattr(models, modelName)
-        print(model)
-        print(savedCounts[modelName])
         assert model.query.count() - savedCounts[modelName]\
                == counts[modelName]
 
