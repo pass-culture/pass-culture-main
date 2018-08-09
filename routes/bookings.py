@@ -78,6 +78,7 @@ def post_booking():
     if recommendation_id is not None:
         new_booking.recommendationId = dehumanize(recommendation_id)
 
+
     try:
         PcObject.check_and_save(new_booking)
     except InternalError as ie:
