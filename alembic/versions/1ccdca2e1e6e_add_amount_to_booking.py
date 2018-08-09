@@ -18,6 +18,7 @@ def upgrade():
     op.execute(
         'ALTER TABLE "booking" ADD COLUMN amount numeric(10,2);'
         'UPDATE booking b SET amount=(SELECT o.price FROM offer o WHERE o.id=b."offerId");'
+        'DELETE FROM booking WHERE "offerId" IS NULL;'
         'ALTER TABLE "booking" ALTER COLUMN "amount" SET NOT NULL;'
         'ALTER TABLE "booking" ALTER COLUMN "offerId" SET NOT NULL;'
     )

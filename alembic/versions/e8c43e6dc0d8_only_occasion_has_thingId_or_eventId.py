@@ -56,6 +56,26 @@ def upgrade():
         ')'
     )
 
+    op.execute(
+        'UPDATE mediation m '
+        'SET "occasionId" = ('
+        '   SELECT o.id'
+        '   FROM occasion o'
+        '   WHERE m."eventId" = o."eventId"'
+        '   LIMIT 1'
+        ')'
+    )
+
+    op.execute(
+        'UPDATE recommendation r '
+        'SET "occasionId" = ('
+        '   SELECT m."occasionId"'
+        '   FROM mediation m'
+        '   WHERE r."eventId" = m."eventId"'
+        '   LIMIT 1'
+        ')'
+    )
+
     op.alter_column('event_occurence', 'occasionId', existing_type=sa.BigInteger(), nullable=False)
     op.alter_column('thing', 'type', existing_type=sa.VARCHAR(length=50), nullable=False)
 
