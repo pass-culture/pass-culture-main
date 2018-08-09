@@ -272,10 +272,6 @@ class PcObject():
         if api_errors.errors.keys():
             raise api_errors
 
-
-    def save(self):
-        PcObject.check_and_save(self)
-
     @staticmethod
     def delete(model):
         db.session.delete(model)

@@ -53,7 +53,7 @@ def do_sandbox():
             query = Offerer.query.filter_by(name=obj['name'])
             if query.count() == 0:
                 offerer = Offerer(from_dict=obj)
-                offerer.save()
+                PcObject.check_and_save(offerer)
                 print("CREATED offerer")
                 pprint(vars(offerer))
                 offerers.append(offerer)
@@ -68,7 +68,7 @@ def do_sandbox():
             if query.count() == 0:
                 venue = Venue(from_dict=obj)
                 venue.managingOfferer = offerers[obj['offererIndex']]
-                venue.save()
+                PcObject.check_and_save(venue)
                 print("CREATED venue")
                 pprint(vars(venue))
                 venues.append(venue)
@@ -82,7 +82,7 @@ def do_sandbox():
             query = Event.query.filter_by(name=obj['name'])
             if query.count() == 0:
                 event = Event(from_dict=obj)
-                event.save()
+                PcObject.check_and_save(event)
                 print("CREATED event")
                 pprint(vars(event))
                 events.append(event)
@@ -107,7 +107,7 @@ def do_sandbox():
                     offer.event = event_or_thing
                 else:
                     offer.thing = event_or_thing
-                offer.save()
+                PcObject.check_and_save(offer)
                 print("CREATED offer")
                 pprint(vars(offer))
                 offers.append(offer)
@@ -125,7 +125,7 @@ def do_sandbox():
                 event_occurrence.offer = offer
                 event_occurrence.beginningDatetime = datetime.now() + timedelta(days=1)
                 event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(hours=1)
-                event_occurrence.save()
+                PcObject.check_and_save(event_occurrence)
                 print("CREATED event_occurrence")
                 pprint(vars(event_occurrence))
                 event_occurrences.append(event_occurrence)
@@ -142,7 +142,7 @@ def do_sandbox():
                 stock = Stock(from_dict=obj)
                 stock.eventOccurrence = event_occurrence
                 stock.offer = offers[obj['offerIndex']]
-                stock.save()
+                PcObject.check_and_save(stock)
                 print("CREATED stock")
                 pprint(vars(stock))
                 stocks.append(stock)
@@ -158,7 +158,7 @@ def do_sandbox():
             if query.count() == 0:
                 deposit = Deposit(from_dict=obj)
                 deposit.user = user
-                deposit.save()
+                PcObject.check_and_save(deposit)
                 print("CREATED deposit")
                 pprint(vars(deposit))
                 deposits.append(deposit)
@@ -175,7 +175,7 @@ def do_sandbox():
                 booking.stock = stock
                 booking.user = user
                 booking.amount = stock.price
-                booking.save()
+                PcObject.check_and_save(booking)
                 print("CREATED booking")
                 pprint(vars(booking))
                 bookings.append(booking)
