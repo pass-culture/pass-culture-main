@@ -263,7 +263,8 @@ class PcObject():
         for obj in objects:
             obj_api_errors = obj.errors()
             api_errors.errors.update(obj_api_errors.errors)
-            db.session.add(obj)
+            if not api_errors.errors.keys():
+                db.session.add(obj)
 
         # COMMIT
         try:

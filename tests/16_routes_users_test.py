@@ -1,6 +1,14 @@
+""" routes users tests """
 from datetime import datetime, timedelta
-from models import PcObject, Thing, Venue, Stock, Recommendation, Deposit, Booking, Offer
 from pprint import pprint
+from models import Booking,\
+                   Deposit,\
+                   PcObject,\
+                   Recommendation,\
+                   Stock,\
+                   Thing,\
+                   Venue
+
 
 from models.offerer import Offerer
 from models.user import User
