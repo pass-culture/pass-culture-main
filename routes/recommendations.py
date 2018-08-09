@@ -32,23 +32,26 @@ def patch_recommendation(recommendationId):
 @expect_json_data
 def put_recommendations():
     if 'seenRecommendationIds' in request.json.keys():
-        humanized_seen_recommendationIds = request.json['seenRecommendationIds'] or []
-        seen_recommendationIds = list(map(dehumanize, humanized_seen_recommendationIds))
+        humanized_seen_recommendation_ids = request.json['seenRecommendationIds'] or []
+        seen_recommendation_ids = list(map(dehumanize, humanized_seen_recommendation_ids))
     else:
-        seen_recommendationIds = []
-    requested_recommendation = find_or_make_recommendation(current_user,
-                                                           dehumanize(request.args.get('offerId')),
-                                                           dehumanize(request.args.get('mediationId')))
+        seen_recommendation_ids = []
 
-    if (request.args.get('offerId')
-        or request.args.get('mediationId')) \
-            and requested_recommendation is None:
-        return "Offer or mediation not found", 404
+    offer_id = request.args.get('offerId')
+    mediation_id = request.args.get('mediationId')
+    requested_recommendation = None
 
-    print('requested req', requested_recommendation)
+    if mediation_id or offer_id:
+        requested_recommendation = find_or_make_recommendation(
+            current_user,
+            dehumanize(offer_id),
+            dehumanize(mediation_id)
+        )
 
-    logger.info('(special) requested_recommendation '
-                + str(requested_recommendation))
+        if requested_recommendation is None:
+            return "Offer or mediation not found", 404
+
+    logger.info('(special) requested_recommendation %s' % (requested_recommendation, ))
 
     # TODO
     #    if (request.args.get('offerId') is not None
@@ -62,7 +65,7 @@ def put_recommendations():
 
     # we get more read+unread recos than needed in case we can't make enough new recos
 
-    filter_not_seen_offer = ~Recommendation.id.in_(seen_recommendationIds)
+    filter_not_seen_offer = ~Recommendation.id.in_(seen_recommendation_ids)
 
     query = Recommendation.query.outerjoin(Mediation) \
         .filter((Recommendation.user == current_user)

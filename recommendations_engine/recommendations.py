@@ -15,28 +15,33 @@ def pick_random_offers_given_blob_size(recos, limit=BLOB_SIZE):
 
 
 def find_or_make_recommendation(user, offer_id, mediation_id):
+    logger.info('Requested Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
+
     query = Recommendation.query.join(Offer)
-    logger.info('(requested) offer_id=%s mediation_id=%s ' % (offer_id, mediation_id))
+
     mediation = Mediation.query.filter_by(id=mediation_id).first()
     offer = Offer.query.filter_by(id=offer_id).first()
-    if not mediation_id and not offer_id:
-        return None
+
     if mediation_id:
-        if mediation is None:
+        if _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
+            logger.info('Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
+                        % (offer.id, mediation.id))
             return None
-        if offer_id and (mediation.offerId != offer_id):
-            return None
+
         query = query.filter(Recommendation.mediationId == mediation_id)
+
     if offer_id:
         if offer is None:
+            logger.info('Offer not found for offer_id=%s' % (offer_id, ))
             return None
+
         query = query.filter(Offer.id == offer_id)
+
     requested_recommendation = query.first()
-    if requested_recommendation is None:
-        requested_recommendation = create_recommendation(user, offer, mediation=mediation)
 
     if requested_recommendation is None:
-        raise ApiErrors()
+        requested_recommendation = create_recommendation(user, offer, mediation=mediation)
+        logger.info('Creating Recommendation with offer_id=%s mediation_id=%s' % (offer.id, mediation.id))
 
     return requested_recommendation
 
@@ -100,3 +105,7 @@ def insert_tuto_mediation(user, tuto_mediation):
     recommendation.mediation = tuto_mediation
     recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
     PcObject.check_and_save(recommendation)
+
+
+def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
+    return mediation is None or (offer_id and (mediation.offerId != offer_id))
