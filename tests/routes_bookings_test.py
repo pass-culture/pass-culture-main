@@ -118,7 +118,7 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     PcObject.check_and_save(recommendation)
 
     deposit = create_deposit(user, datetime.utcnow(), amount=50)
-    deposit.check_and_save()
+    PcObject.check_and_save(deposit)
 
     booking_json = {
         'stockId': humanize(stock.id),
