@@ -9,7 +9,6 @@ from models import Booking,\
                    Thing,\
                    Venue
 
-
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
@@ -214,7 +213,6 @@ def test_24_pro_signup_should_create_user_offerer_and_userOfferer(app):
     assert user_offerer is not None
     assert user_offerer.validationToken is None
     assert user_offerer.rights == RightsType.admin
-
 
 def test_25_should_not_be_able_to_validate_offerer_with_wrong_token():
     r = req_with_auth(email='toto_pro@btmx.fr',

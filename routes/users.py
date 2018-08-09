@@ -118,7 +118,7 @@ def signup():
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.editor)
             user_offerer.generate_validation_token()
-            objects_to_save = [user_offerer]
+            objects_to_save = [new_user, user_offerer]
         maybe_send_offerer_validation_email(offerer, user_offerer)
     else:
         objects_to_save = [new_user]
@@ -129,7 +129,7 @@ def signup():
         e = ApiErrors()
         if "check_admin_cannot_book_free_offers" in str(ie.orig):
             e.addError('canBookFreeOffers', 'Admin ne peut pas booker')
-        raise e
+            raise e
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)

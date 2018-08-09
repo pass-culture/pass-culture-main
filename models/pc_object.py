@@ -266,6 +266,10 @@ class PcObject():
             if not api_errors.errors.keys():
                 db.session.add(obj)
 
+        # CHECK BEFORE COMMIT
+        if api_errors.errors.keys():
+            raise api_errors
+
         # COMMIT
         try:
             db.session.commit()
