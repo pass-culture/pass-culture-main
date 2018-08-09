@@ -61,8 +61,8 @@ class Offer(PcObject,
         if self.thingId:
             return self.thing.stocks
         elif self.eventId:
-            return chain(map(lambda eo: eo.stocks,
-                             self.eventOccurrences))
+            return list(chain(*map(lambda eo: eo.stocks,
+                                   self.eventOccurrences)))
         else:
             return []
 
