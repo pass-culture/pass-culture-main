@@ -140,7 +140,7 @@ class PcObject():
         pprint(vars(self))
 
     def errors(self):
-        errors = ApiErrors()
+        api_errors = ApiErrors()
         data = self.__class__.__table__.columns._data
         for key in data.keys():
             col = data[key]
@@ -152,28 +152,28 @@ class PcObject():
                and not col.primary_key\
                and col.default is None\
                and val is None:
-                errors.addError(key, 'Cette information est obligatoire')
+                api_errors.addError(key, 'Cette information est obligatoire')
             if val is None:
                 continue
             if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
                and not isinstance(col.type, Enum)\
                and not isinstance(val, str):
-                errors.addError(key, 'doit être une chaîne de caractères')
+                api_errors.addError(key, 'doit être une chaîne de caractères')
             if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
                and isinstance(val, str)\
                and col.type.length\
                and len(val)>col.type.length:
-                errors.addError(key,
+                api_errors.addError(key,
                                 'Vous devez saisir moins de '
                                       + str(col.type.length)
                                       + ' caractères')
             if isinstance(col.type, Integer)\
                and not isinstance(val, int):
-                errors.addError(key, 'doit être un entier')
+                api_errors.addError(key, 'doit être un entier')
             if isinstance(col.type, Float)\
                and not isinstance(val, float):
-                errors.addError(key, 'doit être un nombre')
-        return errors
+                api_errors.addError(key, 'doit être un nombre')
+        return api_errors
 
     @staticmethod
     def restize_global_error(e):
@@ -213,19 +213,6 @@ class PcObject():
         else:
             return PcObject.restize_global_error(e)
 
-    def commitOrAbortIfErrors(self):
-        apiErrors = self.errors()
-        try:
-            db.session.commit()
-        except IntegrityError as ie:
-            apiErrors.addError(*PcObject.restize_integrity_error(ie))
-        except TypeError as te:
-            apiErrors.addError(*PcObject.restize_type_error(te))
-        except ValueError as ve:
-            apiErrors.addError(*PcObject.restize_value_error(ve))
-        if apiErrors.errors:
-            raise apiErrors
-
     def populateFromDict(self, dct, skipped_keys=[]):
         data = dct.copy()
         if data.__contains__('id'):
@@ -263,13 +250,31 @@ class PcObject():
         if not objects:
             raise ValueError('Objects to save need to be passed as arguments'
                              + ' to check_and_save')
+        # CUMULATE ERRORS IN ONE SINGLE API ERRORS DURING ADD TIME
+        api_errors = ApiErrors()
         for obj in objects:
+            obj_api_errors = obj.errors()
+            api_errors.errors.update(obj_api_errors.errors)
             db.session.add(obj)
-        obj.commitOrAbortIfErrors()
+
+        # COMMIT
+        try:
+            db.session.commit()
+        except IntegrityError as ie:
+            api_errors.addError(*PcObject.restize_integrity_error(ie))
+            raise api_errors
+        except TypeError as te:
+            api_errors.addError(*PcObject.restize_type_error(te))
+            raise api_errors
+        except ValueError as ve:
+            api_errors.addError(*PcObject.restize_value_error(ve))
+            raise api_errors
+        if api_errors.errors.keys():
+            raise api_errors
+
 
     def save(self):
-        db.session.add(self)
-        self.commitOrAbortIfErrors()
+        PcObject.check_and_save(self)
 
     @staticmethod
     def delete(model):

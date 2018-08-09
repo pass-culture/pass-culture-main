@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.expenses import get_expenses
 from models.api_errors import ApiErrors
+from models.db import db
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user import User
@@ -14,9 +15,9 @@ from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email, \
-    subscribe_newsletter
+                          subscribe_newsletter
 from utils.rest import expect_json_data, \
-    login_or_api_key_required
+                       login_or_api_key_required
 
 
 def is_pro_signup(json_user):
@@ -117,7 +118,7 @@ def signup():
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.editor)
             user_offerer.generate_validation_token()
-            objects_to_save = [user_offerer]
+            objects_to_save = [new_user, user_offerer]
         maybe_send_offerer_validation_email(offerer, user_offerer)
     else:
         objects_to_save = [new_user]
