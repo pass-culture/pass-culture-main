@@ -25,13 +25,16 @@ const delay = 250
 const duration = 250
 
 const defaultStyle = {
+  opacity: '0',
   top: '100vh',
-  transition: `top ${duration}ms ease`,
+  transitionDuration: `${duration}ms`,
+  transitionProperty: 'opacity, top',
+  transitionTimingFunction: 'ease',
 }
 
 const transitionStyles = {
-  entered: { top: 0 },
-  entering: { top: '100vh' },
+  entered: { opacity: 1, top: 0 },
+  entering: { opacity: 0, top: '100vh' },
 }
 
 const renderContactUsLink = () => (
