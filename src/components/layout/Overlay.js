@@ -21,6 +21,7 @@ const Overlay = ({ isVisible }) => (
     {state => (
       <div
         id="overlay"
+        className="is-overlay"
         style={{ ...defaultStyle, ...transitionStyles[state] }}
       />
     )}

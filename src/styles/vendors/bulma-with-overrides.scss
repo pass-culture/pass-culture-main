@@ -33,10 +33,14 @@
   }
 }
 
-.disabled,
-[disabled] {
+[disabled],
+.is-disabled {
   cursor: default;
   opacity: $button-disabled-opacity;
+}
+
+.is-relative {
+  position: relative;
 }
 
 .field-group

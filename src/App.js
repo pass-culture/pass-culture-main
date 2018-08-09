@@ -33,14 +33,14 @@ const App = ({ location, children }) => {
           {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
         </title>
       </Helmet>
-      <Debug className="app relative">
+      <Debug className="app is-relative">
         {children}
         <Overlay />
         <MainMenu />
         <Splash />
         <img
           alt="beta"
-          className="beta-corner absolute"
+          className="beta-corner is-overlay"
           src={`${ROOT_PATH}/beta.png`}
           srcSet={`${ROOT_PATH}/beta@2x.png`}
         />

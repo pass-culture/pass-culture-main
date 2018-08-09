@@ -59,39 +59,15 @@ button {
 }
 
 .app .beta-corner {
-  bottom: 0;
   left: 0;
-  height: $footer-height;
+  bottom: 0;
+  top: inherit;
+  right: inherit;
   width: $footer-height;
+  height: $footer-height;
   z-index: $zindex-beta-corner;
 }
 
-.hidden {
-  display: none;
-  visibility: hidden;
-}
-
-.visible {
-  display: inherit;
-  visibility: inherit;
-}
-
-.absolute {
-  position: absolute;
-}
-
-.relative {
+.is-relative {
   position: relative;
-}
-
-.align-left {
-  text-align: left;
-}
-
-.align-right {
-  text-align: right;
-}
-
-.align-center {
-  text-align: center;
 }

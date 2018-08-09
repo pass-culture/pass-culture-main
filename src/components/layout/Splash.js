@@ -40,7 +40,8 @@ class Splash extends React.PureComponent {
       <Transition unmountOnExit in={!close} timeout={duration}>
         {state => (
           <div
-            className="splash"
+            id="splash"
+            className="is-overlay has-text-centered"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
             <Icon svg="logo-group" alt="Logo Pass Culture" />

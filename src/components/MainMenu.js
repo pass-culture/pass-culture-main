@@ -25,8 +25,8 @@ const transitionStyles = {
 }
 
 const renderDisabledLink = (path, title, icon) => (
-  <span className="navlink flex-columns disabled">
-    <span className="align-center menu-icon">
+  <span className="navlink flex-columns is-disabled">
+    <span className="has-text-centered menu-icon">
       <Icon svg={`ico-${icon}-w`} alt={title} />
     </span>
     <span>
@@ -37,7 +37,7 @@ const renderDisabledLink = (path, title, icon) => (
 
 const renderContactUsLink = () => (
   <a className="navlink flex-columns" href="mailto:pass@culture.gouv.fr">
-    <span className="align-center menu-icon">
+    <span className="has-text-centered menu-icon">
       <Icon svg="ico-mail-w" alt="Nous contacter" />
     </span>
     <span>
@@ -75,7 +75,7 @@ class MainMenu extends React.PureComponent {
         className="navlink flex-columns"
         onClick={this.onSignOutClick}
       >
-        <span className="align-center menu-icon">
+        <span className="has-text-centered menu-icon">
           <Icon svg="ico-deconnect-w" alt="Déconnexion" />
         </span>
         <span>
@@ -92,7 +92,7 @@ class MainMenu extends React.PureComponent {
         onClick={this.onNavLinkClick}
         className="navlink flex-columns"
       >
-        <span className="align-center menu-icon">
+        <span className="has-text-centered menu-icon">
           <Icon svg={`ico-${icon}-w`} alt={title} />
         </span>
         <span>
@@ -105,22 +105,22 @@ class MainMenu extends React.PureComponent {
   renderMenuHeader() {
     const { user, dispatch } = this.props
     return (
-      <div className="header flex-columns relative p16">
+      <div className="header flex-columns is-relative p16">
         <button
           type="button"
-          className="close-button absolute"
+          className="close-button is-overlay"
           onClick={() => dispatch(toggleMainMenu())}
         >
           <Icon svg="ico-close" alt="Fermer" />
         </button>
-        <div className="profile align-center">
+        <div className="profile has-text-centered">
           <p className="avatar">
             <img
               alt="Avatar"
               src={`${ROOT_PATH}/icons/avatar-default-w-XL.svg`}
             />
           </p>
-          <p className="username">
+          <p className="username is-clipped">
             <span>
               {user && user.publicName}
             </span>
@@ -149,12 +149,12 @@ class MainMenu extends React.PureComponent {
         {state => (
           <div
             id="main-menu"
-            className="absolute flex-columns items-end p12"
+            className="is-overlay is-clipped flex-columns items-end p12"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
-            <div className="inner relative flex-rows">
+            <div className="inner is-relative is-clipped flex-rows">
               {this.renderMenuHeader()}
-              <div className="scroll-container">
+              <div className="scroll-container is-clipped">
                 <Scrollbars>
                   <nav className="navigation flex-rows mt16 pb0">
                     {this.renderNavLink('decouverte', 'Les offres', 'offres')}
