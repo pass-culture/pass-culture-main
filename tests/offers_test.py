@@ -57,8 +57,8 @@ def test_score_offer_returns_none_given_a_paid_offer_if_feature_is_disabled(feat
     stock.price = 100
 
     offer = Offer()
-    offer.stocks = [stock]
     offer.thing = Thing()
+    offer.thing.stocks = [stock]
     offer.thing.thumbCount = 1
     feature_paid_offers_enabled.return_value = False
 
@@ -78,8 +78,8 @@ def test_score_offer_returns_a_score_given_a_paid_offer_if_feature_is_enabled(fe
     stock.price = 100
 
     offer = Offer()
-    offer.stocks = [stock]
     offer.thing = Thing()
+    offer.thing.stocks = [stock]
     offer.thing.thumbCount = 1
     feature_paid_offers_enabled.return_value = True
 
@@ -99,8 +99,8 @@ def test_score_offer_returns_a_score_given_a_free_offer_if_feature_is_disabled(f
     stock.price = 0
 
     offer = Offer()
-    offer.stocks = [stock]
     offer.thing = Thing()
+    offer.thing.stocks = [stock]
     offer.thing.thumbCount = 1
     feature_paid_offers_enabled.return_value = False
 
