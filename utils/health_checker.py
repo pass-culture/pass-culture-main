@@ -9,7 +9,7 @@ def check_database_connection():
         database_working = True
         output = "ok"
     except Exception as e:
-        logger.info(str(e))
+        logger.critical(str(e))
         output = "Database connection failed"
 
     return database_working, output
