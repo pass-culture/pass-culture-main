@@ -16,9 +16,8 @@ def test_write_object_validation_email_raises_ApiEntrepriseException_when_siren_
     requests_get.return_value = MagicMock(status_code=400)
     validation_token = secrets.token_urlsafe(20)
 
-    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE',
-                             city='Paris', postalCode='75013', name='Accenture',
-                             validationToken=validation_token)
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
+                             name='Accenture', validation_token=validation_token)
 
     #When
     with pytest.raises(ApiEntrepriseException) as error:

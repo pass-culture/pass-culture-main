@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from models import Venue
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user import User
@@ -31,6 +32,7 @@ def list_offerers():
     return handle_rest_get_list(Offerer,
                                 query=query,
                                 include=OFFERER_INCLUDES)
+
 
 @app.route('/offerers/<id>', methods=['GET'])
 @login_required

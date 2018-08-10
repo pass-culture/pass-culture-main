@@ -13,11 +13,9 @@ from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_off
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_should_not_work_past_limit_date(app):
-    offerer = create_offerer('987654321', 'Test address', 'Test city', '93000',
-                             'Test name')
+    offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
 
-    venue = create_venue(offerer, 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                     'Test offerer', '93')
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
 
     thing_offer = create_thing_offer()
 
@@ -25,7 +23,7 @@ def test_create_booking_should_not_work_past_limit_date(app):
     expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
     PcObject.check_and_save(expired_stock)
 
-    user = create_user('test@mail.com', 'test name', '93', password='psswd123')
+    user = create_user('test name', '93', 'test@mail.com', password='psswd123')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(thing_offer, user)
@@ -44,16 +42,15 @@ def test_create_booking_should_not_work_past_limit_date(app):
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_should_work_before_limit_date(app):
-    offerer = create_offerer('987654321', 'Test address', 'Test city', '93000',
-                             'Test name')
-    venue = create_venue(offerer, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
+    offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     ok_stock = create_stock_with_event_offer(offerer=offerer,
                                              venue=venue, price=0)
     ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     PcObject.check_and_save(ok_stock)
 
-    user = create_user('test@mail.com', 'test name', '93', password='psswd123')
+    user = create_user('test name', '93', 'test@mail.com', password='psswd123')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(offer=ok_stock.offer, user=user)
@@ -76,15 +73,13 @@ def test_create_booking_should_work_before_limit_date(app):
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_should_not_work_if_too_many_bookings(app):
-    offerer = create_offerer('987654321', 'Test address', 'Test city', '93000',
-                             'Test name')
-    venue = create_venue(offerer, 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                     'Test offerer', '93')
+    offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None)
     too_many_bookings_stock.available = 0
     PcObject.check_and_save(too_many_bookings_stock)
 
-    user = create_user('test@email.com', 'Toto', '93', password='mdppsswd')
+    user = create_user('Toto', '93', 'test@email.com', password='mdppsswd')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
@@ -107,10 +102,10 @@ def test_create_booking_should_not_work_if_too_many_bookings(app):
 def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     # Given
     offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
-    venue = create_venue(offerer, 'booking@email.com', '1 fake street', '93000', 'False city', 'venue name', '93')
+    venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city', '93')
     thing_offer = create_thing_offer()
 
-    user = create_user('test@email.com', 'Toto', '93', password='mdppsswd')
+    user = create_user('Toto', '93', 'test@email.com', password='mdppsswd')
     PcObject.check_and_save(user)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50)
@@ -135,16 +130,19 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
 @pytest.mark.standalone
 def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
     # Given
-    user = create_user('cannotBook_freeOffers@email.com', 'Test', '93', canBookFreeOffers=False, password='testpsswd')
+    user = create_user('Test', '93', 'cannotBook_freeOffers@email.com', can_book_free_offers=False,
+                       password='testpsswd')
     PcObject.check_and_save(user)
 
-    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postalCode='93000', name='Test offerer')
+    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
+                             name='Test offerer')
     PcObject.check_and_save(offerer)
 
     thing_offer = create_thing_offer()
     PcObject.check_and_save(thing_offer)
 
-    venue = create_venue(offerer=offerer, bookingEmail='booking@email.com', address='1 Test address', postalCode='93000', city='Test city', name='Venue name', departementCode='93')
+    venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
+                         address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
     PcObject.check_and_save(venue)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
@@ -175,16 +173,18 @@ def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOff
 @pytest.mark.standalone
 def test_create_booking_should_not_work_if_not_enough_credit(app):
     # Given
-    user = create_user('insufficient_funds_test@email.com', 'Test', '93', password='testpsswd')
+    user = create_user('Test', '93', 'insufficient_funds_test@email.com', password='testpsswd')
     PcObject.check_and_save(user)
 
-    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postalCode='93000', name='Test offerer')
+    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
+                             name='Test offerer')
     PcObject.check_and_save(offerer)
 
     thing_offer = create_thing_offer()
     PcObject.check_and_save(thing_offer)
 
-    venue = create_venue(offerer=offerer, bookingEmail='booking@email.com', address='1 Test address', postalCode='93000', city='Test city', name='Venue name', departementCode='93')
+    venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
+                         address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
     PcObject.check_and_save(venue)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=200)
@@ -216,18 +216,17 @@ def test_create_booking_should_not_work_if_not_enough_credit(app):
 @pytest.mark.standalone
 def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(app):
     #Given
-    user = create_user('sufficient_funds@email.com', 'Test', '93', password='testpsswd')
+    user = create_user('Test', '93', 'sufficient_funds@email.com', password='testpsswd')
     PcObject.check_and_save(user)
 
-    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postalCode='93000',
+    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
                              name='Test offerer')
     PcObject.check_and_save(offerer)
 
     thing_offer = create_thing_offer()
     PcObject.check_and_save(thing_offer)
 
-    venue = create_venue(offerer, 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                     'Test offerer', '93')
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     PcObject.check_and_save(venue)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
@@ -259,18 +258,17 @@ def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
-    user = create_user('can_book_paid_offers@email.com', 'Test', '93', canBookFreeOffers=False, password='testpsswd')
+    user = create_user('Test', '93', 'can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
     PcObject.check_and_save(user)
 
-    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postalCode='93000',
+    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
                              name='Test offerer')
     PcObject.check_and_save(offerer)
 
     thing_offer = create_thing_offer()
     PcObject.check_and_save(thing_offer)
 
-    venue = create_venue(offerer, 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                     'Test offerer', '93')
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     PcObject.check_and_save(venue)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)

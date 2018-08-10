@@ -160,11 +160,11 @@ MOCKED_SIREN_ENTREPRISES_API_RETURN = {
 
 
 def req_with_auth(email=None, password=None):
-    r = req.Session()
+    request = req.Session()
     if email is None:
-        r.auth = ('pctest.admin@btmx.fr', 'pctestadmin')
+        request.auth = ('pctest.admin@btmx.fr', 'pctestadmin')
     elif password is not None:
-        r.auth = (email, password)
+        request.auth = (email, password)
     else:
         json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'users.json'
 
@@ -172,10 +172,10 @@ def req_with_auth(email=None, password=None):
             for user_json in json.load(json_file):
                 print('user_json', user_json)
                 if email == user_json['email']:
-                    r.auth = (user_json['email'], user_json['password'])
+                    request.auth = (user_json['email'], user_json['password'])
                     break
                 raise ValueError("Utilisateur inconnu: " + email)
-    return r
+    return request
 
 
 def create_booking_for_booking_email_test(user, stock, is_cancellation=False):
@@ -188,21 +188,21 @@ def create_booking_for_booking_email_test(user, stock, is_cancellation=False):
     return booking
 
 
-def create_user(email, publicName, departementCode, canBookFreeOffers=True, password='totallysafepsswd',
-                validationToken=None):
+def create_user(public_name='John Doe', departement_code='93', email='john.doe@test.com', can_book_free_offers=True,
+                password='totallysafepsswd', validation_token=None):
     user = User()
-    user.publicName = publicName
+    user.publicName = public_name
     user.email = email
-    user.canBookFreeOffers = canBookFreeOffers
-    user.departementCode = departementCode
-    user.validationToken = validationToken
+    user.canBookFreeOffers = can_book_free_offers
+    user.departementCode = departement_code
+    user.validationToken = validation_token
     user.setPassword(password)
     return user
 
 
 def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10):
     stock = Stock()
-    stock.offerer=offerer
+    stock.offerer = offerer
     stock.price = price
     stock.eventOccurrence = EventOccurrence()
     if beginning_datetime_future:
@@ -224,7 +224,7 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
 
 def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50):
     stock = Stock()
-    stock.offerer=offerer
+    stock.offerer = offerer
     stock.price = price
     if thing_offer:
         stock.offer = thing_offer
@@ -232,7 +232,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
         stock.offer = create_thing_offer()
     stock.offer.venue = venue
     stock.isActive = True
-    stock.available=available
+    stock.available = available
     return stock
 
 
@@ -247,27 +247,30 @@ def create_thing_offer():
     return offer
 
 
-def create_offerer(siren, address, city, postalCode, name, validationToken=None):
+def create_offerer(siren='123456789', address='123 rue de Paris', city='Montreuil', postal_code='93100',
+                   name='Test Offerer', validation_token=None):
     offerer = Offerer()
-    offerer.siren=siren
+    offerer.siren = siren
     offerer.isActive = True
     offerer.address = address
-    offerer.postalCode = postalCode
+    offerer.postalCode = postal_code
     offerer.city = city
     offerer.name = name
-    offerer.validationToken=validationToken
+    offerer.validationToken = validation_token
     return offerer
 
 
-def create_venue(offerer, bookingEmail, address, postalCode, city, name, departementCode):
+def create_venue(offerer, name='La petite librairie', booking_email='john.doe@test.com', address='123 rue de Paris',
+                 postal_code='93100', city='Montreuil', departement_code='93', is_virtual=False):
     venue = Venue()
-    venue.bookingEmail = bookingEmail
+    venue.bookingEmail = booking_email
     venue.address = address
-    venue.postalCode = postalCode
+    venue.postalCode = postal_code
     venue.city = city
     venue.name = name
-    venue.departementCode = departementCode
+    venue.departementCode = departement_code
     venue.managingOfferer = offerer
+    venue.isVirtual = is_virtual
     return venue
 
 
