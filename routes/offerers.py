@@ -32,6 +32,7 @@ def list_offerers():
                                 query=query,
                                 include=OFFERER_INCLUDES)
 
+
 @app.route('/offerers/<id>', methods=['GET'])
 @login_required
 def get_offerer(id):
