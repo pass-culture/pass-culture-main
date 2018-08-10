@@ -1,6 +1,7 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
 
+from models.venue import TooManyVirtualVenuesException
 from tests.conftest import clean_database
 from utils.test_utils import create_offerer, create_venue
 
@@ -50,5 +51,5 @@ def test_offerer_cannot_have_two_virtual_venues(app):
                              departement_code=None, is_virtual=True)
 
     # When
-    with pytest.raises(IntegrityError) as ie:
+    with pytest.raises(TooManyVirtualVenuesException):
         new_venue.save()

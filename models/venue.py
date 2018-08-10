@@ -82,8 +82,6 @@ class Venue(PcObject,
     # open thursday 9 to 18, closed the rest of the week
 
     def store_department_code(self):
-        if not self.postalCode:
-            raise IntegrityError(None, None, None)
         self.departementCode = self.postalCode[:-3]
 
     def errors(self):
@@ -114,13 +112,25 @@ class Venue(PcObject,
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
     if not self.isVirtual:
+        if not self.postalCode:
+            raise IntegrityError(None, None, None)
         self.store_department_code()
+    else:
+        virtual_venues_count = Venue.query\
+            .filter_by(managingOffererId=self.managingOffererId, isVirtual=True)\
+            .count()
+        if virtual_venues_count == 1:
+            raise TooManyVirtualVenuesException()
 
 
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
     if not self.isVirtual:
         self.store_department_code()
+
+
+class TooManyVirtualVenuesException(Exception):
+    pass
 
 
 Venue.__ts_vector__ = create_tsvector(
