@@ -244,7 +244,7 @@ def test_27_pro_signup_with_existing_offerer(app):
             "city": "Paris"
     }
     offerer = Offerer(from_dict=json_offerer)
-    offerer.check_and_save()
+    PcObject.check_and_save(offerer)
 
 
     data = BASE_DATA_PRO.copy()
@@ -363,4 +363,4 @@ def test_29_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
     print(r_signup)
     error = r_signup.json()
     pprint(error)
-    assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
+    assert error['canBookFreeOffers'] == ['Admin ne peut pas booker']
