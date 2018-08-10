@@ -7,6 +7,7 @@ from sqlalchemy import BigInteger, \
     Numeric, \
     String, \
     TEXT, Boolean, CheckConstraint
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
@@ -81,6 +82,8 @@ class Venue(PcObject,
     # open thursday 9 to 18, closed the rest of the week
 
     def store_department_code(self):
+        if not self.postalCode:
+            raise IntegrityError(None, None, None)
         self.departementCode = self.postalCode[:-3]
 
     def errors(self):

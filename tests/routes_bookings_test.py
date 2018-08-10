@@ -142,8 +142,8 @@ def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOff
     thing_offer = create_thing_offer()
     PcObject.check_and_save(thing_offer)
 
-    venue = create_venue(offerer=offerer, bookingEmail='booking@email.com', address='1 Test address',
-                         postalCode='93000', city='Test city', name='Venue name', departementCode='93')
+    venue = create_venue(offerer=offerer, booking_email='booking@email.com', address='1 Test address',
+                         postal_code='93000', city='Test city', name='Venue name', departement_code='93')
     PcObject.check_and_save(venue)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
@@ -183,8 +183,8 @@ def test_create_booking_should_not_work_if_not_enough_credit(app):
     thing_offer = create_thing_offer()
     PcObject.check_and_save(thing_offer)
 
-    venue = create_venue(offerer=offerer, bookingEmail='booking@email.com', address='1 Test address',
-                         postalCode='93000', city='Test city', name='Venue name', departementCode='93')
+    venue = create_venue(offerer=offerer, booking_email='booking@email.com', address='1 Test address',
+                         postal_code='93000', city='Test city', name='Venue name', departement_code='93')
     PcObject.check_and_save(venue)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=200)
