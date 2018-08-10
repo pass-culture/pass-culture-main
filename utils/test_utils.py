@@ -260,7 +260,8 @@ def create_offerer(siren='123456789', address='123 rue de Paris', city='Montreui
     return offerer
 
 
-def create_venue(offerer, booking_email, address, postal_code, city, name, departement_code, is_virtual=False):
+def create_venue(offerer, name='La petite librairie', booking_email='john.doe@test.com', address='123 rue de Paris',
+                 postal_code='93100', city='Montreuil', departement_code='93', is_virtual=False):
     venue = Venue()
     venue.bookingEmail = booking_email
     venue.address = address

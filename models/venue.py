@@ -113,11 +113,18 @@ class Venue(PcObject,
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
-    if not self.isVirtual:
-        if not self.postalCode:
-            raise IntegrityError(None, None, None)
-        self.store_department_code()
-    else:
+    _check_if_existing_virtual_venue(self)
+    _fill_department_code_from_postal_code(self)
+
+
+@listens_for(Venue, 'before_update')
+def before_update(mapper, connect, self):
+    _check_if_existing_virtual_venue(self)
+    _fill_department_code_from_postal_code(self)
+
+
+def _check_if_existing_virtual_venue(self):
+    if self.isVirtual:
         virtual_venues_count = Venue.query \
             .filter_by(managingOffererId=self.managingOffererId, isVirtual=True) \
             .count()
@@ -125,9 +132,10 @@ def before_insert(mapper, connect, self):
             raise TooManyVirtualVenuesException()
 
 
-@listens_for(Venue, 'before_update')
-def before_update(mapper, connect, self):
+def _fill_department_code_from_postal_code(self):
     if not self.isVirtual:
+        if not self.postalCode:
+            raise IntegrityError(None, None, None)
         self.store_department_code()
 
 
