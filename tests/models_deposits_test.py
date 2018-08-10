@@ -1,6 +1,6 @@
 import pytest
 
-from models import Deposit, User
+from models import Deposit, PcObject, User
 from tests.conftest import clean_database
 
 
@@ -20,7 +20,7 @@ def test_deposit_creation_1(app):
     deposit.source = "test money"
 
     # when
-    deposit.check_save()
+    PcObject.check_and_save(deposit)
 
     # then
     assert Deposit.query.count() == 1
