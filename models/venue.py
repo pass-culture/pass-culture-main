@@ -20,13 +20,24 @@ from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from utils.search import create_tsvector
 
+CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
+(
+    "isVirtual" IS TRUE 
+    AND (address IS NULL AND "postalCode" IS NULL AND city IS NULL AND "departementCode" IS NULL)
+)
+OR
+(
+    "isVirtual" IS FALSE
+    AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
+)
+"""
+
 
 class Venue(PcObject,
             HasThumbMixin,
             HasAddressMixin,
             ProvidableMixin,
             Model):
-
     id = Column(BigInteger, primary_key=True)
 
     name = Column(String(140), nullable=False)
@@ -60,15 +71,11 @@ class Venue(PcObject,
     city = Column(String(50), nullable=True)
 
     isVirtual = Column(Boolean,
-                     CheckConstraint('("isVirtual" IS TRUE AND' +
-                                     '(address IS NULL AND "postalCode" IS NULL AND city IS NULL AND ' +
-                                     '"departementCode" IS NULL)) OR ("isVirtual" IS FALSE AND ' +
-                                     '(address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND ' +
-                                     '"departementCode" IS NOT NULL))',
-                                     name='check_is_virtual_xor_has_address'),
-                     nullable=False)
+                       CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS,
+                                       name='check_is_virtual_xor_has_address'),
+                       nullable=False)
 
-    #openingHours = Column(ARRAY(TIME))
+    # openingHours = Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
     # means open monday 9 to 18 and tuesday 9 to 19, closed wednesday,
     # open thursday 9 to 18, closed the rest of the week
@@ -78,27 +85,28 @@ class Venue(PcObject,
 
     def errors(self):
         errors = super(Venue, self).errors()
-        if self.siret is not None\
-           and not len(self.siret) == 14:
-            errors.addError('siret', 'Ce code SIRET est invalide : '+self.siret)
+        if self.siret is not None \
+                and not len(self.siret) == 14:
+            errors.addError('siret', 'Ce code SIRET est invalide : ' + self.siret)
         if self.managingOffererId is not None:
             if self.managingOfferer is None:
-                managingOfferer = Offerer.query\
-                                      .filter_by(id=self.managingOffererId).first()
+                managingOfferer = Offerer.query \
+                    .filter_by(id=self.managingOffererId).first()
             else:
                 managingOfferer = self.managingOfferer
             if managingOfferer.siren is None:
                 errors.addError('siren', 'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
                                 + 'SIREN renseigné')
-            if self.siret is not None\
-               and managingOfferer is not None\
-               and not self.siret.startswith(managingOfferer.siren):
+            if self.siret is not None \
+                    and managingOfferer is not None \
+                    and not self.siret.startswith(managingOfferer.siren):
                 errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
         return errors
 
     @property
     def nOffers(self):
         return Offer.query.filter_by(venue=self).count()
+
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
@@ -111,12 +119,12 @@ def before_update(mapper, connect, self):
     if not self.isVirtual:
         self.store_department_code()
 
+
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT),
     cast(coalesce(Venue.address, ''), TEXT),
     cast(coalesce(Venue.siret, ''), TEXT)
 )
-
 
 Venue.__table_args__ = (
     Index(

@@ -1,14 +1,14 @@
 import os
 from functools import wraps
 from unittest.mock import Mock
+
 import pytest
 from flask import Flask
 from mailjet_rest import Client
 
+from local_providers.install import install_local_providers
 from models import User, Deposit, Booking, Mediation, Recommendation, UserOfferer, Offerer, Venue, VenueProvider, Offer, \
     EventOccurrence, Stock
-
-from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
 
