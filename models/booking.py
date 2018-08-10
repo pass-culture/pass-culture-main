@@ -77,9 +77,9 @@ Booking.trig_ddl = """
     RETURNS NUMERIC(10,2) AS $$
     BEGIN
         RETURN 
-                (SELECT COALESCE(SUM(AMOUNT), 0) FROM deposit WHERE "userId"=user_id)
+                (SELECT COALESCE(SUM(amount), 0) FROM deposit WHERE "userId"=user_id)
                 -
-                (SELECT COALESCE(SUM(AMOUNT), 0) FROM booking WHERE "userId"=user_id);
+                (SELECT COALESCE(SUM(amount * quantity), 0) FROM booking WHERE "userId"=user_id);
     END; $$
     LANGUAGE plpgsql;
 
