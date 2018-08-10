@@ -51,17 +51,22 @@ class User(PcObject,
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 
+    #def restize_integrity_error(self, ie):
+    #    if "check_admin_cannot_book_free_offers" in str(ie.orig):
+    #        return ['canBookFreeOffers', 'Admin ne peut pas booker']
+
     def errors(self):
         api_errors = PcObject.errors(self)
-        # NO AUTOFLUSH IS NEEDED TO AVOID INTEGRITY ERROR
-        with db.session.no_autoflush:
-            user_count = User.query.filter_by(email=self.email).count()
+        user_count = User.query.filter_by(email=self.email).count()
         if self.id is None and user_count > 0:
             api_errors.addError('email', 'Un compte lié à cet email existe déjà')
         if self.publicName:
             api_errors.checkMinLength('publicName', self.publicName, 3)
         if self.email:
             api_errors.checkEmail('email', self.email)
+
+        if self.isAdmin and self.canBookFreeOffers:
+            api_errors.addError('canBookFreeOffers', 'Admin ne peut pas booker')
 #        if self.firstname:
 #            api_errors.checkMinLength('firstname', self.firstname, 2)
 #        if self.lastname:

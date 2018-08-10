@@ -57,10 +57,6 @@ def signout():
     return jsonify({"global": "Deconnecté"})
 
 
-def restize_integrity_error(ie):
-    if "check_admin_cannot_book_free_offers" in str(ie.orig):
-        return ['canBookFreeOffers', 'Admin ne peut pas booker']
-
 @app.route("/users/signup", methods=["POST"])
 def signup():
     missing_field_contact_ok = 'contact_ok' not in request.json
@@ -127,10 +123,7 @@ def signup():
     else:
         objects_to_save = [new_user]
 
-    PcObject.check_and_save(
-        *objects_to_save,
-        restize_integrity_error=restize_integrity_error
-    )
+    PcObject.check_and_save(*objects_to_save)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
