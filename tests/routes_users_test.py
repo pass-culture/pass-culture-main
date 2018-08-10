@@ -244,7 +244,7 @@ def test_get_profile_should_work_only_when_logged_in():
 @pytest.mark.standalone
 @clean_database
 def test_get_profile_should_return_the_users_profile_without_password_hash(app):
-    user = create_user('toto@btmx.fr', 'Toto', '93', password='toto12345678')
+    user = create_user(email='toto@btmx.fr', public_name='Toto', departement_code='93', password='toto12345678')
     user.save()
     r = req_with_auth(email='toto@btmx.fr',
                       password='toto12345678')\
@@ -390,7 +390,7 @@ def test_pro_signup_should_create_user_offerer_and_userOfferer(app):
 @clean_database
 @pytest.mark.standalone
 def test_should_not_be_able_to_validate_offerer_with_wrong_token(app):
-    user = create_user('toto_pro@btmx.fr', 'Toto Pro', '93', canBookFreeOffers=False, password='toto12345678')
+    user = create_user(email='toto@btmx.fr', public_name='Toto', departement_code='93', password='toto12345678')
     user.save()
     user.validationToken = secrets.token_urlsafe(20)
     r = req_with_auth(email='toto_pro@btmx.fr',
@@ -405,7 +405,7 @@ def test_validate_offerer(app):
     # Given
     offerer_token = secrets.token_urlsafe(20)
     offerer = create_offerer('349974931', '12 boulevard de Pesaro', 'Nanterre', '92000', 'Crédit Coopératif',
-                             validationToken=offerer_token)
+                             validation_token=offerer_token)
     offerer.save()
     offerer_id = offerer.id
     del(offerer)
@@ -469,13 +469,13 @@ def test_pro_signup_with_existing_offerer(app):
 @pytest.mark.standalone
 def test_user_should_have_its_wallet_balance(app):
     # Given
-    user = create_user('wallet_test@email.com', 'Test', '93', password='testpsswd')
+    user = create_user(email='wallet_test@email.com', public_name='Test', departement_code='93', password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     PcObject.check_and_save(offerer)
 
-    venue = create_venue(offerer,'booking@email.com', '1 Test address', '93000', 'Test city', 'Venue name', '93')
+    venue = create_venue(offerer)
     PcObject.check_and_save(venue)
 
     thing_offer = create_thing_offer()
@@ -497,7 +497,10 @@ def test_user_should_have_its_wallet_balance(app):
     PcObject.check_and_save(booking)
 
     r_create = req_with_auth('wallet_test@email.com', 'testpsswd').get(API_URL + '/users/current')
+
+    # when
     wallet_balance = r_create.json()['wallet_balance']
+
     #Then
     assert wallet_balance == 15
 
@@ -529,13 +532,13 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 @pytest.mark.standalone
 def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
     # Given
-    user = create_user('wallet_2_bookings_test@email.com', 'Test', '93', password='testpsswd')
+    user = create_user(email='wallet_2_bookings_test@email.com', public_name='Test', departement_code='93', password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     PcObject.check_and_save(offerer)
 
-    venue = create_venue(offerer,'booking@email.com', '1 Test address', '93000', 'Test city', 'Venue name', '93')
+    venue = create_venue(offerer)
     PcObject.check_and_save(venue)
 
     thing_offer = create_thing_offer()
