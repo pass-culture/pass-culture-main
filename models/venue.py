@@ -71,10 +71,12 @@ class Venue(PcObject,
 
     city = Column(String(50), nullable=True)
 
-    isVirtual = Column(Boolean,
-                       CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS,
-                                       name='check_is_virtual_xor_has_address'),
-                       nullable=False)
+    isVirtual = Column(
+        Boolean,
+        CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name='check_is_virtual_xor_has_address'),
+        nullable=False,
+        default=False
+    )
 
     # openingHours = Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
@@ -116,8 +118,8 @@ def before_insert(mapper, connect, self):
             raise IntegrityError(None, None, None)
         self.store_department_code()
     else:
-        virtual_venues_count = Venue.query\
-            .filter_by(managingOffererId=self.managingOffererId, isVirtual=True)\
+        virtual_venues_count = Venue.query \
+            .filter_by(managingOffererId=self.managingOffererId, isVirtual=True) \
             .count()
         if virtual_venues_count == 1:
             raise TooManyVirtualVenuesException()
