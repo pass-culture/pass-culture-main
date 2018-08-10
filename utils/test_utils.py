@@ -259,7 +259,7 @@ def create_offerer(siren, address, city, postalCode, name, validationToken=None)
     return offerer
 
 
-def create_venue(offerer, bookingEmail, address, postalCode, city, name, departementCode):
+def create_venue(offerer, bookingEmail, address, postalCode, city, name, departementCode, isVirtual=False):
     venue = Venue()
     venue.bookingEmail = bookingEmail
     venue.address = address
@@ -268,6 +268,7 @@ def create_venue(offerer, bookingEmail, address, postalCode, city, name, departe
     venue.name = name
     venue.departementCode = departementCode
     venue.managingOfferer = offerer
+    venue.isVirtual = isVirtual
     return venue
 
 

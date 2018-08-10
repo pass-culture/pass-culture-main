@@ -1,12 +1,12 @@
 """ venue """
 from sqlalchemy.event import listens_for
-from sqlalchemy import BigInteger,\
-                       Column,\
-                       ForeignKey,\
-                       Index,\
-                       Numeric,\
-                       String,\
-                       TEXT
+from sqlalchemy import BigInteger, \
+    Column, \
+    ForeignKey, \
+    Index, \
+    Numeric, \
+    String, \
+    TEXT, Boolean, CheckConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
@@ -33,7 +33,7 @@ class Venue(PcObject,
 
     siret = Column(String(14), nullable=True, unique=True)
 
-    departementCode = Column(String(3), nullable=False, index=True)
+    departementCode = Column(String(3), nullable=True, index=True)
 
     latitude = Column(Numeric(8, 5), nullable=True)
 
@@ -52,6 +52,21 @@ class Venue(PcObject,
                                    backref='managedVenues')
 
     bookingEmail = Column(String(120), nullable=False)
+
+    address = Column(String(200), nullable=True)
+
+    postalCode = Column(String(6), nullable=True)
+
+    city = Column(String(50), nullable=True)
+
+    isVirtual = Column(Boolean,
+                     CheckConstraint('("isVirtual" IS TRUE AND' +
+                                     '(address IS NULL AND "postalCode" IS NULL AND city IS NULL AND ' +
+                                     '"departementCode" IS NULL)) OR ("isVirtual" IS FALSE AND ' +
+                                     '(address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND ' +
+                                     '"departementCode" IS NOT NULL))',
+                                     name='check_is_virtual_xor_has_address'),
+                     nullable=False)
 
     #openingHours = Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
@@ -87,12 +102,14 @@ class Venue(PcObject,
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
-    self.store_department_code()
+    if not self.isVirtual:
+        self.store_department_code()
 
 
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
-    self.store_department_code()
+    if not self.isVirtual:
+        self.store_department_code()
 
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT),

@@ -115,8 +115,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject(app):
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_body(app):
     # Given
-    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
-                                                             'Test city', 'Test offerer', '93')
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
@@ -135,8 +134,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_body(app):
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
     # Given
-    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
-                                                             'Test city', 'Test offerer', '93')
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
@@ -152,8 +150,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject_cancel
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
     # Given
-    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000',
-                                                             'Test city', 'Test offerer', '93')
+    venue = create_venue(None, 'reservations@test.fr', '123 rue test', '93000', 'Test city', 'Test offerer', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
     user = create_user('test@email.com', 'Test', 93, True)
