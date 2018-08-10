@@ -20,3 +20,4 @@ import routes.users
 import routes.validate
 import routes.venue_providers
 import routes.venues
+import routes.health_check
