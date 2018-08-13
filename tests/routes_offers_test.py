@@ -176,6 +176,34 @@ def test_create_thing_offer(app):
 
 @clean_database
 @pytest.mark.standalone
+def test_create_thing_offer_returns_bad_request_if_thing_is_physical_and_venue_is_virtual(app):
+    # given
+    user = create_user(email='user@test.com', password='azerty123')
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user, offerer)
+    venue = create_venue(offerer, is_virtual=True)
+    thing = create_thing(url=None)
+    PcObject.check_and_save(user_offerer, venue, thing)
+
+    data = {
+        'venueId': humanize(venue.id),
+        'thingId': humanize(thing.id)
+    }
+    auth_request = req_with_auth(email='user@test.com', password='azerty123')
+
+    # when
+    response = auth_request.post(API_URL + '/offers', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json() == {
+        'global':
+            ['InconsistentOffer : Offer.venue is virtual but Offer.thing does not have an URL']
+    }
+
+
+@clean_database
+@pytest.mark.standalone
 def test_create_event_offer(app):
     # given
     user = create_user(email='user@test.com', password='azerty123')

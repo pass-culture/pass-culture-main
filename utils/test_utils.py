@@ -244,13 +244,15 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author'):
+def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
+                 url=None):
     thing = Thing()
     thing.type = thing_type
     thing.name = thing_name
     thing.mediaUrls = media_urls
     thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
     thing.extraData = {'author': author_name}
+    thing.url = url
     return thing
 
 
@@ -306,11 +308,12 @@ def create_venue(offerer, name='La petite librairie', booking_email='john.doe@te
                  postal_code='93100', city='Montreuil', departement_code='93', is_virtual=False):
     venue = Venue()
     venue.bookingEmail = booking_email
-    venue.address = address
-    venue.postalCode = postal_code
-    venue.city = city
+    if not is_virtual:
+        venue.address = address
+        venue.postalCode = postal_code
+        venue.city = city
+        venue.departementCode = departement_code
     venue.name = name
-    venue.departementCode = departement_code
     venue.managingOfferer = offerer
     venue.isVirtual = is_virtual
     return venue
