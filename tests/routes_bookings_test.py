@@ -7,7 +7,7 @@ from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_offer, \
     create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
-    create_recommendation, create_user, create_booking_for_booking_email_test
+    create_recommendation, create_user, create_booking
 
 
 @clean_database
@@ -23,7 +23,7 @@ def test_create_booking_should_not_work_past_limit_date(app):
     expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
     PcObject.check_and_save(expired_stock)
 
-    user = create_user('test name', '93', 'test@mail.com', password='psswd123')
+    user = create_user(email='test@mail.com', password='psswd123')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(thing_offer, user)
@@ -50,7 +50,7 @@ def test_create_booking_should_work_before_limit_date(app):
     ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     PcObject.check_and_save(ok_stock)
 
-    user = create_user('test name', '93', 'test@mail.com', password='psswd123')
+    user = create_user(email='test@mail.com', password='psswd123')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(offer=ok_stock.offer, user=user)
@@ -79,7 +79,7 @@ def test_create_booking_should_not_work_if_too_many_bookings(app):
     too_many_bookings_stock.available = 0
     PcObject.check_and_save(too_many_bookings_stock)
 
-    user = create_user('Toto', '93', 'test@email.com', password='mdppsswd')
+    user = create_user(email='test@email.com', password='mdppsswd')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
@@ -105,7 +105,7 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city', '93')
     thing_offer = create_thing_offer(venue=None)
 
-    user = create_user('Toto', '93', 'test@email.com', password='mdppsswd')
+    user = create_user(email='test@email.com', password='mdppsswd')
     PcObject.check_and_save(user)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50)
@@ -130,7 +130,7 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
 @pytest.mark.standalone
 def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
     # Given
-    user = create_user('Test', '93', 'cannotBook_freeOffers@email.com', can_book_free_offers=False,
+    user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False,
                        password='testpsswd')
     PcObject.check_and_save(user)
 
@@ -173,7 +173,7 @@ def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOff
 @pytest.mark.standalone
 def test_create_booking_should_not_work_if_not_enough_credit(app):
     # Given
-    user = create_user('Test', '93', 'insufficient_funds_test@email.com', password='testpsswd')
+    user = create_user(email='insufficient_funds_test@email.com', password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -216,7 +216,7 @@ def test_create_booking_should_not_work_if_not_enough_credit(app):
 @pytest.mark.standalone
 def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(app):
     #Given
-    user = create_user('Test', '93', 'sufficient_funds@email.com', password='testpsswd')
+    user = create_user(email='sufficient_funds@email.com', password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -258,7 +258,7 @@ def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
-    user = create_user('Test', '93', 'can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
+    user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -299,54 +299,36 @@ def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_
 
 @clean_database
 @pytest.mark.standalone
-def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_things_reached(app):
+def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limit_physical_thing_reached(app):
     # Given
-    user = create_user('test@email.com', 'Test', '93', password='testpsswd')
+    user = create_user(email='test@email.com', password='testpsswd')
     PcObject.check_and_save(user)
 
-    offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postalCode='93000', name='Test offerer')
+    offerer = create_offerer()
     PcObject.check_and_save(offerer)
 
-    thing_offer = create_thing_offer()
-    PcObject.check_and_save(thing_offer)
-
-    venue = create_venue(offerer=offerer, bookingEmail='booking@email.com', address='1 Test address', postalCode='93000', city='Test city', name='Venue name', departementCode='93')
+    venue = create_venue(offerer)
     PcObject.check_and_save(venue)
 
-    stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=25)
-    PcObject.check_and_save(stock_1)
+    thing_offer = create_thing_offer(venue)
+    PcObject.check_and_save(thing_offer)
 
-    stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50)
-    PcObject.check_and_save(stock_2)
-
-    stock_3 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=30)
-    PcObject.check_and_save(stock_3)
+    stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+    stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20)
+    PcObject.check_and_save(stock_1, stock_2)
 
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
     deposit = create_deposit(user, deposit_date, amount=500, source='public')
     PcObject.check_and_save(deposit)
 
-    booking_1 = Booking()
-    booking_1.stock = stock_1
-    booking_1.user = user
-    booking_1.token = '56789'
-    booking_1.amount = stock_1.price
-
+    booking_1 = create_booking(user, stock_1, recommendation=None)
     PcObject.check_and_save(booking_1)
 
-    booking_2 = Booking()
-    booking_2.stock = stock_2
-    booking_2.user = user
-    booking_2.token = '12340'
-    booking_2.amount = stock_2.price
-
-    PcObject.check_and_save(booking_2)
-
     recommendation = create_recommendation(thing_offer, user)
-    PcObject.check_and_save(recommendation)
+    recommendation.save()
 
     booking_json = {
-        "stockId": humanize(stock_3.id),
+        "stockId": humanize(stock_2.id),
         "recommendationId": humanize(recommendation.id),
         "userId": humanize(user.id),
     }
@@ -358,4 +340,4 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_thin
     error_message = r_create.json()
     assert r_create.status_code == 400
     assert 'insufficientFunds' in error_message
-    assert error_message['insufficientFunds'] == 'La limite de 100 euros pour les biens culturels a été atteinte'
+    assert error_message['insufficientFunds'] == 'La limite de 100 euros pour les bien culturels a été atteinte'
