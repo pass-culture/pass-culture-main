@@ -13,7 +13,7 @@ import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
 import BackButton from './BackButton'
-import Footer from './Footer'
+// import Footer from './Footer'
 
 class Main extends Component {
   constructor(props) {
@@ -69,18 +69,16 @@ class Main extends Component {
     const {
       backButton,
       children,
-      footer: footerProps,
       name,
       noPadding,
       redBg,
+      footer,
+      header,
     } = this.props
     // FIXME [PERFS] -> ne pas faire une itération
     // utiliser plutot une propriete avec un composant
-    const header = [].concat(children).find(e => e.type === 'header')
-    const footer = [].concat(children).find(e => e.type === 'footer')
-    const content = []
-      .concat(children)
-      .filter(e => e.type !== 'header' && e.type !== 'footer')
+    // const footer = [].concat(children).find(e => e.type === 'footer')
+    // const content = [].concat(children).filter(e => e.type !== 'footer')
 
     return (
       <React.Fragment>
@@ -90,19 +88,20 @@ class Main extends Component {
             'no-padding': noPadding,
             page: true,
             'red-bg': redBg,
-            'with-footer': Boolean(footer) || Boolean(footerProps),
-            'with-header': Boolean(header),
+            'with-footer': footer !== null,
+            // Boolean(footer) || Boolean(footerProps),
+            'with-header': header !== null,
           })}
-          key="main"
         >
-          {header}
+          {header && header()}
           {backButton && <BackButton {...backButton} />}
           <div className="page-content is-relative">
-            {content}
+            {children}
           </div>
-          {footer || (footerProps && <Footer {...footerProps} />)}
+          {footer && footer()}
+          {/* || (footerProps && <Footer {...footerProps} />)} */}
         </main>
-        <Modal key="modal" />
+        <Modal />
       </React.Fragment>
     )
   }
@@ -112,6 +111,7 @@ Main.defaultProps = {
   backButton: false,
   footer: null,
   handleDataRequest: null,
+  header: null,
   noPadding: false,
   redBg: false,
   user: null,
@@ -121,8 +121,9 @@ Main.propTypes = {
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   children: PropTypes.node.isRequired,
   dispatch: PropTypes.func.isRequired,
-  footer: PropTypes.object,
+  footer: PropTypes.func,
   handleDataRequest: PropTypes.func,
+  header: PropTypes.func,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,

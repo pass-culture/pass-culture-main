@@ -18,10 +18,19 @@ class SigninPage extends Component {
     this.setState({ $footer: this.$footer })
   }
 
+  // FIXME -> [PERFS] remove ReactPortal
+  renderPageFooter = () => (
+    <footer
+      ref={elt => {
+        this.$footer = elt
+      }}
+    />
+  )
+
   render() {
     const { $footer } = this.state
     return (
-      <Main name="sign-in" redBg>
+      <Main name="sign-in" redBg footer={this.renderPageFooter}>
         <div className="section form-container">
           <h1 className="title is-1 is-italic">
 Bonjour&nbsp;!
@@ -68,12 +77,6 @@ Bonjour&nbsp;!
             </Portal>
           </Form>
         </div>
-
-        <footer
-          ref={elt => {
-            this.$footer = elt
-          }}
-        />
       </Main>
     )
   }

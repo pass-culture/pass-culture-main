@@ -6,6 +6,18 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Main from '../layout/Main'
+import Footer from '../layout/Footer'
+
+const renderPageHeader = () => (
+  <header>
+    {'Mon profil'}
+  </header>
+)
+
+const renderPageFooter = () => {
+  const footerProps = { borderTop: true, colored: true }
+  return <Footer {...footerProps} />
+}
 
 class ProfilePage extends Component {
   componentWillReceiveProps(nextProps) {
@@ -25,14 +37,12 @@ class ProfilePage extends Component {
     return (
       <Main
         name="profile"
-        footer={{ borderTop: true, colored: true }}
         backButton
+        footer={renderPageFooter}
+        header={renderPageHeader}
       >
-        <header>
-Mon profil
-        </header>
         <h2 className="title is-2">
-Bienvenue !
+          {'Bienvenue !'}
         </h2>
         <button
           type="button"
@@ -40,7 +50,7 @@ Bienvenue !
           disabled={!user}
           onClick={this.onSignOutClick}
         >
-          Déconnexion
+          {'Déconnexion'}
         </button>
       </Main>
     )

@@ -15,10 +15,19 @@ class SignupPage extends Component {
     this.setState({ $footer: this.$footer })
   }
 
+  // FIXME -> [PERFS] remove ReactPortal
+  renderPageFooter = () => (
+    <footer
+      ref={elt => {
+        this.$footer = elt
+      }}
+    />
+  )
+
   render() {
     const { $footer } = this.state
     return (
-      <Main name="sign-up">
+      <Main name="sign-up" footer={this.renderPageFooter}>
         <div className="section">
           <h2 className="subtitle is-italic">
             {"Une minute pour créer un compte, et puis c'est tout !"}
@@ -92,12 +101,6 @@ class SignupPage extends Component {
             </Portal>
           </Form>
         </div>
-
-        <footer
-          ref={_e => {
-            this.$footer = _e
-          }}
-        />
       </Main>
     )
   }

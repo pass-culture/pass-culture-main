@@ -4,7 +4,19 @@ import ReactMarkdown from 'react-markdown'
 import { version } from '../../../package.json'
 
 import Main from '../layout/Main'
+import Footer from '../layout/Footer'
 import { ROOT_PATH } from '../../utils/config'
+
+const renderPageHeader = () => (
+  <header>
+    {'Mentions légales'}
+  </header>
+)
+
+const renderPageFooter = () => {
+  const footerProps = { borderTop: true, colored: true }
+  return <Footer {...footerProps} />
+}
 
 class TermsPage extends React.PureComponent {
   constructor(props) {
@@ -21,10 +33,12 @@ class TermsPage extends React.PureComponent {
   render() {
     const { mdText } = this.state
     return (
-      <Main name="terms" footer={{ borderTop: true, colored: true }} backButton>
-        <header>
-          {'Mentions légales'}
-        </header>
+      <Main
+        backButton
+        name="terms"
+        header={renderPageHeader}
+        footer={renderPageFooter}
+      >
         <div className="content">
           <ReactMarkdown source={mdText} />
           <p className="version">

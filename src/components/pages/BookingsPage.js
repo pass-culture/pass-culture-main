@@ -7,9 +7,23 @@ import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
+import Footer from '../layout/Footer'
 import otherBookingsSelector from '../../selectors/otherBookings'
 import soonBookingsSelector from '../../selectors/soonBookings'
 import { bookingNormalizer } from '../../utils/normalizers'
+
+const renderPageHeader = () => (
+  <header>
+    <h1>
+      {'Mes réservations'}
+    </h1>
+  </header>
+)
+
+const renderPageFooter = () => {
+  const footerProps = { borderTop: true }
+  return <Footer {...footerProps} />
+}
 
 class BookingsPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
@@ -26,16 +40,12 @@ class BookingsPage extends Component {
     return (
       <Main
         backButton
+        header={renderPageHeader}
         handleDataRequest={this.handleDataRequest}
         name="bookings"
-        footer={{ borderTop: true }}
+        footer={renderPageFooter}
         redBg
       >
-        <header>
-          <h1>
-Mes réservations
-          </h1>
-        </header>
         {soonBookings.length > 0 && (
           <div>
             <h4>

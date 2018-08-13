@@ -13,6 +13,7 @@ import { compose, bindActionCreators } from 'redux'
 
 import Deck from '../Deck'
 import Main from '../layout/Main'
+import Footer from '../layout/Footer'
 import DeckLoader from '../DeckLoader'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { getDiscoveryQueryParams } from '../../helpers'
@@ -107,15 +108,21 @@ class DiscoveryPage extends React.PureComponent {
   }
   */
 
+  renderPageFooter = () => {
+    const { isMenuOnTop } = this.props
+    const footerProps = { borderTop: true, onTop: isMenuOnTop }
+    return <Footer {...footerProps} />
+  }
+
   render() {
+    const { backButton } = this.props
     const { isempty, isloading } = this.state
-    const { backButton, isMenuOnTop } = this.props
     return (
       <Main
         noPadding
         name="discovery"
         handleDataRequest={this.handleDataRequest}
-        footer={{ borderTop: true, onTop: isMenuOnTop }}
+        footer={this.renderPageFooter}
         backButton={backButton ? { className: 'discovery' } : null}
       >
         <Switch>

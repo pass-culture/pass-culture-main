@@ -4,18 +4,33 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
+import Footer from '../layout/Footer'
+import BookingItem from '../BookingItem'
 
 const getkey = index => `booking-item-${index}`
 
+const renderPageHeader = () => (
+  <header>
+    <h1>
+      {'Mes favoris'}
+    </h1>
+  </header>
+)
+
+const renderPageFooter = () => {
+  const footerProps = { borderTop: true }
+  return <Footer {...footerProps} />
+}
+
 const FavoritesPage = ({ favorites }) => (
-  <Main name="favorites" redBg footer={{ borderTop: true }} backButton>
-    <header>
-      <h1>
-Mes favoris
-      </h1>
-    </header>
+  <Main
+    name="favorites"
+    redBg
+    backButton
+    footer={renderPageFooter}
+    header={renderPageHeader}
+  >
     {favorites.length > 0 && (
       <div>
         <ul className="favorites">
