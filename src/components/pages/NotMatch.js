@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom'
 const renderRedirect = () => <Redirect to="/" />
 const renderRedirecting = () => (
   <span>
-Redirecting...
+    {'Redirecting...'}
   </span>
 )
 

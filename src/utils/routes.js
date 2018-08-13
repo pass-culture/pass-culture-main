@@ -34,7 +34,7 @@ const routes = [
   {
     component: DiscoveryPage,
     exact: false,
-    path: '/decouverte',
+    path: '/decouverte/:offerId?/:mediationId?',
     title: 'Les offres',
   },
   {

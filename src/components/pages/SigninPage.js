@@ -1,5 +1,5 @@
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { Portal } from 'react-portal'
 import { NavLink } from 'react-router-dom'
 
@@ -7,7 +7,7 @@ import Main from '../layout/Main'
 
 const inputClassName = 'input block col-12 mb2 red'
 
-class SigninPage extends Component {
+class SigninPage extends React.PureComponent {
   constructor() {
     super()
     this.$footer = null

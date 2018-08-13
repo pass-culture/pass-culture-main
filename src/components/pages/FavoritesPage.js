@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { requestData } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -62,9 +61,8 @@ FavoritesPage.propTypes = {
   favorites: PropTypes.array.isRequired,
 }
 
-export default connect(
-  state => ({
-    favorites: state.data.favorites || [],
-  }),
-  { requestData }
-)(FavoritesPage)
+const mapStateToProps = state => ({
+  favorites: state.data.favorites || [],
+})
+
+export default connect(mapStateToProps)(FavoritesPage)

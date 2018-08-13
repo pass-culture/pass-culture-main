@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 import { requestData } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
+import { bindActionCreators } from 'redux'
 
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
@@ -19,7 +18,14 @@ const renderPageFooter = () => {
   return <Footer {...footerProps} />
 }
 
-class ProfilePage extends Component {
+class ProfilePage extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    const { dispatch } = props
+    const actions = { requestData }
+    this.actions = bindActionCreators(actions, dispatch)
+  }
+
   componentWillReceiveProps(nextProps) {
     const { user } = this.props
     if (nextProps.user === false && user) {
@@ -28,8 +34,7 @@ class ProfilePage extends Component {
   }
 
   onSignOutClick = () => {
-    const { dispatchRequestData } = this.props
-    dispatchRequestData('GET', 'users/signout')
+    this.actions.requestData('GET', 'users/signout')
   }
 
   render() {
@@ -58,15 +63,11 @@ class ProfilePage extends Component {
 }
 
 ProfilePage.propTypes = {
-  dispatchRequestData: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
 }
 
-export default compose(
-  withRouter,
-  connect(
-    state => ({ user: state.user }),
-    { dispatchRequestData: requestData }
-  )
-)(ProfilePage)
+const mapStateToProps = state => ({ user: state.user })
+
+export default connect(mapStateToProps)(ProfilePage)

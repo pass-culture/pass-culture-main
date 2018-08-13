@@ -8,8 +8,8 @@ import {
 } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
-import { Route, Switch, withRouter } from 'react-router-dom'
-import { compose, bindActionCreators } from 'redux'
+import { Route, Switch } from 'react-router-dom'
+import { bindActionCreators } from 'redux'
 
 import Deck from '../Deck'
 import Main from '../layout/Main'
@@ -18,6 +18,11 @@ import DeckLoader from '../DeckLoader'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { getDiscoveryQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
+
+const renderPageFooter = () => {
+  const footerProps = { borderTop: true }
+  return <Footer {...footerProps} />
+}
 
 class DiscoveryPage extends React.PureComponent {
   constructor(props) {
@@ -51,18 +56,24 @@ class DiscoveryPage extends React.PureComponent {
       Logger.warn('first recommendation has no offer id, weird...')
     }
     const firstMediationId = get(action, 'data.0.mediationId') || ''
+    // FIXME -> appeller une action pour le changement de page
+    // qui s'occupera d'enregistrer la derniere carte decouverte vue
     history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
   }
 
   handleDataRequest = () => {
-    const { currentRecommendation, match } = this.props
+    // se recharge apres chaque changement de page d'application
+    // c'est le comportement normal attendu
+    // puisqu'on ne stocke nulle part la page en cours
+    const { match } = this.props
     // si les recommendations ont déjà été chargées
     // on ne relance pas de requêtes
-    if (currentRecommendation) return
     this.setState({ isloading: true })
     // si il existe quelque chose dans l'URL
     // l'API renvoi cette première carte avant les autres recommendations
     const query = getDiscoveryQueryParams(match)
+    console.log('match', match)
+    console.log('query', query)
     const serviceuri = `recommendations?${query}`
     this.actions.requestData('PUT', serviceuri, {
       handleSuccess: this.handleRequestSuccess,
@@ -108,12 +119,6 @@ class DiscoveryPage extends React.PureComponent {
   }
   */
 
-  renderPageFooter = () => {
-    const { isMenuOnTop } = this.props
-    const footerProps = { borderTop: true, onTop: isMenuOnTop }
-    return <Footer {...footerProps} />
-  }
-
   render() {
     const { backButton } = this.props
     const { isempty, isloading } = this.state
@@ -122,7 +127,7 @@ class DiscoveryPage extends React.PureComponent {
         noPadding
         name="discovery"
         handleDataRequest={this.handleDataRequest}
-        footer={this.renderPageFooter}
+        footer={renderPageFooter}
         backButton={backButton ? { className: 'discovery' } : null}
       >
         <Switch>
@@ -131,15 +136,6 @@ class DiscoveryPage extends React.PureComponent {
             path="/decouverte/:offerId/:mediationId?"
             component={Deck}
           />
-          {/*
-            FIXME -> Ajouter une route si aucune données pour l'user
-            TODO -> Supprimer 'isempty du loader'
-          */}
-          {/* <Route
-            key="route-discovery-empty"
-            path="/decouverte/empty"
-            component={Deck}
-          /> */}
         </Switch>
         <DeckLoader isempty={isempty} isloading={isloading} />
       </Main>
@@ -149,15 +145,13 @@ class DiscoveryPage extends React.PureComponent {
 
 DiscoveryPage.defaultProps = {
   currentRecommendation: null,
-  isMenuOnTop: false,
+  recommendations: null,
 }
 
 DiscoveryPage.propTypes = {
   backButton: PropTypes.bool.isRequired,
-  currentRecommendation: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  isMenuOnTop: PropTypes.bool,
   match: PropTypes.object.isRequired,
 }
 
@@ -171,12 +165,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     backButton: ownProps.location.search.indexOf('to=verso') > -1,
     currentRecommendation,
-    isMenuOnTop: state.loading.isActive || get(state, 'loading.config.isEmpty'),
-    recommendations: state.data.recommendations,
   }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(DiscoveryPage)
+export default connect(mapStateToProps)(DiscoveryPage)

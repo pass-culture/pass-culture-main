@@ -10,6 +10,17 @@ import { Scrollbars } from 'react-custom-scrollbars'
 import { ROOT_PATH } from '../utils/config'
 import { toggleMainMenu } from '../reducers/menu'
 
+// FIXME -> hardcoded, peut etre defini de routes.js
+const navigations = [
+  // [route-path, link-label, link-icon, is-disabled]
+  ['decouverte', 'Les offres', 'offres'],
+  ['reservations', 'Mes réservations', 'calendar'],
+  ['favoris', 'Mes préférés', 'like'],
+  ['reglages', 'Réglages', 'settings', true],
+  ['profil', 'Mon profil', 'user', true],
+  ['mentions-legales', 'Mentions légales', 'txt'],
+]
+
 const delay = 250
 const duration = 250
 
@@ -22,17 +33,6 @@ const transitionStyles = {
   entered: { top: 0 },
   entering: { top: '100vh' },
 }
-
-const renderDisabledLink = (path, title, icon) => (
-  <span className="navlink flex-columns is-disabled">
-    <span className="has-text-centered menu-icon">
-      <Icon svg={`ico-${icon}-w`} alt={title} />
-    </span>
-    <span>
-      {title}
-    </span>
-  </span>
-)
 
 const renderContactUsLink = () => (
   <a className="navlink flex-columns" href="mailto:pass@culture.gouv.fr">
@@ -84,12 +84,15 @@ class MainMenu extends React.PureComponent {
     )
   }
 
-  renderNavLink(path, title, icon) {
+  renderNavLink(path, title, icon, disabled) {
+    const cssclass = (disabled && 'is-disabled') || ''
     return (
       <NavLink
+        key={path}
         to={`/${path}`}
+        activeClassName="active"
         onClick={this.onNavLinkClick}
-        className="navlink flex-columns"
+        className={`navlink flex-columns ${cssclass}`}
       >
         <span className="has-text-centered menu-icon">
           <Icon svg={`ico-${icon}-w`} alt={title} />
@@ -156,20 +159,7 @@ class MainMenu extends React.PureComponent {
               <div className="scroll-container is-clipped">
                 <Scrollbars>
                   <nav className="navigation flex-rows mt16 pb0">
-                    {this.renderNavLink('decouverte', 'Les offres', 'offres')}
-                    {this.renderNavLink(
-                      'reservations',
-                      'Mes réservations',
-                      'calendar'
-                    )}
-                    {this.renderNavLink('favoris', 'Mes préférés', 'like')}
-                    {renderDisabledLink('reglages', 'Réglages', 'settings')}
-                    {renderDisabledLink('profil', 'Mon profil', 'user')}
-                    {this.renderNavLink(
-                      'mentions-legales',
-                      'Mentions légales',
-                      'txt'
-                    )}
+                    {navigations.map(o => this.renderNavLink(...o))}
                     {renderContactUsLink()}
                     {this.renderSignOutLink()}
                   </nav>

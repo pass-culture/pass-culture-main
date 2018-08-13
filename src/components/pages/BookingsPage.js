@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
+import { bindActionCreators } from 'redux'
 import { Link } from 'react-router-dom'
 
 import BookingItem from '../BookingItem'
@@ -26,9 +26,15 @@ const renderPageFooter = () => {
 }
 
 class BookingsPage extends Component {
+  constructor(props) {
+    super(props)
+    const { dispatch } = props
+    const actions = { requestData }
+    this.actions = bindActionCreators(actions, dispatch)
+  }
+
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { dispatchRequestData } = this.props
-    dispatchRequestData('GET', 'bookings', {
+    this.actions.requestData('GET', 'bookings', {
       handleFail,
       handleSuccess,
       normalizer: bookingNormalizer,
@@ -89,17 +95,14 @@ Pas encore de réservation.
 }
 
 BookingsPage.propTypes = {
-  dispatchRequestData: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
   otherBookings: PropTypes.array.isRequired,
   soonBookings: PropTypes.array.isRequired,
 }
 
-export default compose(
-  connect(
-    state => ({
-      otherBookings: otherBookingsSelector(state),
-      soonBookings: soonBookingsSelector(state),
-    }),
-    { dispatchRequestData: requestData }
-  )
-)(BookingsPage)
+const mapStateToProps = state => ({
+  otherBookings: otherBookingsSelector(state),
+  soonBookings: soonBookingsSelector(state),
+})
+
+export default connect(mapStateToProps)(BookingsPage)

@@ -7,15 +7,14 @@ import {
   showNotification,
   withLogin,
 } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
 import BackButton from './BackButton'
-// import Footer from './Footer'
 
-class Main extends Component {
+class Main extends React.PureComponent {
   constructor(props) {
     super(props)
     const { dispatch } = props

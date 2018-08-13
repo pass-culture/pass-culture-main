@@ -1,11 +1,11 @@
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { Portal } from 'react-portal'
 import { NavLink } from 'react-router-dom'
 
 import Main from '../layout/Main'
 
-class SignupPage extends Component {
+class SignupPage extends React.PureComponent {
   constructor() {
     super()
     this.state = { $footer: null }

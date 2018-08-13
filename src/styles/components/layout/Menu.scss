@@ -94,6 +94,15 @@
   @include dotted($text);
 }
 
+#main-menu .navlink.active {
+  // disable le click sur les liens actifs dans le menu principal
+  opacity: 0.9;
+  cursor: default;
+  touch-action: none;
+  pointer-events: none;
+  text-decoration: none;
+}
+
 #main-menu button.navlink {
   @extend .px16;
 
