@@ -75,8 +75,8 @@ def test_get_offers_returns_offers_sorted_by_id_desc(app):
 def test_get_offers_is_filtered_by_given_venue_id(app):
     # given
     user = create_user(email='user@test.com', password='azerty123')
-    insert_offers_for(user, siren='123456789')
-    insert_offers_for(user, siren='987654321')
+    insert_offers_for(user, 20, siren='123456789')
+    insert_offers_for(user, 20, siren='987654321')
     auth_request = req_with_auth(email='user@test.com', password='azerty123')
     venue_id = Venue.query.first().id
 
@@ -95,7 +95,7 @@ def test_get_offers_is_filtered_by_given_venue_id(app):
 def test_get_offers_can_be_filtered_and_paginated_at_the_same_time(app):
     # given
     user = create_user(email='user@test.com', password='azerty123')
-    insert_offers_for(user, siren='987654321')
+    insert_offers_for(user, 20, siren='987654321')
     auth_request = req_with_auth(email='user@test.com', password='azerty123')
     venue_id = Venue.query.first().id
 
@@ -114,7 +114,7 @@ def test_get_offers_can_be_filtered_and_paginated_at_the_same_time(app):
 def test_get_offers_can_be_searched_and_filtered_and_paginated_at_the_same_time(app):
     # given
     user = create_user(email='user@test.com', password='azerty123')
-    insert_offers_for(user, siren='987654321')
+    insert_offers_for(user, 20, siren='987654321')
     auth_request = req_with_auth(email='user@test.com', password='azerty123')
     venue_id = Venue.query.first().id
 
@@ -135,7 +135,7 @@ def test_get_offers_can_be_searched_and_filtered_and_paginated_at_the_same_time(
 def test_get_offers_can_be_searched_using_multiple_search_terms(app):
     # given
     user = create_user(email='user@test.com', password='azerty123')
-    insert_offers_for(user, siren='987654321')
+    insert_offers_for(user, 20, siren='987654321')
     auth_request = req_with_auth(email='user@test.com', password='azerty123')
     venue_id = Venue.query.first().id
 
@@ -198,7 +198,7 @@ def test_create_thing_offer_returns_bad_request_if_thing_is_physical_and_venue_i
     assert response.status_code == 400
     assert response.json() == {
         'global':
-            ['InconsistentOffer : Offer.venue is virtual but Offer.thing does not have an URL']
+            ['Offer.venue is virtual but Offer.thing does not have an URL']
     }
 
 

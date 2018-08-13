@@ -82,7 +82,9 @@ def post_offer():
         try:
             check_digital_offer_consistency(offer, venue)
         except InconsistentOffer as e:
-            raise ApiErrors({'global': e.message})
+            errors = ApiErrors()
+            errors.addError('global', e.message)
+            raise errors
 
     PcObject.check_and_save(offer)
     return jsonify(offer._asdict(include=OFFER_INCLUDES)), 201

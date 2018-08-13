@@ -4,8 +4,8 @@ import json
 
 
 class ApiErrors(Exception):
-    def __init__(self, errors={}):
-        self.errors = errors
+    def __init__(self):
+        self.errors = {}
 
     def addError(self, field, error):
         self.errors[field] = self.errors[field].append(error)\
