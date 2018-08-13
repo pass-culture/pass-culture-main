@@ -13,67 +13,53 @@ import TermsPage from '../components/pages/TermsPage'
 
 const routes = [
   {
-    exact: true,
     path: '/',
     render: () => <Redirect to="/beta" />,
   },
   {
-    exact: true,
+    component: BetaPage,
     path: '/beta',
-    render: () => <BetaPage />,
     title: "Bienvenue dans l'avant-première du Pass Culture",
   },
   {
-    exact: true,
+    component: SigninPage,
     path: '/connexion',
-    render: () => <SigninPage />,
     title: 'Connexion',
   },
   {
-    exact: true,
+    component: SignupPage,
     path: '/inscription',
-    render: () => <SignupPage />,
     title: 'Inscription',
   },
   {
-    exact: true,
+    component: DiscoveryPage,
     path: '/decouverte',
-    render: () => <DiscoveryPage />,
-  },
-  {
-    exact: true,
-    path: '/decouverte/:offerId/:mediationId?',
-    render: () => <DiscoveryPage />,
+    subroutes: ['/decouverte/:offerId/:mediationId?'],
     title: 'Les offres',
   },
   {
-    exact: true,
+    component: FavoritesPage,
     path: '/favoris',
-    render: () => <FavoritesPage />,
     title: 'Mes favoris',
   },
   {
-    exact: true,
+    component: InventoryPage,
     path: '/inventaire',
-    render: () => <InventoryPage />,
     title: 'Inventaire',
   },
   {
-    exact: true,
+    component: ProfilePage,
     path: '/profil',
-    render: () => <ProfilePage />,
     title: 'Profil',
   },
   {
-    exact: true,
+    component: BookingsPage,
     path: '/reservations',
-    render: () => <BookingsPage />,
     title: 'Réservations',
   },
   {
-    exact: true,
+    component: TermsPage,
     path: '/mentions-legales',
-    render: () => <TermsPage />,
     title: 'Mentions Légales',
   },
 ]

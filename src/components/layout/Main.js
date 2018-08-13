@@ -42,9 +42,9 @@ class Main extends Component {
 
   handleDataFail = (state, action) => {
     const { dispatchShowNotification } = this.props
+    const error = get(action, 'errors.global', []).join('\n')
     dispatchShowNotification({
-      text:
-        get(action, 'errors.global', []).join('\n') || 'Erreur de chargement',
+      text: error || 'Erreur de chargement',
       type: 'danger',
     })
   }

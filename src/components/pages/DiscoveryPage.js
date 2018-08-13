@@ -105,15 +105,29 @@ class DiscoveryPage extends Component {
 
   render() {
     const { backButton, isMenuOnTop } = this.props
-
+    console.log('rendering discoverypage')
     return (
       <Main
-        backButton={backButton ? { className: 'discovery' } : null}
+        noPadding
+        name="discovery"
         handleDataRequest={this.handleDataRequest}
         footer={{ borderTop: true, onTop: isMenuOnTop }}
-        name="discovery"
-        noPadding
+        backButton={backButton ? { className: 'discovery' } : null}
       >
+        {/* <Switch>
+          <Route
+            exact
+            path="/deouverte"
+            key="route-all-discovery"
+            render={() => <AllApplicationsPage />}
+          />
+          <Route
+            exact
+            path="/decouverte/:offerId/:mediationId?"
+            key="route-single-discovery"
+            render={() => <SingleApplicationPage />}
+          />
+        </Switch> */}
         <Deck />
       </Main>
     )

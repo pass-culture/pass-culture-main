@@ -17,15 +17,20 @@ import store from './utils/store'
 import { API_URL, IS_DEV } from './utils/config'
 import { version } from '../package.json'
 
-const buildRoute = route => <Route {...route} key={route.path} />
+const buildRoute = route => (
+  <Route
+    key={route.path}
+    exact={!route.subroutes}
+    component={route.component}
+  />
+)
 
 const buildNotFoundRoute = () => (
   <Route
     path="/:active?"
     render={({ match, location }) => {
-      const matchedRoute = routes.find(route =>
-        matchPath(`/${match.params.active}`, route)
-      )
+      const { active } = match.params
+      const matchedRoute = routes.find(route => matchPath(`/${active}`, route))
       return location.pathname !== '/' && !matchedRoute && <Redirect to="/" />
     }}
   />
