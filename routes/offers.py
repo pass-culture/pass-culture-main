@@ -67,6 +67,7 @@ def get_offer(id):
     offer = load_or_404(Offer, id)
     return jsonify(offer._asdict(include=OFFER_INCLUDES))
 
+
 @app.route('/offers', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
@@ -78,6 +79,7 @@ def post_offer():
     ocas.populateFromDict(request.json)
     PcObject.check_and_save(ocas)
     return jsonify(ocas._asdict(include=OFFER_INCLUDES)), 201
+
 
 @app.route('/offers/<id>', methods=['DELETE'])
 @login_or_api_key_required
