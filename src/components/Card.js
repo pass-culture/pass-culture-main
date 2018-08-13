@@ -2,7 +2,7 @@ import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
 import { compose } from 'redux'
 

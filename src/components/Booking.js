@@ -13,7 +13,7 @@ import {
 import React, { Component } from 'react'
 import { SingleDatePicker } from 'react-dates'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Price from './Price'

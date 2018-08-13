@@ -9,7 +9,7 @@ import {
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
 import BackButton from './BackButton'
@@ -28,7 +28,7 @@ class Main extends Component {
     // si un utilisateur est connecte ?
     // FIXME -> cela doit etre gere par un composant private
     // heritage de ReactRouter
-    // https://reacttraining.com/react-router/web/example/auth-workflow
+    // NOTE -> https://reacttraining.com/react-router/web/example/auth-workflow
     if (!user) return
     this.dataRequestHandler()
   }

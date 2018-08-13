@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
 import React from 'react'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 const BackButton = ({
@@ -11,7 +11,7 @@ const BackButton = ({
   className,
   // FIXME -> staticContext est défini en tant que props de composant
   // uniquement pour éviter que react-router ne lève une erreur
-  // @see https://github.com/ReactTraining/react-router/issues/4683
+  // NOTE -> https://github.com/ReactTraining/react-router/issues/4683
   // eslint-disable-next-line react/prop-types
   staticContext,
   ...otherProps

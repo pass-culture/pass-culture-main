@@ -1,5 +1,5 @@
 import React from 'react'
-import { Redirect } from 'react-router'
+import { Redirect } from 'react-router-dom'
 
 import BetaPage from '../components/pages/BetaPage'
 import BookingsPage from '../components/pages/BookingsPage'

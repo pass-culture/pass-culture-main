@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Footer from './layout/Footer'
