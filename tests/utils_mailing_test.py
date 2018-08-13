@@ -206,7 +206,7 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
 def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
     #Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer()
+    thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('Test', 93, 'test@email.com', True)
@@ -226,7 +226,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
 def test_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer()
+    thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('Test', 93, 'test@email.com', True)
@@ -243,7 +243,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
 def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer()
+    thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('Test', 93, 'test@email.com', True)
@@ -260,7 +260,7 @@ def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancel
 def test_make_user_booking_thing_recap_email_should_have_standard_body_cancellation(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer()
+    thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
     user = create_user('Test', 93, 'test@email.com', True)
@@ -482,7 +482,7 @@ def test_offerer_booking_recap_email_book(app):
         </body>
     </html>'''
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer()
+    thing_offer = create_thing_offer(venue=None)
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     user = create_user('Test', 93, 'test@email.com', True)
@@ -508,7 +508,7 @@ def test_write_object_validation_email_should_have_some_specific_information(app
     user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
                        validation_token=validation_token)
 
-    user_offerer = create_user_offerer(offerer, user, validation_token)
+    user_offerer = create_user_offerer(user, offerer, validation_token)
 
     # When
     email = write_object_validation_email(offerer, user_offerer, get_by_siren=get_mocked_response_status_200)
@@ -568,7 +568,7 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
                        validation_token=None)
 
-    user_offerer = create_user_offerer(offerer, user, validation_token=None)
+    user_offerer = create_user_offerer(user, offerer, validation_token=None)
 
     #When
     maybe_send_offerer_validation_email(offerer, user_offerer)
@@ -589,7 +589,7 @@ def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400
     user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
                        validation_token=validation_token)
 
-    user_offerer = create_user_offerer(offerer, user, validation_token)
+    user_offerer = create_user_offerer(user, offerer, validation_token)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
@@ -609,7 +609,7 @@ def test_validation_email_should_not_return_clearTextPassword(app):
     user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
                        password='totallysafepsswd', validation_token=validation_token)
 
-    user_offerer = create_user_offerer(offerer, user, validation_token)
+    user_offerer = create_user_offerer(user, offerer, validation_token)
 
     mocked_api_entreprises = get_mocked_response_status_200
 

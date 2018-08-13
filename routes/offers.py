@@ -1,11 +1,12 @@
 """offers"""
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
+from domain.offer import check_digital_offer_consistency, InconsistentOffer
+from models import ApiErrors
 from models.event import Event
-from models.event_occurrence import EventOccurrence
 from models.offer import Offer
-from models.stock import Stock
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.thing import Thing
@@ -67,22 +68,32 @@ def get_offer(id):
     offer = load_or_404(Offer, id)
     return jsonify(offer._asdict(include=OFFER_INCLUDES))
 
+
 @app.route('/offers', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
 def post_offer():
-    ocas = Offer()
+    offer = Offer()
     venue = load_or_404(Venue, request.json['venueId'])
-    ensure_current_user_has_rights(RightsType.editor,
-                                   venue.managingOffererId)
-    ocas.populateFromDict(request.json)
-    PcObject.check_and_save(ocas)
-    return jsonify(ocas._asdict(include=OFFER_INCLUDES)), 201
+    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+    offer.populateFromDict(request.json)
+
+    if offer.thingId:
+        try:
+            check_digital_offer_consistency(offer, venue)
+        except InconsistentOffer as e:
+            errors = ApiErrors()
+            errors.addError('global', e.message)
+            raise errors
+
+    PcObject.check_and_save(offer)
+    return jsonify(offer._asdict(include=OFFER_INCLUDES)), 201
+
 
 @app.route('/offers/<id>', methods=['DELETE'])
 @login_or_api_key_required
 def delete_offer(id):
-    ocas = load_or_404(Offer, id)
+    offer = load_or_404(Offer, id)
     ensure_current_user_has_rights(RightsType.editor,
-                                   ocas.venue.managingOffererId)
-    return delete(ocas)
+                                   offer.venue.managingOffererId)
+    return delete(offer)

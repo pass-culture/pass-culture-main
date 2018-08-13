@@ -65,6 +65,9 @@ class Thing(PcObject,
                           nullable=False,
                           default=[])
 
+    url = Column(String(255), nullable=True)
+
+
 Thing.__ts_vector__ = create_tsvector(
     cast(coalesce(Thing.name, ''), TEXT),
     coalesce(Thing.extraData['author'].cast(TEXT), ''),
