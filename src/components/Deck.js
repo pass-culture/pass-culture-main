@@ -1,12 +1,11 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { Icon, requestData } from 'pass-culture-shared'
+import { Logger, Icon, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
-import { withRouter } from 'react-router-dom'
+import { compose, bindActionCreators } from 'redux'
 import withSizes from 'react-sizes'
 
 import Card from './Card'
@@ -32,9 +31,13 @@ class Deck extends Component {
     this.handleGoPrevious = this.handleGoPrevious.bind(this)
     this.handleSetDateRead = this.handleSetDateRead.bind(this)
     this.handleRefreshedData = this.handleRefreshedData.bind(this)
+    const actions = { flip, requestData, unFlip }
+    const { dispatch } = props
+    this.actions = bindActionCreators(actions, dispatch)
   }
 
   componentDidMount() {
+    Logger.log('Deck ---> componentDidMount')
     const { currentRecommendation, recommendations } = this.props
     if (!recommendations || !currentRecommendation) {
       // this.handleRefreshedData()
@@ -57,6 +60,7 @@ class Deck extends Component {
   }
 
   componentWillUnmount() {
+    Logger.log('Deck ---> componentWillUnmount')
     if (this.readTimeout) clearTimeout(this.readTimeout)
     if (this.noDataTimeout) clearTimeout(this.noDataTimeout)
   }
@@ -132,12 +136,7 @@ class Deck extends Component {
   }
 
   handleSetDateRead(prevProps) {
-    const {
-      currentRecommendation,
-      dispatchRequestData,
-      isFlipped,
-      readTimeout,
-    } = this.props
+    const { currentRecommendation, isFlipped, readTimeout } = this.props
     const { isRead } = this.state
 
     const isSameReco =
@@ -168,7 +167,7 @@ class Deck extends Component {
       this.currentReadRecommendationId = currentRecommendation.id
       this.readTimeout = setTimeout(() => {
         if (currentRecommendation && !currentRecommendation.dateRead) {
-          dispatchRequestData(
+          this.actions.requestData(
             'PATCH',
             `recommendations/${currentRecommendation.id}`,
             {
@@ -192,15 +191,15 @@ class Deck extends Component {
   }
 
   handleFlip() {
-    const { dispatchFlip, isFlipDisabled } = this.props
+    const { isFlipDisabled } = this.props
     if (isFlipDisabled) return
-    dispatchFlip()
+    this.actions.flip()
   }
 
   handleUnFlip() {
-    const { dispatchUnFlip, unFlippable } = this.props
+    const { unFlippable } = this.props
     if (unFlippable) return
-    dispatchUnFlip()
+    this.actions.unFlip()
   }
 
   renderDraggableCards() {
@@ -248,35 +247,17 @@ class Deck extends Component {
     const {
       currentRecommendation,
       nextRecommendation,
-      isEmpty,
       isFlipDisabled,
       isFlipped,
       previousRecommendation,
       unFlippable,
     } = this.props
 
-    const showLoader = !currentRecommendation
     const showCloseButton = isFlipped && !unFlippable
     const showNavigation = !isFlipped || isFlipDisabled
 
     return (
-      <div className="deck" id="deck">
-        {showLoader && (
-          <div className="loading">
-            <div>
-              <Icon
-                draggable={false}
-                svg="ico-loading-card"
-                alt="Chargement ..."
-              />
-              <h2 className="subtitle is-2">
-                {isEmpty
-                  ? 'aucune offre pour le moment'
-                  : 'chargement des offres'}
-              </h2>
-            </div>
-          </div>
-        )}
+      <div id="deck" className="is-clipped is-relative">
         {showCloseButton && (
           <button
             type="button"
@@ -308,7 +289,6 @@ Deck.defaultProps = {
   currentRecommendation: null,
   // flipRatio: 0.25,
   horizontalSlideRatio: 0.2,
-  isEmpty: false,
   nextRecommendation: null,
   previousRecommendation: null,
   readTimeout: 2000,
@@ -318,14 +298,11 @@ Deck.defaultProps = {
 
 Deck.propTypes = {
   currentRecommendation: PropTypes.object,
-  dispatchFlip: PropTypes.func.isRequired,
-  dispatchRequestData: PropTypes.func.isRequired,
-  dispatchUnFlip: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
   height: PropTypes.number.isRequired,
   history: PropTypes.object.isRequired,
   horizontalSlideRatio: PropTypes.number,
-  isEmpty: PropTypes.bool,
   isFlipDisabled: PropTypes.bool.isRequired,
   isFlipped: PropTypes.bool.isRequired,
   nextLimit: PropTypes.number.isRequired,
@@ -384,22 +361,12 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapSizeToProps = ({ width, height }) => ({
-  // body{max-width: 500px;}
   height,
+  // NOTE -> CSS body{ max-width: 500px; }
   width: Math.min(width, 500),
 })
 
-const mapDispatchToProps = {
-  dispatchFlip: flip,
-  dispatchRequestData: requestData,
-  dispatchUnFlip: unFlip,
-}
-
 export default compose(
-  withRouter,
   withSizes(mapSizeToProps),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps)
 )(Deck)

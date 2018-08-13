@@ -6,59 +6,67 @@ import {
   showLoading,
   Logger,
 } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
+import { Route, Switch, withRouter } from 'react-router-dom'
+import { compose, bindActionCreators } from 'redux'
 
 import Deck from '../Deck'
 import Main from '../layout/Main'
+import DeckLoader from '../DeckLoader'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { getDiscoveryQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
 
-class DiscoveryPage extends Component {
-  handleDataRequest = () => {
-    const {
-      dispatchCloseLoading,
-      currentRecommendation,
-      history,
-      match: {
-        params: { offerId, mediationId },
-      },
-      dispatchRequestData,
-      dispatchShowLoading,
-    } = this.props
+class DiscoveryPage extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    const { dispatch } = props
+    this.state = { isempty: false, isloading: true }
+    const actions = { closeLoading, requestData, showLoading }
+    this.actions = bindActionCreators(actions, dispatch)
+  }
 
-    if (!currentRecommendation) {
-      const query = [
-        offerId && offerId !== 'tuto' && `offerId=${offerId}`,
-        mediationId && `mediationId=${mediationId}`,
-      ]
-        .filter(param => param)
-        .join('&')
+  componentDidMount() {
+    Logger.log('DiscoveryPage ---> componentDidMount')
+  }
 
-      dispatchRequestData('PUT', `recommendations?${query}`, {
-        handleSuccess: (state, action) => {
-          if (get(action, 'data.length')) {
-            if (!offerId) {
-              const firstOfferId = get(action, 'data.0.offerId') || 'tuto'
+  componentWillUnmount() {
+    Logger.log('DiscoveryPage ---> componentWillUnmount')
+  }
 
-              if (!firstOfferId) {
-                Logger.warn('first recommendation has no offer id, weird...')
-              }
-
-              const firstMediationId = get(action, 'data.0.mediationId') || ''
-
-              history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
-            }
-          } else {
-            dispatchCloseLoading({ isEmpty: true })
-          }
-        },
-        normalizer: recommendationNormalizer,
-      })
-      dispatchShowLoading({ isEmpty: false })
+  handleRequestSuccess = (state, action) => {
+    const { history, match } = this.props
+    const { offerId } = match.params
+    const len = get(action, 'data.length')
+    const isempty = !(len && len > 0)
+    this.setState({ isempty, isloading: false })
+    if (isempty || offerId) return
+    // si aucune carte n'est chargée
+    // on affiche le tuto
+    // ou la premiere carte dans le paylod
+    const firstOfferId = get(action, 'data.0.offerId') || 'tuto'
+    if (!firstOfferId) {
+      Logger.warn('first recommendation has no offer id, weird...')
     }
+    const firstMediationId = get(action, 'data.0.mediationId') || ''
+    history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
+  }
+
+  handleDataRequest = () => {
+    const { currentRecommendation, match } = this.props
+    // si les recommendations ont déjà été chargées
+    // on ne relance pas de requêtes
+    if (currentRecommendation) return
+    this.setState({ isloading: true })
+    // si il existe quelque chose dans l'URL
+    // l'API renvoi cette première carte avant les autres recommendations
+    const query = getDiscoveryQueryParams(match)
+    const serviceuri = `recommendations?${query}`
+    this.actions.requestData('PUT', serviceuri, {
+      handleSuccess: this.handleRequestSuccess,
+      normalizer: recommendationNormalizer,
+    })
   }
 
   /*
@@ -85,16 +93,12 @@ class DiscoveryPage extends Component {
     const path = getDiscoveryPath(chosenOffer, targetRecommendation.mediation)
     history.push(path)
   }
-  */
 
-  /*
   componentWillMount() {
     // this.handleRedirectFromLoading(this.props)
     // this.ensureRecommendations(this.props)
   }
-  */
 
-  /*
   componentWillReceiveProps(nextProps) {
     // this.handleRedirectFromLoading(nextProps)
     if (nextProps.offerId && nextProps.offerId !== this.props.offerId) {
@@ -104,8 +108,8 @@ class DiscoveryPage extends Component {
   */
 
   render() {
+    const { isempty, isloading } = this.state
     const { backButton, isMenuOnTop } = this.props
-    console.log('rendering discoverypage')
     return (
       <Main
         noPadding
@@ -114,21 +118,23 @@ class DiscoveryPage extends Component {
         footer={{ borderTop: true, onTop: isMenuOnTop }}
         backButton={backButton ? { className: 'discovery' } : null}
       >
-        {/* <Switch>
+        <Switch>
           <Route
-            exact
-            path="/deouverte"
-            key="route-all-discovery"
-            render={() => <AllApplicationsPage />}
-          />
-          <Route
-            exact
+            key="route-discovery-deck"
             path="/decouverte/:offerId/:mediationId?"
-            key="route-single-discovery"
-            render={() => <SingleApplicationPage />}
+            component={Deck}
           />
-        </Switch> */}
-        <Deck />
+          {/*
+            FIXME -> Ajouter une route si aucune données pour l'user
+            TODO -> Supprimer 'isempty du loader'
+          */}
+          {/* <Route
+            key="route-discovery-empty"
+            path="/decouverte/empty"
+            component={Deck}
+          /> */}
+        </Switch>
+        <DeckLoader isempty={isempty} isloading={isloading} />
       </Main>
     )
   }
@@ -142,9 +148,7 @@ DiscoveryPage.defaultProps = {
 DiscoveryPage.propTypes = {
   backButton: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.object,
-  dispatchCloseLoading: PropTypes.func.isRequired,
-  dispatchRequestData: PropTypes.func.isRequired,
-  dispatchShowLoading: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isMenuOnTop: PropTypes.bool,
   match: PropTypes.object.isRequired,
@@ -152,13 +156,14 @@ DiscoveryPage.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
+  const currentRecommendation = currentRecommendationSelector(
+    state,
+    offerId,
+    mediationId
+  )
   return {
     backButton: ownProps.location.search.indexOf('to=verso') > -1,
-    currentRecommendation: currentRecommendationSelector(
-      state,
-      offerId,
-      mediationId
-    ),
+    currentRecommendation,
     isMenuOnTop: state.loading.isActive || get(state, 'loading.config.isEmpty'),
     recommendations: state.data.recommendations,
   }
@@ -166,12 +171,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    {
-      dispatchCloseLoading: closeLoading,
-      dispatchRequestData: requestData,
-      dispatchShowLoading: showLoading,
-    }
-  )
+  connect(mapStateToProps)
 )(DiscoveryPage)

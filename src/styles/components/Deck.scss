@@ -1,8 +1,6 @@
-.deck {
-  background-color: black;
+#deck {
   height: 100vh;
-  overflow: hidden;
-  position: relative;
+  background-color: black;
 
   .react-draggable {
     width: 100%;
@@ -14,36 +12,20 @@
     transition-duration: 250ms;
   }
 
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: $primary;
-    text-align: center;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    color: white;
-    font-style: italic;
-    opacity: 1;
-    z-index: 2;
-    transition: opacity 1s 1s, z-index 1s 2s;
-
-    &.is-invisibile {
-      opacity: 0;
-      z-index: -1000;
-    }
-
-    img {
-      margin-bottom: 1rem;
-    }
-  }
-
   .close {
     top: 1rem;
     right: 1rem;
+  }
+}
+
+#deckloader {
+  z-index: $zindex-deckloader;
+  opacity: 1;
+  color: white;
+  background-color: $primary;
+
+  img {
+    margin-bottom: 1rem;
   }
 }
 

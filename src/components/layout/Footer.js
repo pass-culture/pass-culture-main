@@ -15,15 +15,13 @@ const Footer = ({ borderTop, colored, isFlipped, onTop, dispatch }) => {
   if (!colored) {
     style.display = isFlipped ? 'none' : 'block'
   }
+  const cssclass = classnames('footer', {
+    bordered: borderTop,
+    colored,
+    'on-top': onTop,
+  })
   return (
-    <footer
-      className={classnames('footer', {
-        bordered: borderTop,
-        colored,
-        'on-top': onTop,
-      })}
-      style={style}
-    >
+    <footer className={cssclass} style={style}>
       <div className="button-wrapper">
         <button
           className="profile-button"
