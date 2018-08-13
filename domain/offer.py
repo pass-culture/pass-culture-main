@@ -1,10 +1,10 @@
-from repository import thing_queries, venue_queries
+from repository import thing_queries
 
 
 class InconsistentOffer(Exception):
 
     def __init__(self, message=''):
-        self.message = 'InconsistentOffer : %s' % message
+        self.message = message
 
     def __str__(self):
         return self.message

@@ -478,7 +478,7 @@ def test_user_should_have_its_wallet_balance(app):
     venue = create_venue(offerer)
     PcObject.check_and_save(venue)
 
-    thing_offer = create_thing_offer(None)
+    thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
     PcObject.check_and_save(stock)
 
@@ -541,7 +541,7 @@ def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_a
     venue = create_venue(offerer)
     PcObject.check_and_save(venue)
 
-    thing_offer = create_thing_offer(None)
+    thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
     PcObject.check_and_save(stock)
 

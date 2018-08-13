@@ -7,11 +7,11 @@ from utils.test_utils import API_URL, req_with_auth, create_user, create_venue, 
     create_offerer, create_user_offerer, create_n_mixed_offers_with_same_venue, create_thing, create_event
 
 
-def insert_offers_for(user, siren='123456789'):
+def insert_offers_for(user, n, siren='123456789'):
     offerer = create_offerer(siren=siren)
     user_offerer = create_user_offerer(user, offerer)
     venue = create_venue(offerer)
-    offers = create_n_mixed_offers_with_same_venue(venue, n=20)
+    offers = create_n_mixed_offers_with_same_venue(venue, n=n)
 
     PcObject.check_and_save(user_offerer)
     PcObject.check_and_save(*offers)
@@ -22,7 +22,7 @@ def insert_offers_for(user, siren='123456789'):
 def test_get_offers_are_paginated_by_chunks_of_10(app):
     # Given
     user = create_user(email='user@test.com', password='azerty123')
-    insert_offers_for(user)
+    insert_offers_for(user, 20)
 
     # when
     response = req_with_auth(email='user@test.com', password='azerty123').get(API_URL + '/offers')
@@ -38,7 +38,7 @@ def test_get_offers_are_paginated_by_chunks_of_10(app):
 def test_get_offers_is_paginated_by_default_on_page_1(app):
     # given
     user = create_user(email='user@test.com', password='azerty123')
-    insert_offers_for(user)
+    insert_offers_for(user, 20)
     auth_request = req_with_auth(email='user@test.com', password='azerty123')
     offers = auth_request.get(API_URL + '/offers').json()
     first_id = dehumanize(offers[0]['id'])
@@ -47,9 +47,9 @@ def test_get_offers_is_paginated_by_default_on_page_1(app):
     response = auth_request.get(API_URL + '/offers?page=1')
 
     # then
-    offers = response.json()
+    result = response.json()
     assert response.status_code == 200
-    assert dehumanize(offers[0]['id']) == first_id
+    assert dehumanize(result[0]['id']) == first_id
 
 
 @clean_database
@@ -57,7 +57,7 @@ def test_get_offers_is_paginated_by_default_on_page_1(app):
 def test_get_offers_returns_offers_sorted_by_id_desc(app):
     # given
     user = create_user(email='user@test.com', password='azerty123')
-    insert_offers_for(user)
+    insert_offers_for(user, 20)
     auth_request = req_with_auth(email='user@test.com', password='azerty123')
     response_1 = auth_request.get(API_URL + '/offers?page=1')
 

@@ -22,7 +22,7 @@ def test_check_digital_offer_consistency_raises_an_error_for_physical_venue_and_
         check_digital_offer_consistency(offer, venue, find_thing=find_thing)
 
     # then
-    assert str(e.value) == 'InconsistentOffer : Offer.venue is not virtual but Offer.thing has an URL'
+    assert str(e.value) == 'Offer.venue is not virtual but Offer.thing has an URL'
 
 
 @pytest.mark.standalone
@@ -49,7 +49,7 @@ def test_check_digital_offer_consistency_raises_an_error_for_virtual_venue_and_p
         check_digital_offer_consistency(offer, venue, find_thing=find_thing)
 
     # then
-    assert str(e.value) == 'InconsistentOffer : Offer.venue is virtual but Offer.thing does not have an URL'
+    assert str(e.value) == 'Offer.venue is virtual but Offer.thing does not have an URL'
 
 
 @pytest.mark.standalone

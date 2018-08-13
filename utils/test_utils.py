@@ -6,7 +6,6 @@ from os import path
 from pathlib import Path
 
 import requests as req
-from oslo_utils.timeutils import utcnow
 
 from models import Thing, Deposit, UserOfferer, Recommendation, RightsType
 from models.booking import Booking
@@ -189,7 +188,7 @@ def create_booking(user, stock, recommendation, is_cancellation=False, quantity=
     if recommendation:
         booking.recommendation = recommendation
     else:
-        offer = create_thing_offer(None)
+        offer = create_thing_offer(venue=None)
         booking.recommendation = create_recommendation(offer, user)
     if not is_cancellation:
         stock.bookings = [booking]
@@ -237,7 +236,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     if thing_offer:
         stock.offer = thing_offer
     else:
-        stock.offer = create_thing_offer(None)
+        stock.offer = create_thing_offer(venue=None)
     stock.offer.venue = venue
     stock.isActive = True
     stock.available = available
@@ -264,7 +263,7 @@ def create_event(event_name='Test event', duration_minutes=60):
 
 
 def create_thing_offer(venue, thing_type='Book', thing_name='Test Book', media_urls='test/urls',
-                       author_name='Test Author', date_created=utcnow()):
+                       author_name='Test Author', date_created=datetime.utcnow()):
     offer = Offer()
     offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
                                author_name=author_name)
@@ -273,7 +272,7 @@ def create_thing_offer(venue, thing_type='Book', thing_name='Test Book', media_u
     return offer
 
 
-def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=utcnow()):
+def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow()):
     offer = Offer()
     event = create_event(event_name=event_name, duration_minutes=duration_minutes)
     offer.event = event
@@ -285,7 +284,7 @@ def create_event_offer(venue, event_name='Test event', duration_minutes=60, date
 def create_n_mixed_offers_with_same_venue(venue, n=10):
     offers = []
     for i in range(n // 2, 0, -1):
-        date_created = utcnow() - timedelta(days=i)
+        date_created = datetime.utcnow() - timedelta(days=i)
         offers.append(create_thing_offer(venue, thing_name='Thing Offer %s' % i, date_created=date_created))
         offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
     return offers
