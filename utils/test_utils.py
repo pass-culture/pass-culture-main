@@ -6,14 +6,15 @@ from os import path
 from pathlib import Path
 
 import requests as req
+from oslo_utils.timeutils import utcnow
 
-from models import Thing, Deposit, UserOfferer, Recommendation
+from models import Thing, Deposit, UserOfferer, Recommendation, RightsType
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.offer import Offer
-from models.stock import Stock
 from models.offerer import Offerer
+from models.stock import Stock
 from models.user import User
 from models.venue import Venue
 
@@ -188,7 +189,7 @@ def create_booking(user, stock, recommendation, is_cancellation=False, quantity=
     if recommendation:
         booking.recommendation = recommendation
     else:
-        offer = create_thing_offer()
+        offer = create_thing_offer(None)
         booking.recommendation = create_recommendation(offer, user)
     if not is_cancellation:
         stock.bookings = [booking]
@@ -236,22 +237,56 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     if thing_offer:
         stock.offer = thing_offer
     else:
-        stock.offer = create_thing_offer()
+        stock.offer = create_thing_offer(None)
     stock.offer.venue = venue
     stock.isActive = True
     stock.available = available
     return stock
 
 
-def create_thing_offer():
+def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author'):
+    thing = Thing()
+    thing.type = thing_type
+    thing.name = thing_name
+    thing.mediaUrls = media_urls
+    thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
+    thing.extraData = {'author': author_name}
+    return thing
+
+
+def create_event(event_name='Test event', duration_minutes=60):
+    event = Event()
+    event.name = event_name
+    event.durationMinutes = duration_minutes
+    return event
+
+
+def create_thing_offer(venue, thing_type='Book', thing_name='Test Book', media_urls='test/urls',
+                       author_name='Test Author', date_created=utcnow()):
     offer = Offer()
-    offer.thing = Thing()
-    offer.thing.type = 'Book'
-    offer.thing.name = 'Test Book'
-    offer.thing.mediaUrls = 'test/urls'
-    offer.thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
-    offer.thing.extraData = {'author': 'Test Author'}
+    offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
+                               author_name=author_name)
+    offer.venue = venue
+    offer.dateCreated = date_created
     return offer
+
+
+def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=utcnow()):
+    offer = Offer()
+    event = create_event(event_name=event_name, duration_minutes=duration_minutes)
+    offer.event = event
+    offer.venue = venue
+    offer.dateCreated = date_created
+    return event
+
+
+def create_n_mixed_offers_with_same_venue(venue, n=10):
+    offers = []
+    for i in range(n // 2, 0, -1):
+        date_created = utcnow() - timedelta(days=i)
+        offers.append(create_thing_offer(venue, thing_name='Thing Offer %s' % i, date_created=date_created))
+        offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
+    return offers
 
 
 def create_offerer(siren='123456789', address='123 rue de Paris', city='Montreuil', postal_code='93100',
@@ -289,11 +324,12 @@ def create_deposit(user, date, amount=50, source='public'):
     return deposit
 
 
-def create_user_offerer(offerer, user, validation_token=None):
+def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
     user_offerer = UserOfferer()
     user_offerer.user = user
     user_offerer.offerer = offerer
     user_offerer.validationToken = validation_token
+    user_offerer.rights = RightsType.admin if is_admin else RightsType.editor
     return user_offerer
 
 
