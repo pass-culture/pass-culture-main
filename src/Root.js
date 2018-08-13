@@ -1,13 +1,7 @@
 import Raven from 'raven-js'
 import React from 'react'
 import { Provider } from 'react-redux'
-import {
-  BrowserRouter,
-  matchPath,
-  Redirect,
-  Route,
-  Switch,
-} from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
@@ -15,26 +9,17 @@ import persistor from './utils/persistor'
 import routes from './utils/routes'
 import store from './utils/store'
 import { API_URL, IS_DEV } from './utils/config'
+import { ownProperty } from './helpers'
 import { version } from '../package.json'
+import NotMatch from './components/pages/NotMatch'
 
-const buildRoute = route => (
-  <Route
-    key={route.path}
-    exact={!route.subroutes}
-    component={route.component}
-  />
-)
-
-const buildNotFoundRoute = () => (
-  <Route
-    path="/:active?"
-    render={({ match, location }) => {
-      const { active } = match.params
-      const matchedRoute = routes.find(route => matchPath(`/${active}`, route))
-      return location.pathname !== '/' && !matchedRoute && <Redirect to="/" />
-    }}
-  />
-)
+const buildRoute = route => {
+  // lodash.get retourne 'null' pour une valeur 'null'
+  const hasexact = ownProperty(route, 'exact')
+  const isexact = hasexact ? route.exact : true
+  // first props, last overrides
+  return <Route {...route} key={route.path} exact={isexact} />
+}
 
 const Root = () => {
   if (!IS_DEV) {
@@ -51,7 +36,7 @@ const Root = () => {
           <App>
             <Switch>
               {routes.map(buildRoute)}
-              {buildNotFoundRoute()}
+              <Route component={NotMatch} />
             </Switch>
           </App>
         </BrowserRouter>

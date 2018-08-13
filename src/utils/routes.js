@@ -33,8 +33,8 @@ const routes = [
   },
   {
     component: DiscoveryPage,
+    exact: false,
     path: '/decouverte',
-    subroutes: ['/decouverte/:offerId/:mediationId?'],
     title: 'Les offres',
   },
   {
