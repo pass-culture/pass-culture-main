@@ -1,8 +1,10 @@
+from decimal import Decimal
+
 from repository.booking_queries import find_by_user_id
 
-MAX_SUBVENTION_ALL = 500
-MAX_SUBVENTION_PHYSICAL = 100
-MAX_SUBVENTION_DIGITAL = 200
+MAX_SUBVENTION_ALL = Decimal(500)
+MAX_SUBVENTION_PHYSICAL = Decimal(100)
+MAX_SUBVENTION_DIGITAL = Decimal(200)
 
 
 def get_expenses(user, find_bookings_by_user_id=find_by_user_id):
@@ -22,8 +24,7 @@ def get_expenses(user, find_bookings_by_user_id=find_by_user_id):
 def _sum_bookings(bookings, filter_bookings=lambda b: b):
     bookings_to_sum = filter_bookings(bookings)
     amounts = map(lambda x: x.amount * x.quantity, bookings_to_sum)
-    actual_all = float(sum(amounts))
-    return actual_all
+    return Decimal(sum(amounts))
 
 
 def _filter_digital_things_bookings(bookings):
