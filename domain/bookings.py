@@ -10,6 +10,13 @@ def check_has_stock_id(stock_id):
         raise api_errors
 
 
+def check_has_quantity(quantity):
+    if quantity is None:
+        api_errors = ApiErrors()
+        api_errors.addError('quantity', 'Vous devez préciser une quantité pour la réservation')
+        raise api_errors
+
+
 def check_existing_stock(stock):
     if stock is None:
         api_errors = ApiErrors()

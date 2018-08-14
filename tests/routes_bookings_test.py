@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import User, Offerer, Recommendation, Stock, PcObject, Deposit, Venue, Booking
+from models import Offerer, PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_offer, \
     create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
-    create_recommendation, create_user, create_booking, create_event_offer
+    create_recommendation, create_user, create_booking
 
 
 @clean_database
@@ -30,7 +30,8 @@ def test_create_booking_should_not_work_past_limit_date(app):
 
     booking_json = {
         'stockId': humanize(expired_stock.id),
-        'recommendationId': humanize(recommendation.id)
+        'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
 
     r_create = req_with_auth('test@mail.com', password='psswd123').post(API_URL + '/bookings', json=booking_json)
@@ -58,7 +59,8 @@ def test_create_booking_should_work_before_limit_date(app):
 
     booking_json = {
         'stockId': humanize(ok_stock.id),
-        'recommendationId': humanize(recommendation.id)
+        'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
 
     r_create = req_with_auth(email='test@mail.com', password='psswd123').post(API_URL + '/bookings', json=booking_json)
@@ -87,7 +89,8 @@ def test_create_booking_should_not_work_if_too_many_bookings(app):
 
     booking_json = {
         'stockId': humanize(too_many_bookings_stock.id),
-        'recommendationId': humanize(recommendation.id)
+        'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
 
     r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
@@ -120,9 +123,9 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     booking_json = {
         'stockId': humanize(stock.id),
         'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
     r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
-    print(r_create.json())
     assert r_create.status_code == 201
 
 
@@ -158,7 +161,7 @@ def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOff
     booking_json = {
         'stockId': humanize(stock.id),
         'recommendationId': humanize(recommendation.id),
-        "userId": humanize(user.id)
+        'quantity': 1
     }
 
     # When
@@ -192,7 +195,7 @@ def test_create_booking_should_not_work_if_not_enough_credit(app):
     booking_json = {
         "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        "quantity": 1
     }
 
     # When
@@ -234,7 +237,7 @@ def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(
     booking_json = {
         "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        "quantity": 1
     }
 
     # When
@@ -276,7 +279,7 @@ def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_
     booking_json = {
         "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        "quantity": 1
     }
 
     # When
@@ -307,7 +310,7 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limi
     PcObject.check_and_save(thing_offer)
 
     stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-    stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20)
+    stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=9)
     PcObject.check_and_save(stock_1, stock_2)
 
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
@@ -323,7 +326,7 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limi
     booking_json = {
         "stockId": humanize(stock_2.id),
         "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        "quantity": 2
     }
 
     # When
@@ -333,4 +336,44 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limi
     error_message = response.json()
     assert response.status_code == 400
     assert error_message['global'] == ['La limite de 100 € pour les biens culturels ' \
-                                                 'ne vous permet pas de réserver']
+                                       'ne vous permet pas de réserver']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_no_stock_id_is_given(app):
+    # Given
+    create_user(email='test@email.com', password='testpsswd').save()
+    booking_json = {
+        'stockId': None,
+        'recommendationId': 'AFQA',
+        'quantity': 2
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['stockId'] == ['Vous devez préciser un identifiant d\'offre']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_no_quantity_is_given(app):
+    # Given
+    create_user(email='test@email.com', password='testpsswd').save()
+    booking_json = {
+        'stockId': 'AE',
+        'recommendationId': 'AFQA',
+        'quantity': None
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']

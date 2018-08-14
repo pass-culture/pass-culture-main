@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from sqlalchemy.exc import InternalError
 
 from domain.bookings import check_has_stock_id, check_existing_stock, check_can_book_free_offer, \
-    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits
+    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, check_has_quantity
 from domain.expenses import get_expenses
 from models import Booking
 from models.api_errors import ApiErrors
@@ -40,9 +40,11 @@ def get_booking(booking_id):
 def create_booking():
     stock_id = request.json.get('stockId')
     recommendation_id = request.json.get('recommendationId')
+    quantity = request.json.get('quantity')
 
     try:
         check_has_stock_id(stock_id)
+        check_has_quantity(quantity)
     except ApiErrors as api_errors:
         return jsonify(api_errors.errors), 400
 
@@ -62,7 +64,7 @@ def create_booking():
         'amount': stock.price,
         'token': random_token(),
         'userId': humanize(current_user.id),
-        'quantity': 1,
+        'quantity': quantity,
         'recommendationId': recommendation_id if recommendation_id else None
     })
 
