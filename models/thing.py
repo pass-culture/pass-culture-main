@@ -67,6 +67,10 @@ class Thing(PcObject,
 
     url = Column(String(255), nullable=True)
 
+    @property
+    def isDigital(self):
+        return self.url is not None and self.url != ''
+
 
 Thing.__ts_vector__ = create_tsvector(
     cast(coalesce(Thing.name, ''), TEXT),

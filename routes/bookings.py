@@ -24,6 +24,7 @@ def get_bookings():
     return jsonify([booking._asdict(include=BOOKING_INCLUDES)
                     for booking in bookings]), 200
 
+
 @app.route('/bookings/<booking_id>', methods=['GET'])
 @login_required
 def get_booking(booking_id):
