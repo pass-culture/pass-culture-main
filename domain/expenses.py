@@ -1,5 +1,8 @@
-from domain import MAX_SUBVENTION_ALL, MAX_SUBVENTION_PHYSICAL, MAX_SUBVENTION_DIGITAL
 from repository.booking_queries import find_by_user_id
+
+MAX_SUBVENTION_ALL = 500
+MAX_SUBVENTION_PHYSICAL = 100
+MAX_SUBVENTION_DIGITAL = 200
 
 
 def get_expenses(user, find_bookings_by_user_id=find_by_user_id):

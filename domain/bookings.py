@@ -36,3 +36,31 @@ def check_stock_booking_limit_date(stock):
         api_errors = ApiErrors()
         api_errors.addError('global', 'La date limite de réservation de cette offre est dépassée')
         raise api_errors
+
+
+def check_expenses_limits(expenses, booking, stock):
+    if stock.resolvedOffer.event:
+        return None
+
+    if stock.resolvedOffer.thing.isDigital:
+        _check_digital_expense_limit(booking, expenses)
+    else:
+        _check_physical_expense_limit(booking, expenses)
+
+
+def _check_physical_expense_limit(booking, expenses):
+    new_actual_amount = expenses['physical']['actual'] + booking.amount * booking.quantity
+    if new_actual_amount > expenses['physical']['max']:
+        api_errors = ApiErrors()
+        api_errors.addError('global', 'La limite de %s € pour les biens culturels ne vous permet pas ' \
+                                      'de réserver' % expenses['physical']['max'])
+        raise api_errors
+
+
+def _check_digital_expense_limit(booking, expenses):
+    new_actual_amount = expenses['digital']['actual'] + booking.amount * booking.quantity
+    if new_actual_amount > expenses['digital']['max']:
+        api_errors = ApiErrors()
+        api_errors.addError('global', 'La limite de %s € pour les offres numériques ne vous permet pas ' \
+                                      'de réserver' % expenses['digital']['max'])
+        raise api_errors
