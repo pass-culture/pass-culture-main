@@ -4,7 +4,6 @@ from unittest.mock import patch
 import pytest
 
 from models import PcObject
-
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
@@ -13,28 +12,28 @@ from utils.test_utils import API_URL, req, req_with_auth, create_thing_offer, cr
     create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
 
 BASE_DATA = {
-              'email': 'toto@btmx.fr',
-              'publicName': 'Toto',
-              'password': 'toto12345678',
-              'contact_ok': 'true'
-            }
+    'email': 'toto@btmx.fr',
+    'publicName': 'Toto',
+    'password': 'toto12345678',
+    'contact_ok': 'true'
+}
 
 BASE_DATA_PRO = {
-                  'email': 'toto_pro@btmx.fr',
-                  'publicName': 'Toto Pro',
-                  'password': 'toto12345678',
-                  'contact_ok': 'true',
-                  'siren': '349974931',
-                  'address': '12 boulevard de Pesaro',
-                  'postalCode': '92000',
-                  'city': 'Nanterre',
-                  'name': 'Crédit Coopératif'
-                }
+    'email': 'toto_pro@btmx.fr',
+    'publicName': 'Toto Pro',
+    'password': 'toto12345678',
+    'contact_ok': 'true',
+    'siren': '349974931',
+    'address': '12 boulevard de Pesaro',
+    'postalCode': '92000',
+    'city': 'Nanterre',
+    'name': 'Crédit Coopératif'
+}
 
 
 def assert_signup_error(data, err_field):
     r_signup = req.post(API_URL + '/users/signup',
-                                  json=data)
+                        json=data)
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert err_field in error
@@ -45,7 +44,7 @@ def assert_signup_error(data, err_field):
 def test_signup_should_not_work_without_email(app):
     # Given
     data = BASE_DATA.copy()
-    del(data['email'])
+    del (data['email'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -78,7 +77,7 @@ def test_signup_should_not_work_with_invalid_email(app):
 def test_signup_should_not_work_without_publicName():
     # Given
     data = BASE_DATA.copy()
-    del(data['publicName'])
+    del (data['publicName'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -110,7 +109,7 @@ def test_signup_should_not_work_with_publicName_too_short():
 def test_signup_should_not_work_with_publicName_too_long():
     # Given
     data = BASE_DATA.copy()
-    data['publicName'] = 'x'*32
+    data['publicName'] = 'x' * 32
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -126,7 +125,7 @@ def test_signup_should_not_work_with_publicName_too_long():
 def test_signup_should_not_work_without_password():
     # Given
     data = BASE_DATA.copy()
-    del(data['password'])
+    del (data['password'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -157,7 +156,7 @@ def test_signup_should_not_work_with_invalid_password():
 @pytest.mark.standalone
 def test_signup_should_not_work_without_contact_ok():
     data = BASE_DATA.copy()
-    del(data['contact_ok'])
+    del (data['contact_ok'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -197,7 +196,7 @@ def test_signup(app):
 @clean_database
 def test_signup_should_not_work_again_with_same_email(app):
     req.post(API_URL + '/users/signup',
-                        json=BASE_DATA)
+             json=BASE_DATA)
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -221,8 +220,8 @@ def test_get_profile_should_return_the_users_profile_without_password_hash(app):
     user = create_user(email='toto@btmx.fr', public_name='Toto', departement_code='93', password='toto12345678')
     user.save()
     r = req_with_auth(email='toto@btmx.fr',
-                      password='toto12345678')\
-                 .get(API_URL + '/users/current')
+                      password='toto12345678') \
+        .get(API_URL + '/users/current')
     user_json = r.json()
     assert r.status_code == 200
     assert user_json['email'] == 'toto@btmx.fr'
@@ -247,8 +246,9 @@ def test_signup_should_not_work_for_user_not_in_exp_spreadsheet(get_authorized_e
     error = r_signup.json()
     assert 'email' in error
 
-#TODO
-#def test_19_pro_signup_should_not_work_with_invalid_siren():
+
+# TODO
+# def test_19_pro_signup_should_not_work_with_invalid_siren():
 #    data = BASE_DATA_PRO.copy()
 #    data['siren'] = '123456789'
 #    assert_signup_error(data, 'siren')
@@ -259,7 +259,7 @@ def test_signup_should_not_work_for_user_not_in_exp_spreadsheet(get_authorized_e
 def test_pro_signup_should_not_work_without_offerer_name(app):
     # Given
     data = BASE_DATA_PRO.copy()
-    del(data['name'])
+    del (data['name'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -274,7 +274,7 @@ def test_pro_signup_should_not_work_without_offerer_name(app):
 @pytest.mark.standalone
 def test_pro_signup_should_not_work_without_offerer_address():
     data = BASE_DATA_PRO.copy()
-    del(data['address'])
+    del (data['address'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -289,7 +289,7 @@ def test_pro_signup_should_not_work_without_offerer_address():
 @pytest.mark.standalone
 def test_pro_signup_should_not_work_without_offerer_city():
     data = BASE_DATA_PRO.copy()
-    del(data['city'])
+    del (data['city'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -304,7 +304,7 @@ def test_pro_signup_should_not_work_without_offerer_city():
 @pytest.mark.standalone
 def test_pro_signup_should_not_work_without_offerer_postal_code():
     data = BASE_DATA_PRO.copy()
-    del(data['postalCode'])
+    del (data['postalCode'])
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -338,19 +338,19 @@ def test_pro_signup_should_create_user_offerer_and_userOfferer(app):
                         json=BASE_DATA_PRO)
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
-    user = User.query\
-                         .filter_by(email='toto_pro@btmx.fr')\
-                         .first()
+    user = User.query \
+        .filter_by(email='toto_pro@btmx.fr') \
+        .first()
     assert user is not None
-    offerer = Offerer.query\
-                               .filter_by(siren='349974931')\
-                               .first()
+    offerer = Offerer.query \
+        .filter_by(siren='349974931') \
+        .first()
     assert offerer is not None
     assert offerer.validationToken is not None
-    user_offerer = UserOfferer.query\
-                                        .filter_by(user=user,
-                                                   offerer=offerer)\
-                                        .first()
+    user_offerer = UserOfferer.query \
+        .filter_by(user=user,
+                   offerer=offerer) \
+        .first()
     assert user_offerer is not None
     assert user_offerer.validationToken is None
     assert user_offerer.rights == RightsType.admin
@@ -361,33 +361,32 @@ def test_pro_signup_should_create_user_offerer_and_userOfferer(app):
 def test_pro_signup_with_existing_offerer(app):
     "should create user and userOfferer"
     json_offerer = {
-            "name": "Test Offerer",
-            "siren": "349974931",
-            "address": "Test adresse",
-            "postalCode": "75000",
-            "city": "Paris"
+        "name": "Test Offerer",
+        "siren": "349974931",
+        "address": "Test adresse",
+        "postalCode": "75000",
+        "city": "Paris"
     }
     offerer = Offerer(from_dict=json_offerer)
     offerer.save()
-
 
     data = BASE_DATA_PRO.copy()
     r_signup = req.post(API_URL + '/users/signup',
                         json=data)
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
-    user = User.query\
-                         .filter_by(email='toto_pro@btmx.fr')\
-                         .first()
+    user = User.query \
+        .filter_by(email='toto_pro@btmx.fr') \
+        .first()
     assert user is not None
-    offerer = Offerer.query\
-                               .filter_by(siren='349974931')\
-                               .first()
+    offerer = Offerer.query \
+        .filter_by(siren='349974931') \
+        .first()
     assert offerer is not None
-    user_offerer = UserOfferer.query\
-                                        .filter_by(user=user,
-                                                   offerer=offerer)\
-                                        .first()
+    user_offerer = UserOfferer.query \
+        .filter_by(user=user,
+                   offerer=offerer) \
+        .first()
     assert user_offerer is not None
     assert user_offerer.validationToken is not None
     assert user_offerer.rights == RightsType.editor
@@ -429,7 +428,7 @@ def test_user_should_have_its_wallet_balance(app):
     # when
     wallet_balance = r_create.json()['wallet_balance']
 
-    #Then
+    # Then
     assert wallet_balance == 15
 
 
@@ -447,7 +446,7 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                                  json=user_json)
+                        json=user_json)
 
     # Then
     assert r_signup.status_code == 400
@@ -459,7 +458,8 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 @pytest.mark.standalone
 def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
     # Given
-    user = create_user(email='wallet_2_bookings_test@email.com', public_name='Test', departement_code='93', password='testpsswd')
+    user = create_user(email='wallet_2_bookings_test@email.com', public_name='Test', departement_code='93',
+                       password='testpsswd')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)
     thing_offer = create_thing_offer(venue=None)
@@ -478,3 +478,33 @@ def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_a
     # Then
     wallet_balance = r_create.json()['wallet_balance']
     assert wallet_balance == 30
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_current_user_returns_expenses(app):
+    # Given
+    user = create_user(email='wallet_2_bookings_test@email.com', public_name='Test', departement_code='93',
+                       password='testpsswd')
+    offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
+    venue = create_venue(offerer)
+    thing_offer = create_thing_offer(venue=None)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
+    recommendation = create_recommendation(thing_offer, user)
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(user, deposit_date, amount=50)
+    booking = create_booking(user, stock, recommendation, quantity=2)
+
+    PcObject.check_and_save(deposit)
+    PcObject.check_and_save(booking)
+
+    # When
+    response = req_with_auth('wallet_2_bookings_test@email.com', 'testpsswd').get(API_URL + '/users/current')
+
+    # Then
+    expenses = response.json()['expenses']
+    assert expenses == {
+        'all': {'max': 500, 'actual': 20},
+        'physical': {'max': 100, 'actual': 20},
+        'digital': {'max': 200, 'actual': 0}
+    }

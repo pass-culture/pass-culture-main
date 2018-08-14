@@ -18,7 +18,7 @@ def get_expenses(user, find_bookings_by_user_id=find_by_user_id):
 
 def _sum_bookings(bookings, filter_bookings=lambda b: b):
     bookings_to_sum = filter_bookings(bookings)
-    amounts = map(lambda x: x.amount, bookings_to_sum)
+    amounts = map(lambda x: x.amount * x.quantity, bookings_to_sum)
     actual_all = float(sum(amounts))
     return actual_all
 

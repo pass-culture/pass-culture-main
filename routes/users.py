@@ -4,6 +4,7 @@ from flask_login import current_user, login_required, logout_user, login_user
 from sqlalchemy.exc import IntegrityError
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
+from domain.expenses import get_expenses
 from models.api_errors import ApiErrors
 from models.offerer import Offerer
 from models.pc_object import PcObject
@@ -26,6 +27,7 @@ def is_pro_signup(json_user):
 @login_required
 def get_profile():
     user = current_user._asdict(include=USER_INCLUDES)
+    user['expenses'] = get_expenses(current_user)
     return jsonify(user)
 
 
