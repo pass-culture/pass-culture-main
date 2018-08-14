@@ -12,7 +12,7 @@ from sqlalchemy import CHAR,\
                        Integer,\
                        Numeric,\
                        String
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors

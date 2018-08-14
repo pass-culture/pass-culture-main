@@ -1,5 +1,7 @@
 """ booking model """
 from datetime import datetime
+from pprint import pprint
+
 from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
@@ -8,8 +10,10 @@ from sqlalchemy import BigInteger, \
     ForeignKey, \
     Integer, \
     String, Numeric
+from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import relationship
 
+from models import ApiErrors
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
@@ -62,7 +66,7 @@ class Booking(PcObject,
                         backref='userBookings')
 
     amount = Column(Numeric(10, 2),
-                   nullable=False)
+                    nullable=False)
 
     @property
     def eventOccurrenceBeginningDatetime(self):
@@ -110,5 +114,3 @@ Booking.trig_ddl = """
 event.listen(Booking.__table__,
              'after_create',
              DDL(Booking.trig_ddl))
-
-
