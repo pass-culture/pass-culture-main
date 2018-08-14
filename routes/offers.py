@@ -3,7 +3,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
-from domain.offer import check_digital_offer_consistency, InconsistentOffer
+from domain.offers import check_digital_offer_consistency, InconsistentOffer
 from models import ApiErrors
 from models.event import Event
 from models.offer import Offer

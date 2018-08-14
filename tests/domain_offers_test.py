@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from domain.offer import check_digital_offer_consistency, InconsistentOffer
+from domain.offers import check_digital_offer_consistency, InconsistentOffer
 from models import Offer, Venue, Thing
 
 find_thing = Mock()
