@@ -56,9 +56,9 @@ def signout():
 
 @app.route("/users/signup", methods=["POST"])
 def signup():
-    if 'contact_ok' not in request.json or\
-       (request.json['contact_ok'] is not True and
-        str(request.json['contact_ok']).lower() != 'true'):
+    if 'contact_ok' not in request.json or \
+            (request.json['contact_ok'] is not True and
+             str(request.json['contact_ok']).lower() != 'true'):
         e = ApiErrors()
         e.addError('contact_ok', 'Vous devez obligatoirement cocher cette case')
         raise e
@@ -100,11 +100,11 @@ def signup():
             offerer.generate_validation_token()
             if offerer.postalCode is not None:
                 offerer_dept_code = offerer.postalCode[:2]
-                new_user.departementCode = '93' if offerer_dept_code in ILE_DE_FRANCE_DEPT_CODES\
-                                                else offerer_dept_code
+                new_user.departementCode = '93' if offerer_dept_code in ILE_DE_FRANCE_DEPT_CODES \
+                    else offerer_dept_code
             else:
-                new_user.departementCode = 'XX' # We don't want to trigger an error on this:
-                                                # we want the error on user
+                new_user.departementCode = 'XX'  # We don't want to trigger an error on this:
+                # we want the error on user
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.admin)
             # offerer.bookingEmail = new_user.email

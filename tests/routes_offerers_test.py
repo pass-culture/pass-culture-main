@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 
 from tests.conftest import clean_database

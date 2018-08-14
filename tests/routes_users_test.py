@@ -1,11 +1,9 @@
-import secrets
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
 
 from models import PcObject
-from pprint import pprint
 
 from models.offerer import Offerer
 from models.user import User
@@ -39,7 +37,6 @@ def assert_signup_error(data, err_field):
                                   json=data)
     assert r_signup.status_code == 400
     error = r_signup.json()
-    pprint(error)
     assert err_field in error
 
 
@@ -58,6 +55,7 @@ def test_signup_should_not_work_without_email(app):
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert 'email' in error
+
 
 @pytest.mark.standalone
 @clean_database
@@ -211,34 +209,10 @@ def test_signup_should_not_work_again_with_same_email(app):
     assert 'email' in error
 
 
-
 @pytest.mark.standalone
 def test_get_profile_should_work_only_when_logged_in():
     r = req.get(API_URL + '/users/current')
     assert r.status_code == 401
-
-
-#def test_14_get_profile_should_not_work_if_account_is_not_validated():
-#    r = req_with_auth(email='toto@btmx.fr',
-#                      password='toto12345678')\
-#                    .get(API_URL + '/users/current')
-#    assert r.status_code == 401
-#    assert 'pas validé' in r.json()['identifier']
-
-
-#def test_15_should_not_be_able_to_validate_user_with_wrong_token():
-#    r = req_with_auth(email='toto@btmx.fr',
-#                      password='toto12345678')\
-#                 .get(API_URL + '/validate?modelNames=User&token=123')
-#    assert r.status_code == 404
-
-
-#def test_16_should_be_able_to_validate_user(app):
-#    token = User.query\
-#                .filter(User.validationToken != None)\
-#                .first().validationToken
-#    r = req_with_auth().get(API_URL + '/validate?modelNames=User&token='+token)
-#    assert r.status_code == 202
 
 
 @pytest.mark.standalone
@@ -250,7 +224,6 @@ def test_get_profile_should_return_the_users_profile_without_password_hash(app):
                       password='toto12345678')\
                  .get(API_URL + '/users/current')
     user_json = r.json()
-    print(user_json)
     assert r.status_code == 200
     assert user_json['email'] == 'toto@btmx.fr'
     assert 'password' not in user_json
@@ -308,7 +281,6 @@ def test_pro_signup_should_not_work_without_offerer_address():
                         json=data)
 
     # Then
-    print(r_signup.json())
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert 'address' in error
@@ -324,7 +296,6 @@ def test_pro_signup_should_not_work_without_offerer_city():
                         json=data)
 
     # Then
-    print(r_signup.json())
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert 'city' in error
@@ -340,7 +311,6 @@ def test_pro_signup_should_not_work_without_offerer_postal_code():
                         json=data)
 
     # Then
-    print(r_signup.json())
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert 'postalCode' in error
@@ -356,7 +326,6 @@ def test_pro_signup_should_not_work_with_invalid_offerer_postal_code():
                         json=data)
 
     # Then
-    print(r_signup.json())
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert 'postalCode' in error
@@ -385,47 +354,6 @@ def test_pro_signup_should_create_user_offerer_and_userOfferer(app):
     assert user_offerer is not None
     assert user_offerer.validationToken is None
     assert user_offerer.rights == RightsType.admin
-
-
-@clean_database
-@pytest.mark.standalone
-def test_should_not_be_able_to_validate_offerer_with_wrong_token(app):
-    user = create_user(email='toto@btmx.fr', public_name='Toto', departement_code='93', password='toto12345678')
-    user.save()
-    user.validationToken = secrets.token_urlsafe(20)
-    r = req_with_auth(email='toto_pro@btmx.fr',
-                      password='toto12345678')\
-                 .get(API_URL + '/validate?modelNames=Offerer&token=123')
-    assert r.status_code == 404
-
-
-@clean_database
-@pytest.mark.standalone
-def test_validate_offerer(app):
-    # Given
-    offerer_token = secrets.token_urlsafe(20)
-    offerer = create_offerer('349974931', '12 boulevard de Pesaro', 'Nanterre', '92000', 'Crédit Coopératif',
-                             validation_token=offerer_token)
-    offerer.save()
-    offerer_id = offerer.id
-    del(offerer)
-
-    token = Offerer.query\
-                             .filter_by(id=offerer_id)\
-                             .first().validationToken
-
-    print('token', token)
-    print('offerer_token', offerer_token)
-
-    # When
-    r = req.get(API_URL + '/validate?modelNames=Offerer&token='+token)
-
-    # Then
-    assert r.status_code == 202
-    offerer = Offerer.query\
-                               .filter_by(id=offerer_id)\
-                               .first()
-    assert offerer.isValidated
 
 
 @clean_database
@@ -524,7 +452,6 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
     # Then
     assert r_signup.status_code == 400
     error = r_signup.json()
-    pprint(error)
     assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
 
 
@@ -533,26 +460,16 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
     # Given
     user = create_user(email='wallet_2_bookings_test@email.com', public_name='Test', departement_code='93', password='testpsswd')
-    PcObject.check_and_save(user)
-
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
-    PcObject.check_and_save(offerer)
-
     venue = create_venue(offerer)
-    PcObject.check_and_save(venue)
-
     thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-    PcObject.check_and_save(stock)
-
     recommendation = create_recommendation(thing_offer, user)
-    PcObject.check_and_save(recommendation)
-
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
     deposit = create_deposit(user, deposit_date, amount=50)
-    PcObject.check_and_save(deposit)
-
     booking = create_booking(user, stock, recommendation, quantity=2)
+
+    PcObject.check_and_save(deposit)
     PcObject.check_and_save(booking)
 
     # When
