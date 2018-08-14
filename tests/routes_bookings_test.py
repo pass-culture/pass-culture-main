@@ -299,7 +299,7 @@ def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_
 
 @clean_database
 @pytest.mark.standalone
-def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limit_physical_thing_reached(app):
+def skipped_test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limit_physical_thing_reached(app):
     # Given
     user = create_user(email='test@email.com', password='testpsswd')
     PcObject.check_and_save(user)
