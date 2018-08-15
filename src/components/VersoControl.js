@@ -8,7 +8,7 @@ import { compose } from 'redux'
 
 import Price from './Price'
 import Booking from './Booking'
-import Finishable from './layout/Finishable'
+// import Finishable from './layout/Finishable'
 import bookingsSelector from '../selectors/bookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
@@ -50,12 +50,13 @@ class VersoControl extends Component {
   }
 
   render() {
-    const { bookings, offer, currentRecommendation } = this.props
-    const { isFinished } = currentRecommendation || {}
+    const { bookings, offer, currentRecommendation, match } = this.props
+    // const { isFinished } = currentRecommendation || {}
     const { venue } = offer || {}
     const { managingOfferer } = venue || {}
     const isFavorite = currentRecommendation && currentRecommendation.isFavorite
     Logger.fixme('VersoControl is mounted but not visible')
+    const { offerId, mediationId } = match.params
     return (
       <ul className="verso-control">
         <li>
@@ -98,20 +99,28 @@ Mon Pass
               {' Réservé'}
             </Link>
           ) : (
-            <Finishable finished={isFinished}>
-              <button
-                type="button"
-                className="button is-primary is-go is-medium"
-                onClick={this.onClickJyVais}
-              >
-                <Price
-                  value={get(offer, 'price') || get(offer, 'displayPrice')}
-                  free="——"
-                  className={managingOfferer ? 'strike' : ''}
-                />
-                {"J'y vais!"}
-              </button>
-            </Finishable>
+            <Link to={`/decouverte/${offerId}/${mediationId}/booking`}>
+              <Price
+                value={get(offer, 'price') || get(offer, 'displayPrice')}
+                free="——"
+                className={managingOfferer ? 'strike' : ''}
+              />
+              {"J'y vais!"}
+            </Link>
+            // <Finishable finished={isFinished}>
+            //   <button
+            //     type="button"
+            //     className="button is-primary is-go is-medium"
+            //     onClick={this.onClickJyVais}
+            //   >
+            //     <Price
+            //       value={get(offer, 'price') || get(offer, 'displayPrice')}
+            //       free="——"
+            //       className={managingOfferer ? 'strike' : ''}
+            //     />
+            //     {"J'y vais!"}
+            //   </button>
+            // </Finishable>
           )}
         </li>
       </ul>
@@ -129,6 +138,7 @@ VersoControl.propTypes = {
   currentRecommendation: PropTypes.object,
   dispatchRequestData: PropTypes.func.isRequired,
   dispatchShowModal: PropTypes.func.isRequired,
+  match: PropTypes.object.isRequired,
   offer: PropTypes.object,
 }
 

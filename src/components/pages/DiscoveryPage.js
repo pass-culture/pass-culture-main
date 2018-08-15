@@ -11,11 +11,10 @@ import { bindActionCreators } from 'redux'
 import { Route } from 'react-router-dom'
 
 import Deck from '../Deck'
-// import Booking from '../Booking'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
 import DeckLoader from '../DeckLoader'
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import BookingCard from '../BookingCard'
 import { getDiscoveryQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
 
@@ -129,23 +128,21 @@ class DiscoveryPage extends React.PureComponent {
         handleDataRequest={this.handleDataRequest}
         backButton={backButton ? { className: 'discovery' } : null}
       >
-        <Route
-          key="route-discovery-deck"
-          path="/decouverte/:offerId/:mediationId?"
-          component={Deck}
-        />
-        <Route
-          key="route-discovery-deck-booking"
-          path="/decouverte/:offerId/:mediationId?/:view(booking|verso)"
-          render={() => {
-            // const { view } = match.params
-            // const Component = BookingCard
-            // if (view === 'verso') Component = Verso;
-            // return <Component />
-            console.log('render booking or verso component')
-            return <div />
-          }}
-        />
+        {!isloading && (
+          // do not mount components if its loading
+          <React.Fragment>
+            <Route
+              key="route-discovery-deck"
+              path="/decouverte/:offerId/:mediationId?"
+              render={route => <Deck {...route} />}
+            />
+            <Route
+              key="route-discovery-booking"
+              path="/decouverte/:offerId/:mediationId?/:view(booking|verso)"
+              render={route => <BookingCard {...route} />}
+            />
+          </React.Fragment>
+        )}
         <DeckLoader
           isempty={isempty}
           haserror={haserror}
@@ -157,7 +154,6 @@ class DiscoveryPage extends React.PureComponent {
 }
 
 DiscoveryPage.defaultProps = {
-  currentRecommendation: null,
   recommendations: null,
 }
 
@@ -168,17 +164,8 @@ DiscoveryPage.propTypes = {
   match: PropTypes.object.isRequired,
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const { mediationId, offerId } = ownProps.match.params
-  const currentRecommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
-  return {
-    backButton: ownProps.location.search.indexOf('to=verso') > -1,
-    currentRecommendation,
-  }
-}
+const mapStateToProps = (state, ownProps) => ({
+  backButton: ownProps.location.search.indexOf('to=verso') > -1,
+})
 
 export default connect(mapStateToProps)(DiscoveryPage)
