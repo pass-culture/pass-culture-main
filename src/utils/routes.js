@@ -33,8 +33,8 @@ const routes = [
   },
   {
     component: DiscoveryPage,
-    exact: false,
-    path: '/decouverte/:offerId?/:mediationId?',
+    // il s'agit de l'URL optimale qui peut être partagée
+    path: '/decouverte/:offerId?/:mediationId?/:view(booking|verso)?',
     title: 'Les offres',
   },
   {

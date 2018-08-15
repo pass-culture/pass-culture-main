@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import get from 'lodash.get'
 import {
   closeLoading,
   requestData,
@@ -8,10 +7,11 @@ import {
 } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
-import { Route, Switch } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
+import { Route } from 'react-router-dom'
 
 import Deck from '../Deck'
+// import Booking from '../Booking'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
 import DeckLoader from '../DeckLoader'
@@ -28,7 +28,7 @@ class DiscoveryPage extends React.PureComponent {
   constructor(props) {
     super(props)
     const { dispatch } = props
-    this.state = { isempty: false, isloading: true }
+    this.state = { haserror: false, isempty: false, isloading: true }
     const actions = { closeLoading, requestData, showLoading }
     this.actions = bindActionCreators(actions, dispatch)
   }
@@ -41,41 +41,40 @@ class DiscoveryPage extends React.PureComponent {
     Logger.log('DiscoveryPage ---> componentWillUnmount')
   }
 
+  handleRequestFail = () => {
+    // ERREUR DE CHARGEMENT
+    this.setState({ haserror: true, isloading: true })
+  }
+
   handleRequestSuccess = (state, action) => {
     const { history, match } = this.props
-    const { offerId } = match.params
-    const len = get(action, 'data.length')
+    const { data } = action
+    const { offerId, mediationId } = match.params
+    const len = data.length
     const isempty = !(len && len > 0)
     this.setState({ isempty, isloading: false })
-    if (isempty || offerId) return
-    // si aucune carte n'est chargée
-    // on affiche le tuto
-    // ou la premiere carte dans le paylod
-    const firstOfferId = get(action, 'data.0.offerId') || 'tuto'
-    if (!firstOfferId) {
-      Logger.warn('first recommendation has no offer id, weird...')
-    }
-    const firstMediationId = get(action, 'data.0.mediationId') || ''
-    // FIXME -> appeller une action pour le changement de page
-    // qui s'occupera d'enregistrer la derniere carte decouverte vue
+    // NOTE -> on recharge pas la page
+    // si l'URL contient déjà une offer et une mediation
+    // car il s'agit alors d'une URL partagée
+    const shouldNotReloadPage = isempty || (offerId && mediationId)
+    if (shouldNotReloadPage) return
+    const [firstOffer] = action.data
+    // NOTE -> si la premiere carte n'a pas d'offerid
+    // alors il s'agit d'une carte tuto
+    const firstOfferId = (firstOffer && firstOffer.offerId) || 'tuto'
+    const firstMediationId = (firstOffer && firstOffer.mediationId) || ''
     history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
   }
 
   handleDataRequest = () => {
-    // se recharge apres chaque changement de page d'application
-    // c'est le comportement normal attendu
-    // puisqu'on ne stocke nulle part la page en cours
     const { match } = this.props
-    // si les recommendations ont déjà été chargées
-    // on ne relance pas de requêtes
     this.setState({ isloading: true })
-    // si il existe quelque chose dans l'URL
+    // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
     const query = getDiscoveryQueryParams(match)
-    console.log('match', match)
-    console.log('query', query)
     const serviceuri = `recommendations?${query}`
     this.actions.requestData('PUT', serviceuri, {
+      handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
       normalizer: recommendationNormalizer,
     })
@@ -121,23 +120,37 @@ class DiscoveryPage extends React.PureComponent {
 
   render() {
     const { backButton } = this.props
-    const { isempty, isloading } = this.state
+    const { isempty, isloading, haserror } = this.state
     return (
       <Main
         noPadding
         name="discovery"
-        handleDataRequest={this.handleDataRequest}
         footer={renderPageFooter}
+        handleDataRequest={this.handleDataRequest}
         backButton={backButton ? { className: 'discovery' } : null}
       >
-        <Switch>
-          <Route
-            key="route-discovery-deck"
-            path="/decouverte/:offerId/:mediationId?"
-            component={Deck}
-          />
-        </Switch>
-        <DeckLoader isempty={isempty} isloading={isloading} />
+        <Route
+          key="route-discovery-deck"
+          path="/decouverte/:offerId/:mediationId?"
+          component={Deck}
+        />
+        <Route
+          key="route-discovery-deck-booking"
+          path="/decouverte/:offerId/:mediationId?/:view(booking|verso)"
+          render={() => {
+            // const { view } = match.params
+            // const Component = BookingCard
+            // if (view === 'verso') Component = Verso;
+            // return <Component />
+            console.log('render booking or verso component')
+            return <div />
+          }}
+        />
+        <DeckLoader
+          isempty={isempty}
+          haserror={haserror}
+          isloading={isloading}
+        />
       </Main>
     )
   }
