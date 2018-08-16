@@ -6,6 +6,7 @@ import {
   Logger,
 } from 'pass-culture-shared'
 import React from 'react'
+import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Route } from 'react-router-dom'
@@ -47,9 +48,8 @@ class DiscoveryPage extends React.PureComponent {
 
   handleRequestSuccess = (state, action) => {
     const { history, match } = this.props
-    const { data } = action
     const { offerId, mediationId } = match.params
-    const len = data.length
+    const len = get(action, 'data.length')
     const isempty = !(len && len > 0)
     this.setState({ isempty, isloading: false })
     // NOTE -> on recharge pas la page
@@ -57,7 +57,7 @@ class DiscoveryPage extends React.PureComponent {
     // car il s'agit alors d'une URL partagée
     const shouldNotReloadPage = isempty || (offerId && mediationId)
     if (shouldNotReloadPage) return
-    const [firstOffer] = action.data
+    const firstOffer = get(action, 'data[0]') || {}
     // NOTE -> si la premiere carte n'a pas d'offerid
     // alors il s'agit d'une carte tuto
     const firstOfferId = (firstOffer && firstOffer.offerId) || 'tuto'

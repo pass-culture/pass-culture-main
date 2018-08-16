@@ -1,3 +1,37 @@
+#booking-card {
+  z-index: $zindex-booking-card;
+  color: #000000;
+  background: #FFFFFF;
+}
+
+#booking-card header {
+  color: #FFFFFF;
+  background: #261801;
+  padding: 36px 12px;
+  padding-top: 72px;
+
+  .title {
+    font-size: 40px;
+  }
+
+  .subtitle {
+    font-size: 22px;
+  }
+}
+
+#booking-card .footer {
+  // <----- FIXME
+  // .page.with-footer footer
+  // le flow-direction est defini par la classe css
+  // et donc on ne peut pas donner comme tag <footer>
+  height: 3.5rem;
+}
+
+#booking-card .main {
+  padding: 36px 12px;
+}
+
+/*
 .booking {
   margin: 1rem;
   text-align: center;
@@ -102,3 +136,4 @@
     }
   }
 }
+*/
