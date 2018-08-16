@@ -1,7 +1,7 @@
 import pytest
 
 from domain.bookings import check_expenses_limits
-from domain.expenses import MAX_SUBVENTION_PHYSICAL, MAX_SUBVENTION_DIGITAL
+from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
 from models import Booking, ApiErrors, Stock, Thing, Offer, Event
 
 
@@ -9,8 +9,8 @@ from models import Booking, ApiErrors, Stock, Thing, Offer, Event
 def test_check_expenses_limits_raises_an_error_when_physical_limit_is_reached_for_things():
     # given
     expenses = {
-        'physical': {'max': MAX_SUBVENTION_PHYSICAL, 'actual': 90},
-        'digital': {'max': MAX_SUBVENTION_DIGITAL, 'actual': 190}
+        'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 90},
+        'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
     }
     booking = create_booking_for_thing(url=None, amount=9, quantity=2)
     stock = booking.stock
@@ -21,15 +21,15 @@ def test_check_expenses_limits_raises_an_error_when_physical_limit_is_reached_fo
 
     # then
     assert api_errors.value.errors['global'] == ['La limite de %s € pour les biens culturels ne vous permet pas ' \
-                                                 'de réserver' % MAX_SUBVENTION_PHYSICAL]
+                                                 'de réserver' % SUBVENTION_PHYSICAL_THINGS]
 
 
 @pytest.mark.standalone
 def test_check_expenses_limits_raises_an_error_when_digital_limit_is_reached_for_things():
     # given
     expenses = {
-        'physical': {'max': MAX_SUBVENTION_PHYSICAL, 'actual': 90},
-        'digital': {'max': MAX_SUBVENTION_DIGITAL, 'actual': 190}
+        'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 90},
+        'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
     }
     booking = create_booking_for_thing(url='http://truc', amount=9, quantity=2)
     stock = booking.stock
@@ -40,15 +40,15 @@ def test_check_expenses_limits_raises_an_error_when_digital_limit_is_reached_for
 
     # then
     assert api_errors.value.errors['global'] == ['La limite de %s € pour les offres numériques ne vous permet pas ' \
-                                                 'de réserver' % MAX_SUBVENTION_DIGITAL]
+                                                 'de réserver' % SUBVENTION_DIGITAL_THINGS]
 
 
 @pytest.mark.standalone
 def test_check_expenses_limits_does_not_raise_an_error_when_booking_for_an_event():
     # given
     expenses = {
-        'physical': {'max': MAX_SUBVENTION_PHYSICAL, 'actual': 90},
-        'digital': {'max': MAX_SUBVENTION_DIGITAL, 'actual': 190}
+        'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 90},
+        'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
     }
     booking = create_booking_for_event(amount=9, quantity=2)
     stock = booking.stock

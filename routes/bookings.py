@@ -68,8 +68,9 @@ def create_booking():
         'recommendationId': recommendation_id if recommendation_id else None
     })
 
+    expenses = get_expenses(current_user)
+
     try:
-        expenses = get_expenses(current_user)
         check_expenses_limits(expenses, new_booking, stock)
     except ApiErrors as api_errors:
         return jsonify(api_errors.errors), 400

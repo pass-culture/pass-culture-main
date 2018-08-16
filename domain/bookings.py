@@ -25,21 +25,29 @@ def check_existing_stock(stock):
 
 
 def check_can_book_free_offer(stock, user):
-    if (user.canBookFreeOffers is False) and (stock.price == 0):
+    if not user.canBookFreeOffers and stock.price == 0:
         api_errors = ApiErrors()
         api_errors.addError('cannotBookFreeOffers', 'L\'utilisateur n\'a pas le droit de réserver d\'offres gratuites')
         raise api_errors
 
 
 def check_offer_is_active(stock, offerer):
-    if not stock.isActive or not offerer.isActive or (stock.eventOccurrence and (not stock.eventOccurrence.isActive)):
+    inactive_stock = not stock.isActive
+    inactive_offerer = not offerer.isActive
+    inactive_event_occurrence = stock.eventOccurrence and (not stock.eventOccurrence.isActive)
+
+    if inactive_stock or inactive_offerer or inactive_event_occurrence:
         api_errors = ApiErrors()
         api_errors.addError('stockId', "Cette offre a été retirée. Elle n'est plus valable.")
         raise api_errors
 
 
 def check_stock_booking_limit_date(stock):
-    if stock.bookingLimitDatetime is not None and stock.bookingLimitDatetime < datetime.utcnow():
+    has_booking_limit_date = stock.bookingLimitDatetime is not None
+    is_limit_date_past = stock.bookingLimitDatetime < datetime.utcnow()
+    stock_has_expired = has_booking_limit_date and is_limit_date_past
+
+    if stock_has_expired:
         api_errors = ApiErrors()
         api_errors.addError('global', 'La date limite de réservation de cette offre est dépassée')
         raise api_errors
@@ -56,8 +64,8 @@ def check_expenses_limits(expenses, booking, stock):
 
 
 def _check_physical_expense_limit(booking, expenses):
-    new_actual_amount = expenses['physical']['actual'] + booking.amount * booking.quantity
-    if new_actual_amount > expenses['physical']['max']:
+    new_expenses = expenses['physical']['actual'] + booking.amount * booking.quantity
+    if new_expenses > expenses['physical']['max']:
         api_errors = ApiErrors()
         api_errors.addError('global', 'La limite de %s € pour les biens culturels ne vous permet pas ' \
                                       'de réserver' % expenses['physical']['max'])
@@ -65,8 +73,8 @@ def _check_physical_expense_limit(booking, expenses):
 
 
 def _check_digital_expense_limit(booking, expenses):
-    new_actual_amount = expenses['digital']['actual'] + booking.amount * booking.quantity
-    if new_actual_amount > expenses['digital']['max']:
+    new_expenses = expenses['digital']['actual'] + booking.amount * booking.quantity
+    if new_expenses > expenses['digital']['max']:
         api_errors = ApiErrors()
         api_errors.addError('global', 'La limite de %s € pour les offres numériques ne vous permet pas ' \
                                       'de réserver' % expenses['digital']['max'])
