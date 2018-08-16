@@ -344,6 +344,30 @@ def create_recommendation(offer, user):
     return recommendation
 
 
+def create_booking_for_thing(url=None, amount=50, quantity=1):
+    thing = Thing(from_dict={'url': url})
+    offer = Offer()
+    stock = Stock()
+    booking = Booking(from_dict={'amount': amount})
+    offer.thing = thing
+    stock.offer = offer
+    booking.stock = stock
+    booking.quantity = quantity
+    return booking
+
+
+def create_booking_for_event(amount=50, quantity=1):
+    event = Event()
+    offer = Offer()
+    stock = Stock()
+    booking = Booking(from_dict={'amount': amount})
+    offer.event = event
+    stock.offer = offer
+    booking.stock = stock
+    booking.quantity = quantity
+    return booking
+
+
 def create_event_occurrence(offer, beginning_datetime, end_datetime):
     event_occurrence = EventOccurrence()
     event_occurrence.offer = offer
