@@ -69,10 +69,13 @@ def export_table(model_name):
 
 @app.route('/export/users_per_department', methods=['GET'])
 def get_users_per_department():
+    _check_token()
+
     result = db.session.query(
         User.departementCode,
         func.count(User.id)) \
         .group_by(User.departementCode) \
+        .order_by(User.departementCode) \
         .all()
     file_name = 'export_%s_users_per_department.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['departement_code', 'nb_users']
@@ -97,13 +100,13 @@ def _check_token():
     if EXPORT_TOKEN is None or EXPORT_TOKEN == '':
         raise ValueError("Missing environment variable EXPORT_TOKEN")
     token = request.args.get('token')
-    ae = ApiErrors()
+    api_errors = ApiErrors()
     if token is None:
-        ae.addError('token', 'Vous devez préciser un jeton dans l''adresse (token=XXX)')
+        api_errors.addError('token', 'Vous devez préciser un jeton dans l''adresse (token=XXX)')
     if not token == EXPORT_TOKEN:
-        ae.addError('token', 'Le jeton est invalide')
-    if ae.errors:
-        raise ae
+        api_errors.addError('token', 'Le jeton est invalide')
+    if api_errors.errors:
+        raise api_errors
 
 
 def _is_exportable(model_name):
