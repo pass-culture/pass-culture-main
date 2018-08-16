@@ -9,11 +9,22 @@ def find_all_by_user_id(user_id):
 
 
 def compute_total_booking_value_of_offerer(offerer_id):
-    return db.session.query(func.sum(Booking.amount * Booking.quantity)) \
-        .join(Stock) \
-        .join(EventOccurrence) \
-        .join(Offer) \
-        .join(Venue) \
-        .join(Offerer) \
-        .filter_by(id=offerer_id)\
+    query_event = db.session.query(func.sum(Booking.amount * Booking.quantity))\
+        .join(Booking.stock)\
+        .join(Stock.eventOccurrence)\
+        .join(EventOccurrence.offer)\
+        .join(Offer.venue)\
+        .join(Venue.managingOfferer)\
+        .filter(Offerer.id == offerer_id)\
         .first()
+
+    query_thing = db.session\
+        .query(func.sum(Booking.amount * Booking.quantity))\
+        .join(Booking.stock)\
+        .join(Stock.offer)\
+        .join(Offer.venue)\
+        .join(Venue.managingOfferer)\
+        .filter(Offerer.id == offerer_id)\
+        .first()
+
+    return query_event[0] + query_thing[0]
