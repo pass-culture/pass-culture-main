@@ -55,7 +55,7 @@ def test_get_users_per_department_returns_the_user_count_by_department_code_as_c
     create_user(email='user1@test.com', departement_code='93').save()
 
     # when
-    response = requests.get(API_URL + '/export/users_per_department?token=abc')
+    response = requests.get(API_URL + '/export/users_per_department?token=azerty123')
 
     # then
     assert response.status_code == 200
