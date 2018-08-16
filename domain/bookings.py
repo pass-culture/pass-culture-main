@@ -43,9 +43,7 @@ def check_offer_is_active(stock, offerer):
 
 
 def check_stock_booking_limit_date(stock):
-    has_booking_limit_date = stock.bookingLimitDatetime is not None
-    is_limit_date_past = stock.bookingLimitDatetime < datetime.utcnow()
-    stock_has_expired = has_booking_limit_date and is_limit_date_past
+    stock_has_expired = stock.bookingLimitDatetime is not None and stock.bookingLimitDatetime < datetime.utcnow()
 
     if stock_has_expired:
         api_errors = ApiErrors()
