@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import User, Offerer, Recommendation, Stock, PcObject, Deposit, Venue
+from models import Offerer, PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_offer, \
     create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
-    create_recommendation, create_user
+    create_recommendation, create_user, create_booking
 
 
 @clean_database
@@ -23,14 +23,15 @@ def test_create_booking_should_not_work_past_limit_date(app):
     expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
     PcObject.check_and_save(expired_stock)
 
-    user = create_user('test name', '93', 'test@mail.com', password='psswd123')
+    user = create_user(email='test@mail.com', password='psswd123')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(thing_offer, user)
 
     booking_json = {
         'stockId': humanize(expired_stock.id),
-        'recommendationId': humanize(recommendation.id)
+        'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
 
     r_create = req_with_auth('test@mail.com', password='psswd123').post(API_URL + '/bookings', json=booking_json)
@@ -50,7 +51,7 @@ def test_create_booking_should_work_before_limit_date(app):
     ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     PcObject.check_and_save(ok_stock)
 
-    user = create_user('test name', '93', 'test@mail.com', password='psswd123')
+    user = create_user(email='test@mail.com', password='psswd123')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(offer=ok_stock.offer, user=user)
@@ -58,7 +59,8 @@ def test_create_booking_should_work_before_limit_date(app):
 
     booking_json = {
         'stockId': humanize(ok_stock.id),
-        'recommendationId': humanize(recommendation.id)
+        'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
 
     r_create = req_with_auth(email='test@mail.com', password='psswd123').post(API_URL + '/bookings', json=booking_json)
@@ -79,7 +81,7 @@ def test_create_booking_should_not_work_if_too_many_bookings(app):
     too_many_bookings_stock.available = 0
     PcObject.check_and_save(too_many_bookings_stock)
 
-    user = create_user('Toto', '93', 'test@email.com', password='mdppsswd')
+    user = create_user(email='test@email.com', password='mdppsswd')
     PcObject.check_and_save(user)
 
     recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
@@ -87,7 +89,8 @@ def test_create_booking_should_not_work_if_too_many_bookings(app):
 
     booking_json = {
         'stockId': humanize(too_many_bookings_stock.id),
-        'recommendationId': humanize(recommendation.id)
+        'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
 
     r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
@@ -105,7 +108,7 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city', '93')
     thing_offer = create_thing_offer(venue=None)
 
-    user = create_user('Toto', '93', 'test@email.com', password='mdppsswd')
+    user = create_user(email='test@email.com', password='mdppsswd')
     PcObject.check_and_save(user)
 
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50)
@@ -120,9 +123,9 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     booking_json = {
         'stockId': humanize(stock.id),
         'recommendationId': humanize(recommendation.id),
+        'quantity': 1
     }
     r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
-    print(r_create.json())
     assert r_create.status_code == 201
 
 
@@ -130,7 +133,7 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
 @pytest.mark.standalone
 def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
     # Given
-    user = create_user('Test', '93', 'cannotBook_freeOffers@email.com', can_book_free_offers=False,
+    user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False,
                        password='testpsswd')
     PcObject.check_and_save(user)
 
@@ -158,11 +161,12 @@ def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOff
     booking_json = {
         'stockId': humanize(stock.id),
         'recommendationId': humanize(recommendation.id),
-        "userId": humanize(user.id)
+        'quantity': 1
     }
 
     # When
-    r_create = req_with_auth('cannotBook_freeOffers@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('cannotBook_freeOffers@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                  json=booking_json)
 
     # Then
     assert r_create.status_code == 400
@@ -173,34 +177,25 @@ def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOff
 @pytest.mark.standalone
 def test_create_booking_should_not_work_if_not_enough_credit(app):
     # Given
-    user = create_user('Test', '93', 'insufficient_funds_test@email.com', password='testpsswd')
-    PcObject.check_and_save(user)
-
+    user = create_user(email='insufficient_funds_test@email.com', password='testpsswd')
     offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
                              name='Test offerer')
-    PcObject.check_and_save(offerer)
-
-    thing_offer = create_thing_offer(venue=None)
-    PcObject.check_and_save(thing_offer)
-
     venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
                          address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
-    PcObject.check_and_save(venue)
-
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=200)
-    PcObject.check_and_save(stock)
-
-    recommendation = create_recommendation(thing_offer, user)
-    PcObject.check_and_save(recommendation)
-
+    stock = create_stock_with_event_offer(offerer, venue, price=200)
+    event_offer = stock.resolvedOffer
+    recommendation = create_recommendation(event_offer, user)
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
     deposit = create_deposit(user, deposit_date, amount=0)
+
+    PcObject.check_and_save(recommendation)
+    PcObject.check_and_save(stock)
     PcObject.check_and_save(deposit)
 
     booking_json = {
         "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        "quantity": 1
     }
 
     # When
@@ -215,8 +210,8 @@ def test_create_booking_should_not_work_if_not_enough_credit(app):
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(app):
-    #Given
-    user = create_user('Test', '93', 'sufficient_funds@email.com', password='testpsswd')
+    # Given
+    user = create_user(email='sufficient_funds@email.com', password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -242,7 +237,7 @@ def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(
     booking_json = {
         "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        "quantity": 1
     }
 
     # When
@@ -258,7 +253,7 @@ def test_create_booking_should_work_if_enough_credit_when_userCanBookFreeOffers(
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(app):
-    user = create_user('Test', '93', 'can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
+    user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -284,14 +279,101 @@ def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_
     booking_json = {
         "stockId": humanize(stock.id),
         "recommendationId": humanize(recommendation.id),
-        "userId": humanize(user.id),
+        "quantity": 1
     }
 
     # When
-    r_create = req_with_auth('can_book_paid_offers@email.com', 'testpsswd').post(API_URL + '/bookings', json=booking_json)
+    r_create = req_with_auth('can_book_paid_offers@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                 json=booking_json)
     r_create_json = r_create.json()
 
     # Then
     assert r_create.status_code == 201
     assert r_create_json['amount'] == 10.0
     assert r_create_json['quantity'] == 1
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limit_physical_thing_reached(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    PcObject.check_and_save(user)
+
+    offerer = create_offerer()
+    PcObject.check_and_save(offerer)
+
+    venue = create_venue(offerer)
+    PcObject.check_and_save(venue)
+
+    thing_offer = create_thing_offer(venue)
+    PcObject.check_and_save(thing_offer)
+
+    stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+    stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=9)
+    PcObject.check_and_save(stock_1, stock_2)
+
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(user, deposit_date, amount=500, source='public')
+    PcObject.check_and_save(deposit)
+
+    booking_1 = create_booking(user, stock_1, recommendation=None)
+    PcObject.check_and_save(booking_1)
+
+    recommendation = create_recommendation(thing_offer, user)
+    recommendation.save()
+
+    booking_json = {
+        "stockId": humanize(stock_2.id),
+        "recommendationId": humanize(recommendation.id),
+        "quantity": 2
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['global'] == ['La limite de 100 € pour les biens culturels ' \
+                                       'ne vous permet pas de réserver']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_no_stock_id_is_given(app):
+    # Given
+    create_user(email='test@email.com', password='testpsswd').save()
+    booking_json = {
+        'stockId': None,
+        'recommendationId': 'AFQA',
+        'quantity': 2
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['stockId'] == ['Vous devez préciser un identifiant d\'offre']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_no_quantity_is_given(app):
+    # Given
+    create_user(email='test@email.com', password='testpsswd').save()
+    booking_json = {
+        'stockId': 'AE',
+        'recommendationId': 'AFQA',
+        'quantity': None
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']

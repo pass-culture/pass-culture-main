@@ -1,18 +1,15 @@
 """ mailing """
 
-from connectors import api_entreprises
-
-from models.offerer import Offerer
-from models.pc_object import PcObject
-from models.user_offerer import UserOfferer
-
 import os
 from datetime import datetime
 from pprint import pformat
 
-import requests
 from flask import current_app as app, render_template
 
+from connectors import api_entreprises
+from models.offerer import Offerer
+from models.pc_object import PcObject
+from models.user_offerer import UserOfferer
 from utils.config import API_URL, ENV, IS_DEV, IS_STAGING
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
@@ -24,6 +21,7 @@ if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
 
 if MAILJET_API_SECRET is None or MAILJET_API_SECRET == '':
     raise ValueError("Missing environment variable MAILJET_API_SECRET")
+
 
 class MailServiceException(Exception):
     pass

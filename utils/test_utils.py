@@ -16,6 +16,7 @@ from models.offerer import Offerer
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
+from utils.token import random_token
 
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
@@ -182,7 +183,7 @@ def create_booking(user, stock, recommendation, is_cancellation=False, quantity=
     booking = Booking()
     booking.stock = stock
     booking.user = user
-    booking.token = '56789'
+    booking.token = random_token()
     booking.amount = stock.price
     booking.quantity = quantity
     if recommendation:

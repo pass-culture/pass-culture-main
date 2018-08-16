@@ -1,5 +1,6 @@
 """ booking model """
 from datetime import datetime
+
 from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
@@ -62,7 +63,7 @@ class Booking(PcObject,
                         backref='userBookings')
 
     amount = Column(Numeric(10, 2),
-                   nullable=False)
+                    nullable=False)
 
     @property
     def eventOccurrenceBeginningDatetime(self):
@@ -110,5 +111,3 @@ Booking.trig_ddl = """
 event.listen(Booking.__table__,
              'after_create',
              DDL(Booking.trig_ddl))
-
-
