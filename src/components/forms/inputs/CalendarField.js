@@ -17,15 +17,6 @@ export class CalendarField extends React.PureComponent {
     this.container = ref
   }
 
-  parseAvailableDate = date => {
-    if (!date) return false
-    const { availables } = this.props
-    const format = 'YYYYMMDD'
-    const formatted = date.format(format)
-    const contains = availables.includes(formatted)
-    return !contains
-  }
-
   render() {
     const {
       help,
@@ -33,7 +24,7 @@ export class CalendarField extends React.PureComponent {
       label,
       format,
       disabled,
-      availables,
+      provider,
       placeholder,
       ...rest
     } = this.props
@@ -51,12 +42,15 @@ export class CalendarField extends React.PureComponent {
                 format={format}
                 locale={locale}
                 disabled={disabled}
-                onChange={input.onChange}
+                disabledDate={() => false}
+                // defaultValue={input.value.date}
                 getCalendarContainer={() => this.container}
-                disabledDate={availables && this.parseAvailableDate}
                 placeholder={placeholder || moment().format(format)}
                 className="calendarpicker-field-input"
                 dropdownClassName="calendarpicker-field-popup"
+                onChange={(date, dateString) => {
+                  input.onChange({ date, dateString })
+                }}
               />
             </React.Fragment>
           )}
@@ -71,17 +65,16 @@ export class CalendarField extends React.PureComponent {
 }
 
 CalendarField.defaultProps = {
-  availables: null,
   defaultValue: '',
   disabled: false,
   format: 'DD MMMM YYYY',
   help: null,
   label: null,
   placeholder: null,
+  provider: null,
 }
 
 CalendarField.propTypes = {
-  availables: PropTypes.array,
   defaultValue: PropTypes.string,
   disabled: PropTypes.bool,
   format: PropTypes.string,
@@ -89,6 +82,7 @@ CalendarField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
+  provider: PropTypes.array,
 }
 
 export default CalendarField

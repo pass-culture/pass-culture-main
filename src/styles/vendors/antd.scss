@@ -45,7 +45,18 @@ span[class*='-picker-icon'] {
   }
 }
 
+// icone des select
+.ant-select-arrow {
+  top: 15px;
+
+  &,
+  &::after {
+    color: $primary;
+  }
+}
+
 .ant-input,
+.ant-select-selection,
 .ant-time-picker-input {
   height: 44px;
   font-size: 20px;
@@ -157,17 +168,26 @@ span[class*='-picker-icon'] {
 
           .ant-calendar-next-month-btn {
             right: 12px;
+
+            &::after {
+              content: '\E61F';
+            }
           }
 
           .ant-calendar-prev-month-btn {
             left: 12px;
+
+            &::after {
+              content: '\E620';
+            }
           }
 
           .ant-calendar-next-month-btn,
           .ant-calendar-prev-month-btn {
             color: #BFBFBF;
-            font-size: 40px;
+            font-size: 20px;
             font-weight: normal;
+            font-family: 'anticon', sans-serif !important;
 
             &:hover {
               color: $primary;

@@ -26,11 +26,23 @@
   // et donc on ne peut pas donner comme tag <footer>
   height: 3.5rem;
   max-height: 3.5rem;
+  min-height: 3.5rem;
+  background-color: $primary;
+
+  button {
+    border: 0;
+    width: 35%;
+    color: $white;
+    font-size: 20px;
+    background: transparent;
+  }
+
+  button + button {
+    border-left: 1px dotted $white;
+  }
 }
 
 #booking-card .main {
-  padding: 36px 12px;
-
   .calendarpicker-field-input {
     width: 260px;
 
@@ -42,23 +54,21 @@
     }
   }
 
+  .views-container {
+    padding: 36px 12px;
+  }
+
   .calendarpicker-field-popup {
     width: 350px;
     top: 0 !important;
     left: -45px !important;
   }
 
-  .timepicker-field-input {
+  .select-field {
     width: 212px;
 
-    input {
-      cursor: pointer;
-      text-align: center;
-      padding-right: 44px;
+    .ant-select-arrow::before {
+      content: '\E641';
     }
-  }
-
-  .timepicker-field-popup {
-    width: 212px;
   }
 }
