@@ -72,6 +72,10 @@ class Booking(PcObject,
             return None
         return stock.eventOccurrence.beginningDatetime
 
+    @property
+    def value(self):
+        return self.amount * self.quantity
+
 
 Booking.trig_ddl = """
     CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT)

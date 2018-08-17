@@ -20,8 +20,8 @@ from utils.rest import ensure_current_user_has_rights, \
 def list_offerers():
     query = Offerer.query
     if not current_user.isAdmin:
-        query = query.join(UserOfferer)\
-                     .filter_by(user=current_user)
+        query = query.join(UserOfferer) \
+            .filter_by(user=current_user)
     return handle_rest_get_list(Offerer,
                                 query=query,
                                 include=OFFERER_INCLUDES)
@@ -33,6 +33,15 @@ def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
     offerer = load_or_404(Offerer, id)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
+
+
+@app.route('/offerers/<id>/bookings', methods=['GET'])
+@login_required
+def get_offerer_bookings(id):
+    # get bookings
+    # compute cumul
+    # zklnfklzenf
+    pass
 
 
 @app.route('/offerers', methods=['POST'])
@@ -55,8 +64,8 @@ def create_offerer():
 @login_or_api_key_required
 @expect_json_data
 def patch_offerer(offererId):
-    offerer = Offerer\
-                       .query.filter_by(id=dehumanize(offererId))
+    offerer = Offerer \
+        .query.filter_by(id=dehumanize(offererId))
     offerer.populateFromDict(request.json, skipped_keys=['validationToken'])
     PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200

@@ -1,5 +1,6 @@
 from decimal import Decimal
 from enum import Enum
+from itertools import accumulate
 
 MAX_REIMBURSEMENT_FOR_OFFERER_PER_YEAR = 23000
 
@@ -35,6 +36,15 @@ class ReimbursementRule(Enum):
     NO_REIMBURSEMENT_ABOVE_23_000_EUROS_BY_OFFERER = Reimbursement(
         description='Pas de remboursement au dessus du plafond de 23 000 € par offreur'
     )
+
+
+def compute_cumulative_booking_values(bookings):
+    booking_values = list(map(compute_booking_reimbursable_value, bookings))
+    return list(accumulate(booking_values))
+
+
+def compute_booking_reimbursable_value(booking):
+    return 0 if booking.stock.resolvedOffer.eventOrThing.isDigital else booking.value
 
 
 def find_all_booking_reimbursement(bookings, cumulative_booking_values):

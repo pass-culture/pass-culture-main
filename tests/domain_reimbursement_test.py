@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from domain.reimbursement import find_reimbursement_rule, ReimbursementRule, find_all_booking_reimbursement, \
-    BookingReimbursement
+    BookingReimbursement, compute_cumulative_booking_values
 from models import Offerer
 from utils.test_utils import create_booking_for_thing, create_booking_for_event
 
@@ -146,3 +146,18 @@ def test_find_all_booking_reimbursement_returns_no_reimbursement_above_23000_eur
         BookingReimbursement(booking2, ReimbursementRule.NO_REIMBURSEMENT_OF_DIGITAL_THINGS),
         BookingReimbursement(booking3, ReimbursementRule.NO_REIMBURSEMENT_ABOVE_23_000_EUROS_BY_OFFERER)
     ]
+
+
+@pytest.mark.standalone
+def test_compute_cumulative_booking_values_excludes_digital_thing_offers_from_the_accumulated_values():
+    # given
+    booking1 = create_booking_for_event(amount=50, quantity=1)
+    booking2 = create_booking_for_thing(url='http://', amount=40, quantity=3)
+    booking3 = create_booking_for_thing(amount=100, quantity=2)
+    bookings = [booking1, booking2, booking3]
+
+    # when
+    cumulative_values = compute_cumulative_booking_values(bookings)
+
+    # then
+    assert cumulative_values == [50, 50, 250]
