@@ -7,6 +7,7 @@ import { compose } from 'redux'
 
 import Price from './Price'
 import Finishable from './layout/Finishable'
+import { getPriceRangeFromStocks } from '../helpers'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
@@ -19,8 +20,7 @@ const DeckNavigation = ({
 }) => {
   const { distance, headerColor, isFinished, mediation, offer } =
     currentRecommendation || {}
-  const { stock } = offer || {}
-  const { price } = stock || {}
+  const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
   const { tutoIndex } = mediation || {}
   const color = headerColor || '#000'
   const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${color} 30%,${color} 100%)`
@@ -61,7 +61,7 @@ const DeckNavigation = ({
                   // Hard coded to prevent a weird bug to arise, should be eventually removed
                 }
               >
-                <Price value={price} />
+                <Price value={priceRange} />
                 <div className="separator">
                   {offer ? '\u00B7' : ' '}
                 </div>
