@@ -1,9 +1,11 @@
 """ stocks """
 from pprint import pformat
 from flask import current_app as app, jsonify, request
+from flask_login import current_user
 from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
+from models import Offerer, User
 from models.api_errors import ApiErrors
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -13,7 +15,6 @@ from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from routes.offerers import check_offerer_user
 from utils.human_ids import dehumanize
 from utils.rest import delete, \
     ensure_provider_can_update, \
@@ -31,6 +32,10 @@ search_models = [
     Event
 ]
 
+def check_offerer_user(query):
+    return query.filter(
+        Offerer.users.any(User.id == current_user.id)
+    ).first_or_404()
 
 def join_stocks(query):
     for search_model in search_models:
