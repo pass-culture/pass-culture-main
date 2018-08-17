@@ -17,6 +17,12 @@ class BookingReimbursement:
     def __repr__(self):
         return repr(self.booking) + repr(self.reimbursement)
 
+    def as_dict(self):
+        return {
+            'booking': self.booking._asdict(),
+            'reimbursement': self.reimbursement.as_dict()
+        }
+
 
 class Reimbursement:
     def __init__(self, is_active=True, rate=Decimal(0), description=''):
@@ -24,6 +30,11 @@ class Reimbursement:
         self.rate = rate
         self.description = description
 
+    def as_dict(self):
+        return {
+            'rate': self.rate,
+            'description': self.description
+        }
 
 class ReimbursementRule(Enum):
     NO_REIMBURSEMENT_OF_DIGITAL_THINGS = Reimbursement(
@@ -37,6 +48,11 @@ class ReimbursementRule(Enum):
         description='Pas de remboursement au dessus du plafond de 23 000 € par offreur'
     )
 
+    def as_dict(self):
+        return {
+            'name': self.name,
+            'rule': self.value.as_dict()
+        }
 
 def compute_cumulative_booking_values(bookings):
     booking_values = list(map(compute_booking_reimbursable_value, bookings))

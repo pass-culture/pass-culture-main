@@ -2,9 +2,11 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.reimbursement import compute_cumulative_booking_values, find_all_booking_reimbursement
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer, RightsType
+from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email
@@ -38,10 +40,11 @@ def get_offerer(id):
 @app.route('/offerers/<id>/bookings', methods=['GET'])
 @login_required
 def get_offerer_bookings(id):
-    # get bookings
-    # compute cumul
-    # zklnfklzenf
-    pass
+    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
+    bookings = find_all_by_offerer_sorted_by_date_modified_asc(dehumanize(id))
+    cumulative_values = compute_cumulative_booking_values(bookings)
+    bookings_reimbursements = find_all_booking_reimbursement(bookings, cumulative_values)
+    return jsonify(list(map(lambda b: b.as_dict(), bookings_reimbursements))[::-1]), 200
 
 
 @app.route('/offerers', methods=['POST'])
