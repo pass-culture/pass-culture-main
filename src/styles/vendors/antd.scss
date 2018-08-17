@@ -1,0 +1,229 @@
+@import '~antd/dist/antd.css';
+
+.ant-no-shadow {
+  box-shadow: none !important;
+}
+
+.ant-disable-click {
+  pointer-events: none !important;
+}
+
+.ant-removed-element {
+  width: 0 !important;
+  height: 0 !important;
+  font-size: 0 !important;
+  display: none !important;
+  line-height: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+}
+
+// tous les elements de la librairie antd
+[class*='ant-'],
+[class*='ant-'] label {
+  color: #000000;
+  font-size: 22px;
+  font-family: 'Barlow', arial, sans-serif;
+}
+
+/* ------- icons */
+// NOTE -> cible tous les elements dont une classe
+// se termine par ...
+i[class*='-picker-clear'],
+span[class*='-picker-icon'] {
+  top: 8px;
+  right: 20px;
+  width: 26px;
+  height: 26px;
+  margin-top: 0;
+
+  &,
+  &::after {
+    color: $primary;
+    font-size: 26px;
+    line-height: 26px;
+  }
+}
+
+.ant-input,
+.ant-time-picker-input {
+  height: 44px;
+  font-size: 20px;
+  padding: 0 24px;
+  border-width: 2px;
+  border-radius: 22px;
+
+  &,
+  &:hover,
+  &:focus {
+    border-color: #DAE1E3;
+  }
+}
+
+.ant-form-vertical.has-text-centered .ant-form-item-label {
+  text-align: center;
+}
+
+/* -----------------------------------
+
+ ANTD TimePicker
+
+*/
+.ant-time-picker-panel {
+  width: 100%;
+  overflow: hidden;
+  border: 2px solid;
+  top: 2px !important;
+  border-radius: 20px;
+  border-color: #DAE1E3;
+
+  .ant-time-picker-panel-input-wrap {
+    @extend .ant-removed-element;
+  }
+
+  .ant-time-picker-panel-inner {
+    @extend .ant-no-shadow;
+  }
+
+  .ant-time-picker-panel-combobox {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    .ant-time-picker-panel-select {
+      flex: 1;
+      width: 50%;
+      float: none;
+      overflow-y: scroll;
+      overflow-x: hidden;
+
+      &:hover {
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+
+      ul {
+        padding: 0;
+      }
+
+      ul,
+      ul li {
+        text-align: center;
+      }
+    }
+  }
+}
+
+/* -----------------------------------
+
+ ANTD DatePicker
+
+*/
+.ant-calendar-picker-container {
+  .ant-calendar {
+    @extend .ant-no-shadow;
+
+    width: 100%;
+
+    .ant-calendar-panel {
+      .ant-calendar-input-wrap {
+        @extend .ant-removed-element;
+      }
+
+      .ant-calendar-date-panel {
+        border: 2px solid;
+        border-radius: 20px;
+        border-color: #DAE1E3;
+
+        .ant-calendar-header {
+          height: 50px;
+          border-bottom: 0;
+          line-height: 45px;
+
+          .ant-calendar-my-select {
+            > a {
+              @extend .ant-disable-click;
+
+              font-size: 18px;
+              font-weight: normal;
+            }
+          }
+
+          .ant-calendar-next-year-btn,
+          .ant-calendar-prev-year-btn {
+            @extend .ant-removed-element;
+          }
+
+          .ant-calendar-next-month-btn {
+            right: 12px;
+          }
+
+          .ant-calendar-prev-month-btn {
+            left: 12px;
+          }
+
+          .ant-calendar-next-month-btn,
+          .ant-calendar-prev-month-btn {
+            color: #BFBFBF;
+            font-size: 40px;
+            font-weight: normal;
+
+            &:hover {
+              color: $primary;
+            }
+          }
+        }
+
+        .ant-calendar-body {
+          padding-top: 0;
+
+          .ant-calendar-table,
+          .ant-calendar-table tr {
+            width: 100%;
+            display: block;
+          }
+
+          .ant-calendar-table thead {
+            width: 100%;
+            display: block;
+            min-width: 100%;
+            border-top: 1px dotted $primary !important;
+            border-bottom: 1px dotted $primary !important;
+
+            tr {
+              display: flex;
+              flex-direction: row;
+              justify-content: space-around;
+            }
+
+            tr th > * {
+              font-size: 16px;
+            }
+          }
+
+          .ant-calendar-table tbody {
+            width: 100%;
+            display: block;
+            min-width: 100%;
+
+            tr {
+              display: flex;
+              flex-direction: row;
+              justify-content: space-around;
+            }
+
+            tr td {
+              text-align: center;
+              width: calc(100% / 7);
+            }
+
+            tr td > * {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

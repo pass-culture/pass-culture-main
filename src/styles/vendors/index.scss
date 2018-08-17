@@ -1,4 +1,3 @@
-@import '~antd/dist/antd.css';
 @import '~bulma/sass/utilities/_all';
 @import '~bulma/sass/base/_all';
 @import '~bulma/sass/elements/_all';
@@ -9,76 +8,4 @@
 
 // overrides
 @import './bulma-with-overrides.scss';
-
-// tous les elements de la librairie antd
-[class*='ant-'],
-[class*='ant-'] label {
-  color: #000000;
-  font-size: 22px;
-  font-family: 'Barlow', arial, sans-serif;
-}
-
-/* ------- icons */
-// NOTE -> cible tous les elements dont une classe
-// se termine par ...
-i[class*='-picker-clear'],
-span[class*='-picker-icon'] {
-  top: 8px;
-  right: 20px;
-  width: 26px;
-  height: 26px;
-  margin-top: 0;
-
-  &,
-  &::after {
-    color: $primary;
-    font-size: 26px;
-    line-height: 26px;
-  }
-}
-
-.ant-input,
-.ant-time-picker-input {
-  height: 44px;
-  font-size: 20px;
-  padding: 0 24px;
-  border-width: 2px;
-  border-radius: 22px;
-
-  &,
-  &:hover,
-  &:focus {
-    border-color: #DAE1E3;
-  }
-}
-
-.ant-form-vertical.has-text-centered .ant-form-item-label {
-  text-align: center;
-}
-
-/* ------- no-shadow */
-.ant-calendar,
-.ant-time-picker-panel-inner {
-  box-shadow: none;
-}
-
-/* ------- Calendar */
-
-/*
-.ant-calendar,
-.ant-calendar-picker {
-  font-size: 16px;
-}
-
-.ant-calendar-my-select {
-  font-size: 18px;
-}
-
-.ant-calendar-date,
-.ant-calendar-date:hover,
-.ant-calendar-selected-date .ant-calendar-date,
-.ant-calendar-selected-start-date .ant-calendar-date,
-.ant-calendar-selected-end-date .ant-calendar-date  {
-  border-radius: 50px;
-}
-*/
+@import './antd.scss';

@@ -15,7 +15,15 @@ export class TimeField extends React.PureComponent {
   }
 
   render() {
-    const { help, name, label, disabled, format, ...rest } = this.props
+    const {
+      help,
+      name,
+      label,
+      disabled,
+      format,
+      placeholder,
+      ...rest
+    } = this.props
     return (
       <Form.Item
         {...rest}
@@ -30,16 +38,17 @@ export class TimeField extends React.PureComponent {
               inputReadOnly
               hideDisabledOptions
               format={format}
+              minuteStep={15}
               onChange={input.onChange}
+              placeholder={placeholder}
               className="timepicker-field-input"
-              dropdownClassName="timepicker-field-popup"
               getPopupContainer={() => this.container}
             />
           )}
         />
         <div
           ref={this.setContainerRef}
-          className="timepicker-field-popup-container is-relative"
+          className="timepicker-field-popup is-relative"
         />
       </Form.Item>
     )
@@ -50,6 +59,7 @@ TimeField.defaultProps = {
   format: 'HH:mm',
   help: null,
   label: null,
+  placeholder: '',
 }
 TimeField.propTypes = {
   disabled: PropTypes.bool,
@@ -57,5 +67,6 @@ TimeField.propTypes = {
   help: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
 }
 export default TimeField

@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import { requestData } from 'pass-culture-shared'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
-import BookingForm from './booking/BookingForm'
+import BookingForm from './forms/BookingForm'
 import BookingUserUndefined from './booking/BookingUserUndefined'
 
 class BookingCard extends React.PureComponent {
@@ -92,7 +92,7 @@ class BookingCard extends React.PureComponent {
             className="flex-rows items-center has-text-centered"
           />
         </div>
-        <div className="footer flex-columns flex-0 items-center has-text-centered">
+        <div className="form-footer flex-columns flex-0 items-center has-text-centered">
           <button type="reset" onClick={this.cancelButtonClick}>
             <span>Annuler</span>
           </button>

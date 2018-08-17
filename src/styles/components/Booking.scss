@@ -19,121 +19,46 @@
   }
 }
 
-#booking-card .footer {
+#booking-card .form-footer {
   // <----- FIXME
   // .page.with-footer footer
   // le flow-direction est defini par la classe css
   // et donc on ne peut pas donner comme tag <footer>
   height: 3.5rem;
+  max-height: 3.5rem;
 }
 
 #booking-card .main {
   padding: 36px 12px;
-}
 
-/*
-.booking {
-  margin: 1rem;
-  text-align: center;
+  .calendarpicker-field-input {
+    width: 260px;
 
-  h6 {
-    font-weight: normal;
-    text-align: center;
-    font-size: 1.5em;
-    margin-bottom: 1rem;
-  }
-
-  .input-field {
-    position: relative;
-    margin: auto;
-    display: inline-block;
-    margin-bottom: 1rem;
-    .input {
-      margin: auto;
-      display: block;
-      border: thin solid $primary;
-      border-radius: 50px;
-      font-weight: 500;
-      background-color: transparent;
-      padding: 0 4em 0 1em;
-      width: auto;
-      height: 3em;
-    }
-
-    .input-icon {
-      position: absolute;
-      right: 20px;
-      top: 0;
-      bottom: 0;
-      margin: auto;
+    input {
+      cursor: pointer;
+      text-align: center;
+      padding-right: 44px;
+      pointer-events: none;
     }
   }
 
+  .calendarpicker-field-popup {
+    width: 350px;
+    top: 0 !important;
+    left: -45px !important;
+  }
 
-  // TODO: make a theme: https://github.com/airbnb/react-dates/#theming
-  .SingleDatePicker {
-    border-radius: 50px;
-    border: thin solid $primary;
-    .SingleDatePickerInput {
-      background: transparent;
-      .DateInput {
-        background: transparent;
-        .DateInput_input {
-          font-weight: normal;
-          background: transparent;
-          color: inherit;
-          padding-left: 1em;
-          &.DateInput_input__focused {
-            border-bottom: none;
-          }
-        }
-      }
+  .timepicker-field-input {
+    width: 212px;
+
+    input {
+      cursor: pointer;
+      text-align: center;
+      padding-right: 44px;
     }
   }
 
-
-  p {
-    text-align: center;
-    font-weight: 500;
-    font-size: 1.2em;
-    small {
-      font-weight: normal;
-    }
-  }
-  ul.bottom-bar {
-    background-color: $primary;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 0;
-    margin: 0;
-    padding: $footer-height-padding $page-padding;
-    padding-left: 4rem; // beta bandeau
-    height: $footer-height;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row-reverse;
-    li {
-      display: inline-block;
-      &.center {
-        margin: 0 auto;
-      }
-    }
-  }
-  .finished {
-    text-align: center;
-    big {
-      font-size: 3rem;
-    }
-    p {
-      margin-bottom: 1rem;
-    }
-    img {
-      margin-bottom: 1rem;
-    }
+  .timepicker-field-popup {
+    width: 212px;
   }
 }
-*/

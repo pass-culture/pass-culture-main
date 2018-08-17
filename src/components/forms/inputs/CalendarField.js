@@ -34,30 +34,31 @@ export class CalendarField extends React.PureComponent {
       format,
       disabled,
       availables,
+      placeholder,
       ...rest
     } = this.props
     return (
       <Form.Item
         {...rest}
-        // FIXME -> update de la prop label avec la classe bulma.label
-        // FIXME -> ajout de la prop help
         label={renderLabel(label, help)}
-        className={`calendarpicker-field ${rest.className || ''}`}
+        className="calendarpicker-field"
       >
         <Field
           name={name}
           render={({ input }) => (
-            <DatePicker
-              format={format}
-              locale={locale}
-              disabled={disabled}
-              onChange={input.onChange}
-              className="calendarpicker-field-input"
-              placeholder={moment().format(format)}
-              dropdownClassName="calendarpicker-field-popup"
-              getCalendarContainer={() => this.container}
-              disabledDate={availables && this.parseAvailableDate}
-            />
+            <React.Fragment>
+              <DatePicker
+                format={format}
+                locale={locale}
+                disabled={disabled}
+                onChange={input.onChange}
+                getCalendarContainer={() => this.container}
+                disabledDate={availables && this.parseAvailableDate}
+                placeholder={placeholder || moment().format(format)}
+                className="calendarpicker-field-input"
+                dropdownClassName="calendarpicker-field-popup"
+              />
+            </React.Fragment>
           )}
         />
         <div
@@ -76,6 +77,7 @@ CalendarField.defaultProps = {
   format: 'DD MMMM YYYY',
   help: null,
   label: null,
+  placeholder: null,
 }
 
 CalendarField.propTypes = {
@@ -86,6 +88,7 @@ CalendarField.propTypes = {
   help: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
 }
 
 export default CalendarField

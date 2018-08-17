@@ -41,6 +41,7 @@ const withForm = (WrappedComponent, validator, calculator) => {
           initialValues={initialValues || {}}
           render={({ form, handleSubmit }) => (
             <React.Fragment>
+              <FormSpy subscription={spySubscriptions} onChange={onMutation} />
               <Form
                 id={id}
                 layout="vertical"
@@ -57,7 +58,6 @@ const withForm = (WrappedComponent, validator, calculator) => {
                   {children}
                 </WrappedComponent>
               </Form>
-              <FormSpy subscription={spySubscriptions} onChange={onMutation} />
             </React.Fragment>
           )}
         />

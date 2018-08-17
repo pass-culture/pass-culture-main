@@ -3,8 +3,8 @@ import moment from 'moment'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 
-import withForm from '../forms/withForm'
-import { TimeField, CalendarField } from '../forms/fields'
+import withForm from './withForm'
+import { TimeField, CalendarField } from './inputs'
 
 const parseAvailableDates = item => {
   const format = 'YYYYMMDD'
@@ -25,10 +25,16 @@ class BookingFormComponent extends React.PureComponent {
       <React.Fragment>
         <CalendarField
           name="date"
+          help="This is help"
           availables={availables}
           label="Choisissez une date"
+          placeholder={moment().format('DD MMMM YYYY')}
         />
-        <TimeField name="time" label="Choisissez une heure" />
+        <TimeField
+          name="time"
+          placeholder="Heure et prix"
+          label="Choisissez une heure"
+        />
       </React.Fragment>
     )
   }
