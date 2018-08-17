@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 
 from models import PcObject
-from repository.booking_queries import compute_total_booking_value_of_offerer
+from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
 from tests.conftest import clean_database
 from utils.test_utils import create_offerer, create_venue, create_stock_with_thing_offer, create_booking, create_user, \
     create_deposit, create_stock_with_event_offer
@@ -11,36 +11,11 @@ from utils.test_utils import create_offerer, create_venue, create_stock_with_thi
 
 @clean_database
 @pytest.mark.standalone
-def test_compute_total_booking_value_of_offerer(app):
+def test_find_all_by_offerer_sorted_by_date_modified_asc_with_event_and_things(app):
     # given
     user = create_user()
-    create_deposit(user, datetime.utcnow(), amount=1600)
-    offerer1 = create_offerer(siren='123456789')
-    offerer2 = create_offerer(siren='987654321')
-    venue1 = create_venue(offerer1)
-    venue2 = create_venue(offerer2)
-    stock1 = create_stock_with_thing_offer(offerer1, venue1, thing_offer=None, price=200)
-    stock2 = create_stock_with_thing_offer(offerer1, venue1, thing_offer=None, price=300)
-    stock3 = create_stock_with_thing_offer(offerer2, venue2, thing_offer=None, price=400)
-    booking1 = create_booking(user, stock1, recommendation=None, quantity=2)
-    booking2 = create_booking(user, stock2, recommendation=None, quantity=1)
-    booking3 = create_booking(user, stock3, recommendation=None, quantity=2)
-
-    PcObject.check_and_save(booking1, booking2, booking3)
-
-    # when
-    total = compute_total_booking_value_of_offerer(offerer1.id)
-
-    # then
-    assert total == 700
-
-
-@clean_database
-@pytest.mark.standalone
-def test_compute_total_booking_value_of_offerer(app):
-    # given
-    user = create_user()
-    create_deposit(user, datetime.utcnow(), amount=1600)
+    now = datetime.utcnow()
+    create_deposit(user, now, amount=1600)
     offerer1 = create_offerer(siren='123456789')
     offerer2 = create_offerer(siren='987654321')
     venue1 = create_venue(offerer1)
@@ -48,14 +23,17 @@ def test_compute_total_booking_value_of_offerer(app):
     stock1 = create_stock_with_event_offer(offerer1, venue1, price=200)
     stock2 = create_stock_with_thing_offer(offerer1, venue1, thing_offer=None, price=300)
     stock3 = create_stock_with_thing_offer(offerer2, venue2, thing_offer=None, price=400)
-    booking1 = create_booking(user, stock1, recommendation=None, quantity=2)
-    booking2 = create_booking(user, stock2, recommendation=None, quantity=1)
-    booking3 = create_booking(user, stock3, recommendation=None, quantity=2)
+    booking1 = create_booking(user, stock1, recommendation=None, quantity=2, date_modified=now - timedelta(days=5))
+    booking2 = create_booking(user, stock2, recommendation=None, quantity=1, date_modified=now - timedelta(days=10))
+    booking3 = create_booking(user, stock3, recommendation=None, quantity=2, date_modified=now - timedelta(days=1))
 
     PcObject.check_and_save(booking1, booking2, booking3)
 
     # when
-    total = compute_total_booking_value_of_offerer(offerer1.id)
+    bookings = find_all_by_offerer_sorted_by_date_modified_asc(offerer1.id)
 
     # then
-    assert total == 700
+    assert bookings[0].dateModified < bookings[1].dateModified
+    assert booking1 in bookings
+    assert booking2 in bookings
+    assert booking3 not in bookings

@@ -1,9 +1,20 @@
 from decimal import Decimal
 from enum import Enum
 
-from repository import booking_queries
-
 MAX_REIMBURSEMENT_FOR_OFFERER_PER_YEAR = 23000
+
+
+class BookingReimbursement:
+    def __init__(self, booking, reimbursement):
+        self.booking = booking
+        self.reimbursement = reimbursement
+
+    def __eq__(self, other):
+        return self.booking == other.booking \
+               and self.reimbursement == other.reimbursement
+
+    def __repr__(self):
+        return repr(self.booking) + repr(self.reimbursement)
 
 
 class Reimbursement:
@@ -26,20 +37,25 @@ class ReimbursementRule(Enum):
     )
 
 
+def find_all_booking_reimbursement(bookings, cumulative_booking_values):
+    booking_reimbursements = []
+    for booking, value in zip(bookings, cumulative_booking_values):
+        rule = find_reimbursement_rule(booking, value)
+        booking_reimbursements.append(BookingReimbursement(booking, rule))
+    return booking_reimbursements
+
+
 def find_reimbursement_rule(
         booking,
-        compute_total_booking_value_of_offerer=booking_queries.compute_total_booking_value_of_offerer):
+        cumulated_booking_value):
     if booking.stock.resolvedOffer.eventOrThing.isDigital:
         return ReimbursementRule.NO_REIMBURSEMENT_OF_DIGITAL_THINGS
-
-    offerer_id = booking.stock.resolvedOffer.venue.managingOfferer.id
-    total_booking_value_of_offerer = compute_total_booking_value_of_offerer(offerer_id)
 
     eligible_rules = []
 
     eligible_rules.append(ReimbursementRule.FULL_REIMBURSEMENT_OF_PHYSICAL_OFFERS)
 
-    if total_booking_value_of_offerer > MAX_REIMBURSEMENT_FOR_OFFERER_PER_YEAR:
+    if cumulated_booking_value > MAX_REIMBURSEMENT_FOR_OFFERER_PER_YEAR:
         eligible_rules.append(ReimbursementRule.NO_REIMBURSEMENT_ABOVE_23_000_EUROS_BY_OFFERER)
 
     return _find_least_favorable_rule(eligible_rules)

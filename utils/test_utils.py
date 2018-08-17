@@ -179,13 +179,14 @@ def req_with_auth(email=None, password=None):
     return request
 
 
-def create_booking(user, stock, venue, recommendation, is_cancellation=False, quantity=1):
+def create_booking(user, stock, venue, recommendation, is_cancellation=False, quantity=1, date_modified=datetime.utcnow()):
     booking = Booking()
     booking.stock = stock
     booking.user = user
     booking.token = random_token()
     booking.amount = stock.price
     booking.quantity = quantity
+    booking.dateModified = date_modified
     if recommendation:
         booking.recommendation = recommendation
     else:
