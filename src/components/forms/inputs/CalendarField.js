@@ -3,18 +3,30 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import { DatePicker, Form } from 'antd'
 import { Field } from 'react-final-form'
+// import momentPropTypes from 'react-moment-proptypes'
 import locale from 'antd/lib/date-picker/locale/fr_FR'
 
 import renderLabel from '../renderLabel'
 
+const momentIsSameDay = (a, b) => a && b && a.isSame(b, 'day')
+
 export class CalendarField extends React.PureComponent {
   constructor(props) {
     super(props)
-    this.container = null
+    this.popupContainer = null
   }
 
   setContainerRef = ref => {
-    this.container = ref
+    this.popupContainer = ref
+  }
+
+  filterDisabledDate = currDate => {
+    const { provider } = this.props
+    if (!currDate) return false
+    // si une date n'est pas dans le provider
+    // -> elle ne sera pas affichée dans le calendrier
+    const result = provider.filter(s => momentIsSameDay(currDate, s))
+    return result && !result.length
   }
 
   render() {
@@ -22,9 +34,9 @@ export class CalendarField extends React.PureComponent {
       help,
       name,
       label,
-      format,
       disabled,
       provider,
+      dateFormat,
       placeholder,
       ...rest
     } = this.props
@@ -39,18 +51,24 @@ export class CalendarField extends React.PureComponent {
           render={({ input }) => (
             <React.Fragment>
               <DatePicker
-                format={format}
-                locale={locale}
-                disabled={disabled}
-                disabledDate={() => false}
-                // defaultValue={input.value.date}
-                getCalendarContainer={() => this.container}
-                placeholder={placeholder || moment().format(format)}
+                // style={customize input box style}
+                // popupStyle={customize popup calendar style}
+                // dateRender={custom rendering function for date cells}
                 className="calendarpicker-field-input"
                 dropdownClassName="calendarpicker-field-popup"
-                onChange={(date, dateString) => {
+                locale={locale}
+                format={dateFormat}
+                disabled={disabled}
+                getCalendarContainer={() => this.popupContainer}
+                placeholder={placeholder || moment().format(dateFormat)}
+                // specify the dates that cannot be selected
+                disabledDate={provider && this.filterDisabledDate}
+                // a la selection de l'user d'une date
+                // on renvoi les valeurs du calendar
+                // { date: Moment, dateString: String }
+                onChange={(date, dateString) =>
                   input.onChange({ date, dateString })
-                }}
+                }
               />
             </React.Fragment>
           )}
@@ -65,24 +83,34 @@ export class CalendarField extends React.PureComponent {
 }
 
 CalendarField.defaultProps = {
+  dateFormat: 'DD MMMM YYYY',
   defaultValue: '',
   disabled: false,
-  format: 'DD MMMM YYYY',
   help: null,
   label: null,
   placeholder: null,
   provider: null,
 }
 
+const providerObjectsShape = PropTypes.shape({
+  // FIXME -> using array(PropTypes.shape) and
+  // momentPropTypes as PropTypes throws error
+  date: PropTypes.string,
+  value: PropTypes.string,
+})
+
 CalendarField.propTypes = {
+  dateFormat: PropTypes.string,
   defaultValue: PropTypes.string,
   disabled: PropTypes.bool,
-  format: PropTypes.string,
   help: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
-  provider: PropTypes.array,
+  provider: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.arrayOf(providerObjectsShape),
+  ]),
 }
 
 export default CalendarField
