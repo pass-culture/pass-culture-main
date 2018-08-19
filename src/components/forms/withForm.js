@@ -5,26 +5,26 @@ import createDecorator from 'final-form-calculate'
 // import arrayMutators from 'final-form-arrays'
 import { Form as FinalForm, FormSpy } from 'react-final-form'
 
-// complete list of subscriptions
-// https://github.com/final-form/final-form#formstate
-const spySubscriptions = {
-  errors: true,
-  invalid: true,
-  pristine: true,
-  values: true,
-}
-
-// React Final Form Calculator
-// github.com/final-form/react-final-form#calculated-fields
-const parseCalculator = calculator => {
-  if (!calculator) return null
-  const rules = calculator.filter(v => v)
-  return createDecorator.apply(createDecorator, rules)
-}
-
 // React Final Form Validator
 // github.com/final-form/react-final-form#synchronous-record-level-validation
 const withForm = (WrappedComponent, validator, calculator) => {
+  const decorators = [
+    // React Final Form Calculator
+    // github.com/final-form/react-final-form#calculated-fields
+    // FIXME -> console.error lors du hot reload
+    // https://github.com/final-form/react-final-form/issues/270
+    calculator && createDecorator(...calculator),
+  ]
+
+  const spySubscriptions = {
+    // complete list of subscriptions
+    // https://github.com/final-form/final-form#formstate
+    errors: true,
+    invalid: true,
+    pristine: true,
+    values: true,
+  }
+
   class EditForm extends React.PureComponent {
     render() {
       const {
@@ -40,10 +40,10 @@ const withForm = (WrappedComponent, validator, calculator) => {
         <FinalForm
           onSubmit={onSubmit}
           validate={validator}
+          decorators={decorators}
           // FIXME -> [DEPRECATED] Use form.mutators instead
           // mutators={{ ...arrayMutators }}
           initialValues={initialValues || {}}
-          decorators={[parseCalculator(calculator)]}
           render={({ form, values, handleSubmit }) => (
             <React.Fragment>
               <Form

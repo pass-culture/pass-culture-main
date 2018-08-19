@@ -10,12 +10,7 @@ export const filterByQuantity = recommendation => {
   return filtered
 }
 
-export const filterAvailableStocks = recommendation => {
-  const stocks = filterByQuantity(recommendation)
-  if (!stocks) return []
-  // const now = moment().tz(tz)
-  const tz = get(recommendation, 'tz')
-  const now = moment('2018-08-12T23:59:00Z').tz(tz)
+export const filterAvailableStocks = (stocks, now, tz) => {
   const results = stocks.filter(o => {
     const date = moment(o.bookingLimitDatetime).tz(tz)
     // - booking date limit >= now
@@ -32,8 +27,8 @@ export const filterAvailableStocks = recommendation => {
 // compose une map d'objet de type stock
 // contenant les infos pour envoyer au service de booking
 // FIXME -> regroupement des horaires pour un même jour
-export const filteredToBookable = filtered =>
-  filtered.map((stock, index) => {
+export const filteredToBookable = stocks =>
+  stocks.map((stock, index) => {
     const eventOccurrence = stock.eventOccurrence || {}
     return {
       available: stock.available,
@@ -51,12 +46,27 @@ export const filteredToBookable = filtered =>
 export const selectBookable = createCachedSelector(
   (state, recommendation) => recommendation,
   recommendation => {
-    const filtered = filterAvailableStocks(recommendation)
+    const stocks = filterByQuantity(recommendation)
+    if (!stocks) return []
+    const tz = get(recommendation, 'tz')
+    /* <-------- DEBUG -------- */
+    // const now = moment().tz(tz)
+    const now = moment('2018-08-12T23:59:00Z').tz(tz)
+    /* --------> */
+    const filtered = filterAvailableStocks(stocks, now, tz)
     const bookables = filteredToBookable(filtered)
-    return bookables
+    /* <-------- DEBUG -------- */
+    const last = Object.assign({}, bookables[bookables.length - 1], {
+      beginningDatetime: '2018-08-18T10:00:00Z',
+      price: 1234567890.12345678901234567890123456789,
+      stockId: 'BWVA',
+    })
+    return bookables.concat([last])
+    /* --------> */
+    // return bookables
   }
 )(
-  // cachec key
+  // cached key
   (state, recommendation, match) => match.url
 )
 

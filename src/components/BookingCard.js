@@ -1,78 +1,22 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import { Icon } from 'antd'
 import get from 'lodash.get'
+import pick from 'lodash.pick'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { requestData } from 'pass-culture-shared'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
 import { ROOT_PATH } from '../utils/config'
 import submitForm from './forms/submitForm'
-import BookingForm from './forms/BookingForm'
-import BookingUserUndefined from './BookingUserUndefined'
 import selectBookables from '../selectors/selectBookables'
-
-const renderStepLoading = () => (
-  <div className="loading">
-    <span>Réservation en cours...</span>
-  </div>
-)
-
-const renderBookedFooter = () => (
-  <p>
-    Retrouvez ce code et les détails de l&apos;offre dans la rubrique{' '}
-    <Link to="/reservations">Mes Réservations</Link>
-    de votre compte
-  </p>
-)
-
-const renderStepThingBooked = () => (
-  <div className="booked thing has-text-centered">
-    <h3 style={{ fontSize: '22px' }}>
-      <span
-        className="is-block mb12"
-        style={{ color: '#27AE60', fontSize: '4.5rem' }}
-      >
-        <Icon type="check-circle" />
-      </span>
-      <span className="is-block mb36">
-        Votre pouvez accéder à cette offfre à tout moment.
-      </span>
-    </h3>
-    <p>
-      <b>Accéder au cours en ligne</b>
-    </p>
-    {renderBookedFooter()}
-  </div>
-)
-
-const renderStepEventBooked = () => {
-  const price = '8€'
-  const gratuit = false
-  return (
-    <div className="booked event">
-      <h3>
-        <span>Votre réservation est validée</span>
-      </h3>
-      <p>
-        {!gratuit && (
-          <span className="is-block">
-            {price} ont été déduit de votre pass.
-          </span>
-        )}
-        <span className="is-block">Présentez le code suivant sur place:</span>
-      </p>
-      <p>
-        <b>A684P6</b>
-      </p>
-      {renderBookedFooter()}
-    </div>
-  )
-}
+import BookingForm from './BookingForm'
+import BookingCardError from './BookingCardError'
+import BookingCardLoader from './BookingCardLoader'
+import BookingCardSuccess from './BookingCardSuccess'
+import BookingUserUndefined from './BookingUserUndefined'
 
 class BookingCard extends React.PureComponent {
   constructor(props) {
@@ -90,39 +34,48 @@ class BookingCard extends React.PureComponent {
 
   onFormMutation = ({ invalid, pristine, values }) => {
     // intervient aux changement sur le form
-    console.log('onFormMutation ---> form values', values)
-    const canSubmitForm = !pristine && !invalid
-    this.setState({ canSubmitForm })
+    // pour les changements sur 'invalid | pristine | values'
+    const nextCanSubmitForm =
+      !pristine && !invalid && values.stockId && values.price >= 0
+    const canSubmitForm = this.state
+    const hasFormValid = canSubmitForm !== nextCanSubmitForm
+    if (!hasFormValid) return
+    this.setState({ canSubmitForm: nextCanSubmitForm })
   }
 
-  onFormSubmit = () => {
+  onFormSubmit = formValues => {
     const onSubmittingStateChanged = () => {
+      console.log('formValues', formValues)
       // console.log('BookingCard.onFormSubmit => formValues', formValues)
       // setTimeout(this.handleRequestSuccess, 3000)
-      // const body = {
-      //   offerId:
-      //   quantity: values.quantity,
-      //   currentRecommendationId: recommendation.id,
-      // }
-      // this.actions.requestData('POST', 'bookings', {
-      //   body,
-      //   name: 'booking',
-      //   handleFail: this.handleRequestFail,
-      //   handleSuccess: this.handleRequestSuccess,
-      // })
+      this.actions.requestData('POST', 'bookings', {
+        body: pick(formValues, [
+          'price',
+          'stockId',
+          'quantity',
+          'currentRecommendationId',
+        ]),
+        handleFail: this.handleRequestFail,
+        handleSuccess: this.handleRequestSuccess,
+        name: 'booking',
+      })
     }
     // appel au service apres le changement du state
     this.setState({ isSubmitting: true }, onSubmittingStateChanged)
   }
 
-  // handleRequestSuccess = (state, action) => {}
-  handleRequestSuccess = () => {
-    const nextState = { isBooked: true, isErrored: false, isSubmitting: false }
+  handleRequestSuccess = (state, action) => {
+    const nextState = { isBooked: true, isErrored: action, isSubmitting: false }
     this.setState(nextState)
   }
 
-  handleRequestFail = () => {
-    const nextState = { isBooked: false, isErrored: true, isSubmitting: false }
+  handleRequestFail = (state, action) => {
+    // TODO -> ajouter une gestion des erreurs
+    const nextState = {
+      isBooked: false,
+      isErrored: action,
+      isSubmitting: false,
+    }
     this.setState(nextState)
   }
 
@@ -190,10 +143,9 @@ class BookingCard extends React.PureComponent {
           style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
         >
           <div className="views-container is-overlay">
-            {isSubmitting && renderStepLoading()}
-            {isBooked && isevent && renderStepEventBooked()}
-            {isBooked && !isevent && renderStepThingBooked()}
-            {isErrored && <div>Form Submit Error</div>}
+            {isSubmitting && <BookingCardLoader />}
+            {isBooked && <BookingCardSuccess isEvent={isevent} />}
+            {isErrored && <BookingCardError {...isErrored} />}
             {showForm && (
               <React.Fragment>
                 <BookingUserUndefined show={userConnected} />
@@ -204,8 +156,10 @@ class BookingCard extends React.PureComponent {
                   recommendation={recommendation}
                   onMutation={this.onFormMutation}
                   onValidation={this.onFormValidation}
+                  className="flex-rows items-center"
                   initialValues={{
                     bookables,
+                    currentRecommendationId: recommendation.id,
                     date: null,
                     quantity: 1,
                     stockId: null,

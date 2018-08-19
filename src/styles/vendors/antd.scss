@@ -56,12 +56,12 @@ span[class*='-picker-icon'] {
 }
 
 .ant-input,
-.ant-select-selection,
-.ant-time-picker-input {
+.ant-select .ant-select-selection {
   height: 44px;
   font-size: 20px;
   padding: 0 24px;
   border-width: 2px;
+  font-weight: bold;
   border-radius: 22px;
 
   &,
@@ -71,58 +71,42 @@ span[class*='-picker-icon'] {
   }
 }
 
-.ant-form-vertical.has-text-centered .ant-form-item-label {
+.has-text-centered .ant-form-item-label,
+.has-text-centered .ant-form-item-label label {
   text-align: center;
 }
 
 /* -----------------------------------
 
- ANTD TimePicker
+ ANTD Select
 
 */
-.ant-time-picker-panel {
-  width: 100%;
-  overflow: hidden;
-  border: 2px solid;
-  top: 2px !important;
-  border-radius: 20px;
-  border-color: #DAE1E3;
-
-  .ant-time-picker-panel-input-wrap {
-    @extend .ant-removed-element;
+.select-field {
+  .ant-select-selection__rendered {
+    font-weight: bold;
+    text-align: center;
   }
 
-  .ant-time-picker-panel-inner {
-    @extend .ant-no-shadow;
+  .ant-select-selection-selected-value {
+    padding: 0;
+    width: 100%;
   }
 
-  .ant-time-picker-panel-combobox {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  .ant-select-selection__clear {
+    right: 21px;
+    color: $primary;
+  }
 
-    .ant-time-picker-panel-select {
-      flex: 1;
-      width: 50%;
-      float: none;
-      overflow-y: scroll;
-      overflow-x: hidden;
+  .ant-select-open .ant-select-arrow::before {
+    transform: rotate(0deg) !important;
+  }
 
-      &:hover {
-        overflow-y: scroll;
-        overflow-x: hidden;
-      }
+  .ant-select-dropdown-menu {
+    text-align: center;
+  }
 
-      ul {
-        padding: 0;
-      }
-
-      ul,
-      ul li {
-        text-align: center;
-      }
-    }
+  .ant-select-dropdown {
+    border-radius: 20px;
   }
 }
 

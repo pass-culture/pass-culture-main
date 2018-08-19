@@ -67,6 +67,16 @@
   .select-field {
     width: 212px;
 
+    /*
+    .ant-select-selection__rendered {
+      height: 100%;
+    }
+
+    .ant-select-selection__placeholder {
+      text-align: center;
+    }
+    */
+
     .ant-select-arrow::before {
       content: '\E641';
     }
