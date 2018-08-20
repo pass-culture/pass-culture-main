@@ -1,12 +1,9 @@
 """users routes"""
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
-from sqlalchemy.exc import IntegrityError
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.expenses import get_expenses
-from models.api_errors import ApiErrors
-from models.db import db
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user import User
@@ -119,11 +116,12 @@ def signup():
                                                RightsType.editor)
             user_offerer.generate_validation_token()
             objects_to_save = [new_user, user_offerer]
-        maybe_send_offerer_validation_email(offerer, user_offerer)
     else:
         objects_to_save = [new_user]
 
     PcObject.check_and_save(*objects_to_save)
+
+    maybe_send_offerer_validation_email(*objects_to_save)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)

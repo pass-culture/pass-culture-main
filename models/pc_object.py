@@ -258,6 +258,7 @@ class PcObject():
         if not objects:
             raise ValueError('Objects to save need to be passed as arguments'
                              + ' to check_and_save')
+
         # CUMULATE ERRORS IN ONE SINGLE API ERRORS DURING ADD TIME
         api_errors = ApiErrors()
         for obj in objects:

@@ -23,8 +23,14 @@ def test_should_not_be_able_to_validate_offerer_with_wrong_token(app):
 def test_validate_offerer(app):
     # Given
     offerer_token = secrets.token_urlsafe(20)
-    offerer = create_offerer('349974931', '12 boulevard de Pesaro', 'Nanterre', '92000', 'Crédit Coopératif',
-                             validation_token=offerer_token)
+    offerer = create_offerer(
+        '349974931',
+        '12 boulevard de Pesaro',
+        'Nanterre',
+        '92000',
+        'Crédit Coopératif',
+        validation_token=offerer_token
+    )
     PcObject.check_and_save(offerer)
     offerer_id = offerer.id
     del (offerer)
