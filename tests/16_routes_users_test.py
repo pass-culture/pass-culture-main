@@ -309,7 +309,7 @@ def test_28_user_should_have_its_wallet_balance(app):
     stock.price = 5
     stock.venueId = venue.id
     stock.available = 50
-    stock.offer = create_thing_offer()
+    stock.offer = create_thing_offer(venue)
     PcObject.check_and_save(stock)
 
     recommendation = Recommendation()
