@@ -19,6 +19,21 @@ const fromWatchSirenInput = sireType =>
           postalCode: null,
         })
       )
+
+      let wrongSireType =
+        get(patch, `${SIRET}.length`) > 14
+          ? SIRET
+          : get(patch, `${SIREN}.length`) > 9
+            ? SIREN
+            : null
+      if (wrongSireType) {
+        yield put(
+          mergeErrors(name, {
+            [wrongSireType]: [`${capitalize(wrongSireType)} invalide`],
+          })
+        )
+      }
+
       return
     }
 
