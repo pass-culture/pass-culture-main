@@ -2,7 +2,7 @@ import secrets
 
 import pytest
 
-from models import Offerer
+from models import Offerer, PcObject
 from tests.conftest import clean_database
 from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer
 

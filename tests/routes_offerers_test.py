@@ -1,5 +1,6 @@
 import pytest
 
+from models import PcObject
 from tests.conftest import clean_database
 from utils.test_utils import API_URL, req, req_with_auth, create_user, create_offerer
 
