@@ -1,7 +1,6 @@
 import pytest
-from sqlalchemy.exc import IntegrityError
 
-from models import PcObject
+from models import ApiErrors, PcObject
 from models.venue import TooManyVirtualVenuesException
 from tests.conftest import clean_database
 from utils.test_utils import create_offerer, create_venue
@@ -18,7 +17,7 @@ def test_offerer_cannot_have_address_and_isVirtual(app):
     venue.address = '1 test address'
 
     # When
-    with pytest.raises(IntegrityError) as ie:
+    with pytest.raises(ApiErrors):
         PcObject.check_and_save(venue)
 
 
@@ -33,7 +32,7 @@ def test_offerer_not_isVirtual_cannot_have_null_address(app):
                          city=None, departement_code=None, is_virtual=False)
 
     # When
-    with pytest.raises(IntegrityError) as ie:
+    with pytest.raises(ApiErrors):
         PcObject.check_and_save(venue)
 
 
