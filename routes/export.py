@@ -14,6 +14,7 @@ from models import Event
 from models import EventOccurrence
 from models import Offer
 from models import Offerer
+from models import Stock
 from models import User
 from models import UserOfferer
 from models import Venue
@@ -91,7 +92,7 @@ def get_users_per_date_per_department():
         query = query.filter(User.dateCreated <= date_max)
 
     result = query.order_by(User.dateCreated).all()
-    file_name = 'export_%s_user_per_date_or_per_departement.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    file_name = 'export_%s_users.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['user_id', 'dateCreated', 'department']
     return _make_csv_response(file_name, headers, result)
 
@@ -106,14 +107,14 @@ def get_user_offerers_per_rights():
         .group_by(UserOfferer.rights) \
         .order_by(UserOfferer.rights) \
         .all()
+
     file_name = 'export_%s_userOfferer_per_rights.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['rigths_type', 'nb_userOfferers']
-
     return _make_csv_response(file_name, headers, result)
 
 
-@app.route('/exports/bookings_per_users_department', methods=['GET'])
-def get_bookings_per_user_departments():
+@app.route('/exports/booking_sum_per_users_department', methods=['GET'])
+def get_booking_sum_per_user_departments():
     _check_token()
 
     result = db.session.query(
@@ -122,11 +123,47 @@ def get_bookings_per_user_departments():
         .join(Booking) \
         .group_by(User.departementCode) \
         .all()
-    file_name = 'export_%s_Booking_per_users_department.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['departement_code', 'nb_bookings']
 
+    file_name = 'export_%s_Booking_sum_per_users_department.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = ['departement_code', 'nb_bookings']
     return _make_csv_response(file_name, headers, result)
 
+@app.route('/exports/bookings', methods=['GET'])
+def get_bookings_per_date_per_departement():
+    _check_token()
+    booking_date_min = request.args.get('booking_date_min')
+    booking_date_max = request.args.get('booking_date_max')
+    event_date_min = request.args.get('event_date_min')
+    event_date_max = request.args.get('event_date_max')
+    user_department = request.args.get('user_department')
+    venue_department = request.args.get('venue_department')
+
+    query = db.session.query(User.id, User.departementCode, Booking.id, Booking.dateModified, Stock.id, EventOccurrence.id, EventOccurrence.beginningDatetime, Offer.id, Venue.id, Venue.name, Venue.departementCode, Offerer.id, Offerer.name, Event.id, Event.name) \
+        .join(Booking) \
+        .join(Stock) \
+        .join(EventOccurrence) \
+        .join(Offer) \
+        .join(Venue) \
+        .join(Offerer) \
+        .join(Event)
+
+    if booking_date_min:
+        query = query.filter(Booking.dateModified >= booking_date_min)
+    if booking_date_max:
+        query = query.filter(Booking.dateModified <=  booking_date_max)
+    if event_date_min:
+        query = query.filter(EventOccurrence.beginningDatetime >= event_date_min)
+    if event_date_max:
+        query = query.filter(EventOccurrence.beginningDatetime <= event_date_max)
+    if user_department:
+        query = query.filter(User.departementCode == user_department)
+    if venue_department:
+        query = query.filter(Venue.departementCode == venue_department)
+
+    result = query.all()
+    file_name = 'export_%s_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = ['User_id', 'User_departementCode', 'Booking_id', 'Booking_dateModified', 'Stock_id', 'EventOccurrence_id', 'EventOccurrence_beginningDatetime', 'Offer_id', 'Venue_id', 'Venue_name', 'Venue_departementCode', 'Offerer_id', 'Offerer_name', 'Event_id', 'Event_name']
+    return _make_csv_response(file_name, headers, result)
 
 @app.route('/exports/offers', methods=['GET'])
 def get_offers_per_date_per_department():
@@ -149,8 +186,7 @@ def get_offers_per_date_per_department():
 
     result = query.order_by(EventOccurrence.beginningDatetime) \
         .all()
-
-    file_name = 'export_%s_Offers_per_date_or_per_department.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    file_name = 'export_%s_offers.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['offer_id', 'event_id', 'event_name', 'event_date', 'departement_code']
     return _make_csv_response(file_name, headers, result)
 
@@ -175,7 +211,7 @@ def get_offerers_per_date_per_departement():
     result = query.order_by(Offerer.dateCreated) \
         .all()
 
-    file_name = 'export_%s_offerers_per_date_or_per_department.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    file_name = 'export_%s_offerers.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'dateCreated', 'departement_code']
     return _make_csv_response(file_name, headers, result)
 
