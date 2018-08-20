@@ -1,19 +1,28 @@
 <html>
     <body>
-        <p>Inscription ou rattachement PRO à valider</p>
-        {% for users_vars, offerers_vars in users_offerers_vars %}
-        <h3 class='user_offerer'>Nouveau Rattachement : </h3>
-        <h4 class='user_offerer'>Utilisateur: </h4>
-        <pre class='user_offerer'>{{ users_vars }}</pre>
-        <h4 class='user_offerer'>Structure: </h4>
-        <pre class='user_offerer'>{{ offerers_vars}} </pre>
-        {% endfor %}
-        {% for offerers_vars, api_data in offerer_information %}
-        <h3 class='offerer'>Nouvelle Structure : </h3>
-        <pre class='offerer'>{{ offerers_vars }}</pre>
-        <h4 class='offerer'>Infos API entreprise : </h4>
-        <pre class='offerer'>{{ api_data }}</pre>
-        {% endfor %}
-        Pour valider, <a href='{{ api_url }}/validate?modelNames={{ joined_classes_to_validate }}&token={{ token }}'>cliquez ici</a>
+        <h1>Inscription ou rattachement PRO à valider</h1>
+
+        <div class="user_offerer">
+            <h2>Nouveau Rattachement :</h2>
+            <h3>Utilisateur :</h3>
+            <pre>{{ user_vars }}</pre>
+            <h4>Structure :</h4>
+            <pre>{{ offerer_vars_user_offerer }} </pre>
+
+            <strong>
+                Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_token }}">cliquez ici</a>
+            </strong>
+        </div>
+
+        <div class="offerer">
+            <h2>Nouvelle Structure :</h2>
+            <pre class="offerer-data">{{ offerer_vars }}</pre>
+            <h3>Infos API entreprise :</h3>
+            <pre class="api-entreprise-data">{{ api_entreprise }}</pre>
+
+            <strong>
+                Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer_token }}">cliquez ici</a>
+            </strong>
+        </div>
     </body>
 </html>

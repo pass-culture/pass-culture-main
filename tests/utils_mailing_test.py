@@ -24,21 +24,21 @@ SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
 
 HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = \
-'''<html>
-    <body>
-        <p id="mail-greeting">Cher Test,</p>
-
-        <div id="mail-content">
-            Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city). Votre code de réservation est le 56789.
-        </div>
-
-        <p id="mail-salutation">
-            Cordialement,
-            <br>L\'équipe pass culture
-        </p>
-
-    </body>
-</html>'''
+    '''<html>
+        <body>
+            <p id="mail-greeting">Cher Test,</p>
+    
+            <div id="mail-content">
+                Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city). Votre code de réservation est le 56789.
+            </div>
+    
+            <p id="mail-salutation">
+                Cordialement,
+                <br>L\'équipe pass culture
+            </p>
+    
+        </body>
+    </html>'''
 
 SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre commande pour Test Book'
@@ -518,41 +518,33 @@ def test_write_object_validation_email_should_have_some_specific_information(app
     email = write_object_validation_email(offerer, user_offerer, get_by_siren=get_mocked_response_status_200)
 
     # Then
-    email_html_soup = BeautifulSoup(email['Html-part'], features="html.parser")
-    all_pre_offerer = email_html_soup.find_all('pre', "offerer")
-    assert str(email_html_soup.find_all('p')[0]) == '<p>Inscription ou rattachement PRO à valider</p>'
-    assert str(email_html_soup.find_all('h3', "offerer")[0]) == '<h3 class="offerer">Nouvelle Structure : </h3>'
-    assert str(
-        email_html_soup.find_all('h3', "user_offerer")[0]) == '<h3 class="user_offerer">Nouveau Rattachement : </h3>'
-    assert str(email_html_soup.find_all('h4', "user_offerer")[0]) == '<h4 class="user_offerer">Utilisateur: </h4>'
-    assert 'UserOfferers' in str(email_html_soup.find_all('pre', "user_offerer")[0])
-    assert "'address': '122 AVENUE DE FRANCE'" in str(all_pre_offerer[0])
-    assert "'city': 'Paris'" in str(all_pre_offerer[0])
-    assert "'name': 'Accenture'" in str(all_pre_offerer[0])
-    assert "'postalCode': '75013'" in str(all_pre_offerer[0])
-    assert "'siren': '732075312'" in str(all_pre_offerer[0])
-    assert "'validationToken': '{}'".format(validation_token) in str(all_pre_offerer[0])
-    assert str(email_html_soup.find_all('h4', "offerer")[0]) == '<h4 class="offerer">Infos API entreprise : </h4>'
-    assert "'numero_tva_intra': 'FR60732075312'" in str(all_pre_offerer[1])
-    assert '<a href="localhost/validate?modelNames=Offerer,UserOfferer&amp;token={}">cliquez ici</a>'.format(
-        validation_token) in str(email_html_soup.find_all('a')[0])
-    assert "'other_etablissements_sirets': ['73207531200213', '73207531200197', '73207531200171']".replace(
-        ' ', '').replace('\n', '') in str(all_pre_offerer[1]).replace(' ', '').replace('\n', '')
-    assert 'siege_social' in str(all_pre_offerer[1])
+    html = BeautifulSoup(email['Html-part'], features="html.parser")
+    assert html.h1.text == 'Inscription ou rattachement PRO à valider'
 
+    div_offerer = html.select('div.offerer')[0]
+    assert div_offerer.h2.text == 'Nouvelle Structure :'
+    assert div_offerer.h3.text == 'Infos API entreprise :'
+    assert div_offerer.strong.a['href'] == 'localhost/validate?modelNames=Offerer&token={}'.format(offerer.validationToken)
+    assert div_offerer.strong.a.text == 'cliquez ici'
 
-@clean_database
-@pytest.mark.standalone
-def test_write_object_validation_email_raises_value_error_when_object_to_validate_not_offerer_or_user_offerer(app):
-    # Given
-    validation_token = secrets.token_urlsafe(20)
+    div_user_offerer = html.select('div.user_offerer')[0]
+    assert div_user_offerer.h2.text == 'Nouveau Rattachement :'
+    assert div_user_offerer.h3.text == 'Utilisateur :'
+    assert div_user_offerer.strong.a['href'] == 'localhost/validate?modelNames=UserOfferer&token={}'.format(user_offerer.validationToken)
+    assert div_user_offerer.strong.a.text == 'cliquez ici'
 
-    user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
-                       validation_token=validation_token)
+    offerer_data = div_offerer.select('pre.offerer-data')[0].text
+    assert "'address': '122 AVENUE DE FRANCE'" in offerer_data
+    assert "'city': 'Paris'" in offerer_data
+    assert "'name': 'Accenture'" in offerer_data
+    assert "'postalCode': '75013'" in offerer_data
+    assert "'siren': '732075312'" in offerer_data
+    assert "'validationToken': '{}'".format(validation_token) in offerer_data
 
-    with pytest.raises(ValueError) as error:
-        write_object_validation_email(user)
-        assert 'Unexpected object type in maybe_send_pro_validation_email :' in str(error.value)
+    api_entreprise_data = div_offerer.select('pre.api-entreprise-data')[0].text
+    assert "'numero_tva_intra': 'FR60732075312'" in api_entreprise_data
+    assert "'other_etablissements_sirets': ['73207531200213', '73207531200197', '73207531200171']".replace(' ', '').replace('\n', '') in api_entreprise_data.replace(' ', '').replace('\n', '')
+    assert 'siege_social' in api_entreprise_data
 
 
 @clean_database
@@ -618,4 +610,3 @@ def test_validation_email_should_not_return_clearTextPassword(app):
     email_html_soup = BeautifulSoup(email['Html-part'], features="html.parser")
     assert 'clearTextPassword' not in str(email_html_soup)
     assert 'totallysafepsswd' not in str(email_html_soup)
-
