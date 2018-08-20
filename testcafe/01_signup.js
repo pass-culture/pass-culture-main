@@ -64,9 +64,7 @@ test('E-mail déjà présent dans la base et mot de passe invalide', async t => 
     .wait(1000)
   await t
     .expect(emailInputError.innerText)
-    .eql(
-      '\nUne entrée avec cet identifiant existe déjà dans notre base de données\n\n'
-    )
+    .eql('\nUn compte lié à cet email existe déjà\n\n')
   // TODO Mot de passe invalide en attente correction API
   // await t.expect(passwordInputError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
 })
