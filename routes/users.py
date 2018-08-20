@@ -4,9 +4,7 @@ from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.expenses import get_expenses
-from models.offerer import Offerer
-from models.pc_object import PcObject
-from models.user import User
+from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
