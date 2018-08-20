@@ -5,7 +5,7 @@ import { regularOfferer } from './helpers/roles'
 const adressInput = Selector('#venue-address')
 const backButton = Selector('a.back-button')
 const cityInput = Selector('#venue-city')
-const closeButton = Selector('button.close').withText('OK')
+const closeButton = Selector('button.close-button').withText('OK')
 
 const latitudeInput = Selector('#venue-latitude')
 const longitudeInput = Selector('#venue-longitude')
@@ -39,16 +39,19 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
     .click(offererButton)
     .wait(500)
     .click(newVenueButton)
+
   // input
-  await t.typeText(siretInput, '69203951400017').wait(1000)
+  // WATCH WE ENTER AN OTHER SIRET THAN THE FIRST CHAILLOT ONE '69203951400017'
+  // to be sure to have one different
+  await t.typeText(siretInput, '69203951400033').wait(1000)
 
   // check other completed fields
   await t.expect(nameInput.value).eql('THEATRE NATIONAL DE CHAILLOT')
-  await t.expect(adressInput.value).eql('1 PL TROCADERO ET DU 11 NOVEMBRE')
-  await t.expect(postalCodeInput.value).eql('75116')
-  await t.expect(cityInput.value).eql('PARIS 16')
-  await t.expect(latitudeInput.value).eql('48.862923')
-  await t.expect(longitudeInput.value).eql('2.287896')
+  await t.expect(adressInput.value).eql('32 AVENUE GEORGES GUYNEMER')
+  await t.expect(postalCodeInput.value).eql('94550')
+  await t.expect(cityInput.value).eql('CHEVILLY LARUE')
+  await t.expect(latitudeInput.value).eql('48.765134')
+  await t.expect(longitudeInput.value).eql('2.338438')
 
   // create venue
   await t.click(submitButton)
@@ -82,11 +85,10 @@ fixture`05_02 VenuePage | Je ne peux pas créer de lieu, j'ai des erreurs`.befor
 
 test('Une entrée avec cet identifiant existe déjà', async t => {
   // input
-  await t.typeText(siretInput, '69203951400017').wait(1000)
+  await t.typeText(siretInput, '69203951400017').wait(2000)
 
   // create venue
-  await t.click(submitButton)
-  // .wait(1000)
+  await t.click(submitButton).wait(5000)
 
   // error response
   await t
@@ -106,10 +108,10 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
 
 test('Le code SIRET doit correspondre à un établissement de votre structure', async t => {
   // input
-  await t.typeText(siretInput, '492475033 00022').wait(1000)
+  await t.typeText(siretInput, '492475033 00022').wait(2000)
 
   // create venue
-  await t.click(submitButton).wait(1000)
+  await t.click(submitButton).wait(3000)
 
   // error response
   await t

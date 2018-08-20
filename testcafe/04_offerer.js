@@ -36,7 +36,7 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
     .wait(1000)
 
   // submit
-  await t.click(submitButton).wait(1000)
+  await t.click(submitButton).wait(3000)
 
   // api return an error message
   await t.expect(sirenErrorInput.innerText).eql('\nSiren invalide\n')
@@ -54,7 +54,7 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
     .wait(1000)
 
   // submit
-  await t.click(submitButton).wait(2000)
+  await t.click(submitButton).wait(3000)
 
   // api return an error message
   await t
@@ -80,7 +80,7 @@ test('Je rentre une nouvelle structure via son siren', async t => {
   await t.expect(adressInput.value).eql('167 QUAI DE VALMY')
 
   // submit
-  await t.click(submitButton).wait(1000)
+  await t.click(submitButton).wait(3000)
 
   // check location success change
   location = await t.eval(() => window.location)

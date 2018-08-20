@@ -55,20 +55,25 @@ class VenuePage extends Component {
         params: { offererId, venueId },
       },
       requestData,
+      venue,
     } = this.props
-    requestData('GET', `offerers/${offererId}`, {
-      handleSuccess: () => {
-        requestData('GET', `venues/${venueId ? venueId : ''}`, {
-          handleSuccess,
-          handleFail,
-          key: 'venues',
-          normalizer: venueNormalizer,
-        })
-      },
-      handleFail,
-      key: 'offerers',
-      normalizer: offererNormalizer,
-    })
+    if (!venue && venueId !== 'nouveau') {
+      requestData('GET', `offerers/${offererId}`, {
+        handleSuccess: () => {
+          requestData('GET', `venues/${venueId}`, {
+            handleSuccess,
+            handleFail,
+            key: 'venues',
+            normalizer: venueNormalizer,
+          })
+        },
+        handleFail,
+        key: 'offerers',
+        normalizer: offererNormalizer,
+      })
+    } else {
+      return handleSuccess()
+    }
   }
 
   handleSuccess = (state, action) => {
