@@ -420,7 +420,7 @@ def test_user_should_have_its_wallet_balance(app):
     deposit_2 = create_deposit(user, deposit_2_date, amount=10)
     PcObject.check_and_save(deposit_2)
 
-    booking = create_booking(user, stock, recommendation, quantity=1)
+    booking = create_booking(user, stock, venue, recommendation, quantity=1)
     PcObject.check_and_save(booking)
 
     r_create = req_with_auth('wallet_test@email.com', 'testpsswd').get(API_URL + '/users/current')
@@ -467,7 +467,7 @@ def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_a
     recommendation = create_recommendation(thing_offer, user)
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
     deposit = create_deposit(user, deposit_date, amount=50)
-    booking = create_booking(user, stock, recommendation, quantity=2)
+    booking = create_booking(user, stock, venue, recommendation, quantity=2)
 
     PcObject.check_and_save(deposit)
     PcObject.check_and_save(booking)
@@ -493,7 +493,7 @@ def test_get_current_user_returns_expenses(app):
     recommendation = create_recommendation(thing_offer, user)
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
     deposit = create_deposit(user, deposit_date, amount=50)
-    booking = create_booking(user, stock, recommendation, quantity=2)
+    booking = create_booking(user, stock, venue, recommendation, quantity=2)
 
     PcObject.check_and_save(deposit)
     PcObject.check_and_save(booking)

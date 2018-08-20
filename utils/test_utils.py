@@ -179,7 +179,7 @@ def req_with_auth(email=None, password=None):
     return request
 
 
-def create_booking(user, stock, recommendation, is_cancellation=False, quantity=1):
+def create_booking(user, stock, venue, recommendation, is_cancellation=False, quantity=1):
     booking = Booking()
     booking.stock = stock
     booking.user = user
@@ -189,7 +189,7 @@ def create_booking(user, stock, recommendation, is_cancellation=False, quantity=
     if recommendation:
         booking.recommendation = recommendation
     else:
-        offer = create_thing_offer(venue=None)
+        offer = create_thing_offer(venue)
         booking.recommendation = create_recommendation(offer, user)
     if not is_cancellation:
         stock.bookings = [booking]
@@ -237,7 +237,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     if thing_offer:
         stock.offer = thing_offer
     else:
-        stock.offer = create_thing_offer(venue=None)
+        stock.offer = create_thing_offer(venue)
     stock.offer.venue = venue
     stock.isActive = True
     stock.available = available

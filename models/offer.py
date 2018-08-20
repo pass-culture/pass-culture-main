@@ -45,7 +45,7 @@ class Offer(PcObject,
 
     venueId = Column(BigInteger,
                      ForeignKey("venue.id"),
-                     nullable=True,
+                     nullable=False,
                      index=True)
 
     venue = relationship('Venue',
