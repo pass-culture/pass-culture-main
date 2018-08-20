@@ -321,7 +321,7 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limi
     PcObject.check_and_save(booking_1)
 
     recommendation = create_recommendation(thing_offer, user)
-    recommendation.save()
+    PcObject.check_and_save(recommendation)
 
     booking_json = {
         "stockId": humanize(stock_2.id),
@@ -343,7 +343,8 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limi
 @pytest.mark.standalone
 def test_create_booking_returns_bad_request_if_no_stock_id_is_given(app):
     # Given
-    create_user(email='test@email.com', password='testpsswd').save()
+    user = create_user(email='test@email.com', password='testpsswd')
+    PcObject.check_and_save(user)
     booking_json = {
         'stockId': None,
         'recommendationId': 'AFQA',
@@ -363,7 +364,8 @@ def test_create_booking_returns_bad_request_if_no_stock_id_is_given(app):
 @pytest.mark.standalone
 def test_create_booking_returns_bad_request_if_no_quantity_is_given(app):
     # Given
-    create_user(email='test@email.com', password='testpsswd').save()
+    user = create_user(email='test@email.com', password='testpsswd')
+    PcObject.check_and_save(user)
     booking_json = {
         'stockId': 'AE',
         'recommendationId': 'AFQA',

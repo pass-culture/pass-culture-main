@@ -218,7 +218,7 @@ def test_get_profile_should_work_only_when_logged_in():
 @clean_database
 def test_get_profile_should_return_the_users_profile_without_password_hash(app):
     user = create_user(email='toto@btmx.fr', public_name='Toto', departement_code='93', password='toto12345678')
-    user.save()
+    PcObject.check_and_save(user)
     r = req_with_auth(email='toto@btmx.fr',
                       password='toto12345678') \
         .get(API_URL + '/users/current')
@@ -368,7 +368,7 @@ def test_pro_signup_with_existing_offerer(app):
         "city": "Paris"
     }
     offerer = Offerer(from_dict=json_offerer)
-    offerer.save()
+    PcObject.check_and_save(offerer)
 
     data = BASE_DATA_PRO.copy()
     r_signup = req.post(API_URL + '/users/signup',

@@ -18,11 +18,11 @@ def test_get_offerers_should_work_only_when_logged_in():
 def test_get_offerers_should_return_a_list_of_offerers(app):
     # given
     offerer = create_offerer()
-    offerer.save()
+    PcObject.check_and_save(offerer)
 
     user = create_user(password='p@55sw0rd')
     user.offerers = [offerer]
-    user.save()
+    PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     # when
@@ -38,7 +38,7 @@ def test_get_offerers_should_return_a_list_of_offerers(app):
 def test_post_offerers_create_an_offerer(app):
     # given
     user = create_user(password='p@55sw0rd')
-    user.save()
+    PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
     body = {
         'name': 'Test Offerer',
