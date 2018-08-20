@@ -179,14 +179,12 @@ def write_object_validation_email(*objects_to_validate, get_by_siren=api_entrepr
 
     token = obj.validationToken
 
-
     email_html = render_template('validation_email.html',
                                  users_offerers_vars=zip(users_vars_user_offerer, offerers_vars_user_offerer),
                                  offerer_information=zip(offerers_vars_offerer, offerers_api),
                                  api_url=API_URL,
                                  joined_classes_to_validate=",".join(classes_to_validate),
                                  token=token)
-
 
     return {
         'FromName': 'Pass Culture',
@@ -203,6 +201,7 @@ def maybe_send_offerer_validation_email(*objects_to_validate):
     if len(unvalidated_objects) == 0:
         return
     email = write_object_validation_email(*unvalidated_objects)
+    print(app.mailjet_client.send)
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
         raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
