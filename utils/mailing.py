@@ -7,9 +7,7 @@ from pprint import pformat
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
-from models.offerer import Offerer
 from models.pc_object import PcObject
-from models.user_offerer import UserOfferer
 from utils.config import API_URL, ENV, IS_DEV, IS_STAGING
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
@@ -118,7 +116,7 @@ def make_booking_recap_email(stock, booking):
     if stock.eventOccurrence is None:
         stock_name = stock.offer.thing.name
         email_subject = '[Reservations] Nouvelle reservation pour {}'.format(stock_name)
-        formatted_datetime=None
+        formatted_datetime = None
     else:
         date_in_tz = _get_event_datetime(stock)
         formatted_datetime = format_datetime(date_in_tz)
@@ -148,61 +146,33 @@ def make_booking_recap_email(stock, booking):
     }
 
 
-def write_object_validation_email(*objects_to_validate, get_by_siren=api_entreprises.get_by_siren):
-    user_offerers = []
-    offerers = []
-    users_vars_user_offerer = []
-    offerers_vars_user_offerer = []
-    offerers_vars_offerer = []
-    offerers_api = []
-    classes_to_validate = []
-    for obj in objects_to_validate:
-        classes_to_validate.append(obj.__class__.__name__)
-        if isinstance(obj, UserOfferer):
-            vars_obj_user = vars(obj.user)
-            vars_obj_user.pop('clearTextPassword', None)
-            user_offerers.append(obj)
-            user_vars = pformat(vars_obj_user)
-            offerer_vars_user_offerer = pformat(vars(obj.offerer))
-            users_vars_user_offerer.append(user_vars)
-            offerers_vars_user_offerer.append(offerer_vars_user_offerer)
-        elif isinstance(obj, Offerer):
-            offerer_vars_offerer = pformat(vars(obj))
-            offerers_vars_offerer.append(offerer_vars_offerer)
-            api_entreprise_response = get_by_siren(obj)
-            offerers_api.append(api_entreprise_response.json())
-            offerers.append(obj)
-        else:
-            raise ValueError("Unexpected object type in"
-                             + " maybe_send_pro_validation_email : "
-                             + obj.__class__.__name__)
-
-    token = obj.validationToken
-
+def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entreprises.get_by_siren):
+    vars_obj_user = vars(user_offerer.user)
+    vars_obj_user.pop('clearTextPassword', None)
+    api_entreprise = get_by_siren(offerer).json()
 
     email_html = render_template('validation_email.html',
-                                 users_offerers_vars=zip(users_vars_user_offerer, offerers_vars_user_offerer),
-                                 offerer_information=zip(offerers_vars_offerer, offerers_api),
-                                 api_url=API_URL,
-                                 joined_classes_to_validate=",".join(classes_to_validate),
-                                 token=token)
-
+                                 user_offerer=user_offerer,
+                                 user_vars=pformat(vars_obj_user),
+                                 offerer=offerer,
+                                 offerer_vars_user_offerer=pformat(vars(user_offerer.offerer)),
+                                 offerer_vars=pformat(vars(offerer)),
+                                 api_entreprise=pformat(api_entreprise),
+                                 api_url=API_URL)
 
     return {
         'FromName': 'Pass Culture',
         'FromEmail': 'passculture@beta.gouv.fr',
-        'Subject': "Inscription PRO à valider",
+        'Subject': "Inscription ou rattachement PRO à valider",
         'Html-part': email_html,
-        'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING
-        else 'passculture@beta.gouv.fr'
+        'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING else 'passculture@beta.gouv.fr'
     }
 
 
-def maybe_send_offerer_validation_email(*objects_to_validate):
-    unvalidated_objects = [o for o in objects_to_validate if not o.isValidated]
-    if len(unvalidated_objects) == 0:
+def maybe_send_offerer_validation_email(offerer, user_offerer):
+    if offerer.isValidated and user_offerer.isValidated:
         return
-    email = write_object_validation_email(*unvalidated_objects)
+    email = write_object_validation_email(offerer, user_offerer)
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
         raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
