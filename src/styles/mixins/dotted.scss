@@ -16,3 +16,23 @@
     linear-gradient($color 10%, rgba(white, 0) 0%)
   );
 }
+
+.dotted-top {
+  // FIXME -> oblige d'etre override a chaque fois :(
+  @include dotted(white, top);
+}
+
+.dotted-bottom {
+  // FIXME -> oblige d'etre override a chaque fois :(
+  @include dotted(white, bottom);
+}
+
+.dotted-right {
+  // FIXME -> oblige d'etre override a chaque fois :(
+  @include dotted(white, left);
+}
+
+.dotted-left {
+  // FIXME -> oblige d'etre override a chaque fois :(
+  @include dotted(white, left);
+}

@@ -19,10 +19,10 @@ const renderPageFooter = () => (
 const BetaPage = () => (
   <Main name="beta" redBg footer={renderPageFooter}>
     <h1>
-      <strong>
+      <strong className="is-block">
         {'Bienvenue dans la version beta'}
       </strong>
-      <span>
+      <span className="is-block">
         {'du Pass Culture'}
       </span>
     </h1>

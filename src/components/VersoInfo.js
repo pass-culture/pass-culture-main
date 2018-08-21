@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import uniq from 'lodash.uniq'
@@ -21,9 +23,7 @@ const renderDescription = desc => (
 
 const renderVenueDetails = (venue, distance, where) => (
   <div>
-    <h3>
-      {'Où ?'}
-    </h3>
+    <h3>Où ?</h3>
     <a
       className="distance"
       href={navigationLink(venue.latitude, venue.longitude)}
@@ -32,14 +32,11 @@ const renderVenueDetails = (venue, distance, where) => (
       <Icon svg="ico-geoloc-solid2" alt="Géolocalisation" />
     </a>
     <ul className="address-info">
-      <li>
-        {where.name}
-      </li>
+      <li>{where.name}</li>
       {where.address.split(/[,\n\r]/).map((el, index) => (
+        // FIXME ->
         // eslint-disable-next-line react/no-array-index-key
-        <li key={index}>
-          {capitalize(el)}
-        </li>
+        <li key={index}>{capitalize(el)}</li>
       ))}
     </ul>
   </div>
@@ -90,36 +87,24 @@ const VersoInfo = ({ bookings, currentRecommendation }) => {
     <div className="verso-info">
       {managingOfferer && (
         <div className="offerer">
-          Ce livre vous est offert par 
-          {' '}
-          {managingOfferer}
-.
+          Ce livre vous est offert par {managingOfferer}.
         </div>
       )}
       {false && <img alt="" className="offerPicture" src={infos.image} />}
       {infos.description && renderDescription(infos.description)}
       {infos.what && (
         <div>
-          <h3>
-Quoi ?
-          </h3>
-          <p>
-            {infos.what}
-          </p>
+          <h3>Quoi ?</h3>
+          <p>{infos.what}</p>
         </div>
       )}
       {infos.when && (
         <div>
-          <h3>
-Quand ?
-          </h3>
+          <h3>Quand ?</h3>
           <ul className="dates-info">
-            {infos.when.length === 0 && (
-            <li>
-Plus de dates disponibles :(
-            </li>
-)}
+            {infos.when.length === 0 && <li>Plus de dates disponibles :(</li>}
             {infos.when.map((occurence, index) => (
+              // FIXME ->
               // eslint-disable-next-line react/no-array-index-key
               <li key={index}>
                 {tz &&
@@ -132,9 +117,7 @@ Plus de dates disponibles :(
               </li>
             ))}
             {bookableOccurences.length > 7 && (
-              <li>
-                {'Cliquez sur "j\'y vais" pour voir plus de dates.'}
-              </li>
+              <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>
             )}
           </ul>
         </div>

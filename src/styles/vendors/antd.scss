@@ -1,5 +1,15 @@
 @import '~antd/dist/antd.css';
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  // stop antd overrides
+  color: inherit;
+}
+
 .ant-no-shadow {
   box-shadow: none !important;
 }

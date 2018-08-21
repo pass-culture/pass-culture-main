@@ -96,10 +96,10 @@ export default compose(
   connect(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
-      const recoSelector = getSelectorByCardPosition(ownProps.position)
+      const recomendationSelector = getSelectorByCardPosition(ownProps.position)
       return {
         isFlipped: state.verso.isFlipped,
-        recommendation: recoSelector(
+        recommendation: recomendationSelector(
           state,
           offerId,
           mediationId,

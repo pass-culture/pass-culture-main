@@ -50,24 +50,19 @@ class VersoWrapper extends Component {
   }
 
   render() {
-    const {
-      children,
-      className,
-      currentRecommendation,
-      headerColor,
-    } = this.props
-    const { mediation, offer } = currentRecommendation || {}
+    const { children, className, currentRecommendation } = this.props
+    const { headerColor, mediation, offer } = currentRecommendation || {}
     const { eventOrThing, venue } = offer || {}
+
     const { tutoIndex } = mediation || {}
 
     const contentStyle = {}
+    contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     if (typeof tutoIndex === 'number') {
       contentStyle.backgroundColor = headerColor
-    } else {
-      contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     }
-    const author = get(eventOrThing, 'extraData.author')
 
+    const author = get(eventOrThing, 'extraData.author')
     return (
       <div
         ref={$el => {
@@ -103,7 +98,6 @@ class VersoWrapper extends Component {
 
 VersoWrapper.defaultProps = {
   currentRecommendation: null,
-  headerColor: null,
 }
 
 VersoWrapper.propTypes = {
@@ -113,7 +107,6 @@ VersoWrapper.propTypes = {
   dispatchMakeDraggable: PropTypes.func.isRequired,
   dispatchMakeUndraggable: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
-  headerColor: PropTypes.string,
   isFlipped: PropTypes.bool.isRequired,
 }
 
@@ -122,12 +115,13 @@ export default compose(
   connect(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
+      const currentRecommendation = currentRecommendationSelector(
+        state,
+        offerId,
+        mediationId
+      )
       return {
-        currentRecommendation: currentRecommendationSelector(
-          state,
-          offerId,
-          mediationId
-        ),
+        currentRecommendation,
         draggable: state.verso.draggable,
         isFlipped: state.verso.isFlipped,
       }

@@ -71,8 +71,6 @@ class DiscoveryPage extends React.PureComponent {
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
     const query = getDiscoveryQueryParams(match)
-    console.log('match', match)
-    console.log('query', query)
     const serviceuri = `recommendations?${query}`
     this.actions.requestData('PUT', serviceuri, {
       handleFail: this.handleRequestFail,
@@ -80,44 +78,6 @@ class DiscoveryPage extends React.PureComponent {
       normalizer: recommendationNormalizer,
     })
   }
-
-  /*
-  handleRedirectFromLoading(props) {
-    const { history, mediationId, offerId, recommendations } = props
-    if (
-      !recommendations ||
-      recommendations.length === 0 ||
-      mediationId ||
-      offerId
-    )
-      return
-
-    const targetRecommendation = recommendations[0]
-    // NOW CHOOSE AN OFFER AMONG THE ONES
-    const recommendationOffers = targetRecommendation.recommendationOffers
-    const chosenOffer =
-      recommendationOffers &&
-      recommendationOffers[
-        Math.floor(Math.random() * recommendationOffers.length)
-      ]
-
-    // PUSH
-    const path = getDiscoveryPath(chosenOffer, targetRecommendation.mediation)
-    history.push(path)
-  }
-
-  componentWillMount() {
-    // this.handleRedirectFromLoading(this.props)
-    // this.ensureRecommendations(this.props)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // this.handleRedirectFromLoading(nextProps)
-    if (nextProps.offerId && nextProps.offerId !== this.props.offerId) {
-      // this.ensureRecommendations(nextProps)
-    }
-  }
-  */
 
   render() {
     const { backButton } = this.props

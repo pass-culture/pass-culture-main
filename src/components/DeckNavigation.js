@@ -58,7 +58,8 @@ const DeckNavigation = ({
               <Finishable
                 finished={
                   isFinished && typeof tutoIndex === 'undefined'
-                  // Hard coded to prevent a weird bug to arise, should be eventually removed
+                  // Hard coded to prevent a weird bug to arise
+                  // should be eventually removed
                 }
               >
                 <Price value={priceRange} />

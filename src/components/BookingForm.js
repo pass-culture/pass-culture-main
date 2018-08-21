@@ -43,8 +43,7 @@ const onTimeUpdates = (selection, name, allvalues) => {
   const { bookables } = allvalues
   const selected = bookables.filter(o => o.stockId === selection)
   return {
-    // price: selected[0].price,
-    price: 1234567890.12345678901234567890123456789,
+    price: selected[0].price,
     // NOTE -> pas de gestion de stock
     quantity: 1,
     stockId: selected[0].stockId,

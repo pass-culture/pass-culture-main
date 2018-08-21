@@ -1,14 +1,15 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import { Logger, Icon, requestData, showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter, Link } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Price from './Price'
 import Booking from './Booking'
-// import Finishable from './layout/Finishable'
+import BookingControlButton from './BookingControlButton'
 import bookingsSelector from '../selectors/bookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
@@ -21,10 +22,9 @@ class VersoControl extends Component {
   onClickFavorite = () => {
     const { currentRecommendation, dispatchRequestData } = this.props
     const { id, isFavorite } = currentRecommendation
+    const body = { isFavorite: !isFavorite }
     dispatchRequestData('PATCH', `currentRecommendations/${id}`, {
-      body: {
-        isFavorite: !isFavorite,
-      },
+      body,
       key: 'currentRecommendations',
     })
   }
@@ -51,21 +51,14 @@ class VersoControl extends Component {
 
   render() {
     const { bookings, offer, currentRecommendation, match } = this.props
-    // const { isFinished } = currentRecommendation || {}
-    const { venue } = offer || {}
-    const { managingOfferer } = venue || {}
+    const { isFinished } = currentRecommendation || {}
     const isFavorite = currentRecommendation && currentRecommendation.isFavorite
     Logger.fixme('VersoControl is mounted but not visible')
-    const { offerId, mediationId } = match.params
     return (
       <ul className="verso-control">
         <li>
-          <small className="pass-label">
-Mon Pass
-          </small>
-          <span className="pass-value">
-——€
-          </span>
+          <small className="pass-label">Mon Pass</small>
+          <span className="pass-value">——€</span>
         </li>
         <li>
           <button
@@ -90,38 +83,12 @@ Mon Pass
           </button>
         </li>
         <li>
-          {bookings.length > 0 ? (
-            <Link
-              to="/reservations"
-              className="button is-primary is-go is-medium"
-            >
-              <Icon name="Check" />
-              {' Réservé'}
-            </Link>
-          ) : (
-            <Link to={`/decouverte/${offerId}/${mediationId}/booking`}>
-              <Price
-                value={get(offer, 'price') || get(offer, 'displayPrice')}
-                free="——"
-                className={managingOfferer ? 'strike' : ''}
-              />
-              {"J'y vais!"}
-            </Link>
-            // <Finishable finished={isFinished}>
-            //   <button
-            //     type="button"
-            //     className="button is-primary is-go is-medium"
-            //     onClick={this.onClickJyVais}
-            //   >
-            //     <Price
-            //       value={get(offer, 'price') || get(offer, 'displayPrice')}
-            //       free="——"
-            //       className={managingOfferer ? 'strike' : ''}
-            //     />
-            //     {"J'y vais!"}
-            //   </button>
-            // </Finishable>
-          )}
+          <BookingControlButton
+            offer={offer}
+            matchURL={match.url}
+            isFinished={isFinished}
+            isAlreadyBooked={bookings.length > 0}
+          />
         </li>
       </ul>
     )

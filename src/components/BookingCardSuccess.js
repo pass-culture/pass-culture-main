@@ -13,21 +13,11 @@ const renderBookedFooter = () => (
   </p>
 )
 
-/*
-const renderStepThingBooked = () => (
-  <div className="booked thing has-text-centered">
-    <p>
-      <b>Accéder au cours en ligne</b>
-    </p>
-    {renderBookedFooter()}
-  </div>
-)
-*/
-
 const BookingCardSuccess = ({ isEvent, price, gratuit }) => {
+  const isGratuit = !price || gratuit
   const cssclass = (isEvent && 'event') || 'thing'
   return (
-    <div className={`booked has-text-centerd ${cssclass}`}>
+    <div className={`booked has-text-centered ${cssclass}`}>
       <h3 style={{ fontSize: '22px' }}>
         <span
           className="is-block mb12"
@@ -42,14 +32,14 @@ const BookingCardSuccess = ({ isEvent, price, gratuit }) => {
         </span>
       </h3>
       <p>
-        {!gratuit && (
+        {!isGratuit && (
           <span className="is-block">
             {price} ont été déduit de votre pass.
           </span>
         )}
         <span className="is-block">Présentez le code suivant sur place:</span>
       </p>
-      <p>
+      <p className="is-size-1">
         <b>A684P6</b>
       </p>
       {renderBookedFooter()}

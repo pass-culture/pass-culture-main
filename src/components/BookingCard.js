@@ -2,7 +2,6 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import get from 'lodash.get'
-import pick from 'lodash.pick'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -45,16 +44,15 @@ class BookingCard extends React.PureComponent {
 
   onFormSubmit = formValues => {
     const onSubmittingStateChanged = () => {
-      console.log('formValues', formValues)
       // console.log('BookingCard.onFormSubmit => formValues', formValues)
       // setTimeout(this.handleRequestSuccess, 3000)
       this.actions.requestData('POST', 'bookings', {
-        body: pick(formValues, [
-          'price',
-          'stockId',
-          'quantity',
-          'currentRecommendationId',
-        ]),
+        body: {
+          currentRecommendationId: formValues.currentRecommendationId,
+          price: formValues.price,
+          quantity: formValues.quantity,
+          stockId: formValues.stockId,
+        },
         handleFail: this.handleRequestFail,
         handleSuccess: this.handleRequestSuccess,
         name: 'booking',
@@ -65,7 +63,8 @@ class BookingCard extends React.PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    const nextState = { isBooked: true, isErrored: action, isSubmitting: false }
+    console.log('action', action)
+    const nextState = { isBooked: true, isErrored: false, isSubmitting: false }
     this.setState(nextState)
   }
 
@@ -124,7 +123,7 @@ class BookingCard extends React.PureComponent {
   }
 
   render() {
-    const { recommendation, bookables, isevent } = this.props
+    const { recommendation, bookables, isEvent } = this.props
     const { isBooked, isErrored, isSubmitting } = this.state
     const userConnected = false
     const showForm = !isSubmitting && !isBooked && !isErrored
@@ -144,7 +143,7 @@ class BookingCard extends React.PureComponent {
         >
           <div className="views-container is-overlay">
             {isSubmitting && <BookingCardLoader />}
-            {isBooked && <BookingCardSuccess isEvent={isevent} />}
+            {isBooked && <BookingCardSuccess isEvent={isEvent} />}
             {isErrored && <BookingCardError {...isErrored} />}
             {showForm && (
               <React.Fragment>
@@ -179,7 +178,7 @@ class BookingCard extends React.PureComponent {
 
 BookingCard.defaultProps = {
   bookables: null,
-  isevent: false,
+  isEvent: false,
   recommendation: null,
 }
 
@@ -187,7 +186,7 @@ BookingCard.propTypes = {
   bookables: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  isevent: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  isEvent: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   match: PropTypes.object.isRequired,
   recommendation: PropTypes.object,
 }
@@ -199,14 +198,14 @@ const mapStateToProps = (state, { match }) => {
     offerId,
     mediationId
   )
-  const isevent = get(recommendation, 'offer.eventId') || false
+  const isEvent = (get(recommendation, 'offer.eventId') && true) || false
   // pas sur qu'un selecteur soit pertinent:
   // perfs -> l'user ne reviendra pas sur la page puisqu'il est déjà venu
   // opaque -> oblige a regarder dans un fichier ce qui se passe
   const bookables = selectBookables(state, recommendation, match)
   return {
     bookables,
-    isevent,
+    isEvent,
     recommendation,
   }
 }
