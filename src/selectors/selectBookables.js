@@ -2,7 +2,7 @@ import moment from 'moment'
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
-export const filterByQuantity = recommendation => {
+export const filterAvailableStocks = recommendation => {
   const stocks = get(recommendation, 'offer.stocks')
   if (!stocks) return []
   // available > 0
@@ -10,7 +10,7 @@ export const filterByQuantity = recommendation => {
   return filtered
 }
 
-export const filterAvailableStocks = (stocks, now, tz) => {
+export const filterOutdatedStocks = (stocks, now, tz) => {
   const results = stocks.filter(o => {
     const date = moment(o.bookingLimitDatetime).tz(tz)
     // - booking date limit >= now
@@ -27,7 +27,7 @@ export const filterAvailableStocks = (stocks, now, tz) => {
 // compose une map d'objet de type stock
 // contenant les infos pour envoyer au service de booking
 // FIXME -> regroupement des horaires pour un même jour
-export const filteredToBookable = stocks =>
+export const mapStockToBookable = stocks =>
   stocks.map((stock, index) => {
     const eventOccurrence = stock.eventOccurrence || {}
     return {
@@ -46,24 +46,22 @@ export const filteredToBookable = stocks =>
 export const selectBookable = createCachedSelector(
   (state, recommendation) => recommendation,
   recommendation => {
-    const stocks = filterByQuantity(recommendation)
+    const stocks = filterAvailableStocks(recommendation)
     if (!stocks) return []
+    /* <-------- DEBUG -------- */
+    // const now = moment('2018-08-12T23:59:00Z').tz(tz)
+    // const last = Object.assign({}, bookables[bookables.length - 1], {
+    //   beginningDatetime: '2018-08-18T10:00:00Z',
+    //   price: 1234567890.12345678901234567890123456789,
+    //   stockId: 'BWVA',
+    // })
+    // return bookables.concat([last])
+    /* --------> */
     const tz = get(recommendation, 'tz')
-    /* <-------- DEBUG -------- */
-    // const now = moment().tz(tz)
-    const now = moment('2018-08-12T23:59:00Z').tz(tz)
-    /* --------> */
-    const filtered = filterAvailableStocks(stocks, now, tz)
-    const bookables = filteredToBookable(filtered)
-    /* <-------- DEBUG -------- */
-    const last = Object.assign({}, bookables[bookables.length - 1], {
-      beginningDatetime: '2018-08-18T10:00:00Z',
-      price: 1234567890.12345678901234567890123456789,
-      stockId: 'BWVA',
-    })
-    return bookables.concat([last])
-    /* --------> */
-    // return bookables
+    const now = moment().tz(tz)
+    const filtered = filterOutdatedStocks(stocks, now, tz)
+    const bookables = mapStockToBookable(filtered)
+    return bookables
   }
 )(
   // cached key

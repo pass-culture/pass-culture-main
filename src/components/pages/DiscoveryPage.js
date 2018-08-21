@@ -71,6 +71,8 @@ class DiscoveryPage extends React.PureComponent {
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
     const query = getDiscoveryQueryParams(match)
+    console.log('match', match)
+    console.log('query', query)
     const serviceuri = `recommendations?${query}`
     this.actions.requestData('PUT', serviceuri, {
       handleFail: this.handleRequestFail,
