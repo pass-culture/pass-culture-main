@@ -12,7 +12,7 @@ const createOffererButton = Selector(
 )
 const firstArrow = arrow.nth(0)
 const modalContent = Selector('.modal-content')
-const navbarLink = Selector('a.navbar-link')
+const navbarLink = Selector('a.navbar-link, span.navbar-burger').filterVisible()
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const pageTitle = Selector('h1')
 const subTitle = Selector('h2')

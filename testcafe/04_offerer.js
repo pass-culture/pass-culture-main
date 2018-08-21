@@ -4,7 +4,7 @@ import { regularOfferer } from './helpers/roles'
 
 const adressInput = Selector('input#offerer-address')
 const nameInput = Selector('input#offerer-name')
-const navbarLink = Selector('a.navbar-link')
+const navbarLink = Selector('a.navbar-link, span.navbar-burger').filterVisible()
 const newOffererButton = Selector(
   "a.button.is-primary[href='/structures/nouveau']"
 )

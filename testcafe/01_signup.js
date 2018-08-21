@@ -43,7 +43,9 @@ test('Je créé un compte, je suis redirigé·e vers la page /structures', async
     .click(contactOkInput)
     .click(newsletterOkInput)
     .wait(1000)
-  await t.click(signUpButton).wait(10000)
+
+  await t.click(signUpButton).wait(5000)
+
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/structures')
 })
@@ -57,11 +59,12 @@ test('E-mail déjà présent dans la base et mot de passe invalide', async t => 
     .typeText(emailInput, offererUser.email)
     .typeText(passwordInput, 'pas')
     .typeText(sirenInput, offererUser.siren)
-    .wait(1000)
+    .wait(3000)
     .click(contactOkInput)
     .wait(1000)
-    .click(signUpButton)
-    .wait(1000)
+
+  await t.click(signUpButton).wait(5000)
+
   await t
     .expect(emailInputError.innerText)
     .eql('\nUn compte lié à cet email existe déjà\n\n')
