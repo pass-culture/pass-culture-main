@@ -7,9 +7,7 @@ from pprint import pformat
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
-from models.offerer import Offerer
 from models.pc_object import PcObject
-from models.user_offerer import UserOfferer
 from utils.config import API_URL, ENV, IS_DEV, IS_STAGING
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
@@ -175,12 +173,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
 
 
 def maybe_send_offerer_validation_email(offerer, user_offerer):
-    unvalidated_objects = []
-    if not offerer.isValidated:
-        unvalidated_objects.append(offerer)
-    if not user_offerer.isValidated:
-        unvalidated_objects.append(user_offerer)
-    if len(unvalidated_objects) == 0:
+    if offerer.isValidated and user_offerer.isValidated:
         return
     email = write_object_validation_email(offerer, user_offerer)
     mailjet_result = app.mailjet_client.send.create(data=email)
