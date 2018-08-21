@@ -3,9 +3,12 @@
         <h1>Inscription ou rattachement PRO à valider</h1>
         <hr/>
         <div class="user_offerer">
-            <h2>Nouveau Rattachement :</h2>
 
-            {% if not user_offerer.isValidated %}
+            {% if user_offerer.isValidated %}
+            <h2>Rattachement :</h2>
+            {% else %}
+            <h2>Nouveau rattachement :</h2>
+
             <strong class="validation">
                 Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_offerer.validationToken }}">cliquez ici</a>
             </strong>
@@ -18,9 +21,10 @@
         </div>
         <hr/>
         <div class="offerer">
-            <h2>Nouvelle Structure :</h2>
-
-            {% if not offerer.isValidated %}
+            {% if offerer.isValidated %}
+            <h2>Structure :</h2>
+            {% else %}
+            <h2>Nouvelle structure :</h2>
             <strong class="validation">
                 Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer.validationToken }}">cliquez ici</a>
             </strong>

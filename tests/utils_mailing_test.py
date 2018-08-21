@@ -522,13 +522,13 @@ def test_write_object_validation_email_should_have_some_specific_information(app
     assert html.h1.text == 'Inscription ou rattachement PRO à valider'
 
     div_offerer = html.select('div.offerer')[0]
-    assert div_offerer.h2.text == 'Nouvelle Structure :'
+    assert div_offerer.h2.text == 'Nouvelle structure :'
     assert div_offerer.h3.text == 'Infos API entreprise :'
     assert div_offerer.strong.a['href'] == 'localhost/validate?modelNames=Offerer&token={}'.format(offerer.validationToken)
     assert div_offerer.strong.a.text == 'cliquez ici'
 
     div_user_offerer = html.select('div.user_offerer')[0]
-    assert div_user_offerer.h2.text == 'Nouveau Rattachement :'
+    assert div_user_offerer.h2.text == 'Nouveau rattachement :'
     assert div_user_offerer.h3.text == 'Utilisateur :'
     assert div_user_offerer.strong.a['href'] == 'localhost/validate?modelNames=UserOfferer&token={}'.format(user_offerer.validationToken)
     assert div_user_offerer.strong.a.text == 'cliquez ici'
@@ -566,6 +566,7 @@ def test_write_object_validation_email_does_not_include_validation_link_if_user_
     # Then
     html = BeautifulSoup(email['Html-part'], features="html.parser")
     assert not html.select('div.user_offerer strong.validation a')
+    assert html.select('div.user_offerer h2')[0].text == 'Rattachement :'
 
 
 @clean_database
@@ -587,6 +588,7 @@ def test_write_object_validation_email_does_not_include_validation_link_if_offer
     # Then
     html = BeautifulSoup(email['Html-part'], features="html.parser")
     assert not html.select('div.offerer strong.validation a')
+    assert html.select('div.offerer h2')[0].text == 'Structure :'
 
 
 @clean_database
