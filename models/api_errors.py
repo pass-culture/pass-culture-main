@@ -8,9 +8,12 @@ class ApiErrors(Exception):
         self.errors = {}
 
     def addError(self, field, error):
+
+        # SPECIFIC ERRORS FROM MODELS
+        # HAPPEN FIRST, SO NO NEED TO ADD AFTER
+        # PSQL GENERIC ERRORS COMING FROM PC_OBJECT
+        # CHECK_AND_SAVE STATIC METHOD
         if field not in self.errors:
-        #    self.errors[field].append(error)
-        #else:
             self.errors[field] = [error]
 
     def checkDate(self, field, value):

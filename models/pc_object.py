@@ -21,7 +21,11 @@ from sqlalchemy.orm.collections import InstrumentedList
 from models.api_errors import ApiErrors
 from models.db import db
 from utils.human_ids import dehumanize, humanize
+from utils.logger import logger
 
+DUPLICATE_KEY_ERROR_CODE = '23505'
+NOT_FOUND_KEY_ERROR_CODE = '23503'
+OBLIGATORY_FIELD_ERROR_CODE = '23502'
 
 def serialize(value, **options):
     if isinstance(value, Enum):
@@ -177,7 +181,7 @@ class PcObject():
 
     @staticmethod
     def restize_global_error(e):
-        print("UNHANDLED ERROR : ")
+        logger.error("UNHANDLED ERROR : ")
         traceback.print_exc()
         return ["global", "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
 
@@ -191,13 +195,13 @@ class PcObject():
 
     @staticmethod
     def restize_integrity_error(e):
-        if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23505':
+        if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
             field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
             return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
-        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23503':
+        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
             field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
             return [field, 'Aucun objet ne correspond à cet identifiant dans notre base de données']
-        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == '23502':
+        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE:
             field = re.search('column "(.*?)"', e.orig.pgerror, re.IGNORECASE).group(1)
             return [field, 'Ce champ est obligatoire']
         else:
@@ -254,7 +258,7 @@ class PcObject():
                     setattr(self, key, value)
 
     @staticmethod
-    def check_and_save(*objects, **kwargs):
+    def check_and_save(*objects):
         if not objects:
             raise ValueError('Objects to save need to be passed as arguments'
                              + ' to check_and_save')
@@ -263,8 +267,9 @@ class PcObject():
         api_errors = ApiErrors()
         for obj in objects:
             obj_api_errors = obj.errors()
-            api_errors.errors.update(obj_api_errors.errors)
-            if not api_errors.errors.keys():
+            if api_errors.errors.keys():
+                api_errors.errors.update(obj_api_errors.errors)
+            else:
                 db.session.add(obj)
 
         # CHECK BEFORE COMMIT

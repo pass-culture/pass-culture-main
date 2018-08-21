@@ -71,10 +71,6 @@ class User(PcObject,
 
         if self.isAdmin and self.canBookFreeOffers:
             api_errors.addError('canBookFreeOffers', 'Admin ne peut pas booker')
-#        if self.firstname:
-#            api_errors.checkMinLength('firstname', self.firstname, 2)
-#        if self.lastname:
-#            api_errors.checkMinLength('lastname', self.lastname, 2)
         if self.clearTextPassword:
             api_errors.checkMinLength('password', self.clearTextPassword, 8)
         return api_errors
