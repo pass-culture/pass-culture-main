@@ -1,9 +1,5 @@
 """ event occurrence """
-from sqlalchemy import Binary, \
-    BigInteger, \
-    Column, \
-    DateTime, \
-    Enum, \
+from sqlalchemy import Binary, BigInteger, Column, DateTime, Enum, \
     ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 
