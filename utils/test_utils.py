@@ -341,3 +341,11 @@ def create_recommendation(offer, user):
     recommendation.offer = offer
     recommendation.user = user
     return recommendation
+
+
+def create_event_occurrence(offer, beginning_datetime, end_datetime):
+    event_occurrence = EventOccurrence()
+    event_occurrence.offer = offer
+    event_occurrence.beginningDatetime = beginning_datetime
+    event_occurrence.endDatetime = end_datetime
+    return event_occurrence
