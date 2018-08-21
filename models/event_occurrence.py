@@ -8,8 +8,8 @@ from sqlalchemy import Binary, \
 from sqlalchemy.orm import relationship
 
 from models.db import Model
-from models.event import EventType
 from models.deactivable_mixin import DeactivableMixin
+from models.event import EventType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
@@ -46,3 +46,9 @@ class EventOccurrence(PcObject,
     accessibility = Column(Binary(1),
                            nullable=False,
                            default=bytes([0]))
+
+    def errors(self):
+        api_errors = super(EventOccurrence, self).errors()
+        if self.endDatetime < self.beginningDatetime:
+            api_errors.addError('endDatetime', 'La date de fin de l\'événement doit être postérieure à la date de début')
+        return api_errors
