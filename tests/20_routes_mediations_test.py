@@ -18,11 +18,3 @@ def test_10_create_mediation():
                                         data=data,
                                         files=files)
         assert r_create.status_code == 201
-
-
-#TODO
-#def test_12_delete_mediation():
-#    r_delete = req_with_auth().delete(API_URL + '/mediations/AE')
-#    assert r_delete.status_code == 200
-#    r_check = req_with_auth().get(API_URL + '/mediations/AE')
-#    assert r_check.status_code == 404

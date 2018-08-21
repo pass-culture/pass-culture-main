@@ -48,25 +48,3 @@ def test_validate_offerer(app):
         .filter_by(id=offerer_id) \
         .first()
     assert offerer.isValidated
-
-# def test_14_get_profile_should_not_work_if_account_is_not_validated():
-#    r = req_with_auth(email='toto@btmx.fr',
-#                      password='toto12345678')\
-#                    .get(API_URL + '/users/current')
-#    assert r.status_code == 401
-#    assert 'pas validé' in r.json()['identifier']
-
-
-# def test_15_should_not_be_able_to_validate_user_with_wrong_token():
-#    r = req_with_auth(email='toto@btmx.fr',
-#                      password='toto12345678')\
-#                 .get(API_URL + '/validate?modelNames=User&token=123')
-#    assert r.status_code == 404
-
-
-# def test_16_should_be_able_to_validate_user(app):
-#    token = User.query\
-#                .filter(User.validationToken != None)\
-#                .first().validationToken
-#    r = req_with_auth().get(API_URL + '/validate?modelNames=User&token='+token)
-#    assert r.status_code == 202
