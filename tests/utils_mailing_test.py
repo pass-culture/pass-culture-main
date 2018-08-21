@@ -24,21 +24,21 @@ SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
 
 HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = \
-    '''<html>
-        <body>
-            <p id="mail-greeting">Cher Test,</p>
-    
-            <div id="mail-content">
-                Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city). Votre code de réservation est le 56789.
-            </div>
-    
-            <p id="mail-salutation">
-                Cordialement,
-                <br>L\'équipe pass culture
-            </p>
-    
-        </body>
-    </html>'''
+'''<html>
+    <body>
+        <p id="mail-greeting">Cher Test,</p>
+
+        <div id="mail-content">
+            Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city). Votre code de réservation est le 56789.
+        </div>
+
+        <p id="mail-salutation">
+            Cordialement,
+            <br>L\'équipe pass culture
+        </p>
+
+    </body>
+</html>'''
 
 SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre commande pour Test Book'
