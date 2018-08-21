@@ -157,7 +157,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
                                  offerer=offerer,
                                  offerer_vars_user_offerer=pformat(vars(user_offerer.offerer)),
                                  offerer_vars=pformat(vars(offerer)),
-                                 api_entreprise=api_entreprise,
+                                 api_entreprise=pformat(api_entreprise),
                                  api_url=API_URL)
 
     return {
