@@ -1,22 +1,18 @@
 """users routes"""
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
-from sqlalchemy.exc import IntegrityError
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.expenses import get_expenses
-from models.api_errors import ApiErrors
-from models.offerer import Offerer
-from models.pc_object import PcObject
-from models.user import User
+from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email, \
-    subscribe_newsletter
+                          subscribe_newsletter
 from utils.rest import expect_json_data, \
-    login_or_api_key_required
+                       login_or_api_key_required
 
 
 def is_pro_signup(json_user):
@@ -117,18 +113,14 @@ def signup():
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.editor)
             user_offerer.generate_validation_token()
-            objects_to_save = [user_offerer]
-        maybe_send_offerer_validation_email(offerer, user_offerer)
+            objects_to_save = [new_user, user_offerer]
     else:
         objects_to_save = [new_user]
 
-    try:
-        PcObject.check_and_save(*objects_to_save)
-    except IntegrityError as ie:
-        e = ApiErrors()
-        if "check_admin_cannot_book_free_offers" in str(ie.orig):
-            e.addError('canBookFreeOffers', 'Admin ne peut pas booker')
-        raise e
+    PcObject.check_and_save(*objects_to_save)
+    
+    if is_pro_signup(request.json):
+        maybe_send_offerer_validation_email(offerer, user_offerer)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)

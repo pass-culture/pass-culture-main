@@ -1,7 +1,6 @@
 import pytest
-from sqlalchemy.exc import IntegrityError
 
-from models import User, PcObject
+from models import ApiErrors, User, PcObject
 from tests.conftest import clean_database
 
 
@@ -18,5 +17,5 @@ def test_cannot_create_admin_that_can_book(app):
     user.canBookFreeOffers = True
 
     #When
-    with pytest.raises(IntegrityError):
+    with pytest.raises(ApiErrors):
         PcObject.check_and_save(user)

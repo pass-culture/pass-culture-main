@@ -1,9 +1,7 @@
 """ mailing """
-
 import os
 from datetime import datetime
 from pprint import pformat
-
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises

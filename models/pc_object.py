@@ -3,7 +3,10 @@ from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pprint import pprint
+import re
+import traceback
 from psycopg2.extras import DateTimeRange
+
 from sqlalchemy import CHAR,\
                        BigInteger,\
                        Column,\
@@ -12,16 +15,17 @@ from sqlalchemy import CHAR,\
                        Integer,\
                        Numeric,\
                        String
-from sqlalchemy.exc import IntegrityError, InternalError
+from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
 from models.db import db
-from utils.errors import restize_integrity_error,\
-                         restize_type_error,\
-                         restize_value_error
 from utils.human_ids import dehumanize, humanize
+from utils.logger import logger
 
+DUPLICATE_KEY_ERROR_CODE = '23505'
+NOT_FOUND_KEY_ERROR_CODE = '23503'
+OBLIGATORY_FIELD_ERROR_CODE = '23502'
 
 def serialize(value, **options):
     if isinstance(value, Enum):
@@ -140,7 +144,7 @@ class PcObject():
         pprint(vars(self))
 
     def errors(self):
-        errors = ApiErrors()
+        api_errors = ApiErrors()
         data = self.__class__.__table__.columns._data
         for key in data.keys():
             col = data[key]
@@ -152,42 +156,74 @@ class PcObject():
                and not col.primary_key\
                and col.default is None\
                and val is None:
-                errors.addError(key, 'Cette information est obligatoire')
+                api_errors.addError(key, 'Cette information est obligatoire')
             if val is None:
                 continue
             if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
                and not isinstance(col.type, Enum)\
                and not isinstance(val, str):
-                errors.addError(key, 'doit être une chaîne de caractères')
+                api_errors.addError(key, 'doit être une chaîne de caractères')
             if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
                and isinstance(val, str)\
                and col.type.length\
                and len(val)>col.type.length:
-                errors.addError(key,
+                api_errors.addError(key,
                                 'Vous devez saisir moins de '
                                       + str(col.type.length)
                                       + ' caractères')
             if isinstance(col.type, Integer)\
                and not isinstance(val, int):
-                errors.addError(key, 'doit être un entier')
+                api_errors.addError(key, 'doit être un entier')
             if isinstance(col.type, Float)\
                and not isinstance(val, float):
-                errors.addError(key, 'doit être un nombre')
-        return errors
+                api_errors.addError(key, 'doit être un nombre')
+        return api_errors
 
-    def addOrAbortIfErrors(self):
-        apiErrors = self.errors()
-        try:
-            db.session.add(self)
-        except IntegrityError:
-            apiErrors.add(*restize_integrity_error(IntegrityError))
-        except TypeError:
-            apiErrors.add(*restize_type_error(TypeError))
-        except ValueError:
-            apiErrors.add(*restize_value_error(ValueError))
-        if apiErrors.errors:
-            print(apiErrors.errors)
-            raise apiErrors
+    @staticmethod
+    def restize_global_error(e):
+        logger.error("UNHANDLED ERROR : ")
+        traceback.print_exc()
+        return ["global", "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
+
+    @staticmethod
+    def restize_data_error(e):
+        if e.args and len(e.args) > 0 and e.args[0].startswith('(psycopg2.DataError) value too long for type'):
+            max_length = re.search('\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)', e.args[0], re.IGNORECASE).group(2)
+            return ['global', "La valeur d'une entrée est trop longue (max " + max_length + ")"]
+        else:
+            return PcObject.restize_global_error(e)
+
+    @staticmethod
+    def restize_integrity_error(e):
+        if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
+            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
+            return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
+        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
+            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
+            return [field, 'Aucun objet ne correspond à cet identifiant dans notre base de données']
+        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE:
+            field = re.search('column "(.*?)"', e.orig.pgerror, re.IGNORECASE).group(1)
+            return [field, 'Ce champ est obligatoire']
+        else:
+            return PcObject.restize_global_error(e)
+
+    @staticmethod
+    def restize_type_error(e):
+        if e.args and len(e.args)>1 and e.args[1] == 'geography':
+            return [e.args[2], 'doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]']
+        elif e.args and len(e.args)>1 and e.args[1] and e.args[1]=='decimal':
+            return [e.args[2], 'doit être un nombre décimal']
+        elif e.args and len(e.args)>1 and e.args[1] and e.args[1]=='integer':
+            return [e.args[2], 'doit être un entier']
+        else:
+            return PcObject.restize_global_error(e)
+
+    @staticmethod
+    def restize_value_error(e):
+        if len(e.args)>1 and e.args[1] == 'enum':
+            return [e.args[2], ' doit etre dans cette liste : '+",".join(map(lambda x : '"'+x+'"', e.args[3]))]
+        else:
+            return PcObject.restize_global_error(e)
 
     def populateFromDict(self, dct, skipped_keys=[]):
         data = dct.copy()
@@ -226,13 +262,38 @@ class PcObject():
         if not objects:
             raise ValueError('Objects to save need to be passed as arguments'
                              + ' to check_and_save')
-        for obj in objects:
-            obj.addOrAbortIfErrors()
-        db.session.commit()
 
-    def save(self):
-        self.addOrAbortIfErrors()
-        db.session.commit()
+        # CUMULATE ERRORS IN ONE SINGLE API ERRORS DURING ADD TIME
+        api_errors = ApiErrors()
+        for obj in objects:
+            obj_api_errors = obj.errors()
+            if obj_api_errors.errors.keys():
+                api_errors.errors.update(obj_api_errors.errors)
+            else:
+                db.session.add(obj)
+
+        # CHECK BEFORE COMMIT
+        if api_errors.errors.keys():
+            raise api_errors
+
+        # COMMIT
+        try:
+            db.session.commit()
+        except DataError as de:
+            api_errors.addError(*PcObject.restize_data_error(de))
+            raise api_errors
+        except IntegrityError as ie:
+            api_errors.addError(*PcObject.restize_integrity_error(ie))
+            raise api_errors
+        except TypeError as te:
+            api_errors.addError(*PcObject.restize_type_error(te))
+            raise api_errors
+        except ValueError as ve:
+            api_errors.addError(*PcObject.restize_value_error(ve))
+            raise api_errors
+
+        if api_errors.errors.keys():
+            raise api_errors
 
     @staticmethod
     def delete(model):

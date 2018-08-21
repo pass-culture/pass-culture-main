@@ -1,5 +1,6 @@
 """User model"""
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import expression
 from sqlalchemy.orm import relationship
 from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
@@ -52,21 +53,28 @@ class User(PcObject,
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 
     def errors(self):
-        errors = super(User, self).errors()
-        if self.id is None\
-           and User.query.filter_by(email=self.email).count()>0:
-            errors.addError('email', 'Un compte lié à cet email existe déjà')
+        api_errors = super(User, self).errors()
+
+        user_count = 0
+        try:
+            user_count = User.query.filter_by(email=self.email).count()
+        except IntegrityError as ie:
+            if self.id is None:
+                api_errors.addError('email', 'Un compte lié à cet email existe déjà')
+
+        if self.id is None and user_count > 0:
+            api_errors.addError('email', 'Un compte lié à cet email existe déjà')
         if self.publicName:
-            errors.checkMinLength('publicName', self.publicName, 3)
+            api_errors.checkMinLength('publicName', self.publicName, 3)
         if self.email:
-            errors.checkEmail('email', self.email)
-#        if self.firstname:
-#            errors.checkMinLength('firstname', self.firstname, 2)
-#        if self.lastname:
-#            errors.checkMinLength('lastname', self.lastname, 2)
+            api_errors.checkEmail('email', self.email)
+
+        if self.isAdmin and self.canBookFreeOffers:
+            api_errors.addError('canBookFreeOffers', 'Admin ne peut pas booker')
         if self.clearTextPassword:
-            errors.checkMinLength('password', self.clearTextPassword, 8)
-        return errors
+            api_errors.checkMinLength('password', self.clearTextPassword, 8)
+            
+        return api_errors
 
     def get_id(self):
         return str(self.id)
