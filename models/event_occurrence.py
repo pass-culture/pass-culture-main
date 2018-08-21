@@ -1,10 +1,10 @@
 """ event occurrence """
-from sqlalchemy import Binary,\
-                       BigInteger,\
-                       Column,\
-                       DateTime,\
-                       Enum,\
-                       ForeignKey
+from sqlalchemy import Binary, \
+    BigInteger, \
+    Column, \
+    DateTime, \
+    Enum, \
+    ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -17,8 +17,7 @@ from models.providable_mixin import ProvidableMixin
 class EventOccurrence(PcObject,
                       Model,
                       DeactivableMixin,
-                      ProvidableMixin
-                     ):
+                      ProvidableMixin):
 
     id = Column(BigInteger,
                 primary_key=True)
@@ -40,6 +39,8 @@ class EventOccurrence(PcObject,
                                nullable=False)
 
     endDatetime = Column(DateTime,
+                         CheckConstraint('"endDatetime" > "beginningDatetime"',
+                                         name='check_end_datetime_is_after_beginning_datetime'),
                          nullable=False)
 
     accessibility = Column(Binary(1),
