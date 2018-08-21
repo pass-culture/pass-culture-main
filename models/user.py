@@ -53,7 +53,7 @@ class User(PcObject,
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 
     def errors(self):
-        api_errors = PcObject.errors(self)
+        api_errors = super(User, self).errors()
 
         user_count = 0
         try:
@@ -73,6 +73,7 @@ class User(PcObject,
             api_errors.addError('canBookFreeOffers', 'Admin ne peut pas booker')
         if self.clearTextPassword:
             api_errors.checkMinLength('password', self.clearTextPassword, 8)
+            
         return api_errors
 
     def get_id(self):

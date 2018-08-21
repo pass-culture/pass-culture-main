@@ -23,7 +23,7 @@ from utils.search import create_tsvector
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 (
-    "isVirtual" IS TRUE 
+    "isVirtual" IS TRUE
     AND (address IS NULL AND "postalCode" IS NULL AND city IS NULL AND "departementCode" IS NULL)
 )
 OR
@@ -87,10 +87,11 @@ class Venue(PcObject,
         self.departementCode = self.postalCode[:-3]
 
     def errors(self):
-        errors = super(Venue, self).errors()
+        api_errors = super(Venue, self).errors()
+
         if self.siret is not None \
                 and not len(self.siret) == 14:
-            errors.addError('siret', 'Ce code SIRET est invalide : ' + self.siret)
+            api_errors.addError('siret', 'Ce code SIRET est invalide : ' + self.siret)
         if self.managingOffererId is not None:
             if self.managingOfferer is None:
                 managingOfferer = Offerer.query \
@@ -98,13 +99,14 @@ class Venue(PcObject,
             else:
                 managingOfferer = self.managingOfferer
             if managingOfferer.siren is None:
-                errors.addError('siren', 'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
+                api_errors.addError('siren', 'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
                                 + 'SIREN renseigné')
             if self.siret is not None \
                     and managingOfferer is not None \
                     and not self.siret.startswith(managingOfferer.siren):
-                errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
-        return errors
+                api_errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
+
+        return api_errors
 
     @property
     def nOffers(self):

@@ -267,7 +267,7 @@ class PcObject():
         api_errors = ApiErrors()
         for obj in objects:
             obj_api_errors = obj.errors()
-            if api_errors.errors.keys():
+            if obj_api_errors.errors.keys():
                 api_errors.errors.update(obj_api_errors.errors)
             else:
                 db.session.add(obj)
@@ -291,6 +291,7 @@ class PcObject():
         except ValueError as ve:
             api_errors.addError(*PcObject.restize_value_error(ve))
             raise api_errors
+
         if api_errors.errors.keys():
             raise api_errors
 
