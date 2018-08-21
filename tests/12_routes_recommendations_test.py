@@ -161,6 +161,13 @@ def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_no_
                               expected_offer_id='AFQA')
 
 
+def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_tuto_mediationid(app):
+    subtest_recos_with_params('mediationId=AE',
+                              expected_status=200,
+                              expected_mediation_id='AE',
+                              is_tuto=True)
+
+
 def test_put_recommendations_returns_404_for_given_offer_and_mediation_but_different_event():
     # when
     response = req_with_auth().put(RECOMMENDATION_URL + '?offerId=AQ&mediationId=AE', json={})
