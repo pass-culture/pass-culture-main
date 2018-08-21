@@ -118,8 +118,9 @@ def signup():
         objects_to_save = [new_user]
 
     PcObject.check_and_save(*objects_to_save)
-
-    maybe_send_offerer_validation_email(*objects_to_save)
+    
+    if is_pro_signup(request.json):
+        maybe_send_offerer_validation_email(offerer, user_offerer)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
