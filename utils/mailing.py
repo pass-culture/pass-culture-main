@@ -149,18 +149,15 @@ def make_booking_recap_email(stock, booking):
 def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entreprises.get_by_siren):
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop('clearTextPassword', None)
-    user_vars = pformat(vars_obj_user)
-    offerer_vars_user_offerer = pformat(vars(user_offerer.offerer))
-    offerer_vars = pformat(vars(offerer))
     api_entreprise = get_by_siren(offerer).json()
 
     email_html = render_template('validation_email.html',
-                                 user_vars=user_vars,
-                                 offerer_vars_user_offerer=offerer_vars_user_offerer,
-                                 offerer_vars=offerer_vars,
+                                 user_offerer=user_offerer,
+                                 user_vars=pformat(vars_obj_user),
+                                 offerer=offerer,
+                                 offerer_vars_user_offerer=pformat(vars(user_offerer.offerer)),
+                                 offerer_vars=pformat(vars(offerer)),
                                  api_entreprise=api_entreprise,
-                                 user_token=user_offerer.validationToken,
-                                 offerer_token=offerer.validationToken,
                                  api_url=API_URL)
 
     return {

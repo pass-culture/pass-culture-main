@@ -1,28 +1,34 @@
 <html>
     <body>
         <h1>Inscription ou rattachement PRO à valider</h1>
-
+        <hr/>
         <div class="user_offerer">
             <h2>Nouveau Rattachement :</h2>
+
+            {% if not user_offerer.isValidated %}
+            <strong class="validation">
+                Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_offerer.validationToken }}">cliquez ici</a>
+            </strong>
+            {% endif %}
+
             <h3>Utilisateur :</h3>
             <pre>{{ user_vars }}</pre>
             <h4>Structure :</h4>
             <pre>{{ offerer_vars_user_offerer }} </pre>
-
-            <strong>
-                Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_token }}">cliquez ici</a>
-            </strong>
         </div>
-
+        <hr/>
         <div class="offerer">
             <h2>Nouvelle Structure :</h2>
+
+            {% if not offerer.isValidated %}
+            <strong class="validation">
+                Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer.validationToken }}">cliquez ici</a>
+            </strong>
+            {% endif %}
+
             <pre class="offerer-data">{{ offerer_vars }}</pre>
             <h3>Infos API entreprise :</h3>
             <pre class="api-entreprise-data">{{ api_entreprise }}</pre>
-
-            <strong>
-                Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer_token }}">cliquez ici</a>
-            </strong>
         </div>
     </body>
 </html>

@@ -549,6 +549,48 @@ def test_write_object_validation_email_should_have_some_specific_information(app
 
 @clean_database
 @pytest.mark.standalone
+def test_write_object_validation_email_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
+    # Given
+    validation_token = secrets.token_urlsafe(20)
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
+                             name='Accenture', validation_token=validation_token)
+
+    user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
+                       validation_token=validation_token)
+
+    user_offerer = create_user_offerer(user, offerer, validation_token=None)
+
+    # When
+    email = write_object_validation_email(offerer, user_offerer, get_by_siren=get_mocked_response_status_200)
+
+    # Then
+    html = BeautifulSoup(email['Html-part'], features="html.parser")
+    assert not html.select('div.user_offerer strong.validation a')
+
+
+@clean_database
+@pytest.mark.standalone
+def test_write_object_validation_email_does_not_include_validation_link_if_offerer_is_already_validated(app):
+    # Given
+    validation_token = secrets.token_urlsafe(20)
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
+                             name='Accenture', validation_token=None)
+
+    user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
+                       validation_token=validation_token)
+
+    user_offerer = create_user_offerer(user, offerer, validation_token)
+
+    # When
+    email = write_object_validation_email(offerer, user_offerer, get_by_siren=get_mocked_response_status_200)
+
+    # Then
+    html = BeautifulSoup(email['Html-part'], features="html.parser")
+    assert not html.select('div.offerer strong.validation a')
+
+
+@clean_database
+@pytest.mark.standalone
 def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
     app.mailjet_client.reset_mock()
