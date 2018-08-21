@@ -3,15 +3,17 @@ import { Selector } from 'testcafe'
 import { regularOfferer } from './helpers/roles'
 
 const adressInput = Selector('#venue-address')
-const backButton = Selector('a.back-button')
+const backAnchor = Selector('a.back-button')
 const cityInput = Selector('#venue-city')
-const closeButton = Selector('button.close-button').withText('OK')
+const closeAnchor = Selector('button.close-button').withText('OK')
 
 const latitudeInput = Selector('#venue-latitude')
 const longitudeInput = Selector('#venue-longitude')
 const nameInput = Selector('#venue-name')
-const navbarLink = Selector('a.navbar-link, span.navbar-burger').filterVisible()
-const newVenueButton = Selector('a.button.is-secondary').withText(
+const navbarAnchor = Selector(
+  'a.navbar-link, span.navbar-burger'
+).filterVisible()
+const newVenueAnchor = Selector('a.button.is-secondary').withText(
   '+ Ajouter un lieu'
 )
 const postalCodeInput = Selector('#venue-postalCode')
@@ -21,11 +23,11 @@ const offererButton = Selector("a[href^='/structures/']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 const siretInput = Selector('#venue-siret')
-const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
+const offerersNavbarAnchor = Selector("a.navbar-item[href='/structures']")
 const siretInputError = Selector('#venue-siret-error')
 const submitButton = Selector('button.button.is-primary') //créer un lieu
-const updateButton = Selector('a.button.is-secondary') //modifier un lieu
-const venueButton = Selector('#a-theatre-national-de-chaillot')
+const updateAnchor = Selector('a.button.is-secondary') //modifier un lieu
+const venueAnchor = Selector('#a-theatre-national-de-chaillot')
 
 fixture`05_01 VenuePage | Créer un nouveau lieu avec succès`
 test('Je rentre une nouveau lieu via son siret avec succès', async t => {
@@ -34,11 +36,11 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
 
   // navigation
   await t
-    .click(navbarLink)
-    .click(offerersNavbarLink)
+    .click(navbarAnchor)
+    .click(offerersNavbarAnchor)
     .click(offererButton)
     .wait(500)
-    .click(newVenueButton)
+    .click(newVenueAnchor)
 
   // input
   // WATCH WE ENTER AN OTHER SIRET THAN THE FIRST CHAILLOT ONE '69203951400017'
@@ -64,7 +66,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
 
   // close notification div
   await t
-    .click(closeButton)
+    .click(closeAnchor)
     .expect(notificationError.exists)
     .notOk()
 })
@@ -75,11 +77,11 @@ fixture`05_02 VenuePage | Je ne peux pas créer de lieu, j'ai des erreurs`.befor
 
     // navigation
     await t
-      .click(navbarLink)
-      .click(offerersNavbarLink)
+      .click(navbarAnchor)
+      .click(offerersNavbarAnchor)
       .click(offererButton)
       .wait(500)
-      .click(newVenueButton)
+      .click(newVenueAnchor)
   }
 )
 
@@ -101,7 +103,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
 
   // close notification div
   await t
-    .click(closeButton)
+    .click(closeAnchor)
     .expect(notificationError.exists)
     .notOk()
 })
@@ -133,28 +135,28 @@ fixture`05_03 VenuePage |  Component | Je suis sur la page de détail du lieu`.b
 
     // navigation
     await t
-      .click(navbarLink)
-      .click(offerersNavbarLink)
+      .click(navbarAnchor)
+      .click(offerersNavbarAnchor)
       .click(offererButton)
       .wait(500)
-      .click(venueButton)
+      .click(venueAnchor)
   }
 )
 
 test('Je vois les détails du lieu', async t => {
   // Navigate to offerer Detail page and found venue added
-  await t.click(backButton)
+  await t.click(backAnchor)
 
   const location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
     .match(/\/structures\/([A-Z0-9]*)$/)
-    .expect(venueButton.innerText)
+    .expect(venueAnchor.innerText)
     .eql('THEATRE NATIONAL DE CHAILLOT')
 })
 
 test('Je peux modifier le lieu', async t => {
   // Submit button should disapear
   // update
-  await t.click(updateButton)
+  await t.click(updateAnchor)
 })

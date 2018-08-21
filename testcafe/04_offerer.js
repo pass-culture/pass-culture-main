@@ -4,8 +4,10 @@ import { regularOfferer } from './helpers/roles'
 
 const adressInput = Selector('input#offerer-address')
 const nameInput = Selector('input#offerer-name')
-const navbarLink = Selector('a.navbar-link, span.navbar-burger').filterVisible()
-const newOffererButton = Selector(
+const navbarAnchor = Selector(
+  'a.navbar-link, span.navbar-burger'
+).filterVisible()
+const newOffererAnchor = Selector(
   "a.button.is-primary[href='/structures/nouveau']"
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
@@ -18,9 +20,9 @@ fixture`04_01 OffererPage | Créer une nouvelle structure`.beforeEach(
     await t
       .useRole(regularOfferer)
       // le userRole a l'option preserveUrl: true donc le test commence sur la page /offres
-      .click(navbarLink)
+      .click(navbarAnchor)
       .click(offerersNavbarLink)
-      .click(newOffererButton)
+      .click(newOffererAnchor)
   }
 )
 

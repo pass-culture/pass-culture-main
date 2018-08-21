@@ -1,28 +1,114 @@
 import { Selector } from 'testcafe'
-import { ROOT_PATH } from '../src/utils/config'
 
 import { regularOfferer } from './helpers/roles'
 
-const backButton = Selector('a.back-button.has-text-primary.active')
-const cancelButton = Selector('a.back-button')
-const createOfferButton = Selector(
-  "a.button.is-primary[href='/offres/nouveau?lieu=AE']"
+const cancelAnchor = Selector('button.button').withText('Annuler')
+const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
+const createOfferFromVenueAnchor = Selector(
+  "a.button[href='/offres/nouveau?lieu=AE']"
+)
+const descriptionInput = Selector('#offer-description')
+const durationMinutesInput = Selector('#offer-durationMinutes')
+const navbarAnchor = Selector(
+  'a.navbar-link, span.navbar-burger'
+).filterVisible()
+const offererAnchor = Selector("a[href^='/structures/']").withText(
+  'THEATRE NATIONAL DE CHAILLOT'
+)
+const offererInput = Selector('#offer-offererId')
+const offererOption = Selector('option').withText(
+  'THEATRE NATIONAL DE CHAILLOT'
+)
+const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
+const nameInput = Selector('#offer-name')
+const submitButton = Selector('button.button.is-primary').withText(
+  'Enregistrer'
+)
+const typeOption = Selector('option').withText(
+  'Dédicace / Rencontre / Conférence'
+)
+const typeInput = Selector('#offer-type')
+const venueAnchor = Selector("a[href='/structures/AE/lieux/AE']").withText(
+  'THEATRE NATIONAL DE CHAILLOT'
 )
 
 fixture`06_01 OfferPage | Créer une nouvelle offre`
 
-test.skip("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre", async t => {
+test.skip("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
   await t
     .useRole(regularOfferer)
-    .navigateTo(ROOT_PATH + 'structures/AE/lieux/AE')
+    .click(createOfferAnchor)
+    .wait(1000)
 
-  await t.click(createOfferButton).wait(500)
   const location = await t.eval(() => window.location)
-  // await t.expect(location.pathname).eql('/offres/nouveau?lieu=AE')
   await t.expect(location.pathname).eql('/offres/nouveau')
+})
 
-  await t.click(cancelButton)
+test.skip("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre, et je peux revenir avec le bouton annuler", async t => {
+  await t
+    .useRole(regularOfferer)
+    .click(navbarAnchor)
+    .click(offerersNavbarLink)
+    .click(offererAnchor)
+    .wait(500)
+    .click(venueAnchor)
+    .wait(500)
+
+  await t.click(createOfferFromVenueAnchor).wait(1000)
+
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/offres/nouveau')
+})
+
+test.skip('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {
+  await t
+    .useRole(regularOfferer)
+    .click(createOfferAnchor)
+    .wait(1000)
+
+  const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres')
 })
 
-// annuler renvoie vers /offres
+test('Je peux remplir une offre', async t => {
+  await t
+    .useRole(regularOfferer)
+    .click(createOfferAnchor)
+    .wait(1000)
+
+  await t.typeText(nameInput, 'Rencontre avec Franck Lepage').wait(500)
+
+  await t
+    .click(typeInput)
+    .click(typeOption)
+    //.expect(typeInput.selectedIndex).eql(1);
+    .wait(500)
+
+  await t
+    .click(offererInput)
+    .click(offererOption)
+    .wait(500)
+
+  await t.typeText(durationMinutesInput, '120').wait(500)
+
+  await t
+    .typeText(
+      descriptionInput,
+      [
+        'Alors que les licenciements sont devenus des plans de sauvegarde de l’emploi, ',
+        'ou que votre banquier se veut votre partenaire, ',
+        'il est temps de se poser certaines questions. ',
+        'Avec d’autres travailleurs socioculturels, ',
+        'lassés des euphémismes et des mensonges du langage du pouvoir, ',
+        'Franck Lepage s’est lancé dans cette bataille très politique : celle des mots. ',
+        "Atelier d'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ",
+        "Suivi d'une séance de dédicaces.",
+      ].join('')
+    )
+    .wait(500)
+
+  await t.click(submitButton).wait(5000)
+
+  //const location = await t.eval(() => window.location)
+  //await t.expect(location.pathname).eql('/offres')
+})

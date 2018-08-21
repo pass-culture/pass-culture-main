@@ -4,10 +4,10 @@ import { regularOfferer } from './helpers/roles'
 
 const activationMessage = Selector('ul.actions li.is-italic')
 const arrow = Selector('.caret a')
-const backButton = Selector('a.button.is-secondary')
+const backAnchor = Selector('a.button.is-secondary')
 const closeButton = Selector('.close')
-const createOfferButton = Selector('a.button.is-primary')
-const createOffererButton = Selector(
+const createOfferAnchor = Selector('a.button.is-primary')
+const createOffererAnchor = Selector(
   "a.button.is-primary[href='/structures/nouveau']"
 )
 const firstArrow = arrow.nth(0)
@@ -30,9 +30,9 @@ test("J'arrive sur la page /offres après m'être connecté·e", async t => {
 
 test("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une modale m'informe et je suis redirigé·e vers la page /structures", async t => {
   await t
-    .expect(createOfferButton.innerText)
+    .expect(createOfferAnchor.innerText)
     .eql('\nCréer une offre\n')
-    .click(createOfferButton)
+    .click(createOfferAnchor)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres/nouveau')
   await t
@@ -69,14 +69,14 @@ test("Je peux voir les détails d'une structure (THEATRE NATIONAL DE CHAILLOT)",
 })
 
 test('Je peux rattacher une nouvelle structure', async t => {
-  await t.click(createOffererButton)
+  await t.click(createOffererAnchor)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/structures/nouveau')
   await t
     .expect(pageTitle.innerText)
     .eql('Structure')
 
-    .click(backButton)
+    .click(backAnchor)
   const newLocation = await t.eval(() => window.location)
   await t.expect(newLocation.pathname).eql('/structures')
 })
