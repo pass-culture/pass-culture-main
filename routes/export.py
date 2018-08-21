@@ -6,7 +6,7 @@ from inspect import isclass
 from io import BytesIO, StringIO
 
 from flask import current_app as app, jsonify, request, send_file
-from sqlalchemy import func
+from sqlalchemy import func, distinct, extract
 
 import models
 from models import Booking
@@ -96,36 +96,19 @@ def get_users_per_date_per_department():
     headers = ['user_id', 'dateCreated', 'department']
     return _make_csv_response(file_name, headers, result)
 
-
-@app.route('/exports/user_offerers_per_rights', methods=['GET'])
-def get_user_offerers_per_rights():
+@app.route('/exports/users_stats', methods=['GET'])
+def get_users_stats():
     _check_token()
+    type_date = _check_type_date(request.args.get('type_date'))
 
-    result = db.session.query(
-        UserOfferer.rights,
-        func.count(UserOfferer.id)) \
-        .group_by(UserOfferer.rights) \
-        .order_by(UserOfferer.rights) \
+    result = db.session.query(func.date_trunc(type_date, User.dateCreated), User.departementCode, func.count(distinct(User.id)), func.count(Booking.id), func.count(distinct(Booking.userId))) \
+        .filter(User.canBookFreeOffers == 'true') \
+        .join(Booking, isouter = 'true') \
+        .group_by(func.date_trunc(type_date, User.dateCreated), User.departementCode) \
         .all()
 
-    file_name = 'export_%s_userOfferer_per_rights.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['rigths_type', 'nb_userOfferers']
-    return _make_csv_response(file_name, headers, result)
-
-
-@app.route('/exports/booking_sum_per_users_department', methods=['GET'])
-def get_booking_sum_per_user_departments():
-    _check_token()
-
-    result = db.session.query(
-        User.departementCode,
-        func.count(User.id)) \
-        .join(Booking) \
-        .group_by(User.departementCode) \
-        .all()
-
-    file_name = 'export_%s_Booking_sum_per_users_department.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['departement_code', 'nb_bookings']
+    file_name = 'export_%s_users_stats.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = [type_date, 'department', 'distinct_user', 'count_booking', 'count_distinct_booking_users']
     return _make_csv_response(file_name, headers, result)
 
 @app.route('/exports/bookings', methods=['GET'])
@@ -164,6 +147,7 @@ def get_bookings_per_date_per_departement():
     file_name = 'export_%s_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['User_id', 'User_departementCode', 'Booking_id', 'Booking_dateModified', 'Stock_id', 'EventOccurrence_id', 'EventOccurrence_beginningDatetime', 'Offer_id', 'Venue_id', 'Venue_name', 'Venue_departementCode', 'Offerer_id', 'Offerer_name', 'Event_id', 'Event_name']
     return _make_csv_response(file_name, headers, result)
+
 
 @app.route('/exports/offers', methods=['GET'])
 def get_offers_per_date_per_department():
@@ -268,3 +252,9 @@ def _clean_dict_for_export(model_name, dct):
         del (dct['password'])
         del (dct['id'])
     return dct
+
+
+def _check_type_date(type_date):
+    if type_date == 'year' or type_date == 'month' or type_date == 'day':
+        return type_date
+    return 'day'
