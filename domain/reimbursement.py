@@ -36,6 +36,7 @@ class Reimbursement:
             'description': self.description
         }
 
+
 class ReimbursementRule(Enum):
     NO_REIMBURSEMENT_OF_DIGITAL_THINGS = Reimbursement(
         description='Pas de remboursement pour les offres digitales'
@@ -53,6 +54,7 @@ class ReimbursementRule(Enum):
             'name': self.name,
             'rule': self.value.as_dict()
         }
+
 
 def compute_cumulative_booking_values(bookings):
     booking_values = list(map(compute_booking_reimbursable_value, bookings))

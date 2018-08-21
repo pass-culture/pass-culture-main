@@ -71,18 +71,18 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
     user_pro = create_user(password='p@55sw0rd', can_book_free_offers=False)
     user = create_user(email='test@email.com')
     deposit = create_deposit(user, now, amount='500')
-    deposit.save()
+    PcObject.check_and_save(deposit)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
-    user_offerer.save()
+    PcObject.check_and_save(user_offerer)
 
     venue = create_venue(offerer)
     stock1 = create_stock_with_event_offer(offerer, venue, price=20)
     stock2 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=30)
     stock3 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=40)
-    booking1 = create_booking(user, stock1, recommendation=None, quantity=2, date_modified=now - timedelta(days=5))
-    booking2 = create_booking(user, stock2, recommendation=None, quantity=1, date_modified=now - timedelta(days=10))
-    booking3 = create_booking(user, stock3, recommendation=None, quantity=2, date_modified=now - timedelta(days=1))
+    booking1 = create_booking(user, stock1, venue, recommendation=None, quantity=2, date_modified=now - timedelta(days=5))
+    booking2 = create_booking(user, stock2, venue, recommendation=None, quantity=1, date_modified=now - timedelta(days=10))
+    booking3 = create_booking(user, stock3, venue, recommendation=None, quantity=2, date_modified=now - timedelta(days=1))
 
     PcObject.check_and_save(booking1, booking2, booking3)
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
@@ -107,17 +107,17 @@ def test_get_offerer_bookings_returns_bad_request_if_user_has_no_rights_on_offer
     now = datetime.utcnow()
     user = create_user(email='test@email.com', password='p@55sw0rd!')
     deposit = create_deposit(user, now, amount='500')
-    deposit.save()
+    PcObject.check_and_save(deposit)
     offerer = create_offerer()
-    offerer.save()
+    PcObject.check_and_save(offerer)
 
     venue = create_venue(offerer)
     stock1 = create_stock_with_event_offer(offerer, venue, price=20)
     stock2 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=30)
     stock3 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=40)
-    booking1 = create_booking(user, stock1, recommendation=None, quantity=2, date_modified=now - timedelta(days=5))
-    booking2 = create_booking(user, stock2, recommendation=None, quantity=1, date_modified=now - timedelta(days=10))
-    booking3 = create_booking(user, stock3, recommendation=None, quantity=2, date_modified=now - timedelta(days=1))
+    booking1 = create_booking(user, stock1, venue, recommendation=None, quantity=2, date_modified=now - timedelta(days=5))
+    booking2 = create_booking(user, stock2, venue, recommendation=None, quantity=1, date_modified=now - timedelta(days=10))
+    booking3 = create_booking(user, stock3, venue, recommendation=None, quantity=2, date_modified=now - timedelta(days=1))
 
     PcObject.check_and_save(booking1, booking2, booking3)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd!')
@@ -134,7 +134,7 @@ def test_get_offerer_bookings_returns_bad_request_if_user_has_no_rights_on_offer
 def test_get_offerer_bookings_should_work_only_when_logged_in(app):
     # when
     offerer = create_offerer()
-    offerer.save()
+    PcObject.check_and_save(offerer)
     response = req.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
     # then
