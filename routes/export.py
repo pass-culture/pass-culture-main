@@ -15,12 +15,17 @@ from models import EventOccurrence
 from models import Offer
 from models import Offerer
 from models import Stock
+from models import Thing
 from models import User
 from models import UserOfferer
 from models import Venue
 from models.api_errors import ApiErrors
 from models.db import db
 from models.pc_object import PcObject
+
+from postgresql_audit.flask import versioning_manager
+
+Activity = versioning_manager.activity_cls
 
 EXPORT_TOKEN = os.environ.get('EXPORT_TOKEN')
 
@@ -156,10 +161,11 @@ def get_offers_per_date_per_department():
     date_max = request.args.get('date_max')
     department = request.args.get('department')
 
-    query = db.session.query(Offer.id, Event.id, Event.name, EventOccurrence.beginningDatetime, Venue.departementCode) \
+    query = db.session.query(Offer.id, Event.id, Event.name, EventOccurrence.beginningDatetime, Venue.departementCode, Offerer.id, Offerer.name) \
         .join(Event) \
         .join(EventOccurrence) \
-        .join(Venue)
+        .join(Venue) \
+        .join(Offerer)
 
     if department:
         query = query.filter(Venue.departementCode == department)
@@ -171,7 +177,7 @@ def get_offers_per_date_per_department():
     result = query.order_by(EventOccurrence.beginningDatetime) \
         .all()
     file_name = 'export_%s_offers.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['offer_id', 'event_id', 'event_name', 'event_date', 'departement_code']
+    headers = ['offer_id', 'event_id', 'event_name', 'event_date', 'departement_code', 'Offerer_id', 'Offerer_name']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -182,8 +188,11 @@ def get_offerers_per_date_per_departement():
     date_max = request.args.get('date_max')
     department = request.args.get('department')
 
-    query = db.session.query(Offerer.id, Offerer.name, Offerer.dateCreated, Venue.departementCode) \
-        .join(Venue)
+    # query = db.session.query(Offerer.id, Offerer.name, Offerer.dateCreated, Venue.departementCode) \
+    #     .join(Venue) \
+    query = db.session.query(func.distinct(Offerer.id), Offerer.name, Activity.issued_at, Venue.departementCode).join(Venue).join(Activity, Activity.table_name == 'offerer').filter(Activity.verb == 'insert')
+
+    # db.session.query(Offerer.name, Venue.id, Activity.issued_at).join(Venue).join(Activity, activity.table_name = %s' % Venue.__table__).all()
 
     if department:
         query = query.filter(Venue.departementCode == department)
@@ -192,11 +201,57 @@ def get_offerers_per_date_per_departement():
     if date_max:
         query = query.filter(Offerer.dateCreated <= date_max)
 
-    result = query.order_by(Offerer.dateCreated) \
+    result = query.order_by(Activity.issued_at) \
         .all()
 
     file_name = 'export_%s_offerers.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'dateCreated', 'departement_code']
+    return _make_csv_response(file_name, headers, result)
+
+
+@app.route('/exports/user_offerers', methods=['GET'])
+def get_user_offerers_Offer_Book():
+    _check_token()
+    date_min = request.args.get('date_min')
+    date_max = request.args.get('date_max')
+    department = request.args.get('department')
+
+    # query = db.session.query(User.id, UserOfferer.rights, User.dateCreated, User.email, Offerer.id, Offerer.name, Venue.id, Venue.departementCode, Venue.name, Offer.id, Offer.dateCreated, Booking.id, Booking.dateModified) \
+    #     .join(UserOfferer) \
+    #     .join(Offerer, isouter = True) \
+    #     .join(Venue) \
+    #     .join(Offer, isouter = True) \
+    #     .join(Stock) \
+    #     .join(Booking, isouter = True) \
+
+
+    query = db.session.query(Offerer.id, Offerer.name, Venue.id, Venue.departementCode, Venue.name, Offer.id, Offer.dateCreated, Event.id, Event.name, Stock.id, Booking.id, Booking.dateModified) \
+        .join(Venue) \
+        .join(Offer, isouter = True) \
+        .join(Stock, isouter = True) \
+        .join(Booking, isouter = True) \
+        .join(Event)
+
+        
+    # query = db.session.query(Offerer.id, Offerer.name, Venue.id, Venue.departementCode, Venue.name, Offer.id, Offer.dateCreated, Event.id, Event.name, Stock.id, Booking.id, Booking.dateModified) \
+    #     .join(Venue) \
+    #     .outerjoin(Offer)
+    #     .outerjoin(Stock)
+    #     .outerjoin(Booking) \
+    #     .join(Event)
+
+    if department:
+        query = query.filter(Venue.departementCode == department)
+    if date_min:
+        query = query.filter(Offerer.dateCreated >= date_min)
+    if date_max:
+        query = query.filter(Offerer.dateCreated <= date_max)
+
+    result = query.all()
+
+    file_name = 'export_%s_userOfferers.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = ['Offerer_id', 'Offerer_name', 'Venue_id', 'Venue_departementCode', 'Venue_name', 'Offer_id', 'Offer_dateCreated', 'Event_id', 'Event_name', 'Stock.id', 'Booking_id', 'Booking_dateModified']
+    # headers = ['User_id', 'UserOfferer_rights', 'User_dateCreated', 'User_email', 'Offerer_id', 'Offerer_name', 'Venue_id', 'Venue_departementCode', 'Venue_name', 'Offer_id', 'Offer_dateCreated', 'Event_id', 'Event_name', 'Thing_id', 'Thing_name', 'Booking_id', 'Booking_dateModified']
     return _make_csv_response(file_name, headers, result)
 
 
