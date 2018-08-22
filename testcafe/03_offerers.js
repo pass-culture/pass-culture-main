@@ -14,8 +14,8 @@ const firstArrow = arrow.nth(0)
 const modalContent = Selector('.modal-content')
 const navbarLink = Selector('a.navbar-link, span.navbar-burger').filterVisible()
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
-const pageTitle = Selector('h1')
-const subTitle = Selector('h2')
+const pageTitleHeader = Selector('h1')
+const subTitleHeader = Selector('h2')
 
 fixture`03_01 OfferersPage | Je me connecte pour la première fois en tant que nouvel utilisateur·ice`.beforeEach(
   async t => {
@@ -25,7 +25,7 @@ fixture`03_01 OfferersPage | Je me connecte pour la première fois en tant que n
 )
 
 test("J'arrive sur la page /offres après m'être connecté·e", async t => {
-  await t.expect(pageTitle.innerText).eql('Vos offres')
+  await t.expect(pageTitleHeader.innerText).eql('Vos offres')
 })
 
 test("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une modale m'informe et je suis redirigé·e vers la page /structures", async t => {
@@ -65,7 +65,7 @@ test("Je peux voir les détails d'une structure (THEATRE NATIONAL DE CHAILLOT)",
   await t.click(firstArrow)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
-  await t.expect(subTitle.innerText).eql('THEATRE NATIONAL DE CHAILLOT')
+  await t.expect(subTitleHeader.innerText).eql('THEATRE NATIONAL DE CHAILLOT')
 })
 
 test('Je peux rattacher une nouvelle structure', async t => {
@@ -73,7 +73,7 @@ test('Je peux rattacher une nouvelle structure', async t => {
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/structures/nouveau')
   await t
-    .expect(pageTitle.innerText)
+    .expect(pageTitleHeader.innerText)
     .eql('Structure')
 
     .click(backAnchor)

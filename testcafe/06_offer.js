@@ -2,6 +2,7 @@ import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
 
+const beginningDateAnchor = Selector('#occurrence-beginningDate')
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
 const createOfferFromVenueAnchor = Selector(
@@ -9,6 +10,7 @@ const createOfferFromVenueAnchor = Selector(
 )
 const descriptionInput = Selector('#offer-description')
 const durationMinutesInput = Selector('#offer-durationMinutes')
+const nameInput = Selector('#offer-name')
 const navbarAnchor = Selector(
   'a.navbar-link, span.navbar-burger'
 ).filterVisible()
@@ -20,7 +22,7 @@ const offererOption = Selector('option').withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
-const nameInput = Selector('#offer-name')
+const scheduleAnchor = Selector('a.button').withText('+ Ajouter un horaire')
 const submitButton = Selector('button.button.is-primary').withText(
   'Enregistrer'
 )
@@ -32,7 +34,7 @@ const venueAnchor = Selector("a[href='/structures/AE/lieux/AE']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 
-fixture`06_01 OfferPage | Créer une nouvelle offre`
+fixture`06_01 OfferPage | Naviguer vers creer une offre`
 
 test.skip("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
   await t
@@ -70,7 +72,9 @@ test.skip('Lorsque je clique sur le bouton annuler une offre sur la page des off
   await t.expect(location.pathname).eql('/offres')
 })
 
-test('Je peux remplir une offre', async t => {
+fixture`06_02 OfferPage | Créer une nouvelle offre`
+
+test('Je peux créer une offre', async t => {
   await t
     .useRole(regularOfferer)
     .click(createOfferAnchor)
@@ -109,6 +113,13 @@ test('Je peux remplir une offre', async t => {
 
   await t.click(submitButton).wait(5000)
 
-  //const location = await t.eval(() => window.location)
-  //await t.expect(location.pathname).eql('/offres')
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).match(/\/offres\/([A-Z0-9]*)?gestion$/)
+
+  await t
+    .click(scheduleAnchor)
+    .expect(beginningDateAnchor.value)
+    .eql('08/22/2018')
 })
+
+//fixture`06_03 OfferPage | Créer une nouvelle offre`
