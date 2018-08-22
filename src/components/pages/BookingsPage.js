@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -8,15 +10,15 @@ import { Link } from 'react-router-dom'
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
-import otherBookingsSelector from '../../selectors/otherBookings'
-import soonBookingsSelector from '../../selectors/soonBookings'
+import {
+  selectSoonBookings,
+  selectOtherBookings,
+} from '../../selectors/selectBookings'
 import { bookingNormalizer } from '../../utils/normalizers'
 
 const renderPageHeader = () => (
   <header>
-    <h1>
-      {'Mes réservations'}
-    </h1>
+    <h1>Mes réservations</h1>
   </header>
 )
 
@@ -24,6 +26,25 @@ const renderPageFooter = () => {
   const footerProps = { borderTop: true }
   return <Footer {...footerProps} />
 }
+
+const renderNoBookingSection = () => (
+  <div>
+    <p className="nothing">Pas encore de réservation.</p>
+    <p className="nothing">
+      <Link to="/decouverte" className="button is-primary">
+        Allez-y !
+      </Link>
+    </p>
+  </div>
+)
+
+const renderBookingList = items => (
+  <ul className="bookings">
+    {items.map(booking => (
+      <BookingItem key={booking.id} booking={booking} />
+    ))}
+  </ul>
+)
 
 class BookingsPage extends Component {
   constructor(props) {
@@ -43,6 +64,10 @@ class BookingsPage extends Component {
 
   render() {
     const { soonBookings, otherBookings } = this.props
+    // NOTE -> perfs: calculate length once
+    const soonBookingsLength = soonBookings.length
+    const otherBookingsLength = otherBookings.length
+    const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
     return (
       <Main
         backButton
@@ -52,43 +77,19 @@ class BookingsPage extends Component {
         footer={renderPageFooter}
         redBg
       >
-        {soonBookings.length > 0 && (
+        {soonBookingsLength > 0 && (
           <div>
-            <h4>
-              {"C'est bientôt !"}
-            </h4>
-            <ul className="bookings">
-              {soonBookings.map(booking => (
-                <BookingItem key={booking.id} booking={booking} />
-              ))}
-            </ul>
+            <h4>C&apos;est bientôt !</h4>
+            {renderBookingList(soonBookings)}
           </div>
         )}
-        {otherBookings.length > 0 && (
+        {otherBookingsLength > 0 && (
           <div>
-            <h4>
-Réservations
-            </h4>
-            <ul className="bookings">
-              {otherBookings.map(booking => (
-                <BookingItem key={booking.id} booking={booking} />
-              ))}
-            </ul>
+            <h4>Réservations</h4>
+            {renderBookingList(otherBookings)}
           </div>
         )}
-        {soonBookings.length === 0 &&
-          otherBookings.length === 0 && (
-            <div>
-              <p className="nothing">
-Pas encore de réservation.
-              </p>
-              <p className="nothing">
-                <Link to="/decouverte" className="button is-primary">
-                  Allez-y !
-                </Link>
-              </p>
-            </div>
-          )}
+        {hasNoBooking && renderNoBookingSection()}
       </Main>
     )
   }
@@ -100,9 +101,10 @@ BookingsPage.propTypes = {
   soonBookings: PropTypes.array.isRequired,
 }
 
-const mapStateToProps = state => ({
-  otherBookings: otherBookingsSelector(state),
-  soonBookings: soonBookingsSelector(state),
-})
+const mapStateToProps = state => {
+  const otherBookings = selectOtherBookings(state)
+  const soonBookings = selectSoonBookings(state)
+  return { otherBookings, soonBookings }
+}
 
 export default connect(mapStateToProps)(BookingsPage)

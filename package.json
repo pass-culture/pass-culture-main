@@ -31,6 +31,7 @@
     "html-webpack-plugin": "2.29.0",
     "indexeddbshim": "^3.6.2",
     "lodash.debounce": "^4.0.8",
+    "lodash.difference": "^4.5.0",
     "lodash.flatten": "^4.4.0",
     "lodash.get": "^4.4.2",
     "lodash.groupby": "^4.6.0",

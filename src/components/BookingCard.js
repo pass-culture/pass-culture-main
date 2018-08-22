@@ -24,8 +24,8 @@ class BookingCard extends React.PureComponent {
     const actions = { requestData }
     this.actions = bindActionCreators(actions, props.dispatch)
     this.state = {
+      bookedPayload: false,
       canSubmitForm: false,
-      isBooked: false,
       isErrored: false,
       isSubmitting: false,
     }
@@ -46,13 +46,14 @@ class BookingCard extends React.PureComponent {
     const onSubmittingStateChanged = () => {
       // console.log('BookingCard.onFormSubmit => formValues', formValues)
       // setTimeout(this.handleRequestSuccess, 3000)
+      const body = {
+        price: formValues.price,
+        quantity: formValues.quantity,
+        recommendationId: formValues.recommendationId,
+        stockId: formValues.stockId,
+      }
       this.actions.requestData('POST', 'bookings', {
-        body: {
-          currentRecommendationId: formValues.currentRecommendationId,
-          price: formValues.price,
-          quantity: formValues.quantity,
-          stockId: formValues.stockId,
-        },
+        body,
         handleFail: this.handleRequestFail,
         handleSuccess: this.handleRequestSuccess,
         name: 'booking',
@@ -63,15 +64,18 @@ class BookingCard extends React.PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    console.log('action', action)
-    const nextState = { isBooked: true, isErrored: false, isSubmitting: false }
+    const nextState = {
+      bookedPayload: action.data,
+      isErrored: false,
+      isSubmitting: false,
+    }
     this.setState(nextState)
   }
 
   handleRequestFail = (state, action) => {
     // TODO -> ajouter une gestion des erreurs
     const nextState = {
-      isBooked: false,
+      bookedPayload: false,
       isErrored: action,
       isSubmitting: false,
     }
@@ -85,9 +89,8 @@ class BookingCard extends React.PureComponent {
   }
 
   renderFormControls = () => {
-    const { isBooked, isSubmitting, canSubmitForm } = this.state
-    const showOkButton = isBooked
-    const showCancelButton = !isSubmitting && !isBooked
+    const { bookedPayload, isSubmitting, canSubmitForm } = this.state
+    const showCancelButton = !isSubmitting && !bookedPayload
     const showSubmitButton = showCancelButton && canSubmitForm
     return (
       <React.Fragment>
@@ -109,7 +112,7 @@ class BookingCard extends React.PureComponent {
             <b>Valider</b>
           </button>
         )}
-        {showOkButton && (
+        {bookedPayload && (
           <button
             type="button"
             className="has-text-centered my5"
@@ -124,9 +127,16 @@ class BookingCard extends React.PureComponent {
 
   render() {
     const { recommendation, bookables, isEvent } = this.props
-    const { isBooked, isErrored, isSubmitting } = this.state
+    const { bookedPayload, isErrored, isSubmitting } = this.state
     const userConnected = false
-    const showForm = !isSubmitting && !isBooked && !isErrored
+    const showForm = !isSubmitting && !bookedPayload && !isErrored
+    const formInitialValues = {
+      bookables,
+      date: null,
+      quantity: 1,
+      recommendationId: recommendation.id,
+      stockId: null,
+    }
     return (
       <div id="booking-card" className="is-overlay flex-rows">
         <header className="flex-0">
@@ -143,7 +153,9 @@ class BookingCard extends React.PureComponent {
         >
           <div className="views-container is-overlay">
             {isSubmitting && <BookingCardLoader />}
-            {isBooked && <BookingCardSuccess isEvent={isEvent} />}
+            {bookedPayload && (
+              <BookingCardSuccess isEvent={isEvent} data={bookedPayload} />
+            )}
             {isErrored && <BookingCardError {...isErrored} />}
             {showForm && (
               <React.Fragment>
@@ -154,15 +166,9 @@ class BookingCard extends React.PureComponent {
                   onSubmit={this.onFormSubmit}
                   recommendation={recommendation}
                   onMutation={this.onFormMutation}
+                  initialValues={formInitialValues}
                   onValidation={this.onFormValidation}
                   className="flex-rows items-center"
-                  initialValues={{
-                    bookables,
-                    currentRecommendationId: recommendation.id,
-                    date: null,
-                    quantity: 1,
-                    stockId: null,
-                  }}
                 />
               </React.Fragment>
             )}

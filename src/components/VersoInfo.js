@@ -11,7 +11,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import ReactMarkdown from 'react-markdown'
 
-import bookingsSelector from '../selectors/bookings'
+import { selectBookings } from '../selectors/selectBookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { navigationLink } from '../utils/geolocation'
 
@@ -149,7 +149,7 @@ export default compose(
     )
     const eventOrThingId = get(currentRecommendation, 'offer.eventOrThing.id')
     return {
-      bookings: bookingsSelector(state, eventOrThingId),
+      bookings: selectBookings(state, eventOrThingId),
       currentRecommendation,
     }
   })

@@ -2,19 +2,26 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { Icon } from 'antd'
+import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
+import { getPrice } from '../helpers'
+
 const renderBookedFooter = () => (
   <p>
-    Retrouvez ce code et les détails de l&apos;offre dans la rubrique{' '}
-    <Link to="/reservations">Mes Réservations</Link>
+    Retrouvez ce code et les détails de l&apos;offre dans la rubrique
+    <Link to="/reservations">
+      <b className="is-primary-text"> Mes Réservations </b>
+    </Link>
     de votre compte
   </p>
 )
 
-const BookingCardSuccess = ({ isEvent, price, gratuit }) => {
-  const isGratuit = !price || gratuit
+const BookingCardSuccess = ({ isEvent, data }) => {
+  const token = get(data, 'token')
+  let price = get(data, 'stock.price')
+  price = getPrice(price)
   const cssclass = (isEvent && 'event') || 'thing'
   return (
     <div className={`booked has-text-centered ${cssclass}`}>
@@ -32,30 +39,20 @@ const BookingCardSuccess = ({ isEvent, price, gratuit }) => {
         </span>
       </h3>
       <p>
-        {!isGratuit && (
-          <span className="is-block">
-            {price} ont été déduit de votre pass.
-          </span>
-        )}
+        <span className="is-block">{price} ont été déduit de votre pass.</span>
         <span className="is-block">Présentez le code suivant sur place:</span>
       </p>
-      <p className="is-size-1">
-        <b>A684P6</b>
+      <p className="is-size-1 my28">
+        <b>{token}</b>
       </p>
       {renderBookedFooter()}
     </div>
   )
 }
 
-BookingCardSuccess.defaultProps = {
-  gratuit: false,
-  price: null,
-}
-
 BookingCardSuccess.propTypes = {
-  gratuit: PropTypes.bool,
+  data: PropTypes.object.isRequired,
   isEvent: PropTypes.bool.isRequired,
-  price: PropTypes.number,
 }
 
 export default BookingCardSuccess

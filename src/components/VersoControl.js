@@ -10,7 +10,7 @@ import { compose } from 'redux'
 
 import Booking from './Booking'
 import BookingControlButton from './BookingControlButton'
-import bookingsSelector from '../selectors/bookings'
+import selectBookings from '../selectors/selectBookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
 class VersoControl extends Component {
@@ -20,8 +20,8 @@ class VersoControl extends Component {
   }
 
   onClickFavorite = () => {
-    const { currentRecommendation, dispatchRequestData } = this.props
-    const { id, isFavorite } = currentRecommendation
+    const { recommendation, dispatchRequestData } = this.props
+    const { id, isFavorite } = recommendation
     const body = { isFavorite: !isFavorite }
     dispatchRequestData('PATCH', `currentRecommendations/${id}`, {
       body,
@@ -34,8 +34,8 @@ class VersoControl extends Component {
   }
 
   onClickJyVais = () => {
-    const { currentRecommendation, offer, dispatchShowModal } = this.props
-    const { isFinished } = currentRecommendation || {}
+    const { recommendation, offer, dispatchShowModal } = this.props
+    const { isFinished } = recommendation || {}
 
     if (isFinished) return
     if (offer) {
@@ -50,9 +50,9 @@ class VersoControl extends Component {
   }
 
   render() {
-    const { bookings, offer, currentRecommendation, match } = this.props
-    const { isFinished } = currentRecommendation || {}
-    const isFavorite = currentRecommendation && currentRecommendation.isFavorite
+    const { bookings, offer, recommendation, match } = this.props
+    const { isFinished } = recommendation || {}
+    const isFavorite = recommendation && recommendation.isFavorite
     Logger.fixme('VersoControl is mounted but not visible')
     return (
       <ul className="verso-control">
@@ -96,17 +96,17 @@ class VersoControl extends Component {
 }
 
 VersoControl.defaultProps = {
-  currentRecommendation: null,
   offer: null,
+  recommendation: null,
 }
 
 VersoControl.propTypes = {
   bookings: PropTypes.array.isRequired,
-  currentRecommendation: PropTypes.object,
   dispatchRequestData: PropTypes.func.isRequired,
   dispatchShowModal: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
   offer: PropTypes.object,
+  recommendation: PropTypes.object,
 }
 
 export default compose(
@@ -114,15 +114,17 @@ export default compose(
   connect(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
-      const currentRecommendation = currentRecommendationSelector(
+      const recommendation = currentRecommendationSelector(
         state,
         offerId,
         mediationId
       )
-      const eventOrThingId = get(currentRecommendation, 'offer.eventOrThing.id')
+      const eventOrThingId = get(recommendation, 'offer.eventOrThing.id')
+      console.log('recommendation', recommendation)
+      console.log('eventOrThingId', eventOrThingId)
       return {
-        bookings: bookingsSelector(state, eventOrThingId),
-        currentRecommendation,
+        bookings: selectBookings(state, eventOrThingId),
+        recommendation,
       }
     },
     {
