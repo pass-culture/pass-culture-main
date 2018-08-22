@@ -87,16 +87,18 @@ def get_users_per_date_per_department():
     date_max = request.args.get('date_max')
     department = request.args.get('department')
 
-    query = db.session.query(User.id, User.dateCreated, User.departementCode)
+    query = db.session.query(User.id, Activity.issued_at, User.departementCode) \
+        .join(Activity, Activity.table_name == 'users') \
+        .filter(Activity.verb == 'insert')
 
     if department:
         query = query.filter(User.departementCode == department)
     if date_min:
-        query = query.filter(User.dateCreated >= date_min)
+        query = query.filter(Activity.issued_at >= date_min)
     if date_max:
-        query = query.filter(User.dateCreated <= date_max)
+        query = query.filter(Activity.issued_at <= date_max)
 
-    result = query.order_by(User.dateCreated).all()
+    result = query.order_by(Activity.issued_at).all()
     file_name = 'export_%s_users.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['user_id', 'dateCreated', 'department']
     return _make_csv_response(file_name, headers, result)
@@ -106,14 +108,16 @@ def get_users_stats():
     _check_token()
     type_date = _check_type_date(request.args.get('type_date'))
 
-    result = db.session.query(func.date_trunc(type_date, User.dateCreated), User.departementCode, func.count(distinct(User.id)), func.count(Booking.id), func.count(distinct(Booking.userId))) \
+    result = db.session.query(User.departementCode, func.date_trunc(type_date, Activity.issued_at), func.count(distinct(User.id)), func.count(Booking.id), func.count(distinct(Booking.userId))) \
+        .join(Activity, Activity.table_name == 'user') \
+        .filter(Activity.verb == 'insert') \
         .filter(User.canBookFreeOffers == 'true') \
         .join(Booking, isouter = 'true') \
-        .group_by(func.date_trunc(type_date, User.dateCreated), User.departementCode) \
+        .group_by(func.date_trunc(type_date, Activity.issued_at), User.departementCode) \
         .all()
 
     file_name = 'export_%s_users_stats.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = [type_date, 'department', 'distinct_user', 'count_booking', 'count_distinct_booking_users']
+    headers = ['department', type_date, 'distinct_user', 'count_booking', 'count_distinct_booking_users']
     return _make_csv_response(file_name, headers, result)
 
 @app.route('/exports/bookings', methods=['GET'])
@@ -128,6 +132,8 @@ def get_bookings_per_date_per_departement():
 
     query = db.session.query(User.id, User.departementCode, Booking.id, Booking.dateModified, Stock.id, EventOccurrence.id, EventOccurrence.beginningDatetime, Offer.id, Venue.id, Venue.name, Venue.departementCode, Offerer.id, Offerer.name, Event.id, Event.name) \
         .join(Booking) \
+        .join(Activity, Activity.table_name == 'booking') \
+        .filter(Activity.verb == 'insert') \
         .join(Stock) \
         .join(EventOccurrence) \
         .join(Offer) \
@@ -136,9 +142,9 @@ def get_bookings_per_date_per_departement():
         .join(Event)
 
     if booking_date_min:
-        query = query.filter(Booking.dateModified >= booking_date_min)
+        query = query.filter(Activity.issued_at >= booking_date_min)
     if booking_date_max:
-        query = query.filter(Booking.dateModified <=  booking_date_max)
+        query = query.filter(Activity.issued_at <=  booking_date_max)
     if event_date_min:
         query = query.filter(EventOccurrence.beginningDatetime >= event_date_min)
     if event_date_max:
@@ -190,16 +196,19 @@ def get_offerers_per_date_per_departement():
 
     # query = db.session.query(Offerer.id, Offerer.name, Offerer.dateCreated, Venue.departementCode) \
     #     .join(Venue) \
-    query = db.session.query(func.distinct(Offerer.id), Offerer.name, Activity.issued_at, Venue.departementCode).join(Venue).join(Activity, Activity.table_name == 'offerer').filter(Activity.verb == 'insert')
+    query = db.session.query(func.distinct(Offerer.id), Offerer.name, Activity.issued_at, Venue.departementCode) \
+        .join(Venue) \
+        .join(Activity, Activity.table_name == 'offerer') \
+        .filter(Activity.verb == 'insert')
 
     # db.session.query(Offerer.name, Venue.id, Activity.issued_at).join(Venue).join(Activity, activity.table_name = %s' % Venue.__table__).all()
 
     if department:
         query = query.filter(Venue.departementCode == department)
     if date_min:
-        query = query.filter(Offerer.dateCreated >= date_min)
+        query = query.filter(Activity.issued_at >= date_min)
     if date_max:
-        query = query.filter(Offerer.dateCreated <= date_max)
+        query = query.filter(Activity.issued_at <= date_max)
 
     result = query.order_by(Activity.issued_at) \
         .all()
@@ -268,6 +277,21 @@ def get_venue_per_department():
     headers = ['departement_code', 'nb_Venue']
     return _make_csv_response(file_name, headers, result)
 
+
+@app.route('/exports/tracked_activity', methods=['GET'])
+def get_tracked_activity_from_id():
+    _check_token()
+    object_id = request.args.get('object_id')
+    table_name = request.args.get('table_name')
+
+    result = db.session.query(Activity.changed_data) \
+        .filter(Activity.table_name == table_name, 
+        Activity.data['id'].astext.cast(db.Integer) == object_id) \
+        .all()
+
+    file_name = 'export_%s_tracked_activity.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = []
+    return _make_csv_response(file_name, headers, result)
 
 def _make_csv_response(file_name, headers, result):
     csv_file = StringIO()
