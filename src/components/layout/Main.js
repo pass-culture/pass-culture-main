@@ -8,6 +8,7 @@ import {
   resetForm,
   showNotification,
   Spinner,
+  withBlock,
   withLogin,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -34,7 +35,6 @@ class Main extends Component {
     this.setState({
       loading: false,
     })
-    console.log('action', action)
     this.props.showNotification({
       type: 'danger',
       text: get(action, 'errors.0.global') || 'Erreur de chargement',
@@ -58,41 +58,15 @@ class Main extends Component {
     })
   }
 
-  handleHistoryBlock = () => {
-    const { blockers, history } = this.props
-    this.unblock && this.unblock()
-    this.unblock = history.block(() => {
-      if (!blockers) {
-        return
-      }
-      // test all the blockers
-      for (let blocker of blockers) {
-        const { block } = blocker || {}
-        const shouldBlock = block && block(this.props)
-        if (shouldBlock) {
-          return false
-        }
-      }
-      // return true by default, which means that we don't block
-      // the change of pathname
-      return true
-    })
-  }
-
   componentDidMount() {
-    this.handleHistoryBlock()
     this.props.user && this.handleDataRequest()
   }
 
   componentDidUpdate(prevProps) {
-    const blockersChanged = prevProps.blockers !== this.props.blockers
     const userChanged = !prevProps.user && this.props.user // User just loaded
     const searchChanged =
       this.props.location.search !== prevProps.location.search
 
-    if (blockersChanged) {
-      this.handleHistoryBlock()
-    }
     if (userChanged || searchChanged) {
       this.handleDataRequest()
     }
@@ -193,9 +167,9 @@ export default compose(
   withLogin({
     failRedirect: '/connexion',
   }),
+  withBlock,
   connect(
     state => ({
-      blockers: state.blockers,
       notification: state.notification,
       user: state.user,
     }),

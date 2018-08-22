@@ -1,5 +1,4 @@
 import {
-  blockers,
   errors,
   form,
   loading,
@@ -13,7 +12,6 @@ import { combineReducers } from 'redux'
 import data from './data'
 
 const rootReducer = combineReducers({
-  blockers,
   data,
   errors,
   form,
