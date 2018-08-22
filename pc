@@ -142,6 +142,7 @@ elif [[ "$CMD" == "install" ]]; then
        git submodule update;
        git submodule foreach git checkout master;
 			 ./pc symlink;
+			 cd $ROOT_PATH/shared && yarn install;
        cd $ROOT_PATH/webapp && yarn;
 			 cd $ROOT_PATH/pro && yarn'
 elif [[ "$CMD" == "install-geoip" ]]; then
