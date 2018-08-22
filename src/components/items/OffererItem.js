@@ -4,8 +4,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
-import venuesSelector from '../selectors/venues'
-import { pluralize } from '../utils/string'
+import venuesSelector from '../../selectors/venues'
+import { pluralize } from '../../utils/string'
 
 const OffererItem = ({ offerer, venues }) => {
   const { id, name, isValidated } = offerer || {}

@@ -5,7 +5,7 @@ import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
 import Main from '../layout/Main'
-import OffererItem from '../OffererItem'
+import OffererItem from '../items/OffererItem'
 import offerersSelector from '../../selectors/offerers'
 import { offererNormalizer } from '../../utils/normalizers'
 

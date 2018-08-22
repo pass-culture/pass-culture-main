@@ -14,6 +14,10 @@ const nameInput = Selector('#offer-name')
 const navbarAnchor = Selector(
   'a.navbar-link, span.navbar-burger'
 ).filterVisible()
+
+const occurenceBeginningTimeAnchor = Selector('#occurrence-beginningTime')
+const occurenceEndTimeAnchor = Selector('#occurrence-endTime')
+
 const offererAnchor = Selector("a[href^='/structures/']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )

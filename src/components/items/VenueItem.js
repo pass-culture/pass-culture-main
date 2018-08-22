@@ -3,7 +3,7 @@ import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
-import { pluralize } from '../utils/string'
+import { pluralize } from '../../utils/string'
 
 const VenueItem = ({ venue }) => {
   const { address, city, id, managingOffererId, name, postalCode } = venue || {}

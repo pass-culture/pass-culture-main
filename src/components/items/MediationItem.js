@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
-import { THUMBS_URL } from '../utils/config'
+import { THUMBS_URL } from '../../utils/config'
 
 class MediationItem extends Component {
   render() {

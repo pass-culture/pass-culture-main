@@ -6,13 +6,13 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OccurrenceForm from './OccurrenceForm'
-import eventSelector from '../selectors/event'
-import occurrenceErrorsSelector from '../selectors/occurrenceErrors'
-import occurrencesSelector from '../selectors/occurrences'
-import offerSelector from '../selectors/offer'
-import searchSelector from '../selectors/search'
-import providerSelector from '../selectors/provider'
+import OccurrenceItem from '../items/OccurrenceItem'
+import eventSelector from '../../selectors/event'
+import occurrenceErrorsSelector from '../../selectors/occurrenceErrors'
+import occurrencesSelector from '../../selectors/occurrences'
+import offerSelector from '../../selectors/offer'
+import searchSelector from '../../selectors/search'
+import providerSelector from '../../selectors/provider'
 
 class OccurrenceManager extends Component {
   onCloseClick = e => {
@@ -88,10 +88,10 @@ class OccurrenceManager extends Component {
                 </td>
               </tr>
               {eventOccurrenceIdOrNew === 'nouvelle' && (
-                <OccurrenceForm isFullyEditable={!provider} />
+                <OccurrenceItem isFullyEditable={!provider} />
               )}
               {occurrences.map(o => (
-                <OccurrenceForm
+                <OccurrenceItem
                   key={o.id}
                   isFullyEditable={!provider}
                   occurrence={o}
