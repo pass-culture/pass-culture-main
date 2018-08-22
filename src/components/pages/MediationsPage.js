@@ -1,7 +1,7 @@
 import React from 'react'
 
-import MediationManager from '../MediationManager'
 import Main from '../layout/Main'
+import MediationManager from '../managers/MediationManager'
 
 const MediationsPage = () => {
   return (

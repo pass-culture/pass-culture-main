@@ -16,14 +16,14 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import eventSelector from '../selectors/event'
-import occurrenceSelector from '../selectors/occurrence'
-import occurrencesSelector from '../selectors/occurrences'
-import offerSelector from '../selectors/offer'
-import searchSelector from '../selectors/search'
-import stockSelector from '../selectors/stock'
-import timezoneSelector from '../selectors/timezone'
-import venueSelector from '../selectors/venue'
+import eventSelector from '../../selectors/event'
+import occurrenceSelector from '../../selectors/occurrence'
+import occurrencesSelector from '../../selectors/occurrences'
+import offerSelector from '../../selectors/offer'
+import searchSelector from '../../selectors/search'
+import stockSelector from '../../selectors/stock'
+import timezoneSelector from '../../selectors/timezone'
+import venueSelector from '../../selectors/venue'
 
 class OccurrenceForm extends Component {
   constructor() {

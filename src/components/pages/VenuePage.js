@@ -13,12 +13,11 @@ import {
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { NavLink } from 'react-router-dom'
+import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { withRouter } from 'react-router'
 
-import ProviderManager from '../ProviderManager'
 import Main from '../layout/Main'
+import ProviderManager from '../managers/ProviderManager'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
@@ -55,20 +54,25 @@ class VenuePage extends Component {
         params: { offererId, venueId },
       },
       requestData,
+      venue,
     } = this.props
-    requestData('GET', `offerers/${offererId}`, {
-      handleSuccess: () => {
-        requestData('GET', `venues/${venueId ? venueId : ''}`, {
-          handleSuccess,
-          handleFail,
-          key: 'venues',
-          normalizer: venueNormalizer,
-        })
-      },
-      handleFail,
-      key: 'offerers',
-      normalizer: offererNormalizer,
-    })
+    if (!venue && venueId !== 'nouveau') {
+      requestData('GET', `offerers/${offererId}`, {
+        handleSuccess: () => {
+          requestData('GET', `venues/${venueId}`, {
+            handleSuccess,
+            handleFail,
+            key: 'venues',
+            normalizer: venueNormalizer,
+          })
+        },
+        handleFail,
+        key: 'offerers',
+        normalizer: offererNormalizer,
+      })
+    } else {
+      return handleSuccess()
+    }
   }
 
   handleSuccess = (state, action) => {

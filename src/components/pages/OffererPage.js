@@ -10,11 +10,10 @@ import {
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { NavLink } from 'react-router-dom'
+import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import VenueItem from '../VenueItem'
+import VenueItem from '../items/VenueItem'
 import Main from '../layout/Main'
 import offererSelector from '../../selectors/offerer'
 import venuesSelector from '../../selectors/venues'

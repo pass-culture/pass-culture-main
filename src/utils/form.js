@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { Form } from 'pass-culture-shared'
 
 import GeoInput from '../components/layout/GeoInput'
@@ -10,6 +11,7 @@ Object.assign(Form.WrappedComponent.inputsByType, {
 })
 
 Object.assign(Form.WrappedComponent.defaultProps, {
-  handleFailNotification: () => 'Formulaire non validé',
+  handleFailNotification: (state, action) =>
+    get(action, 'errors.0.global') || 'Formulaire non validé',
   handleSuccessNotification: () => 'Formulaire validé',
 })

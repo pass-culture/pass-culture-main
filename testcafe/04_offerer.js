@@ -4,8 +4,10 @@ import { regularOfferer } from './helpers/roles'
 
 const adressInput = Selector('input#offerer-address')
 const nameInput = Selector('input#offerer-name')
-const navbarLink = Selector('a.navbar-link')
-const newOffererButton = Selector(
+const navbarAnchor = Selector(
+  'a.navbar-link, span.navbar-burger'
+).filterVisible()
+const newOffererAnchor = Selector(
   "a.button.is-primary[href='/structures/nouveau']"
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
@@ -18,9 +20,9 @@ fixture`04_01 OffererPage | Créer une nouvelle structure`.beforeEach(
     await t
       .useRole(regularOfferer)
       // le userRole a l'option preserveUrl: true donc le test commence sur la page /offres
-      .click(navbarLink)
+      .click(navbarAnchor)
       .click(offerersNavbarLink)
-      .click(newOffererButton)
+      .click(newOffererAnchor)
   }
 )
 
@@ -36,10 +38,10 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
     .wait(1000)
 
   // submit
-  await t.click(submitButton).wait(1000)
+  await t.click(submitButton).wait(3000)
 
   // api return an error message
-  await t.expect(sirenErrorInput.innerText).eql('Ce code SIREN est invalide')
+  await t.expect(sirenErrorInput.innerText).eql('\nSiren invalide\n')
 })
 
 test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base', async t => {
@@ -54,13 +56,13 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
     .wait(1000)
 
   // submit
-  await t.click(submitButton).wait(2000)
+  await t.click(submitButton).wait(3000)
 
   // api return an error message
   await t
     .expect(sirenErrorInput.innerText)
     .eql(
-      'Une entrée avec cet identifiant existe déjà dans notre base de données'
+      '\nUne entrée avec cet identifiant existe déjà dans notre base de données\n'
     )
 })
 
@@ -80,7 +82,7 @@ test('Je rentre une nouvelle structure via son siren', async t => {
   await t.expect(adressInput.value).eql('167 QUAI DE VALMY')
 
   // submit
-  await t.click(submitButton).wait(1000)
+  await t.click(submitButton).wait(3000)
 
   // check location success change
   location = await t.eval(() => window.location)
