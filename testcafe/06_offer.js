@@ -2,22 +2,24 @@ import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
 
-const beginningDateAnchor = Selector('#occurrence-beginningDate')
+const addScheduleAnchor = Selector('a.button').withText('+ Ajouter un horaire')
+const availableInput = Selector('#stock-available')
+const beginningDateInput = Selector('#occurrence-beginningDate')
+const bookingLimitDatetimeInput = Selector('#stock-bookingLimitDatetime')
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
 const createOfferFromVenueAnchor = Selector(
-  "a.button[href='/offres/nouveau?lieu=AE']"
+  "a.button[href='/offres/nouveau?lieu=']"
 )
 const descriptionInput = Selector('#offer-description')
 const durationMinutesInput = Selector('#offer-durationMinutes')
+const editScheduleAnchor = Selector("a.button[href='/offres/A9?gestion&date=']")
 const nameInput = Selector('#offer-name')
 const navbarAnchor = Selector(
   'a.navbar-link, span.navbar-burger'
 ).filterVisible()
-
-const occurenceBeginningTimeAnchor = Selector('#occurrence-beginningTime')
-const occurenceEndTimeAnchor = Selector('#occurrence-endTime')
-
+const occurenceBeginningTimeInput = Selector('#occurrence-beginningTime')
+const occurenceEndTimeInput = Selector('#occurrence-endTime')
 const offererAnchor = Selector("a[href^='/structures/']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
@@ -26,7 +28,11 @@ const offererOption = Selector('option').withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
-const scheduleAnchor = Selector('a.button').withText('+ Ajouter un horaire')
+const priceInput = Selector('#stock-price')
+const scheduleCloseButton = Selector('button.button').withText('Fermer')
+const scheduleSubmitButton = Selector('button.button.is-primary').withText(
+  'Valider'
+)
 const submitButton = Selector('button.button.is-primary').withText(
   'Enregistrer'
 )
@@ -117,13 +123,73 @@ test('Je peux créer une offre', async t => {
 
   await t.click(submitButton).wait(5000)
 
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).match(/\/offres\/([A-Z0-9]*)?gestion$/)
+  let location = await t.eval(() => window.location)
+  await t
+    .expect(location.pathname)
+    .match(/\/offres\/([A-Z0-9]*)$/)
+    .expect(location.search)
+    .eql('?gestion')
+
+  // ADD AN EVENT OCCURENCE AND A STOCK
+  await t.click(addScheduleAnchor).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('?gestion&date=nouvelle')
+
+  await t.click(scheduleSubmitButton).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t
+    .expect(location.search)
+    .eql(/\?gestion&date=([A-Z0-9]*)&stock=nouveau$/)
 
   await t
-    .click(scheduleAnchor)
-    .expect(beginningDateAnchor.value)
-    .eql('08/22/2018')
+    .typeText(priceInput, '10')
+    .typeText(availableInput, '50')
+    .click(scheduleSubmitButton)
+    .wait(500)
+
+  await t.click(scheduleSubmitButton).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('?gestion')
+
+  // ADD AN OTHER EVENT OCCURENCE AND A STOCK
+  await t.click(addScheduleAnchor).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('?gestion&date=nouvelle')
+
+  await t.click(scheduleSubmitButton).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('?gestion')
+
+  // EDIT ONE
+  await t.click(editScheduleAnchor)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).match(/\?gestion&date=([A-Z0-9]*)$/)
+
+  await t.click(scheduleSubmitButton).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t
+    .expect(location.search)
+    .eql(/\?gestion&date=([A-Z0-9]*)&stock=([A-Z0-9]*)$/)
+
+  await t.typeText(availableInput, '10')
+
+  await t.click(scheduleSubmitButton).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('?gestion')
+
+  // CLOSE
+  await t.click(scheduleCloseButton).wait(500)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('')
 })
 
 //fixture`06_03 OfferPage | Créer une nouvelle offre`
