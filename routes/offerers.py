@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.reimbursement import compute_cumulative_booking_values, find_all_booking_reimbursement
+from domain.reimbursement import find_all_booking_reimbursement
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer, RightsType
@@ -42,8 +42,7 @@ def get_offerer(id):
 def get_offerer_bookings(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
     bookings = find_all_by_offerer_sorted_by_date_modified_asc(dehumanize(id))
-    cumulative_values = compute_cumulative_booking_values(bookings)
-    bookings_reimbursements = find_all_booking_reimbursement(bookings, cumulative_values)
+    bookings_reimbursements = find_all_booking_reimbursement(bookings)
     return jsonify(list(map(lambda b: b.as_dict(), bookings_reimbursements))[::-1]), 200
 
 

@@ -63,7 +63,6 @@ def clean_database(f):
         Booking.query.delete()
         Stock.query.delete()
         EventOccurrence.query.delete()
-        Recommendation.query.delete()
         Mediation.query.delete()
         Recommendation.query.delete()
         Offer.query.delete()

@@ -1,8 +1,6 @@
+from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
-from itertools import accumulate
-
-MAX_REIMBURSEMENT_FOR_OFFERER_PER_YEAR = 23000
 
 
 class BookingReimbursement:
@@ -10,84 +8,74 @@ class BookingReimbursement:
         self.booking = booking
         self.reimbursement = reimbursement
 
-    def __eq__(self, other):
-        return self.booking == other.booking \
-               and self.reimbursement == other.reimbursement
-
-    def __repr__(self):
-        return repr(self.booking) + repr(self.reimbursement)
-
     def as_dict(self):
         return {
             'booking': self.booking._asdict(),
-            'reimbursement': self.reimbursement.as_dict()
+            'reimbursement': {
+                'name': self.reimbursement.name,
+                'description': self.reimbursement.value.description,
+                'rate': self.reimbursement.value.rate,
+            }
         }
 
 
-class Reimbursement:
-    def __init__(self, is_active=True, rate=Decimal(0), description=''):
-        self.is_active = is_active
-        self.rate = rate
-        self.description = description
-
-    def as_dict(self):
-        return {
-            'rate': self.rate,
-            'description': self.description
-        }
+class ReimbursementRule(ABC):
+    @abstractmethod
+    def apply(self, booking, **kwargs):
+        pass
 
 
-class ReimbursementRule(Enum):
-    NO_REIMBURSEMENT_OF_DIGITAL_THINGS = Reimbursement(
-        description='Pas de remboursement pour les offres digitales'
-    )
-    FULL_REIMBURSEMENT_OF_PHYSICAL_OFFERS = Reimbursement(
-        rate=Decimal(1),
-        description='Remboursement total pour les offres physiques'
-    )
-    NO_REIMBURSEMENT_ABOVE_23_000_EUROS_BY_OFFERER = Reimbursement(
-        description='Pas de remboursement au dessus du plafond de 23 000 € par offreur'
-    )
+class DigitalThingsReimbursement(ReimbursementRule):
+    rate = Decimal(0)
+    description = 'Pas de remboursement pour les offres digitales'
+    is_active = True
 
-    def as_dict(self):
-        return {
-            'name': self.name,
-            'rule': self.value.as_dict()
-        }
+    def apply(self, booking, **kwargs):
+        return booking.stock.resolvedOffer.eventOrThing.isDigital
 
 
-def compute_cumulative_booking_values(bookings):
-    booking_values = list(map(compute_booking_reimbursable_value, bookings))
-    return list(accumulate(booking_values))
+class PhysicalOffersReimbursement(ReimbursementRule):
+    rate = Decimal(1)
+    description = 'Remboursement total pour les offres physiques'
+    is_active = True
+
+    def apply(self, booking, **kwargs):
+        return not booking.stock.resolvedOffer.eventOrThing.isDigital
 
 
-def compute_booking_reimbursable_value(booking):
-    return 0 if booking.stock.resolvedOffer.eventOrThing.isDigital else booking.value
+class MaxReimbursementByOfferer(ReimbursementRule):
+    rate = Decimal(0)
+    description = 'Pas de remboursement au dessus du plafond de 23 000 € par offreur'
+    is_active = True
+
+    def apply(self, booking, **kwargs):
+        if booking.stock.resolvedOffer.eventOrThing.isDigital:
+            return False
+        else:
+            return kwargs['cumulative_value'] >= 23000
 
 
-def find_all_booking_reimbursement(bookings, cumulative_booking_values):
-    booking_reimbursements = []
-    for booking, value in zip(bookings, cumulative_booking_values):
-        rule = find_reimbursement_rule(booking, value)
-        booking_reimbursements.append(BookingReimbursement(booking, rule))
-    return booking_reimbursements
+class ReimbursementRules(Enum):
+    DIGITAL_THINGS = DigitalThingsReimbursement()
+    PHYSICAL_OFFERS = PhysicalOffersReimbursement()
+    MAX_REIMBURSEMENT = MaxReimbursementByOfferer()
 
 
-def find_reimbursement_rule(
-        booking,
-        cumulated_booking_value):
-    if booking.stock.resolvedOffer.eventOrThing.isDigital:
-        return ReimbursementRule.NO_REIMBURSEMENT_OF_DIGITAL_THINGS
-
-    eligible_rules = []
-
-    eligible_rules.append(ReimbursementRule.FULL_REIMBURSEMENT_OF_PHYSICAL_OFFERS)
-
-    if cumulated_booking_value > MAX_REIMBURSEMENT_FOR_OFFERER_PER_YEAR:
-        eligible_rules.append(ReimbursementRule.NO_REIMBURSEMENT_ABOVE_23_000_EUROS_BY_OFFERER)
-
-    return _find_least_favorable_rule(eligible_rules)
+def find_all_booking_reimbursement(bookings):
+    reimbursements = []
+    cumulative_bookings_value = 0
+    for booking in bookings:
+        if ReimbursementRules.PHYSICAL_OFFERS.value.apply(booking):
+            cumulative_bookings_value = cumulative_bookings_value + booking.value
+        potential_rules = _find_potential_rules(booking, cumulative_bookings_value)
+        elected_rule = min(potential_rules, key=lambda r: r.value.rate)
+        reimbursements.append(BookingReimbursement(booking, elected_rule))
+    return reimbursements
 
 
-def _find_least_favorable_rule(eligible_rules):
-    return min(eligible_rules, key=lambda r: r.value.rate)
+def _find_potential_rules(booking, cumulative_bookings_value):
+    relevant_rules = []
+    for rule in ReimbursementRules:
+        if rule.value.is_active and rule.value.apply(booking, cumulative_value=cumulative_bookings_value):
+            relevant_rules.append(rule)
+    return relevant_rules
