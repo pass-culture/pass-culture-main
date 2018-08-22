@@ -2,25 +2,23 @@ import moment from 'moment'
 import 'moment/locale/fr'
 import 'moment-timezone'
 
+import { version } from '../../package.json'
 import { getMobileOperatingSystem } from '../helpers'
 
 moment.locale('fr-fr')
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
-
-// unused
-// export const IS_DEBUG = true
-
+export const APP_VERSION = version
+export const USE_REDUX_PERSIST = false
+export const PERSIST_STORE_KEY = 'app-passculture'
 export const PROJECT_NAME = 'Pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
 
-// unused
-// export const NEW = '_new_'
-
 export const API_URL = process.env.API_URL || 'http://localhost'
-export const THUMBS_URL = process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
+export const THUMBS_URL =
+  process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
 
 let calculatedLocalhost
 if (typeof window !== 'undefined') {

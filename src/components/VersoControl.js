@@ -10,7 +10,7 @@ import { compose } from 'redux'
 
 import Booking from './Booking'
 import BookingControlButton from './BookingControlButton'
-import selectBookings from '../selectors/selectBookings'
+import { selectBookings } from '../selectors/selectBookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
 class VersoControl extends Component {

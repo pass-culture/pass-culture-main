@@ -1,5 +1,4 @@
 export * from './getPrice'
-export * from './ownProperty'
 export * from './getDiscoveryQueryParams'
 export * from './getPriceRangeFromStocks'
 export * from './getMobileOperatingSystem'

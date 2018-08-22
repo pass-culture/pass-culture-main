@@ -4,7 +4,7 @@ import {
   setGeolocationWatchId,
 } from '../reducers/geolocation'
 
-const init = store => {
+const initGeolocation = store => {
   Logger.log('Geoloc queried')
   const watchId = navigator.geolocation.watchPosition(
     position => {
@@ -21,4 +21,4 @@ const init = store => {
   store.dispatch(setGeolocationWatchId(watchId))
 }
 
-export default init
+export default initGeolocation
