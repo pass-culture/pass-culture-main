@@ -95,7 +95,6 @@ test('Je peux créer une offre', async t => {
   await t
     .click(typeInput)
     .click(typeOption)
-    //.expect(typeInput.selectedIndex).eql(1);
     .wait(500)
 
   await t
