@@ -88,7 +88,8 @@ def signup():
     user_offerer = None
     # we don't validate users yet
     # new_user.generate_validation_token()
-    if is_pro_signup(request.json):
+    do_pro_signup = is_pro_signup(request.json)
+    if do_pro_signup:
         new_user.canBookFreeOffers = False
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
@@ -118,13 +119,15 @@ def signup():
         objects_to_save = [new_user]
 
     PcObject.check_and_save(*objects_to_save)
-    
-    if is_pro_signup(request.json):
+
+    if do_pro_signup:
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
+
     login_user(new_user)
+
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 
 

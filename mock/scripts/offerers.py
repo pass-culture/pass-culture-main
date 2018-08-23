@@ -1,9 +1,8 @@
-[
+""" offerers """
+offerer_mocks = [
   {
     "name": "Théâtre Chaillot",
-    "departementCode": "75",
-    "bookingEmail": "fake@email.com",
-    "offererIndex": 0,
+    "siren": "692039514",
     "address": "1 pl trocadero et 11 novembre",
     "postalCode": "75116",
     "city": "Paris"

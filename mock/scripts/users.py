@@ -1,4 +1,5 @@
-[
+""" users """
+user_mocks = [
   {
     "publicName": "Utilisateur test jeune",
     "email": "pctest.jeune.93@btmx.fr",
@@ -15,8 +16,8 @@
     "publicName": "Utilisateur test admin",
     "email": "pctest.admin@btmx.fr",
     "departementCode": "93",
-    "isAdmin": true,
-    "canBookFreeOffers": false,
+    "isAdmin": True,
+    "canBookFreeOffers": False,
     "password": "pctestadmin"
   }
 ]

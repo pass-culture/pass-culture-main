@@ -1,4 +1,5 @@
-[
+""" bookings """
+booking_mocks = [
   {
     "stockIndex": 0,
     "token": "2ALYY4",
