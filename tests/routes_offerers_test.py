@@ -94,12 +94,9 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
 
     # then
     assert response.status_code == 200
-    assert response.json()[0]['booking']['id'] == humanize(booking3.id)
-    assert response.json()[0]['reimbursement']['name'] == ReimbursementRules.MAX_REIMBURSEMENT.name
-    assert response.json()[1]['booking']['id'] == humanize(booking1.id)
-    assert response.json()[1]['reimbursement']['name'] == ReimbursementRules.PHYSICAL_OFFERS.name
-    assert response.json()[2]['booking']['id'] == humanize(booking2.id)
-    assert response.json()[2]['reimbursement']['name'] == ReimbursementRules.PHYSICAL_OFFERS.name
+    assert response.json()[0]['id'] == humanize(booking3.id)
+    assert response.json()[1]['id'] == humanize(booking1.id)
+    assert response.json()[2]['id'] == humanize(booking2.id)
 
 
 @pytest.mark.standalone
@@ -126,10 +123,9 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_infos(a
     response = auth_request.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
     # then
-    assert response.json()[0]['booking']['id'] == humanize(booking.id)
-    assert response.json()[0]['reimbursement']['name'] == ReimbursementRules.PHYSICAL_OFFERS.name
-    assert response.json()[0]['reimbursement']['description'] == ReimbursementRules.PHYSICAL_OFFERS.value.description
-    assert response.json()[0]['reimbursement']['rate'] == ReimbursementRules.PHYSICAL_OFFERS.value.rate
+    assert response.json()[0]['id'] == humanize(booking.id)
+    assert response.json()[0]['reimbursement_rule'] == ReimbursementRules.PHYSICAL_OFFERS.value.description
+    assert response.json()[0]['reimbursed_amount'] == booking.value
 
 
 @pytest.mark.standalone
