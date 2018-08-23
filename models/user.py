@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
 import bcrypt
 
-from models import Deposit, Booking
 from models.db import Model, db
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
@@ -112,7 +111,6 @@ class User(PcObject,
             & (UserOfferer.validationToken.is_(None))
             & (UserOfferer.rights.in_(compatible_rights))
         ).first()
-
         return user_offerer is not None
 
     @property
