@@ -215,12 +215,12 @@ elif [[ "$CMD" == "ssh" ]]; then
 	fi
 elif [[ "$CMD" == "start-backend" ]]; then
   RUN='cd $ROOT_PATH && docker-compose up'
-elif [[ "$CMD" == "start-browser-webapp" ]] || [[ "$CMD" == "start-browser-pro" ]]; then
+elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
 	NGROK_API_URL=''
 	if [[ $# == 1 ]] && [[ $1 == '-t' ]]; then
 		NGROK_API_URL=$(node $ROOT_PATH/webapp/scripts/ngrok.js)
 	fi
-	if [[ "$CMD" == "start-browser-webapp" ]]; then
+	if [[ "$CMD" == "start-webapp" ]]; then
 		RUN='cd $ROOT_PATH/webapp && NGROK_API_URL=$NGROK_API_URL yarn start'
 	else
 		RUN='cd $ROOT_PATH/pro && NGROK_API_URL=$NGROK_API_URL yarn start'
