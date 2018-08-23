@@ -1,4 +1,4 @@
-"""empty message
+""" Add credit field to mediation table
 
 Revision ID: ea836848f102
 Revises: 9f958c5e2435
