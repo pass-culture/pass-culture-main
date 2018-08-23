@@ -18,7 +18,6 @@ ALLOWED_EXTENSIONS = set(['jpg', 'png', 'jpeg', 'gif'])
 def create_mediation():
     # TODO: Allow to receive a URL from request.form['thumb']
     # save_thumb already does it so it should be easy, but I can't make it ...
-
     if 'thumb' not in request.files\
        or request.files['thumb'].filename == '':
         e = ApiErrors()
@@ -33,15 +32,14 @@ def create_mediation():
         e.addError('thumb', "Ce format d'image n'est pas autorisé")
         return jsonify(e.errors), 400
 
-    offererId = dehumanize(request.form['offererId'])
-    ensure_current_user_has_rights(RightsType.editor,
-                                   offererId)
+    offerer_id = dehumanize(request.form['offererId'])
+    ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
     new_mediation = Mediation()
     new_mediation.author = current_user
     new_mediation.offerId = dehumanize(request.form['offerId'])
-    new_mediation.offererId = offererId
     new_mediation.credit = request.form.get('credit')
+    new_mediation.offererId = offerer_id
     PcObject.check_and_save(new_mediation)
 
     if 'croppingRect[x]' in request.form:

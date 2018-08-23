@@ -281,7 +281,7 @@ def create_event_offer(venue, event_name='Test event', duration_minutes=60, date
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created
-    return event
+    return offer
 
 
 def create_n_mixed_offers_with_same_venue(venue, n=10):
