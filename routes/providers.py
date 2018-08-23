@@ -4,6 +4,7 @@ from flask import current_app as app, jsonify
 import local_providers
 from models.provider import Provider
 
+
 @app.route('/providers', methods=['GET'])
 def list_providers():
     providers = Provider\
