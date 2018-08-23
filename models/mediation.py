@@ -8,7 +8,8 @@ from sqlalchemy import Column,\
                        DateTime,\
                        ForeignKey,\
                        Integer,\
-                       Text
+                       Text,\
+                       String
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -29,6 +30,8 @@ class Mediation(PcObject,
     frontText = Column(Text, nullable=True)
 
     backText = Column(Text, nullable=True)
+
+    credit = Column(String(255), nullable=True)
 
     dateCreated = Column(DateTime,
                          nullable=False,
