@@ -179,9 +179,17 @@ def req_with_auth(email=None, password=None):
     return request
 
 
-def create_booking(user, stock, venue, recommendation, is_cancellation=False, quantity=1, date_modified=datetime.utcnow()):
+def create_booking(user, stock=None, venue=None, recommendation=None,
+                   is_cancellation=False, quantity=1, date_modified=datetime.utcnow()):
     booking = Booking()
-    booking.stock = stock
+    if venue is None:
+        offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    if stock:
+        booking.stock = stock
+    else:
+        thing_offer = create_thing_offer(venue)
+        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
     booking.user = user
     booking.token = random_token()
     booking.amount = stock.price
@@ -197,6 +205,34 @@ def create_booking(user, stock, venue, recommendation, is_cancellation=False, qu
     return booking
 
 
+def create_booking_for_thing(url=None, amount=50, quantity=1, user=None):
+    thing = Thing(from_dict={'url': url})
+    offer = Offer()
+    stock = Stock()
+    booking = Booking(from_dict={'amount': amount})
+    offer.thing = thing
+    stock.offer = offer
+    booking.stock = stock
+    booking.quantity = quantity
+    booking.user = user
+    return booking
+
+
+def create_booking_for_event(amount=50, quantity=1, user=None, isCancelled=False):
+    event = Event()
+    offer = Offer()
+    stock = Stock()
+    booking = Booking(from_dict={'amount': amount})
+    offer.event = event
+    stock.offer = offer
+    booking.stock = stock
+    booking.quantity = quantity
+    booking.user = user
+    booking.isCancelled = isCancelled
+    booking.token = random_token()
+    return booking
+
+
 def create_user(public_name='John Doe', departement_code='93', email='john.doe@test.com', can_book_free_offers=True,
                 password='totallysafepsswd', validation_token=None, is_admin=False):
     user = User()
@@ -205,8 +241,8 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     user.canBookFreeOffers = can_book_free_offers
     user.departementCode = departement_code
     user.validationToken = validation_token
-    user.setPassword(password)
     user.isAdmin = is_admin
+    user.setPassword(password)
     return user
 
 

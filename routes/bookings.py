@@ -7,7 +7,7 @@ from sqlalchemy.exc import InternalError
 from domain.bookings import check_has_stock_id, check_existing_stock, check_can_book_free_offer, \
     check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, check_has_quantity
 from domain.expenses import get_expenses
-from models import ApiErrors, Booking, PcObject, Stock
+from models import ApiErrors, Booking, PcObject, Stock, RightsType
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
 from utils.mailing import send_booking_recap_emails, send_booking_confirmation_email_to_user
@@ -87,3 +87,20 @@ def create_booking():
     send_booking_confirmation_email_to_user(new_booking)
 
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201
+
+
+@app.route('/bookings/<booking_id>', methods=['DELETE'])
+@login_required
+def cancel_booking(booking_id):
+    booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
+
+    if not current_user.isAdmin\
+       and not booking.user == current_user\
+       and not current_user.hasRights(RightsType.editor,
+                                      booking.stock.resolvedOffer.venue.managingOffererId):
+        return "Vous n'avez pas le droit d'annuler cette réservation", 403
+
+    booking.isCancelled = True
+    PcObject.check_and_save(booking)
+
+    return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200

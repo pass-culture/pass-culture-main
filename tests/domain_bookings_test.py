@@ -2,7 +2,7 @@ import pytest
 
 from domain.bookings import check_expenses_limits
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
-from models import Booking, ApiErrors, Stock, Thing, Offer, Event
+from models import ApiErrors
 from utils.test_utils import create_booking_for_event, create_booking_for_thing
 
 

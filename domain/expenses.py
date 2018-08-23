@@ -22,7 +22,8 @@ def get_expenses(user, find_bookings_by_user_id=find_all_by_user_id):
 
 
 def _compute_booking_expenses(bookings, get_bookings=lambda b: b):
-    bookings_to_sum = get_bookings(bookings)
+    bookings_to_sum = filter(lambda b: not b.isCancelled,
+                             get_bookings(bookings))
     expenses = map(lambda x: x.amount * x.quantity, bookings_to_sum)
     return Decimal(sum(expenses))
 

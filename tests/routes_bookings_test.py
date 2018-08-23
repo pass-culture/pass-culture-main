@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Offerer, PcObject
+from models.db import db
+from models import Booking, Offerer, PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_offer, \
@@ -379,3 +380,80 @@ def test_create_booking_returns_bad_request_if_no_quantity_is_given(app):
     error_message = response.json()
     assert response.status_code == 400
     assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_cancel_booking_returns_200_and_effectively_marks_the_booking_as_cancelled(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(user, deposit_date, amount=500)
+    booking = create_booking(user)
+    PcObject.check_and_save(user, deposit, booking)
+
+    # When
+    response = req_with_auth(user.email, user.clearTextPassword)\
+                 .delete(API_URL + '/bookings/' + humanize(booking.id))
+
+    # Then
+    assert response.status_code == 200
+    db.session.refresh(booking)
+    assert booking.isCancelled
+
+
+@clean_database
+@pytest.mark.standalone
+def test_cancel_booking_returns_404_if_booking_does_not_exist(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    PcObject.check_and_save(user)
+
+    # When
+    response = req_with_auth(user.email, user.clearTextPassword)\
+                 .delete(API_URL + '/bookings/AX')
+
+    # Then
+    assert response.status_code == 404
+
+
+@clean_database
+@pytest.mark.standalone
+def test_cancel_booking_for_other_users_returns_403_and_does_not_mark_the_booking_as_cancelled(app):
+    # Given
+    other_user = create_user(email='test2@email.com', password='testpsswd')
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(other_user, deposit_date, amount=500)
+    booking = create_booking(other_user)
+    user = create_user(email='test@email.com', password='testpsswd')
+    PcObject.check_and_save(user, other_user, deposit, booking)
+
+    # When
+    response = req_with_auth(user.email, user.clearTextPassword)\
+                 .delete(API_URL + '/bookings/' + humanize(booking.id))
+
+    # Then
+    assert response.status_code == 403
+    db.session.refresh(booking)
+    assert not booking.isCancelled
+
+
+@clean_database
+@pytest.mark.standalone
+def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_the_booking_as_cancelled(app):
+    # Given
+    admin_user = create_user(email='test@email.com', password='testpsswd', is_admin=True, can_book_free_offers=False)
+    other_user = create_user(email='test2@email.com', password='testpsswd')
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(other_user, deposit_date, amount=500)
+    booking = create_booking(other_user)
+    PcObject.check_and_save(admin_user, other_user, deposit, booking)
+
+    # When
+    response = req_with_auth(admin_user.email, admin_user.clearTextPassword)\
+                 .delete(API_URL + '/bookings/' + humanize(booking.id))
+
+    # Then
+    assert response.status_code == 200
+    db.session.refresh(booking)
+    assert booking.isCancelled

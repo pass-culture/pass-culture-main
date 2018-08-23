@@ -1,7 +1,7 @@
 """ booking model """
 from datetime import datetime
-
 from sqlalchemy import BigInteger, \
+    Boolean, \
     Column, \
     DateTime, \
     DDL, \
@@ -10,16 +10,15 @@ from sqlalchemy import BigInteger, \
     Integer, \
     String, Numeric
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from models.db import Model
-from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
 
 
 class Booking(PcObject,
               Model,
-              DeactivableMixin,
               VersionedMixin):
     id = Column(BigInteger,
                 primary_key=True,
@@ -65,12 +64,10 @@ class Booking(PcObject,
     amount = Column(Numeric(10, 2),
                     nullable=False)
 
-    @property
-    def eventOccurrenceBeginningDatetime(self):
-        stock = self.stock
-        if stock.eventOccurrence is None:
-            return None
-        return stock.eventOccurrence.beginningDatetime
+    isCancelled = Column(Boolean,
+                         nullable=False,
+                         server_default=expression.false(),
+                         default=False)
 
     @property
     def value(self):
@@ -93,7 +90,7 @@ Booking.trig_ddl = """
     BEGIN
       IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
          AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")
-              < (SELECT COUNT(*) FROM booking WHERE "stockId"=NEW."stockId")) THEN
+              < (SELECT COUNT(*) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")) THEN
           RAISE EXCEPTION 'tooManyBookings'
                 USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;
