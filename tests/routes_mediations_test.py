@@ -98,3 +98,44 @@ def test_delete_mediation_returns_404_if_mediation_does_not_exist(app):
 
     # then
     assert response.status_code == 404
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_mediation_returns_200_and_the_mediation_as_json(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user_offerer = create_user_offerer(user, offerer)
+    mediation = create_mediation(offer)
+    PcObject.check_and_save(mediation)
+    PcObject.check_and_save(offer)
+    PcObject.check_and_save(user, venue, offerer, user_offerer)
+
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/mediations/%s' % humanize(mediation.id))
+
+    # then
+    assert response.status_code == 200
+    assert response.json()['id'] == humanize(mediation.id)
+    assert response.json()['frontText'] == mediation.frontText
+    assert response.json()['backText'] == mediation.backText
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/mediations/AE')
+
+    # then
+    assert response.status_code == 404
