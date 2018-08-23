@@ -26,7 +26,7 @@ class UploadThumb extends Component {
     return {
       readOnly,
       isDragging: prevState.isDragging,
-      image: prevState.image || props.image,
+      image: props.image || prevState.image,
     }
   }
 
@@ -153,7 +153,6 @@ class UploadThumb extends Component {
               color={[255, 255, 255, readOnly || !image ? 1 : 0.6]}
               image={image}
               onImageChange={this.onImageChange}
-              crossOrigin="anonymous"
             />
             {!readOnly &&
               image && (

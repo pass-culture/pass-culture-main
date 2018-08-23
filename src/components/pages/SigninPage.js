@@ -31,6 +31,7 @@ const SigninPage = ({ errors }) => {
                 </h2>
                 <Form
                   action="/users/signin"
+                  BlockComponent={null}
                   layout="vertical"
                   name="user"
                   handleSuccessNotification={null}

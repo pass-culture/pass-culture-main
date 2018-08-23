@@ -40,9 +40,7 @@ class MediationPage extends Component {
       },
     } = nextProps
     return {
-      inputUrl: prevState.inputUrl,
       imageUrl: prevState.imageUrl || get(nextProps, 'mediation.thumbPath'),
-      image: prevState.image,
       isNew: mediationId === 'nouveau',
     }
   }
@@ -133,7 +131,6 @@ class MediationPage extends Component {
   }
 
   onOkClick = e => {
-    console.log(this.state.inputUrl)
     this.state.inputUrl &&
       this.setState({
         imageUrl: this.state.inputUrl,
@@ -274,8 +271,8 @@ class MediationPage extends Component {
           <div className="field-group">
             <div className="field">
               <label className="label">Crédit photo</label>
-
               <input
+                id="mediation-credit"
                 type="text"
                 className="input is-rounded"
                 value={credit}
