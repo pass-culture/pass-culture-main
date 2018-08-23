@@ -272,13 +272,18 @@ class MediationPage extends Component {
           </div>
         </div>
         <div className="section">
-          <input
-            type="text"
-            className="input is-rounded"
-            placeholder="Crédit photo"
-            value={credit}
-            onChange={e => this.setState({ credit: e.target.value })}
-          />
+          <div className="field-group">
+            <div className="field">
+              <label className="label">Crédit photo</label>
+
+              <input
+                type="text"
+                className="input is-rounded"
+                value={credit}
+                onChange={e => this.setState({ credit: e.target.value })}
+              />
+            </div>
+          </div>
         </div>
         <hr />
         <div
