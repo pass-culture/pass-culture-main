@@ -41,6 +41,7 @@ def create_mediation():
     new_mediation.author = current_user
     new_mediation.offerId = dehumanize(request.form['offerId'])
     new_mediation.offererId = offererId
+    new_mediation.frontText = request.form['credit']
     PcObject.check_and_save(new_mediation)
 
     if 'croppingRect[x]' in request.form:
