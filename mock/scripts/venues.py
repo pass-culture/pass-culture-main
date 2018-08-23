@@ -1,7 +1,10 @@
-[
+""" venue """
+venue_mocks = [
   {
     "name": "Théâtre Chaillot",
-    "siren": "692039514",
+    "departementCode": "75",
+    "bookingEmail": "fake@email.com",
+    "offererIndex": 0,
     "address": "1 pl trocadero et 11 novembre",
     "postalCode": "75116",
     "city": "Paris"
