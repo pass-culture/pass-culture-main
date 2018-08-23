@@ -1,12 +1,10 @@
 import get from 'lodash.get'
 import {
-  addBlockers,
   CancelButton,
   closeNotification,
   Icon,
   Field,
   Form,
-  removeBlockers,
   requestData,
   showNotification,
   SubmitButton,
@@ -77,7 +75,6 @@ class VenuePage extends Component {
 
   handleSuccess = (state, action) => {
     const {
-      addBlockers,
       closeNotification,
       history,
       offerer,
@@ -103,12 +100,14 @@ class VenuePage extends Component {
           : 'Lieu modifié avec succès !',
       type: 'success',
     })
+    /*
     addBlockers('venue-notification', ({ location: { pathname } }) => {
       if (pathname === redirectPathname) {
         removeBlockers('venue-notification')
         closeNotification()
       }
     })
+    */
   }
 
   render() {
@@ -268,9 +267,7 @@ export default compose(
       }
     },
     {
-      addBlockers,
       closeNotification,
-      removeBlockers,
       requestData,
       showNotification,
     }
