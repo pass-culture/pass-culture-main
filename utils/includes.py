@@ -88,7 +88,10 @@ RECOMMENDATION_INCLUDES = [
                 "key": "stocks",
                 "sub_joins": ["eventOccurrence"]
             },
-            "venue",
+            {
+                "key": "venue",
+                "sub_joins": ["managingOfferer"]
+            }
         ]
     },
 ]
