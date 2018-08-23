@@ -143,7 +143,7 @@ class MediationPage extends Component {
 
   onSubmit = () => {
     const { match, mediation, offerer, requestData } = this.props
-    const { croppingRect, image, isNew } = this.state
+    const { croppingRect, image, credit, isNew } = this.state
 
     const offererId = get(offerer, 'id')
     const offerId = match.params.offerId
@@ -154,12 +154,14 @@ class MediationPage extends Component {
         croppingRect,
         offererId,
         offerId,
+        credit,
         thumb: image,
       }
     } else {
       const formData = new FormData()
       formData.append('offererId', offererId)
       formData.append('offerId', offerId)
+      formData.append('credit', credit)
       formData.append('thumb', image)
       formData.append('croppingRect[x]', croppingRect.x)
       formData.append('croppingRect[y]', croppingRect.y)
@@ -193,7 +195,7 @@ class MediationPage extends Component {
       offer,
     } = this.props
     const { name } = offer || {}
-    const { image, imageUrl, inputUrl, isLoading, isNew } = this.state
+    const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${offerId}`
 
     return (
@@ -268,6 +270,15 @@ class MediationPage extends Component {
               />
             </div>
           </div>
+        </div>
+        <div className="section">
+          <input
+            type="text"
+            className="input is-rounded"
+            placeholder="Crédit photo"
+            value={credit}
+            onChange={e => this.setState({ credit: e.target.value })}
+          />
         </div>
         <hr />
         <div
