@@ -10,7 +10,6 @@ import sqlalchemy as sa
 import os
 from pathlib import Path
 
-
 # revision identifiers, used by Alembic.
 revision = '5f81d0abe040'
 down_revision = None
