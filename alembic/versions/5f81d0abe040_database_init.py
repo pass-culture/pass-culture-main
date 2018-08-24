@@ -1,4 +1,4 @@
-"""empty message
+"""Database init
 
 Revision ID: 5f81d0abe040
 Revises: ea836848f102

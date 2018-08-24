@@ -5,18 +5,8 @@
 -- Dumped from database version 10.4 (Debian 10.4-2.pgdg90+1)
 -- Dumped by pg_dump version 10.5 (Ubuntu 10.5-1.pgdg16.04+1)
 
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-SET row_security = off;
-
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
@@ -132,41 +122,6 @@ CREATE TYPE public.thingtype AS ENUM (
 
 
 
-CREATE FUNCTION public.audit_table(target_table regclass) RETURNS void
-    LANGUAGE sql
-    AS $$
-SELECT audit_table(target_table, ARRAY[]::text[]);
-$$;
-
-
-
-CREATE FUNCTION public.audit_table(target_table regclass, ignored_cols text[]) RETURNS void
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    stm_targets text = 'INSERT OR UPDATE OR DELETE OR TRUNCATE';
-    query text;
-    excluded_columns_text text = '';
-BEGIN
-    EXECUTE 'DROP TRIGGER IF EXISTS audit_trigger_row ON ' || target_table;
-
-    IF array_length(ignored_cols, 1) > 0 THEN
-        excluded_columns_text = ', ' || quote_literal(ignored_cols);
-    END IF;
-    query = 'CREATE TRIGGER audit_trigger_row AFTER INSERT OR UPDATE OR DELETE ON ' ||
-             target_table || ' FOR EACH ROW ' ||
-             E'WHEN (current_setting(\'session_replication_role\') ' ||
-             E'<> \'local\')' ||
-             ' EXECUTE PROCEDURE create_activity(' ||
-             excluded_columns_text ||
-             ');';
-    RAISE NOTICE '%', query;
-    EXECUTE query;
-    stm_targets = 'TRUNCATE';
-END;
-$$;
-
-
 
 CREATE FUNCTION public.check_booking() RETURNS trigger
     LANGUAGE plpgsql
@@ -213,55 +168,6 @@ CREATE FUNCTION public.check_stock() RETURNS trigger
 
 
 
-CREATE FUNCTION public.create_activity() RETURNS trigger
-    LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'pg_catalog', 'public'
-    AS $$
-DECLARE
-    audit_row activity;
-    excluded_cols text[] = ARRAY[]::text[];
-BEGIN
-    audit_row.id = nextval('activity_id_seq');
-    audit_row.schema_name = TG_TABLE_SCHEMA::text;
-    audit_row.table_name = TG_TABLE_NAME::text;
-    audit_row.relid = TG_RELID;
-    audit_row.issued_at = statement_timestamp() AT TIME ZONE 'UTC';
-    audit_row.native_transaction_id = txid_current();
-    audit_row.transaction_id = (
-        SELECT id
-        FROM transaction
-        WHERE
-            native_transaction_id = txid_current() AND
-            issued_at >= (NOW() - INTERVAL '1 day')
-        ORDER BY issued_at DESC
-        LIMIT 1
-    );
-    audit_row.verb = LOWER(TG_OP);
-    audit_row.old_data = '{}'::jsonb;
-    audit_row.changed_data = '{}'::jsonb;
-
-    IF TG_ARGV[0] IS NOT NULL THEN
-        excluded_cols = TG_ARGV[0]::text[];
-    END IF;
-
-    IF (TG_OP = 'UPDATE' AND TG_LEVEL = 'ROW') THEN
-        audit_row.old_data = row_to_json(OLD.*)::jsonb - excluded_cols;
-        audit_row.changed_data = (
-            row_to_json(NEW.*)::jsonb - audit_row.old_data - excluded_cols
-        );
-        IF audit_row.changed_data = '{}'::jsonb THEN
-            -- All changed fields are ignored. Skip this update.
-            RETURN NULL;
-        END IF;
-    ELSIF (TG_OP = 'DELETE' AND TG_LEVEL = 'ROW') THEN
-        audit_row.old_data = row_to_json(OLD.*)::jsonb - excluded_cols;
-    ELSIF (TG_OP = 'INSERT' AND TG_LEVEL = 'ROW') THEN
-        audit_row.changed_data = row_to_json(NEW.*)::jsonb - excluded_cols;
-    END IF;
-    INSERT INTO activity VALUES (audit_row.*);
-    RETURN NULL;
-END;
-$$;
 
 
 
@@ -313,33 +219,6 @@ CREATE OPERATOR public.- (
 SET default_tablespace = '';
 
 SET default_with_oids = false;
-
-CREATE TABLE public.activity (
-    id bigint NOT NULL,
-    schema_name text,
-    table_name text,
-    relid integer,
-    issued_at timestamp without time zone,
-    native_transaction_id bigint,
-    verb text,
-    old_data jsonb DEFAULT '{}'::jsonb,
-    changed_data jsonb DEFAULT '{}'::jsonb,
-    transaction_id bigint
-);
-
-
-
-CREATE SEQUENCE public.activity_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
-ALTER SEQUENCE public.activity_id_seq OWNED BY public.activity.id;
-
 
 
 CREATE TABLE public.booking (
@@ -824,8 +703,6 @@ CREATE SEQUENCE public.venue_provider_id_seq
 ALTER SEQUENCE public.venue_provider_id_seq OWNED BY public.venue_provider.id;
 
 
-ALTER TABLE ONLY public.activity ALTER COLUMN id SET DEFAULT nextval('public.activity_id_seq'::regclass);
-
 
 ALTER TABLE ONLY public.booking ALTER COLUMN id SET DEFAULT nextval('public.booking_id_seq'::regclass);
 
@@ -876,10 +753,6 @@ ALTER TABLE ONLY public.venue ALTER COLUMN id SET DEFAULT nextval('public.venue_
 
 
 ALTER TABLE ONLY public.venue_provider ALTER COLUMN id SET DEFAULT nextval('public.venue_provider_id_seq'::regclass);
-
-
-ALTER TABLE ONLY public.activity
-    ADD CONSTRAINT activity_pkey PRIMARY KEY (id);
 
 
 ALTER TABLE ONLY public.booking
@@ -1018,7 +891,6 @@ ALTER TABLE ONLY public.venue
     ADD CONSTRAINT venue_siret_key UNIQUE (siret);
 
 
-CREATE INDEX idx_activity_objid ON public.activity USING btree ((((changed_data ->> 'id'::text))::integer));
 
 
 CREATE INDEX idx_event_fts ON public.event USING gin (to_tsvector('french'::regconfig, (COALESCE(name, ''::character varying))::text));
@@ -1093,44 +965,12 @@ CREATE INDEX "ix_venue_managingOffererId" ON public.venue USING btree ("managing
 CREATE INDEX "ix_venue_provider_venueId" ON public.venue_provider USING btree ("venueId");
 
 
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.event FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.thing FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.venue FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.event_occurrence FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.offerer FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.mediation FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.stock FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.venue_provider FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.booking FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
-
-CREATE TRIGGER audit_trigger_row AFTER INSERT OR DELETE OR UPDATE ON public.offer FOR EACH ROW WHEN ((current_setting('session_replication_role'::text) <> 'local'::text)) EXECUTE PROCEDURE public.create_activity();
-
 
 CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE ON public.booking NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE public.check_booking();
 
 
 CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE ON public.stock NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE public.check_stock();
 
-
-ALTER TABLE ONLY public.activity
-    ADD CONSTRAINT activity_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES public.transaction(id);
 
 
 ALTER TABLE ONLY public.booking
@@ -1260,9 +1100,9 @@ ALTER TABLE ONLY public.venue_provider
 --
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgresql
 --
---
--- REVOKE ALL ON SCHEMA public FROM PUBLIC;
--- GRANT USAGE ON SCHEMA public TO PUBLIC;
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+GRANT USAGE ON SCHEMA public TO PUBLIC;
 
 
 --
