@@ -6,16 +6,16 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { requestData } from 'pass-culture-shared'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
 
 import { ROOT_PATH } from '../utils/config'
 import submitForm from './forms/submitForm'
-import selectBookables from '../selectors/selectBookables'
 import BookingForm from './BookingForm'
 import BookingCardError from './BookingCardError'
 import BookingCardLoader from './BookingCardLoader'
 import BookingCardSuccess from './BookingCardSuccess'
 import BookingUserUndefined from './BookingUserUndefined'
+import { selectBookables } from '../selectors/selectBookables'
+import currentRecommendationSelector from '../selectors/currentRecommendation'
 
 class BookingCard extends React.PureComponent {
   constructor(props) {

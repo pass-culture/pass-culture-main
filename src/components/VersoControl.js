@@ -1,7 +1,6 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
-import get from 'lodash.get'
 import { Logger, Icon, requestData, showModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -119,11 +118,8 @@ export default compose(
         offerId,
         mediationId
       )
-      const eventOrThingId = get(recommendation, 'offer.eventOrThing.id')
-      console.log('recommendation', recommendation)
-      console.log('eventOrThingId', eventOrThingId)
       return {
-        bookings: selectBookings(state, eventOrThingId),
+        bookings: selectBookings(state),
         recommendation,
       }
     },

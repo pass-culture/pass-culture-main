@@ -5,22 +5,7 @@ import { createSelector } from 'reselect'
 
 export const selectBookings = createSelector(
   state => state.data.bookings,
-  // (state, eventOrThingId) => eventOrThingId
   allBookings => allBookings
-  // if (eventOrThingId) {
-  //   filteredBookings = bookings.filter(booking => {
-  //     // FIXME -> replace par lodash.get
-  //     const { stock } = booking
-  //     const { offer } = stock || {}
-  //     const { eventOccurence, thingId } = offer || {}
-  //     const { eventId } = eventOccurence || {}
-  //
-  //     if (thingId) {
-  //       return thingId === eventOrThingId
-  //     }
-  //     return eventId === eventOrThingId
-  //   })
-  // }
 )
 
 export const selectSoonBookings = createSelector(

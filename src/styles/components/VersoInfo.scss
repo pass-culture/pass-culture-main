@@ -13,17 +13,21 @@
     margin-bottom: 1rem;
     list-style: none;
     margin-left: 0;
+
+    li + li {
+      margin-top: 0.3rem;
+    }
   }
+
   a.distance {
-    float: right;
     padding: 0;
     font-weight: 500;
     color: $primary;
     font-size: 1.35rem;
     text-decoration: none;
+
     img {
-        vertical-align: -20%;
-        margin-left: 0.8rem;
+      margin-left: 0.8rem;
     }
   }
 }
