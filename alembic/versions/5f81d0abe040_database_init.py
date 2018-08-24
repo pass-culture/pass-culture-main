@@ -21,9 +21,6 @@ depends_on = None
 def upgrade():
     sql_file = Path(os.path.dirname(os.path.realpath(__file__))) / 'db_init.sql'
 
-    data = "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"pass_cultur_3640\";" \
-           "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"pass_cultur_3640\";"
-
     with open(sql_file, 'r') as file:
         data += file.read()
     op.execute(data)
