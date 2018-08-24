@@ -1,58 +1,44 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
+import React from 'react'
 import PropTypes from 'prop-types'
 import { Logger, Icon, requestData, showModal } from 'pass-culture-shared'
-import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
+import { compose, bindActionCreators } from 'redux'
 
-import Booking from './Booking'
-import BookingControlButton from './BookingControlButton'
+import VersoBookingButton from './VersoBookingButton'
 import { selectBookings } from '../selectors/selectBookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
-class VersoControl extends Component {
-  onClickDisable = event => {
-    alert('Pas encore disponible')
-    event.preventDefault()
+class VersoControl extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    const actions = { requestData, showModal }
+    const { dispatch } = this.props
+    this.actions = bindActionCreators(actions, dispatch)
+  }
+
+  componentWillMount() {
+    Logger.fixme('VersoControl ---> componentWillMount')
+  }
+
+  componentWillUnmount() {
+    Logger.fixme('VersoControl ---> componentWillUnmount')
   }
 
   onClickFavorite = () => {
-    const { recommendation, dispatchRequestData } = this.props
-    const { id, isFavorite } = recommendation
-    const body = { isFavorite: !isFavorite }
-    dispatchRequestData('PATCH', `currentRecommendations/${id}`, {
-      body,
+    const { isFavorite, recommendationId } = this.props
+    const method = 'PATCH'
+    const url = `currentRecommendations/${recommendationId}`
+    const opts = {
+      body: { isFavorite: !isFavorite },
       key: 'currentRecommendations',
-    })
-  }
-
-  onClickShare = () => {
-    // TODO
-  }
-
-  onClickJyVais = () => {
-    const { recommendation, offer, dispatchShowModal } = this.props
-    const { isFinished } = recommendation || {}
-
-    if (isFinished) return
-    if (offer) {
-      dispatchShowModal(<Booking />, {
-        fullscreen: true,
-        hasCloseButton: false,
-        maskColor: 'transparent',
-      })
-    } else {
-      alert("Ce bouton vous permet d'effectuer une reservation")
     }
+    this.actions.requestData(method, url, opts)
   }
 
   render() {
-    const { bookings, offer, recommendation, match } = this.props
-    const { isFinished } = recommendation || {}
-    const isFavorite = recommendation && recommendation.isFavorite
-    Logger.fixme('VersoControl is mounted but not visible')
+    const { offer, isFavorite, isFinished, isReserved } = this.props
     return (
       <ul className="verso-control">
         <li>
@@ -76,17 +62,16 @@ class VersoControl extends Component {
             type="button"
             disabled
             className="button is-secondary"
-            onClick={this.onClickDisable}
+            onClick={() => {}}
           >
             <Icon svg="ico-share-w" alt="Partager" />
           </button>
         </li>
         <li>
-          <BookingControlButton
+          <VersoBookingButton
             offer={offer}
-            matchURL={match.url}
             isFinished={isFinished}
-            isAlreadyBooked={bookings.length > 0}
+            isReserved={isReserved}
           />
         </li>
       </ul>
@@ -95,37 +80,38 @@ class VersoControl extends Component {
 }
 
 VersoControl.defaultProps = {
+  isFavorite: false,
+  isFinished: false,
+  isReserved: false,
   offer: null,
-  recommendation: null,
+  recommendationId: null,
 }
 
 VersoControl.propTypes = {
-  bookings: PropTypes.array.isRequired,
-  dispatchRequestData: PropTypes.func.isRequired,
-  dispatchShowModal: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  isFavorite: PropTypes.bool,
+  isFinished: PropTypes.bool,
+  isReserved: PropTypes.bool,
   offer: PropTypes.object,
-  recommendation: PropTypes.object,
+  recommendationId: PropTypes.string,
 }
 
-export default compose(
-  withRouter,
-  connect(
-    (state, ownProps) => {
-      const { mediationId, offerId } = ownProps.match.params
-      const recommendation = currentRecommendationSelector(
-        state,
-        offerId,
-        mediationId
-      )
-      return {
-        bookings: selectBookings(state),
-        recommendation,
-      }
-    },
-    {
-      dispatchRequestData: requestData,
-      dispatchShowModal: showModal,
-    }
+const mapStateToProps = (state, ownProps) => {
+  const { mediationId, offerId } = ownProps.match.params
+  const recommendation = currentRecommendationSelector(
+    state,
+    offerId,
+    mediationId
   )
-)(VersoControl)
+  const bookings = selectBookings(state)
+  const bookingsIds = recommendation.bookingsIds || []
+  const booked = bookings.filter(obj => bookingsIds.includes(obj.id))
+  return {
+    isFavorite: recommendation && recommendation.isFavorite,
+    isFinished: recommendation && recommendation.isFinished,
+    isReserved: booked.length > 0,
+    recommendationId: recommendation.id,
+  }
+}
+
+export default compose(connect(mapStateToProps))(VersoControl)

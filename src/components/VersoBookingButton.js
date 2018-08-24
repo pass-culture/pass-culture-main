@@ -3,26 +3,16 @@
 import React from 'react'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
 import { Icon } from 'pass-culture-shared'
+import { Link, withRouter } from 'react-router-dom'
 
 import Price from './Price'
 import Finishable from './layout/Finishable'
 
-const renderAlreadyBookedLink = () => (
-  <Link to="/reservations" className="button is-primary is-go is-medium">
-    <Icon name="Check" />
-    {'Réservé'}
-  </Link>
-)
-
-const renderBookingLink = (matchURL, offer) => {
+const renderBookingLink = (url, offer) => {
   const priceValue = get(offer, 'price') || get(offer, 'displayPrice')
   return (
-    <Link
-      to={`${matchURL}/booking`}
-      className="button is-primary is-go is-medium"
-    >
+    <Link to={`${url}/booking`} className="button is-primary is-go is-medium">
       <Price free="——" value={priceValue} />
       <span>J&apos;y vais!</span>
     </Link>
@@ -30,19 +20,24 @@ const renderBookingLink = (matchURL, offer) => {
 }
 
 const VersoBookingButton = ({
-  isAlreadyBooked,
+  isReserved,
   isFinished,
-  matchURL,
+  match: { url },
   offer,
 }) => (
   <React.Fragment>
-    {isAlreadyBooked && renderAlreadyBookedLink()}
-    {!isAlreadyBooked && (
+    {isReserved && (
+      <Link to="/reservations" className="button is-primary is-go is-medium">
+        <Icon name="Check" />
+        {'Réservé'}
+      </Link>
+    )}
+    {!isReserved && (
       <React.Fragment>
         {/* FIXME -> décorer avec isFinished/Finishable */}
-        {!isFinished && renderBookingLink(matchURL, offer)}
+        {!isFinished && renderBookingLink(url, offer)}
         {isFinished && (
-          <Finishable finished>{renderBookingLink(matchURL, offer)}</Finishable>
+          <Finishable finished>{renderBookingLink(url, offer)}</Finishable>
         )}
       </React.Fragment>
     )}
@@ -54,10 +49,10 @@ VersoBookingButton.defaultProps = {
 }
 
 VersoBookingButton.propTypes = {
-  isAlreadyBooked: PropTypes.bool.isRequired,
   isFinished: PropTypes.bool.isRequired,
-  matchURL: PropTypes.string.isRequired,
+  isReserved: PropTypes.bool.isRequired,
+  match: PropTypes.object.isRequired,
   offer: PropTypes.object,
 }
 
-export default VersoBookingButton
+export default withRouter(VersoBookingButton)
