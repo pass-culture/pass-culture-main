@@ -3,7 +3,7 @@ import { createSelector } from 'reselect'
 
 import currentRecommendationSelector from './currentRecommendation'
 
-export default createSelector(
+const selectBooking = createSelector(
   state => state.data.bookings,
   currentRecommendationSelector,
   (bookings, currentRecommendation) =>
@@ -11,3 +11,5 @@ export default createSelector(
       b => get(b, 'recommendationId') === get(currentRecommendation, 'id')
     )
 )
+
+export default selectBooking

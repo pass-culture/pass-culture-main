@@ -2,7 +2,7 @@ import createCachedSelector from 're-reselect'
 
 import recommendationsSelector from './recommendations'
 
-export default createCachedSelector(
+export const selectRecommendation = createCachedSelector(
   state => recommendationsSelector(state),
   (state, recommendationId) => recommendationId,
   (recommendations, recommendationId) =>
@@ -10,3 +10,5 @@ export default createCachedSelector(
       recommendation => recommendation.id === recommendationId
     )
 )((state, recommendationId) => recommendationId || '')
+
+export default selectRecommendation

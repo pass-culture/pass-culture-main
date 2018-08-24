@@ -2,15 +2,19 @@ import moment from 'moment'
 import get from 'lodash.get'
 import omit from 'lodash.omit'
 import pick from 'lodash.pick'
+import cloneDeep from 'lodash.clonedeep'
 import createCachedSelector from 're-reselect'
 
 import { pipe } from '../utils/functionnals'
+
+// eslint-disable-next-line
+const { assert } = require('chai')
 
 const MODIFIER_STRING_ID = 'selectBookables'
 
 // ajoute une 'id' dans l'objet pour indiquer
 // le selecteur qui a modifié les objets utilisables par une vue
-export const addMapperStringId = () => items =>
+export const addModifierString = () => items =>
   items.map(obj => ({
     ...obj,
     __modifiers__: (obj.__modifiers__ || []).concat([MODIFIER_STRING_ID]),
@@ -75,16 +79,20 @@ export const selectBookables = createCachedSelector(
   state => state.data.bookings,
   (state, recommendation) => recommendation,
   (bookings, recommendation) => {
-    const stocks = get(recommendation, 'offer.stocks')
-    if (!stocks) return []
+    let stocks = get(recommendation, 'offer.stocks')
+    // NOTE: cloneDeep -> prevents redux.state mutations
+    stocks = (stocks && cloneDeep(stocks)) || null
+    if (!stocks || !stocks.length) return []
     const tz = get(recommendation, 'tz')
     const now = moment().tz(tz)
+    // DEBUG
+    // const now = moment('2018-08-30T21:59:00Z').tz(tz)
     return pipe(
       filterOutdated(now, tz),
       mapEventOccurenceToBookable(),
       humanizeBeginningDate(tz),
       markAsReserved(bookings),
-      addMapperStringId(),
+      addModifierString(),
       sortByDate()
     )(stocks)
   }

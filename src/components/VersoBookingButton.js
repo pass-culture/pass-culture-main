@@ -3,8 +3,8 @@
 import React from 'react'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import { Icon } from 'pass-culture-shared'
-import { Link, withRouter } from 'react-router-dom'
 
 import Price from './Price'
 import Finishable from './layout/Finishable'
@@ -19,12 +19,7 @@ const renderBookingLink = (url, offer) => {
   )
 }
 
-const VersoBookingButton = ({
-  isReserved,
-  isFinished,
-  match: { url },
-  offer,
-}) => (
+const VersoBookingButton = ({ isReserved, isFinished, url, offer }) => (
   <React.Fragment>
     {isReserved && (
       <Link to="/reservations" className="button is-primary is-go is-medium">
@@ -51,8 +46,8 @@ VersoBookingButton.defaultProps = {
 VersoBookingButton.propTypes = {
   isFinished: PropTypes.bool.isRequired,
   isReserved: PropTypes.bool.isRequired,
-  match: PropTypes.object.isRequired,
   offer: PropTypes.object,
+  url: PropTypes.string.isRequired,
 }
 
-export default withRouter(VersoBookingButton)
+export default VersoBookingButton

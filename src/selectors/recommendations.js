@@ -7,7 +7,7 @@ import { THUMBS_URL } from '../utils/config'
 import { distanceInMeters } from '../utils/geolocation'
 import { getTimezone } from '../utils/timezone'
 
-export default createSelector(
+const selectRecommendations = createSelector(
   state => state.data.recommendations,
   state => state.geolocation.latitude,
   state => state.geolocation.longitude,
@@ -100,3 +100,5 @@ export default createSelector(
     return filteredRecommendations
   }
 )
+
+export default selectRecommendations

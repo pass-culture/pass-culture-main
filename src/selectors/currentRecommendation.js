@@ -4,7 +4,7 @@ import createCachedSelector from 're-reselect'
 import recommendationsSelector from './recommendations'
 import { getHeaderColor } from '../utils/colors'
 
-export default createCachedSelector(
+const selectCurrentRecommendation = createCachedSelector(
   recommendationsSelector,
   (state, offerId) => offerId,
   (state, offerId, mediationId) => mediationId,
@@ -63,3 +63,5 @@ export default createCachedSelector(
   (state, offerId, mediationId, position) =>
     `${offerId || ''}/${mediationId || ''}/${position || ''}`
 )
+
+export default selectCurrentRecommendation

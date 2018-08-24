@@ -4,7 +4,7 @@ import createCachedSelector from 're-reselect'
 import currentRecommendationSelector from './currentRecommendation'
 import recommendationsSelector from './recommendations'
 
-export default createCachedSelector(
+const previousRecommendationSelector = createCachedSelector(
   recommendationsSelector,
   currentRecommendationSelector,
   (recommendations, currentRecommendation) => {
@@ -37,3 +37,5 @@ export default createCachedSelector(
   (state, offerId, mediationId, position) =>
     `${offerId || ''}/${mediationId || ''}/${position || ''}`
 )
+
+export default previousRecommendationSelector

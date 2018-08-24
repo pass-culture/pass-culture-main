@@ -47,12 +47,13 @@ class VersoInfo extends React.PureComponent {
   renderOfferWhen() {
     const { bookables, maxDatesShowned } = this.props
     const sliced = bookables.slice(0, maxDatesShowned)
+    const noMoreAvailableDates = !sliced || !sliced.length
     const hasMoreBookables = bookables.length > maxDatesShowned
     return (
       <div>
         <h3>Quand ?</h3>
         <ul className="dates-info">
-          {!sliced ? (
+          {noMoreAvailableDates ? (
             <li>Plus de dates disponibles :(</li>
           ) : (
             <React.Fragment>

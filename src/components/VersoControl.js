@@ -4,6 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Logger, Icon, requestData, showModal } from 'pass-culture-shared'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
 import VersoBookingButton from './VersoBookingButton'
@@ -38,7 +39,7 @@ class VersoControl extends React.PureComponent {
   }
 
   render() {
-    const { offer, isFavorite, isFinished, isReserved } = this.props
+    const { offer, isFavorite, isFinished, isReserved, url } = this.props
     return (
       <ul className="verso-control">
         <li>
@@ -69,6 +70,7 @@ class VersoControl extends React.PureComponent {
         </li>
         <li>
           <VersoBookingButton
+            url={url}
             offer={offer}
             isFinished={isFinished}
             isReserved={isReserved}
@@ -94,6 +96,7 @@ VersoControl.propTypes = {
   isReserved: PropTypes.bool,
   offer: PropTypes.object,
   recommendationId: PropTypes.string,
+  url: PropTypes.string.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -111,7 +114,11 @@ const mapStateToProps = (state, ownProps) => {
     isFinished: recommendation && recommendation.isFinished,
     isReserved: booked.length > 0,
     recommendationId: recommendation.id,
+    url: ownProps.match.url,
   }
 }
 
-export default compose(connect(mapStateToProps))(VersoControl)
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(VersoControl)
