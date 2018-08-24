@@ -53,14 +53,13 @@ export const markAsReserved = bookings => {
     })
 }
 
-export const filterOutdated = (now, tz) => items => {
+export const filterAvailables = (now, tz) => items => {
   const results = items.filter(o => {
     const date = moment(o.bookingLimitDatetime).tz(tz)
     // - booking date limit >= now
     // FIXME -> minute, heure ou jour ?
-    const isSameOrAfterNow = date.isSameOrAfter(now, 'day')
-    if (!isSameOrAfterNow) return false
-    return true
+    const isSameOrAfterNow = date.isAfter(now, 'day')
+    return isSameOrAfterNow
   })
   return results
 }
@@ -88,7 +87,7 @@ export const selectBookables = createCachedSelector(
     // DEBUG
     // const now = moment('2018-08-30T21:59:00Z').tz(tz)
     return pipe(
-      filterOutdated(now, tz),
+      filterAvailables(now, tz),
       mapEventOccurenceToBookable(),
       humanizeBeginningDate(tz),
       markAsReserved(bookings),

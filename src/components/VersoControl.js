@@ -1,6 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
+import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Logger, Icon, requestData, showModal } from 'pass-culture-shared'
 import { connect } from 'react-redux'
@@ -106,9 +107,13 @@ const mapStateToProps = (state, ownProps) => {
     offerId,
     mediationId
   )
+  // NOTE -> on ne peut pas faire confiance a bookingsIds
+  // bookingsIds n'est pas mis à jour avec le state
+  const stocks = get(recommendation, 'offer.stocks')
+  const stockIds = (stocks || []).map(o => o.id)
   const bookings = selectBookings(state)
-  const bookingsIds = recommendation.bookingsIds || []
-  const booked = bookings.filter(obj => bookingsIds.includes(obj.id))
+  const bookingsIds = bookings.map(o => o.stockId)
+  const booked = bookingsIds.filter(id => stockIds.includes(id))
   return {
     isFavorite: recommendation && recommendation.isFavorite,
     isFinished: recommendation && recommendation.isFinished,

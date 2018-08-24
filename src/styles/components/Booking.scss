@@ -62,20 +62,14 @@
     width: 350px;
     top: 0 !important;
     left: -45px !important;
+
+    .ant-calendar-today .ant-calendar-date::before {
+      border: 0;
+    }
   }
 
   .select-field {
     width: 212px;
-
-    /*
-    .ant-select-selection__rendered {
-      height: 100%;
-    }
-
-    .ant-select-selection__placeholder {
-      text-align: center;
-    }
-    */
 
     .ant-select-arrow::before {
       content: '\E641';

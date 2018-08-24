@@ -11,7 +11,9 @@ const BookingCardError = ({ errors, config }) => (
         Object.keys(errors).map(k => (
           <li key={k} className="mb12">
             <b className="is-block">{`${k}: `}</b>
-            <i className="is-block">{errors[k].toString()}</i>
+            <pre className="is-block is-raw-description">
+              {JSON.stringify(errors[k])}
+            </pre>
           </li>
         ))}
     </ul>
@@ -22,7 +24,9 @@ const BookingCardError = ({ errors, config }) => (
         Object.keys(config.body).map(k => (
           <li key={k} className="mb12">
             <b className="is-block">{`${k}: `}</b>
-            <i className="is-block">{config.body[k].toString()}</i>
+            <pre className="is-block is-raw-description">
+              {JSON.stringify(config.body[k])}
+            </pre>
           </li>
         ))}
     </ul>
@@ -31,7 +35,7 @@ const BookingCardError = ({ errors, config }) => (
 
 BookingCardError.propTypes = {
   config: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired,
+  errors: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
 }
 
 export default BookingCardError

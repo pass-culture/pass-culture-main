@@ -20,33 +20,33 @@ const onCalendarUpdates = (selection, name, allvalues) => {
   // recupere tous les events pour la selection par l'user
   const { bookables } = allvalues
   const momentvalue = selection.date
-  const selected = bookables.filter(o =>
+  const booked = bookables.filter(o =>
     // l'offer est OK si elle est le même jour
     // que la date selectionnee par l'user dans le calendrier
     momentvalue.isSame(o.beginningDatetime, 'day')
   )
-  const issingle = selected && selected.length === 1
-  if (!selected || !issingle) return resetObj
+  const issingle = booked && booked.length === 1
+  if (!booked || !issingle) return resetObj
   return {
-    price: selected[0].price,
+    price: booked[0].price,
     // NOTE -> pas de gestion de stock
     quantity: 1,
-    stockId: selected[0].stockId,
-    time: selected[0].stockId,
+    stockId: booked[0].id,
+    time: booked[0].id,
   }
 }
 
-const onTimeUpdates = (selection, name, allvalues) => {
+const onTimeUpdates = (selection, name, formValues) => {
   const resetObj = {}
-  const currentStockId = allvalues.stockId
+  const currentStockId = formValues.stockId
   if (!selection || currentStockId) return resetObj
-  const { bookables } = allvalues
-  const selected = bookables.filter(o => o.stockId === selection)
+  const { bookables } = formValues
+  const booked = bookables.filter(o => o.id === selection)
   return {
-    price: selected[0].price,
+    price: booked[0].price,
     // NOTE -> pas de gestion de stock
     quantity: 1,
-    stockId: selected[0].stockId,
+    stockId: booked[0].id,
   }
 }
 
@@ -72,11 +72,10 @@ class BookingFormComponent extends React.PureComponent {
       .map(obj => {
         // parse les infos d'une offre
         // pour être affichée dans la selectbox
-        const id = obj.stockId
         const time = moment(obj.beginningDatetime).format('HH:mm')
         const devised = getPrice(obj.price)
         const label = `${time} - ${devised}`
-        return { id, label }
+        return { id: obj.id, label }
       })
   }
 

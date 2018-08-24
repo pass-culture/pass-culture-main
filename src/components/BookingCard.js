@@ -46,14 +46,8 @@ class BookingCard extends React.PureComponent {
     const onSubmittingStateChanged = () => {
       // console.log('BookingCard.onFormSubmit => formValues', formValues)
       // setTimeout(this.handleRequestSuccess, 3000)
-      const body = {
-        price: formValues.price,
-        quantity: formValues.quantity,
-        recommendationId: formValues.recommendationId,
-        stockId: formValues.stockId,
-      }
       this.actions.requestData('POST', 'bookings', {
-        body,
+        body: { ...formValues },
         handleFail: this.handleRequestFail,
         handleSuccess: this.handleRequestSuccess,
         name: 'booking',
