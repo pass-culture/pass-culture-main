@@ -21,7 +21,7 @@ def upgrade():
     sql_file = Path(os.path.dirname(os.path.realpath(__file__))) / 'db_init.sql'
 
     with open(sql_file, 'r') as file:
-        data += file.read()
+        data = file.read()
     op.execute(data)
 
 
