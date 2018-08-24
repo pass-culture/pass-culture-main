@@ -135,8 +135,7 @@ class UploadThumb extends Component {
             onDragEnter={this.handleDragStart}
             onDragLeave={this.handleDragStop}
             onDrop={this.handleDrop}
-            disableClick={Boolean(image || readOnly)}
-            style={{ width, height }}>
+            disableClick={Boolean(image || readOnly)}>
             {!image && (
               <div
                 className={`drag-n-drop ${dragging ? 'dragged' : ''}`}
