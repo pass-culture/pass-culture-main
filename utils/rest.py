@@ -109,8 +109,8 @@ def ensure_provider_can_update(obj):
         return "API key or login required", 403
 
 
-def ensure_current_user_has_rights(rights, offererId):
-    if not current_user.hasRights(rights, offererId):
+def ensure_current_user_has_rights(rights, offerer_id):
+    if not current_user.hasRights(rights, offerer_id):
         errors = ApiErrors()
         errors.addError(
             'global',

@@ -197,7 +197,7 @@ def create_booking(user, stock, venue, recommendation, is_cancellation=False, qu
 
 
 def create_user(public_name='John Doe', departement_code='93', email='john.doe@test.com', can_book_free_offers=True,
-                password='totallysafepsswd', validation_token=None):
+                password='totallysafepsswd', validation_token=None, is_admin=False):
     user = User()
     user.publicName = public_name
     user.email = email
@@ -205,6 +205,7 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     user.departementCode = departement_code
     user.validationToken = validation_token
     user.setPassword(password)
+    user.isAdmin = is_admin
     return user
 
 
