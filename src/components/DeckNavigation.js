@@ -12,16 +12,14 @@ import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
 const DeckNavigation = ({
-  currentRecommendation,
+  recommendation,
   flipHandler,
   handleGoNext,
   handleGoPrevious,
   transitionTimeout,
 }) => {
-  const { distance, headerColor, isFinished, mediation, offer } =
-    currentRecommendation || {}
+  const { distance, headerColor, isFinished, offer } = recommendation || {}
   const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
-  const { tutoIndex } = mediation || {}
   const color = headerColor || '#000'
   const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${color} 30%,${color} 100%)`
   return (
@@ -55,13 +53,7 @@ const DeckNavigation = ({
               className="clue"
               style={{ transition: `opacity ${transitionTimeout}ms` }}
             >
-              <Finishable
-                finished={
-                  isFinished && typeof tutoIndex === 'undefined'
-                  // Hard coded to prevent a weird bug to arise
-                  // should be eventually removed
-                }
-              >
+              <Finishable finished={isFinished}>
                 <Price value={priceRange} />
                 <div className="separator">
                   {offer ? '\u00B7' : ' '}
@@ -85,18 +77,18 @@ const DeckNavigation = ({
 }
 
 DeckNavigation.defaultProps = {
-  currentRecommendation: null,
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
+  recommendation: null,
   transitionTimeout: 250,
 }
 
 DeckNavigation.propTypes = {
-  currentRecommendation: PropTypes.object,
   flipHandler: PropTypes.func,
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
+  recommendation: PropTypes.object,
   transitionTimeout: PropTypes.number,
 }
 
@@ -104,12 +96,14 @@ export default compose(
   withRouter,
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
+    const recommendation = currentRecommendationSelector(
+      state,
+      offerId,
+      mediationId
+    )
     return {
-      currentRecommendation: currentRecommendationSelector(
-        state,
-        offerId,
-        mediationId
-      ),
+      isFinished: recommendation.isFinished,
+      recommendation,
     }
   })
 )(DeckNavigation)

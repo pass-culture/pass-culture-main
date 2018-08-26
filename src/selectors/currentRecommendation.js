@@ -1,20 +1,9 @@
 import get from 'lodash.get'
-import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
 import recommendationsSelector from './recommendations'
 import { getHeaderColor } from '../utils/colors'
-
-const hasStockAvailables = recommendations => {
-  const now = moment()
-  const stocks = get(recommendations, 'offer.stocks')
-  // tuto n'a pas de stock
-  const filtered = (stocks || []).filter(item => {
-    const date = item.bookingLimitDatetime
-    return now.isSameOrAfter(date)
-  })
-  return filtered && filtered.length > 0
-}
+import { filterAvailableDates } from '../helpers/filterAvailableDates'
 
 const selectCurrentRecommendation = createCachedSelector(
   recommendationsSelector,
@@ -48,7 +37,10 @@ const selectCurrentRecommendation = createCachedSelector(
     }
 
     // is finished
-    const isFinished = !hasStockAvailables(currentRecommendation)
+    const tz = get(currentRecommendation, 'tz')
+    const stocks = get(currentRecommendation, 'offer.stocks')
+    const availableDates = filterAvailableDates(stocks, tz)
+    const isFinished = !(availableDates && availableDates.length > 0)
 
     // colors
     const headerColor = getHeaderColor(

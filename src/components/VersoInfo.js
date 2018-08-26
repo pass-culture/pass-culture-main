@@ -45,15 +45,14 @@ class VersoInfo extends React.PureComponent {
   }
 
   renderOfferWhen() {
-    const { bookables, maxDatesShowned } = this.props
+    const { bookables, isFinished, maxDatesShowned } = this.props
     const sliced = bookables.slice(0, maxDatesShowned)
-    const noMoreAvailableDates = !sliced || !sliced.length
     const hasMoreBookables = bookables.length > maxDatesShowned
     return (
       <div>
         <h3>Quand ?</h3>
         <ul className="dates-info">
-          {noMoreAvailableDates ? (
+          {isFinished ? (
             <li>Plus de dates disponibles :(</li>
           ) : (
             <React.Fragment>
@@ -119,6 +118,7 @@ VersoInfo.defaultProps = {
 
 VersoInfo.propTypes = {
   bookables: PropTypes.array,
+  isFinished: PropTypes.bool.isRequired,
   maxDatesShowned: PropTypes.number,
   recommendation: PropTypes.object,
 }
@@ -133,7 +133,11 @@ const mapStateToProps = (state, ownProps) => {
     mediationId
   )
   const bookables = selectBookables(state, recommendation, match)
-  return { bookables, recommendation }
+  return {
+    bookables,
+    isFinished: recommendation.isFinished,
+    recommendation,
+  }
 }
 
 export default compose(

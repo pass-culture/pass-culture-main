@@ -6,6 +6,7 @@ import cloneDeep from 'lodash.clonedeep'
 import createCachedSelector from 're-reselect'
 
 import { pipe } from '../utils/functionnals'
+import { filterAvailableDates } from '../helpers/filterAvailableDates'
 
 // eslint-disable-next-line
 const { assert } = require('chai')
@@ -53,17 +54,6 @@ export const markAsReserved = bookings => {
     })
 }
 
-export const filterAvailables = (now, tz) => items => {
-  const results = items.filter(o => {
-    const date = moment(o.bookingLimitDatetime).tz(tz)
-    // - booking date limit >= now
-    // FIXME -> minute, heure ou jour ?
-    const isSameOrAfterNow = date.isAfter(now, 'day')
-    return isSameOrAfterNow
-  })
-  return results
-}
-
 export const sortByDate = () => items =>
   // trie par ordre ASC les résultats
   items.sort((a, b) => {
@@ -74,20 +64,19 @@ export const sortByDate = () => items =>
     return 0
   })
 
+const filterAvailables = tz => stocks => filterAvailableDates(stocks, tz)
+
 export const selectBookables = createCachedSelector(
   state => state.data.bookings,
   (state, recommendation) => recommendation,
   (bookings, recommendation) => {
     let stocks = get(recommendation, 'offer.stocks')
-    // NOTE: cloneDeep -> prevents redux.state mutations
+    // NOTE -> prevents state to be mutated
     stocks = (stocks && cloneDeep(stocks)) || null
     if (!stocks || !stocks.length) return []
     const tz = get(recommendation, 'tz')
-    const now = moment().tz(tz)
-    // DEBUG
-    // const now = moment('2018-08-30T21:59:00Z').tz(tz)
     return pipe(
-      filterAvailables(now, tz),
+      filterAvailables(tz),
       mapEventOccurenceToBookable(),
       humanizeBeginningDate(tz),
       markAsReserved(bookings),
