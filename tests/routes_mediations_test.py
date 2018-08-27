@@ -58,13 +58,12 @@ def test_patch_mediation_returns_200(app):
     response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation.id), json=data)
 
     # then
-    db.session.commit()  # Commit obligatoire sinon le test ne passe pas.
-    updated_mediation = Mediation.query.filter_by(id=mediation.id).first()
+    db.session.refresh(mediation)
     assert response.status_code == 200
-    assert response.json()['id'] == humanize(updated_mediation.id)
-    assert response.json()['frontText'] == updated_mediation.frontText
-    assert response.json()['backText'] == updated_mediation.backText
-    assert response.json()['isActive'] == updated_mediation.isActive
+    assert response.json()['id'] == humanize(mediation.id)
+    assert response.json()['frontText'] == mediation.frontText
+    assert response.json()['backText'] == mediation.backText
+    assert response.json()['isActive'] == mediation.isActive
 
 
 @clean_database
