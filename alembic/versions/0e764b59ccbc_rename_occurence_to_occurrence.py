@@ -7,8 +7,6 @@ Create Date: 2018-07-31 08:07:39.614788
 """
 from alembic import op
 
-from models import Stock
-
 # revision identifiers, used by Alembic.
 revision = '0e764b59ccbc'
 down_revision = '7ce5154d87e2'
@@ -39,7 +37,31 @@ def upgrade():
 
         'ALTER TABLE offer RENAME CONSTRAINT "offer_eventOccurenceId_fkey" TO "offer_eventOccurrenceId_fkey";'
         'ALTER TABLE recommendation RENAME CONSTRAINT "recommendation_inviteforEventOccurenceId_fkey" TO "recommendation_inviteforEventOccurrenceId_fkey";'
-        + Stock.trig_ddl + ';'
+        + """
+        CREATE OR REPLACE FUNCTION check_offer()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            IF NOT NEW.available IS NULL AND
+            ((SELECT COUNT(*) FROM booking WHERE "offerId"=NEW.id) > NEW.available) THEN
+                RAISE EXCEPTION 'available_too_low'
+                USING HINT = 'offer.available cannot be lower than number of bookings';
+            END IF;
+            
+            IF NOT NEW."bookingLimitDatetime" IS NULL AND
+            (NEW."bookingLimitDatetime" > (SELECT "beginningDatetime" FROM event_occurrence WHERE id=NEW."eventOccurrenceId")) THEN
+            
+            RAISE EXCEPTION 'bookingLimitDatetime_too_late'
+            USING HINT = 'offer.bookingLimitDatetime after event_occurrence.beginningDatetime';
+            END IF;
+            
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        DROP TRIGGER IF EXISTS offer_update ON offer;
+        CREATE CONSTRAINT TRIGGER offer_update AFTER INSERT OR UPDATE 
+        ON offer 
+        FOR EACH ROW EXECUTE PROCEDURE check_offer()
+      """ + ';'
       'COMMIT;'
     )
     pass

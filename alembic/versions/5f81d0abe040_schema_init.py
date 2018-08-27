@@ -1,4 +1,4 @@
-"""Database init
+"""Initialize database schema
 
 Revision ID: 5f81d0abe040
 Revises: ea836848f102
@@ -18,7 +18,7 @@ depends_on = None
 
 
 def upgrade():
-    sql_file = Path(os.path.dirname(os.path.realpath(__file__))) / 'db_init.sql'
+    sql_file = Path(os.path.dirname(os.path.realpath(__file__))) / 'sql' / 'schema_init.sql'
 
     with open(sql_file, 'r') as file:
         data = file.read()

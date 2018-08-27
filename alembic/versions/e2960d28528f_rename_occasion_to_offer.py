@@ -61,8 +61,66 @@ def upgrade():
 
         'DROP TRIGGER offer_update ON stock;'
         'DROP FUNCTION check_offer;'
-        + Stock.trig_ddl + ';'
-        + Booking.trig_ddl + ';'
+        + """
+         CREATE OR REPLACE FUNCTION check_stock()
+         RETURNS TRIGGER AS $$
+         BEGIN
+           IF NOT NEW.available IS NULL AND
+           ((SELECT COUNT(*) FROM booking WHERE "stockId"=NEW.id) > NEW.available) THEN
+             RAISE EXCEPTION 'available_too_low'
+             USING HINT = 'stock.available cannot be lower than number of bookings';
+           END IF;
+           
+           IF NOT NEW."bookingLimitDatetime" IS NULL AND
+           (NEW."bookingLimitDatetime" > (SELECT "beginningDatetime" FROM event_occurrence WHERE id=NEW."eventOccurrenceId")) THEN
+           
+           RAISE EXCEPTION 'bookingLimitDatetime_too_late'
+           USING HINT = 'stock.bookingLimitDatetime after event_occurrence.beginningDatetime';
+           END IF;
+           
+           RETURN NEW;
+         END;
+         $$ LANGUAGE plpgsql;
+         DROP TRIGGER IF EXISTS stock_update ON stock;
+         CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
+         ON stock
+         FOR EACH ROW EXECUTE PROCEDURE check_stock()
+        """ + ';'
+        + """
+         CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT)
+         RETURNS NUMERIC(10,2) AS $$
+         BEGIN
+             RETURN 
+                     (SELECT COALESCE(SUM(amount), 0) FROM deposit WHERE "userId"=user_id)
+                     -
+                     (SELECT COALESCE(SUM(amount * quantity), 0) FROM booking WHERE "userId"=user_id);
+         END; $$
+         LANGUAGE plpgsql;
+    
+         CREATE OR REPLACE FUNCTION check_booking()
+         RETURNS TRIGGER AS $$
+         BEGIN
+           IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
+              AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")
+                   < (SELECT COUNT(*) FROM booking WHERE "stockId"=NEW."stockId")) THEN
+               RAISE EXCEPTION 'tooManyBookings'
+                     USING HINT = 'Number of bookings cannot exceed "stock.available"';
+           END IF;
+           
+           IF (SELECT get_wallet_balance(NEW."userId") < 0)
+           THEN RAISE EXCEPTION 'insufficientFunds'
+                      USING HINT = 'The user does not have enough credit to book';
+           END IF;
+           
+           RETURN NEW;
+         END;
+         $$ LANGUAGE plpgsql;
+    
+         DROP TRIGGER IF EXISTS booking_update ON booking;
+         CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
+         ON booking
+         FOR EACH ROW EXECUTE PROCEDURE check_booking()
+         """ + ';'
       'COMMIT;')
 
 
