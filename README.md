@@ -38,8 +38,15 @@ Pour lancer l'API:
 
 Pour lancer l'appli Web:
 ```bash
-./pc start-browser-webapp
+./pc start-webapp
 ```
+
+Pour lancer le portail pro:
+```bash
+./pc start-pro
+```
+
+
 
 ## Développeurs.ses
 
