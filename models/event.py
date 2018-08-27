@@ -96,6 +96,10 @@ class Event(PcObject,
                         default=False,
                         nullable=False)
 
+    @property
+    def isDigital(self):
+        return False
+
 Event.__ts_vector__ = create_tsvector(
     cast(coalesce(Event.name, ''), TEXT)
 )

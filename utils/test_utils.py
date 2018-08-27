@@ -179,13 +179,14 @@ def req_with_auth(email=None, password=None):
     return request
 
 
-def create_booking(user, stock, venue, recommendation, is_cancellation=False, quantity=1):
+def create_booking(user, stock, venue, recommendation, is_cancellation=False, quantity=1, date_modified=datetime.utcnow()):
     booking = Booking()
     booking.stock = stock
     booking.user = user
     booking.token = random_token()
     booking.amount = stock.price
     booking.quantity = quantity
+    booking.dateModified = date_modified
     if recommendation:
         booking.recommendation = recommendation
     else:
@@ -342,6 +343,30 @@ def create_recommendation(offer, user):
     recommendation.offer = offer
     recommendation.user = user
     return recommendation
+
+
+def create_booking_for_thing(url=None, amount=50, quantity=1):
+    thing = Thing(from_dict={'url': url})
+    offer = Offer()
+    stock = Stock()
+    booking = Booking(from_dict={'amount': amount})
+    offer.thing = thing
+    stock.offer = offer
+    booking.stock = stock
+    booking.quantity = quantity
+    return booking
+
+
+def create_booking_for_event(amount=50, quantity=1):
+    event = Event()
+    offer = Offer()
+    stock = Stock()
+    booking = Booking(from_dict={'amount': amount})
+    offer.event = event
+    stock.offer = offer
+    booking.stock = stock
+    booking.quantity = quantity
+    return booking
 
 
 def create_event_occurrence(offer, beginning_datetime, end_datetime):

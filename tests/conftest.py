@@ -65,7 +65,6 @@ def clean_database(f):
         EventOccurrence.query.delete()
         Recommendation.query.delete()
         Mediation.query.delete()
-        Recommendation.query.delete()
         Offer.query.delete()
         Thing.query.delete()
         Event.query.delete()

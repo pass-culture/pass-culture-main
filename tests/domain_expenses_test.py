@@ -4,7 +4,7 @@ import pytest
 
 from domain.expenses import get_expenses
 from models import Booking, Thing, Offer, Stock, Event
-from utils.test_utils import create_user
+from utils.test_utils import create_user, create_booking_for_thing, create_booking_for_event
 
 
 @pytest.mark.standalone
@@ -52,27 +52,3 @@ def test_get_expenses_returns_max_200_and_actual_110_for_digital_bookings():
 
     # Then
     assert expenses['digital'] == {'max': 200, 'actual': 110}
-
-
-def create_booking_for_thing(url=None, amount=50, quantity=1):
-    thing = Thing(from_dict={'url': url})
-    offer = Offer()
-    stock = Stock()
-    booking = Booking(from_dict={'amount': amount})
-    offer.thing = thing
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    return booking
-
-
-def create_booking_for_event(amount=50, quantity=1):
-    event = Event()
-    offer = Offer()
-    stock = Stock()
-    booking = Booking(from_dict={'amount': amount})
-    offer.event = event
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    return booking

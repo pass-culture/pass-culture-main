@@ -3,6 +3,7 @@ import pytest
 from domain.bookings import check_expenses_limits
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
 from models import Booking, ApiErrors, Stock, Thing, Offer, Event
+from utils.test_utils import create_booking_for_event, create_booking_for_thing
 
 
 @pytest.mark.standalone
@@ -59,27 +60,3 @@ def test_check_expenses_limits_does_not_raise_an_error_when_booking_for_an_event
     except ApiErrors:
         # then
         pytest.fail('Booking for events must not raise any exceptions')
-
-
-def create_booking_for_thing(url=None, amount=50, quantity=1):
-    thing = Thing(from_dict={'url': url})
-    offer = Offer()
-    stock = Stock()
-    booking = Booking(from_dict={'amount': amount})
-    offer.thing = thing
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    return booking
-
-
-def create_booking_for_event(amount=50, quantity=1):
-    event = Event()
-    offer = Offer()
-    stock = Stock()
-    booking = Booking(from_dict={'amount': amount})
-    offer.event = event
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    return booking
