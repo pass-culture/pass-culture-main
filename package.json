@@ -19,6 +19,7 @@
     "colorsys": "^1.0.20",
     "commander": "^2.14.1",
     "css-loader": "0.28.7",
+    "raven-js": "^3.26.3",
     "dotenv": "4.0.0",
     "eslint": "4.10.0",
     "eslint-config-react-app": "^2.0.1",
