@@ -16,7 +16,10 @@ const buildStoreEnhancer = (middlewares = []) => {
   const enhancers = []
   let composeEnhancers = compose
   // utilisation de l'extension browser react-dev-tools
-  if (typeof window !== 'undefined') {
+  if (
+    typeof window !== 'undefined' &&
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  ) {
     composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
   }
   return composeEnhancers(...enhancers, applyMiddleware(...middlewares))
