@@ -126,7 +126,7 @@ class MaxReimbursementByOffererTest:
         # then
         assert is_relevant is True
 
-    def test_is_relevant_for_booking_on_physical_things_with_cumulative_value_of_exactly_23000(self):
+    def test_is_not_relevant_for_booking_on_physical_things_with_cumulative_value_of_exactly_23000(self):
         # given
         rule = ReimbursementRules.MAX_REIMBURSEMENT.value
         booking = create_booking_for_thing(url=None, amount=40, quantity=3)
@@ -136,9 +136,9 @@ class MaxReimbursementByOffererTest:
         is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
 
         # then
-        assert is_relevant is True
+        assert is_relevant is False
 
-    def test_is_relevant_for_booking_on_events_with_cumulative_value_of_exactly_23000(self):
+    def test_is_not_relevant_for_booking_on_events_with_cumulative_value_of_exactly_23000(self):
         # given
         rule = ReimbursementRules.MAX_REIMBURSEMENT.value
         booking = create_booking_for_event(amount=40, quantity=3)
@@ -148,7 +148,7 @@ class MaxReimbursementByOffererTest:
         is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
 
         # then
-        assert is_relevant is True
+        assert is_relevant is False
 
     def test_is_not_relevant_for_booking_on_digital_things_with_cumulative_value_above_23000(self):
         # given
@@ -240,7 +240,7 @@ class FindAllBookingsReimbursementsTest:
 
     def test_returns_no_reimbursement_above_23000_euros_for_last_booking(self):
         # given
-        booking1 = create_booking_for_event(amount=50, quantity=1)
+        booking1 = create_booking_for_event(amount=60, quantity=1)
         booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
         booking3 = create_booking_for_thing(amount=2295, quantity=10)
         bookings = [booking1, booking2, booking3]

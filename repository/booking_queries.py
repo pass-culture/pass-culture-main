@@ -7,20 +7,18 @@ def find_all_by_user_id(user_id):
 
 def find_all_by_offerer_sorted_by_date_modified_asc(offerer_id):
     query_event = Booking.query \
-        .join(Booking.stock) \
-        .join(Stock.eventOccurrence) \
-        .join(EventOccurrence.offer) \
-        .join(Offer.venue) \
-        .join(Venue.managingOfferer) \
-        .filter(Offerer.id == offerer_id) \
+        .join(Stock) \
+        .join(EventOccurrence) \
+        .join(Offer) \
+        .join(Venue) \
+        .filter(Venue.managingOffererId == offerer_id) \
         .all()
 
     query_thing = Booking.query \
-        .join(Booking.stock) \
-        .join(Stock.offer) \
-        .join(Offer.venue) \
-        .join(Venue.managingOfferer) \
-        .filter(Offerer.id == offerer_id) \
+        .join(Stock) \
+        .join(Offer) \
+        .join(Venue) \
+        .filter(Venue.managingOffererId == offerer_id) \
         .all()
 
     return sorted(query_event + query_thing, key=lambda b: b.dateModified)
