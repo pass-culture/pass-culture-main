@@ -5,6 +5,14 @@ from models.api_errors import ApiErrors
 
 ALLOWED_EXTENSIONS = set(['jpg', 'png', 'jpeg', 'gif'])
 
+def get_crop():
+    if 'croppingRect[x]' in request.form \
+        and 'croppingRect[y]' in request.form \
+        and 'croppingRect[height]' in request.form:
+        return [float(request.form['croppingRect[x]']),
+                float(request.form['croppingRect[y]']),
+                float(request.form['croppingRect[height]'])]
+
 def has_thumb():
     if 'thumb' in request.files:
         if request.files['thumb'].filename == '':

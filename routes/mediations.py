@@ -8,7 +8,7 @@ from models.pc_object import PcObject
 from models.user_offerer import RightsType
 from utils.human_ids import dehumanize
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
-from utils.thumb import has_thumb, read_thumb
+from utils.thumb import has_thumb, get_crop, read_thumb
 
 
 @app.route('/mediations', methods=['POST'])
@@ -30,11 +30,7 @@ def create_mediation():
     new_mediation.offererId = offerer_id
     PcObject.check_and_save(new_mediation)
 
-    crop = [float(request.form['croppingRect[x]']),
-            float(request.form['croppingRect[y]']),
-            float(request.form['croppingRect[height]'])]
-
-    new_mediation.save_thumb(read_thumb(), 0, crop=crop)
+    new_mediation.save_thumb(read_thumb(), 0, crop=get_crop())
 
     return jsonify(new_mediation), 201
 
