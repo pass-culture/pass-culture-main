@@ -7,7 +7,7 @@ from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.user_offerer import RightsType
 from utils.human_ids import dehumanize
-from utils.rest import ensure_current_user_has_rights, load_or_404
+from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
 
 ALLOWED_EXTENSIONS = set(['jpg', 'png', 'jpeg', 'gif'])
 
@@ -62,6 +62,7 @@ def get_mediation(mediation_id):
 
 @app.route('/mediations/<mediation_id>', methods=['PATCH'])
 @login_required
+@expect_json_data
 def update_mediation(mediation_id):
     mediation = load_or_404(Mediation, mediation_id)
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
