@@ -21,27 +21,21 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    this.handleHistoryBlock()
     const { user } = this.props
     if (user) this.dataRequestHandler()
   }
 
   componentDidUpdate(prevProps) {
-    const { blockers, user, location } = this.props
-    const blockersChanged = prevProps.blockers !== blockers
+    const { user, location } = this.props
     const userChanged = !prevProps.user && user // User just loaded
     const searchChanged = location.search !== prevProps.location.search
 
-    if (blockersChanged) {
-      this.handleHistoryBlock()
-    }
     if (userChanged || searchChanged) {
       this.dataRequestHandler()
     }
   }
 
   componentWillUnmount() {
-    if (this.unblock) this.unblock()
     const { dispatchResetForm } = this.props
     dispatchResetForm()
   }
@@ -61,27 +55,6 @@ class Main extends Component {
     // possibility of the handleDataRequest to return
     // false in order to not trigger the loading
     handleDataRequest(this.handleDataSuccess, this.handleDataFail)
-  }
-
-  handleHistoryBlock = () => {
-    const { blockers, history } = this.props
-    if (this.unblock) this.unblock()
-    this.unblock = history.block(() => {
-      if (!blockers) {
-        return false
-      }
-      // test all the blockers
-      for (const blocker of blockers) {
-        const { block } = blocker || {}
-        const shouldBlock = block && block(this.props)
-        if (shouldBlock) {
-          return false
-        }
-      }
-      // return true by default, which means that we don't block
-      // the change of pathname
-      return true
-    })
   }
 
   render() {
@@ -137,7 +110,6 @@ Main.defaultProps = {
 Main.propTypes = {
   Tag: PropTypes.string,
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-  blockers: PropTypes.array.isRequired,
   children: PropTypes.node.isRequired,
   dispatchResetForm: PropTypes.func.isRequired,
   dispatchShowNotification: PropTypes.func.isRequired,
@@ -158,7 +130,6 @@ export default compose(
   }),
   connect(
     state => ({
-      blockers: state.blockers,
       notification: state.notification,
       user: state.user,
     }),
