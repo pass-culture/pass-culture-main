@@ -6,41 +6,40 @@ import moment from 'moment'
 import { capitalize, Icon } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
-import Dotdotdot from 'react-dotdotdot'
+// import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Thumb from './layout/Thumb'
 import { getQueryURL } from '../helpers'
-import recommendationSelector from '../selectors/recommendation'
+import { THUMBS_URL } from '../utils/config'
 import { getTimezone } from '../utils/timezone'
+import { selectRecommendation } from '../selectors'
 
 const BookingItem = ({ booking, recommendation }) => {
-  const { stock, token } = booking || {}
-  const { offer } = stock || {}
-  const { mediation, mediationId, thumbUrl } = recommendation || {}
-  const { eventOrThing, offerId, venue } = offer || {}
-  const { name } = eventOrThing || {}
-  const { departementCode } = venue || {}
-
-  const tz = getTimezone(departementCode)
+  const token = get(booking, 'token')
+  const offerId = get(recommendation, 'offerId')
+  const mediationId = get(recommendation, 'mediationId')
   const date = get(booking, 'stock.eventOccurrence.beginningDatetime')
-
+  const departementCode = get(booking, 'stock.offer.venue.departementCode')
+  const tz = getTimezone(departementCode)
   const dateString = capitalize(
     moment(date)
       .tz(tz)
       .format('dddd DD/MM/YYYY à H:mm')
   )
-  const queryParams = getQueryURL({ mediationId, offerId })
-  const linkURL = `/decouverte/${queryParams}`
+
+  const queryURL = getQueryURL({ mediationId, offerId })
+  const linkURL = `/decouverte/${queryURL}`
+  const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
   return (
     <li className="booking-item">
       <Link to={linkURL}>
-        <Thumb src={thumbUrl} withMediation={mediation} />
+        <Thumb src={thumbUrl} />
         <div className="infos">
           <div className="top">
-            <h5 title={name}>
-              <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
-            </h5>
+            {/* <h5 title={name}>
+            <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
+          </h5> */}
             <span>{dateString}</span>
           </div>
           <div className="token">{token}</div>
@@ -65,6 +64,6 @@ BookingItem.propTypes = {
 
 export default connect((state, ownProps) => {
   const { recommendationId } = ownProps.booking
-  const recommendation = recommendationSelector(state, recommendationId)
+  const recommendation = selectRecommendation(state, recommendationId)
   return { recommendation }
 })(BookingItem)

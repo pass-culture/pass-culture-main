@@ -1,13 +1,13 @@
 import get from 'lodash.get'
 import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
-import { Logger } from 'pass-culture-shared'
+// import { Logger } from 'pass-culture-shared'
 
 import { THUMBS_URL } from '../utils/config'
 import { distanceInMeters } from '../utils/geolocation'
 import { getTimezone } from '../utils/timezone'
 
-const selectRecommendations = createSelector(
+export const selectRecommendations = createSelector(
   state => state.data.recommendations,
   state => state.geolocation.latitude,
   state => state.geolocation.longitude,
@@ -25,7 +25,7 @@ const selectRecommendations = createSelector(
       if (tutoIndex) {
         return `tuto_${tutoIndex}`
       }
-      Logger.warn('weird this recommendation has no thing or event or tuto')
+      // Logger.warn('weird this recommendation has no thing or event or tuto')
       return ''
     })
 

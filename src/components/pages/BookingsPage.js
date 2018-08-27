@@ -6,6 +6,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router-dom'
+import get from 'lodash.get'
 
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
@@ -13,8 +14,13 @@ import Footer from '../layout/Footer'
 import {
   selectSoonBookings,
   selectOtherBookings,
-} from '../../selectors/selectBookings'
-import { bookingNormalizer } from '../../utils/normalizers'
+  selectRecommendations,
+} from '../../selectors'
+import DeckLoader from '../DeckLoader'
+import {
+  bookingNormalizer,
+  recommendationNormalizer,
+} from '../../utils/normalizers'
 
 const renderPageHeader = () => (
   <header>
@@ -52,27 +58,55 @@ class BookingsPage extends Component {
     const { dispatch } = props
     const actions = { requestData }
     this.actions = bindActionCreators(actions, dispatch)
+    this.state = { haserror: false, isempty: false, isloading: true }
   }
 
-  handleDataRequest = (handleSuccess, handleFail) => {
-    this.actions.requestData('GET', 'bookings', {
-      handleFail,
-      handleSuccess,
+  componentWillMount = () => {
+    const { recommendations } = this.props
+    const hasRecommendations = recommendations && recommendations.length > 0
+    if (hasRecommendations) this.loadBookings()
+    else this.loadRecommendations()
+  }
+
+  handleRequestFail = () => {
+    // ERREUR DE CHARGEMENT
+    this.setState({ haserror: true, isloading: true })
+  }
+
+  loadRecommendations = () => {
+    const serviceURI = 'recommendations?'
+    this.actions.requestData('PUT', serviceURI, {
+      handleFail: this.handleRequestFail,
+      handleSuccess: this.loadBookings,
+      normalizer: recommendationNormalizer,
+    })
+  }
+
+  loadBookings = () => {
+    const serviceURI = 'bookings'
+    this.actions.requestData('GET', serviceURI, {
+      handleFail: this.handleRequestFail,
+      handleSuccess: this.handleRequestSuccess,
       normalizer: bookingNormalizer,
     })
   }
 
+  handleRequestSuccess = (state, action) => {
+    const len = get(action, 'data.length')
+    const isempty = !(len && len > 0)
+    this.setState({ isempty, isloading: false })
+  }
+
   render() {
     const { soonBookings, otherBookings } = this.props
+    const { isempty, isloading, haserror } = this.state
     // NOTE -> perfs: calculate length once
     const soonBookingsLength = soonBookings.length
     const otherBookingsLength = otherBookings.length
     const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
     return (
       <Main
-        backButton
         header={renderPageHeader}
-        handleDataRequest={this.handleDataRequest}
         name="bookings"
         footer={renderPageFooter}
         redBg
@@ -90,6 +124,11 @@ class BookingsPage extends Component {
           </div>
         )}
         {hasNoBooking && renderNoBookingSection()}
+        <DeckLoader
+          isempty={isempty}
+          haserror={haserror}
+          isloading={isloading}
+        />
       </Main>
     )
   }
@@ -98,13 +137,15 @@ class BookingsPage extends Component {
 BookingsPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   otherBookings: PropTypes.array.isRequired,
+  recommendations: PropTypes.array.isRequired,
   soonBookings: PropTypes.array.isRequired,
 }
 
 const mapStateToProps = state => {
+  const recommendations = selectRecommendations(state)
   const otherBookings = selectOtherBookings(state)
   const soonBookings = selectSoonBookings(state)
-  return { otherBookings, soonBookings }
+  return { otherBookings, recommendations, soonBookings }
 }
 
 export default connect(mapStateToProps)(BookingsPage)

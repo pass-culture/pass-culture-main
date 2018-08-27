@@ -40,7 +40,8 @@ const selectCurrentRecommendation = createCachedSelector(
     const tz = get(currentRecommendation, 'tz')
     const stocks = get(currentRecommendation, 'offer.stocks')
     const availableDates = filterAvailableDates(stocks, tz)
-    const isFinished = !(availableDates && availableDates.length > 0)
+    const isFinished =
+      offerId !== 'tuto' && !(availableDates && availableDates.length > 0)
 
     // colors
     const headerColor = getHeaderColor(

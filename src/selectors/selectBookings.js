@@ -25,14 +25,7 @@ export const selectSoonBookings = createSelector(
 export const selectOtherBookings = createSelector(
   selectBookings,
   selectSoonBookings,
-  (allBookings, soonBookings) => {
-    const results = difference(allBookings, soonBookings)
-    const filtered = results.filter(booking => {
-      const date = get(booking, 'stock.eventOccurrence.beginningDatetime')
-      return date
-    })
-    return filtered
-  }
+  (allBookings, soonBookings) => difference(allBookings, soonBookings)
 )
 
 export default selectBookings
