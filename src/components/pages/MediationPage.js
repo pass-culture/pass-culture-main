@@ -40,9 +40,7 @@ class MediationPage extends Component {
       },
     } = nextProps
     return {
-      inputUrl: prevState.inputUrl,
       imageUrl: prevState.imageUrl || get(nextProps, 'mediation.thumbPath'),
-      image: prevState.image,
       isNew: mediationId === 'nouveau',
     }
   }
@@ -133,7 +131,6 @@ class MediationPage extends Component {
   }
 
   onOkClick = e => {
-    console.log(this.state.inputUrl)
     this.state.inputUrl &&
       this.setState({
         imageUrl: this.state.inputUrl,
@@ -147,27 +144,19 @@ class MediationPage extends Component {
     const offererId = get(offerer, 'id')
     const offerId = match.params.offerId
 
-    let body
+    const body = new FormData()
+    body.append('offererId', offererId)
+    body.append('offerId', offerId)
+    body.append('credit', credit)
     if (typeof image === 'string') {
-      body = {
-        croppingRect,
-        offererId,
-        offerId,
-        credit,
-        thumb: image,
-      }
+      body.append('thumbUrl', image)
     } else {
-      const formData = new FormData()
-      formData.append('offererId', offererId)
-      formData.append('offerId', offerId)
-      formData.append('credit', credit)
-      formData.append('thumb', image)
-      formData.append('croppingRect[x]', croppingRect.x)
-      formData.append('croppingRect[y]', croppingRect.y)
-      formData.append('croppingRect[width]', croppingRect.width)
-      formData.append('croppingRect[height]', croppingRect.height)
-      body = formData
+      body.append('thumb', image)
     }
+    body.append('croppingRect[x]', croppingRect.x)
+    body.append('croppingRect[y]', croppingRect.y)
+    body.append('croppingRect[width]', croppingRect.width)
+    body.append('croppingRect[height]', croppingRect.height)
 
     this.setState({ isLoading: true })
 
@@ -274,8 +263,8 @@ class MediationPage extends Component {
           <div className="field-group">
             <div className="field">
               <label className="label">Crédit photo</label>
-
               <input
+                id="mediation-credit"
                 type="text"
                 className="input is-rounded"
                 value={credit}
