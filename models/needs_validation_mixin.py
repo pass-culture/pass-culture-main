@@ -16,4 +16,4 @@ class NeedsValidationMixin(object):
 
     @property
     def isValidated(self):
-        return (self.validationToken is None)
+        return self.validationToken is None

@@ -19,7 +19,6 @@ class User(PcObject,
            HasThumbMixin,
            NeedsValidationMixin
            ):
-
     email = Column(String(120), nullable=False, unique=True)
     password = Column(Binary(60), nullable=False)
 
@@ -73,7 +72,7 @@ class User(PcObject,
             api_errors.addError('canBookFreeOffers', 'Admin ne peut pas booker')
         if self.clearTextPassword:
             api_errors.checkMinLength('password', self.clearTextPassword, 8)
-            
+
         return api_errors
 
     def get_id(self):
@@ -98,17 +97,23 @@ class User(PcObject,
         self.password = bcrypt.hashpw(newpass.encode('utf-8'),
                                       bcrypt.gensalt())
 
-    def hasRights(self, rights, offererId):
+    def hasRights(self, rights, offerer_id):
         if self.isAdmin:
             return True
+
         if rights == RightsType.editor:
             compatible_rights = [RightsType.editor, RightsType.admin]
         else:
             compatible_rights = [rights]
-        return UserOfferer.query\
-                  .filter((UserOfferer.offererId == offererId) &
-                          (UserOfferer.rights.in_(compatible_rights)))\
-                  .first() is not None
+
+        user_offerer = UserOfferer.query.filter(
+            (UserOfferer.offererId == offerer_id)
+            & (UserOfferer.userId == self.id)
+            & (UserOfferer.validationToken.is_(None))
+            & (UserOfferer.rights.in_(compatible_rights))
+        ).first()
+
+        return user_offerer is not None
 
     @property
     def wallet_balance(self):
