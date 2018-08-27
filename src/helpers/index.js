@@ -1,4 +1,4 @@
 export * from './getPrice'
-export * from './getDiscoveryQueryParams'
+export * from './getQueryParams'
 export * from './getPriceRangeFromStocks'
 export * from './getMobileOperatingSystem'

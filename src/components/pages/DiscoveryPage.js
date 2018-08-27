@@ -16,7 +16,7 @@ import Main from '../layout/Main'
 import Footer from '../layout/Footer'
 import DeckLoader from '../DeckLoader'
 import BookingCard from '../BookingCard'
-import { getDiscoveryQueryParams } from '../../helpers'
+import { getQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
 
 const renderPageFooter = () => {
@@ -70,7 +70,7 @@ class DiscoveryPage extends React.PureComponent {
     this.setState({ isloading: true })
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
-    const query = getDiscoveryQueryParams(match)
+    const query = getQueryParams(match)
     const serviceuri = `recommendations?${query}`
     this.actions.requestData('PUT', serviceuri, {
       handleFail: this.handleRequestFail,

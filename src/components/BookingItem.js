@@ -10,14 +10,15 @@ import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Thumb from './layout/Thumb'
+import { getQueryURL } from '../helpers'
 import recommendationSelector from '../selectors/recommendation'
 import { getTimezone } from '../utils/timezone'
 
 const BookingItem = ({ booking, recommendation }) => {
   const { stock, token } = booking || {}
-  const { offer, offerId } = stock || {}
+  const { offer } = stock || {}
   const { mediation, mediationId, thumbUrl } = recommendation || {}
-  const { eventOrThing, venue } = offer || {}
+  const { eventOrThing, offerId, venue } = offer || {}
   const { name } = eventOrThing || {}
   const { departementCode } = venue || {}
 
@@ -29,8 +30,8 @@ const BookingItem = ({ booking, recommendation }) => {
       .tz(tz)
       .format('dddd DD/MM/YYYY à H:mm')
   )
-  const mediationQuery = (mediationId && `/${mediationId}`) || ''
-  const linkURL = `/decouverte/${offerId}${mediationQuery}`
+  const queryParams = getQueryURL({ mediationId, offerId })
+  const linkURL = `/decouverte/${queryParams}`
   return (
     <li className="booking-item">
       <Link to={linkURL}>

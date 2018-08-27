@@ -25,7 +25,7 @@ const selectRecommendations = createSelector(
       if (tutoIndex) {
         return `tuto_${tutoIndex}`
       }
-      Logger.warn('weird this recommendation is with no thing or event or tuto')
+      Logger.warn('weird this recommendation has no thing or event or tuto')
       return ''
     })
 
