@@ -7,7 +7,7 @@ from pathlib import Path
 
 import requests as req
 
-from models import Thing, Deposit, UserOfferer, Recommendation, RightsType
+from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -281,7 +281,7 @@ def create_event_offer(venue, event_name='Test event', duration_minutes=60, date
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created
-    return event
+    return offer
 
 
 def create_n_mixed_offers_with_same_venue(venue, n=10):
@@ -375,3 +375,15 @@ def create_event_occurrence(offer, beginning_datetime, end_datetime):
     event_occurrence.beginningDatetime = beginning_datetime
     event_occurrence.endDatetime = end_datetime
     return event_occurrence
+
+
+def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_text='Some front text',
+                     back_text='Some back test', is_active=True):
+    mediation = Mediation()
+    mediation.offer = offer
+    mediation.dateCreated = date_created
+    mediation.frontText = front_text
+    mediation.backText = back_text
+    mediation.author = author
+    mediation.isActive = is_active
+    return mediation
