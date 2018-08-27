@@ -139,7 +139,6 @@ def do_sandbox():
         if query.count() == 0:
             stock = Stock(from_dict=stock_mock)
             stock.eventOccurrence = event_occurrence
-            stock.offer = offers[stock_mock['offerIndex']]
             PcObject.check_and_save(stock)
             print("CREATED stock")
             pprint(vars(stock))
