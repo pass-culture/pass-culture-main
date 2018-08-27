@@ -6,16 +6,25 @@ import { THUMBS_URL } from '../../utils/config'
 class MediationItem extends Component {
   render() {
     const { mediation } = this.props
-    const { id } = mediation || {}
+    const { id, isActive } = mediation || {}
     return (
       <Form
         action={`/mediations/${id}`}
+        handleSuccessNotification={null}
         isAutoSubmit
         name={`mediation-${id}`}
         patch={mediation}
         Tag="li">
-        <img alt={`accroche-${id}`} src={`${THUMBS_URL}/mediations/${id}`} />
-        <Field name="isActive" type="checkbox" />
+        <img
+          alt={`accroche-${id}`}
+          disabled={!isActive}
+          src={`${THUMBS_URL}/mediations/${id}`}
+        />
+        <br />
+        <br />
+        <div className="columns is-centered">
+          <Field name="isActive" type="checkbox" />
+        </div>
       </Form>
     )
   }
