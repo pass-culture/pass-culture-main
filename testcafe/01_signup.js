@@ -1,4 +1,4 @@
-import { Selector, RequestLogger } from 'testcafe'
+import { ClientFunction, Selector, RequestLogger } from 'testcafe'
 
 import { API_URL, ROOT_PATH } from '../src/utils/config'
 import { offererUser } from './helpers/users'
@@ -26,13 +26,13 @@ const sirenInputError = Selector('#user-siren-error')
 fixture`01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
   .page`${ROOT_PATH + 'inscription'}`
 
-test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
+test.skip("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
   await t.click(signInButton)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
+test.skip("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
   await t.typeText(emailInput, 'email@email.test').wait(500)
   await t.expect(signUpButton.innerText).eql('Créer')
   await t.expect(signUpButton.hasAttribute('disabled')).ok()
@@ -55,8 +55,11 @@ test.requestHooks(logger)(
 
     await t.click(signUpButton).wait(5000)
 
-    const errorMessage = logger.requests[0].response.body
-    console.log('errorMessage', errorMessage)
+    const er = await t.getBrowserConsoleMessages()
+    console.log('er', er)
+
+    //const errorMessage = logger.requests[0].response.body
+    //console.log('errorMessage', errorMessage)
 
     const location = await t.eval(() => window.location)
     await t.expect(location.pathname).eql('/structures')
@@ -66,7 +69,7 @@ test.requestHooks(logger)(
 fixture`01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
   .page`${ROOT_PATH + 'inscription'}`
 
-test('E-mail déjà présent dans la base et mot de passe invalide', async t => {
+test.skip('E-mail déjà présent dans la base et mot de passe invalide', async t => {
   await t
     .typeText(publicNameInput, offererUser.publicName)
     .typeText(emailInput, offererUser.email)
