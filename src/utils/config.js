@@ -24,6 +24,10 @@ export const THUMBS_URL =
 console.log('NODE_ENV', NODE_ENV)
 console.log('API_URL', API_URL)
 
+fetch('https://api.passculture-dev.beta.gouv.fr/health').then(result => {
+  console.log('result', result)
+})
+
 export function apiUrl(path) {
   if (!path) return
   return `${API_URL}${path}`
