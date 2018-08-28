@@ -25,7 +25,6 @@ const SearchPage = ({ handleSearchChange, search }) => (
     <div>
       <form className="section" onSubmit={handleSearchChange}>
         <label className="label" htmlFor="search">
-          Rechercher une offre :
         </label>
         <div className="field is-grouped">
           <p className="control is-expanded">
