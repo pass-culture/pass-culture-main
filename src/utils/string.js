@@ -62,6 +62,7 @@ export function queryStringToObject(string = '') {
 }
 
 export function objectToQueryString(object = {}) {
+  // NOTE unused function
   return (
     object &&
     Object.keys(object)
@@ -76,6 +77,7 @@ export function objectToQueryString(object = {}) {
 }
 
 export function updateQueryString(string, object) {
+  // NOTE unused function
   const previousObject = queryStringToObject(object)
   const nextObject = Object.assign({}, previousObject, object)
   return objectToQueryString(nextObject)
