@@ -8,8 +8,9 @@ from models.stock import Stock
 from models.pc_object import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_user, create_booking
+from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer, create_venue, \
+    create_stock_with_event_offer, create_booking
+
 from utils.token import random_token
 
 
@@ -92,6 +93,23 @@ def test_14_should_not_create_stock_if_booking_limit_datetime_after_event_occurr
                                      json={'bookingLimitDatetime': serialized_date})
 
     #Then
-    print(r_update.json())
     assert r_update.status_code == 400
     assert 'bookingLimitDatetime' in r_update.json()
+
+
+@clean_database
+@pytest.mark.standalone
+def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
+    user = create_user(email='test@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    PcObject.check_and_save(user, stock)
+
+    # When
+    r_update = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
+                                     json={'available': 5})
+
+    # Then
+    assert r_update.status_code == 400
+    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_update.json()
