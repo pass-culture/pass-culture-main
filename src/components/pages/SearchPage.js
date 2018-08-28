@@ -24,8 +24,8 @@ const SearchPage = ({ handleSearchChange, search }) => (
   <Main header={renderPageHeader} name="search" footer={renderPageFooter} redBg>
     <div>
       <form className="section" onSubmit={handleSearchChange}>
-        <label className="label">
-Rechercher une offre :
+        <label className="label" htmlFor="search">
+          Rechercher une offre :
         </label>
         <div className="field is-grouped">
           <p className="control is-expanded">
