@@ -241,8 +241,8 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     user.canBookFreeOffers = can_book_free_offers
     user.departementCode = departement_code
     user.validationToken = validation_token
-    user.isAdmin = is_admin
     user.setPassword(password)
+    user.isAdmin = is_admin
     return user
 
 
@@ -380,29 +380,6 @@ def create_recommendation(offer, user):
     recommendation.user = user
     return recommendation
 
-  
-def create_booking_for_thing(url=None, amount=50, quantity=1):
-    thing = Thing(from_dict={'url': url})
-    offer = Offer()
-    stock = Stock()
-    booking = Booking(from_dict={'amount': amount})
-    offer.thing = thing
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    return booking
-
-
-def create_booking_for_event(amount=50, quantity=1):
-    event = Event()
-    offer = Offer()
-    stock = Stock()
-    booking = Booking(from_dict={'amount': amount})
-    offer.event = event
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    return booking
 
 
 def create_event_occurrence(offer, beginning_datetime=datetime.utcnow() + timedelta(hours=2),
