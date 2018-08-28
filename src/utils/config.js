@@ -18,7 +18,10 @@ export const SEARCH = '_search_'
 export const SPACE = ' '
 
 export const API_URL = process.env.API_URL || 'http://localhost'
-export const THUMBS_URL = process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
+export const THUMBS_URL =
+  process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
+
+console.log('API_URL', API_URL)
 
 export function apiUrl(path) {
   if (!path) return
