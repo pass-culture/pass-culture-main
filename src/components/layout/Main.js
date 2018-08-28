@@ -59,10 +59,6 @@ class Main extends Component {
 
   componentDidMount() {
     this.props.user && this.handleDataRequest()
-
-    fetch('https://api.passculture-dev.beta.gouv.fr/health').then(result => {
-      console.log('result', result)
-    })
   }
 
   componentDidUpdate(prevProps) {
