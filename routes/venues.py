@@ -34,8 +34,7 @@ def create_venue():
 @expect_json_data
 def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)
-    ensure_current_user_has_rights(RightsType.editor,
-                                   venue.managingOffererId)
+    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populateFromDict(request.json)
     PcObject.check_and_save(venue)
     return jsonify(venue._asdict(include=VENUE_INCLUDES)), 200
