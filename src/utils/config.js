@@ -22,9 +22,9 @@ export const THUMBS_URL =
   process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
 
 console.log('NODE_ENV', NODE_ENV)
-console.log('API_URL', API_URL)
+console.log('APII_URL', API_URL)
 
-fetch('https://api.passculture-dev.beta.gouv.fr/health').then(result => {
+window.fetch('https://api.passculture-dev.beta.gouv.fr/health').then(result => {
   console.log('result', result)
 })
 
