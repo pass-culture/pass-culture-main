@@ -20,7 +20,26 @@ def upgrade():
     op.execute(
       'BEGIN TRANSACTION;'
         'ALTER TABLE "booking" ADD COLUMN "isCancelled" BOOLEAN DEFAULT False;'
-        + Booking.trig_ddl + ';'
+        'CREATE OR REPLACE FUNCTION check_booking()'
+        'RETURNS TRIGGER AS $$'
+        'BEGIN'
+        '  IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)'
+        '     AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")'
+        '          < (SELECT COUNT(*) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")) THEN'
+        '      RAISE EXCEPTION \'tooManyBookings\''
+        '            USING HINT = \'Number of bookings cannot exceed "stock.available"\';'
+        '  END IF;'
+        '  IF (SELECT get_wallet_balance(NEW."userId") < 0)'
+        '  THEN RAISE EXCEPTION \'insufficientFunds\''
+        '             USING HINT = \'The user does not have enough credit to book\';'
+        '  END IF;'
+        '  RETURN NEW;'
+        'END;'
+        '$$ LANGUAGE plpgsql;'
+        'DROP TRIGGER IF EXISTS booking_update ON booking;'
+        'CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE'
+        'ON booking'
+        'FOR EACH ROW EXECUTE PROCEDURE check_booking()'
       'COMMIT;')
     pass
 

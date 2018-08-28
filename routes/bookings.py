@@ -94,8 +94,7 @@ def create_booking():
 def cancel_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
-    if not current_user.isAdmin\
-       and not booking.user == current_user\
+    if not booking.user == current_user\
        and not current_user.hasRights(RightsType.editor,
                                       booking.stock.resolvedOffer.venue.managingOffererId):
         return "Vous n'avez pas le droit d'annuler cette réservation", 403
