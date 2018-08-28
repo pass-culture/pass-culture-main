@@ -8,6 +8,7 @@ import Logo from '../layout/Logo'
 import Main from '../layout/Main'
 
 const SignupPage = ({ errors, sirenName }) => {
+  console.log('TEST LOG SIGNUP')
   return (
     <Main name="sign-up" fullscreen>
       <div className="logo-side">
