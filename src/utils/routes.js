@@ -6,6 +6,7 @@ import BookingsPage from '../components/pages/BookingsPage'
 import DiscoveryPage from '../components/pages/DiscoveryPage'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import ProfilePage from '../components/pages/ProfilePage'
+import SearchPage from '../components/pages/SearchPage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
@@ -71,6 +72,16 @@ const routes = [
     href: 'mailto:pass@culture.gouv.fr',
     icon: 'mail-w',
     title: 'Nous contacter',
+  },
+{
+    component: SearchPage,
+    path: '/recherche',
+    title: 'Recherche',
+  },
+  {
+    component: BookingsPage,
+    path: '/reservations',
+    title: 'Réservations',
   },
   {
     component: TermsPage,
