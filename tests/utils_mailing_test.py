@@ -1,5 +1,5 @@
 import secrets
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, patch
 
 import pytest
 from bs4 import BeautifulSoup
@@ -8,7 +8,7 @@ from tests.conftest import clean_database
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
     make_booking_recap_email, make_final_recap_email_for_stock_with_event, write_object_validation_email, \
-    maybe_send_offerer_validation_email, MailServiceException
+    maybe_send_offerer_validation_email, MailServiceException, send_booking_recap_emails, send_final_booking_recap_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer
@@ -197,7 +197,6 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
 
     # Then
     app.mailjet_client.send.create.assert_called_once_with(data=expected_email)
-
 
 
 @clean_database
@@ -659,3 +658,91 @@ def test_validation_email_should_not_return_clearTextPassword(app):
     email_html_soup = BeautifulSoup(email['Html-part'], features="html.parser")
     assert 'clearTextPassword' not in str(email_html_soup)
     assert 'totallysafepsswd' not in str(email_html_soup)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_send_booking_recap_emails_does_not_send_email_to_offer_booking_email_if_feature_is_disabled(app):
+    # given
+    user = create_user()
+    booking = create_booking(user)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue)
+    stock = create_stock_with_thing_offer(offerer, venue, offer)
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
+        send_mail_to_users.return_value = False
+        # when
+        send_booking_recap_emails(stock, booking)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
+
+
+@pytest.mark.standalone
+@clean_database
+def test_send_booking_recap_emails_sends_email_to_offer_booking_email_if_feature_is_enabled(app):
+    # given
+    user = create_user()
+    booking = create_booking(user)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue, booking_email='offer.booking.email@test.com')
+    stock = create_stock_with_thing_offer(offerer, venue, offer)
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
+        send_mail_to_users.return_value = True
+        # when
+        send_booking_recap_emails(stock, booking)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert 'offer.booking.email@test.com' in args[1]['data']['To']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_send_final_booking_recap_email_does_not_send_email_to_offer_booking_email_if_feature_is_disabled(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    stock.eventOccurrence.offer.bookingEmail = 'offer.booking.email@test.com'
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
+        send_mail_to_users.return_value = False
+        # when
+        send_final_booking_recap_email(stock)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_feature_is_enabled(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    stock.eventOccurrence.offer.bookingEmail = 'offer.booking.email@test.com'
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
+        send_mail_to_users.return_value = True
+        # when
+        send_final_booking_recap_email(stock)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert 'offer.booking.email@test.com' in args[1]['data']['To']

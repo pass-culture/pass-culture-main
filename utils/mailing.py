@@ -6,6 +6,7 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from models.pc_object import PcObject
+from repository.features import feature_send_mail_to_users_enabled
 from utils.config import API_URL, ENV, IS_DEV, IS_STAGING
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
@@ -25,7 +26,7 @@ class MailServiceException(Exception):
 
 def send_final_booking_recap_email(stock):
     if len(stock.bookings) == 0:
-        print("Not sending recap for  " + stock + " as it has no bookings")
+        print("Not sending recap for  " + str(stock) + " as it has no bookings")
     email = make_final_recap_email_for_stock_with_event(stock)
 
     recipients = ['passculture@beta.gouv.fr']
@@ -33,14 +34,13 @@ def send_final_booking_recap_email(stock):
         recipients.append(stock.resolvedOffer.bookingEmail)
 
 
-    if IS_DEV or IS_STAGING:
+    if feature_send_mail_to_users_enabled():
+        email['To'] = ", ".join(recipients)
+    else:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
                              + ", ".join(recipients) \
                              + '</p>' + email['Html-part']
         email['To'] = 'passculture-dev@beta.gouv.fr'
-    else:
-        email['To'] = ", ".join(recipients)
-    print('EMAIL', email['To'])
 
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
@@ -52,19 +52,19 @@ def send_final_booking_recap_email(stock):
 
 def send_booking_recap_emails(stock, booking):
     email = make_booking_recap_email(stock, booking)
-
+    
     recipients = ['passculture@beta.gouv.fr']
     if stock.resolvedOffer.bookingEmail:
         recipients.append(stock.resolvedOffer.bookingEmail)
 
-    if IS_DEV or IS_STAGING:
+    if feature_send_mail_to_users_enabled():
+        email['To'] = ", ".join(recipients)
+    else:
+
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
                              + ", ".join(recipients) \
                              + '</p>' + email['Html-part']
         email['To'] = 'passculture-dev@beta.gouv.fr'
-    else:
-        email['To'] = ", ".join(recipients)
-    print('EMAIL', email['To'])
 
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
