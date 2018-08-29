@@ -21,7 +21,8 @@ jobs:
           name: Running API server
           command: |
             cd ~/pass-culture-main
-            ls -al
+            ls -al api/
+            ls -al pro/
             docker-compose up
       - run:
           name: Run Frontend
