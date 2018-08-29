@@ -2,11 +2,12 @@ import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
 
+const addMediationAnchor = Selector('a.button').withText('Ajouter une accroche')
 const creditInput = Selector('#mediation-credit')
 const dragAndDropDiv = Selector('div.drag-n-drop')
 const dropZoneDiv = Selector('div.dropzone').filterVisible()
-const createMediationAnchor = Selector(
-  "a.button[href='/offres/A9/accroches/nouveau']"
+const createMediationAnchor = Selector('a.button').withText(
+  'Créer une accroche'
 )
 const submitButton = Selector('button.button.is-primary').withText('Valider')
 
@@ -18,7 +19,7 @@ fixture`07_01 MediationPage | Naviguer vers ajouter une accroche`
 test("Lorsque je clique sur le bouton ajouter une accroche sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
   await t
     .useRole(regularOfferer)
-    .click(createMediationAnchor)
+    .click(addMediationAnchor)
     .wait(1000)
 
   const location = await t.eval(() => window.location)
@@ -28,7 +29,7 @@ test("Lorsque je clique sur le bouton ajouter une accroche sur la page d'une off
 test('Je peux charger une image same origin', async t => {
   await t
     .useRole(regularOfferer)
-    .click(createMediationAnchor)
+    .click(addMediationAnchor)
     .wait(1000)
 
   await t
@@ -37,6 +38,7 @@ test('Je peux charger une image same origin', async t => {
 
   await t
     .typeText(urlInput, '/images/mediation-test.jpg')
+    .wait(500)
     .click(urlButton)
     .wait(500)
 
@@ -58,6 +60,7 @@ test('Je peux charger une cors image', async t => {
       urlInput,
       'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370'
     )
+    .wait(500)
     .click(urlButton)
     .wait(500)
 
@@ -88,7 +91,7 @@ test('Je peux changer d image chargee', async t => {
   await t.expect(dropZoneDiv).ok()
 })
 
-test('Je peux creer une offre', async t => {
+test('Je peux creer une accroche', async t => {
   await t
     .useRole(regularOfferer)
     .click(createMediationAnchor)

@@ -9,11 +9,13 @@ const bookingLimitDatetimeInput = Selector('#stock-bookingLimitDatetime')
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
 const createOfferFromVenueAnchor = Selector(
-  "a.button[href='/offres/nouveau?lieu=']"
+  "a.button[href^='/offres/nouveau?lieu=']"
 )
 const descriptionInput = Selector('#offer-description')
 const durationMinutesInput = Selector('#offer-durationMinutes')
-const editScheduleAnchor = Selector("a.button[href='/offres/A9?gestion&date=']")
+const editScheduleAnchor = Selector(
+  "a.button[href^='/offres/A9?gestion&date=']"
+)
 const nameInput = Selector('#offer-name')
 const navbarAnchor = Selector(
   'a.navbar-link, span.navbar-burger'
@@ -46,7 +48,7 @@ const venueAnchor = Selector("a[href='/structures/AE/lieux/AE']").withText(
 
 fixture`06_01 OfferPage | Naviguer vers creer une offre`
 
-test.skip("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
+test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
   await t
     .useRole(regularOfferer)
     .click(createOfferAnchor)
@@ -56,7 +58,7 @@ test.skip("Lorsque je clique sur le bouton créer une offre sur la page des offr
   await t.expect(location.pathname).eql('/offres/nouveau')
 })
 
-test.skip("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre, et je peux revenir avec le bouton annuler", async t => {
+test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre, et je peux revenir avec le bouton annuler", async t => {
   await t
     .useRole(regularOfferer)
     .click(navbarAnchor)
@@ -72,11 +74,13 @@ test.skip("Lorsque je clique sur le bouton créer une offre sur la page d'un lie
   await t.expect(location.pathname).eql('/offres/nouveau')
 })
 
-test.skip('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {
+test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {
   await t
     .useRole(regularOfferer)
     .click(createOfferAnchor)
     .wait(1000)
+
+  await t.click(cancelAnchor).wait(500)
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres')
@@ -140,12 +144,11 @@ test('Je peux créer une offre', async t => {
   location = await t.eval(() => window.location)
   await t
     .expect(location.search)
-    .eql(/\?gestion&date=([A-Z0-9]*)&stock=nouveau$/)
+    .match(/\?gestion&date=([A-Z0-9]*)&stock=nouveau$/)
 
   await t
     .typeText(priceInput, '10')
     .typeText(availableInput, '50')
-    .click(scheduleSubmitButton)
     .wait(500)
 
   await t.click(scheduleSubmitButton).wait(500)
@@ -157,38 +160,49 @@ test('Je peux créer une offre', async t => {
   await t.click(addScheduleAnchor).wait(500)
 
   location = await t.eval(() => window.location)
-  await t.expect(location.search).eql('?gestion&date=nouvelle')
-
-  await t.click(scheduleSubmitButton).wait(500)
-
-  location = await t.eval(() => window.location)
-  await t.expect(location.search).eql('?gestion')
-
-  // EDIT ONE
-  await t.click(editScheduleAnchor)
-
-  location = await t.eval(() => window.location)
-  await t.expect(location.search).match(/\?gestion&date=([A-Z0-9]*)$/)
+  await t
+    .expect(location.search)
+    .eql('?gestion&date=nouvelle')
+    .wait(500)
 
   await t.click(scheduleSubmitButton).wait(500)
 
   location = await t.eval(() => window.location)
   await t
     .expect(location.search)
-    .eql(/\?gestion&date=([A-Z0-9]*)&stock=([A-Z0-9]*)$/)
+    .match(/\?gestion&date=([A-Z0-9]*)&stock=nouveau$/)
 
-  await t.typeText(availableInput, '10')
-
-  await t.click(scheduleSubmitButton).wait(500)
+  // EDIT ONE
+  /*
+  await t.click(editScheduleAnchor)
 
   location = await t.eval(() => window.location)
-  await t.expect(location.search).eql('?gestion')
+  await t.expect(location.search)
+         .match(/\?gestion&date=([A-Z0-9]*)$/)
+
+  await t.click(scheduleSubmitButton)
+         .wait(500)
+
+  location = await t.eval(() => window.location)
+  await t
+    .expect(location.search)
+    .match(/\?gestion&date=([A-Z0-9]*)&stock=([A-Z0-9]*)$/)
+
+  await t.typeText(availableInput, '10')
+         .wait(500)
+
+  await t.click(scheduleSubmitButton)
+         .wait(500)
+
+  location = await t.eval(() => window.location)
+  await t.expect(location.search)
+         .eql('?gestion')
 
   // CLOSE
   await t.click(scheduleCloseButton).wait(500)
 
   location = await t.eval(() => window.location)
-  await t.expect(location.search).eql('')
+  await t.expect(location.search)
+         .eql('')
+  */
 })
-
-//fixture`06_03 OfferPage | Créer une nouvelle offre`
