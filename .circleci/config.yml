@@ -29,30 +29,20 @@ jobs:
       - run:
           name: Run Frontend
           command: |
-            echo $PATH
             export PATH=${PATH:44}
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
-            echo $PATH
-            node -v
-            which node
-            nodejs -v
-            which nodejs
             cd ~/pass-culture-main/pro
             yarn install
             yarn start
+          background: true
       - run:
           name: Running tests
           command:
-            echo $PATH
             export PATH=${PATH:44}
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
-            echo $PATH
-            node -v
-            which node
-            nodejs -v
-            which nodejs
+            cd ~/pass-culture-main/pro
             cd ~/pass-culture-main/pro
             sleep 60
             yarn testcafe
