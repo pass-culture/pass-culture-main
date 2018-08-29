@@ -22,7 +22,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y nodejs yarn
             sudo ln -sT /usr/bin/nodejs /usr/sbin/node
-            export PATH=${PATH#"$NVM_BIN"}
+            export PATH=${PATH:44}
             echo $PATH
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
