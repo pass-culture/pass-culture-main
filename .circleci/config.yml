@@ -18,7 +18,9 @@ jobs:
     steps: # a collection of executable commands
       - run:
           name: Clone API Repo
-          command: git clone https://github.com/betagouv/pass-culture-api.git
+          command:  |
+          cd ~
+          git clone https://github.com/betagouv/pass-culture-api.git
       - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run: # install and activate virtual environment with pip
