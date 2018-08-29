@@ -4,3 +4,4 @@ NOT_FORGET.md
 development_env_file
 .idea/
 *.pgdump
+*.iml
