@@ -49,6 +49,7 @@ jobs:
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
             yarn install
+            sleep 120
             dockerize -wait http://localhost -timeout 2m
             yarn testcafe --no-sandbox
 
