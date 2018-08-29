@@ -49,7 +49,7 @@ jobs:
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
-            sleep 100
+            sleep 160
             yarn testcafe
 
 #            dockerize -wait http://localhost -timeout 2m
