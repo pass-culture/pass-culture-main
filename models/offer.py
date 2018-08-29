@@ -1,7 +1,7 @@
 """ offer model """
 from datetime import datetime
 from itertools import chain
-from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey
+from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
 from sqlalchemy.orm import aliased, relationship
 
 from models import Event, EventOccurrence
@@ -51,6 +51,9 @@ class Offer(PcObject,
     venue = relationship('Venue',
                          foreign_keys=[venueId],
                          backref='offers')
+
+    bookingEmail = Column(String(120), nullable=True)
+
 
     @property
     def eventOrThing(self):

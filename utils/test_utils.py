@@ -246,7 +246,8 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     return user
 
 
-def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10):
+def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10,
+                                  booking_email='offer.booking.email@test.com'):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -260,6 +261,7 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
         stock.eventOccurrence.endDatetime = datetime(2017, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
         stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=800)
     stock.eventOccurrence.offer = Offer()
+    stock.eventOccurrence.offer.bookingEmail = booking_email
     stock.eventOccurrence.offer.event = Event(
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
@@ -268,7 +270,8 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
     return stock
 
 
-def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50):
+def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50,
+                                  booking_email='offer.booking.email@test.com'):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -276,6 +279,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
         stock.offer = thing_offer
     else:
         stock.offer = create_thing_offer(venue)
+    stock.offer.bookingEmail = booking_email
     stock.offer.venue = venue
     stock.isActive = True
     stock.available = available
@@ -302,21 +306,26 @@ def create_event(event_name='Test event', duration_minutes=60):
 
 
 def create_thing_offer(venue, thing_type='Book', thing_name='Test Book', media_urls='test/urls',
-                       author_name='Test Author', date_created=datetime.utcnow()):
+                       author_name='Test Author', date_created=datetime.utcnow(),
+                       booking_email='booking.email@test.com'):
     offer = Offer()
     offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
                                author_name=author_name)
     offer.venue = venue
     offer.dateCreated = date_created
+    offer.bookingEmail = booking_email
     return offer
 
 
-def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow()):
+def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
+                       booking_email = 'booking.email@test.com'):
+
     offer = Offer()
     event = create_event(event_name=event_name, duration_minutes=duration_minutes)
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created
+    offer.bookingEmail = booking_email
     return offer
 
 
