@@ -6,8 +6,8 @@ const addMediationAnchor = Selector('a.button').withText('Ajouter une accroche')
 const creditInput = Selector('#mediation-credit')
 const dragAndDropDiv = Selector('div.drag-n-drop')
 const dropZoneDiv = Selector('div.dropzone').filterVisible()
-const createMediationAnchor = Selector('a.button').withText(
-  'Créer une accroche'
+const editOfferAnchor = Selector('a.name').withText(
+  'Rencontre avec Franck Lepage'
 )
 const submitButton = Selector('button.button.is-primary').withText('Valider')
 
@@ -16,21 +16,27 @@ const urlButton = Selector('button.is-primary').withText('OK')
 
 fixture`07_01 MediationPage | Naviguer vers ajouter une accroche`
 
-test("Lorsque je clique sur le bouton ajouter une accroche sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
+test("Lorsque je clique sur le bouton créer une accroche sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
   await t
     .useRole(regularOfferer)
+    .click(editOfferAnchor)
+    .wait(500)
     .click(addMediationAnchor)
-    .wait(1000)
+    .wait(500)
 
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres/A9/accroches/nouveau')
+  await t
+    .expect(location.pathname)
+    .match(/offres\/([A-Z0-9]*)\/accroches\/nouveau$/)
 })
 
 test('Je peux charger une image same origin', async t => {
   await t
     .useRole(regularOfferer)
+    .click(editOfferAnchor)
+    .wait(500)
     .click(addMediationAnchor)
-    .wait(1000)
+    .wait(500)
 
   await t
     .expect(dragAndDropDiv.innerText)
@@ -48,8 +54,10 @@ test('Je peux charger une image same origin', async t => {
 test('Je peux charger une cors image', async t => {
   await t
     .useRole(regularOfferer)
-    .click(createMediationAnchor)
-    .wait(1000)
+    .click(editOfferAnchor)
+    .wait(500)
+    .click(addMediationAnchor)
+    .wait(500)
 
   await t
     .expect(dragAndDropDiv.innerText)
@@ -70,8 +78,10 @@ test('Je peux charger une cors image', async t => {
 test('Je peux changer d image chargee', async t => {
   await t
     .useRole(regularOfferer)
-    .click(createMediationAnchor)
-    .wait(1000)
+    .click(editOfferAnchor)
+    .wait(500)
+    .click(addMediationAnchor)
+    .wait(500)
 
   await t
     .expect(dragAndDropDiv.innerText)
@@ -79,6 +89,7 @@ test('Je peux changer d image chargee', async t => {
 
   await t
     .typeText(urlInput, '/images/mediation-test.jpg')
+    .wait(500)
     .click(urlButton)
     .wait(500)
     .typeText(
@@ -94,8 +105,10 @@ test('Je peux changer d image chargee', async t => {
 test('Je peux creer une accroche', async t => {
   await t
     .useRole(regularOfferer)
-    .click(createMediationAnchor)
-    .wait(1000)
+    .click(editOfferAnchor)
+    .wait(500)
+    .click(addMediationAnchor)
+    .wait(500)
 
   await t
     .typeText(
