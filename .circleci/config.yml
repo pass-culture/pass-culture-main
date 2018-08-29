@@ -26,6 +26,8 @@ jobs:
             export PATH=${PATH%:NVM_BIN}
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
+            echo $PATH
+            echo $NVM_BIN
             node -v
             which node
             nodejs -v
