@@ -148,7 +148,9 @@ def edit_stock(stock_id):
 @login_or_api_key_required
 def delete_stock(id):
     stock = load_or_404(Stock, id)
-    offerer_id = stock.resolvedOffer.venue.managingOffererId
+    offererId = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor,
-                                   offerer_id)
-    return delete(stock)
+                                   offererId)
+    stock.populateFromDict({'isSoftDeleted': True})
+    PcObject.check_and_save(stock)
+    return jsonify(stock._asdict()), 202

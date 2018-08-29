@@ -1,15 +1,15 @@
 """ stock """
 from datetime import datetime, timedelta
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import BigInteger,\
-                       CheckConstraint,\
-                       Column,\
-                       DateTime,\
-                       DDL,\
-                       event,\
-                       ForeignKey,\
-                       Integer,\
-                       Numeric    
+from sqlalchemy import BigInteger, \
+    CheckConstraint, \
+    Column, \
+    DateTime, \
+    DDL, \
+    event, \
+    ForeignKey, \
+    Integer, \
+    Numeric, Boolean
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -47,6 +47,8 @@ class Stock(PcObject,
     eventOccurrence = relationship('EventOccurrence',
                                   foreign_keys=[eventOccurrenceId],
                                   backref='stocks')
+
+    isSoftDeleted = Column(Boolean, nullable=False, default=False)
 
     offerId = Column(BigInteger,
                         ForeignKey('offer.id'),

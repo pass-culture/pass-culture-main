@@ -266,3 +266,43 @@ def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
     # Then
     assert r_update.status_code == 400
     assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_update.json()['global']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_delete_should_keep_stock_in_base_with_is_soft_deleted_true(app):
+    # Given
+    user = create_user(email='email@test.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    PcObject.check_and_save(user, stock)
+
+    # When
+    r_delete = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+
+    # Then
+    assert r_delete.status_code == 202
+    assert r_delete.json()['isSoftDeleted'] == True
+    request = req_with_auth('email@test.fr', 'P@55w0rd').get(API_URL + '/stocks/' + humanize(stock.id))
+    assert request.status_code == 200
+    deleted_stock_data = request.json()
+    assert deleted_stock_data['isSoftDeleted'] == True
+
+
+@clean_database
+@pytest.mark.standalone
+def test_user_should_not_be_able_to_delete_stock_if_does_not_have_rights(app):
+    # Given
+    user = create_user(email='email@test.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    PcObject.check_and_save(user, stock)
+
+    # When
+    r_delete = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+
+    # Then
+    assert r_delete.status_code == 400
+    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_delete.json()['global']
