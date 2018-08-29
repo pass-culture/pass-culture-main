@@ -13,13 +13,16 @@ jobs:
             cd pass-culture-main
             git clone https://github.com/betagouv/pass-culture-api.git api
             node -v
-            sudo nvm uninstall 6.1.0
-            sudo nvm install 8.11
-            node -v
+            which node
+            echo $PATH
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
             sudo apt-get update
-            sudo apt-get install -y yarn
+            sudo apt-get install -y nodejs yarn
+            sudo ln -sT /usr/bin/nodejs /usr/sbin/node
+            node -v
+            nodejs -v
       - checkout:
           path: ~/pass-culture-main/pro
       - run:
