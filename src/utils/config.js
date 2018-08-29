@@ -21,9 +21,6 @@ export const API_URL = process.env.API_URL || 'http://localhost'
 export const THUMBS_URL =
   process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
 
-console.log('NODE_ENV', NODE_ENV)
-console.log('APII_URL', API_URL)
-
 export function apiUrl(path) {
   if (!path) return
   return `${API_URL}${path}`
