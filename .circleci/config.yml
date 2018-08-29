@@ -24,6 +24,7 @@ jobs:
             ls -al api/
             ls -al pro/
             docker-compose up
+          background: true
       - run:
           name: Run Frontend
           command: |
