@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
 import VersoBookingButton from './VersoBookingButton'
+import { isRecommendationFinished } from '../helpers'
 import { selectBookings } from '../selectors/selectBookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
@@ -114,9 +115,10 @@ const mapStateToProps = (state, ownProps) => {
   const bookings = selectBookings(state)
   const bookingsIds = bookings.map(o => o.stockId)
   const booked = bookingsIds.filter(id => stockIds.includes(id))
+  const isFinished = isRecommendationFinished(recommendation, offerId)
   return {
     isFavorite: recommendation && recommendation.isFavorite,
-    isFinished: recommendation && recommendation.isFinished,
+    isFinished,
     isReserved: booked.length > 0,
     recommendationId: recommendation.id,
     url: ownProps.match.url,

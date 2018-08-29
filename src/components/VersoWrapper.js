@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VersoControl from './VersoControl'
+import { getHeaderColor } from '../utils/colors'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
@@ -50,8 +51,13 @@ class VersoWrapper extends Component {
   }
 
   render() {
-    const { children, className, currentRecommendation } = this.props
-    const { headerColor, mediation, offer } = currentRecommendation || {}
+    const {
+      children,
+      className,
+      currentRecommendation,
+      headerColor,
+    } = this.props
+    const { mediation, offer } = currentRecommendation || {}
     const { eventOrThing, venue } = offer || {}
 
     const { tutoIndex } = mediation || {}
@@ -98,6 +104,7 @@ class VersoWrapper extends Component {
 
 VersoWrapper.defaultProps = {
   currentRecommendation: null,
+  headerColor: null,
 }
 
 VersoWrapper.propTypes = {
@@ -107,6 +114,7 @@ VersoWrapper.propTypes = {
   dispatchMakeDraggable: PropTypes.func.isRequired,
   dispatchMakeUndraggable: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
+  headerColor: PropTypes.string,
   isFlipped: PropTypes.bool.isRequired,
 }
 
@@ -120,9 +128,13 @@ export default compose(
         offerId,
         mediationId
       )
+      const headerColor = getHeaderColor(
+        currentRecommendation.firstThumbDominantColor
+      )
       return {
         currentRecommendation,
         draggable: state.verso.draggable,
+        headerColor,
         isFlipped: state.verso.isFlipped,
       }
     },

@@ -4,18 +4,9 @@ import moment from 'moment'
 import { expect } from 'chai'
 import { filterAvailableDates } from './filterAvailableDates'
 
-const DEFAULT_TIMEZONE = 'Europe/Paris'
-const inTwoDays = moment()
-  .add(2, 'days')
-  .tz(DEFAULT_TIMEZONE)
-  .toISOString()
-const inOneDay = moment()
-  .add(1, 'days')
-  .tz(DEFAULT_TIMEZONE)
-  .toISOString()
+const inTwoDays = moment().add(2, 'days')
+const inOneDay = moment().add(1, 'days')
 const inToday = moment()
-  .tz(DEFAULT_TIMEZONE)
-  .toISOString()
 
 describe('filterAvailableDates', () => {
   it('filtre les dates passées ou du jour même', () => {

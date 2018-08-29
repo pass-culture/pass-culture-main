@@ -8,6 +8,7 @@ import { compose } from 'redux'
 
 import Recto from './Recto'
 import Verso from './Verso'
+import { getHeaderColor } from '../utils/colors'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
@@ -40,8 +41,8 @@ class Card extends PureComponent {
   }
 
   render() {
-    const { position, recommendation, width } = this.props
-    const { headerColor, index } = recommendation || {}
+    const { position, recommendation, width, headerColor } = this.props
+    const { index } = recommendation || {}
     const iscurrent = position === 'current'
     const translateTo = index * width
     return (
@@ -60,11 +61,13 @@ class Card extends PureComponent {
 }
 
 Card.defaultProps = {
+  headerColor: null,
   isFlipped: false,
   recommendation: null,
 }
 
 Card.propTypes = {
+  headerColor: PropTypes.string,
   isFlipped: PropTypes.bool,
   position: PropTypes.string.isRequired,
   recommendation: PropTypes.object,
@@ -97,14 +100,17 @@ export default compose(
     (state, ownProps) => {
       const { mediationId, offerId } = ownProps.match.params
       const recomendationSelector = getSelectorByCardPosition(ownProps.position)
+      const recommendation = recomendationSelector(
+        state,
+        offerId,
+        mediationId,
+        ownProps.position
+      )
+      const headerColor = getHeaderColor(recommendation.firstThumbDominantColor)
       return {
+        headerColor,
         isFlipped: state.verso.isFlipped,
-        recommendation: recomendationSelector(
-          state,
-          offerId,
-          mediationId,
-          ownProps.position
-        ),
+        recommendation,
       }
     },
     { requestDataAction: requestData }

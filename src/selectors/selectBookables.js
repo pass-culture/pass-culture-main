@@ -64,8 +64,6 @@ export const sortByDate = () => items =>
     return 0
   })
 
-const filterAvailables = tz => stocks => filterAvailableDates(stocks, tz)
-
 export const selectBookables = createCachedSelector(
   state => state.data.bookings,
   (state, recommendation) => recommendation,
@@ -76,7 +74,7 @@ export const selectBookables = createCachedSelector(
     if (!stocks || !stocks.length) return []
     const tz = get(recommendation, 'tz')
     return pipe(
-      filterAvailables(tz),
+      filterAvailableDates,
       mapEventOccurenceToBookable(),
       humanizeBeginningDate(tz),
       markAsReserved(bookings),

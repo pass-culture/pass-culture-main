@@ -7,18 +7,21 @@ import { compose } from 'redux'
 
 import Price from './Price'
 import Finishable from './layout/Finishable'
-import { getPriceRangeFromStocks } from '../helpers'
+import { getHeaderColor } from '../utils/colors'
+import { getPriceRangeFromStocks, isRecommendationFinished } from '../helpers'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import { ROOT_PATH } from '../utils/config'
 
 const DeckNavigation = ({
+  isFinished,
+  headerColor,
   recommendation,
   flipHandler,
   handleGoNext,
   handleGoPrevious,
   transitionTimeout,
 }) => {
-  const { distance, headerColor, isFinished, offer } = recommendation || {}
+  const { distance, offer } = recommendation || {}
   const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
   const color = headerColor || '#000'
   const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${color} 30%,${color} 100%)`
@@ -80,6 +83,8 @@ DeckNavigation.defaultProps = {
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
+  headerColor: null,
+  isFinished: null,
   recommendation: null,
   transitionTimeout: 250,
 }
@@ -88,6 +93,8 @@ DeckNavigation.propTypes = {
   flipHandler: PropTypes.func,
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
+  headerColor: PropTypes.string,
+  isFinished: PropTypes.bool,
   recommendation: PropTypes.object,
   transitionTimeout: PropTypes.number,
 }
@@ -101,8 +108,11 @@ export default compose(
       offerId,
       mediationId
     )
+    const isFinished = isRecommendationFinished(recommendation, offerId)
+    const headerColor = getHeaderColor(recommendation.firstThumbDominantColor)
     return {
-      isFinished: recommendation.isFinished,
+      headerColor,
+      isFinished,
       recommendation,
     }
   })

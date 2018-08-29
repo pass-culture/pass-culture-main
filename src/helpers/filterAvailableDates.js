@@ -1,18 +1,12 @@
 import moment from 'moment'
 
-// FIXME -> to be moved to constants
-const DEFAULT_TIMEZONE = 'Europe/Paris'
-
-export const filterAvailableDates = (
-  stocks,
-  tz = DEFAULT_TIMEZONE,
-  limit = false
-) => {
+export const filterAvailableDates = (stocks, limit = false) => {
   const now = limit || moment()
   // tuto n'a pas de stock
   const filtered = (stocks || []).filter(item => {
-    const date = moment(item.bookingLimitDatetime).tz(tz)
-    return date.isAfter(now, 'day')
+    // item.bookingLimitDatetime est ISOString
+    const bookingLimit = moment(item.bookingLimitDatetime)
+    return bookingLimit.isAfter(now, 'day')
   })
   return filtered
 }

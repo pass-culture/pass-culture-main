@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom'
 import { Icon, Logger, capitalize } from 'pass-culture-shared'
 
 import { navigationLink } from '../utils/geolocation'
+import { isRecommendationFinished } from '../helpers'
 import { selectBookables } from '../selectors/selectBookables'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
@@ -133,9 +134,10 @@ const mapStateToProps = (state, ownProps) => {
     mediationId
   )
   const bookables = selectBookables(state, recommendation, match)
+  const isFinished = isRecommendationFinished(recommendation, offerId)
   return {
     bookables,
-    isFinished: recommendation.isFinished,
+    isFinished,
     recommendation,
   }
 }
