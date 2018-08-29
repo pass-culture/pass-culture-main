@@ -29,7 +29,11 @@ const DeckLoader = ({ haserror, isempty, isloading }) => {
           className="flex-rows flex-center is-overlay has-text-centered is-italic"
           style={{ ...defaultStyle, ...transitionStyles[state] }}
         >
-          <Icon draggable={false} svg="ico-loading-card" alt="Chargement ..." />
+          <Icon
+            draggable={false}
+            svg="ico-loading-card"
+            alt="Chargement en cours. Merci de patienter…"
+          />
           <h2 className="subtitle is-2">
             {(isempty && 'aucune offre pour le moment') || ''}
             {/* // FIXME -> mettre un label plus sexy avec redirection */}

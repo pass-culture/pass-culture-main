@@ -348,7 +348,10 @@ Une erreur est survenue lors de la réservation :
             ]}
             {step === 'loading' && (
               <li className="center">
-                <Icon svg="loader-w" alt="Chargement ..." />
+                <Icon
+                  svg="loader-w"
+                  alt="Chargement en cours. Merci de patienter…"
+                />
               </li>
             )}
             {step === 'confirmation' && (

@@ -93,7 +93,10 @@ class VersoInfo extends React.PureComponent {
             href={navigationLink(venue.latitude, venue.longitude)}
           >
             {distance}
-            <Icon svg="ico-geoloc-solid2" alt="Géolocalisation" />
+            <Icon
+              svg="ico-geoloc-solid2"
+              alt="Géolocalisation dans Open Street Map"
+            />
           </a>
         </div>
       </div>
