@@ -11,6 +11,7 @@ jobs:
             cd ~
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
+            ./pc install
             docker-compose up
 
 #jobs
