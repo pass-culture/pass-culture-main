@@ -94,7 +94,8 @@ test('Je peux changer d image chargee', async t => {
     .wait(500)
     .typeText(
       urlInput,
-      'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370'
+      'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370',
+      { replace: true }
     )
     .click(urlButton)
     .wait(500)
