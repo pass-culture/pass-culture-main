@@ -8,16 +8,6 @@ import { Link } from 'react-router-dom'
 
 import { getPrice } from '../helpers'
 
-const renderBookedFooter = () => (
-  <p>
-    Retrouvez ce code et les détails de l&apos;offre dans la rubrique
-    <Link to="/reservations">
-      <b className="is-primary-text"> Mes Réservations </b>
-    </Link>
-    de votre compte
-  </p>
-)
-
 const BookingCardSuccess = ({ isEvent, data }) => {
   const token = get(data, 'token')
   let price = get(data, 'stock.price')
@@ -45,7 +35,13 @@ const BookingCardSuccess = ({ isEvent, data }) => {
       <p className="is-size-1 my28">
         <b>{token}</b>
       </p>
-      {renderBookedFooter()}
+      <p>
+        Retrouvez ce code et les détails de l&apos;offre dans la rubrique
+        <Link to="/reservations">
+          <b className="is-primary-text"> Mes Réservations </b>
+        </Link>
+        de votre compte
+      </p>
     </div>
   )
 }
