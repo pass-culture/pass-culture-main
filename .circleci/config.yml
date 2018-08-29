@@ -1,45 +1,53 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
-version: 2
+version: 2.0
+
 jobs:
   build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:8.11.3-browsers
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: yarn install
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run unit tests!
-      #- run: yarn test
-
-      # Start server for testcafe
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/
+    steps: # a collection of executable commands
       - run:
-          name: Running Webapp
-          command:
+          name: Init env
+          command: |
+            git clone https://github.com/betagouv/pass-culture-main.git
+            cd pass-culture-main
+            rm -rf shared
+            git clone https://github.com/betagouv/pass-culture-api.git api
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update
+            sudo apt-get install -y nodejs yarn google-chrome-stable
+      - checkout:
+          path: ~/pass-culture-main/webapp
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - run:
+          name: Running API server
+          command: |
+            cd ~/pass-culture-main
+            docker-compose up
+          background: true
+      - run:
+          name: Run Frontend
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/webapp
+            yarn install
             yarn start
           background: true
 
-      # run functional tests!
       - run:
           name: Running tests
-          command:
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/webapp
+            sleep 160
             yarn testcafe
