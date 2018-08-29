@@ -1,12 +1,7 @@
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import get from 'lodash.get'
-import {
-  Modal,
-  resetForm,
-  showNotification,
-  withLogin,
-} from 'pass-culture-shared'
+import { Modal, resetForm, showNotification } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -139,6 +134,5 @@ const mapStateToProps = state => ({
 
 export default compose(
   withRouter,
-  withLogin({ failRedirect: '/connexion' }),
   connect(mapStateToProps)
 )(Main)

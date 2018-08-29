@@ -26,9 +26,12 @@ const buildStoreEnhancer = (middlewares = []) => {
 }
 
 const buildStoreReducers = () => {
-  // FIXME -> sortir la configuration du de redux-persist
+  // FIXME -> sortir la configuration de redux-persist
   // pour pouvoir faire les tests unitaires sur le store
-  const persistStoreWhiteList = ['user']
+  const persistStoreWhiteList = [
+    // 'data',
+    // 'user'
+  ]
   const persistConfig = {
     key: PERSIST_STORE_KEY,
     storage,

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
-import { requestData } from 'pass-culture-shared'
+import { requestData, withLogin } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import { bindActionCreators, compose } from 'redux'
 
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
@@ -70,4 +70,7 @@ ProfilePage.propTypes = {
 
 const mapStateToProps = state => ({ user: state.user })
 
-export default connect(mapStateToProps)(ProfilePage)
+export default compose(
+  withLogin({ failRedirect: '/connexion' }),
+  connect(mapStateToProps)
+)(ProfilePage)

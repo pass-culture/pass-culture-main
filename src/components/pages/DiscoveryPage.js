@@ -4,11 +4,12 @@ import {
   requestData,
   showLoading,
   Logger,
+  withLogin,
 } from 'pass-culture-shared'
 import React from 'react'
 import get from 'lodash.get'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import { bindActionCreators, compose } from 'redux'
 import { Route } from 'react-router-dom'
 
 import Deck from '../Deck'
@@ -132,4 +133,7 @@ const mapStateToProps = (state, ownProps) => ({
   backButton: ownProps.location.search.indexOf('to=verso') > -1,
 })
 
-export default connect(mapStateToProps)(DiscoveryPage)
+export default compose(
+  withLogin({ failRedirect: '/connexion' }),
+  connect(mapStateToProps)
+)(DiscoveryPage)

@@ -1,6 +1,8 @@
+import { withLogin } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 import { Link } from 'react-router-dom'
 
 import Main from '../layout/Main'
@@ -65,4 +67,7 @@ const mapStateToProps = state => ({
   favorites: state.data.favorites || [],
 })
 
-export default connect(mapStateToProps)(FavoritesPage)
+export default compose(
+  withLogin({ failRedirect: '/connexion' }),
+  connect(mapStateToProps)
+)(FavoritesPage)

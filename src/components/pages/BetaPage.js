@@ -1,4 +1,4 @@
-import { Icon } from 'pass-culture-shared'
+import { Icon, withLogin } from 'pass-culture-shared'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -32,4 +32,7 @@ const BetaPage = () => (
   </Main>
 )
 
-export default BetaPage
+export default withLogin({
+  isRequired: true,
+  successRedirect: '/decouverte',
+})(BetaPage)

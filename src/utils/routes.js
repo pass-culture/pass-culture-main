@@ -5,7 +5,6 @@ import BetaPage from '../components/pages/BetaPage'
 import BookingsPage from '../components/pages/BookingsPage'
 import DiscoveryPage from '../components/pages/DiscoveryPage'
 import FavoritesPage from '../components/pages/FavoritesPage'
-import InventoryPage from '../components/pages/InventoryPage'
 import ProfilePage from '../components/pages/ProfilePage'
 import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
@@ -41,11 +40,6 @@ const routes = [
     component: FavoritesPage,
     path: '/favoris',
     title: 'Mes favoris',
-  },
-  {
-    component: InventoryPage,
-    path: '/inventaire',
-    title: 'Inventaire',
   },
   {
     component: ProfilePage,

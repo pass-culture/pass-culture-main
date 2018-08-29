@@ -1,10 +1,10 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
-import { requestData } from 'pass-culture-shared'
+import { requestData, withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import { bindActionCreators, compose } from 'redux'
 import { Link } from 'react-router-dom'
 import get from 'lodash.get'
 
@@ -128,4 +128,7 @@ const mapStateToProps = state => {
   return { otherBookings, recommendations, soonBookings }
 }
 
-export default connect(mapStateToProps)(BookingsPage)
+export default compose(
+  withLogin({ failRedirect: '/connexion' }),
+  connect(mapStateToProps)
+)(BookingsPage)
