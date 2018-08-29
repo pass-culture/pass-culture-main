@@ -10,7 +10,7 @@ jobs:
           name: Init env
           command: |
             git clone https://github.com/betagouv/pass-culture-main.git
-            cd pass-culture-main/api
+            cd pass-culture-main
             git clone https://github.com/betagouv/pass-culture-api.git
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
@@ -21,6 +21,7 @@ jobs:
           name: Running API server
           command: |
             cd ~/pass-culture-main
+            ls -al
             docker-compose up
       - run:
           name: Run Frontend
