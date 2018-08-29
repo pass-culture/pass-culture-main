@@ -302,21 +302,26 @@ def create_event(event_name='Test event', duration_minutes=60):
 
 
 def create_thing_offer(venue, thing_type='Book', thing_name='Test Book', media_urls='test/urls',
-                       author_name='Test Author', date_created=datetime.utcnow()):
+                       author_name='Test Author', date_created=datetime.utcnow(),
+                       booking_email='booking.email@test.com'):
     offer = Offer()
     offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
                                author_name=author_name)
     offer.venue = venue
     offer.dateCreated = date_created
+    offer.bookingEmail = booking_email
     return offer
 
 
-def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow()):
+def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
+                       booking_email = 'booking.email@test.com'):
+
     offer = Offer()
     event = create_event(event_name=event_name, duration_minutes=duration_minutes)
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created
+    offer.bookingEmail = booking_email
     return offer
 
 

@@ -73,6 +73,7 @@ def clean_database(f):
         Offerer.query.delete()
         Deposit.query.delete()
         User.query.delete()
+        app.mailjet_client.send.reset_mock()
         return f(app, *args, **kwargs)
 
     return decorated_function

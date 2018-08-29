@@ -199,6 +199,7 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
     app.mailjet_client.send.create.assert_called_once_with(data=expected_email)
 
 
+
 @clean_database
 @pytest.mark.standalone
 def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
@@ -524,13 +525,15 @@ def test_write_object_validation_email_should_have_some_specific_information(app
     div_offerer = html.select('div.offerer')[0]
     assert div_offerer.h2.text == 'Nouvelle structure :'
     assert div_offerer.h3.text == 'Infos API entreprise :'
-    assert div_offerer.strong.a['href'] == 'localhost/validate?modelNames=Offerer&token={}'.format(offerer.validationToken)
+    assert div_offerer.strong.a['href'] == 'localhost/validate?modelNames=Offerer&token={}'.format(
+        offerer.validationToken)
     assert div_offerer.strong.a.text == 'cliquez ici'
 
     div_user_offerer = html.select('div.user_offerer')[0]
     assert div_user_offerer.h2.text == 'Nouveau rattachement :'
     assert div_user_offerer.h3.text == 'Utilisateur :'
-    assert div_user_offerer.strong.a['href'] == 'localhost/validate?modelNames=UserOfferer&token={}'.format(user_offerer.validationToken)
+    assert div_user_offerer.strong.a['href'] == 'localhost/validate?modelNames=UserOfferer&token={}'.format(
+        user_offerer.validationToken)
     assert div_user_offerer.strong.a.text == 'cliquez ici'
 
     offerer_data = div_offerer.select('pre.offerer-data')[0].text
@@ -543,7 +546,9 @@ def test_write_object_validation_email_should_have_some_specific_information(app
 
     api_entreprise_data = div_offerer.select('pre.api-entreprise-data')[0].text
     assert "'numero_tva_intra': 'FR60732075312'" in api_entreprise_data
-    assert "'other_etablissements_sirets': ['73207531200213', '73207531200197', '73207531200171']".replace(' ', '').replace('\n', '') in api_entreprise_data.replace(' ', '').replace('\n', '')
+    assert "'other_etablissements_sirets': ['73207531200213', '73207531200197', '73207531200171']".replace(' ',
+                                                                                                           '').replace(
+        '\n', '') in api_entreprise_data.replace(' ', '').replace('\n', '')
     assert 'siege_social' in api_entreprise_data
 
 

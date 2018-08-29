@@ -27,8 +27,11 @@ def send_final_booking_recap_email(stock):
     if len(stock.bookings) == 0:
         print("Not sending recap for  " + stock + " as it has no bookings")
     email = make_final_recap_email_for_stock_with_event(stock)
-    venue = stock.resolvedOffer.venue
-    recipients = [venue.bookingEmail, 'passculture@beta.gouv.fr']
+
+    recipients = ['passculture@beta.gouv.fr']
+    if stock.resolvedOffer.bookingEmail:
+        recipients.append(stock.resolvedOffer.bookingEmail)
+
 
     if IS_DEV or IS_STAGING:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
@@ -49,8 +52,10 @@ def send_final_booking_recap_email(stock):
 
 def send_booking_recap_emails(stock, booking):
     email = make_booking_recap_email(stock, booking)
-    venue = stock.resolvedOffer.venue
-    recipients = [venue.bookingEmail, 'passculture@beta.gouv.fr']
+
+    recipients = ['passculture@beta.gouv.fr']
+    if stock.resolvedOffer.bookingEmail:
+        recipients.append(stock.resolvedOffer.bookingEmail)
 
     if IS_DEV or IS_STAGING:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
