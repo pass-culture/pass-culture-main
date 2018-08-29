@@ -18,6 +18,7 @@ from utils.token import random_token
 @clean_database
 @pytest.mark.standalone
 def test_10_get_stocks_should_return_a_list_of_stocks(app):
+    # Given
     user = create_user(email='test@email.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -26,7 +27,10 @@ def test_10_get_stocks_should_return_a_list_of_stocks(app):
     stock_3 = create_stock_with_event_offer(offerer, venue, price=15, available=1)
     PcObject.check_and_save(user, stock_1, stock_2, stock_3)
 
+    # When
     request = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks')
+
+    # Then
     assert request.status_code == 200
     stocks = request.json()
     assert len(stocks) == 3
@@ -35,6 +39,7 @@ def test_10_get_stocks_should_return_a_list_of_stocks(app):
 @clean_database
 @pytest.mark.standalone
 def test_getting_stocks_with_admin(app):
+    # Given
     user = create_user(email='test@email.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -44,6 +49,8 @@ def test_getting_stocks_with_admin(app):
 
     # When
     request = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+
+    # Then
     assert request.status_code == 200
     assert request.json()['available'] == 10
     assert request.json()['price'] == 10
@@ -145,6 +152,7 @@ def test_user_with_no_rights_cannot_create_stock_from_offer(app):
 
     # Then
     assert r_create.status_code == 400
+    assert r_create.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
 @clean_database
@@ -168,6 +176,7 @@ def test_user_with_no_rights_cannot_create_stock_from_event_occurrence(app):
 
     # Then
     assert r_create.status_code == 400
+    assert r_create.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
 @clean_database
@@ -189,7 +198,9 @@ def test_if_no_event_occurrence_id_or_offer(app):
 
     # Then
     assert r_create.status_code == 400
-    assert r_create.json()
+    r_create_json = r_create.json()
+    assert r_create_json["offerId"] == ["cette entrée est obligatoire en absence de eventOccurrenceId"]
+    assert r_create_json["eventOccurrenceId"] == ["cette entrée est obligatoire en absence de offerId"]
 
 
 @clean_database
@@ -241,6 +252,7 @@ def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrenc
 @clean_database
 @pytest.mark.standalone
 def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
+    # Given
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)

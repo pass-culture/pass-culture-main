@@ -3,7 +3,7 @@ from repository import offerer_queries
 from utils.human_ids import dehumanize
 
 
-def find_offerer_for_new_stock_or_400(stock_dict):
+def find_offerer_for_new_stock(stock_dict):
     if 'offerId' in stock_dict:
         stock_id = dehumanize(stock_dict['offerId'])
         offerer = offerer_queries.get_by_offer_id(stock_id)
