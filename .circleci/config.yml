@@ -36,6 +36,7 @@ jobs:
           name: Running tests
           command:
             cd ~/pass-culture-main/pro
+            sleep 60
             yarn testcafe
 
 #jobs
