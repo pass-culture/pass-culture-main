@@ -7,7 +7,7 @@ from flask import current_app as app, render_template
 from connectors import api_entreprises
 from models.pc_object import PcObject
 from repository.features import feature_send_mail_to_users_enabled
-from utils.config import API_URL, ENV, IS_DEV, IS_STAGING
+from utils.config import API_URL, ENV
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
@@ -52,7 +52,7 @@ def send_final_booking_recap_email(stock):
 
 def send_booking_recap_emails(stock, booking):
     email = make_booking_recap_email(stock, booking)
-    
+
     recipients = ['passculture@beta.gouv.fr']
     if stock.resolvedOffer.bookingEmail:
         recipients.append(stock.resolvedOffer.bookingEmail)
@@ -75,13 +75,13 @@ def send_booking_confirmation_email_to_user(booking, is_cancellation=False):
     email = make_user_booking_recap_email(booking, is_cancellation)
     recipients = [booking.user.email]
 
-    if IS_DEV or IS_STAGING:
+    if feature_send_mail_to_users_enabled():
+        email['To'] = ", ".join(recipients)
+    else:
         email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
                              + ", ".join(recipients) \
                              + '</p>' + email['Html-part']
         email['To'] = 'passculture-dev@beta.gouv.fr'
-    else:
-        email['To'] = ", ".join(recipients)
 
     mailjet_result = app.mailjet_client.send.create(data=email)
     if mailjet_result.status_code != 200:
@@ -168,7 +168,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
         'FromEmail': 'passculture@beta.gouv.fr',
         'Subject': "Inscription ou rattachement PRO à valider",
         'Html-part': email_html,
-        'To': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING else 'passculture@beta.gouv.fr'
+        'To': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'
     }
 
 
@@ -205,7 +205,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'passculture-dev@beta.gouv.fr' if IS_DEV or IS_STAGING else 'passculture@beta.gouv.fr',
+        'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -216,7 +216,7 @@ def get_contact(user):
 
 
 def subscribe_newsletter(user):
-    if IS_DEV or IS_STAGING:
+    if not feature_send_mail_to_users_enabled():
         print("Subscription in DEV or STAGING mode is disabled")
         return
 
