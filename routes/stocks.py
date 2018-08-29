@@ -5,7 +5,7 @@ from flask_login import current_user
 from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
-from domain.stocks import check_offer_id_xor_event_occurrence_id_in_request, find_offerer_for_new_stock
+from domain.stocks import find_offerer_for_new_stock
 from models import Offerer, User
 from models.api_errors import ApiErrors
 from models.event import Event
@@ -26,6 +26,7 @@ from utils.rest import delete, \
     load_or_404, \
     login_or_api_key_required
 from utils.search import get_ts_queries, LANGUAGE
+from validation.stocks import check_offer_id_xor_event_occurrence_id_in_request
 
 search_models = [
     #Order is important
@@ -103,7 +104,9 @@ def get_stock(stock_id, mediation_id):
 def create_stock():
     stock_dict = request.json
     check_offer_id_xor_event_occurrence_id_in_request(stock_dict)
-    offerer = find_offerer_for_new_stock(stock_dict)
+    offer_id = dehumanize(stock_dict.get('offerId', None))
+    event_occurrence_id = dehumanize(stock_dict.get('eventOccurrenceId', None))
+    offerer = find_offerer_for_new_stock(offer_id, event_occurrence_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
     new_stock = Stock(from_dict=request.json)
     PcObject.check_and_save(new_stock)

@@ -1,11 +1,9 @@
 """ bookings routes """
-from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from sqlalchemy.exc import InternalError
 
-from domain.bookings import check_has_stock_id, check_existing_stock, check_can_book_free_offer, \
-    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, check_has_quantity
+
 from domain.expenses import get_expenses
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
 from utils.human_ids import dehumanize, humanize
@@ -13,6 +11,8 @@ from utils.includes import BOOKING_INCLUDES
 from utils.mailing import send_booking_recap_emails, send_booking_confirmation_email_to_user
 from utils.rest import expect_json_data
 from utils.token import random_token
+from validation.bookings import check_has_stock_id, check_has_quantity, check_existing_stock, check_can_book_free_offer, \
+    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits
 
 
 @app.route('/bookings', methods=['GET'])
