@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from sqlalchemy.sql import expression
 
 revision = '10ea71b5a60b'
-down_revision = '6d1eec337686'
+down_revision = 'bd2d69503d1a'
 branch_labels = None
 depends_on = None
 
@@ -23,4 +23,4 @@ def upgrade():
 
 
 def downgrade():
-    pass
+    op.drop_column('stock', 'isSoftDeleted')

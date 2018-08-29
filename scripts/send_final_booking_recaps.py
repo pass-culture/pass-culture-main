@@ -20,7 +20,7 @@ def send_final_booking_recaps():
 
 
 def do_send_final_booking_recaps():
-    for stock in Stock.query.outerjoin(EventOccurrence)\
+    for stock in stock.query.outerjoin(EventOccurrence)\
                             .filter((datetime.utcnow() > Stock.bookingLimitDatetime) &
                                     ((Stock.eventOccurrenceId == None) |
                                      (EventOccurrence.beginningDatetime > datetime.utcnow())) &

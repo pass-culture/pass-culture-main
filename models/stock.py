@@ -12,18 +12,19 @@ from sqlalchemy import BigInteger, \
     Numeric, Boolean
 from sqlalchemy.orm import relationship
 
+from models import VersionedMixin
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.event_occurrence import EventOccurrence
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
-from models.versioned_mixin import VersionedMixin
+from models.soft_deletable_mixin import SoftDeletableMixin
 
 
 class Stock(PcObject,
             Model,
-            DeactivableMixin,
             ProvidableMixin,
+            SoftDeletableMixin,
             VersionedMixin):
 
     id = Column(BigInteger,
@@ -47,8 +48,6 @@ class Stock(PcObject,
     eventOccurrence = relationship('EventOccurrence',
                                   foreign_keys=[eventOccurrenceId],
                                   backref='stocks')
-
-    isSoftDeleted = Column(Boolean, nullable=False, default=False)
 
     offerId = Column(BigInteger,
                         ForeignKey('offer.id'),

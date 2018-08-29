@@ -44,7 +44,7 @@ def create_booking():
     except ApiErrors as api_errors:
         return jsonify(api_errors.errors), 400
 
-    stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
+    stock = stock.query.filter_by(id=dehumanize(stock_id)).first()
     managing_offerer = stock.resolvedOffer.venue.managingOfferer
 
     try:
@@ -82,7 +82,7 @@ def create_booking():
                                                      'effectuer une réservation.')
         return jsonify(api_errors.errors), 400
 
-    new_booking_stock = Stock.query.get(new_booking.stockId)
+    new_booking_stock = stock.query.get(new_booking.stockId)
     send_booking_recap_emails(new_booking_stock, new_booking)
     send_booking_confirmation_email_to_user(new_booking)
 

@@ -39,3 +39,23 @@ def test_stock_needs_eventOccurrence_or_offer(app):
     # When
     with pytest.raises(ApiErrors):
         PcObject.check_and_save(stock)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_stock_needs_eventOccurrence_or_offer(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    stock.isSoftDeleted = True
+    PcObject.check_and_save(stock)
+
+    # When
+    query = stock.queryNotDeleted
+    #all_stocks = query.all()
+
+    print(query)
+
+    # Then
+    assert False

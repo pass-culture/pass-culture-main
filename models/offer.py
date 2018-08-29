@@ -79,7 +79,7 @@ class Offer(PcObject,
 
     @property
     def lastStock(self):
-        query = Stock.query
+        query = stock.query
         if self.eventId:
             query = query.join(EventOccurrence)
         return query.join(Offer) \

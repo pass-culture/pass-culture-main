@@ -62,7 +62,7 @@ def query_stocks(ts_query):
 
 
 def make_stock_query():
-    query = Stock.query
+    query = stock.query
     # FILTERS
     filters = request.args.copy()
     if 'offererId' in filters:
@@ -118,7 +118,7 @@ def create_stock():
 @expect_json_data
 def edit_stock(stock_id):
     updated_stock_dict = request.json
-    query = Stock.query.filter_by(id=dehumanize(stock_id))
+    query = stock.query.filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
