@@ -728,6 +728,30 @@ def test_send_booking_recap_emails_sends_email_to_offer_booking_email_if_feature
     assert 'passculture@beta.gouv.fr' in args[1]['data']['To']
 
 
+@pytest.mark.standalone
+@mocked_mail
+@clean_database
+def test_send_booking_recap_emails_email_sends_email_only_to_passculture_if_feature_is_enabled_but_no_offer_booking_email(app):
+    # given
+    user = create_user()
+    booking = create_booking(user)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue, booking_email=None)
+    stock = create_stock_with_thing_offer(offerer, venue, offer, booking_email=None)
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
+        send_mail_to_users.return_value = True
+        # when
+        send_booking_recap_emails(stock, booking)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert args[1]['data']['To'] == 'passculture@beta.gouv.fr'
+
+
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
@@ -769,3 +793,25 @@ def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_fe
     args = app.mailjet_client.send.create.call_args
     assert 'offer.booking.email@test.com' in args[1]['data']['To']
     assert 'passculture@beta.gouv.fr' in args[1]['data']['To']
+
+
+
+@mocked_mail
+@clean_database
+@pytest.mark.standalone
+def test_send_final_booking_recap_email_sends_email_only_to_passculture_if_feature_is_enabled_but_no_offer_booking_email(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue, booking_email = None)
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
+        send_mail_to_users.return_value = True
+        # when
+        send_final_booking_recap_email(stock)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert args[1]['data']['To'] == 'passculture@beta.gouv.fr'
