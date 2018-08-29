@@ -12,22 +12,16 @@ jobs:
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
             git clone https://github.com/betagouv/pass-culture-api.git api
-            node -v
-            which node
-            printenv
-            export PATH=/usr/bin/nodejs:$PATH
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
             sudo apt-get update
             sudo apt-get install -y nodejs yarn
-            sudo ln -sT /usr/bin/nodejs /usr/sbin/node
+            echo $PATH
             export PATH=${PATH:44}
             echo $PATH
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
-            echo $PATH
-            echo $NVM_BIN
             node -v
             which node
             nodejs -v
