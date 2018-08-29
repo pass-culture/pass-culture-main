@@ -40,7 +40,7 @@ const transitionStyles = {
 const renderContactUsLink = () => (
   <a className="navlink flex-columns" href="mailto:pass@culture.gouv.fr">
     <span className="has-text-centered menu-icon">
-      <Icon svg="ico-mail-w" alt="Nous contacter" />
+      <Icon svg="ico-mail-w" alt="" />
     </span>
     <span>
       {'Nous contacter'}
@@ -78,7 +78,7 @@ class MainMenu extends React.PureComponent {
         onClick={this.onSignOutClick}
       >
         <span className="has-text-centered menu-icon">
-          <Icon svg="ico-deconnect-w" alt="Déconnexion" />
+          <Icon svg="ico-deconnect-w" alt="" />
         </span>
         <span>
           {'Déconnexion'}
@@ -98,7 +98,7 @@ class MainMenu extends React.PureComponent {
         className={`navlink flex-columns ${cssclass}`}
       >
         <span className="has-text-centered menu-icon">
-          <Icon svg={`ico-${icon}-w`} alt={title} />
+          <Icon svg={`ico-${icon}-w`} alt="" />
         </span>
         <span>
           {title}
@@ -120,10 +120,7 @@ class MainMenu extends React.PureComponent {
         </button>
         <div className="profile has-text-centered">
           <p className="avatar">
-            <img
-              alt="Avatar"
-              src={`${ROOT_PATH}/icons/avatar-default-w-XL.svg`}
-            />
+            <img alt="" src={`${ROOT_PATH}/icons/avatar-default-w-XL.svg`} />
           </p>
           <p className="username is-clipped">
             <span>
