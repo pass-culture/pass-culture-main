@@ -6,8 +6,10 @@ import { ROOT_PATH } from '../../utils/config'
 
 const Logo = ({ className, noLink, whiteHeader }) => {
   const src = whiteHeader
-    ? `${ROOT_PATH}/icon/app-icon-spotlight.svg`
-    : `${ROOT_PATH}/icons/logo-inline-negative.svg`
+    ? // ? `${ROOT_PATH}/icon/app-icon-spotlight.svg`
+      `${ROOT_PATH}/icon/logo-full-hppro.png`
+    : `${ROOT_PATH}/icons/logo-group-splash@2x.png`
+  // : `${ROOT_PATH}/icons/logo-inline-negative.svg`
   const extraProps = {}
   if (noLink) {
     extraProps.onClick = e => e.preventDefault()

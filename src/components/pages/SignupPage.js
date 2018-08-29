@@ -20,9 +20,19 @@ const SignupPage = ({ errors, sirenName }) => {
               <div className="hero-body">
                 <h1 className="title is-spaced is-1">Créez votre compte</h1>
                 <h2 className="subtitle is-2">
-                  Merci de renseigner tous les champs marqués d'un{' '}
-                  <span className="required-legend">*</span>.
+                  Nous vous invitons à prendre connaissance des{' '}
+                  <a href="/BrochurePCPro.pdf" className="is-secondary">
+                    modalités de fonctionnement en cliquant ici
+                  </a>{' '}
+                  avant de renseigner les champs suivants.
                 </h2>
+                {/* <span className="is-pulled-right is-size-7 has-text-grey"> */}
+                <span className=" has-text-grey">
+                  {' '}
+                  <span className="required-legend"> * </span> Champs
+                  obligatoires
+                </span>
+                <br />
                 <Form
                   name="user"
                   action="/users/signup"
