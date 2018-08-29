@@ -82,6 +82,7 @@ class Main extends React.PureComponent {
     return (
       <React.Fragment>
         <main
+          role="main"
           className={classnames({
             [`${name}-page`]: true,
             'no-padding': noPadding,
