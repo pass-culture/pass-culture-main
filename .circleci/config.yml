@@ -22,16 +22,11 @@ jobs:
           command: |
             cd ~/pass-culture-main
             docker-compose up
-          background: true
       - run:
           name: Run Frontend
           command: |
             cd ~/pass-culture-main/pro
-            yarn install
-            yarn start
-          background: true
-
-      # run functional tests!
+            yarn install && yarn start
       - run:
           name: Running tests
           command:
