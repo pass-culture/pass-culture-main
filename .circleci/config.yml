@@ -14,7 +14,6 @@ jobs:
             git clone https://github.com/betagouv/pass-culture-api.git api
             node -v
             which node
-            echo $PATH
             printenv
             export PATH=/usr/bin/nodejs:$PATH
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -23,7 +22,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y nodejs yarn
             sudo ln -sT /usr/bin/nodejs /usr/sbin/node
-            export PATH=${PATH%:NVM_BIN}
+            export PATH=${PATH%:/opt/circleci/.nvm/versions/node/v6.1.0/bin}
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             echo $PATH
