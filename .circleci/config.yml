@@ -38,7 +38,7 @@ jobs:
 #          background: true
       - run:
           name: Running tests
-          command:
+          command: |
             export PATH=${PATH:44}
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
