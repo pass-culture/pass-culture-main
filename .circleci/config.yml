@@ -20,6 +20,7 @@ jobs:
           POSTGRES_DB: pass_culture
     steps: # a collection of executable commands
       - run:
+          name: Clone API Repo
           command:  |
           git clone git@github.com:betagouv/pass-culture-api.git
       - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
