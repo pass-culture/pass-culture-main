@@ -41,6 +41,7 @@ jobs:
 #            yarn install
 #            yarn start
 #          background: true
+
       - run:
           name: Running tests
           command: |
@@ -50,9 +51,9 @@ jobs:
             cd ~/pass-culture-main/pro
             yarn install
             sleep 120
-            dockerize -wait http://localhost -timeout 2m
             yarn testcafe --no-sandbox
 
+#            dockerize -wait http://localhost -timeout 2m
 #jobs
 #  build-api:
 #    working_directory: ~/pass-culture-api # directory where steps will run
