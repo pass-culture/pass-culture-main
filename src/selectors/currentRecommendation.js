@@ -2,8 +2,6 @@
 import createCachedSelector from 're-reselect'
 
 import recommendationsSelector from './recommendations'
-// import { getHeaderColor } from '../utils/colors'
-// import { filterAvailableDates } from '../helpers/filterAvailableDates'
 
 const selectCurrentRecommendation = createCachedSelector(
   recommendationsSelector,

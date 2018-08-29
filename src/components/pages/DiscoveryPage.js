@@ -78,6 +78,8 @@ class DiscoveryPage extends React.PureComponent {
     this.actions.requestData('PUT', serviceuri, {
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
+      // replace all the recommendations by the new ones ? as we want
+      // isMergingArray: false,
       normalizer: recommendationNormalizer,
     })
   }
