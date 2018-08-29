@@ -1,8 +1,5 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
-version: 2
+version: 2.0
+
 jobs:
   build-api:
     working_directory: ~/pass-culture-api # directory where steps will run
@@ -103,7 +100,7 @@ jobs:
 
 workflows:
   version: 2
-  build_api_and_build_app:
+  build-api-and-build-app:
     jobs:
       - build-api
       - build-app
