@@ -6,6 +6,7 @@ import {
   resolveIsNew,
   showModal,
   withSearch,
+  withLogin,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -158,6 +159,7 @@ class OffersPage extends Component {
 }
 
 export default compose(
+  withLogin({ failRedirect: '/connexion' }),
   withRouter,
   withSearch({
     dataKey: 'offers',

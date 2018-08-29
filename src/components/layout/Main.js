@@ -9,7 +9,6 @@ import {
   showNotification,
   Spinner,
   withBlock,
-  withLogin,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -164,9 +163,6 @@ class Main extends Component {
 
 export default compose(
   withRouter,
-  withLogin({
-    failRedirect: '/connexion',
-  }),
   withBlock,
   connect(
     state => ({

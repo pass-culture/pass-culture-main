@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { requestData, showNotification } from 'pass-culture-shared'
+import { requestData, showNotification, withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
@@ -301,6 +301,7 @@ class MediationPage extends Component {
 }
 
 export default compose(
+  withLogin({ failRedirect: '/connexion' }),
   withRouter,
   connect(
     (state, ownProps) => {

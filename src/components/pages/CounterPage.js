@@ -1,4 +1,4 @@
-import { Icon } from 'pass-culture-shared'
+import { Icon, withLogin } from 'pass-culture-shared'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -49,4 +49,4 @@ const CounterPage = () => {
   )
 }
 
-export default CounterPage
+export default withLogin({ failRedirect: '/connexion' })(CounterPage)

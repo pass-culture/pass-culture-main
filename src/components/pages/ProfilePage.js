@@ -3,9 +3,11 @@ import {
   Form,
   showNotification,
   SubmitButton,
+  withLogin,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import Main from '../layout/Main'
 import UploadThumb from '../layout/UploadThumb'
@@ -73,11 +75,14 @@ class ProfilePage extends Component {
   }
 }
 
-export default connect(
-  state => ({
-    user: state.user,
-  }),
-  {
-    showNotification,
-  }
+export default compose(
+  withLogin({ failRedirect: '/connexion' }),
+  connect(
+    state => ({
+      user: state.user,
+    }),
+    {
+      showNotification,
+    }
+  )
 )(ProfilePage)

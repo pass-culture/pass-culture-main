@@ -1,3 +1,4 @@
+import { withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 
 import Main from '../layout/Main'
@@ -8,4 +9,4 @@ class AccoutingPage extends Component {
   }
 }
 
-export default AccoutingPage
+export default withLogin({ failRedirect: '/connexion' })(AccoutingPage)

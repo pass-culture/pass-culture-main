@@ -1,4 +1,4 @@
-import { Icon } from 'pass-culture-shared'
+import { Icon, withLogin } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
@@ -37,4 +37,4 @@ const HomePage = ({ user }) => {
   )
 }
 
-export default HomePage
+export default withLogin({ failRedirect: '/connexion' })(HomePage)

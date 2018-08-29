@@ -1,4 +1,4 @@
-import { requestData } from 'pass-culture-shared'
+import { requestData, withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -49,6 +49,7 @@ class OfferersPage extends Component {
 }
 
 export default compose(
+  withLogin({ failRedirect: '/connexion' }),
   connect(
     (state, ownProps) => ({
       offerers: offerersSelector(state),

@@ -1,3 +1,4 @@
+import { withLogin } from 'pass-culture-shared'
 import React from 'react'
 
 import Main from '../layout/Main'
@@ -11,4 +12,4 @@ const MediationsPage = () => {
   )
 }
 
-export default MediationsPage
+export default withLogin({ failRedirect: '/connexion' })(MediationsPage)
