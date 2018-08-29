@@ -104,8 +104,9 @@ BOOKING_INCLUDES = [
             [
                 {
                     "key": "resolvedOffer",
-                    "sub_joins": ["venue"]
-                }
+                    "sub_joins": ["eventOrThing", "venue"]
+                },
+                "eventOccurrence"
             ]
     },
     "recommendation"

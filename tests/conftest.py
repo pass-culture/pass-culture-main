@@ -49,10 +49,18 @@ def app():
     with app.app_context():
         install_models()
         install_local_providers()
-        app.mailjet_client = Mock(spec=Client)
-        app.mailjet_client.send = Mock()
 
     return app
+
+
+def mocked_mail(f):
+    @wraps(f)
+    def decorated_function(app, *args, **kwargs):
+        app.mailjet_client = Mock(spec=Client)
+        app.mailjet_client.send = Mock()
+        return f(app, *args, **kwargs)
+
+    return decorated_function
 
 
 def clean_database(f):
