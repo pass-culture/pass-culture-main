@@ -1,7 +1,7 @@
 version: 2.0
 
 jobs:
-  build:
+  build-api:
     working_directory: ~/pass-culture-api # directory where steps will run
     docker: # run the steps with Docker
       - image: circleci/python:3.6.1 # ...with this image as the primary container; this is where all `steps` will run
@@ -39,9 +39,8 @@ jobs:
             tar xf private.tar.gz
             . venv/bin/activate
             python app.py
-          background: true
 
-  run-app:
+  build-app:
     docker:
       # specify the version you desire here
       - image: circleci/node:8.11.3-browsers
@@ -69,43 +68,44 @@ jobs:
           name: Running Webapp
           command:
             yarn start
-          background: true
 
-      # run functional tests!
-      - run:
-          name: Running tests
-          command:
-            yarn testcafe
-
-#  test:
-#    docker:
-#      # specify the version you desire here
-#      - image: circleci/node:8.11.3-browsers
-#    working_directory: ~/repo
-#
-#    steps:
-#      - checkout
-#
-#      # Download and cache dependencies
-#      - restore_cache:
-#          keys:
-#          - v1-dependencies-{{ checksum "package.json" }}
-#          # fallback to using the latest cache if no exact match is found
-#          - v1-dependencies-
-#
 #      # run functional tests!
 #      - run:
 #          name: Running tests
 #          command:
 #            yarn testcafe
-#
-#workflows:
-#  version: 2
-#  build-api-and-build-app:
-#    jobs:
-#      - build-api
-#      - build-app
-#      - test:
-#          requires:
-#            - build-api
-#            - build-app
+
+  test:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:8.11.3-browsers
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      # run functional tests!
+      # sleep to wait for api to be up
+      - run:
+          name: Running tests
+          command: |
+            sleep 120
+            yarn testcafe
+
+workflows:
+  version: 2
+  build-api-and-build-app:
+    jobs:
+      - build-api
+      - build-app
+      - test:
+          requires:
+            - build-api
+            - build-app
