@@ -5,6 +5,7 @@ from flask_login import current_user
 from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
+from domain.stocks import check_offer_id_xor_event_occurrence_id_in_request, find_offerer_for_new_stock_or_400
 from models import Offerer, User
 from models.api_errors import ApiErrors
 from models.event import Event
@@ -15,6 +16,7 @@ from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
+from repository.offerer_queries import get_by_offer_id, get_by_event_occurrence_id
 from utils.human_ids import dehumanize
 from utils.rest import delete, \
     ensure_provider_can_update, \
@@ -100,6 +102,10 @@ def get_stock(stock_id, mediation_id):
 @expect_json_data
 def create_stock():
     print('STOCK', request.json)
+    stock_dict = request.json
+    check_offer_id_xor_event_occurrence_id_in_request(stock_dict)
+    offerer = find_offerer_for_new_stock_or_400(stock_dict)
+    ensure_current_user_has_rights(RightsType.editor, offerer.id)
     new_stock = Stock(from_dict=request.json)
     PcObject.check_and_save(new_stock)
     return jsonify(new_stock._asdict()), 201
