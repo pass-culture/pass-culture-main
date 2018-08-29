@@ -13,9 +13,8 @@ jobs:
             cd pass-culture-main
             git clone https://github.com/betagouv/pass-culture-api.git api
             node -v
-            sudo npm cache clean -f
-            sudo npm install -g n
-            sudo n stable
+            sudo nvm uninstall 6.1.0
+            sudo nvm install 8.11
             node -v
             nodejs -v
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
