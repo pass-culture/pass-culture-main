@@ -57,11 +57,13 @@ class DiscoveryPage extends React.PureComponent {
     // car il s'agit alors d'une URL partagée
     const shouldNotReloadPage = isempty || (offerId && mediationId)
     if (shouldNotReloadPage) return
-    const firstOffer = get(action, 'data[0]') || {}
+    const firstRecommendation = get(action, 'data[0]') || {}
     // NOTE -> si la premiere carte n'a pas d'offerid
     // alors il s'agit d'une carte tuto
-    const firstOfferId = (firstOffer && firstOffer.offerId) || 'tuto'
-    const firstMediationId = (firstOffer && firstOffer.mediationId) || ''
+    const firstOfferId =
+      (firstRecommendation && firstRecommendation.offerId) || 'tuto'
+    const firstMediationId =
+      (firstRecommendation && firstRecommendation.mediationId) || ''
     history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
   }
 
