@@ -31,6 +31,7 @@ class SignupPage extends React.PureComponent {
         <div className="section">
           <h2 className="subtitle is-italic">
             {"Une minute pour créer un compte, et puis c'est tout !"}
+            {'Tous ces champs sont obligatoires'}
           </h2>
 
           <br />

@@ -40,6 +40,8 @@ Bonjour&nbsp;!
             {' '}
             <br />
             pour accéder aux offres.
+            <br />
+            Tous ces champs sont obligatoires.
           </h2>
 
           <br />
