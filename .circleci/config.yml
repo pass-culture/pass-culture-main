@@ -4,15 +4,36 @@ jobs:
   build:
     machine:
       image: circleci/classic:latest
+    working_directory: ~/
     steps: # a collection of executable commands
       - run:
-          name: Test commands
+          name: Init env
           command: |
-            cd ~
             git clone https://github.com/betagouv/pass-culture-main.git
-            cd pass-culture-main
-            ./pc install
+            cd pass-culture-main/api
+            git clone https://github.com/betagouv/pass-culture-api.git
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+      - checkout:
+          path: ~/pass-culture-main/pro
+      - run:
+          name: Running API server
+          command: |
             docker-compose up
+          background: true
+      - run:
+          name: Run Frontend
+          command: |
+            cd ~/pass-culture-main/pro
+            yarn install
+            yarn start
+          background: true
+
+      # run functional tests!
+      - run:
+          name: Running tests
+          command:
+            yarn testcafe
 
 #jobs
 #  build-api:
