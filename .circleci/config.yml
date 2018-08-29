@@ -31,16 +31,16 @@ jobs:
             cd ~/pass-culture-main
             docker-compose up
           background: true
-#      - run:
-#          name: Run Frontend
-#          command: |
-#            export PATH=${PATH:44}
-#            export NVM_BIN=/usr/bin/nodejs
-#            export PATH=$NVM_BIN:$PATH
-#            cd ~/pass-culture-main/pro
-#            yarn install
-#            yarn start
-#          background: true
+      - run:
+          name: Run Frontend
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/pro
+            yarn install
+            yarn start
+          background: true
 
       - run:
           name: Running tests
@@ -50,8 +50,8 @@ jobs:
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
             yarn install
-            sleep 120
-            yarn testcafe --no-sandbox
+            sleep 100
+            yarn testcafe
 
 #            dockerize -wait http://localhost -timeout 2m
 #jobs
