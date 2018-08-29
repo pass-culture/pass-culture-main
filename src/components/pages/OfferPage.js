@@ -11,7 +11,7 @@ import {
   SubmitButton,
   withLogin,
 } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -320,6 +320,7 @@ class OfferPage extends Component {
                 <h2 className="main-list-title">Infos artistiques</h2>
                 <div className="field-group">
                   <Field
+                    displayMaxLength
                     isExpanded
                     label="Description"
                     maxLength={750}
@@ -328,20 +329,16 @@ class OfferPage extends Component {
                     type="textarea"
                   />
                   <Field name="author" label="Auteur" isExpanded />
-                  {isEventType && [
-                    <Field
-                      isExpanded
-                      key={0}
-                      label="Metteur en scène"
-                      name="stageDirector"
-                    />,
-                    <Field
-                      isExpanded
-                      key={1}
-                      label="Interprète"
-                      name="performer"
-                    />,
-                  ]}
+                  {isEventType && (
+                    <Fragment>
+                      <Field
+                        isExpanded
+                        label="Metteur en scène"
+                        name="stageDirector"
+                      />
+                      <Field isExpanded label="Interprète" name="performer" />
+                    </Fragment>
+                  )}
                 </div>
               </div>
             )}
