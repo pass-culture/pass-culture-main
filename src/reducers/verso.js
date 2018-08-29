@@ -3,6 +3,7 @@ export const CLOSE_VERSO = 'CLOSE_VERSO'
 export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
 export const MAKE_DRAGGABLE = 'MAKE_DRAGGABLE'
 export const MAKE_UNDRAGGABLE = 'MAKE_UNDRAGGABLE'
+export const SHOW_UNFLIPPABLE_VERSO = 'SHOW_UNFLIPPABLE_VERSO'
 export const SHOW_VERSO = 'SHOW_VERSO'
 
 // INITIAL STATE
@@ -24,11 +25,8 @@ function verso(state = initialState, action) {
       return Object.assign({}, state, { draggable: false })
     case MAKE_DRAGGABLE:
       return Object.assign({}, state, { draggable: true })
-    case LOCATION_CHANGE: // Come from reservation
-      if (action.payload.search.indexOf('to=verso') >= 0) {
-        return Object.assign({}, state, { isFlipped: true, unFlippable: true })
-      }
-      return initialState
+    case SHOW_UNFLIPPABLE_VERSO:
+      return Object.assign({}, state, { isFlipped: true, unFlippable: true })
     default:
       return state
   }
@@ -37,6 +35,10 @@ function verso(state = initialState, action) {
 // ACTION CREATORS
 export function flip() {
   return { type: SHOW_VERSO }
+}
+
+export function flipUnflippable() {
+  return { type: SHOW_UNFLIPPABLE_VERSO }
 }
 
 export function makeDraggable() {

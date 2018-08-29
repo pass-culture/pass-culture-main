@@ -33,7 +33,7 @@ const BookingItem = ({ booking, recommendation }) => {
 
   const name = get(booking, 'stock.resolvedOffer.eventOrThing.name')
   const queryURL = getQueryURL({ mediationId, offerId })
-  const linkURL = `/decouverte/${queryURL}`
+  const linkURL = `/decouverte/${queryURL}?to=verso`
   const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
   return (
     <li className="booking-item">

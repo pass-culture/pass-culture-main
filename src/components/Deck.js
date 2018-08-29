@@ -11,7 +11,7 @@ import withSizes from 'react-sizes'
 import Card from './Card'
 import DeckDebugger from './DeckDebugger'
 import DeckNavigation from './DeckNavigation'
-import { flip, unFlip } from '../reducers/verso'
+import { flip, flipUnflippable, unFlip } from '../reducers/verso'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
@@ -31,14 +31,15 @@ class Deck extends Component {
     this.handleGoPrevious = this.handleGoPrevious.bind(this)
     this.handleSetDateRead = this.handleSetDateRead.bind(this)
     this.handleRefreshedData = this.handleRefreshedData.bind(this)
-    const actions = { flip, requestData, unFlip }
+    const actions = { flip, flipUnflippable, requestData, unFlip }
     const { dispatch } = props
     this.actions = bindActionCreators(actions, dispatch)
   }
 
   componentDidMount() {
     Logger.log('Deck ---> componentDidMount')
-    const { currentRecommendation, recommendations } = this.props
+    const { currentRecommendation, history, recommendations } = this.props
+    this.handleUrlFlip(history)
     if (!recommendations || !currentRecommendation) {
       // this.handleRefreshedData()
     }
@@ -46,7 +47,8 @@ class Deck extends Component {
   }
 
   componentDidUpdate(previousProps) {
-    const { currentRecommendation, recommendations } = this.props
+    const { currentRecommendation, history, recommendations } = this.props
+    this.handleUrlFlip(history, previousProps.history)
     if (
       !recommendations ||
       !previousProps.recommendations ||
@@ -200,6 +202,15 @@ class Deck extends Component {
     const { unFlippable } = this.props
     if (unFlippable) return
     this.actions.unFlip()
+  }
+
+  handleUrlFlip(history, previousHistory = false) {
+    const isNewUrl =
+      !previousHistory ||
+      (previousHistory && history.location.key !== previousHistory.location.key)
+    if (isNewUrl && history.location.search.indexOf('to=verso') > 0) {
+      this.actions.flipUnflippable()
+    }
   }
 
   renderDraggableCards() {
