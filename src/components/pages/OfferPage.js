@@ -9,6 +9,7 @@ import {
   showModal,
   showNotification,
   SubmitButton,
+  withLogin,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -384,6 +385,7 @@ class OfferPage extends Component {
 }
 
 export default compose(
+  withLogin({ failRedirect: '/connexion' }),
   withRouter,
   connect(
     (state, ownProps) => {
