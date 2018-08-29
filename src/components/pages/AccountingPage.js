@@ -13,23 +13,44 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import bookingsSelector from '../../selectors/bookings'
 import offererSelector from '../../selectors/offerer'
+import offerersSelector from '../../selectors/offerers'
 import searchSelector from '../../selectors/search'
 import BookingItem from '../items/BookingItem'
 import Main from '../layout/Main'
 
 class AccoutingPage extends Component {
-  handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const { goToNextSearchPage, requestData, types } = this.props
-    // @TODO Fix hard coded ID `FU`
-    requestData('GET', `/offerers/FU/bookings`, {
+  fetchBookings(handleSuccess = () => {}, handleFail = () => {}) {
+    this.props.requestData(
+      'GET',
+      `/offerers/${this.props.offerer.id}/bookings`,
+      {
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          this.props.goToNextSearchPage()
+        },
+        key: 'bookings',
+        handleFail,
+      }
+    )
+  }
+
+  fetchOfferers(handleSuccess = () => {}, handleFail = () => {}) {
+    const { goToNextSearchPage, requestData, offerer } = this.props
+
+    this.props.requestData('GET', '/offerers', {
       handleSuccess: (state, action) => {
         handleSuccess(state, action)
-        goToNextSearchPage()
+        this.fetchBookings()
       },
-      key: 'bookings',
-      handleFail,
+      key: 'offerers',
+      handlefail: () => {},
     })
-    types.length === 0 && requestData('GET', 'types')
+  }
+
+  handleOffererFilter() {}
+
+  handleDataRequest(handleSuccess, handleFail) {
+    this.fetchOfferers(handleSuccess, handleFail)
   }
 
   render() {
@@ -37,6 +58,7 @@ class AccoutingPage extends Component {
       handleOrderByChange,
       handleOrderDirectionChange,
       bookings,
+      offerer,
       queryParams,
     } = this.props
 
@@ -44,16 +66,27 @@ class AccoutingPage extends Component {
     const [orderBy, orderDirection] = (order_by || '').split('+')
 
     return (
-      <Main name="accouting" handleDataRequest={this.handleDataRequest}>
+      <Main
+        name="accounting"
+        handleDataRequest={this.handleDataRequest.bind(this)}>
         <div className="section">
           <h1 className="main-title">Vos Bookings</h1>
         </div>
         <div className="section">
           <div className="list-header">
-            <div>
-              <div className="recently-added" />
-              Ajouté récemment
-            </div>
+            {offerer && (
+              <div>
+                Filtrer par:
+                <span className="select is-rounded is-small">
+                  <select
+                    onChange={this.handleOffererFilter}
+                    className=""
+                    value={offerer.id}>
+                    <option value={offerer.id}>{offerer.name}</option>
+                  </select>
+                </span>
+              </div>
+            )}
             <div>
               Trier par:
               <span className="select is-rounded is-small">
@@ -83,7 +116,7 @@ class AccoutingPage extends Component {
           {
             <InfiniteScroller
               className="offers-list main-list"
-              handleLoadMore={this.handleDataRequest}>
+              handleLoadMore={this.handleDataRequest.bind(this)}>
               {bookings.map(booking => (
                 <BookingItem key={booking.id} booking={booking} />
               ))}
@@ -109,12 +142,17 @@ export default compose(
   connect(
     (state, ownProps) => {
       const queryParams = searchSelector(state, ownProps.location.search)
+      const offerers = offerersSelector(state)
+      let offererId = queryParams.offererId
+      if (!offererId && offerers.length > 0) {
+        offererId = offerers[0].id
+      }
+
       return {
-        bookings: bookingsSelector(state, queryParams.offererId),
-        offerer: offererSelector(state, queryParams.offererId),
+        bookings: bookingsSelector(state),
+        offerer: offererSelector(state, offererId),
         queryParams,
         user: state.user,
-        types: state.data.types,
       }
     },
     { showModal, requestData, assignData }
