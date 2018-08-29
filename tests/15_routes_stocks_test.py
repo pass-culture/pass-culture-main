@@ -112,4 +112,4 @@ def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
 
     # Then
     assert r_update.status_code == 400
-    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_update.json()
+    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_update.json()['global']
