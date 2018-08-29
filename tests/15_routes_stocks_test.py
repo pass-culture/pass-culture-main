@@ -1,11 +1,15 @@
 from datetime import datetime, timedelta
 
+import pytest
+
 from models.booking import Booking
 from models.event_occurrence import EventOccurrence
 from models.stock import Stock
 from models.pc_object import PcObject
+from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth
+from utils.test_utils import API_URL, req_with_auth, create_stock_with_event_offer, create_offerer, create_venue, \
+    create_user, create_booking
 from utils.token import random_token
 
 
@@ -45,60 +49,49 @@ def test_12_create_stock():
     #TODO: check thumb presence
 
 
-def test_13_update_stock_available_should_check_bookings(app):
-    stock = Stock()
-    stock.offerId = 1
-    stock.price = 0
+@clean_database
+@pytest.mark.standalone
+def test_13_number_of_avilable_stocks_cannot_be_updated_below_number_of_already_existing_bookings(app):
+    # Given
+    user = create_user(email='email@test.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue, price=0)
     stock.available = 1
-    stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-    PcObject.check_and_save(stock)
-
-    stockId = stock.id
-
-    booking = Booking()
-    booking.stockId = stockId
-    booking.recommendationId = 1
-    booking.token = random_token()
-    booking.userId = 1
-    booking.amount = 0
+    booking = create_booking(user, stock, venue, recommendation=None)
     PcObject.check_and_save(booking)
 
-    r_update = req_with_auth().patch(API_URL + '/stocks/'+humanize(stockId),
-                                     json={'available': 0})
+    stock_id = stock.id
+
+    # When
+    r_update = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock_id),
+                                                                 json={'available': 0})
+
+    # Then
     assert r_update.status_code == 400
     assert 'available' in r_update.json()
 
 
-def test_14_should_not_create_stock_if_event_occurrence_before_booking_limit_datetime(app):
+@clean_database
+@pytest.mark.standalone
+def test_14_should_not_create_stock_if_booking_limit_datetime_after_event_occurrence(app):
     #Given
     from models.pc_object import serialize
-    event_occurrence = EventOccurrence()
-    event_occurrence.beginningDatetime = datetime.utcnow() + timedelta(days=10)
-    event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(days=1)
-    event_occurrence.offerId = 1
-    event_occurrence.accessibility = bytes([0])
-    PcObject.check_and_save(event_occurrence)
-
-    event_occurrence_id = event_occurrence.id
-
-    stock = Stock()
-    stock.eventOccurrence = event_occurrence
-    stock.offerId = 11
-    stock.eventOccurrenceId = event_occurrence_id
-    stock.price = 0
-    stock.available = 5
-    stock.bookingLimitDatetime = event_occurrence.beginningDatetime - timedelta(days=1)
-
-    PcObject.check_and_save(stock)
+    user = create_user(email='email@test.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    PcObject.check_and_save(stock, user)
 
     stockId = stock.id
 
-    serialized_date = serialize(event_occurrence.beginningDatetime + timedelta(days=1))
+    serialized_date = serialize(stock.eventOccurrence.beginningDatetime + timedelta(days=1))
 
     #When
-    r_update = req_with_auth().patch(API_URL + '/stocks/'+humanize(stockId),
+    r_update = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId),
                                      json={'bookingLimitDatetime': serialized_date})
 
     #Then
+    print(r_update.json())
     assert r_update.status_code == 400
     assert 'bookingLimitDatetime' in r_update.json()

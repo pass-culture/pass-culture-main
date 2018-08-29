@@ -241,8 +241,8 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     user.canBookFreeOffers = can_book_free_offers
     user.departementCode = departement_code
     user.validationToken = validation_token
-    user.isAdmin = is_admin
     user.setPassword(password)
+    user.isAdmin = is_admin
     return user
 
 
@@ -381,7 +381,9 @@ def create_recommendation(offer, user):
     return recommendation
 
 
-def create_event_occurrence(offer, beginning_datetime, end_datetime):
+
+def create_event_occurrence(offer, beginning_datetime=datetime.utcnow() + timedelta(hours=2),
+                            end_datetime=datetime.utcnow() + timedelta(hours=5)):
     event_occurrence = EventOccurrence()
     event_occurrence.offer = offer
     event_occurrence.beginningDatetime = beginning_datetime
