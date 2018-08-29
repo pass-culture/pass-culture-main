@@ -6,7 +6,7 @@ import moment from 'moment'
 import { capitalize, Icon } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
-// import Dotdotdot from 'react-dotdotdot'
+import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Thumb from './layout/Thumb'
@@ -17,10 +17,13 @@ import { selectRecommendation } from '../selectors'
 
 const BookingItem = ({ booking, recommendation }) => {
   const token = get(booking, 'token')
-  const offerId = get(recommendation, 'offerId')
+  const offerId = get(booking, 'stock.resolvedOffer.id')
   const mediationId = get(recommendation, 'mediationId')
   const date = get(booking, 'stock.eventOccurrence.beginningDatetime')
-  const departementCode = get(booking, 'stock.offer.venue.departementCode')
+  const departementCode = get(
+    booking,
+    'stock.resolvedOffer.venue.departementCode'
+  )
   const tz = getTimezone(departementCode)
   const dateString = capitalize(
     moment(date)
@@ -28,6 +31,7 @@ const BookingItem = ({ booking, recommendation }) => {
       .format('dddd DD/MM/YYYY à H:mm')
   )
 
+  const name = get(booking, 'stock.resolvedOffer.eventOrThing.name')
   const queryURL = getQueryURL({ mediationId, offerId })
   const linkURL = `/decouverte/${queryURL}`
   const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
@@ -37,9 +41,9 @@ const BookingItem = ({ booking, recommendation }) => {
         <Thumb src={thumbUrl} />
         <div className="infos">
           <div className="top">
-            {/* <h5 title={name}>
-            <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
-          </h5> */}
+            <h5 title={name}>
+              <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
+            </h5>
             <span>{dateString}</span>
           </div>
           <div className="token">{token}</div>

@@ -13,7 +13,7 @@ import BookingForm from './BookingForm'
 import BookingCardError from './BookingCardError'
 import BookingCardLoader from './BookingCardLoader'
 import BookingCardSuccess from './BookingCardSuccess'
-import BookingUserUndefined from './BookingUserUndefined'
+// import BookingUserUndefined from './BookingUserUndefined'
 import { selectBookables } from '../selectors/selectBookables'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
@@ -153,7 +153,7 @@ class BookingCard extends React.PureComponent {
             {isErrored && <BookingCardError {...isErrored} />}
             {showForm && (
               <React.Fragment>
-                <BookingUserUndefined show={userConnected} />
+                {/* <BookingUserUndefined show={userConnected} /> */}
                 <BookingForm
                   formId={this.formId}
                   disabled={userConnected}

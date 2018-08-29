@@ -10,7 +10,7 @@ export const selectBookings = createSelector(
 
 export const selectSoonBookings = createSelector(
   // select all bookings
-  selectBookings,
+  state => state.data.bookings,
   allBookings => {
     const twoDaysFromNow = moment().subtract(2, 'days')
     const filtered = allBookings.filter(booking => {
@@ -23,7 +23,7 @@ export const selectSoonBookings = createSelector(
 )
 
 export const selectOtherBookings = createSelector(
-  selectBookings,
+  state => state.data.bookings,
   selectSoonBookings,
   (allBookings, soonBookings) => difference(allBookings, soonBookings)
 )

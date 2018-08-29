@@ -19,27 +19,25 @@ const onCalendarUpdates = (selection, name, allvalues) => {
   // iteration sur l'array bookables
   // recupere tous les events pour la selection par l'user
   const { bookables } = allvalues
-  const momentvalue = selection.date
-  const booked = bookables.filter(o =>
+  const userChosen = bookables.filter(o =>
     // l'offer est OK si elle est le même jour
     // que la date selectionnee par l'user dans le calendrier
-    momentvalue.isSame(o.beginningDatetime, 'day')
+    selection.date.isSame(o.beginningDatetime, 'day')
   )
-  const issingle = booked && booked.length === 1
-  if (!booked || !issingle) return resetObj
+  const issingle = userChosen && userChosen.length === 1
+  if (!userChosen || !issingle) return resetObj
   return {
-    price: booked[0].price,
+    price: userChosen[0].price,
     // NOTE -> pas de gestion de stock
     quantity: 1,
-    stockId: booked[0].id,
-    time: booked[0].id,
+    stockId: userChosen[0].id,
+    time: userChosen[0].id,
   }
 }
 
 const onTimeUpdates = (selection, name, formValues) => {
   const resetObj = {}
-  const currentStockId = formValues.stockId
-  if (!selection || currentStockId) return resetObj
+  if (!selection || formValues.stockId) return resetObj
   const { bookables } = formValues
   const booked = bookables.filter(o => o.id === selection)
   return {

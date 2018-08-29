@@ -17,10 +17,7 @@ import {
   selectRecommendations,
 } from '../../selectors'
 import DeckLoader from '../DeckLoader'
-import {
-  bookingNormalizer,
-  recommendationNormalizer,
-} from '../../utils/normalizers'
+import { bookingNormalizer } from '../../utils/normalizers'
 
 const renderPageHeader = () => (
   <header>
@@ -62,33 +59,17 @@ class BookingsPage extends Component {
   }
 
   componentWillMount = () => {
-    const { recommendations } = this.props
-    const hasRecommendations = recommendations && recommendations.length > 0
-    if (hasRecommendations) this.loadBookings()
-    else this.loadRecommendations()
-  }
-
-  handleRequestFail = () => {
-    // ERREUR DE CHARGEMENT
-    this.setState({ haserror: true, isloading: true })
-  }
-
-  loadRecommendations = () => {
-    const serviceURI = 'recommendations?'
-    this.actions.requestData('PUT', serviceURI, {
-      handleFail: this.handleRequestFail,
-      handleSuccess: this.loadBookings,
-      normalizer: recommendationNormalizer,
-    })
-  }
-
-  loadBookings = () => {
     const serviceURI = 'bookings'
     this.actions.requestData('GET', serviceURI, {
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
       normalizer: bookingNormalizer,
     })
+  }
+
+  handleRequestFail = () => {
+    // ERREUR DE CHARGEMENT
+    this.setState({ haserror: true, isloading: true })
   }
 
   handleRequestSuccess = (state, action) => {
@@ -137,7 +118,6 @@ class BookingsPage extends Component {
 BookingsPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   otherBookings: PropTypes.array.isRequired,
-  recommendations: PropTypes.array.isRequired,
   soonBookings: PropTypes.array.isRequired,
 }
 

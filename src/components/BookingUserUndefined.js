@@ -23,7 +23,7 @@ const BookingUserUndefined = ({ show }) => (
       <div className="" style={{ ...defaultStyle, ...transitionStyles[state] }}>
         {/* <Icon  */}
         <p>
-          Cette offre est nominaitve: merci de remplir votre Nom et Prénom dans
+          Cette offre est nominative: merci de remplir votre Nom et Prénom dans
           la rubrique <b>Profil</b>
           {''}
           pour en profiter.
