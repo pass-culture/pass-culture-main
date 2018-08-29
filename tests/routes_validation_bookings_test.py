@@ -1,9 +1,9 @@
 import pytest
 
-from domain.bookings import check_expenses_limits
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
 from models import ApiErrors
 from utils.test_utils import create_booking_for_event, create_booking_for_thing
+from validation.bookings import check_expenses_limits
 
 
 @pytest.mark.standalone

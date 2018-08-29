@@ -246,8 +246,9 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     return user
 
 
+
 def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10,
-                                  booking_email='offer.booking.email@test.com'):
+                                  booking_email='offer.booking.email@test.com', available=10):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -267,6 +268,7 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
     )
     stock.eventOccurrence.offer.venue = venue
     stock.isActive = True
+    stock.available = available
     return stock
 
 
