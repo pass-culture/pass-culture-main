@@ -4,7 +4,7 @@ from unittest.mock import Mock, MagicMock, patch
 import pytest
 from bs4 import BeautifulSoup
 
-from tests.conftest import clean_database
+from tests.conftest import clean_database, mocked_mail
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
     make_booking_recap_email, make_final_recap_email_for_stock_with_event, write_object_validation_email, \
@@ -91,6 +91,7 @@ HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '</body></html>'
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_subject(app):
@@ -107,6 +108,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject(app):
     assert recap_email['Subject'] == SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_body(app):
@@ -126,6 +128,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_body(app):
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
@@ -142,6 +145,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject_cancel
     assert recap_email['Subject'] == SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
@@ -161,11 +165,11 @@ def test_make_user_booking_event_recap_email_should_have_standard_body_cancellat
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create(app):
     # Given
-    app.mailjet_client.reset_mock()
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
@@ -199,6 +203,7 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
     app.mailjet_client.send.create.assert_called_once_with(data=expected_email)
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
@@ -220,6 +225,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
@@ -238,6 +244,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
     assert recap_email['Subject'] == SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation(app):
@@ -256,6 +263,7 @@ def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancel
     assert recap_email['Subject'] == SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_make_user_booking_thing_recap_email_should_have_standard_body_cancellation(app):
@@ -276,6 +284,7 @@ def test_make_user_booking_thing_recap_email_should_have_standard_body_cancellat
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_booking_recap_email_html_should_have_place_and_structure(app):
@@ -296,6 +305,7 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_booking_recap_email_subject_should_have_defined_structure(app):
@@ -313,6 +323,7 @@ def test_booking_recap_email_subject_should_have_defined_structure(app):
     assert recap_email['Subject'] == SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_offerer_recap_email_subject_past_offer_without_booking(app):
@@ -330,6 +341,7 @@ def test_offerer_recap_email_subject_past_offer_without_booking(app):
     assert recap_email['Subject'] == expected_subject
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_offerer_recap_email_past_offer_without_booking(app):
@@ -359,6 +371,7 @@ def test_offerer_recap_email_past_offer_without_booking(app):
     assert expected_html_soup.prettify() == recap_email_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_offerer_recap_email_past_offer_with_booking(app):
@@ -402,6 +415,7 @@ def test_offerer_recap_email_past_offer_with_booking(app):
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
@@ -456,6 +470,7 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_offerer_booking_recap_email_book(app):
@@ -501,6 +516,7 @@ def test_offerer_booking_recap_email_book(app):
     assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_write_object_validation_email_should_have_some_specific_information(app):
@@ -551,6 +567,7 @@ def test_write_object_validation_email_should_have_some_specific_information(app
     assert 'siege_social' in api_entreprise_data
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_write_object_validation_email_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
@@ -573,6 +590,7 @@ def test_write_object_validation_email_does_not_include_validation_link_if_user_
     assert html.select('div.user_offerer h2')[0].text == 'Rattachement :'
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_write_object_validation_email_does_not_include_validation_link_if_offerer_is_already_validated(app):
@@ -595,11 +613,11 @@ def test_write_object_validation_email_does_not_include_validation_link_if_offer
     assert html.select('div.offerer h2')[0].text == 'Structure :'
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
-    app.mailjet_client.reset_mock()
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=None)
 
@@ -615,11 +633,11 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     assert not app.mailjet_client.send.create.called
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400(app):
     # Given
-    app.mailjet_client.reset_mock()
     validation_token = secrets.token_urlsafe(20)
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=validation_token)
@@ -636,6 +654,7 @@ def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_validation_email_should_not_return_clearTextPassword(app):
@@ -660,6 +679,7 @@ def test_validation_email_should_not_return_clearTextPassword(app):
     assert 'totallysafepsswd' not in str(email_html_soup)
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_send_booking_recap_emails_does_not_send_email_to_offer_booking_email_if_feature_is_disabled(app):
@@ -668,7 +688,7 @@ def test_send_booking_recap_emails_does_not_send_email_to_offer_booking_email_if
     booking = create_booking(user)
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue)
+    offer = create_thing_offer(venue, booking_email='offer.booking.email@test.com')
     stock = create_stock_with_thing_offer(offerer, venue, offer)
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -684,6 +704,7 @@ def test_send_booking_recap_emails_does_not_send_email_to_offer_booking_email_if
 
 
 @pytest.mark.standalone
+@mocked_mail
 @clean_database
 def test_send_booking_recap_emails_sends_email_to_offer_booking_email_if_feature_is_enabled(app):
     # given
@@ -704,16 +725,17 @@ def test_send_booking_recap_emails_sends_email_to_offer_booking_email_if_feature
     app.mailjet_client.send.create.assert_called_once()
     args = app.mailjet_client.send.create.call_args
     assert 'offer.booking.email@test.com' in args[1]['data']['To']
+    assert 'passculture@beta.gouv.fr' in args[1]['data']['To']
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_send_final_booking_recap_email_does_not_send_email_to_offer_booking_email_if_feature_is_disabled(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue)
-    stock.eventOccurrence.offer.bookingEmail = 'offer.booking.email@test.com'
+    stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@test.com')
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
@@ -727,14 +749,14 @@ def test_send_final_booking_recap_email_does_not_send_email_to_offer_booking_ema
     assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
 
 
+@mocked_mail
 @clean_database
 @pytest.mark.standalone
 def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_feature_is_enabled(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue)
-    stock.eventOccurrence.offer.bookingEmail = 'offer.booking.email@test.com'
+    stock = create_stock_with_event_offer(offerer, venue, booking_email = 'offer.booking.email@test.com')
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
@@ -746,3 +768,4 @@ def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_fe
     app.mailjet_client.send.create.assert_called_once()
     args = app.mailjet_client.send.create.call_args
     assert 'offer.booking.email@test.com' in args[1]['data']['To']
+    assert 'passculture@beta.gouv.fr' in args[1]['data']['To']

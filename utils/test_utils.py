@@ -246,7 +246,8 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     return user
 
 
-def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10):
+def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10,
+                                  booking_email='offer.booking.email@test.com'):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -260,6 +261,7 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
         stock.eventOccurrence.endDatetime = datetime(2017, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
         stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=800)
     stock.eventOccurrence.offer = Offer()
+    stock.eventOccurrence.offer.bookingEmail = booking_email
     stock.eventOccurrence.offer.event = Event(
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
@@ -268,7 +270,8 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
     return stock
 
 
-def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50):
+def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50,
+                                  booking_email='offer.booking.email@test.com'):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -276,6 +279,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
         stock.offer = thing_offer
     else:
         stock.offer = create_thing_offer(venue)
+    stock.offer.bookingEmail = booking_email
     stock.offer.venue = venue
     stock.isActive = True
     stock.available = available
