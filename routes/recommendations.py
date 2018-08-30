@@ -4,7 +4,7 @@ from sqlalchemy import func
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.build_recommendations import build_mixed_recommendations                                        
+from domain.build_recommendations import build_mixed_recommendations
 from models import Booking,\
                    Event,\
                    EventOccurrence,\
@@ -14,24 +14,26 @@ from models import Booking,\
                    Recommendation,\
                    Stock,\
                    Thing,\
-                   User
+                   User,\
+                   Venue
 from recommendations_engine import create_recommendations,\
                                    give_requested_recommendation_to_user,\
                                    move_requested_recommendation_first,\
                                    move_tutorial_recommendations_first,\
                                    pick_random_offers_given_blob_size,\
                                    RecommendationNotFoundException
+
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
                                               find_all_unread_recommendations, \
-                                              find_all_read_recommendations
+                                              find_all_read_recommendations,\
+                                              give_requested_recommendation_to_user
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
 from utils.rest import expect_json_data,\
-                       handle_rest_get_list,\
-                       login_or_api_key_required
+                       handle_rest_get_list
 from utils.search import get_search_filter
 
 @app.route('/recommendations', methods=['GET'])
@@ -44,7 +46,8 @@ def list_recommendations():
     if search is not None:
         offer_query = offer_query.outerjoin(Event)\
                                  .outerjoin(Thing)\
-                                 .filter(get_search_filter([Event, Thing], search))
+                                 .outerjoin(Venue)\
+                                 .filter(get_search_filter([Event, Thing, Venue], search))
     else:
         offer_query = offer_query.order_by(func.random()) \
                                  .limit(5)
