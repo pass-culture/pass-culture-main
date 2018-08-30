@@ -10,13 +10,14 @@ import get from 'lodash.get'
 
 import BookingItem from '../BookingItem'
 import Main from '../layout/Main'
-import Footer from '../layout/Footer'
 import {
   selectSoonBookings,
   selectOtherBookings,
   selectRecommendations,
 } from '../../selectors'
 import DeckLoader from '../DeckLoader'
+import { toggleMainMenu } from '../../reducers/menu'
+import ProfilePicture from '../layout/ProfilePicture'
 import { bookingNormalizer } from '../../utils/normalizers'
 
 const renderPageHeader = () => (
@@ -24,11 +25,6 @@ const renderPageHeader = () => (
     <h1>Mes réservations</h1>
   </header>
 )
-
-const renderPageFooter = () => {
-  const footerProps = { borderTop: true }
-  return <Footer {...footerProps} />
-}
 
 const renderNoBookingSection = () => (
   <div>
@@ -53,7 +49,7 @@ class BookingsPage extends Component {
   constructor(props) {
     super(props)
     const { dispatch } = props
-    const actions = { requestData }
+    const actions = { requestData, toggleMainMenu }
     this.actions = bindActionCreators(actions, dispatch)
     this.state = { haserror: false, isempty: false, isloading: true }
   }
@@ -78,6 +74,20 @@ class BookingsPage extends Component {
     this.setState({ isempty, isloading: false })
   }
 
+  renderPageFooter = () => (
+    <footer className="footer bordered">
+      <div className="button-wrapper">
+        <button
+          className="profile-button"
+          onClick={this.actions.toggleMainMenu}
+          type="button"
+        >
+          <ProfilePicture alt="Mon menu" />
+        </button>
+      </div>
+    </footer>
+  )
+
   render() {
     const { soonBookings, otherBookings } = this.props
     const { isempty, isloading, haserror } = this.state
@@ -89,7 +99,7 @@ class BookingsPage extends Component {
       <Main
         header={renderPageHeader}
         name="bookings"
-        footer={renderPageFooter}
+        footer={this.renderPageFooter}
         redBg
       >
         {soonBookingsLength > 0 && (
