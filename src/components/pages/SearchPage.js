@@ -23,6 +23,8 @@ const renderPageFooter = () => {
   return <Footer {...footerProps} />
 }
 
+// eslint-disable-resolveIsNew jsx-a11y/label-has-for
+
 class SearchPage extends Component {
   handleDataRequest = () => 'data'
 
@@ -30,11 +32,6 @@ class SearchPage extends Component {
     const { handleSearchChange, queryParams, recommendations } = this.props
 
     const { search } = queryParams || {}
-
-    console.log(
-      'recommendations recommendations recommendations',
-      recommendations[0]
-    )
 
     const items = recommendations
 
@@ -47,9 +44,10 @@ class SearchPage extends Component {
       >
         <div>
           <form className="section" onSubmit={handleSearchChange}>
-            <label className="label" htmlFor="search">
+            {/* <label className="label" id="search"> */}
+            <p className="label" id="search">
               Rechercher une offre :
-            </label>
+            </p>
             <div className="field is-grouped">
               <p className="control is-expanded">
                 <input
