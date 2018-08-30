@@ -43,6 +43,7 @@ export class CalendarField extends React.PureComponent {
       placeholder,
       ...rest
     } = this.props
+    const defaultDate = (provider && provider[0]) || null
     return (
       <Form.Item
         {...rest}
@@ -54,6 +55,7 @@ export class CalendarField extends React.PureComponent {
           render={({ input }) => (
             <DatePicker
               size="large"
+              defaultValue={defaultDate}
               // style={customize input box style}
               // popupStyle={customize popup calendar style}
               // dateRender={custom rendering function for date cells}
