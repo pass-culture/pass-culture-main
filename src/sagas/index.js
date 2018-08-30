@@ -7,7 +7,6 @@ import {
 import { all } from 'redux-saga/effects'
 
 import { watchFormActions } from './form'
-import watchCounterActions from './counter'
 import { API_URL } from '../utils/config'
 
 function* rootSaga() {
@@ -20,7 +19,6 @@ function* rootSaga() {
     watchFormActions(),
     watchModalActions(),
     watchUserActions(),
-    watchCounterActions(),
   ])
 }
 
