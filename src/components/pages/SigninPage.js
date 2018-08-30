@@ -29,6 +29,11 @@ const SigninPage = ({ errors }) => {
                   Et merci de votre participation pour nous aider à l'améliorer
                   !
                 </h2>
+                <span className="has-text-grey">
+                  {' '}
+                  <span className="required-legend"> * </span> Champs
+                  obligatoires
+                </span>
                 <Form
                   action="/users/signin"
                   BlockComponent={null}
