@@ -43,7 +43,6 @@ class DiscoveryPage extends React.PureComponent {
   }
 
   handleRequestFail = () => {
-    // ERREUR DE CHARGEMENT
     this.setState({ haserror: true, isloading: true })
   }
 
@@ -65,7 +64,10 @@ class DiscoveryPage extends React.PureComponent {
       (firstRecommendation && firstRecommendation.offerId) || 'tuto'
     const firstMediationId =
       (firstRecommendation && firstRecommendation.mediationId) || ''
-    history.push(`/decouverte/${firstOfferId}/${firstMediationId}`)
+    // replace pluto qu'un push permet de recharger les données
+    // quand on fait back dans le navigateur et qu'on revient
+    // à l'URL /decouverte
+    history.replace(`/decouverte/${firstOfferId}/${firstMediationId}`)
   }
 
   handleDataRequest = () => {
