@@ -32,11 +32,11 @@ def check_can_book_free_offer(stock, user):
 
 
 def check_offer_is_active(stock, offerer):
-    inactive_stock = not stock.isActive
+    soft_deleted_stock = stock.isSoftDeleted
     inactive_offerer = not offerer.isActive
     inactive_event_occurrence = stock.eventOccurrence and (not stock.eventOccurrence.isActive)
 
-    if inactive_stock or inactive_offerer or inactive_event_occurrence:
+    if soft_deleted_stock or inactive_offerer or inactive_event_occurrence:
         api_errors = ApiErrors()
         api_errors.addError('stockId', "Cette offre a été retirée. Elle n'est plus valable.")
         raise api_errors

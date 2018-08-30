@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models.booking import Booking
+from models.db import db
 from models.event_occurrence import EventOccurrence
 from models.stock import Stock
 from models.pc_object import PcObject
@@ -282,12 +283,12 @@ def test_delete_should_keep_stock_in_base_with_is_soft_deleted_true(app):
     r_delete = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
 
     # Then
-    assert r_delete.status_code == 202
-    assert r_delete.json()['isSoftDeleted'] == True
+    assert r_delete.status_code == 200
+    assert r_delete.json()['isSoftDeleted'] is True
     request = req_with_auth('email@test.fr', 'P@55w0rd').get(API_URL + '/stocks/' + humanize(stock.id))
-    assert request.status_code == 200
-    deleted_stock_data = request.json()
-    assert deleted_stock_data['isSoftDeleted'] == True
+    assert request.status_code == 404
+    db.session.refresh(stock)
+    assert stock.isSoftDeleted is True
 
 
 @clean_database

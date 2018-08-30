@@ -16,16 +16,13 @@ from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository.offerer_queries import get_by_offer_id, get_by_event_occurrence_id
 from utils.human_ids import dehumanize
-from utils.rest import delete, \
-    ensure_provider_can_update, \
-    ensure_current_user_has_rights, \
+from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from utils.search import get_ts_queries, LANGUAGE
+from utils.search import LANGUAGE
 from validation.stocks import check_offer_id_xor_event_occurrence_id_in_request
 
 search_models = [
@@ -62,7 +59,7 @@ def query_stocks(ts_query):
 
 
 def make_stock_query():
-    query = stock.query
+    query = Stock.queryNotSoftDeleted()
     # FILTERS
     filters = request.args.copy()
     if 'offererId' in filters:
@@ -118,7 +115,7 @@ def create_stock():
 @expect_json_data
 def edit_stock(stock_id):
     updated_stock_dict = request.json
-    query = stock.query.filter_by(id=dehumanize(stock_id))
+    query =  Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
@@ -151,6 +148,7 @@ def delete_stock(id):
     offererId = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor,
                                    offererId)
-    stock.populateFromDict({'isSoftDeleted': True})
+    stock.isSoftDeleted = True
     PcObject.check_and_save(stock)
-    return jsonify(stock._asdict()), 202
+    print(stock.isSoftDeleted)
+    return jsonify(stock._asdict()), 200

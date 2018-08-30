@@ -14,7 +14,6 @@ from sqlalchemy.orm import relationship
 
 from models import VersionedMixin
 from models.db import Model
-from models.deactivable_mixin import DeactivableMixin
 from models.event_occurrence import EventOccurrence
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -82,6 +81,9 @@ class Stock(PcObject,
     @property
     def resolvedOffer(self):
         return self.offer or self.eventOccurrence.offer
+
+    def queryNotSoftDeleted():
+        return Stock.query.filter_by(isSoftDeleted=False)
 
 
 @event.listens_for(Stock, 'before_insert')

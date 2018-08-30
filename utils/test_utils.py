@@ -267,7 +267,15 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
     stock.eventOccurrence.offer.venue = venue
-    stock.isActive = True
+    stock.available = available
+    return stock
+
+
+def create_stock_from_event_occurrence(offerer, event_occurrence, price=10, available=10):
+    stock = Stock()
+    stock.offerer = offerer
+    stock.eventOccurrence = event_occurrence
+    stock.price = price
     stock.available = available
     return stock
 
@@ -283,7 +291,6 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
         stock.offer = create_thing_offer(venue)
     stock.offer.bookingEmail = booking_email
     stock.offer.venue = venue
-    stock.isActive = True
     stock.available = available
     return stock
 

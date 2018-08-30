@@ -1,4 +1,4 @@
-"""Add isSoftDeleted Boolean to stock
+"""Add isSoftDeleted Boolean to stock and remove isActive
 
 Revision ID: 10ea71b5a60b
 Revises: 6d1eec337686
@@ -20,7 +20,9 @@ depends_on = None
 
 def upgrade():
     op.add_column('stock', sa.Column('isSoftDeleted', sa.BOOLEAN, nullable=False, server_default=expression.false()))
+    op.drop_column('stock', 'isActive')
 
 
 def downgrade():
     op.drop_column('stock', 'isSoftDeleted')
+    op.add_column('stock', sa.Column('isActive', sa.BOOLEAN, nullable=False, server_default=expression.true()))

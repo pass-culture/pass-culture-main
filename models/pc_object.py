@@ -20,6 +20,7 @@ from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
 from models.db import db
+from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
 
@@ -46,6 +47,12 @@ def serialize(value, **options):
     else:
         return value
 
+
+def is_not_soft_deleted(attribute):
+    if issubclass(type(attribute), SoftDeletableMixin) and attribute.isSoftDeleted:
+        return False
+    else:
+        return True
 
 class PcObject():
     id = Column(BigInteger,
@@ -111,6 +118,7 @@ class PcObject():
                             final_value = value
                         else:
                             final_value = refine(value, options.get('filters', {}))
+                        final_value = filter(is_not_soft_deleted, final_value)
                         result[key] = list(
                             map(
                                 lambda attr: attr._asdict(

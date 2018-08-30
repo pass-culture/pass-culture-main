@@ -31,14 +31,18 @@ def bookable_offers(query, offer_type):
         query = query.filter(Offer.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
-    query = query.filter((Stock.isActive == True)
-                         & ((Stock.bookingLimitDatetime == None)
-                            | (Stock.bookingLimitDatetime > datetime.utcnow()))
-                         & ((Stock.available == None) |
-                            (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
-                             .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))
+    query = _filter_bookable_offers(query)
     logger.debug(lambda: '(reco) bookable .count ' + str(query.count()))
     return query
+
+
+def _filter_bookable_offers(query):
+    return query.filter((Stock.isSoftDeleted == False)
+                        & ((Stock.bookingLimitDatetime == None)
+                           | (Stock.bookingLimitDatetime > datetime.utcnow()))
+                        & ((Stock.available == None) |
+                           (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
+                            .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))
 
 
 def with_active_and_validated_offerer(query):
@@ -67,11 +71,12 @@ def get_offers_by_type(offer_type,
     if offer_type == Event:
         query = query.join(aliased(EventOccurrence))
     query = query.join(Stock)\
-                 .reset_joinpoint()\
-                 .join(Venue)\
-                 .join(Offerer)\
-                 .reset_joinpoint()\
-                 .join(offer_type)
+        .filter_by(isSoftDeleted=False)\
+        .reset_joinpoint()\
+        .join(Venue)\
+        .join(Offerer)\
+        .reset_joinpoint()\
+        .join(offer_type)
                  
     if offer_id is not None:
         query = query.filter_by(id=offer_id)

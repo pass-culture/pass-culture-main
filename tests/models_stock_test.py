@@ -52,7 +52,7 @@ def test_stock_needs_eventOccurrence_or_offer(app):
     PcObject.check_and_save(stock)
 
     # When
-    query = stock.queryNotDeleted
+    query =  Stock.queryNotSoftDeleted()
     #all_stocks = query.all()
 
     print(query)
