@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import { Icon, requestData } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter, NavLink } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 import { Transition } from 'react-transition-group'
 import { Scrollbars } from 'react-custom-scrollbars'
+import { withRouter, NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from '../utils/config'
 import { toggleMainMenu } from '../reducers/menu'
@@ -88,13 +88,20 @@ class MainMenu extends React.PureComponent {
   }
 
   renderNavLink(path, title, icon, disabled) {
+    const { location } = this.props
+    // regle stricte
+    // si on est sur la page verso d'une offre
+    // aucun menu n'est actif
     const cssclass = (disabled && 'is-disabled') || ''
+    const isverso =
+      location.search && location.search.indexOf('?to=verso') !== -1
+    const activeClass = isverso ? null : 'active'
     return (
       <NavLink
         key={path}
         to={`/${path}`}
-        activeClassName="active"
         onClick={this.onNavLinkClick}
+        activeClassName={activeClass}
         className={`navlink flex-columns ${cssclass}`}
       >
         <span className="has-text-centered menu-icon">
@@ -181,6 +188,7 @@ MainMenu.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isVisible: PropTypes.bool.isRequired,
+  location: PropTypes.object.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
