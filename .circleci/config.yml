@@ -51,5 +51,5 @@ jobs:
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
-            dockerize -wait http://localhost/health -timeout 3m
+            dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
             yarn testcafe
