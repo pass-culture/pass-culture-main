@@ -19,3 +19,25 @@ yarn
 yarn version
 # yarn version --new-version 0.2.1
 ```
+
+## Icons Font (Fontello)
+
+**Ajouter une nouvelle icone**
+
+- Exporter l'icone depuis InVision
+- Depuis un logiciel de dessin vectoriel:
+  - Utiliser un plan de travail carré de 500px
+  - Ajouter une shape carré transparent sans stroke de 500px en background
+  - Transformer les strokes en shapes
+  - Fusionner toutes les shapes
+  - Exporter le fichier en `.svg`
+- Nettoyer le fichier généré via [SVGMG](https://jakearchibald.github.io/svgomg/)
+- Ouvrir [fontello.com](http://fontello.com)
+- Glisser/Déposer le fichier de configuration `./fontello.json`
+- Ajouter le nouvelle icon par glisser/déposer
+- Cliquer sur le bouton `Download`
+- Copier/Coller et renommer le fichier `src/styles/vendors/fontello.scss`
+- Modifier les paths du fichier `./fonts/<...>` 
+- Copier/Coller les fichier de fonts depuis fontello dans le dossier fonts
+- Mettre à jour le fichier de configuration `./fontello.json`
+  
