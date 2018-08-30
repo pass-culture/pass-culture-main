@@ -17,12 +17,14 @@ from models.deactivable_mixin import DeactivableMixin
 from models.event_occurrence import EventOccurrence
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from models.versioned_mixin import VersionedMixin
 
 
 class Stock(PcObject,
             Model,
             DeactivableMixin,
-            ProvidableMixin):
+            ProvidableMixin,
+            VersionedMixin):
 
     id = Column(BigInteger,
                 primary_key=True,
