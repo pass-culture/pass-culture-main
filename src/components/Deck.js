@@ -63,6 +63,7 @@ class Deck extends Component {
 
   componentWillUnmount() {
     Logger.log('Deck ---> componentWillUnmount')
+    this.actions.unFlip()
     if (this.readTimeout) clearTimeout(this.readTimeout)
     if (this.noDataTimeout) clearTimeout(this.noDataTimeout)
   }

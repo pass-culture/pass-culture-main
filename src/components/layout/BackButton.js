@@ -19,7 +19,7 @@ const BackButton = ({
   <button
     type="button"
     className={`back-button ${className}`}
-    onClick={history.goBack}
+    onClick={() => history.goBack()}
     {...otherProps}
   >
     <Icon svg="ico-back-simple-w" alt="Retour" />
