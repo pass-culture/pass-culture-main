@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from sqlalchemy import func
 
 from models import Recommendation, Offer, Mediation, PcObject

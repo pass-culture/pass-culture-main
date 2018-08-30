@@ -1,15 +1,25 @@
 """ user mediations routes """
 from random import shuffle
-
+from sqlalchemy import func
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.build_recommendations import build_mixed_recommendations,\
-                                         move_requested_recommendation_first, \
-                                         move_tutorial_recommendations_first
-from models import PcObject, Recommendation
-from recommendations_engine import create_recommendations, \
-                                   give_requested_recommendation_to_user, \
+from domain.build_recommendations import build_mixed_recommendations                                        
+from models import Booking,\
+                   Event,\
+                   EventOccurrence,\
+                   Mediation,\
+                   Offer,\
+                   PcObject,\
+                   Recommendation,\
+                   Stock,\
+                   Thing,\
+                   User
+from recommendations_engine import create_recommendations,\
+                                   give_requested_recommendation_to_user,\
+                                   move_requested_recommendation_first,\
+                                   move_tutorial_recommendations_first,\
+                                   pick_random_offers_given_blob_size,\
                                    RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
@@ -19,8 +29,57 @@ from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
-from utils.rest import expect_json_data
+from utils.rest import expect_json_data,\
+                       handle_rest_get_list,\
+                       login_or_api_key_required
+from utils.search import get_search_filter
 
+@app.route('/recommendations', methods=['GET'])
+#@login_or_api_key_required
+def list_recommendations():
+
+
+
+    # find all the possible offers
+    # compatible with the search query
+    offer_query = Offer.query
+    search = request.args.get('search')
+    if search is not None:
+        offer_query = offer_query.outerjoin(Event)\
+                                 .outerjoin(Thing)\
+                                 .filter(get_search_filter([Event, Thing], search))
+    else:
+        offer_query = offer_query.order_by(func.random()) \
+                                 .limit(5)
+    offers = offer_query.all()
+
+    # now check that recommendations from these filtered offers
+    # match with already build recommendations
+    current_user = User.query.one()
+    recommendation_ids = []
+    for offer in offers:
+        recommendation_query = Recommendation.query.filter_by(
+            userId=current_user.id,
+            offerId=offer.id
+        )
+        if recommendation_query.count() == 0:
+            recommendation = Recommendation()
+            recommendation.user = current_user
+            recommendation.offer = offer
+            PcObject.check_and_save(recommendation)
+        else:
+            recommendation = recommendation_query.first()
+        recommendation_ids.append(recommendation.id)
+
+    recommendation_query = Recommendation.query.filter(
+        Recommendation.id.in_(recommendation_ids)
+    )
+
+    return handle_rest_get_list(Recommendation,
+                                include=RECOMMENDATION_INCLUDES,
+                                query=recommendation_query,
+                                page=request.args.get('page'),
+                                paginate=10)
 
 @app.route('/recommendations/<recommendationId>', methods=['PATCH'])
 @login_required
