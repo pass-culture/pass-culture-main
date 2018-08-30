@@ -5,7 +5,6 @@ from datetime import datetime
 import pytest
 from dateutil.parser import parse as parse_date
 
-from models import Recommendation
 from utils.config import BLOB_SIZE
 from utils.test_utils import API_URL, req, req_with_auth
 

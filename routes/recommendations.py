@@ -24,7 +24,7 @@ def patch_recommendation(recommendationId):
     recommendation = query.first_or_404()
     recommendation.populateFromDict(request.json)
     PcObject.check_and_save(recommendation)
-    return jsonify(dictify_reco(recommendation)), 200
+    return jsonify(serialize_recommendation(recommendation)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -118,11 +118,7 @@ def put_recommendations():
     logger.info('(all read recos) count %i', all_read_recos_count)
 
     if requested_recommendation:
-        for i, reco in enumerate(recos):
-            if reco.id == requested_recommendation.id:
-                recos = recos[:i] + recos[i + 1:]
-                break
-        recos = [requested_recommendation] + recos
+        recos = move_requested_recommendation_first(recos, requested_recommendation)
     else:
         tuto_recos = Recommendation.query.join(Mediation) \
             .filter((Mediation.tutoIndex != None)
@@ -145,19 +141,44 @@ def put_recommendations():
                 + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recos])
                 + str(len(recos)))
 
-    return jsonify(list(map(dictify_reco, recos))), 200
+    return jsonify(serialize_recommendations(recos)), 200
 
 
-def dictify_reco(reco):
+def move_requested_recommendation_first(recos, requested_recommendation):
+    for i, reco in enumerate(recos):
+        if reco.id == requested_recommendation.id:
+            recos = recos[:i] + recos[i + 1:]
+            break
+    recos = [requested_recommendation] + recos
+    return recos
+
+
+def serialize_recommendations(recos):
+    return list(map(serialize_recommendation, recos))
+
+def serialize_recommendation(reco):
     dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
+
     if reco.offer:
-        booking_query = Booking.query \
-            .join(Stock)
-        if reco.offer.eventId:
-            booking_query = booking_query.join(EventOccurrence)
-        booking_query = booking_query.join(Offer) \
-            .filter(Booking.user == current_user) \
-            .filter(Offer.id == reco.offerId)
-        dict_reco['bookings'] = list(map(lambda b: b._asdict(include=BOOKING_INCLUDES),
-                                         booking_query.all()))
+        bookings = find_bookings(reco)
+        dict_reco['bookings'] = serialize_bookings(bookings)
+
     return dict_reco
+
+
+def serialize_bookings(bookings):
+    return list(map(serialize_booking, bookings))
+
+
+def serialize_booking(booking):
+    return booking._asdict(include=BOOKING_INCLUDES)
+
+
+def find_bookings(reco):
+    booking_query = Booking.query.join(Stock)
+    if reco.offer.eventId:
+        booking_query = booking_query.join(EventOccurrence)
+    booking_query = booking_query.join(Offer) \
+        .filter(Booking.user == current_user) \
+        .filter(Offer.id == reco.offerId)
+    return booking_query.all()
