@@ -74,30 +74,7 @@ class AccoutingPage extends Component {
         <div className="section">
           <h1 className="main-title">Vos Bookings</h1>
         </div>
-        <form className="section" onSubmit={handleSearchChange}>
-          <label className="label">Rechercher une offre :</label>
-          <div className="field is-grouped">
-            <p className="control is-expanded">
-              <input
-                id="search"
-                className="input search-input"
-                placeholder="Saisissez une recherche"
-                type="text"
-                defaultValue={search}
-              />
-            </p>
-            <p className="control">
-              <button type="submit" className="button is-primary is-outlined">
-                OK
-              </button>{' '}
-              <button className="button is-secondary">
-                &nbsp;
-                <Icon svg="ico-filter" />
-                &nbsp;
-              </button>
-            </p>
-          </div>
-        </form>
+        <form className="section" onSubmit={handleSearchChange} />
         <div className="section">
           <div className="list-header">
             {offerer && (
@@ -145,15 +122,26 @@ class AccoutingPage extends Component {
               </button>
             </div>
           </div>
-          {
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Qté</th>
+                <th>Montant</th>
+                <th>Règle</th>
+                <th>Annulé ?</th>
+                <th>Annuler</th>
+              </tr>
+            </thead>
             <InfiniteScroller
+              Tag="tbody"
               className="offers-list main-list"
               handleLoadMore={this.handleDataRequest.bind(this)}>
               {bookings.map(booking => (
                 <BookingItem key={booking.id} booking={booking} />
               ))}
             </InfiniteScroller>
-          }
+          </table>
         </div>
       </Main>
     )
