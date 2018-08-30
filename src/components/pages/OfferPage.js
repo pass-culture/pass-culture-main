@@ -322,7 +322,7 @@ class OfferPage extends Component {
                   <Field
                     isExpanded
                     label="Description"
-                    maxLength={750}
+                    maxLength={1000}
                     name="description"
                     required
                     type="textarea"
