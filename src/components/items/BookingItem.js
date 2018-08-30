@@ -32,8 +32,8 @@ const BookingItem = ({ booking }) => (
   </li>
 )
 
-BookingItem.PropTypes = {
-  booking: PropTypes.object.required,
+BookingItem.propTypes = {
+  booking: PropTypes.object.isRequired,
 }
 
 export default BookingItem
