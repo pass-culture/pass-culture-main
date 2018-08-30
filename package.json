@@ -122,13 +122,13 @@
     "ngrok": "ngrok start -config=./ngrok.yml --all",
     "pgbuild": "yarn build && node scripts/pgbuild.js",
     "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
-    "postinstall": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi",
     "precommit": "./scripts/precommit.sh",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
     "start": "node scripts/start.js",
     "test": "node scripts/jesttest.js --env=jsdom",
     "testcafe": "testcafe 'chrome:headless' testcafe",
-    "spec": "NODE_ENV=development ./node_modules/.bin/_mocha -r babel-register -w ./src/**/*.spec.js"
+    "spec": "NODE_ENV=development ./node_modules/.bin/_mocha -r babel-register -w ./src/**/*.spec.js",
+    "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi"
   },
   "jest": {
     "collectCoverageFrom": [
