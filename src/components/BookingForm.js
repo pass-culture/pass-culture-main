@@ -3,12 +3,8 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 
 import withForm from './forms/withForm'
-import { getPrice } from '../helpers'
+import { isSameDayInEachTimezone, getPrice } from '../helpers'
 import { CalendarField, HiddenField, SelectField } from './forms/inputs'
-
-// We use format so that each date is converted to a day in its own timezone
-const isSameDayInEachTimezone = (a, b) =>
-  a.format('YYYYMMDD') === b.format('YYYYMMDD')
 
 /**
  * Calcule les valeurs du form
