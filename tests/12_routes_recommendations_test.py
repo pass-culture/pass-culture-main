@@ -290,10 +290,19 @@ def test_put_recommendation_does_not_return_soft_deleted_recommendation(app):
     assert humanize(recommendation3.id) in recommendation_ids
 
 
-def test_get_recommendations_returns_searched_objects():
+def test_get_recommendations_returns_one_recommendation_found_from_search():
+    # get
+    response = req_with_auth().get(RECOMMENDATION_URL + '?search=Training', json={})
+    recommendations = response.json()
+
+    # then
+    assert 'Training' in recommendations[0]['offer']['event']['name']
+    assert recommendations[0].isFromSearch === False
+
     # get
     response = req_with_auth().get(RECOMMENDATION_URL + '?search=Rencontre', json={})
     recommendations = response.json()
 
     # then
     assert 'Rencontre' in recommendations[0]['offer']['event']['name']
+    assert recommendations[0].isFromSearch === True
