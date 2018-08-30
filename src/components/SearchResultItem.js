@@ -35,14 +35,19 @@ const getOfferDateString = (offer, tz) => {
 
 const getOfferThumb = offer => {
   const mediationId = get(offer, 'mediation.id')
+  let thumbUrl
   if (mediationId) {
-    return `${THUMBS_URL}/mediations/${mediationId}`
+    thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
   }
   if (get(offer, 'eventId')) {
-    return `${THUMBS_URL}/events/${offer.eventId}`
+    thumbUrl = `${THUMBS_URL}/events/${offer.eventId}`
   }
 
-  return `${THUMBS_URL}/things/${offer.thingId}`
+  if (get(offer, 'thingId')) {
+    thumbUrl = `${THUMBS_URL}/events/${offer.thingId}`
+  }
+
+  return thumbUrl
 }
 
 const SearchResultItem = ({ recommendation }) => {
@@ -60,12 +65,14 @@ const SearchResultItem = ({ recommendation }) => {
         <Thumb src={getOfferThumb(recommendation.offer)} />
         <div className="infos">
           <div className="top">
-            <h5 title={recommendation.offer.eventOrThing.name}>
-              <Dotdotdot clamp="2">
-                {recommendation.offer.eventOrThing.name}
-              </Dotdotdot>
-            </h5>
-            <span>{getOfferDateString(recommendation.offer, tz)}</span>
+            {recommendation.offer && [
+              <h5 title={recommendation.offer.eventOrThing.name}>
+                <Dotdotdot clamp="2">
+                  {recommendation.offer.eventOrThing.name}
+                </Dotdotdot>
+              </h5>,
+              <span>{getOfferDateString(recommendation.offer, tz)}</span>,
+            ]}
           </div>
         </div>
         <div className="arrow">
