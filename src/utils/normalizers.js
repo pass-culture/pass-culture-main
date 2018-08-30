@@ -6,6 +6,10 @@ export const thingNormalizer = {
   offers: 'offers',
 }
 
+export const BookingNormalizer = {
+  bookings: 'bookings',
+}
+
 export const offerNormalizer = {
   event: {
     key: 'events',

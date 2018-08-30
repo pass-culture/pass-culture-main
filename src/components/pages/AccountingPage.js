@@ -15,6 +15,7 @@ import bookingsSelector from '../../selectors/bookings'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import searchSelector from '../../selectors/search'
+import { BookingNormalizer } from '../../utils/normalizers'
 import BookingItem from '../items/BookingItem'
 import Main from '../layout/Main'
 
@@ -30,13 +31,13 @@ class AccoutingPage extends Component {
         },
         key: 'bookings',
         handleFail,
+        normalizer: BookingNormalizer,
+        isMergingArray: false,
       }
     )
   }
 
   fetchOfferers(handleSuccess = () => {}, handleFail = () => {}) {
-    const { goToNextSearchPage, requestData, offerer } = this.props
-
     this.props.requestData('GET', '/offerers', {
       handleSuccess: (state, action) => {
         handleSuccess(state, action)
@@ -57,12 +58,15 @@ class AccoutingPage extends Component {
     const {
       handleOrderByChange,
       handleOrderDirectionChange,
+      handleSearchChange,
+      handleQueryParamsChange,
       bookings,
       offerer,
+      offerers,
       queryParams,
     } = this.props
 
-    const { order_by } = queryParams || {}
+    const { search, order_by } = queryParams || {}
     const [orderBy, orderDirection] = (order_by || '').split('+')
 
     return (
@@ -72,6 +76,30 @@ class AccoutingPage extends Component {
         <div className="section">
           <h1 className="main-title">Vos Bookings</h1>
         </div>
+        <form className="section" onSubmit={handleSearchChange}>
+          <label className="label">Rechercher une offre :</label>
+          <div className="field is-grouped">
+            <p className="control is-expanded">
+              <input
+                id="search"
+                className="input search-input"
+                placeholder="Saisissez une recherche"
+                type="text"
+                defaultValue={search}
+              />
+            </p>
+            <p className="control">
+              <button type="submit" className="button is-primary is-outlined">
+                OK
+              </button>{' '}
+              <button className="button is-secondary">
+                &nbsp;
+                <Icon svg="ico-filter" />
+                &nbsp;
+              </button>
+            </p>
+          </div>
+        </form>
         <div className="section">
           <div className="list-header">
             {offerer && (
@@ -79,10 +107,16 @@ class AccoutingPage extends Component {
                 Filtrer par:
                 <span className="select is-rounded is-small">
                   <select
-                    onChange={this.handleOffererFilter}
+                    onChange={event =>
+                      handleQueryParamsChange({ offererId: event.target.value })
+                    }
                     className=""
                     value={offerer.id}>
-                    <option value={offerer.id}>{offerer.name}</option>
+                    {offerers.map(item => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
                   </select>
                 </span>
               </div>
@@ -128,6 +162,29 @@ class AccoutingPage extends Component {
   }
 }
 
+const mapStateToProps = (state, ownProps) => {
+  const queryParams = searchSelector(state, ownProps.location.search)
+  const offerers = offerersSelector(state)
+  let offererId = queryParams.offererId
+  if (!offererId && offerers.length > 0) {
+    offererId = offerers[0].id
+  }
+
+  return {
+    bookings: bookingsSelector(state),
+    offerer: offererSelector(state, offererId),
+    offerers,
+    queryParams,
+    user: state.user,
+  }
+}
+
+const mapDispatchToProps = () => ({
+  showModal,
+  requestData,
+  assignData,
+})
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
@@ -140,21 +197,7 @@ export default compose(
     },
   }),
   connect(
-    (state, ownProps) => {
-      const queryParams = searchSelector(state, ownProps.location.search)
-      const offerers = offerersSelector(state)
-      let offererId = queryParams.offererId
-      if (!offererId && offerers.length > 0) {
-        offererId = offerers[0].id
-      }
-
-      return {
-        bookings: bookingsSelector(state),
-        offerer: offererSelector(state, offererId),
-        queryParams,
-        user: state.user,
-      }
-    },
-    { showModal, requestData, assignData }
+    mapStateToProps,
+    mapDispatchToProps
   )
 )(AccoutingPage)
