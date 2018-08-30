@@ -21,24 +21,23 @@ export const addModifierString = () => items =>
     __modifiers__: (obj.__modifiers__ || []).concat([MODIFIER_STRING_ID]),
   }))
 
-export const mapEventOccurenceToBookable = () => items =>
+export const mapEventOccurenceToBookable = timezone => items =>
   items.map(obj => {
-    const extend = pick(obj.eventOccurrence, [
-      'beginningDatetime',
-      'endDatetime',
-      'offerId',
-    ])
+    const extend = pick(obj.eventOccurrence, ['endDatetime', 'offerId'])
+    extend.beginningDatetime = moment(obj.eventOccurrence.beginningDatetime).tz(
+      timezone
+    )
     const base = omit(obj, ['eventOccurrence'])
     return Object.assign({}, base, extend)
   })
 
-export const humanizeBeginningDate = tz => items =>
+export const humanizeBeginningDate = () => items =>
   // ajoute une date pré-formatée lisible par l'user
   items.map(obj =>
     Object.assign({}, obj, {
-      humanBeginningDate: moment(obj.beginningDatetime)
-        .tz(tz)
-        .format('dddd DD/MM/YYYY à HH:mm'),
+      humanBeginningDate: obj.beginningDatetime.format(
+        'dddd DD/MM/YYYY à HH:mm'
+      ),
     })
   )
 
@@ -59,8 +58,8 @@ export const sortByDate = () => items =>
   items.sort((a, b) => {
     const datea = a.beginningDatetime
     const dateb = b.beginningDatetime
-    if (datea > dateb) return 1
-    if (datea < dateb) return -1
+    if (datea.isAfter(dateb)) return 1
+    if (datea.isAfter(dateb)) return -1
     return 0
   })
 
@@ -75,8 +74,8 @@ export const selectBookables = createCachedSelector(
     const tz = get(recommendation, 'tz')
     return pipe(
       filterAvailableDates,
-      mapEventOccurenceToBookable(),
-      humanizeBeginningDate(tz),
+      mapEventOccurenceToBookable(tz),
+      humanizeBeginningDate(),
       markAsReserved(bookings),
       addModifierString(),
       sortByDate()

@@ -6,6 +6,10 @@ import withForm from './forms/withForm'
 import { getPrice } from '../helpers'
 import { CalendarField, HiddenField, SelectField } from './forms/inputs'
 
+// We use format so that each date is converted to a day in its own timezone
+const isSameDayInEachTimezone = (a, b) =>
+  a.format('YYYYMMDD') === b.format('YYYYMMDD')
+
 /**
  * Calcule les valeurs du form
  * En fonction de la date selectionnée par l'user
@@ -22,7 +26,7 @@ const onCalendarUpdates = (selection, name, allvalues) => {
   const userChosen = bookables.filter(o =>
     // l'offer est OK si elle est le même jour
     // que la date selectionnee par l'user dans le calendrier
-    selection.date.isSame(o.beginningDatetime, 'day')
+    isSameDayInEachTimezone(selection.date, o.beginningDatetime)
   )
   const issingle = userChosen && userChosen.length === 1
   if (!userChosen || !issingle) return resetObj
@@ -61,16 +65,11 @@ class BookingFormComponent extends React.PureComponent {
     } = this.props
     if (!date || !date.date) return []
     return bookables
-      .filter(o => {
-        // verifie que la date correspond au jour
-        // choisi par l'utilisateur
-        const issameday = date.date.isSame(o.beginningDatetime, 'day')
-        return issameday
-      })
+      .filter(o => isSameDayInEachTimezone(date.date, o.beginningDatetime))
       .map(obj => {
         // parse les infos d'une offre
         // pour être affichée dans la selectbox
-        const time = moment(obj.beginningDatetime).format('HH:mm')
+        const time = obj.beginningDatetime.format('HH:mm')
         const devised = getPrice(obj.price)
         const label = `${time} - ${devised}`
         return { id: obj.id, label }

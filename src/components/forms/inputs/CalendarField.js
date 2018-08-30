@@ -8,7 +8,10 @@ import locale from 'antd/lib/date-picker/locale/fr_FR'
 
 import renderLabel from '../renderLabel'
 
-const momentIsSameDay = (a, b) => a && b && a.isSame(b, 'day')
+// We use format so that each date is converted to a day in its own timezone
+const isSameDayInEachTimezone = (a, b) =>
+  a.format('YYYYMMDD') === b.format('YYYYMMDD')
+const momentIsSameDay = (a, b) => a && b && isSameDayInEachTimezone(a, b)
 
 export class CalendarField extends React.PureComponent {
   constructor(props) {
