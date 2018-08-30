@@ -20,7 +20,7 @@ fixture`01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
   .page`${ROOT_PATH + 'inscription'}`
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
-  await t.click(signInButton)
+  await t.click(signInButton).wait(500)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
