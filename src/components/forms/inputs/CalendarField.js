@@ -3,7 +3,7 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import { DatePicker, Form } from 'antd'
 import { Field } from 'react-final-form'
-// import momentPropTypes from 'react-moment-proptypes'
+import momentPropTypes from 'react-moment-proptypes'
 import locale from 'antd/lib/date-picker/locale/fr_FR'
 
 import renderLabel from '../renderLabel'
@@ -97,9 +97,7 @@ CalendarField.defaultProps = {
 }
 
 const providerObjectsShape = PropTypes.shape({
-  // FIXME -> using array(PropTypes.shape) and
-  // momentPropTypes as PropTypes throws error
-  date: PropTypes.string,
+  date: momentPropTypes.momentObj,
   value: PropTypes.string,
 })
 
@@ -113,7 +111,7 @@ CalendarField.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   provider: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.arrayOf(momentPropTypes.momentObj),
     PropTypes.arrayOf(providerObjectsShape),
   ]),
 }
