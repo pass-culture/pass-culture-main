@@ -35,11 +35,8 @@ from utils.rest import expect_json_data,\
 from utils.search import get_search_filter
 
 @app.route('/recommendations', methods=['GET'])
-#@login_or_api_key_required
+@login_or_api_key_required
 def list_recommendations():
-
-
-
     # find all the possible offers
     # compatible with the search query
     offer_query = Offer.query
@@ -55,7 +52,6 @@ def list_recommendations():
 
     # now check that recommendations from these filtered offers
     # match with already build recommendations
-    current_user = User.query.one()
     recommendation_ids = []
     for offer in offers:
         recommendation_query = Recommendation.query.filter_by(
@@ -63,7 +59,9 @@ def list_recommendations():
             offerId=offer.id
         )
         if recommendation_query.count() == 0:
-            recommendation = Recommendation()
+            recommendation = Recommendation(from_dict={
+                "isFromSearch": True
+            })
             recommendation.user = current_user
             recommendation.offer = offer
             PcObject.check_and_save(recommendation)
