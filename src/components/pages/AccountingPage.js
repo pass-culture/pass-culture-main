@@ -1,10 +1,8 @@
 import {
-  assignData,
   Icon,
   InfiniteScroller,
   requestData,
   withLogin,
-  showModal,
   withSearch,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -179,11 +177,7 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = () => ({
-  showModal,
-  requestData,
-  assignData,
-})
+const mapDispatchToProps = { requestData }
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
