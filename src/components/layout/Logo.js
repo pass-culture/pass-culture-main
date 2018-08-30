@@ -4,12 +4,17 @@ import { NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from '../../utils/config'
 
-const Logo = ({ className, noLink, whiteHeader }) => {
-  const src = whiteHeader
-    ? // ? `${ROOT_PATH}/icon/app-icon-spotlight.svg`
-      `${ROOT_PATH}/icon/logo-full-hppro.png`
-    : `${ROOT_PATH}/icons/logo-group-splash@2x.png`
-  // : `${ROOT_PATH}/icons/logo-inline-negative.svg`
+const Logo = ({ className, noLink, whiteHeader, signPage }) => {
+  let src
+  if (whiteHeader) {
+    src = `${ROOT_PATH}/icon/logo-full-hppro.png`
+  } else src = `${ROOT_PATH}/icons/logo-inline-negative.png`
+
+  if (!whiteHeader && signPage) {
+    console.log(' home page normalement !!!!! ')
+    src = `${ROOT_PATH}/icons/logo-group-splash@2x.png`
+  }
+
   const extraProps = {}
   if (noLink) {
     extraProps.onClick = e => e.preventDefault()

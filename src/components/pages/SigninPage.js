@@ -9,7 +9,7 @@ const SigninPage = ({ errors }) => {
   return (
     <Main name="sign-in" fullscreen>
       <div className="logo-side">
-        <Logo noLink />
+        <Logo noLink signPage />
       </div>
       <div className="container">
         <div className="columns">

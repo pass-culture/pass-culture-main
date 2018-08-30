@@ -11,7 +11,7 @@ const SignupPage = ({ errors, sirenName }) => {
   return (
     <Main name="sign-up" fullscreen>
       <div className="logo-side">
-        <Logo noLink />
+        <Logo noLink signPage />
       </div>
       <div className="container">
         <div className="columns">
@@ -26,7 +26,6 @@ const SignupPage = ({ errors, sirenName }) => {
                   </a>{' '}
                   avant de renseigner les champs suivants.
                 </h2>
-                {/* <span className="is-pulled-right is-size-7 has-text-grey"> */}
                 <span className="has-text-grey">
                   {' '}
                   <span className="required-legend"> * </span> Champs
