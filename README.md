@@ -12,3 +12,10 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
 ```bash
 yarn
 ```
+
+## Upgrade de la version
+
+```bash
+yarn version
+# yarn version --new-version 0.2.1
+```
