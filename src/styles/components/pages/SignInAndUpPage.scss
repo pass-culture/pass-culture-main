@@ -1,5 +1,9 @@
 .sign-in-page,
 .sign-up-page {
+  a {
+    color: $primary;
+  }
+
   position: relative;
 
   .logo-side {
@@ -75,8 +79,18 @@
     }
   }
 
-  .subtitle {
-    margin-bottom: 2rem;
+  h2.subtitle {
+    margin-bottom: 0.5rem;
+  }
+
+  form {
+    margin-top: 2rem;
+    p {
+      text-align: left !important;
+      color: #7a7a7a;
+      margin-left: 0.5rem;
+      // has-text-grey
+    }
   }
 
   label {

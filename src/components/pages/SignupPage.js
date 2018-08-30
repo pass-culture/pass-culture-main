@@ -27,12 +27,11 @@ const SignupPage = ({ errors, sirenName }) => {
                   avant de renseigner les champs suivants.
                 </h2>
                 {/* <span className="is-pulled-right is-size-7 has-text-grey"> */}
-                <span className=" has-text-grey">
+                <span className="has-text-grey">
                   {' '}
                   <span className="required-legend"> * </span> Champs
                   obligatoires
                 </span>
-                <br />
                 <Form
                   name="user"
                   action="/users/signup"
