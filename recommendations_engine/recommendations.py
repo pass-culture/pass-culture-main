@@ -2,10 +2,9 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import func
 
-from models import Recommendation, Offer, Mediation, ApiErrors, PcObject
+from models import Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers
 from utils.config import BLOB_SIZE
-from utils.human_ids import dehumanize
 from utils.logger import logger
 
 
@@ -24,12 +23,6 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
             logger.info('Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
 
     return recommendation
-
-
-def pick_random_offers_given_blob_size(recos, limit=BLOB_SIZE):
-    return recos.order_by(func.random()) \
-        .limit(limit) \
-        .all()
 
 
 def create_recommendations(limit=3, user=None, coords=None):

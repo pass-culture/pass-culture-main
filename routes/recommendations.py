@@ -1,15 +1,15 @@
 """ user mediations routes """
-from datetime import datetime
 from random import shuffle
 
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from models import Mediation, PcObject, Recommendation
-from recommendations_engine import pick_random_offers_given_blob_size, create_recommendations, \
-    RecommendationNotFoundException, give_requested_recommendation_to_user
+from models import PcObject, Recommendation
+from recommendations_engine import create_recommendations, RecommendationNotFoundException, \
+    give_requested_recommendation_to_user
 from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import find_unseen_tutorials_for_user, count_read_recommendations_for_user
+from repository.recommendation_queries import find_unseen_tutorials_for_user, count_read_recommendations_for_user, \
+    find_all_unread_recommendations, find_all_read_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -60,52 +60,31 @@ def put_recommendations():
 
     # we get more read+unread recos than needed in case we can't make enough new recos
 
+    unread_recos = find_all_unread_recommendations(current_user, seen_recommendation_ids)
+    read_recos = find_all_read_recommendations(current_user, seen_recommendation_ids)
 
-    query = Recommendation.query.outerjoin(Mediation) \
-        .filter((Recommendation.user == current_user)
-                & ~Recommendation.id.in_(seen_recommendation_ids)
-                & (Mediation.tutoIndex == None)
-                & ((Recommendation.validUntilDate == None)
-                   | (Recommendation.validUntilDate > datetime.utcnow())))
-
-    filter_already_read = (Recommendation.dateRead != None)
-
-    unread_recos = query.filter(~filter_already_read)
-    unread_recos = pick_random_offers_given_blob_size(unread_recos)
-
-    logger.info('(unread reco) count %i', len(unread_recos))
-
-    read_recos = query.filter(filter_already_read)
-    read_recos = pick_random_offers_given_blob_size(read_recos)
-
-    logger.info('(read reco) count %i', len(read_recos))
 
     needed_new_recos = BLOB_SIZE \
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
-    logger.info('(needed new recos) count %i', needed_new_recos)
-
     new_recos = create_recommendations(needed_new_recos, user=current_user)
 
+    logger.info('(unread reco) count %i', len(unread_recos))
+    logger.info('(read reco) count %i', len(read_recos))
+    logger.info('(needed new recos) count %i', needed_new_recos)
     logger.info('(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in new_recos]))
     logger.info('(new reco) count %i', len(new_recos))
 
     recos = new_recos
 
-    while len(recos) < BLOB_SIZE \
-            and (len(unread_recos) > 0
-                 or len(read_recos) > 0):
-        nb_new_unread = min(BLOB_UNREAD_NUMBER,
-                            len(unread_recos),
-                            BLOB_SIZE - len(recos))
-        recos += unread_recos[0:nb_new_unread]
+    while len(recos) < BLOB_SIZE and (len(unread_recos) > 0 or len(read_recos) > 0):
+        nb_new_unread = min(BLOB_UNREAD_NUMBER, len(unread_recos), BLOB_SIZE - len(recos))
+        recos += unread_recos[:nb_new_unread]
         unread_recos = unread_recos[nb_new_unread:]
 
-        nb_new_read = min(BLOB_READ_NUMBER,
-                          len(read_recos),
-                          BLOB_SIZE - len(recos))
-        recos += read_recos[0:nb_new_read]
+        nb_new_read = min(BLOB_READ_NUMBER, len(read_recos), BLOB_SIZE - len(recos))
+        recos += read_recos[:nb_new_read]
         read_recos = read_recos[nb_new_read:]
 
     shuffle(recos)
