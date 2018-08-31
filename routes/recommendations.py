@@ -4,6 +4,8 @@ from random import shuffle
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.build_recommendations import move_requested_recommendation_first, move_tutorial_recommendations_first, \
+    build_mixed_recommendations
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations, RecommendationNotFoundException, \
     give_requested_recommendation_to_user
@@ -25,7 +27,7 @@ def patch_recommendation(recommendationId):
     recommendation = query.first_or_404()
     recommendation.populateFromDict(request.json)
     PcObject.check_and_save(recommendation)
-    return jsonify(serialize_recommendation(recommendation)), 200
+    return jsonify(_serialize_recommendation(recommendation)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -68,86 +70,51 @@ def put_recommendations():
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
-    new_recos = create_recommendations(needed_new_recos, user=current_user)
+    created_recommendations = create_recommendations(needed_new_recos, user=current_user)
 
     logger.info('(unread reco) count %i', len(unread_recos))
     logger.info('(read reco) count %i', len(read_recos))
     logger.info('(needed new recos) count %i', needed_new_recos)
-    logger.info('(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in new_recos]))
-    logger.info('(new reco) count %i', len(new_recos))
+    logger.info('(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in created_recommendations]))
+    logger.info('(new reco) count %i', len(created_recommendations))
 
-    recos = new_recos
+    recommendations = build_mixed_recommendations(created_recommendations, read_recos, unread_recos)
 
-    while len(recos) < BLOB_SIZE and (len(unread_recos) > 0 or len(read_recos) > 0):
-        nb_new_unread = min(BLOB_UNREAD_NUMBER, len(unread_recos), BLOB_SIZE - len(recos))
-        recos += unread_recos[:nb_new_unread]
-        unread_recos = unread_recos[nb_new_unread:]
-
-        nb_new_read = min(BLOB_READ_NUMBER, len(read_recos), BLOB_SIZE - len(recos))
-        recos += read_recos[:nb_new_read]
-        read_recos = read_recos[nb_new_read:]
-
-    shuffle(recos)
+    shuffle(recommendations)
 
     all_read_recos_count = count_read_recommendations_for_user(current_user)
 
     logger.info('(all read recos) count %i', all_read_recos_count)
 
     if requested_recommendation:
-        recos = move_requested_recommendation_first(recos, requested_recommendation)
+        recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)
     else:
-        recos = move_tutorial_recommendations_first(recos, seen_recommendation_ids)
+        recommendations = move_tutorial_recommendations_first(recommendations, seen_recommendation_ids, current_user)
 
     logger.info('(recap reco) '
-                + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recos])
-                + str(len(recos)))
+                + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recommendations])
+                + str(len(recommendations)))
 
-    return jsonify(serialize_recommendations(recos)), 200
-
-
-def move_tutorial_recommendations_first(recos, seen_recommendation_ids):
-    tutorial_recommendations = find_unseen_tutorials_for_user(seen_recommendation_ids, current_user)
-
-    logger.info('(tuto recos) count %i', len(tutorial_recommendations))
-
-    tutos_read = 0
-    for reco in tutorial_recommendations:
-        if reco.dateRead is not None:
-            tutos_read += 1
-
-        elif len(recos) >= reco.mediation.tutoIndex - tutos_read:
-            recos = recos[:reco.mediation.tutoIndex - tutos_read] \
-                    + [reco] \
-                    + recos[reco.mediation.tutoIndex - tutos_read:]
-    return recos
+    return jsonify(_serialize_recommendations(recommendations)), 200
 
 
-def move_requested_recommendation_first(recos, requested_recommendation):
-    for i, reco in enumerate(recos):
-        if reco.id == requested_recommendation.id:
-            recos = recos[:i] + recos[i + 1:]
-            break
-    recos = [requested_recommendation] + recos
-    return recos
+def _serialize_recommendations(recos):
+    return list(map(_serialize_recommendation, recos))
 
 
-def serialize_recommendations(recos):
-    return list(map(serialize_recommendation, recos))
-
-
-def serialize_recommendation(reco):
+def _serialize_recommendation(reco):
     dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
 
     if reco.offer:
         bookings = find_bookings_from_recommendation(reco, current_user)
-        dict_reco['bookings'] = serialize_bookings(bookings)
+        dict_reco['bookings'] = _serialize_bookings(bookings)
 
     return dict_reco
 
 
-def serialize_bookings(bookings):
-    return list(map(serialize_booking, bookings))
+def _serialize_bookings(bookings):
+    return list(map(_serialize_booking, bookings))
 
 
-def serialize_booking(booking):
+def _serialize_booking(booking):
     return booking._asdict(include=BOOKING_INCLUDES)
