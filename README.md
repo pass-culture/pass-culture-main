@@ -13,6 +13,11 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
 yarn
 ```
 
+## Variables d'environnements
+
+A la racine de webapp créer un fichier `env.local`<br>
+Les variables disponibles pour l'application sont décrites dans le fichier `src/config.js`
+
 ## Upgrade de la version
 
 ```bash
@@ -31,10 +36,11 @@ yarn version
   - Transformer les strokes en shapes
   - Fusionner toutes les shapes
   - Exporter le fichier en `.svg`
+  - Remplacer les `<rect>` dans le code svg par des `<g> | <path>`
 - Nettoyer le fichier généré via [SVGMG](https://jakearchibald.github.io/svgomg/)
 - Ouvrir [fontello.com](http://fontello.com)
 - Glisser/Déposer le fichier de configuration `./fontello.json`
-- Ajouter le nouvelle icon par glisser/déposer
+- Ajouter la nouvelle icone par glisser/déposer
 - Cliquer sur le bouton `Download`
 
 **Importer les icones dans le projet**
