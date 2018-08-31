@@ -1,16 +1,16 @@
 from repository.recommendation_queries import find_unseen_tutorials_for_user
-from utils import logger
 from utils.config import BLOB_SIZE, BLOB_UNREAD_NUMBER
+from utils.logger import logger
 
 
 def build_mixed_recommendations(created_recommendations, read_recommendations, unread_recommendations):
     recommendations = created_recommendations.copy()
+    remaining_read = read_recommendations.copy()
+    remaining_unread = unread_recommendations.copy()
 
-    while _can_populate_with_read_or_unread_recommendations(
-            recommendations, read_recommendations, unread_recommendations
-    ):
-        recommendations, unread_recommendations = _populate_recommendations(recommendations, unread_recommendations)
-        recommendations, read_recommendations = _populate_recommendations(recommendations, read_recommendations)
+    while _can_populate_with_read_or_unread_recommendations(recommendations, remaining_read, remaining_unread):
+        recommendations, remaining_unread = _populate_recommendations(recommendations, remaining_unread)
+        recommendations, remaining_read = _populate_recommendations(recommendations, remaining_read)
 
     return recommendations
 
@@ -50,7 +50,7 @@ def _compute_quantity_to_add(recommendations, potential_recommendations, max_to_
 
 
 def _populate_recommendations(recommendations, potential_recommendations):
-    quantity_to_add = _compute_quantity_to_add(potential_recommendations, recommendations, BLOB_UNREAD_NUMBER)
+    quantity_to_add = _compute_quantity_to_add(recommendations, potential_recommendations, BLOB_UNREAD_NUMBER)
     populated_recommendations = recommendations + potential_recommendations[:quantity_to_add]
     remaining_potential = potential_recommendations[quantity_to_add:]
     return populated_recommendations, remaining_potential

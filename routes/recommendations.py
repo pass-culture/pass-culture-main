@@ -10,7 +10,7 @@ from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations, RecommendationNotFoundException, \
     give_requested_recommendation_to_user
 from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import find_unseen_tutorials_for_user, count_read_recommendations_for_user, \
+from repository.recommendation_queries import count_read_recommendations_for_user, \
     find_all_unread_recommendations, find_all_read_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
