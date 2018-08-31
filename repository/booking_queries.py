@@ -5,6 +5,10 @@ def find_all_by_user_id(user_id):
     return Booking.query.filter_by(userId=user_id).all()
 
 
+def find_all_by_stock_id(stock):
+    return Booking.query.filter_by(stockId=stock.id).all()
+
+
 def find_all_by_offerer_sorted_by_date_modified_asc(offerer_id):
     query_event = Booking.query \
         .join(Stock) \

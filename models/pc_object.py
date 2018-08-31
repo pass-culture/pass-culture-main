@@ -28,6 +28,10 @@ DUPLICATE_KEY_ERROR_CODE = '23505'
 NOT_FOUND_KEY_ERROR_CODE = '23503'
 OBLIGATORY_FIELD_ERROR_CODE = '23502'
 
+
+class DeletedRecordException(Exception):
+    pass
+
 def serialize(value, **options):
     if isinstance(value, Enum):
         return value.name

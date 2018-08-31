@@ -1,6 +1,7 @@
 import pytest
 
 from models import Stock, ApiErrors, PcObject
+from models.pc_object import DeletedRecordException
 from tests.conftest import clean_database
 from utils.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_event_offer, \
     create_event_occurrence
@@ -25,8 +26,6 @@ def test_stock_cannot_have_eventOccurrence_and_offer(app):
         PcObject.check_and_save(stock)
 
 
-
-
 @clean_database
 @pytest.mark.standalone
 def test_stock_needs_eventOccurrence_or_offer(app):
@@ -43,7 +42,7 @@ def test_stock_needs_eventOccurrence_or_offer(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_stock_needs_eventOccurrence_or_offer(app):
+def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -52,10 +51,21 @@ def test_stock_needs_eventOccurrence_or_offer(app):
     PcObject.check_and_save(stock)
 
     # When
-    query =  Stock.queryNotSoftDeleted()
-    #all_stocks = query.all()
+    query = Stock.queryNotSoftDeleted().all()
 
     print(query)
 
     # Then
-    assert False
+    assert len(query) == 0
+
+
+@clean_database
+@pytest.mark.standalone
+def test_populate_dict_with_is_soft_deleted_raises_DeletedRecordException(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue)
+    # When
+    with pytest.raises(DeletedRecordException):
+        stock.populateFromDict({"isSoftDeleted": True})

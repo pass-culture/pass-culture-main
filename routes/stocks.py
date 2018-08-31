@@ -6,7 +6,7 @@ from sqlalchemy.exc import InternalError
 from sqlalchemy.sql.expression import and_, or_
 
 from domain.stocks import find_offerer_for_new_stock
-from models import Offerer, User
+from models import Offerer, User, Booking
 from models.api_errors import ApiErrors
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -16,6 +16,7 @@ from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
+from repository import booking_queries
 from utils.human_ids import dehumanize
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -150,5 +151,9 @@ def delete_stock(id):
                                    offererId)
     stock.isSoftDeleted = True
     PcObject.check_and_save(stock)
+
     print(stock.isSoftDeleted)
     return jsonify(stock._asdict()), 200
+
+
+

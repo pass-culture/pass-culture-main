@@ -10,7 +10,8 @@ from models.pc_object import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer, create_venue, \
-    create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence
+    create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence, \
+    create_recommendation, create_stock_from_event_occurrence
 
 from utils.token import random_token
 
@@ -307,3 +308,25 @@ def test_user_should_not_be_able_to_delete_stock_if_does_not_have_rights(app):
     # Then
     assert r_delete.status_code == 400
     assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_delete.json()['global']
+
+
+# @clean_database
+# @pytest.mark.standalone
+# def test_all_related_bookings_should_be_cancelled_when_stock_is_soft_deleted(app):
+#     # Given
+#     user = create_user(email='email@test.fr', password='P@55w0rd')
+#     offerer = create_offerer()
+#     venue = create_venue(offerer)
+#     offer = create_event_offer(venue)
+#     event_occurrence = create_event_occurrence(offer)
+#     stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+#     recommendation = create_recommendation(offer, user)
+#     booking = create_booking(user, stock, recommendation=recommendation)
+#     PcObject.check_and_save(booking)
+#
+#     # When
+#     req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+#
+#     # Then
+#     db.session.refresh(booking)
+#     assert booking.isCancelled == True
