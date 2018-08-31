@@ -22,7 +22,7 @@ const formatDate = (date, tz) =>
       .format('dddd DD/MM/YYYY')
   )
 
-const getOfferDateString = (offer, tz) => {
+const getRecommendationDateString = (offer, tz) => {
   if (offer.eventId === null) {
     return 'permanent'
   }
@@ -33,7 +33,7 @@ const getOfferDateString = (offer, tz) => {
   )}`
 }
 
-const getOfferThumb = offer => {
+const getRecommendationThumb = offer => {
   const mediationId = get(offer, 'mediation.id')
   let thumbUrl
   if (mediationId) {
@@ -44,7 +44,7 @@ const getOfferThumb = offer => {
   }
 
   if (get(offer, 'thingId')) {
-    thumbUrl = `${THUMBS_URL}/events/${offer.thingId}`
+    thumbUrl = `${THUMBS_URL}/things/${offer.thingId}`
   }
 
   return thumbUrl
@@ -60,9 +60,9 @@ const SearchResultItem = ({ recommendation }) => {
   const linkURL = `/decouverte/${queryURL}`
 
   return (
-    <li className="booking-item">
+    <li className="recommendation-item">
       <Link to={linkURL}>
-        <Thumb src={getOfferThumb(recommendation.offer)} />
+        <Thumb src={getRecommendationThumb(recommendation.offer)} />
         <div className="infos">
           <div className="top">
             {recommendation.offer && [
@@ -71,7 +71,9 @@ const SearchResultItem = ({ recommendation }) => {
                   {recommendation.offer.eventOrThing.name}
                 </Dotdotdot>
               </h5>,
-              <span>{getOfferDateString(recommendation.offer, tz)}</span>,
+              <span>
+                {getRecommendationDateString(recommendation.offer, tz)}
+              </span>,
             ]}
           </div>
         </div>

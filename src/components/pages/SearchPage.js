@@ -3,12 +3,20 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import { Icon, withSearch } from 'pass-culture-shared'
-// import items from './searchPage-results'
+import {
+  assignData,
+  Icon,
+  Logger,
+  requestData,
+  resolveIsNew,
+  showModal,
+  withSearch,
+} from 'pass-culture-shared'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
 import SearchResultItem from '../SearchResultItem'
 import { selectRecommendations } from '../../selectors'
+import searchSelector from '../../selectors/search'
 
 const renderPageHeader = () => (
   <header>
@@ -26,17 +34,35 @@ const renderPageFooter = () => {
 // eslint-disable-resolveIsNew jsx-a11y/label-has-for
 
 class SearchPage extends Component {
-  handleDataRequest = () => 'data'
+  // handleDataRequest = () => 'data'
+  componentDidMount() {
+    Logger.log('DiscoveryPage ---> componentDidMount')
+  }
+
+  componentWillUnmount() {
+    Logger.log('DiscoveryPage ---> componentWillUnmount')
+  }
+
+  handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
+    const { goToNextSearchPage, querySearch } = this.props
+    requestData('GET', `recommendations?${querySearch}`, {
+      handleFail,
+      handleSuccess: (state, action) => {
+        handleSuccess(state, action)
+        goToNextSearchPage()
+      },
+      resolve: resolveIsNew,
+    })
+  }
 
   render() {
     const { handleSearchChange, queryParams, recommendations } = this.props
 
     const { search } = queryParams || {}
 
-    const items = recommendations
-
     return (
       <Main
+        handleDataRequest={this.handleDataRequest}
         header={renderPageHeader}
         name="search"
         footer={renderPageFooter}
@@ -73,7 +99,7 @@ class SearchPage extends Component {
           </form>
         </div>
         <ul className="search-results">
-          {items.map(item => (
+          {recommendations.map(item => (
             <SearchResultItem key={item.id} recommendation={item} />
             // TODO SearchResultItem based on booking so for events only
           ))}
@@ -83,24 +109,35 @@ class SearchPage extends Component {
   }
 }
 
-SearchPage.propTypes = {
-  handleSearchChange: PropTypes.func.isRequired,
-  // search: PropTypes.object.isRequired,
-  queryParams: PropTypes.object.isRequired,
-  recommendations: PropTypes.array.isRequired,
+SearchPage.defaultProps = {
+  querySearch: null,
 }
 
-const mapStateToProps = state => {
-  const recommendations = selectRecommendations(state)
-  return { recommendations }
+SearchPage.propTypes = {
+  goToNextSearchPage: PropTypes.func.isRequired,
+  handleSearchChange: PropTypes.func.isRequired,
+  queryParams: PropTypes.object.isRequired,
+  querySearch: PropTypes.string,
+  recommendations: PropTypes.array.isRequired,
+  // requestData: PropTypes.func.isRequired,
 }
 
 export default compose(
   withSearch({
-    dataKey: 'offers',
+    dataKey: 'recommendations',
     defaultQueryParams: {
       search: undefined,
     },
   }),
-  connect(mapStateToProps)
+  connect(
+    (state, ownProps) => {
+      const queryParams = searchSelector(state, ownProps.location.search)
+      return {
+        queryParams,
+        recommendations: selectRecommendations(state),
+        user: state.user,
+      }
+    },
+    { assignData, requestData, showModal }
+  )
 )(SearchPage)
