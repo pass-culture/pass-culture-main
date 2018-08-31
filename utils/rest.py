@@ -7,6 +7,7 @@ from sqlalchemy.exc import ProgrammingError
 
 from models.api_errors import ApiErrors
 from models.db import db
+from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import dashify
 
@@ -64,8 +65,8 @@ def handle_rest_get_list(modelClass, query=None,
     if query is None:
         query = modelClass.query
     # DELETED
-    if hasattr(modelClass, 'deleted'):
-        query = query.filter_by(deleted=False)
+    if issubclass(modelClass, SoftDeletableMixin):
+        query = query.filter_by(isSoftDeleted=False)
     # REFINE
     if refine:
         query = refine(query)
