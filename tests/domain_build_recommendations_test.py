@@ -1,7 +1,10 @@
+import pytest
+
 from domain.build_recommendations import build_mixed_recommendations
 from utils.test_utils import create_recommendation
 
 
+@pytest.mark.standalone
 def test_build_mixed_recommendations_with_only_created_recommendations():
     # given
     created_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
@@ -16,6 +19,7 @@ def test_build_mixed_recommendations_with_only_created_recommendations():
     assert [r.id for r in created_recommendations] == [1, 2]
 
 
+@pytest.mark.standalone
 def test_build_mixed_recommendations_with_created_recommendations_and_unread_but_none_read():
     # given
     created_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
@@ -30,6 +34,7 @@ def test_build_mixed_recommendations_with_created_recommendations_and_unread_but
     assert [r.id for r in created_recommendations] == [1, 2, 3, 4]
 
 
+@pytest.mark.standalone
 def test_build_mixed_recommendations_with_created_recommendations_and_read_but_none_unread():
     # given
     created_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
@@ -44,6 +49,7 @@ def test_build_mixed_recommendations_with_created_recommendations_and_read_but_n
     assert [r.id for r in created_recommendations] == [1, 2, 3, 4]
 
 
+@pytest.mark.standalone
 def test_build_mixed_recommendations_with_only_read_recommendations_and_none_created():
     # given
     created_recommendations = []
@@ -58,6 +64,7 @@ def test_build_mixed_recommendations_with_only_read_recommendations_and_none_cre
     assert [r.id for r in created_recommendations] == [1, 2]
 
 
+@pytest.mark.standalone
 def test_build_mixed_recommendations_with_only_unread_recommendations_and_none_created():
     # given
     created_recommendations = []
@@ -72,6 +79,7 @@ def test_build_mixed_recommendations_with_only_unread_recommendations_and_none_c
     assert [r.id for r in created_recommendations] == [1, 2]
 
 
+@pytest.mark.standalone
 def test_build_mixed_recommendations_with_read_recommendations_and_unread_but_none_created():
     # given
     created_recommendations = []
@@ -86,6 +94,7 @@ def test_build_mixed_recommendations_with_read_recommendations_and_unread_but_no
     assert [r.id for r in created_recommendations] == [3, 4, 1, 2]
 
 
+@pytest.mark.standalone
 def test_build_mixed_recommendations_with_all_sorts_of_recommendations():
     # given
     created_recommendations = [create_recommendation(id=5), create_recommendation(id=6)]
