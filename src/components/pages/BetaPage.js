@@ -1,38 +1,38 @@
-import { Icon, withLogin } from 'pass-culture-shared'
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Main from '../layout/Main'
-
-const renderPageFooter = () => (
-  <footer>
-    <Link
-      to="/inscription"
-      className="button is-secondary has-text-weight-light is-italic"
-    >
-      {"C'est par là"}
-      <Icon svg="ico-next" alt="Suivant" />
-    </Link>
-  </footer>
-)
-
 const BetaPage = () => (
-  <Main name="beta" redBg footer={renderPageFooter}>
-    <h1>
-      <strong className="is-block">
-        {'Bienvenue dans la version beta'}
-      </strong>
-      <span className="is-block">
-        {'du Pass Culture'}
-      </span>
-    </h1>
-    <p>
-      {"Et merci de votre participation pour nous aider à l'améliorer !"}
-    </p>
-  </Main>
+  <div id="beta-page" className="page flex-rows">
+    <main
+      role="main"
+      className="application-main flex-rows flex-around items-center"
+    >
+      <h1 className="has-text-centered">
+        <i className="is-block">Bienvenue dans la version beta</i>
+        <i className="is-block">du Pass Culture</i>
+      </h1>
+      <p className="has-text-centered">
+        <i>
+          Et merci de votre participation pour nous aider à l&apos;améliorer !
+        </i>
+      </p>
+    </main>
+    <footer
+      role="navigation"
+      className="application-footer dotted-top flex-columns items-center flex-end flex-0"
+    >
+      <Link to="/inscription" className="flex-center items-center">
+        <i>C&apos;est par là</i>
+        <span
+          aria-hidden="true"
+          className="icon-next"
+          title="C&apos;est par là"
+        />
+      </Link>
+    </footer>
+  </div>
 )
 
-export default withLogin({
-  isRequired: true,
-  successRedirect: '/decouverte',
-})(BetaPage)
+export default BetaPage

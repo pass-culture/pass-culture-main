@@ -1,4 +1,23 @@
-@import 'BetaPage.scss';
 @import 'BookingsPage.scss';
 @import 'FavoritesPage.scss';
 @import 'SignInAndUpPage.scss';
+
+#beta-page {
+  color: $white;
+  font-size: $size-medium;
+  background-color: $primary;
+
+  main h1 {
+    font-size: 1.5em;
+  }
+
+  footer a,
+  footer a:hover {
+    color: $white;
+    text-decoration: none;
+  }
+
+  footer a span {
+    font-size: 2.4rem;
+  }
+}
