@@ -1,14 +1,17 @@
 """ user mediations routes """
-from datetime import datetime
 from random import shuffle
 
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from models import Booking, Offer
-from models import EventOccurrence, Mediation, Stock, PcObject, Recommendation
-from recommendations_engine import pick_random_offers_given_blob_size, create_recommendations, \
-    RecommendationNotFoundException, give_requested_recommendation_to_user
+from domain.build_recommendations import move_requested_recommendation_first, move_tutorial_recommendations_first, \
+    build_mixed_recommendations
+from models import PcObject, Recommendation
+from recommendations_engine import create_recommendations, RecommendationNotFoundException, \
+    give_requested_recommendation_to_user
+from repository.booking_queries import find_bookings_from_recommendation
+from repository.recommendation_queries import count_read_recommendations_for_user, \
+    find_all_unread_recommendations, find_all_read_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -24,7 +27,7 @@ def patch_recommendation(recommendationId):
     recommendation = query.first_or_404()
     recommendation.populateFromDict(request.json)
     PcObject.check_and_save(recommendation)
-    return jsonify(dictify_reco(recommendation)), 200
+    return jsonify(_serialize_recommendation(recommendation)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -45,7 +48,7 @@ def put_recommendations():
     except RecommendationNotFoundException:
         return "Offer or mediation not found", 404
 
-    logger.info('(special) requested_recommendation %s' % (requested_recommendation, ))
+    logger.info('(special) requested_recommendation %s' % (requested_recommendation,))
 
     # TODO
     #    if (request.args.get('offerId') is not None
@@ -59,105 +62,59 @@ def put_recommendations():
 
     # we get more read+unread recos than needed in case we can't make enough new recos
 
-    filter_not_seen_offer = ~Recommendation.id.in_(seen_recommendation_ids)
+    unread_recos = find_all_unread_recommendations(current_user, seen_recommendation_ids)
+    read_recos = find_all_read_recommendations(current_user, seen_recommendation_ids)
 
-    query = Recommendation.query.outerjoin(Mediation) \
-        .filter((Recommendation.user == current_user)
-                & (filter_not_seen_offer)
-                & (Mediation.tutoIndex == None)
-                & ((Recommendation.validUntilDate == None)
-                   | (Recommendation.validUntilDate > datetime.utcnow())))
-
-    filter_already_read = (Recommendation.dateRead != None)
-
-    unread_recos = query.filter(~filter_already_read)
-    unread_recos = pick_random_offers_given_blob_size(unread_recos)
-
-    logger.info('(unread reco) count %i', len(unread_recos))
-
-    read_recos = query.filter(filter_already_read)
-    read_recos = pick_random_offers_given_blob_size(read_recos)
-
-    logger.info('(read reco) count %i', len(read_recos))
 
     needed_new_recos = BLOB_SIZE \
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
+    created_recommendations = create_recommendations(needed_new_recos, user=current_user)
+
+    logger.info('(unread reco) count %i', len(unread_recos))
+    logger.info('(read reco) count %i', len(read_recos))
     logger.info('(needed new recos) count %i', needed_new_recos)
+    logger.info('(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in created_recommendations]))
+    logger.info('(new reco) count %i', len(created_recommendations))
 
-    new_recos = create_recommendations(needed_new_recos,
-                                       user=current_user)
+    recommendations = build_mixed_recommendations(created_recommendations, read_recos, unread_recos)
 
-    logger.info('(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in new_recos]))
-    logger.info('(new reco) count %i', len(new_recos))
+    shuffle(recommendations)
 
-    recos = new_recos
-
-    while len(recos) < BLOB_SIZE \
-            and (len(unread_recos) > 0
-                 or len(read_recos) > 0):
-        nb_new_unread = min(BLOB_UNREAD_NUMBER,
-                            len(unread_recos),
-                            BLOB_SIZE - len(recos))
-        recos += unread_recos[0:nb_new_unread]
-        unread_recos = unread_recos[nb_new_unread:]
-
-        nb_new_read = min(BLOB_READ_NUMBER,
-                          len(read_recos),
-                          BLOB_SIZE - len(recos))
-        recos += read_recos[0:nb_new_read]
-        read_recos = read_recos[nb_new_read:]
-
-    shuffle(recos)
-
-    all_read_recos_count = Recommendation.query.filter((Recommendation.user == current_user)
-                                                       & (filter_already_read)) \
-        .count()
+    all_read_recos_count = count_read_recommendations_for_user(current_user)
 
     logger.info('(all read recos) count %i', all_read_recos_count)
 
     if requested_recommendation:
-        for i, reco in enumerate(recos):
-            if reco.id == requested_recommendation.id:
-                recos = recos[:i] + recos[i + 1:]
-                break
-        recos = [requested_recommendation] + recos
+        recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)
     else:
-        tuto_recos = Recommendation.query.join(Mediation) \
-            .filter((Mediation.tutoIndex != None)
-                    & (Recommendation.user == current_user)
-                    & filter_not_seen_offer) \
-            .order_by(Mediation.tutoIndex) \
-            .all()
-        logger.info('(tuto recos) count %i', len(tuto_recos))
-
-        tutos_read = 0
-        for tuto_reco in tuto_recos:
-            if tuto_reco.dateRead is not None:
-                tutos_read += 1
-            elif len(recos) >= tuto_reco.mediation.tutoIndex - tutos_read:
-                recos = recos[:tuto_reco.mediation.tutoIndex - tutos_read] \
-                        + [tuto_reco] \
-                        + recos[tuto_reco.mediation.tutoIndex - tutos_read:]
+        recommendations = move_tutorial_recommendations_first(recommendations, seen_recommendation_ids, current_user)
 
     logger.info('(recap reco) '
-                + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recos])
-                + str(len(recos)))
+                + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recommendations])
+                + str(len(recommendations)))
 
-    return jsonify(list(map(dictify_reco, recos))), 200
+    return jsonify(_serialize_recommendations(recommendations)), 200
 
 
-def dictify_reco(reco):
+def _serialize_recommendations(recos):
+    return list(map(_serialize_recommendation, recos))
+
+
+def _serialize_recommendation(reco):
     dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
+
     if reco.offer:
-        booking_query = Booking.query \
-            .join(Stock)
-        if reco.offer.eventId:
-            booking_query = booking_query.join(EventOccurrence)
-        booking_query = booking_query.join(Offer) \
-            .filter(Booking.user == current_user) \
-            .filter(Offer.id == reco.offerId)
-        dict_reco['bookings'] = list(map(lambda b: b._asdict(include=BOOKING_INCLUDES),
-                                         booking_query.all()))
+        bookings = find_bookings_from_recommendation(reco, current_user)
+        dict_reco['bookings'] = _serialize_bookings(bookings)
+
     return dict_reco
+
+
+def _serialize_bookings(bookings):
+    return list(map(_serialize_booking, bookings))
+
+
+def _serialize_booking(booking):
+    return booking._asdict(include=BOOKING_INCLUDES)

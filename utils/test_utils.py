@@ -385,12 +385,12 @@ def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
     return user_offerer
 
 
-def create_recommendation(offer, user):
+def create_recommendation(offer=None, user=None, id=None):
     recommendation = Recommendation()
+    recommendation.id = id
     recommendation.offer = offer
     recommendation.user = user
     return recommendation
-
 
 
 def create_event_occurrence(offer, beginning_datetime=datetime.utcnow() + timedelta(hours=2),
@@ -412,3 +412,4 @@ def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_t
     mediation.author = author
     mediation.isActive = is_active
     return mediation
+

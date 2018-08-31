@@ -1,20 +1,20 @@
 """ offer model """
 from datetime import datetime
 from itertools import chain
+
 from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
 from sqlalchemy.orm import aliased, relationship
 
 from models import Event, EventOccurrence
-from models.stock import Stock
+from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
-from models.db import Model
+from models.stock import Stock
 
 
 class Offer(PcObject,
-               Model,
-               ProvidableMixin):
-
+            Model,
+            ProvidableMixin):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -34,7 +34,7 @@ class Offer(PcObject,
     eventId = Column(BigInteger,
                      ForeignKey("event.id"),
                      CheckConstraint(
-                         '("eventId" IS NOT NULL AND "thingId" IS NULL)' +\
+                         '("eventId" IS NOT NULL AND "thingId" IS NULL)' + \
                          'OR ("eventId" IS NULL AND "thingId" IS NOT NULL)',
                          name='check_offer_has_thing_xor_event'),
                      nullable=True)
@@ -54,6 +54,14 @@ class Offer(PcObject,
 
     bookingEmail = Column(String(120), nullable=True)
 
+    @property
+    def dateRange(self):
+        if self.thing:
+            return None
+
+        start = min([occurrence.beginningDatetime for occurrence in self.eventOccurrences])
+        end = max([occurrence.endDatetime for occurrence in self.eventOccurrences])
+        return [start, end]
 
     @property
     def eventOrThing(self):
@@ -74,19 +82,19 @@ class Offer(PcObject,
         query = Stock.query
         if self.eventId:
             query = query.join(EventOccurrence)
-        return query.join(Offer)\
-                    .filter(Offer.id == self.id)\
-                    .order_by(desc(Stock.bookingLimitDatetime))\
-                    .first()
+        return query.join(Offer) \
+            .filter(Offer.id == self.id) \
+            .order_by(desc(Stock.bookingLimitDatetime)) \
+            .first()
 
     @staticmethod
     def joinWithAliasedStock(query, offerType):
         query = Offer.query
         if offerType == Event:
-            query = query.filter(Offer.eventId != None)\
-                         .join(aliased(EventOccurrence))
+            query = query.filter(Offer.eventId != None) \
+                .join(aliased(EventOccurrence))
         else:
-            query = query.filter(Offer.thingId != None)\
-                         .join(aliased(EventOccurrence))
+            query = query.filter(Offer.thingId != None) \
+                .join(aliased(EventOccurrence))
         stock_alias = aliased(Stock)
         return query.join(stock_alias), stock_alias
