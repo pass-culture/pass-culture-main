@@ -2,9 +2,9 @@ import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 
-import withForm from './forms/withForm'
-import { isSameDayInEachTimezone, getPrice } from '../helpers'
-import { CalendarField, HiddenField, SelectField } from './forms/inputs'
+import withForm from '../forms/withForm'
+import { isSameDayInEachTimezone, getPrice } from '../../helpers'
+import { CalendarField, HiddenField, SelectField } from '../forms/inputs'
 
 /**
  * Calcule les valeurs du form

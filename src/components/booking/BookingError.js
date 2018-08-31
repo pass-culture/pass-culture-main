@@ -4,7 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
 
-const BookingCardError = ({ errors }) => (
+const BookingError = ({ errors }) => (
   <div className="booked has-text-centered">
     <h3 style={{ fontSize: '22px' }} className="mb16">
       <span
@@ -33,9 +33,9 @@ const BookingCardError = ({ errors }) => (
   </div>
 )
 
-BookingCardError.propTypes = {
+BookingError.propTypes = {
   // config: PropTypes.object.isRequired,
   errors: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
 }
 
-export default BookingCardError
+export default BookingError

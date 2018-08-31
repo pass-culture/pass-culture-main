@@ -13,10 +13,10 @@ import { bindActionCreators, compose } from 'redux'
 import { Route } from 'react-router-dom'
 
 import Deck from '../Deck'
+import Booking from '../Booking'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
 import DeckLoader from '../DeckLoader'
-import BookingCard from '../BookingCard'
 import { getQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
 
@@ -108,7 +108,7 @@ class DiscoveryPage extends React.PureComponent {
             <Route
               key="route-discovery-booking"
               path="/decouverte/:offerId/:mediationId?/:view(booking|verso)"
-              render={route => <BookingCard {...route} />}
+              render={route => <Booking {...route} />}
             />
           </React.Fragment>
         )}

@@ -6,9 +6,9 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { getPrice } from '../helpers'
+import { getPrice } from '../../helpers'
 
-const BookingCardSuccess = ({ isEvent, data }) => {
+const BookingSuccess = ({ isEvent, data }) => {
   const token = get(data, 'token')
   let price = get(data, 'stock.price')
   price = getPrice(price)
@@ -46,9 +46,9 @@ const BookingCardSuccess = ({ isEvent, data }) => {
   )
 }
 
-BookingCardSuccess.propTypes = {
+BookingSuccess.propTypes = {
   data: PropTypes.object.isRequired,
   isEvent: PropTypes.bool.isRequired,
 }
 
-export default BookingCardSuccess
+export default BookingSuccess

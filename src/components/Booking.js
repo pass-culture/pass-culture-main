@@ -9,15 +9,15 @@ import { requestData } from 'pass-culture-shared'
 
 import { ROOT_PATH } from '../utils/config'
 import submitForm from './forms/submitForm'
-import BookingForm from './BookingForm'
-import BookingCardError from './BookingCardError'
-import BookingCardLoader from './BookingCardLoader'
-import BookingCardSuccess from './BookingCardSuccess'
+import BookingForm from './booking/BookingForm'
+import BookingError from './booking/BookingError'
+import BookingLoader from './booking/BookingLoader'
+import BookingSuccess from './booking/BookingSuccess'
 // import BookingUserUndefined from './BookingUserUndefined'
 import { selectBookables } from '../selectors/selectBookables'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
-class BookingCard extends React.PureComponent {
+class Booking extends React.PureComponent {
   constructor(props) {
     super(props)
     this.formId = 'form-create-booking'
@@ -146,11 +146,11 @@ class BookingCard extends React.PureComponent {
           style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
         >
           <div className="views-container is-overlay">
-            {isSubmitting && <BookingCardLoader />}
+            {isSubmitting && <BookingLoader />}
             {bookedPayload && (
-              <BookingCardSuccess isEvent={isEvent} data={bookedPayload} />
+              <BookingSuccess isEvent={isEvent} data={bookedPayload} />
             )}
-            {isErrored && <BookingCardError {...isErrored} />}
+            {isErrored && <BookingError {...isErrored} />}
             {showForm && (
               <React.Fragment>
                 {/* <BookingUserUndefined show={userConnected} /> */}
@@ -176,13 +176,13 @@ class BookingCard extends React.PureComponent {
   }
 }
 
-BookingCard.defaultProps = {
+Booking.defaultProps = {
   bookables: null,
   isEvent: false,
   recommendation: null,
 }
 
-BookingCard.propTypes = {
+Booking.propTypes = {
   bookables: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
@@ -210,4 +210,4 @@ const mapStateToProps = (state, { match }) => {
   }
 }
 
-export default connect(mapStateToProps)(BookingCard)
+export default connect(mapStateToProps)(Booking)
