@@ -36,8 +36,10 @@ yarn version
 - Glisser/Déposer le fichier de configuration `./fontello.json`
 - Ajouter le nouvelle icon par glisser/déposer
 - Cliquer sur le bouton `Download`
-- Copier/Coller et renommer le fichier `src/styles/vendors/fontello.scss`
-- Modifier les paths du fichier `./fonts/<...>` 
-- Copier/Coller les fichier de fonts depuis fontello dans le dossier fonts
-- Mettre à jour le fichier de configuration `./fontello.json`
+
+**Importer les icones dans le projet**
+
+- Dézipper le fichier téléchargé
+- Renommer le dossier `fontello-<hash>` en `fontello`
+- Couper/Coller le dossier dans `public/static/`
   
