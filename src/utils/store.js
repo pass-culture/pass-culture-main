@@ -10,32 +10,30 @@ import { compose, createStore, applyMiddleware } from 'redux'
 import rootSaga from '../sagas'
 import rootReducer from '../reducers'
 import initGeolocation from './initGeolocation'
-import { PERSIST_STORE_KEY } from './config'
+import { PERSIST_STORE_KEY, PERSIST_WHITE_LIST } from './config'
 
 const buildStoreEnhancer = (middlewares = []) => {
   const enhancers = []
-  let composeEnhancers = compose
   // utilisation de l'extension browser react-dev-tools
-  if (
-    typeof window !== 'undefined' &&
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-  ) {
-    composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  const useDevTools =
+    typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  if (useDevTools) {
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    return composeEnhancers(...enhancers, applyMiddleware(...middlewares))
   }
-  return composeEnhancers(...enhancers, applyMiddleware(...middlewares))
+  return compose(
+    ...enhancers,
+    applyMiddleware(...middlewares)
+  )
 }
 
 const buildStoreReducers = () => {
   // FIXME -> sortir la configuration de redux-persist
   // pour pouvoir faire les tests unitaires sur le store
-  const persistStoreWhiteList = [
-    // 'data',
-    // 'user'
-  ]
   const persistConfig = {
     key: PERSIST_STORE_KEY,
     storage,
-    whitelist: persistStoreWhiteList,
+    whitelist: PERSIST_WHITE_LIST,
   }
   return persistReducer(persistConfig, rootReducer)
 }
