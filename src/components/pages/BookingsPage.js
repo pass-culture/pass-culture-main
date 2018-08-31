@@ -15,7 +15,7 @@ import {
   selectOtherBookings,
   selectRecommendations,
 } from '../../selectors'
-import DeckLoader from '../DeckLoader'
+import DeckLoader from '../deck/DeckLoader'
 import { toggleMainMenu } from '../../reducers/menu'
 import ProfilePicture from '../layout/ProfilePicture'
 import { bookingNormalizer } from '../../utils/normalizers'

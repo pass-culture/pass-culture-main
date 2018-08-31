@@ -16,7 +16,7 @@ import Deck from '../Deck'
 import Booking from '../Booking'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
-import DeckLoader from '../DeckLoader'
+import DeckLoader from '../deck/DeckLoader'
 import { getQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
 

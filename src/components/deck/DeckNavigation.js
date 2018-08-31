@@ -5,12 +5,15 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Price from './Price'
-import Finishable from './layout/Finishable'
-import { getHeaderColor } from '../utils/colors'
-import { getPriceRangeFromStocks, isRecommendationFinished } from '../helpers'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
-import { ROOT_PATH } from '../utils/config'
+import Price from '../Price'
+import Finishable from '../layout/Finishable'
+import { getHeaderColor } from '../../utils/colors'
+import {
+  getPriceRangeFromStocks,
+  isRecommendationFinished,
+} from '../../helpers'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { ROOT_PATH } from '../../utils/config'
 
 const DeckNavigation = ({
   isFinished,
