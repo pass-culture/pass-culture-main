@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
@@ -56,9 +58,8 @@ class BookingFormComponent extends React.PureComponent {
   }
 
   parseHoursByStockId = () => {
-    const {
-      formValues: { date, bookables },
-    } = this.props
+    const { formValues } = this.props
+    const { date, bookables } = formValues
     if (!date || !date.date) return []
     return bookables
       .filter(o => isSameDayInEachTimezone(date.date, o.beginningDatetime))
@@ -75,6 +76,8 @@ class BookingFormComponent extends React.PureComponent {
   render() {
     const calendarDates = this.getCalendarProvider()
     const hoursAndPrices = this.parseHoursByStockId()
+    const { formValues } = this.props
+    const { stockId, price } = formValues
     return (
       <React.Fragment>
         <HiddenField name="price" />
@@ -82,8 +85,8 @@ class BookingFormComponent extends React.PureComponent {
         <HiddenField name="quantity" />
         <CalendarField
           name="date"
-          provider={calendarDates}
           help="This is help"
+          provider={calendarDates}
           label="Choisissez une date"
           className="has-text-centered"
           placeholder={moment().format('DD MMMM YYYY')}
@@ -94,7 +97,14 @@ class BookingFormComponent extends React.PureComponent {
             provider={hoursAndPrices}
             placeholder="Heure et prix"
             label="Choisissez une heure"
+            className="has-text-centered"
           />
+        )}
+        {stockId && (
+          <p className="has-text-centered">
+            <span className="is-block">Vous êtes sur le point de réserver</span>
+            <span className="is-block">cette offre pour {price}€</span>
+          </p>
         )}
       </React.Fragment>
     )

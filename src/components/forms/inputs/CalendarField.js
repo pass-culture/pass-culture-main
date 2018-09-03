@@ -43,27 +43,23 @@ export class CalendarField extends React.PureComponent {
       placeholder,
       ...rest
     } = this.props
-    const defaultDate = (provider && provider[0]) || null
     return (
       <Form.Item
         {...rest}
         label={renderLabel(label, help)}
-        className={`calendarpicker-field ${className}`}
+        className={`ant-calendar-custom ${className}`}
       >
         <Field
           name={name}
           render={({ input }) => (
             <DatePicker
               size="large"
-              defaultValue={defaultDate}
-              // style={customize input box style}
-              // popupStyle={customize popup calendar style}
-              // dateRender={custom rendering function for date cells}
-              className="calendarpicker-field-input"
-              dropdownClassName="calendarpicker-field-popup"
               locale={locale}
+              showToday={false}
               format={dateFormat}
               disabled={disabled}
+              className="ant-calendar-custom-input"
+              dropdownClassName="ant-calendar-custom-popup"
               getCalendarContainer={() => this.popupContainer}
               placeholder={placeholder || moment().format(dateFormat)}
               // specify the dates that cannot be selected
@@ -79,7 +75,7 @@ export class CalendarField extends React.PureComponent {
         />
         <div
           ref={this.setContainerRef}
-          className="calendarpicker-field-popup-container is-relative"
+          className="ant-calendar-custom-popup-container is-relative"
         />
       </Form.Item>
     )

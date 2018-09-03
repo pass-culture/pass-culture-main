@@ -12,7 +12,7 @@ import Finishable from './layout/Finishable'
 const renderBookingLink = (url, offer) => {
   const priceValue = get(offer, 'price') || get(offer, 'displayPrice')
   return (
-    <Link to={`${url}/booking`} className="button is-primary is-go is-medium">
+    <Link to={`${url}/booking`} className="button is-primary is-medium">
       <Price free="——" value={priceValue} />
       <span>J&apos;y vais!</span>
     </Link>
@@ -22,7 +22,7 @@ const renderBookingLink = (url, offer) => {
 const VersoBookingButton = ({ isReserved, isFinished, url, offer }) => (
   <React.Fragment>
     {isReserved && (
-      <Link to="/reservations" className="button is-primary is-go is-medium">
+      <Link to="/reservations" className="button is-primary is-medium">
         <Icon name="Check" />
         {'Réservé'}
       </Link>

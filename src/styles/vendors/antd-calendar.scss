@@ -1,130 +1,11 @@
-@import '~antd/dist/antd.css';
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  // stop antd overrides
-  color: inherit;
-}
-
-.ant-no-shadow {
-  box-shadow: none !important;
-}
-
-.ant-disable-click {
-  pointer-events: none !important;
-}
-
-.ant-removed-element {
-  width: 0 !important;
-  height: 0 !important;
-  font-size: 0 !important;
-  display: none !important;
-  line-height: 0 !important;
-  overflow: hidden !important;
-  visibility: hidden !important;
-}
-
-// tous les elements de la librairie antd
-[class*='ant-'],
-[class*='ant-'] label {
-  color: #000000;
-  font-size: 22px;
-  font-family: 'Barlow', arial, sans-serif;
-}
-
-/* ------- icons */
-// NOTE -> cible tous les elements dont une classe
-// se termine par ...
-i[class*='-picker-clear'],
-span[class*='-picker-icon'] {
-  top: 8px;
-  right: 20px;
-  width: 26px;
-  height: 26px;
-  margin-top: 0;
-
-  &,
-  &::after {
-    color: $primary;
-    font-size: 26px;
-    line-height: 26px;
-  }
-}
-
-// icone des select
-.ant-select-arrow {
-  top: 15px;
-
-  &,
-  &::after {
-    color: $primary;
-  }
-}
-
-.ant-input,
-.ant-select .ant-select-selection {
-  height: 44px;
-  font-size: 20px;
-  padding: 0 24px;
-  border-width: 2px;
-  font-weight: bold;
-  border-radius: 22px;
-
-  &,
-  &:hover,
-  &:focus {
-    border-color: #DAE1E3;
-  }
-}
-
-.has-text-centered .ant-form-item-label,
-.has-text-centered .ant-form-item-label label {
-  text-align: center;
-}
-
-/* -----------------------------------
-
- ANTD Select
-
-*/
-.select-field {
-  .ant-select-selection__rendered {
-    font-weight: bold;
-    text-align: center;
-  }
-
-  .ant-select-selection-selected-value {
-    padding: 0;
-    width: 100%;
-  }
-
-  .ant-select-selection__clear {
-    right: 21px;
-    color: $primary;
-  }
-
-  .ant-select-open .ant-select-arrow::before {
-    transform: rotate(0deg) !important;
-  }
-
-  .ant-select-dropdown-menu {
-    text-align: center;
-  }
-
-  .ant-select-dropdown {
-    border-radius: 20px;
-  }
-}
-
 /* -----------------------------------
 
  ANTD DatePicker
 
-*/
+----------------------------------- */
+
+/* --- override --- */
+
 .ant-calendar-picker-container {
   .ant-calendar {
     @extend .ant-no-shadow;
@@ -239,5 +120,64 @@ span[class*='-picker-icon'] {
         }
       }
     }
+  }
+}
+
+/* --- custom --- */
+
+.ant-calendar-custom-input {
+  width: 260px;
+
+  input {
+    cursor: pointer;
+    text-align: center;
+    padding-right: 44px;
+    pointer-events: none;
+  }
+}
+
+.ant-calendar-custom-popup {
+  width: 300px;
+  top: 0 !important;
+  left: -20px !important;
+
+  .ant-calendar-today .ant-calendar-date::before {
+    border: 0;
+  }
+
+  .ant-calendar-cell {
+    border: 0;
+    width: 30px;
+    height: 30px;
+    max-width: 30px;
+    max-height: 30px;
+    border-radius: 0;
+    text-align: center;
+  }
+
+  .ant-calendar-disabled-cell .ant-calendar-date {
+    background: transparent;
+  }
+
+  .ant-calendar-selected-date .ant-calendar-date {
+    font-weight: bold;
+    border-radius: 15px;
+    color: $primary !important;
+    background-color: transparent;
+    border: 2px solid $primary !important;
+  }
+
+  .ant-calendar-cell:not(.ant-calendar-disabled-cell) .ant-calendar-date {
+    color: #737373;
+    font-weight: bold;
+    border-radius: 15px;
+    border: 2px dotted #737373;
+    background-color: transparent;
+  }
+
+  .ant-calendar-today,
+  .ant-calendar-today .ant-calendar-date:hover {
+    color: black;
+    background-color: #E6E6E6;
   }
 }

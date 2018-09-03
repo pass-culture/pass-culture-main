@@ -27,6 +27,7 @@ export class SelectField extends React.PureComponent {
       name,
       disabled,
       provider,
+      className,
       canSearch,
       placeholder,
       ...rest
@@ -34,7 +35,7 @@ export class SelectField extends React.PureComponent {
     return (
       <Form.Item
         {...rest}
-        className="select-field"
+        className={`ant-select-custom ${className}`}
         label={renderLabel(label, help)}
       >
         <Field
@@ -71,6 +72,7 @@ export class SelectField extends React.PureComponent {
 
 SelectField.defaultProps = {
   canSearch: false,
+  className: '',
   disabled: null,
   help: null,
   label: null,
@@ -79,6 +81,7 @@ SelectField.defaultProps = {
 
 SelectField.propTypes = {
   canSearch: PropTypes.bool,
+  className: PropTypes.string,
   disabled: PropTypes.string,
   help: PropTypes.string,
   label: PropTypes.string,

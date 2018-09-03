@@ -8,5 +8,8 @@
 
 // overrides
 @import './bulma-with-overrides.scss';
-@import './fontello.scss';
-@import './antd.scss';
+
+/* antd | https://ant.design/docs/react/introduce */
+@import './antd-base.scss';
+@import './antd-select.scss';
+@import './antd-calendar.scss';

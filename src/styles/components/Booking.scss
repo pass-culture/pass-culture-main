@@ -42,37 +42,8 @@
 }
 
 #booking-card .main {
-  .calendarpicker-field-input {
-    width: 260px;
-
-    input {
-      cursor: pointer;
-      text-align: center;
-      padding-right: 44px;
-      pointer-events: none;
-    }
-  }
-
   .views-container {
     overflow-y: auto;
     padding: 36px 12px;
-  }
-
-  .calendarpicker-field-popup {
-    width: 350px;
-    top: 0 !important;
-    left: -45px !important;
-
-    .ant-calendar-today .ant-calendar-date::before {
-      border: 0;
-    }
-  }
-
-  .select-field {
-    width: 212px;
-
-    .ant-select-arrow::before {
-      content: '\E641';
-    }
   }
 }
