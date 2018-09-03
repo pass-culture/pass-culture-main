@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { requestData } from 'pass-culture-shared'
+import { Transition } from 'react-transition-group'
 
 import { ROOT_PATH } from '../utils/config'
 import submitForm from './forms/submitForm'
@@ -16,6 +17,19 @@ import BookingSuccess from './booking/BookingSuccess'
 // import BookingUserUndefined from './BookingUserUndefined'
 import { selectBookables } from '../selectors/selectBookables'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
+
+const duration = 250
+
+const defaultStyle = {
+  top: '100%',
+  transition: `top ${duration}ms ease-in-out`,
+}
+
+const transitionStyles = {
+  entered: { top: 0 },
+  entering: { top: '100%' },
+  exited: { display: 'none', visibility: 'none' },
+}
 
 class Booking extends React.PureComponent {
   constructor(props) {
@@ -28,7 +42,16 @@ class Booking extends React.PureComponent {
       canSubmitForm: false,
       isErrored: false,
       isSubmitting: false,
+      mounted: false,
     }
+  }
+
+  componentDidMount() {
+    this.setState({ mounted: true })
+  }
+
+  componentWillUnmount() {
+    this.setState({ mounted: false })
   }
 
   onFormMutation = ({ invalid, pristine, values }) => {
@@ -120,9 +143,9 @@ class Booking extends React.PureComponent {
   }
 
   render() {
-    const { recommendation, bookables, isEvent } = this.props
-    const { bookedPayload, isErrored, isSubmitting } = this.state
     const userConnected = false
+    const { recommendation, bookables, isEvent } = this.props
+    const { bookedPayload, isErrored, isSubmitting, mounted } = this.state
     const showForm = !isSubmitting && !bookedPayload && !isErrored
     const formInitialValues = {
       bookables,
@@ -132,46 +155,56 @@ class Booking extends React.PureComponent {
       stockId: null,
     }
     return (
-      <div id="booking-card" className="is-overlay flex-rows">
-        <header className="flex-0">
-          <h1 className="title">
-            <span>{get(recommendation, 'offer.eventOrThing.name')}</span>
-          </h1>
-          <h2 className="subtitle">
-            <span>{get(recommendation, 'offer.venue.name')}</span>
-          </h2>
-        </header>
-        <div
-          className="main flex-1 items-center is-clipped is-relative"
-          style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
-        >
-          <div className="views-container is-overlay">
-            {isSubmitting && <BookingLoader />}
-            {bookedPayload && (
-              <BookingSuccess isEvent={isEvent} data={bookedPayload} />
-            )}
-            {isErrored && <BookingError {...isErrored} />}
-            {showForm && (
-              <React.Fragment>
-                {/* <BookingUserUndefined show={userConnected} /> */}
-                <BookingForm
-                  formId={this.formId}
-                  disabled={userConnected}
-                  onSubmit={this.onFormSubmit}
-                  recommendation={recommendation}
-                  onMutation={this.onFormMutation}
-                  initialValues={formInitialValues}
-                  onValidation={this.onFormValidation}
-                  className="flex-rows items-center"
-                />
-              </React.Fragment>
-            )}
+      <Transition in={mounted} timeout={0}>
+        {state => (
+          <div
+            id="booking-card"
+            className="is-overlay is-clipped flex-rows"
+            style={{ ...defaultStyle, ...transitionStyles[state] }}
+          >
+            <header className="flex-0">
+              <h1 className="title">
+                <span>{get(recommendation, 'offer.eventOrThing.name')}</span>
+              </h1>
+              <h2 className="subtitle">
+                <span>{get(recommendation, 'offer.venue.name')}</span>
+              </h2>
+            </header>
+            <div
+              className="main flex-1 items-center is-clipped is-relative"
+              style={{
+                backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,
+              }}
+            >
+              <div className="views-container is-overlay">
+                {isSubmitting && <BookingLoader />}
+                {bookedPayload && (
+                  <BookingSuccess isEvent={isEvent} data={bookedPayload} />
+                )}
+                {isErrored && <BookingError {...isErrored} />}
+                {showForm && (
+                  <React.Fragment>
+                    {/* <BookingUserUndefined show={userConnected} /> */}
+                    <BookingForm
+                      formId={this.formId}
+                      disabled={userConnected}
+                      onSubmit={this.onFormSubmit}
+                      recommendation={recommendation}
+                      onMutation={this.onFormMutation}
+                      initialValues={formInitialValues}
+                      onValidation={this.onFormValidation}
+                      className="flex-rows items-center"
+                    />
+                  </React.Fragment>
+                )}
+              </div>
+            </div>
+            <div className="form-footer flex-columns flex-0 flex-center">
+              {this.renderFormControls()}
+            </div>
           </div>
-        </div>
-        <div className="form-footer flex-columns flex-0 flex-center">
-          {this.renderFormControls()}
-        </div>
-      </div>
+        )}
+      </Transition>
     )
   }
 }
