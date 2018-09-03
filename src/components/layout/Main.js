@@ -132,9 +132,12 @@ class Main extends Component {
             <div className="page-content column is-10 is-offset-1">
               {notification && (
                 <div
-                  className={`notification is-${notification.type || 'info'}`}>
-                  <span> {notification.text} </span>
-                  <button className="close-button" onClick={closeNotification}>
+                  className={`notification columns is-${notification.type ||
+                    'info'}`}>
+                  <span className="column"> {notification.text} </span>
+                  <button
+                    className="column is-1 close"
+                    onClick={closeNotification}>
                     OK
                   </button>
                 </div>
