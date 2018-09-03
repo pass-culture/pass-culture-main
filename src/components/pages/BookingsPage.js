@@ -15,7 +15,7 @@ import {
   selectOtherBookings,
   selectRecommendations,
 } from '../../selectors'
-import DeckLoader from '../deck/DeckLoader'
+import Loader from '../Loader'
 import { toggleMainMenu } from '../../reducers/menu'
 import ProfilePicture from '../layout/ProfilePicture'
 import { bookingNormalizer } from '../../utils/normalizers'
@@ -125,11 +125,9 @@ class BookingsPage extends Component {
             </footer>
           </React.Fragment>
         )}
-        {/*
-          FIXME: le isempty a pas de sens ici
-          Dans tous les cas on affiche un écran si il n'y pas de réservations
-        */}
-        {!isempty && <DeckLoader haserror={haserror} isloading={isloading} />}
+        {!isempty && (
+          <Loader isempty={isempty} haserror={haserror} isloading={isloading} />
+        )}
       </div>
     )
   }

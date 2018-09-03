@@ -22,17 +22,6 @@
   }
 }
 
-#deckloader {
-  z-index: $zindex-deckloader;
-  opacity: 1;
-  color: white;
-  background-color: $primary;
-
-  img {
-    margin-bottom: 1rem;
-  }
-}
-
 .android-with-statusbar .close {
   top: 2rem;
 }

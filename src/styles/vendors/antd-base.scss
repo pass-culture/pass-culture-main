@@ -31,7 +31,7 @@ h6 {
 // tous les elements de la librairie antd
 [class*='ant-'],
 [class*='ant-'] label {
-  color: #000000;
+  color: $black;
   font-size: 22px;
   font-family: 'Barlow', arial, sans-serif;
 }
@@ -81,7 +81,7 @@ span[class*='-picker-icon'] {
   }
 }
 
-.has-text-centered .ant-form-item-label,
-.has-text-centered .ant-form-item-label label {
+.text-center .ant-form-item-label,
+.text-center .ant-form-item-label label {
   text-align: center;
 }

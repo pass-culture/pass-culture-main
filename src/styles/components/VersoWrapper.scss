@@ -20,12 +20,13 @@
     padding-bottom: 1.5 * $page-padding;
     padding-left: $page-padding;
     padding-right: $page-padding;
-    color: white;
+    color: $white;
     position: relative;
     flex-shrink: 0;
 
     $triangle-diag: 50px;
-    &:before {
+
+    &::before {
       content: '';
       background-color: inherit;
       width: $triangle-diag;
@@ -44,6 +45,7 @@
       font-weight: 500;
       line-height: 2.7rem;
     }
+
     h2 {
       font-weight: 400;
       font-size: 1.375rem;
@@ -51,7 +53,7 @@
   }
 
   .verso-content {
-    background-color: white;
+    background-color: $white;
     padding-bottom: $footer-height;
     flex: 1;
 
@@ -68,7 +70,7 @@
     }
 
     img.verso-tuto-mediation {
-      width: 100%
+      width: 100%;
     }
 
     p {

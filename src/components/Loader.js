@@ -16,7 +16,7 @@ const transitionStyles = {
   exited: { display: 'none', visibility: 'none' },
 }
 
-const DeckLoader = ({ haserror, isempty, isloading }) => {
+const Loader = ({ haserror, isempty, isloading }) => {
   // on cache pas le loader
   // si il est en court de chargement
   // si il y a aucun produits à afficher pour l'utilisateur
@@ -25,8 +25,8 @@ const DeckLoader = ({ haserror, isempty, isloading }) => {
     <Transition in={!shouldhide} timeout={duration}>
       {state => (
         <div
-          id="deckloader"
-          className="pc-gradient flex-rows flex-center is-overlay has-text-centered is-italic"
+          id="application-loader"
+          className="pc-gradient flex-rows flex-center is-overlay text-center is-italic"
           style={{ ...defaultStyle, ...transitionStyles[state] }}
         >
           <Icon
@@ -34,7 +34,7 @@ const DeckLoader = ({ haserror, isempty, isloading }) => {
             svg="ico-loading-card"
             alt="Chargement en cours. Merci de patienter…"
           />
-          <h2 className="subtitle is-2">
+          <h2 className="subtitle">
             {(isempty && 'aucune offre pour le moment') || ''}
             {/* // FIXME -> mettre un label plus sexy avec redirection */}
             {(haserror && 'erreur de chargement') || ''}
@@ -46,15 +46,15 @@ const DeckLoader = ({ haserror, isempty, isloading }) => {
   )
 }
 
-DeckLoader.defaultProps = {
+Loader.defaultProps = {
   haserror: false,
   isempty: false,
 }
 
-DeckLoader.propTypes = {
+Loader.propTypes = {
   haserror: PropTypes.bool,
   isempty: PropTypes.bool,
   isloading: PropTypes.bool.isRequired,
 }
 
-export default DeckLoader
+export default Loader

@@ -1,11 +1,11 @@
 #booking-card {
   z-index: $zindex-booking-card;
-  color: #000000;
-  background: #FFFFFF;
+  color: $black;
+  background: $white;
 }
 
 #booking-card header {
-  color: #FFFFFF;
+  color: $white;
   background: #261801;
   padding: 1.5rem 1rem;
 

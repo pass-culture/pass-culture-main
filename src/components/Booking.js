@@ -113,7 +113,7 @@ class Booking extends React.PureComponent {
         {showCancelButton && (
           <button
             type="reset"
-            className="has-text-centered my5"
+            className="text-center my5"
             onClick={this.cancelBookingHandler}
           >
             <span>Annuler</span>
@@ -122,7 +122,7 @@ class Booking extends React.PureComponent {
         {showSubmitButton && (
           <button
             type="submit"
-            className="has-text-centered my5"
+            className="text-center my5"
             onClick={() => submitForm(this.formId)}
           >
             <b>Valider</b>
@@ -131,7 +131,7 @@ class Booking extends React.PureComponent {
         {bookedPayload && (
           <button
             type="button"
-            className="has-text-centered my5"
+            className="text-center my5"
             onClick={this.cancelBookingHandler}
           >
             <b>OK</b>
@@ -153,6 +153,7 @@ class Booking extends React.PureComponent {
       recommendationId: recommendation.id,
       stockId: null,
     }
+    const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     return (
       <Transition in={mounted} timeout={0}>
         {state => (
@@ -171,9 +172,7 @@ class Booking extends React.PureComponent {
             </header>
             <div
               className="main flex-1 items-center is-clipped is-relative"
-              style={{
-                backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')`,
-              }}
+              style={{ backgroundImage }}
             >
               <div className="views-container is-overlay">
                 {isSubmitting && <BookingLoader />}

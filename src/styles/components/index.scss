@@ -13,3 +13,16 @@
 @import 'VersoControl.scss';
 @import 'VersoInfo.scss';
 @import 'VersoWrapper.scss';
+//
+@import 'jauges.scss';
+
+#application-loader {
+  z-index: $zindex-application-loader;
+  opacity: 1;
+  color: $white;
+  background-color: $primary;
+
+  img {
+    margin-bottom: 1rem;
+  }
+}

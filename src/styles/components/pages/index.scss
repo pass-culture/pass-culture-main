@@ -22,3 +22,14 @@
     font-size: 2.4rem;
   }
 }
+
+#profile-page {
+  button .icon-next {
+    color: $primary;
+    font-size: 1.4rem;
+  }
+
+  button:disabled .icon-next {
+    color: $grey;
+  }
+}

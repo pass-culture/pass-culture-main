@@ -59,7 +59,7 @@ class MainMenu extends React.PureComponent {
         className="navlink flex-columns"
         onClick={this.onSignOutClick}
       >
-        <span className="has-text-centered menu-icon">
+        <span className="text-center menu-icon">
           <Icon svg="ico-deconnect-w" alt="" />
         </span>
         <span>
@@ -81,6 +81,7 @@ Déconnexion
 
   renderMenuHeader = () => {
     const { user } = this.props
+    const wallet = user ? user.wallet_balance : '--'
     const avatar = `${ROOT_PATH}/icons/avatar-default-w-XL.svg`
     return (
       <React.Fragment>
@@ -102,7 +103,7 @@ Mon Pass
           </p>
           <p>
             <strong>
-              {'—— €'}
+              {`${wallet}€`}
             </strong>
           </p>
         </div>
@@ -126,7 +127,7 @@ Mon Pass
                 {this.renderMenuHeader()}
               </div>
               <div className="scroll-container is-clipped">
-                <Scrollbars>
+                <Scrollbars autoHide>
                   <nav className="navigation flex-rows mt16 pb0">
                     {menuitems &&
                       menuitems.map(

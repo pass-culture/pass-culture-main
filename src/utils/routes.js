@@ -11,6 +11,8 @@ import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
 
+// NOTE: la gestion des éléments du menu principal
+// se fait dans le fichier src/components/MainMenu
 const routes = [
   {
     path: '/',

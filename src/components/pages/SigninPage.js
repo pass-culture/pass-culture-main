@@ -32,10 +32,10 @@ class SigninPage extends React.PureComponent {
     return (
       <Main name="sign-in" redBg footer={this.renderPageFooter}>
         <div className="section form-container is-clipped">
-          <h1 className="title is-1 is-italic">
+          <h1 className="title is-italic">
 Bonjour&nbsp;!
           </h1>
-          <h2 className="subtitle is-2 is-italic">
+          <h2 className="subtitle is-italic">
             Identifiez-vous 
             {' '}
             <br />

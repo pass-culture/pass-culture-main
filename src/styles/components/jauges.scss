@@ -1,0 +1,57 @@
+.jauges {
+  .text-containers {
+    width: 200px;
+    min-width: 200px;
+  }
+
+  .text.overall {
+    font-size: 1.5rem;
+    color: $jauge-red;
+  }
+
+  .text.digital {
+    color: $jauge-green;
+  }
+
+  .text.physical {
+    color: $jauge-orange;
+  }
+
+  .jauges-container {
+    @extend .is-relative;
+
+    background-color: #F4F4F6;
+  }
+
+  .jauge {
+    @extend .is-absolute;
+
+    width: 100%;
+    height: 100%;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .jauge.overall {
+    background-image: linear-gradient(
+      90deg,
+      rgba(50, 0, 150, 1) 0%,
+      rgba(235, 0, 85, 1) 100%
+    );
+  }
+
+  .jauge.physical {
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 92, 214, 1) 0%,
+      rgba(255, 151, 0, 1) 100%
+    );
+  }
+
+  .jauge.digital {
+    background-image: linear-gradient(
+      90deg,
+      rgba(0, 210, 230, 1) 0%,
+      rgba(176, 222, 0, 1) 100%
+    );
+  }
+}

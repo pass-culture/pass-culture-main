@@ -13,10 +13,10 @@ import { bindActionCreators, compose } from 'redux'
 import { Route } from 'react-router-dom'
 
 import Deck from '../Deck'
+import Loader from '../Loader'
 import Booking from '../Booking'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
-import DeckLoader from '../deck/DeckLoader'
 import { getQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
 
@@ -112,11 +112,7 @@ class DiscoveryPage extends React.PureComponent {
             />
           </React.Fragment>
         )}
-        <DeckLoader
-          isempty={isempty}
-          haserror={haserror}
-          isloading={isloading}
-        />
+        <Loader isempty={isempty} haserror={haserror} isloading={isloading} />
       </Main>
     )
   }

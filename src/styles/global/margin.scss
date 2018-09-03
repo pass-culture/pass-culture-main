@@ -1,8 +1,9 @@
-$spaces: (0, 3, 5, 7, 8, 12, 16, 20, 28, 30, 32, 36, 40, 48, 60);
-
-$sides: (all, topbottom, leftright, top, left, right, bottom);
+// used: 3, 8, 12, 16, 20, 22, 40
+$spaces: (0, 3, 5, 7, 8, 12, 16, 20, 22, 28, 30, 32, 36, 40, 48, 60);
 
 @each $space in $spaces {
+  $sides: (all, topbottom, leftright, top, left, right, bottom);
+
   @each $side in $sides {
     @if $side == 'all' {
       .m#{$space} {

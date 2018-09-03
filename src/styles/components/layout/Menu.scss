@@ -94,7 +94,7 @@
 }
 
 #main-menu .navlink + .navlink {
-  @include dotted($text);
+  @extend .dotted-top-black;
 }
 
 #main-menu .navlink.active {
