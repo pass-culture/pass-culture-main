@@ -296,7 +296,7 @@ def test_get_recommendations_returns_one_recommendation_found_from_search():
     recommendations = response.json()
 
     # then
-    assert 'Training' in recommendations[0]['offer']['event']['name']
+    assert 'Training' in recommendations[0]['offer']['eventOrThing']['name']
     assert recommendations[0].isFromSearch == False
 
     # get
@@ -304,5 +304,5 @@ def test_get_recommendations_returns_one_recommendation_found_from_search():
     recommendations = response.json()
 
     # then
-    assert 'Rencontre' in recommendations[0]['offer']['event']['name']
+    assert 'Rencontre' in recommendations[0]['offer']['eventOrThing']['name']
     assert recommendations[0].isFromSearch == True
