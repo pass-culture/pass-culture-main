@@ -53,6 +53,7 @@ class Main extends React.PureComponent {
     const { handleDataRequest } = this.props
     // la definition d'une propriete `handleDataRequest`
     // dans un composant lance une requete
+
     if (!handleDataRequest) return
     // possibility of the handleDataRequest to return
     // false in order to not trigger the loading

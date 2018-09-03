@@ -1,3 +1,5 @@
+/* eslint-disabler */
+
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -6,9 +8,9 @@ import { compose } from 'redux'
 import {
   assignData,
   Icon,
+  InfiniteScroller,
   Logger,
   requestData,
-  resolveIsNew,
   showModal,
   withSearch,
 } from 'pass-culture-shared'
@@ -31,10 +33,7 @@ const renderPageFooter = () => {
   return <Footer {...footerProps} />
 }
 
-// eslint-disable-resolveIsNew jsx-a11y/label-has-for
-
 class SearchPage extends Component {
-  // handleDataRequest = () => 'data'
   componentDidMount() {
     Logger.log('DiscoveryPage ---> componentDidMount')
   }
@@ -44,14 +43,13 @@ class SearchPage extends Component {
   }
 
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const { goToNextSearchPage, querySearch } = this.props
+    const { goToNextSearchPage, querySearch, requestData } = this.props // eslint-disable-line no-shadow
     requestData('GET', `recommendations?${querySearch}`, {
       handleFail,
       handleSuccess: (state, action) => {
         handleSuccess(state, action)
         goToNextSearchPage()
       },
-      resolve: resolveIsNew,
     })
   }
 
@@ -70,10 +68,9 @@ class SearchPage extends Component {
       >
         <div>
           <form className="section" onSubmit={handleSearchChange}>
-            {/* <label className="label" id="search"> */}
-            <p className="label" id="search">
+            <label className="label" id="search" htmlFor="search">
               Rechercher une offre :
-            </p>
+            </label>
             <div className="field is-grouped">
               <p className="control is-expanded">
                 <input
@@ -98,12 +95,14 @@ class SearchPage extends Component {
             </div>
           </form>
         </div>
-        <ul className="search-results">
-          {recommendations.map(item => (
-            <SearchResultItem key={item.id} recommendation={item} />
-            // TODO SearchResultItem based on booking so for events only
+        <InfiniteScroller
+          className="offers-list main-list"
+          handleLoadMore={this.handleDataRequest}
+        >
+          {recommendations.map(o => (
+            <SearchResultItem key={o.id} recommendation={o} />
           ))}
-        </ul>
+        </InfiniteScroller>
       </Main>
     )
   }
@@ -119,7 +118,7 @@ SearchPage.propTypes = {
   queryParams: PropTypes.object.isRequired,
   querySearch: PropTypes.string,
   recommendations: PropTypes.array.isRequired,
-  // requestData: PropTypes.func.isRequired,
+  requestData: PropTypes.func.isRequired,
 }
 
 export default compose(
