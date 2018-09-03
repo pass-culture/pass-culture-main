@@ -65,7 +65,7 @@ def test_populate_dict_with_is_soft_deleted_raises_DeletedRecordException(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_from_offer(offerer, create_offer)
+    stock = create_stock_from_offer(offerer, )
     # When
     with pytest.raises(DeletedRecordException):
         stock.populateFromDict({"isSoftDeleted": True})

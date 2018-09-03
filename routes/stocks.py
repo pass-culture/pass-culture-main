@@ -16,7 +16,7 @@ from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import booking_queries
+from repository import booking_queries, stock_queries
 from utils.human_ids import dehumanize
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -32,11 +32,6 @@ search_models = [
     Venue,
     Event
 ]
-
-def check_offerer_user(query):
-    return query.filter(
-        Offerer.users.any(User.id == current_user.id)
-    ).first_or_404()
 
 def join_stocks(query):
     for search_model in search_models:
@@ -59,25 +54,18 @@ def query_stocks(ts_query):
     )
 
 
-def make_stock_query():
-    query = Stock.queryNotSoftDeleted()
-    # FILTERS
-    filters = request.args.copy()
-    if 'offererId' in filters:
-        query = query.filter(Stock.offererId == dehumanize(filters['offererId']))
-        check_offerer_user(query.first_or_404().offerer.query)
-    # PRICE
-    if 'hasPrice' in filters and filters['hasPrice'].lower() == 'true':
-        query = query.filter(Stock.price != None)
-    # RETURN
-    return query
+def _cancel_bookings(all_bookings_with_soft_deleted_stocks):
+    for booking in all_bookings_with_soft_deleted_stocks:
+        booking.isCancelled = True
+        PcObject.check_and_save(booking)
 
 
 @app.route('/stocks', methods=['GET'])
 @login_or_api_key_required
 def list_stocks():
+    filters = request.args.copy()
     return handle_rest_get_list(Stock,
-                                query=make_stock_query(),
+                                query=stock_queries.find_stocks_with_possible_filters(filters, current_user),
                                 paginate=50)
 
 @app.route('/stocks/<stock_id>',
@@ -85,7 +73,8 @@ def list_stocks():
            defaults={'mediation_id': None})
 @app.route('/stocks/<stock_id>/<mediation_id>', methods=['GET'])
 def get_stock(stock_id, mediation_id):
-    query = make_stock_query().filter_by(id=dehumanize(stock_id))
+    filters = request.args.copy()
+    query = stock_queries.find_stocks_with_possible_filters(filters, current_user).filter_by(id=dehumanize(stock_id))
     if stock_id == '0':
         stock = {'id': '0',
                  'thing': {'id': '0',
@@ -152,8 +141,7 @@ def delete_stock(id):
     stock.isSoftDeleted = True
     PcObject.check_and_save(stock)
 
-    print(stock.isSoftDeleted)
+    all_bookings_with_soft_deleted_stocks = booking_queries.find_all_with_soft_deleted_stocks()
+    _cancel_bookings(all_bookings_with_soft_deleted_stocks)
+
     return jsonify(stock._asdict()), 200
-
-
-

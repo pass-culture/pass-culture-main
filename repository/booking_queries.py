@@ -36,3 +36,7 @@ def find_bookings_from_recommendation(reco, user):
         .filter(Booking.user == user) \
         .filter(Offer.id == reco.offerId)
     return booking_query.all()
+
+
+def find_all_with_soft_deleted_stocks():
+    return Booking.query.join(Stock).filter_by(isSoftDeleted=True).all()

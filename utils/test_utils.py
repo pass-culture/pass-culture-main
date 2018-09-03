@@ -179,8 +179,8 @@ def req_with_auth(email=None, password=None):
     return request
 
 
-def create_booking(user, stock=None, venue=None, recommendation=None,
-                   is_cancellation=False, quantity=1, date_modified=datetime.utcnow()):
+def create_booking(user, stock=None, venue=None, recommendation=None, is_cancellation=False, quantity=1,
+                   date_modified=datetime.utcnow(), fill_stock_bookings=True):
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -200,7 +200,7 @@ def create_booking(user, stock=None, venue=None, recommendation=None,
     else:
         offer = create_thing_offer(venue)
         booking.recommendation = create_recommendation(offer, user)
-    if not is_cancellation:
+    if not is_cancellation and fill_stock_bookings:
         stock.bookings = [booking]
     return booking
 

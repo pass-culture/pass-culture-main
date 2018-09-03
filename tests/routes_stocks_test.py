@@ -310,23 +310,36 @@ def test_user_should_not_be_able_to_delete_stock_if_does_not_have_rights(app):
     assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_delete.json()['global']
 
 
-# @clean_database
-# @pytest.mark.standalone
-# def test_all_related_bookings_should_be_cancelled_when_stock_is_soft_deleted(app):
-#     # Given
-#     user = create_user(email='email@test.fr', password='P@55w0rd')
-#     offerer = create_offerer()
-#     venue = create_venue(offerer)
-#     offer = create_event_offer(venue)
-#     event_occurrence = create_event_occurrence(offer)
-#     stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
-#     recommendation = create_recommendation(offer, user)
-#     booking = create_booking(user, stock, recommendation=recommendation)
-#     PcObject.check_and_save(booking)
-#
-#     # When
-#     req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
-#
-#     # Then
-#     db.session.refresh(booking)
-#     assert booking.isCancelled == True
+@clean_database
+@pytest.mark.standalone
+def test_when_deleted_stock_only_all_bookings_related_to_soft_deleted_stock_are_cancelled(app):
+    # Given
+    user1 = create_user(email='user1@test.fr')
+    user2 = create_user(email='user2@test.fr')
+    user_admin = create_user(email='email@test.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_admin, offerer)
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    event_occurrence = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence, price=0, available=10)
+    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence, price=0, available=10)
+    recommendation1 = create_recommendation(offer, user1)
+    recommendation2 = create_recommendation(offer, user2)
+    booking1 = create_booking(user1, stock1, venue, recommendation=recommendation1, fill_stock_bookings=False)
+    booking2 = create_booking(user1, stock2, venue, recommendation=recommendation1, fill_stock_bookings=False)
+    booking3 = create_booking(user2, stock1, venue, recommendation=recommendation2, fill_stock_bookings=False)
+
+    PcObject.check_and_save(booking1, booking2, booking3, user_offerer)
+
+    # When
+    req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock1.id))
+
+    # Then
+    db.session.refresh(booking1)
+    db.session.refresh(booking2)
+    db.session.refresh(booking3)
+    assert booking1.isCancelled == True
+    assert booking2.isCancelled == False
+    assert booking3.isCancelled == True
+
