@@ -5,7 +5,7 @@ import { regularOfferer } from './helpers/roles'
 const adressInput = Selector('#venue-address')
 const backAnchor = Selector('a.back-button')
 const cityInput = Selector('#venue-city')
-const closeAnchor = Selector('button.close-button').withText('OK')
+const closeAnchor = Selector('button.close').withText('OK')
 
 const latitudeInput = Selector('#venue-latitude')
 const longitudeInput = Selector('#venue-longitude')
