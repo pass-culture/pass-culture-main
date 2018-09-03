@@ -1,6 +1,5 @@
 """ user mediations routes """
 from random import shuffle
-from sqlalchemy import func
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -27,52 +26,28 @@ from repository.recommendation_queries import count_read_recommendations_for_use
                                               find_all_unread_recommendations, \
                                               find_all_read_recommendations,\
                                               give_requested_recommendation_to_user
+from recommendations_engine import create_recommendations_for_discovery,\
+                                   create_recommendations_for_search,\
+                                   give_requested_recommendation_to_user,\
+                                   RecommendationNotFoundException
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
 from utils.rest import expect_json_data,\
                        handle_rest_get_list
-from utils.search import get_search_filter
+from utils.search import get_search_filter,\
+                         handle_rest_get_list,\
+                         login_or_api_key_required
 
 @app.route('/recommendations', methods=['GET'])
 @login_or_api_key_required
 def list_recommendations():
-    # find all the possible offers
-    # compatible with the search query
-    offer_query = Offer.query
-    search = request.args.get('search')
-    if search is not None:
-        offer_query = offer_query.outerjoin(Event)\
-                                 .outerjoin(Thing)\
-                                 .outerjoin(Venue)\
-                                 .filter(get_search_filter([Event, Thing, Venue], search))
-    else:
-        offer_query = offer_query.order_by(func.random()) \
-                                 .limit(5)
-    offers = offer_query.all()
 
-    # now check that recommendations from these filtered offers
-    # match with already build recommendations
-    recommendation_ids = []
-    for offer in offers:
-        recommendation_query = Recommendation.query.filter_by(
-            userId=current_user.id,
-            offerId=offer.id
-        )
-        if recommendation_query.count() == 0:
-            recommendation = Recommendation(from_dict={
-                "isFromSearch": True
-            })
-            recommendation.user = current_user
-            recommendation.offer = offer
-            PcObject.check_and_save(recommendation)
-        else:
-            recommendation = recommendation_query.first()
-        recommendation_ids.append(recommendation.id)
+    recommendations = create_recommendations_for_search(5, current_user, request.args.get('search'))
 
     recommendation_query = Recommendation.query.filter(
-        Recommendation.id.in_(recommendation_ids)
+        Recommendation.id.in_([r.id for r in recommendations])
     )
 
     return handle_rest_get_list(Recommendation,
@@ -132,7 +107,7 @@ def put_recommendations():
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
-    created_recommendations = create_recommendations(needed_new_recos, user=current_user)
+    created_recommendations = create_recommendations_for_discovery(needed_new_recos, user=current_user)
 
     logger.info('(unread reco) count %i', len(unread_recos))
     logger.info('(read reco) count %i', len(read_recos))

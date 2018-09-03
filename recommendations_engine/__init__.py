@@ -1,13 +1,19 @@
 """ recommendations """
 
-from recommendations_engine.offers import get_offers, get_offers_by_type
-from recommendations_engine.recommendations import create_recommendations, \
-    RecommendationNotFoundException, give_requested_recommendation_to_user
+from recommendations_engine.offers import get_offers_for_recommendations_discovery,\
+                                          get_offers_for_recommendations_search,\
+                                          get_offers_by_type
+from recommendations_engine.recommendations import create_recommendations_for_discovery,\
+                                                   create_recommendations_for_search,\
+                                                   give_requested_recommendation_to_user,\
+                                                   RecommendationNotFoundException
 
 __all__ = (
-    'get_offers',
+    'create_recommendations_for_discovery',
+    'create_recommendations_for_search',
+    'get_offers_for_recommendations_discovery',
+    'get_offers_for_recommendations_search',
     'get_offers_by_type',
-    'create_recommendations',
     'give_requested_recommendation_to_user',
     'RecommendationNotFoundException'
 )
