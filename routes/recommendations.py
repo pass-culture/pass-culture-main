@@ -47,7 +47,7 @@ from utils.search import get_search_filter,\
 def list_recommendations():
 
     recommendations = create_recommendations_for_search(
-        request.args.get('page'),
+        request.args.get('page', 1),
         current_user,
         request.args.get('search')
     )
