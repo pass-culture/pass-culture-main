@@ -152,6 +152,7 @@ def create_recommendations_for_search(page=1, user=None, search=None):
 
         recommendations.append(recommendation)
 
-    PcObject.check_and_save(*recommendations_to_save)
+    if recommendations_to_save:
+        PcObject.check_and_save(*recommendations_to_save)
 
     return recommendations
