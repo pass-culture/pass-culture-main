@@ -11,7 +11,7 @@ const passwordInput = Selector('#user-password')
 const passwordInputError = Selector('#user-password-error')
 const newsletterOkInput = Selector('#user-newsletter_ok')
 const publicNameInput = Selector('#user-publicName')
-const signInButton = Selector('.is-secondary')
+const signInButton = Selector('.is-secondary').withText("J'ai déjà un compte")
 const signUpButton = Selector('button.button.is-primary')
 const sirenInput = Selector('#user-siren')
 const sirenInputError = Selector('#user-siren-error')
@@ -20,7 +20,7 @@ fixture`01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
   .page`${ROOT_PATH + 'inscription'}`
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
-  await t.click(signInButton)
+  await t.click(signInButton).wait(500)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })

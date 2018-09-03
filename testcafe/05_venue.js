@@ -5,7 +5,7 @@ import { regularOfferer } from './helpers/roles'
 const adressInput = Selector('#venue-address')
 const backAnchor = Selector('a.back-button')
 const cityInput = Selector('#venue-city')
-const closeAnchor = Selector('button.close-button').withText('OK')
+const closeAnchor = Selector('button.close').withText('OK')
 
 const latitudeInput = Selector('#venue-latitude')
 const longitudeInput = Selector('#venue-longitude')
@@ -62,7 +62,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
     .expect(location.pathname)
     .match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
     .expect(notificationSuccess.innerText)
-    .eql('Lieu ajouté avec succès ! OK')
+    .eql('Lieu ajouté avec succès !\nOK\n')
 
   // close notification div
   await t
@@ -99,7 +99,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
       '\nUne entrée avec cet identifiant existe déjà dans notre base de données\n'
     )
     .expect(notificationError.innerText)
-    .eql('Formulaire non validé OK')
+    .eql('Formulaire non validé\nOK\n')
 
   // close notification div
   await t
@@ -122,7 +122,7 @@ test('Le code SIRET doit correspondre à un établissement de votre structure', 
       '\nLe code SIRET doit correspondre à un établissement de votre structure\n'
     )
     .expect(notificationError.innerText)
-    .eql('Formulaire non validé OK')
+    .eql('Formulaire non validé\nOK\n')
 })
 
 test("Le siret n'est pas valide", async t => {
