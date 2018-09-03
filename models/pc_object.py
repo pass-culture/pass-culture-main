@@ -52,11 +52,20 @@ def serialize(value, **options):
         return value
 
 
-def is_not_soft_deleted(attribute):
-    if issubclass(type(attribute), SoftDeletableMixin) and attribute.isSoftDeleted:
-        return False
-    else:
+def is_soft_deleted(object):
+    if issubclass(type(object), SoftDeletableMixin) and object.isSoftDeleted:
         return True
+    else:
+        return False
+
+def is_not_soft_deleted(object):
+    return not is_soft_deleted(object)
+
+
+def _check_not_soft_deleted(object):
+    if is_soft_deleted(object):
+        raise DeletedRecordException
+
 
 class PcObject():
     id = Column(BigInteger,
@@ -238,9 +247,12 @@ class PcObject():
             return PcObject.restize_global_error(e)
 
     def populateFromDict(self, dct, skipped_keys=[]):
+        _check_not_soft_deleted(self)
+
         data = dct.copy()
         if data.__contains__('id'):
             del data['id']
+
         cols = self.__class__.__table__.columns._data
         for key in data.keys():
             if (key=='deleted') or (key in skipped_keys):
@@ -268,6 +280,7 @@ class PcObject():
                                         key)
                 else:
                     setattr(self, key, value)
+
 
     @staticmethod
     def check_and_save(*objects):

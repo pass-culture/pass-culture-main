@@ -61,11 +61,13 @@ def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_populate_dict_with_is_soft_deleted_raises_DeletedRecordException(app):
+def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_from_offer(offerer, )
+    stock = create_stock_from_offer(offerer, create_event_offer(venue))
+    stock.isSoftDeleted = True
+    PcObject.check_and_save(stock)
     # When
     with pytest.raises(DeletedRecordException):
-        stock.populateFromDict({"isSoftDeleted": True})
+        stock.populateFromDict({"available": 5})
