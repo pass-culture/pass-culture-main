@@ -136,14 +136,22 @@ def create_recommendations_for_search(page=1, user=None, search=None):
         recommendation.offerId for recommendation in already_created_recommendations
     ]
     recommendations = []
+    recommendations_to_save = []
     for offer in offers:
-        if offer.id not in offer_ids_with_already_created_recommendations:
-            recommendation = _create_recommendation(user, offer)
-            recommendation.isFromSearch = True
-            PcObject.check_and_save(recommendation)
-        else:
+        if offer.id in offer_ids_with_already_created_recommendations:
+            # NOTE: these arrays are mapped like:
+            # offer_ids_with_already_created_recommendations [<offerId1>, <offerId2>,...]
+            # already_created_recommendations [<reco.offerId1>, <reco.offerId2>]
+            # so we can find the matching reco given the index in the offer ids array
             recommendation_index = offer_ids_with_already_created_recommendations.index(offer.id)
             recommendation = already_created_recommendations[recommendation_index]
+        else:
+            recommendation = _create_recommendation(user, offer)
+            recommendation.isFromSearch = True
+            recommendations_to_save.append(recommendation)
+
         recommendations.append(recommendation)
+
+    PcObject.check_and_save(*recommendations_to_save)
 
     return recommendations

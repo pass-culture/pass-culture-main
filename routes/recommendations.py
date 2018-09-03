@@ -31,6 +31,7 @@ from recommendations_engine import create_recommendations_for_discovery,\
                                    give_requested_recommendation_to_user,\
                                    RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
+from repository.recommendation_queries import find_all_read_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
