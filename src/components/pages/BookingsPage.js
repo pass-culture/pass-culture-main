@@ -8,7 +8,7 @@ import { bindActionCreators, compose } from 'redux'
 import { Link } from 'react-router-dom'
 import get from 'lodash.get'
 
-import BookingItem from '../BookingItem'
+import BookingItem from '../layout/BookingItem'
 import Main from '../layout/Main'
 import {
   selectSoonBookings,

@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
-import BookingItem from '../BookingItem'
+import BookingItem from '../layout/BookingItem'
 
 const getkey = index => `booking-item-${index}`
 

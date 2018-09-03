@@ -9,11 +9,11 @@ import { connect } from 'react-redux'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
-import Thumb from './layout/Thumb'
-import { getQueryURL } from '../helpers'
-import { THUMBS_URL } from '../utils/config'
-import { getTimezone } from '../utils/timezone'
-import { selectRecommendation } from '../selectors'
+import Thumb from './Thumb'
+import { getQueryURL } from '../../helpers'
+import { THUMBS_URL } from '../../utils/config'
+import { getTimezone } from '../../utils/timezone'
+import { selectRecommendation } from '../../selectors'
 
 const BookingItem = ({ booking, recommendation }) => {
   const token = get(booking, 'token')
