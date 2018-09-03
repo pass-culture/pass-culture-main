@@ -13,7 +13,7 @@ class SirenInput extends Component {
   }
 
   render() {
-    const { errors, fetchedName, value } = this.props
+    const { errors, fetchedName, readOnly, value } = this.props
 
     const $input = (
       <BasicInput
@@ -30,7 +30,9 @@ class SirenInput extends Component {
         {fetchedName ? (
           <div className="display-name">{fetchedName}</div>
         ) : (
-          value && !errors && <button className="button is-loading" />
+          value &&
+          !errors &&
+          !readOnly && <button className="button is-loading" />
         )}
       </div>
     )
