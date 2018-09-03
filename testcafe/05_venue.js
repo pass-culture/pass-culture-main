@@ -99,7 +99,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
       '\nUne entrée avec cet identifiant existe déjà dans notre base de données\n'
     )
     .expect(notificationError.innerText)
-    .eql('Formulaire non validé OK')
+    .eql('Formulaire non validé\nOK\n')
 
   // close notification div
   await t
@@ -122,7 +122,7 @@ test('Le code SIRET doit correspondre à un établissement de votre structure', 
       '\nLe code SIRET doit correspondre à un établissement de votre structure\n'
     )
     .expect(notificationError.innerText)
-    .eql('Formulaire non validé OK')
+    .eql('Formulaire non validé\nOK\n')
 })
 
 test("Le siret n'est pas valide", async t => {
