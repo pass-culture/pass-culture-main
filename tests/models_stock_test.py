@@ -4,7 +4,7 @@ from models import Stock, ApiErrors, PcObject
 from models.pc_object import DeletedRecordException
 from tests.conftest import clean_database
 from utils.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_event_offer, \
-    create_event_occurrence
+    create_event_occurrence, create_stock_from_offer
 
 
 @clean_database
@@ -65,7 +65,7 @@ def test_populate_dict_with_is_soft_deleted_raises_DeletedRecordException(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue)
+    stock = create_stock_from_offer(offerer, create_offer)
     # When
     with pytest.raises(DeletedRecordException):
         stock.populateFromDict({"isSoftDeleted": True})

@@ -12,7 +12,7 @@ from sqlalchemy import BigInteger, \
     Numeric, Boolean
 from sqlalchemy.orm import relationship
 
-from models import VersionedMixin
+from models.versioned_mixin import VersionedMixin
 from models.db import Model
 from models.event_occurrence import EventOccurrence
 from models.pc_object import PcObject

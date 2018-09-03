@@ -280,6 +280,15 @@ def create_stock_from_event_occurrence(offerer, event_occurrence, price=10, avai
     return stock
 
 
+def create_stock_from_offer(offerer, offer, price=10, available=10):
+    stock = Stock()
+    stock.offerer = offerer
+    stock.offer = offer
+    stock.price = price
+    stock.available = available
+    return stock
+
+
 def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50,
                                   booking_email='offer.booking.email@test.com'):
     stock = Stock()
@@ -314,12 +323,14 @@ def create_event(event_name='Test event', duration_minutes=60):
     return event
 
 
-def create_thing_offer(venue, thing_type='Book', thing_name='Test Book', media_urls='test/urls',
-                       author_name='Test Author', date_created=datetime.utcnow(),
-                       booking_email='booking.email@test.com'):
+def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
+                       thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author'):
     offer = Offer()
-    offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                               author_name=author_name)
+    if thing:
+        offer.thing = thing
+    else:
+        offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
+                                   author_name=author_name)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
@@ -342,7 +353,7 @@ def create_n_mixed_offers_with_same_venue(venue, n=10):
     offers = []
     for i in range(n // 2, 0, -1):
         date_created = datetime.utcnow() - timedelta(days=i)
-        offers.append(create_thing_offer(venue, thing_name='Thing Offer %s' % i, date_created=date_created))
+        offers.append(create_thing_offer(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
         offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
     return offers
 

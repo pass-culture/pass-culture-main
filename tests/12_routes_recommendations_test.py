@@ -4,9 +4,15 @@ from datetime import datetime
 
 import pytest
 from dateutil.parser import parse as parse_date
+from sqlalchemy import and_
+from sqlalchemy.orm import aliased
 
+from models import Recommendation, Offer, Stock, EventOccurrence, PcObject
+from tests.conftest import clean_database
 from utils.config import BLOB_SIZE
-from utils.test_utils import API_URL, req, req_with_auth
+from utils.test_utils import API_URL, req, req_with_auth, create_recommendation, create_event_offer, create_offerer, \
+    create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
+    create_thing_offer
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
@@ -251,3 +257,47 @@ def test_patch_recommendations_returns_is_clicked_true():
     # then
     assert r_update.status_code == 200
     assert r_update.json()['isClicked']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_query(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user = create_user()
+    event_occurrence1 = create_event_occurrence(offer)
+    event_occurrence2 = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence1)
+    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence2)
+    thing_offer1 = create_thing_offer(venue)
+    thing_offer2 = create_thing_offer(venue)
+    stock3 = create_stock_from_offer(offerer, thing_offer1)
+    stock4 = create_stock_from_offer(offerer, thing_offer2)
+    stock1.isSoftDeleted = True
+    stock3.isSoftDeleted = True
+    recommendation1 = create_recommendation(offer, user)
+    recommendation2 = create_recommendation(thing_offer1, user)
+    recommendation3 = create_recommendation(thing_offer2, user)
+    PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+
+
+    # When
+    query1 = Recommendation.query \
+        .join(Offer) \
+        .join(Stock) \
+        .filter_by(isSoftDeleted=False)
+    query2 = Recommendation.query \
+        .join(Offer) \
+        .join(EventOccurrence) \
+        .join(Stock) \
+        .filter_by(isSoftDeleted=False) \
+        .all()
+
+    # Then
+    recommendation_ids = [r.id for r in query1] + [r.id for r in query2]
+    assert recommendation1.id in recommendation_ids
+    assert recommendation2.id not in recommendation_ids
+    assert recommendation3.id in recommendation_ids
+
