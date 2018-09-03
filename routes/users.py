@@ -3,6 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
+from domain import password
 from domain.expenses import get_expenses
 from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
@@ -11,9 +12,9 @@ from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email, \
-                          subscribe_newsletter
+    subscribe_newsletter
 from utils.rest import expect_json_data, \
-                       login_or_api_key_required
+    login_or_api_key_required
 
 
 def is_pro_signup(json_user):
@@ -35,6 +36,17 @@ def patch_profile():
     current_user.populateFromDict(request.json)
     PcObject.check_and_save(current_user)
     return jsonify(current_user._asdict(include=USER_INCLUDES)), 200
+
+
+@app.route('/users/current/change-password', methods=['POST'])
+@login_required
+@expect_json_data
+def change_password():
+    json = request.get_json()
+    password.validate_request(json)
+    password.change_password(current_user, json.get('oldPassword'), json.get('newPassword'))
+    PcObject.check_and_save(current_user)
+    return '', 204
 
 
 @app.route("/users/signin", methods=["POST"])

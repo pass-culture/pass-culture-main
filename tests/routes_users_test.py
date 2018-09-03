@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from models import PcObject
+from models.db import db
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
@@ -510,3 +511,55 @@ def test_get_current_user_returns_expenses(app):
         'physical': {'max': 100, 'actual': 20},
         'digital': {'max': 200, 'actual': 0}
     }
+
+
+@clean_database
+@pytest.mark.standalone
+def test_change_password_changes_the_current_user_password(app):
+    # given
+    user = create_user(email='user@test.com', password='testpsswd')
+    PcObject.check_and_save(user)
+    auth = req_with_auth(user.email, user.clearTextPassword)
+    data = {'oldPassword': 'testpsswd', 'newPassword': 'n3wp4ssw0rd'}
+
+    # when
+    response = auth.post(API_URL + '/users/current/change-password', json=data)
+
+    # then
+    db.session.refresh(user)
+    assert user.checkPassword('n3wp4ssw0rd') is True
+    assert response.status_code == 204
+
+
+@clean_database
+@pytest.mark.standalone
+def test_change_password_returns_bad_request_if_old_password_is_missing(app):
+    # given
+    user = create_user(email='user@test.com', password='testpsswd')
+    PcObject.check_and_save(user)
+    auth = req_with_auth(user.email, user.clearTextPassword)
+    data = {'newPassword': 'n3wp4ssw0rd'}
+
+    # when
+    response = auth.post(API_URL + '/users/current/change-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['oldPassword'] == ['Ancien mot de passe manquant']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_change_password_returns_bad_request_if_old_password_is_missing(app):
+    # given
+    user = create_user(email='user@test.com', password='testpsswd')
+    PcObject.check_and_save(user)
+    auth = req_with_auth(user.email, user.clearTextPassword)
+    data = {'oldPassword': '0ldp4ssw0rd'}
+
+    # when
+    response = auth.post(API_URL + '/users/current/change-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['newPassword'] == ['Nouveau mot de passe manquant']
