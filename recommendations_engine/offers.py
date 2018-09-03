@@ -139,13 +139,7 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
 
     return roundrobin(offers, limit)
 
-def get_offers_for_recommendations_search(page=1, user=None, search=None):
-    # NOTE: the api signature is the same as get_offers_for_recommendations_discovery
-    # so we pass user here even if we don't need it yet, but maybe later
-    # for customized search results given the user state
-
-    # find all the possible offers
-    # compatible with the search query
+def get_offers_for_recommendations_search(page=1, search=None):
     offer_query = Offer.query
     if search is not None:
         offer_query = offer_query.outerjoin(Event)\
