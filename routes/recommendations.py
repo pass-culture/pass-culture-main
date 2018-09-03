@@ -30,6 +30,7 @@ from recommendations_engine import create_recommendations_for_discovery,\
                                    create_recommendations_for_search,\
                                    give_requested_recommendation_to_user,\
                                    RecommendationNotFoundException
+from repository.booking_queries import find_bookings_from_recommendation
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -44,17 +45,13 @@ from utils.search import get_search_filter,\
 @login_or_api_key_required
 def list_recommendations():
 
-    recommendations = create_recommendations_for_search(5, current_user, request.args.get('search'))
-
-    recommendation_query = Recommendation.query.filter(
-        Recommendation.id.in_([r.id for r in recommendations])
+    recommendations = create_recommendations_for_search(
+        request.args.get('page'),
+        current_user,
+        request.args.get('search')
     )
 
-    return handle_rest_get_list(Recommendation,
-                                include=RECOMMENDATION_INCLUDES,
-                                query=recommendation_query,
-                                page=request.args.get('page'),
-                                paginate=10)
+    return jsonify(_serialize_recommendations(recommendations)), 200
 
 @app.route('/recommendations/<recommendationId>', methods=['PATCH'])
 @login_required

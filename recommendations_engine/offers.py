@@ -139,7 +139,7 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
 
     return roundrobin(offers, limit)
 
-def get_offers_for_recommendations_search(limit = 3, user = None, search = None):
+def get_offers_for_recommendations_search(page=1, user=None, search=None):
     # NOTE: the api signature is the same as get_offers_for_recommendations_discovery
     # so we pass user here even if we don't need it yet, but maybe later
     # for customized search results given the user state
@@ -151,11 +151,11 @@ def get_offers_for_recommendations_search(limit = 3, user = None, search = None)
         offer_query = offer_query.outerjoin(Event)\
                                  .outerjoin(Thing)\
                                  .outerjoin(Venue)\
-                                 .filter(get_search_filter([Event, Thing, Venue], search))\
-                                 .limit(limit)
+                                 .filter(get_search_filter([Event, Thing, Venue], search))
     else:
-        offer_query = offer_query.order_by(func.random()) \
-                                 .limit(limit)
-    offers = offer_query.all()
+        offer_query = offer_query.order_by(func.random())
+
+    offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
+                        .items
 
     return offers
