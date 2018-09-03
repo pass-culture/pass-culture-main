@@ -4,14 +4,16 @@ import React, { Component } from 'react'
 import { formatSiren } from '../../utils/string'
 
 class SirenInput extends Component {
-  onChange = e => {
-    this.props.onChange(removeWhitespaces(e.target.value), {
+  onChange = event => {
+    event.persist()
+    this.props.onChange(removeWhitespaces(event.target.value), {
+      event,
       isSagaCalling: true,
     })
   }
 
   render() {
-    const { fetchedName, value } = this.props
+    const { errors, fetchedName, value } = this.props
 
     const $input = (
       <BasicInput
@@ -22,11 +24,14 @@ class SirenInput extends Component {
       />
     )
 
-    if (typeof fetchedName !== 'string') return $input
     return (
       <div className="with-display-name">
         {$input}
-        <div className="display-name">{fetchedName}</div>
+        {fetchedName ? (
+          <div className="display-name">{fetchedName}</div>
+        ) : (
+          value && !errors && <button className="button is-loading" />
+        )}
       </div>
     )
   }

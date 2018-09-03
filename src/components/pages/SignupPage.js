@@ -65,6 +65,7 @@ const SignupPage = ({ errors, sirenName }) => {
                     type="password"
                   />
                   <Field
+                    disabling={() => !sirenName}
                     name="siren"
                     label="SIREN"
                     sublabel="de la structure à rattacher"

@@ -90,7 +90,7 @@ const fromWatchSirenInput = sireType =>
     } catch (e) {
       console.error(e)
       yield put(
-        mergeErrors({
+        mergeErrors(name, {
           [sireType]: [
             `Impossible de vérifier le ${capitalize(sireType)} saisi.`,
           ],
