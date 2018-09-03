@@ -121,9 +121,9 @@ def _create_recommendation(user, offer, mediation=None):
     PcObject.check_and_save(recommendation)
     return recommendation
 
-def create_recommendations_for_search(limit = 5, user = None, search = None):
+def create_recommendations_for_search(page=1, user=None, search=None):
 
-    offers = get_offers_for_recommendations_search(limit, user, search)
+    offers = get_offers_for_recommendations_search(page, user, search)
 
     # now check that recommendations from these filtered offers
     # match with already build recommendations
