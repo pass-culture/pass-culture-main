@@ -1,0 +1,29 @@
+.offer-page {
+  ul.mediations-list {
+    list-style: none;
+    li {
+      display: inline-block;
+      height: 250px;
+      img {
+        max-height: 200px;
+      }
+      .field {
+        .field-body {
+          margin-left: auto;
+          margin-right: auto;
+          width: 90%;
+        }
+        .checkbox {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  .nb-dates {
+    color: $red;
+    font-weight: $weight-bold;
+    display: inline-block;
+    margin-right: 2rem;
+  }
+}

@@ -7,9 +7,9 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import MediationItem from '../items/MediationItem'
 import mediationsSelector from '../../selectors/mediations'
 import offerSelector from '../../selectors/offer'
-import { THUMBS_URL } from '../../utils/config'
 
 const mediationExplanation = `
   **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
@@ -24,14 +24,7 @@ const MediationManager = ({ mediations, offer }) => {
     <div className="box content has-text-centered">
       <ReactMarkdown source={mediationExplanation} className="section" />
       <ul className="mediations-list">
-        {mediations.map(m => (
-          <li key={m.id}>
-            <img
-              alt={`accroche-${m.id}`}
-              src={`${THUMBS_URL}/mediations/${m.id}`}
-            />
-          </li>
-        ))}
+        {mediations.map(m => <MediationItem key={m.id} mediation={m} />)}
       </ul>
       <p>
         {offer && (

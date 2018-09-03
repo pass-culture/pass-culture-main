@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import { API_URL, ROOT_PATH } from '../src/utils/config'
+import { ROOT_PATH } from '../src/utils/config'
 import { offererUser } from './helpers/users'
 
 const contactOkInput = Selector('#user-contact_ok')
@@ -53,7 +53,7 @@ test('Je créé un compte, je suis redirigé·e vers la page /structures', async
 fixture`01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
   .page`${ROOT_PATH + 'inscription'}`
 
-test('E-mail déjà présent dans la base et mot de passe invalide', async t => {
+test.skip('E-mail déjà présent dans la base et mot de passe invalide', async t => {
   await t
     .typeText(publicNameInput, offererUser.publicName)
     .typeText(emailInput, offererUser.email)
