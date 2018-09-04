@@ -56,12 +56,12 @@ class Offer(PcObject,
 
     @property
     def dateRange(self):
-        if self.thing:
-            return None
+        if self.thing or not self.eventOccurrences:
+            return tuple()
 
         start = min([occurrence.beginningDatetime for occurrence in self.eventOccurrences])
         end = max([occurrence.endDatetime for occurrence in self.eventOccurrences])
-        return [start, end]
+        return (start, end)
 
     @property
     def eventOrThing(self):

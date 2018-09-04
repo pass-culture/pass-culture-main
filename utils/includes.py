@@ -82,6 +82,7 @@ RECOMMENDATION_INCLUDES = [
     {
         "key": "offer",
         "sub_joins": [
+            "dateRange",
             "eventOrThing",
             "mediation",
             {
