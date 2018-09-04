@@ -55,9 +55,12 @@ def query_stocks(ts_query):
 
 
 def _cancel_bookings(all_bookings_with_soft_deleted_stocks):
+    soft_deleted_bookings = []
     for booking in all_bookings_with_soft_deleted_stocks:
         booking.isCancelled = True
-        PcObject.check_and_save(booking)
+        soft_deleted_bookings.append(booking)
+    if soft_deleted_bookings:
+        PcObject.check_and_save(*soft_deleted_bookings)
 
 
 @app.route('/stocks', methods=['GET'])
@@ -105,7 +108,7 @@ def create_stock():
 @expect_json_data
 def edit_stock(stock_id):
     updated_stock_dict = request.json
-    query =  Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
+    query = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
@@ -135,9 +138,9 @@ def edit_stock(stock_id):
 @login_or_api_key_required
 def delete_stock(id):
     stock = load_or_404(Stock, id)
-    offererId = stock.resolvedOffer.venue.managingOffererId
+    offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor,
-                                   offererId)
+                                   offerer_id)
     stock.isSoftDeleted = True
     PcObject.check_and_save(stock)
 

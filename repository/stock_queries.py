@@ -14,8 +14,6 @@ def find_stocks_with_possible_filters(filters, user):
     if 'offererId' in filters:
         query = query.filter(Stock.offererId == dehumanize(filters['offererId']))
         _check_offerer_user(query.first_or_404().offerer.query, user)
-    # PRICE
     if 'hasPrice' in filters and filters['hasPrice'].lower() == 'true':
         query = query.filter(Stock.price != None)
-    # RETURN
     return query

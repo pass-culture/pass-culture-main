@@ -29,7 +29,6 @@ def test_handle_rest_get_list_should_return_only_not_soft_deleted_stock(app):
     # When
     request = handle_rest_get_list(Stock)
     # Then
-    print(str(request[0].response))
     assert '"id":"{}"'.format(humanize(stock1.id)) not in str(request[0].response)
     assert '"id":"{}"'.format(humanize(stock2.id)) in str(request[0].response)
     assert '"id":"{}"'.format(humanize(stock3.id)) in str(request[0].response)

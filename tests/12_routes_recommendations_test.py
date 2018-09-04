@@ -285,7 +285,6 @@ def test_put_recommendation_does_not_return_soft_deleted_recommendation(app):
     response = req_with_auth('test@email.com', 'P@55w0rd').put(RECOMMENDATION_URL, json={})
 
     # Then
-    print(response.json())
     recommendation_ids = [r['id'] for r in (response.json())]
     assert humanize(recommendation1.id) in recommendation_ids
     assert humanize(recommendation2.id) not in recommendation_ids

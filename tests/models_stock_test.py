@@ -51,12 +51,10 @@ def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     PcObject.check_and_save(stock)
 
     # When
-    query = Stock.queryNotSoftDeleted().all()
-
-    print(query)
+    result = Stock.queryNotSoftDeleted().all()
 
     # Then
-    assert len(query) == 0
+    assert not result
 
 
 @clean_database

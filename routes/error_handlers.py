@@ -8,8 +8,3 @@ from models.api_errors import ApiErrors
 def restize_api_errors(e):
     print(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 400
-
-#
-# @app.errorhandler(CustomError)
-# def handle_custom_error(e):
-#     return '', 404

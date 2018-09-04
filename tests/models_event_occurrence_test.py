@@ -32,26 +32,6 @@ def test_beginning_datetime_cannot_be_after_end_datetime(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_stocks_attribute_should_return_list_of_all_linked_stocks(app):
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue)
-    event_occurrence = create_event_occurrence(offer)
-    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence)
-    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence)
-    stock3 = create_stock_from_event_occurrence(offerer, event_occurrence)
-    stock4 = create_stock_from_event_occurrence(offerer, event_occurrence)
-    PcObject.check_and_save(stock1, stock2, stock3, stock4)
-
-    # When
-    stocks = event_occurrence.stocks
-    # Then
-    assert stocks == [stock4, stock3, stock2, stock1]
-
-
-@pytest.mark.standalone
-@clean_database
 def test_soft_deleted_stocks_do_not_appear_in_asdict(app):
     # Given
     offerer = create_offerer()

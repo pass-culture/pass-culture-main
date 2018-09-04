@@ -52,21 +52,6 @@ def serialize(value, **options):
         return value
 
 
-def is_soft_deleted(object):
-    if issubclass(type(object), SoftDeletableMixin) and object.isSoftDeleted:
-        return True
-    else:
-        return False
-
-def is_not_soft_deleted(object):
-    return not is_soft_deleted(object)
-
-
-def _check_not_soft_deleted(object):
-    if is_soft_deleted(object):
-        raise DeletedRecordException
-
-
 class PcObject():
     id = Column(BigInteger,
                 primary_key=True,
@@ -131,7 +116,7 @@ class PcObject():
                             final_value = value
                         else:
                             final_value = refine(value, options.get('filters', {}))
-                        final_value = filter(is_not_soft_deleted, final_value)
+                        final_value = filter(lambda x: not x.is_soft_deleted(), final_value)
                         result[key] = list(
                             map(
                                 lambda attr: attr._asdict(
@@ -200,6 +185,13 @@ class PcObject():
                 api_errors.addError(key, 'doit être un nombre')
         return api_errors
 
+    def is_soft_deleted(self):
+        return issubclass(type(self), SoftDeletableMixin) and self.isSoftDeleted
+
+    def _check_not_soft_deleted(self):
+        if self.is_soft_deleted():
+                raise DeletedRecordException
+
     @staticmethod
     def restize_global_error(e):
         logger.error("UNHANDLED ERROR : ")
@@ -247,7 +239,7 @@ class PcObject():
             return PcObject.restize_global_error(e)
 
     def populateFromDict(self, dct, skipped_keys=[]):
-        _check_not_soft_deleted(self)
+        self._check_not_soft_deleted()
 
         data = dct.copy()
         if data.__contains__('id'):

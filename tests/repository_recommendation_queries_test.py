@@ -10,7 +10,7 @@ from utils.test_utils import create_recommendation, create_event_offer, create_o
 
 @clean_database
 @pytest.mark.standalone
-def test_query_with_union_all(app):
+def test_filter_out_recommendation_on_soft_deleted_stocks_returns_recos_with_at_least_one_not_soft_deleted_stock(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
