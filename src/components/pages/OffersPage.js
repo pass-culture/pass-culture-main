@@ -80,7 +80,7 @@ class OffersPage extends Component {
               <button type="submit" className="button is-primary is-outlined">
                 OK
               </button>{' '}
-              <button className="button is-secondary">
+              <button className="button is-secondary" disabled>
                 &nbsp;<Icon svg="ico-filter" />&nbsp;
               </button>
             </p>
