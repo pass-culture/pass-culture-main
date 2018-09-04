@@ -17,22 +17,32 @@ const COUNTER_POST_REGISTER = 'COUNTER_POST_REGISTER'
 const COUNTER_RECEIVE_REGISTER = 'COUNTER_RECEIVE_REGISTER'
 const COUNTER_FAIL_REGISTER = 'COUNTER_FAIL_REGISTER'
 
-const CounterState = ({ message, level, booking }) => (
-  <div>
-    <span className={level}>{message}</span>
+const DEFAULT_STATE = { state: COUNTER_WAIT, code: '', booking: null }
 
-    {booking && (
-      <ul>
-        <li>Identifiant : xxx</li>
-        <li>Offre: {booking.token}</li>
-        <li>Date de l'offre: xxx</li>
-      </ul>
-    )}
+const CounterState = ({ message, level, booking }) => (
+  <div className="counter-state">
+    <table className="booking-summary">
+      <tbody>
+        <tr>
+          <th>email :</th>
+          <td>{booking && 'xxx'}</td>
+        </tr>
+        <tr>
+          <th>Offre :</th>
+          <td>{booking && booking.token}</td>
+        </tr>
+        <tr>
+          <th>Date de l'offre :</th>
+          <td>{booking && 'xxx'}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div className={`state ${level}`}>{message}</div>
   </div>
 )
 
 CounterState.defaultProps = {
-  level: 'Success',
+  level: 'success',
 }
 
 CounterState.propTypes = {
@@ -46,7 +56,7 @@ class CounterPage extends Component {
     super(props)
 
     this.actions = bindActionCreators({ requestData }, props.dispatch)
-    this.state = { state: COUNTER_WAIT, code: '', booking: null }
+    this.state = DEFAULT_STATE
   }
 
   getBookingDataFor(code) {
@@ -81,7 +91,7 @@ class CounterPage extends Component {
   }
 
   handleCodeChange(event) {
-    const code = event.target.value
+    const code = event.target.value.toUpperCase()
     this.setState({ code })
 
     if (code === '') {
@@ -105,6 +115,10 @@ class CounterPage extends Component {
     this.postRegistrationFor(code)
   }
 
+  handleReset() {
+    this.setState(DEFAULT_STATE)
+  }
+
   componentDidMount() {
     this.input.focus()
   }
@@ -120,10 +134,11 @@ class CounterPage extends Component {
           </p>
         </div>
 
-        <div className="section">
+        <div className="section form">
           <p className="subtitle is-medium has-text-weight-bold">
             Scannez un code-barres, ou saisissez-le ci-dessous:
           </p>
+
           <input
             className="input is-undefined"
             type="text"
@@ -131,15 +146,18 @@ class CounterPage extends Component {
             name="code"
             onChange={this.handleCodeChange.bind(this)}
             maxLength="6"
+            value={this.state.code}
           />
 
-          {this.state.state === COUNTER_RECEIVE_VERIFICATION && (
-            <button
-              type="submit"
-              onClick={() => this.handleCodeRegistration(this.state.code)}>
-              OK
-            </button>
-          )}
+          <span className="buttonContainer">
+            {this.state.state === COUNTER_RECEIVE_VERIFICATION && (
+              <button
+                type="submit"
+                onClick={() => this.handleCodeRegistration(this.state.code)}>
+                OK
+              </button>
+            )}
+          </span>
 
           {this.state.state === COUNTER_WAIT && (
             <CounterState message="Saissez un code" />
@@ -165,7 +183,7 @@ class CounterPage extends Component {
           {this.state.state === COUNTER_RECEIVE_VERIFICATION && (
             <CounterState
               booking={this.state.booking}
-              message="Booking vérifié !"
+              message="Booking vérifié, cliquez sur OK pour enregistrer"
             />
           )}
 
@@ -186,16 +204,18 @@ class CounterPage extends Component {
           {this.state.state === COUNTER_FAIL_REGISTER && (
             <CounterState
               booking={this.state.booking}
+              level="error"
               message="Echec de l'enregistrement (problème technique)"
             />
           )}
-        </div>
 
-        <NavLink
-          className="button is-primary is-medium is-pulled-right"
-          to="/offres">
-          Terminer
-        </NavLink>
+          <input
+            type="reset"
+            className="button is-primary is-medium is-pulled-right"
+            onClick={() => this.handleReset()}
+            value="Terminer"
+          />
+        </div>
       </Main>
     )
   }
