@@ -2,6 +2,7 @@
 import os
 from datetime import datetime
 from pprint import pformat
+
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
@@ -50,7 +51,7 @@ def send_final_booking_recap_email(stock):
 
 
 def send_booking_recap_emails(stock, booking):
-    email = make_booking_recap_email(stock, booking)
+    email = make_offerer_booking_recap_email_after_user_action(booking)
 
     recipients = ['passculture@beta.gouv.fr']
     if stock.resolvedOffer.bookingEmail:
@@ -112,30 +113,34 @@ def make_final_recap_email_for_stock_with_event(stock):
     }
 
 
-def make_booking_recap_email(stock, booking):
+def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=False):
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
+    stock_bookings = [b for b in booking.stock.bookings if not b.isCancelled]
+    stock_name = booking.stock.resolvedOffer.eventOrThing.name
 
-    if stock.eventOccurrence is None:
-        stock_name = stock.offer.thing.name
+    if booking.stock.eventOccurrence is None:
         email_subject = '[Reservations] Nouvelle reservation pour {}'.format(stock_name)
         formatted_datetime = None
     else:
-        date_in_tz = _get_event_datetime(stock)
+        date_in_tz = _get_event_datetime(booking.stock)
         formatted_datetime = format_datetime(date_in_tz)
-        stock_name = stock.eventOccurrence.offer.event.name
-        email_subject = '[Reservations] Nouvelle reservation pour {} - {}'.format(stock_name,
+        email_subject = '[Reservations] Nouvelle reservation pour {} le {}'.format(stock_name,
                                                                                    formatted_datetime)
 
-    email_html = render_template('offerer_booking_recap_email.html',
-                                 number_of_bookings=len(stock.bookings),
+    if is_cancellation:
+        template_name = 'offerer_cancellation_by_user_email.html'
+    else:
+        template_name = 'offerer_booking_recap_email.html'
+    email_html = render_template(template_name,
+                                 number_of_bookings=len(stock_bookings),
                                  stock_name=stock_name,
                                  stock_date_time=formatted_datetime,
                                  venue_name=venue.name,
                                  venue_address=venue.address,
                                  venue_postal_code=venue.postalCode,
                                  venue_city=venue.city,
-                                 stock_bookings=stock.bookings,
+                                 stock_bookings=stock_bookings,
                                  user_name=user.publicName,
                                  user_email=user.email)
 
@@ -166,7 +171,8 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
     return {
         'FromName': 'Pass Culture',
         'FromEmail': 'passculture@beta.gouv.fr',
-        'Subject': "%s - inscription / rattachement PRO à valider : %s" % (user_offerer.user.departementCode, offerer.name),
+        'Subject': "%s - inscription / rattachement PRO à valider : %s" % (
+        user_offerer.user.departementCode, offerer.name),
         'Html-part': email_html,
         'To': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'
     }

@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
-from unittest.mock import patch
+from unittest import mock
+from unittest.mock import patch, Mock
 
 import pytest
 import requests as req
 
 from models.db import db
 from models import Booking, Offerer, PcObject
+from tests.conftest import clean_database, mocked_mail
 from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import humanize
@@ -929,6 +931,5 @@ def test_user_cancelling_booking_calls_send_user_driven_cancellation_email_to_us
 
         # Then
         send_user_driven_cancellation_email_to_user.assert_called_once()
-        print(send_user_driven_cancellation_email_to_user.call_args)
         assert False
 

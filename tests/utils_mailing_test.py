@@ -4,12 +4,14 @@ from unittest.mock import Mock, MagicMock, patch
 import pytest
 from bs4 import BeautifulSoup
 
+from models import PcObject
 from tests.conftest import clean_database, mocked_mail
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
-    make_booking_recap_email, make_final_recap_email_for_stock_with_event, write_object_validation_email, \
-    maybe_send_offerer_validation_email, MailServiceException, send_booking_recap_emails, \
+    make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
+    write_object_validation_email, maybe_send_offerer_validation_email, MailServiceException, send_booking_recap_emails, \
     send_final_booking_recap_email, make_reset_password_email, send_reset_password_email
+
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer
@@ -285,6 +287,10 @@ def test_make_user_booking_thing_recap_email_should_have_standard_body_cancellat
     assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
+def make_booking_recap_email(stock, booking):
+    pass
+
+
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
@@ -299,7 +305,7 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
     expected_email_soup = BeautifulSoup(HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL, 'html.parser')
 
     # When
-    recap_email = make_booking_recap_email(stock, booking)
+    recap_email = make_offerer_booking_recap_email_after_user_action(booking)
 
     # Then
     recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
@@ -318,7 +324,7 @@ def test_booking_recap_email_subject_should_have_defined_structure(app):
     booking = create_booking(user, stock, venue, None)
 
     # When
-    recap_email = make_booking_recap_email(stock, booking)
+    recap_email = make_offerer_booking_recap_email_after_user_action(booking)
 
     # Then
     assert recap_email['Subject'] == SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL
@@ -464,7 +470,7 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
     stock.bookings = [booking_1, booking_2]
 
     # When
-    recap_email = make_booking_recap_email(stock, booking_2)
+    recap_email = make_offerer_booking_recap_email_after_user_action(booking_2)
 
     # Then
     recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
@@ -510,7 +516,7 @@ def test_offerer_booking_recap_email_book(app):
     booking.token = '56789'
 
     # When
-    recap_email = make_booking_recap_email(stock, booking)
+    recap_email = make_offerer_booking_recap_email_after_user_action(booking)
 
     # Then
     recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
@@ -865,3 +871,51 @@ def test_send_reset_password_email_raises_an_exception_if_mailjet_failed(app):
     # when
     with pytest.raises(MailServiceException):
         send_reset_password_email(user)
+
+
+@clean_database
+def test_make_offerer_booking_user_cancellation_email(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    thing_offer = create_thing_offer(venue)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
+    user_1 = create_user('Test1', 93, 'test1@email.com')
+    user_2 = create_user('Test2', 93, 'test2@email.com')
+    booking_1 = create_booking(user_1, stock, venue, fill_stock_bookings=False)
+    booking_2 = create_booking(user_2, stock, venue, fill_stock_bookings=False)
+    booking_2.isCancelled = True
+    PcObject.check_and_save(booking_1, booking_2)
+    expected_html = '''
+        <html>
+            <body>
+                <p>Cher partenaire Pass Culture,</p>
+                <p><strong>Test2</strong> (test2@email.com) vient d'annuler sa réservation.</p>
+                <p>
+                Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
+                </p>
+                <table>
+                    <tr>
+                        <th>Nom ou pseudo</th>
+                        <th>Email</th>
+                        <th>Code réservation</th>
+                    </tr> 
+
+                    <tr>
+                        <td>Test1</td>
+                        <td>test1@email.com</td>
+                        <td>{token}</td>
+                    </tr>
+
+                </table>
+
+            </body>
+        </html>'''.format(token=booking_1.token)
+    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
+
+    # When
+    recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+
+    # Then
+    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
+    assert recap_email_soup.prettify() == expected_html_soup.prettify()

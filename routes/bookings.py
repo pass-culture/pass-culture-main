@@ -2,9 +2,12 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.booking_emails import send_user_driven_cancellation_email_to_user
+from domain.booking_emails import send_user_driven_cancellation_email_to_user, \
+    send_user_driven_cancellation_email_to_offerer, send_offerer_driven_cancellation_email_to_user, \
+    send_offerer_driven_cancellation_email_to_offerer
 from domain.expenses import get_expenses
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
+from repository import booking_queries
 from models.pc_object import serialize
 from repository import booking_queries
 from utils.human_ids import dehumanize, humanize
@@ -82,19 +85,28 @@ def create_booking():
 @app.route('/bookings/<booking_id>', methods=['DELETE'])
 @login_required
 def cancel_booking(booking_id):
-    booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
+    booking = booking_queries.find_by_id(dehumanize(booking_id))
 
-    if not booking.user == current_user \
-            and not current_user.hasRights(RightsType.editor,
-                                           booking.stock.resolvedOffer.venue.managingOffererId):
+    is_user_cancellation = booking.user == current_user
+    booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
+    is_offerer_cancellation = current_user.hasRights(RightsType.editor, booking_offerer)
+
+    if not is_user_cancellation and not is_offerer_cancellation:
         return "Vous n'avez pas le droit d'annuler cette réservation", 403
 
     booking.isCancelled = True
     PcObject.check_and_save(booking)
 
-    send_user_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
+    if is_user_cancellation:
+        send_user_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
+        send_user_driven_cancellation_email_to_offerer(booking, app.mailjet_client.send.create)
+
+    if is_offerer_cancellation:
+        send_offerer_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
+        send_offerer_driven_cancellation_email_to_offerer(booking, app.mailjet_client.send.create)
 
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
+
 
 @app.route('/bookings/token/<token>', methods=["GET"])
 def get_booking_by_token(token):
