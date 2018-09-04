@@ -90,7 +90,6 @@ class Booking extends React.PureComponent {
   }
 
   handleRequestFail = (state, action) => {
-    // TODO -> ajouter une gestion des erreurs
     const nextState = {
       bookedPayload: false,
       isErrored: action,
