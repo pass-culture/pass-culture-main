@@ -1,12 +1,13 @@
 import verso, {
   flip,
+  flipUnflippable,
   makeDraggable,
   makeUndraggable,
   unFlip,
   CLOSE_VERSO,
-  LOCATION_CHANGE,
   MAKE_DRAGGABLE,
   MAKE_UNDRAGGABLE,
+  SHOW_UNFLIPPABLE_VERSO,
   SHOW_VERSO,
 } from '../verso'
 
@@ -79,27 +80,18 @@ describe('src | reducers | verso  ', () => {
     })
   })
 
-  describe('When action.type is LOCATION_CHANGE', () => {
+  describe('When action.type is SHOW_UNFLIPPABLE_VERSO', () => {
     it('should return correct update state', () => {
       // given
       const action = {
-        type: LOCATION_CHANGE,
-        payload: {
-          pathname: '/decouverte/AH7Q/AU',
-          search: '',
-          hash: '#AM',
-          state: undefined,
-          key: '0upzvj',
-        },
+        type: SHOW_UNFLIPPABLE_VERSO,
       }
 
       // when
       const queriesReducer = verso(state, action)
       const expected = {
-        draggable: true,
-        isActive: false,
-        isFlipped: false,
-        unFlippable: false,
+        isFlipped: true,
+        unFlippable: true,
       }
 
       // then
@@ -114,6 +106,18 @@ describe('src | reducers | verso  ', () => {
         const action = flip({})
         const expected = {
           type: SHOW_VERSO,
+        }
+
+        // then
+        expect(action).toMatchObject(expected)
+      })
+    })
+    describe('flipUnflippable', () => {
+      it('should return correct action type', () => {
+        // when
+        const action = flipUnflippable({})
+        const expected = {
+          type: SHOW_UNFLIPPABLE_VERSO,
         }
 
         // then
