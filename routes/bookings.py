@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.booking_emails import send_user_driven_cancellation_email_to_user
 from domain.expenses import get_expenses
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
 from models.pc_object import serialize
@@ -90,6 +91,8 @@ def cancel_booking(booking_id):
 
     booking.isCancelled = True
     PcObject.check_and_save(booking)
+
+    send_user_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
 
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
 

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 import requests as req
@@ -909,3 +910,25 @@ def test_patch_booking_by_token_when_booking_already_validated(app):
     assert response.json()['booking'] == ['Cette réservation a déjà été validée']
     db.session.refresh(booking)
     assert booking.isValidated == True
+
+
+@clean_database
+@pytest.mark.standalone
+def test_user_cancelling_booking_calls_send_user_driven_cancellation_email_to_user(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(user, deposit_date, amount=500)
+    booking = create_booking(user)
+    PcObject.check_and_save(user, deposit, booking)
+
+    with patch('routes.bookings.send_user_driven_cancellation_email_to_user') as send_user_driven_cancellation_email_to_user:
+        # When
+        r = req_with_auth(user.email, user.clearTextPassword) \
+            .delete(API_URL + '/bookings/' + humanize(booking.id))
+
+        # Then
+        send_user_driven_cancellation_email_to_user.assert_called_once()
+        print(send_user_driven_cancellation_email_to_user.call_args)
+        assert False
+
