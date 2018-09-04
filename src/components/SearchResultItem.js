@@ -5,7 +5,6 @@ import get from 'lodash.get'
 import moment from 'moment'
 import { capitalize, Icon } from 'pass-culture-shared'
 import React from 'react'
-// import { connect } from 'react-redux'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
@@ -13,7 +12,6 @@ import Thumb from './layout/Thumb'
 import { getQueryURL } from '../helpers'
 import { THUMBS_URL } from '../utils/config'
 import { getTimezone } from '../utils/timezone'
-// import { selectRecommendation } from '../selectors'
 
 const formatDate = (date, tz) =>
   capitalize(
@@ -26,9 +24,10 @@ const getRecommendationDateString = (offer, tz) => {
   if (offer.eventId === null) {
     return 'permanent'
   }
+
   return `du
-  ${formatDate(offer.eventOrThing.dateRange[0], tz)} au ${formatDate(
-    offer.eventOrThing.dateRange[1],
+  ${formatDate(offer.dateRange[0], tz)} au ${formatDate(
+    offer.dateRange[1],
     tz
   )}`
 }
@@ -72,7 +71,8 @@ const SearchResultItem = ({ recommendation }) => {
                 </Dotdotdot>
               </h5>,
               <span>
-                {getRecommendationDateString(recommendation.offer, tz)}
+                {recommendation.offer &&
+                  getRecommendationDateString(recommendation.offer, tz)}
               </span>,
             ]}
           </div>
