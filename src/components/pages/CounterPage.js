@@ -1,5 +1,6 @@
 import { requestData, withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -16,90 +17,97 @@ const COUNTER_POST_REGISTER = 'COUNTER_POST_REGISTER'
 const COUNTER_RECEIVE_REGISTER = 'COUNTER_RECEIVE_REGISTER'
 const COUNTER_FAIL_REGISTER = 'COUNTER_FAIL_REGISTER'
 
-class CounterPage extends Component {
-  constructor(props) {
-    super(props)
+const CounterState = ({ message, level, booking }) => (
+  <div>
+    <span className={level}>{message}</span>
 
-    const { dispatch } = props
-
-    this.actions = bindActionCreators({ requestData }, dispatch)
-
-    this.state = {
-      state: COUNTER_WAIT,
-      code: '',
-      booking: null,
-    }
-  }
-
-  receiveVerification(status, booking) {
-    this.setState({
-      state: COUNTER_RECEIVE_VERIFICATION,
-      booking,
-    })
-  }
-
-  getVerification(code) {
-    this.actions.requestData('GET', `/bookings/AE`, {
-      key: 'bookings',
-      handleSuccess: (state, request) => {
-        this.receiveVerification(200, request.data)
-      },
-      handleFail: (state, request) => {
-        this.setState({ state: COUNTER_FAIL_VERIFICATION })
-        console.log(request.errors)
-      },
-    })
-  }
-
-  handleCodeChange(event) {
-    const value = event.target.value
-
-    this.setState({ code: value })
-
-    if (value === '') {
-      return this.setState({ state: COUNTER_WAIT })
-    }
-
-    if (value.match(/[^a-z0-9]/i) !== null) {
-      return this.setState({ state: COUNTER_INVALID })
-    }
-
-    if (value.length < 6) {
-      return this.setState({ state: COUNTER_TYPE })
-    }
-
-    this.setState({ state: COUNTER_GET_VERIFICATION })
-    return this.getVerification(value)
-  }
-
-  handleCodeRegistration(code) {
-    this.setState({ state: COUNTER_POST_REGISTER })
-    this.actions.requestData('POST', '/some/url', {
-      body: {
-        code,
-      },
-      handleSuccess: (state, request) => {
-        this.setState({ state: COUNTER_RECEIVE_REGISTER })
-      },
-      handleFail: (state, request) => {
-        this.setState({ state: COUNTER_FAIL_REGISTER })
-      },
-    })
-  }
-
-  componentDidMount() {
-    this.element.focus()
-  }
-
-  bookingDetail = booking => (
-    <div>
+    {booking && (
       <ul>
         <li>Identifiant : xxx</li>
         <li>Offre: {booking.token}</li>
         <li>Date de l'offre: xxx</li>
       </ul>
-    </div>
-  )
+    )}
+  </div>
+)
+
+CounterState.defaultProps = {
+  level: 'Success',
+}
+
+CounterState.propTypes = {
+  message: PropTypes.string.isRequired,
+  level: PropTypes.string,
+  booking: PropTypes.object,
+}
+
+class CounterPage extends Component {
+  constructor(props) {
+    super(props)
+
+    this.actions = bindActionCreators({ requestData }, props.dispatch)
+    this.state = { state: COUNTER_WAIT, code: '', booking: null }
+  }
+
+  getBookingDataFor(code) {
+    // @TODO : Fix url with real endpoint
+    this.actions.requestData('GET', `/bookings/AE`, {
+      key: 'bookings',
+      handleSuccess: (state, request) => {
+        this.setState({
+          state: COUNTER_RECEIVE_VERIFICATION,
+          booking: request.data,
+        })
+      },
+      handleFail: (state, request) => {
+        this.setState({ state: COUNTER_FAIL_VERIFICATION })
+        console.log(request.errors) // @TODO something more usefull...
+      },
+    })
+  }
+
+  postRegistrationFor(code) {
+    // @TODO : Fix url with real endpoint
+    this.actions.requestData('POST', '/some/url', {
+      body: { code },
+      handleSuccess: (state, request) => {
+        this.setState({ state: COUNTER_RECEIVE_REGISTER })
+      },
+      handleFail: (state, request) => {
+        this.setState({ state: COUNTER_FAIL_REGISTER })
+        console.log(request.errors) // @TODO something more usefull...
+      },
+    })
+  }
+
+  handleCodeChange(event) {
+    const code = event.target.value
+    this.setState({ code })
+
+    if (code === '') {
+      return this.setState({ state: COUNTER_WAIT })
+    }
+
+    if (code.match(/[^a-z0-9]/i) !== null) {
+      return this.setState({ state: COUNTER_INVALID })
+    }
+
+    if (code.length < 6) {
+      return this.setState({ state: COUNTER_TYPE })
+    }
+
+    this.setState({ state: COUNTER_GET_VERIFICATION })
+    return this.getBookingDataFor(code)
+  }
+
+  handleCodeRegistration(code) {
+    this.setState({ state: COUNTER_POST_REGISTER })
+    this.postRegistrationFor(code)
+  }
+
+  componentDidMount() {
+    this.input.focus()
+  }
 
   render() {
     return (
@@ -119,9 +127,10 @@ class CounterPage extends Component {
           <input
             className="input is-undefined"
             type="text"
-            ref={el => (this.element = el)}
+            ref={element => (this.input = element)}
             name="code"
             onChange={this.handleCodeChange.bind(this)}
+            maxLength="6"
           />
 
           {this.state.state === COUNTER_RECEIVE_VERIFICATION && (
@@ -132,51 +141,53 @@ class CounterPage extends Component {
             </button>
           )}
 
-          {this.state.state === COUNTER_WAIT && <div>Saissez un code</div>}
+          {this.state.state === COUNTER_WAIT && (
+            <CounterState message="Saissez un code" />
+          )}
+
           {this.state.state === COUNTER_TYPE && (
-            <div>
-              caractères restants: {6 - this.state.code.length}
-              /6
-            </div>
+            <CounterState
+              message={`caractères restants: ${6 - this.state.code.length}/6`}
+            />
           )}
 
           {this.state.state === COUNTER_INVALID && (
-            <div>
-              Le code ne doit contenir que des caractères alphanumériques (de A
-              à Z et de 0 à 9)
-            </div>
+            <CounterState
+              level="error"
+              message="Caractères valides : de A à Z et de 0 à 9"
+            />
           )}
 
           {this.state.state === COUNTER_GET_VERIFICATION && (
-            <div>Vérification...</div>
+            <CounterState message="Vérification..." />
           )}
 
           {this.state.state === COUNTER_RECEIVE_VERIFICATION && (
-            <div>
-              <span>Booking vérifié !</span>
-              {this.bookingDetail(this.state.booking)}
-            </div>
+            <CounterState
+              booking={this.state.booking}
+              message="Booking vérifié !"
+            />
           )}
 
           {this.state.state === COUNTER_POST_REGISTER && (
-            <div>
-              <span>Enregistrement en cours...</span>
-              {this.bookingDetail(this.state.booking)}
-            </div>
+            <CounterState
+              booking={this.state.booking}
+              message="Enregistrement en cours..."
+            />
           )}
 
           {this.state.state === COUNTER_RECEIVE_REGISTER && (
-            <div>
-              <span>Enregistrement réussi!</span>
-              {this.bookingDetail(this.state.booking)}
-            </div>
+            <CounterState
+              booking={this.state.booking}
+              message="Enregistrement réussi!"
+            />
           )}
 
           {this.state.state === COUNTER_FAIL_REGISTER && (
-            <div>
-              <span>Echec de l'enregistrement (problème technique)</span>
-              {this.bookingDetail(this.state.booking)}
-            </div>
+            <CounterState
+              booking={this.state.booking}
+              message="Echec de l'enregistrement (problème technique)"
+            />
           )}
         </div>
 
