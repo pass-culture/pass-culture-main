@@ -15,71 +15,78 @@ import {
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { ROOT_PATH } from '../../utils/config'
 
-const DeckNavigation = ({
-  isFinished,
-  headerColor,
-  recommendation,
-  flipHandler,
-  handleGoNext,
-  handleGoPrevious,
-  transitionTimeout,
-}) => {
-  const { distance, offer } = recommendation || {}
-  const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
-  const color = headerColor || '#000'
-  const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${color} 30%,${color} 100%)`
-  return (
-    <div id="deck-navigation" style={{ background: backgroundGradient }}>
-      <div
-        className="controls flex-columns wrap-3"
-        style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
-      >
-        {/* previous button */}
-        {(handleGoPrevious && (
-          <button
-            type="button"
-            className="button before"
-            onClick={handleGoPrevious}
-          >
-            <Icon svg="ico-prev-w-group" alt="Précédent" />
-          </button>
-        )) || <span />}
-        {/* flip button */}
-        {(flipHandler && (
-          <div className="flex-rows">
+class DeckNavigation extends React.PureComponent {
+  render() {
+    const {
+      isFinished,
+      headerColor,
+      recommendation,
+      flipHandler,
+      handleGoNext,
+      handleGoPrevious,
+      transitionTimeout,
+    } = this.props
+    const { distance, offer } = recommendation || {}
+    const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
+    const color = headerColor || '#000'
+    const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${color} 30%,${color} 100%)`
+    return (
+      <div id="deck-navigation" style={{ background: backgroundGradient }}>
+        <div
+          className="controls flex-columns wrap-3"
+          style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
+        >
+          {/* previous button */}
+          {(handleGoPrevious && (
             <button
               type="button"
-              onClick={flipHandler}
-              onDragLeave={flipHandler}
-              className="button to-recto"
+              className="button before"
+              onClick={handleGoPrevious}
             >
-              <Icon svg="ico-slideup-w" alt="Plus d'infos" />
+              <Icon svg="ico-prev-w-group" alt="Précédent" />
             </button>
-            <div
-              className="clue"
-              style={{ transition: `opacity ${transitionTimeout}ms` }}
-            >
-              <Finishable finished={isFinished}>
-                <Price value={priceRange} />
-                <div className="separator">
-                  {offer ? '\u00B7' : ' '}
-                </div>
-                <div>
-                  {offer ? distance : ' '}
-                </div>
-              </Finishable>
+          )) || <span />}
+          {/* flip button */}
+          {(flipHandler && (
+            <div className="flex-rows">
+              <button
+                type="button"
+                onClick={flipHandler}
+                onDragLeave={flipHandler}
+                className="button to-recto"
+              >
+                <Icon svg="ico-slideup-w" alt="Plus d'infos" />
+              </button>
+              <div
+                className="clue"
+                style={{ transition: `opacity ${transitionTimeout}ms` }}
+              >
+                <Finishable finished={isFinished}>
+                  <Price value={priceRange} />
+                  <div className="separator">
+                    {offer ? '\u00B7' : ' '}
+                  </div>
+                  <div>
+                    {offer ? distance : ' '}
+                  </div>
+                </Finishable>
+              </div>
             </div>
-          </div>
-        )) || <span />}
-        {/* next button */}
-        {(handleGoNext && (
-          <button type="button" className="button after" onClick={handleGoNext}>
-            <Icon svg="ico-next-w-group" alt="Suivant" />
-          </button>
-        )) || <span />}
+          )) || <span />}
+          {/* next button */}
+          {(handleGoNext && (
+            <button
+              type="button"
+              className="button after"
+              onClick={handleGoNext}
+            >
+              <Icon svg="ico-next-w-group" alt="Suivant" />
+            </button>
+          )) || <span />}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 DeckNavigation.defaultProps = {
