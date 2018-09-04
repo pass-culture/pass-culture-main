@@ -177,6 +177,14 @@ Vous pourrez alors utiliser l'url ngrok webapp pour dans votre navigateur androi
 
 ## Deploy
 
+Le deploy passe par Netligy<br>
+Il est obligatoire d'installer le module [netlify](https://www.npmjs.com/package/netlify)
+
+```bash
+npm i -g netlify
+```
+
+
 ### FRONTEND WEB
 
 Pour déployer une nouvelle version web, par exemple en staging:
