@@ -21,7 +21,10 @@ const SignupPage = ({ errors, sirenName }) => {
                 <h1 className="title is-spaced is-1">Créez votre compte</h1>
                 <h2 className="subtitle is-2">
                   Nous vous invitons à prendre connaissance des{' '}
-                  <a href="/BrochurePCPro.pdf" className="is-secondary">
+                  <a
+                    className="is-secondary"
+                    href="/BrochurePCPro.pdf"
+                    target="_blank">
                     modalités de fonctionnement en cliquant ici
                   </a>{' '}
                   avant de renseigner les champs suivants.

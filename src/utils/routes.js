@@ -6,7 +6,6 @@ import CounterPage from '../components/pages/CounterPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import MediationsPage from '../components/pages/MediationsPage'
-import NotFoundPage from '../components/pages/NotFoundPage'
 import OffersPage from '../components/pages/OffersPage'
 import OfferPage from '../components/pages/OfferPage'
 import OffererPage from '../components/pages/OffererPage'
@@ -19,121 +18,98 @@ import VenuePage from '../components/pages/VenuePage'
 
 const routes = [
   {
-    exact: true,
     path: '/',
     render: () => <Redirect to="/connexion" />,
   },
   {
-    exact: true,
+    component: AccoutingPage,
     path: '/comptabilite',
     title: 'Comptabilité',
-    render: () => <AccoutingPage />,
   },
   {
-    exact: true,
+    component: SigninPage,
     path: '/connexion',
     title: 'Connexion',
-    render: () => <SigninPage />,
   },
   {
-    exact: true,
+    component: CounterPage,
     path: '/guichet',
     title: 'Guichet',
-    render: () => <CounterPage />,
   },
   {
-    exact: true,
+    component: SignupPage,
     path: '/inscription',
     title: 'Inscription',
-    render: () => <SignupPage />,
   },
   {
-    exact: true,
+    component: HomePage,
     path: '/accueil',
     title: 'Accueil',
-    render: () => <HomePage />,
   },
   {
-    exact: true,
+    component: OfferersPage,
     path: '/structures',
     title: 'Structures',
-    render: () => <OfferersPage />,
   },
   {
-    exact: true,
+    component: OffererPage,
     path: '/structures/:offererId',
     title: 'Structure',
-    render: () => <OffererPage />,
   },
   {
-    exact: true,
+    component: VenuePage,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Lieu',
-    render: () => <VenuePage />,
   },
   {
-    exact: true,
+    component: VenuePage,
     path: '/structures/:offererId/lieux/:venueId/fournisseurs/:venueProviderId',
     title: 'Lieu',
-    render: () => <VenuePage />,
   },
   {
-    exact: true,
+    component: OffersPage,
     path: '/structures/:offererId/lieux/:venueId/offres',
     title: 'Offres',
-    render: () => <OffersPage />,
   },
   {
-    exact: true,
+    component: OffersPage,
     path: '/offres',
     title: 'Offres',
-    render: () => <OffersPage />,
   },
   {
-    exact: true,
+    component: OfferPage,
     path: '/offres/:offerId',
     title: 'Offre',
-    render: () => <OfferPage />,
   },
   {
-    exact: true,
+    component: MediationPage,
     path: '/offres/:offerId/accroches/:mediationId',
     title: 'Accroche',
-    render: () => <MediationPage />,
   },
   {
-    exact: true,
+    component: OfferPage,
     path: '/structures/:offererId/offres/:offerId',
     title: 'Offres',
-    render: () => <OfferPage />,
   },
   {
-    exact: true,
+    component: OfferPage,
     path: '/structures/:offererId/lieux/:venueId/offres/:offerId',
     title: 'Offres',
-    render: () => <OfferPage />,
   },
   {
-    exact: true,
+    component: MediationsPage,
     path: '/offres/:offerId/accroches',
     title: 'Accroches',
-    render: () => <MediationsPage />,
   },
   {
-    exact: true,
+    component: ProfilePage,
     path: '/profil',
     title: 'Profil',
-    render: () => <ProfilePage />,
   },
   {
-    exact: true,
+    component: TermsPage,
     path: '/mentions-legales',
     title: 'Mentions Légales',
-    render: () => <TermsPage />,
-  },
-  {
-    title: 'Page non trouvée',
-    render: () => <NotFoundPage />,
   },
 ]
 

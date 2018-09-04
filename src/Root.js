@@ -1,15 +1,10 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import {
-  BrowserRouter,
-  matchPath,
-  Redirect,
-  Route,
-  Switch,
-} from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
+import NotMatchPage from './components/pages/NotMatchPage'
 import persistor from './utils/persistor'
 import routes from './utils/routes'
 import store from './utils/store'
@@ -21,29 +16,13 @@ const Root = () => {
         <BrowserRouter>
           <App>
             <Switch>
-              {routes.map((route, index) => (
-                <Route
-                  key={index}
-                  {...route}
-                  render={match => {
-                    document.title =
-                      (route.title ? `${route.title} - ` : '') + 'Pass Culture'
-                    return route.render(match)
-                  }}
-                />
-              ))}
-              <Route
-                path="/:active?"
-                render={props => {
-                  const matchedRoute = routes.find(route =>
-                    matchPath(`/${props.match.params.active}`, route)
-                  )
-                  return (
-                    props.location.pathname !== '/' &&
-                    !matchedRoute && <Redirect to="/" />
-                  )
-                }}
-              />
+              {routes.map(route => {
+                const isExact =
+                  typeof route.exact !== 'undefined' ? route.exact : true
+                // first props, last overrides
+                return <Route {...route} key={route.path} exact={isExact} />
+              })}
+              <Route component={NotMatchPage} />
             </Switch>
           </App>
         </BrowserRouter>
