@@ -79,7 +79,7 @@ class Offer(PcObject,
 
     @property
     def lastStock(self):
-        query = Stock.query
+        query = Stock.queryNotSoftDeleted()
         if self.eventId:
             query = query.join(EventOccurrence)
         return query.join(Offer) \
@@ -97,4 +97,4 @@ class Offer(PcObject,
             query = query.filter(Offer.thingId != None) \
                 .join(aliased(EventOccurrence))
         stock_alias = aliased(Stock)
-        return query.join(stock_alias), stock_alias
+        return query.join(stock_alias).filter_by(isSoftDeleted=False), stock_alias

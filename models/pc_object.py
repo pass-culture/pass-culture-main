@@ -20,12 +20,17 @@ from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
 from models.db import db
+from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
 
 DUPLICATE_KEY_ERROR_CODE = '23505'
 NOT_FOUND_KEY_ERROR_CODE = '23503'
 OBLIGATORY_FIELD_ERROR_CODE = '23502'
+
+
+class DeletedRecordException(Exception):
+    pass
 
 def serialize(value, **options):
     if isinstance(value, Enum):
@@ -111,6 +116,7 @@ class PcObject():
                             final_value = value
                         else:
                             final_value = refine(value, options.get('filters', {}))
+                        final_value = filter(lambda x: not x.is_soft_deleted(), final_value)
                         result[key] = list(
                             map(
                                 lambda attr: attr._asdict(
@@ -179,6 +185,13 @@ class PcObject():
                 api_errors.addError(key, 'doit être un nombre')
         return api_errors
 
+    def is_soft_deleted(self):
+        return issubclass(type(self), SoftDeletableMixin) and self.isSoftDeleted
+
+    def _check_not_soft_deleted(self):
+        if self.is_soft_deleted():
+                raise DeletedRecordException
+
     @staticmethod
     def restize_global_error(e):
         logger.error("UNHANDLED ERROR : ")
@@ -226,9 +239,12 @@ class PcObject():
             return PcObject.restize_global_error(e)
 
     def populateFromDict(self, dct, skipped_keys=[]):
+        self._check_not_soft_deleted()
+
         data = dct.copy()
         if data.__contains__('id'):
             del data['id']
+
         cols = self.__class__.__table__.columns._data
         for key in data.keys():
             if (key=='deleted') or (key in skipped_keys):
@@ -256,6 +272,7 @@ class PcObject():
                                         key)
                 else:
                     setattr(self, key, value)
+
 
     @staticmethod
     def check_and_save(*objects):

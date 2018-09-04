@@ -179,8 +179,8 @@ def req_with_auth(email=None, password=None):
     return request
 
 
-def create_booking(user, stock=None, venue=None, recommendation=None,
-                   is_cancellation=False, quantity=1, date_modified=datetime.utcnow()):
+def create_booking(user, stock=None, venue=None, recommendation=None, is_cancellation=False, quantity=1,
+                   date_modified=datetime.utcnow(), fill_stock_bookings=True):
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -200,7 +200,7 @@ def create_booking(user, stock=None, venue=None, recommendation=None,
     else:
         offer = create_thing_offer(venue)
         booking.recommendation = create_recommendation(offer, user)
-    if not is_cancellation:
+    if not is_cancellation and fill_stock_bookings:
         stock.bookings = [booking]
     return booking
 
@@ -267,7 +267,24 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
     stock.eventOccurrence.offer.venue = venue
-    stock.isActive = True
+    stock.available = available
+    return stock
+
+
+def create_stock_from_event_occurrence(offerer, event_occurrence, price=10, available=10):
+    stock = Stock()
+    stock.offerer = offerer
+    stock.eventOccurrence = event_occurrence
+    stock.price = price
+    stock.available = available
+    return stock
+
+
+def create_stock_from_offer(offerer, offer, price=10, available=10):
+    stock = Stock()
+    stock.offerer = offerer
+    stock.offer = offer
+    stock.price = price
     stock.available = available
     return stock
 
@@ -283,7 +300,6 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
         stock.offer = create_thing_offer(venue)
     stock.offer.bookingEmail = booking_email
     stock.offer.venue = venue
-    stock.isActive = True
     stock.available = available
     return stock
 
@@ -307,12 +323,14 @@ def create_event(event_name='Test event', duration_minutes=60):
     return event
 
 
-def create_thing_offer(venue, thing_type='Book', thing_name='Test Book', media_urls='test/urls',
-                       author_name='Test Author', date_created=datetime.utcnow(),
-                       booking_email='booking.email@test.com'):
+def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
+                       thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author'):
     offer = Offer()
-    offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                               author_name=author_name)
+    if thing:
+        offer.thing = thing
+    else:
+        offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
+                                   author_name=author_name)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
@@ -335,7 +353,7 @@ def create_n_mixed_offers_with_same_venue(venue, n=10):
     offers = []
     for i in range(n // 2, 0, -1):
         date_created = datetime.utcnow() - timedelta(days=i)
-        offers.append(create_thing_offer(venue, thing_name='Thing Offer %s' % i, date_created=date_created))
+        offers.append(create_thing_offer(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
         offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
     return offers
 

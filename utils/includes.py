@@ -12,7 +12,7 @@ OFFERER_INCLUDES = [
 ]
 
 EVENT_OCCURRENCE_INCLUDES = [
-    'stock'
+    'stocks'
 ]
 
 EVENT_INCLUDES = [

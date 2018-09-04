@@ -44,7 +44,7 @@ def create_booking():
     except ApiErrors as api_errors:
         return jsonify(api_errors.errors), 400
 
-    stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
+    stock = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id)).first()
     managing_offerer = stock.resolvedOffer.venue.managingOfferer
 
     try:
