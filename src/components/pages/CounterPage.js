@@ -160,7 +160,7 @@ class CounterPage extends Component {
           </span>
 
           {this.state.state === COUNTER_WAIT && (
-            <CounterState message="Saissez un code" />
+            <CounterState message="Saisissez un code" />
           )}
 
           {this.state.state === COUNTER_TYPE && (
