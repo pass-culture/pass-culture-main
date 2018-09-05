@@ -61,6 +61,10 @@ def test_post_offerers_create_an_offerer(app):
     assert response.status_code == 201
     assert response.json()['siren'] == '418166096'
     assert response.json()['name'] == 'Test Offerer'
+    virtual_venues = list(filter(lambda v: v['isVirtual'],
+                                 response.json()['managedVenues']))
+    assert len(virtual_venues) == 1
+
 
 
 @pytest.mark.standalone

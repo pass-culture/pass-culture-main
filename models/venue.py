@@ -63,7 +63,7 @@ class Venue(PcObject,
                                    foreign_keys=[managingOffererId],
                                    backref='managedVenues')
 
-    bookingEmail = Column(String(120), nullable=False)
+    bookingEmail = Column(String(120), nullable=True)
 
     address = Column(String(200), nullable=True)
 
