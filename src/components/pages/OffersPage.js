@@ -2,6 +2,7 @@ import {
   assignData,
   Icon,
   InfiniteScroller,
+  lastTrackerMoment,
   requestData,
   resolveIsNew,
   showModal,
@@ -23,7 +24,13 @@ import { offerNormalizer } from '../../utils/normalizers'
 
 class OffersPage extends Component {
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const { goToNextSearchPage, querySearch, requestData, types } = this.props
+    const {
+      comparedTo,
+      goToNextSearchPage,
+      querySearch,
+      requestData,
+      types,
+    } = this.props
     requestData('GET', `offers?${querySearch}`, {
       handleSuccess: (state, action) => {
         handleSuccess(state, action)
@@ -31,7 +38,7 @@ class OffersPage extends Component {
       },
       handleFail,
       normalizer: offerNormalizer,
-      resolve: resolveIsNew,
+      resolve: datum => resolveIsNew(datum, 'dateCreated', comparedTo),
     })
     types.length === 0 && requestData('GET', 'types')
   }
@@ -174,6 +181,7 @@ export default compose(
     (state, ownProps) => {
       const queryParams = searchSelector(state, ownProps.location.search)
       return {
+        lastTrackerMoment: lastTrackerMoment(state, 'offers'),
         offers: offersSelector(
           state,
           queryParams.offererId,
