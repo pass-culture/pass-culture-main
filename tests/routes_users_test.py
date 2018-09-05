@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject
 from models.db import db
 from models.offerer import Offerer
@@ -563,3 +564,63 @@ def test_change_password_returns_bad_request_if_old_password_is_missing(app):
     # then
     assert response.status_code == 400
     assert response.json()['newPassword'] == ['Nouveau mot de passe manquant']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_reset_password_records_a_new_password_token_if_email_is_known(app):
+    # given
+    data = {'email': 'bobby@test.com'}
+    user = create_user(email='bobby@test.com')
+    PcObject.check_and_save(user)
+
+    # when
+    response = req.post(API_URL + '/users/reset-password', json=data)
+
+    # then
+    db.session.refresh(user)
+    assert response.status_code == 204
+    assert len(user.resetPasswordToken) == RESET_PASSWORD_TOKEN_LENGTH
+    now = datetime.utcnow()
+    assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))
+
+
+@clean_database
+@pytest.mark.standalone
+def test_reset_password_returns_no_content_if_email_is_unknown(app):
+    # given
+    data = {'email': 'unknown.user@test.com'}
+
+    # when
+    response = req.post(API_URL + '/users/reset-password', json=data)
+
+    # then
+    assert response.status_code == 204
+
+
+@clean_database
+@pytest.mark.standalone
+def test_reset_password_returns_bad_request_if_email_is_empty(app):
+    # given
+    data = {'email': ''}
+
+    # when
+    response = req.post(API_URL + '/users/reset-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['email'] == ['L\'email renseigné est vide']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_reset_password_returns_bad_request_if_email_is_missing(app):
+    # given
+    data = {}
+
+    # when
+    response = req.post(API_URL + '/users/reset-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['email'] == ['L\'email est manquant']

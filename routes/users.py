@@ -1,10 +1,12 @@
 """users routes"""
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain import password
 from domain.expenses import get_expenses
+from domain.password import validate_reset_request
 from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -46,6 +48,20 @@ def change_password():
     password.validate_request(json)
     password.change_password(current_user, json.get('oldPassword'), json.get('newPassword'))
     PcObject.check_and_save(current_user)
+    return '', 204
+
+
+@app.route("/users/reset-password", methods=['POST'])
+@expect_json_data
+def reset_password():
+    validate_reset_request(request)
+    email = request.get_json()['email']
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        password.generate_reset_token(user)
+        PcObject.check_and_save(user)
+
     return '', 204
 
 

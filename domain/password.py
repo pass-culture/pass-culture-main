@@ -1,4 +1,10 @@
+import secrets
+import string
+from datetime import datetime, timedelta
+
 from models import ApiErrors
+
+RESET_PASSWORD_TOKEN_LENGTH = 10
 
 
 def change_password(user, old_password, new_password):
@@ -25,3 +31,25 @@ def validate_request(json):
     if 'newPassword' not in json:
         errors.addError('newPassword', 'Nouveau mot de passe manquant')
         raise errors
+
+
+def generate_reset_token(user):
+    token = ''.join(_random_alphanum_char() for _ in range(RESET_PASSWORD_TOKEN_LENGTH))
+    user.resetPasswordToken = token
+    user.resetPasswordTokenValidityLimit = datetime.utcnow() + timedelta(hours=24)
+
+
+def validate_reset_request(request):
+    if 'email' not in request.get_json():
+        errors = ApiErrors()
+        errors.addError('email', 'L\'email est manquant')
+        raise errors
+
+    if not request.get_json()['email']:
+        errors = ApiErrors()
+        errors.addError('email', 'L\'email renseigné est vide')
+        raise errors
+
+
+def _random_alphanum_char():
+    return secrets.choice(string.ascii_uppercase + string.digits)
