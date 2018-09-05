@@ -297,7 +297,7 @@ def test_get_recommendations_returns_one_recommendation_found_from_search():
 
     # then
     assert 'Training' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0].isFromSearch == False
+    assert recommendations[0].search == 'Training'
 
     # get
     response = req_with_auth().get(RECOMMENDATION_URL + '?search=Rencontre', json={})
@@ -305,4 +305,4 @@ def test_get_recommendations_returns_one_recommendation_found_from_search():
 
     # then
     assert 'Rencontre' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0].isFromSearch == True
+    assert recommendations[0].search == 'Rencontre'

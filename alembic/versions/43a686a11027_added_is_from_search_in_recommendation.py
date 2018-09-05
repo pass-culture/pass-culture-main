@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('recommendation', sa.Column('isFromSearch', sa.Boolean(), nullable=False, server_default=expression.false()))
+    op.add_column('recommendation', sa.Column('search', sa.VARCHAR(300), nullable=True))
 
 def downgrade():
     pass

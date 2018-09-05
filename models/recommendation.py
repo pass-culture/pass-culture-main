@@ -88,7 +88,5 @@ class Recommendation(PcObject, Model):
                      server_default=expression.false(),
                      default=False)
 
-    isFromSearch = Column(Boolean,
-                     nullable=False,
-                     server_default=expression.false(),
-                     default=False)
+    search = Column(String(300),
+                    nullable=True)

@@ -126,11 +126,12 @@ def create_recommendations_for_search(page=1, user=None, search=None):
     offers = get_offers_for_recommendations_search(page, search)
 
     # now check that recommendations from these filtered offers
-    # match with already build recommendations
+    # match with already built recommendations coming from the same search
     offer_ids = [offer.id for offer in offers]
     already_created_recommendations = Recommendation.query.filter(
         Recommendation.userId == user.id,
-        Recommendation.offerId.in_(offer_ids)
+        Recommendation.offerId.in_(offer_ids),
+        Recommendation.search == search
     )
     offer_ids_with_already_created_recommendations = [
         recommendation.offerId for recommendation in already_created_recommendations
@@ -147,7 +148,7 @@ def create_recommendations_for_search(page=1, user=None, search=None):
             recommendation = already_created_recommendations[recommendation_index]
         else:
             recommendation = _create_recommendation(user, offer)
-            recommendation.isFromSearch = True
+            recommendation.search = search
             recommendations_to_save.append(recommendation)
 
         recommendations.append(recommendation)

@@ -146,8 +146,6 @@ def get_offers_for_recommendations_search(page=1, search=None):
                                  .outerjoin(Thing)\
                                  .outerjoin(Venue)\
                                  .filter(get_search_filter([Event, Thing, Venue], search))
-    else:
-        offer_query = offer_query.order_by(func.random())
 
     offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
                         .items
