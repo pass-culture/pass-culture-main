@@ -20,7 +20,6 @@ from validation.bookings import check_has_stock_id, check_has_quantity, check_ex
 @app.route('/bookings', methods=['GET'])
 @login_required
 def get_bookings():
-    print('in booking route')
     bookings = Booking.query.filter_by(userId=current_user.id).all()
     return jsonify([booking._asdict(include=BOOKING_INCLUDES)
                     for booking in bookings]), 200
