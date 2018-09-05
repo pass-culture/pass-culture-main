@@ -19,31 +19,29 @@ import Main from '../layout/Main'
 
 class AccoutingPage extends Component {
   fetchBookings(handleSuccess = () => {}, handleFail = () => {}) {
-    this.props.requestData(
-      'GET',
-      `/offerers/${this.props.offerer.id}/bookings`,
-      {
+    const { dispatch, goToNextSearchPage, querySearch } = this.props
+    dispatch(
+      requestData('GET', `bookings?${querySearch}`, {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
-          this.props.goToNextSearchPage()
+          goToNextSearchPage()
         },
-        key: 'bookings',
         handleFail,
         normalizer: BookingNormalizer,
-        isMergingArray: false,
-      }
+      })
     )
   }
 
   fetchOfferers(handleSuccess = () => {}, handleFail = () => {}) {
-    this.props.requestData('GET', '/offerers', {
-      handleSuccess: (state, action) => {
-        handleSuccess(state, action)
-        this.fetchBookings()
-      },
-      key: 'offerers',
-      handlefail: () => {},
-    })
+    this.props.dispatch(
+      requestData('GET', 'offerers', {
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          this.fetchBookings()
+        },
+        handleFail,
+      })
+    )
   }
 
   handleOffererFilter() {}
@@ -72,7 +70,7 @@ class AccoutingPage extends Component {
         name="accounting"
         handleDataRequest={this.handleDataRequest.bind(this)}>
         <div className="section">
-          <h1 className="main-title">Vos Bookings</h1>
+          <h1 className="main-title">Vos Réservations</h1>
         </div>
         <form className="section" onSubmit={handleSearchChange} />
         <div className="section">
@@ -165,8 +163,6 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = { requestData }
-
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
@@ -178,8 +174,5 @@ export default compose(
       offererId: null,
     },
   }),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps)
 )(AccoutingPage)
