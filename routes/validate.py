@@ -7,7 +7,7 @@ from models import ApiErrors, \
 
 
 @app.route("/validate", methods=["GET"])
-def validate_offerer():
+def validate():
     token = request.args.get('token')
 
     if token is None:
