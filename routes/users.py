@@ -6,10 +6,11 @@ from flask_login import current_user, login_required, logout_user, login_user
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain import password
 from domain.expenses import get_expenses
-from domain.password import validate_reset_request
+from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request
 from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
+from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
@@ -53,10 +54,10 @@ def change_password():
 
 @app.route("/users/reset-password", methods=['POST'])
 @expect_json_data
-def reset_password():
+def post_reset_password():
     validate_reset_request(request)
     email = request.get_json()['email']
-    user = User.query.filter_by(email=email).first()
+    user = find_user_by_email(email)
 
     if not user:
         return '', 204
@@ -69,6 +70,23 @@ def reset_password():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
+    return '', 204
+
+
+@app.route("/users/new-password", methods=['POST'])
+@expect_json_data
+def post_new_password():
+    validate_new_password_request(request)
+    user = find_user_by_reset_password_token(request.get_json()['token'])
+
+    if not user:
+        errors = ApiErrors()
+        errors.addError('token', 'Votre lien de changement de mot de passe est invalide.')
+        raise errors
+
+    check_reset_token_validity(user)
+    user.setPassword(request.get_json()['newPassword'])
+    PcObject.check_and_save(user)
     return '', 204
 
 

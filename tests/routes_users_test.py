@@ -568,7 +568,7 @@ def test_change_password_returns_bad_request_if_old_password_is_missing(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_reset_password_records_a_new_password_token_if_email_is_known(app):
+def test_post_reset_password_token_records_a_new_password_token_if_email_is_known(app):
     # given
     data = {'email': 'bobby@test.com'}
     user = create_user(email='bobby@test.com')
@@ -587,7 +587,7 @@ def test_reset_password_records_a_new_password_token_if_email_is_known(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_reset_password_returns_no_content_if_email_is_unknown(app):
+def test_post_reset_password_token_returns_no_content_if_email_is_unknown(app):
     # given
     data = {'email': 'unknown.user@test.com'}
 
@@ -600,7 +600,7 @@ def test_reset_password_returns_no_content_if_email_is_unknown(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_reset_password_returns_bad_request_if_email_is_empty(app):
+def test_post_reset_password_token_returns_bad_request_if_email_is_empty(app):
     # given
     data = {'email': ''}
 
@@ -614,7 +614,7 @@ def test_reset_password_returns_bad_request_if_email_is_empty(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_reset_password_returns_bad_request_if_email_is_missing(app):
+def test_post_reset_password_token_returns_bad_request_if_email_is_missing(app):
     # given
     data = {}
 
@@ -624,3 +624,128 @@ def test_reset_password_returns_bad_request_if_email_is_missing(app):
     # then
     assert response.status_code == 400
     assert response.json()['email'] == ['L\'email est manquant']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_new_password_changes_the_user_password(app):
+    # given
+    user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+    PcObject.check_and_save(user)
+
+    data = {
+        'token': 'KL89PBNG51',
+        'newPassword': 'n3w_p455w0rd'
+    }
+
+    # when
+    response = req.post(API_URL + '/users/new-password', json=data)
+
+    # then
+    db.session.refresh(user)
+    assert response.status_code == 204
+    assert user.checkPassword('n3w_p455w0rd')
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_new_password_remove_the_reset_token_and_the_validity_date(app):
+    # given
+    user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+    PcObject.check_and_save(user)
+
+    data = {
+        'token': 'KL89PBNG51',
+        'newPassword': 'n3w_p455w0rd'
+    }
+
+    # when
+    req.post(API_URL + '/users/new-password', json=data)
+
+    # then
+    db.session.refresh(user)
+    assert user.resetPasswordToken is None
+    assert user.resetPasswordTokenValidityLimit is None
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_new_password_returns_bad_request_if_the_token_is_outdated(app):
+    # given
+    user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51',
+                       reset_password_token_validity_limit=datetime.utcnow() - timedelta(days=2))
+    PcObject.check_and_save(user)
+
+    data = {
+        'token': 'KL89PBNG51',
+        'newPassword': 'n3w_p455w0rd'
+    }
+
+    # when
+    response = req.post(API_URL + '/users/new-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['token'] == [
+        'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.'
+    ]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_new_password_returns_bad_request_if_the_token_is_unknown(app):
+    # given
+    user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+    PcObject.check_and_save(user)
+
+    data = {
+        'token': 'AZER1QSDF2',
+        'newPassword': 'n3w_p455w0rd'
+    }
+
+    # when
+    response = req.post(API_URL + '/users/new-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['token'] == [
+        'Votre lien de changement de mot de passe est invalide.'
+    ]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_new_password_returns_bad_request_if_the_token_is_missing(app):
+    # given
+    user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+    PcObject.check_and_save(user)
+
+    data = {'newPassword': 'n3w_p455w0rd'}
+
+    # when
+    response = req.post(API_URL + '/users/new-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['token'] == [
+        'Votre lien de changement de mot de passe est invalide.'
+    ]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_new_password_returns_bad_request_if_the_new_password_is_missing(app):
+    # given
+    user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+    PcObject.check_and_save(user)
+
+    data = {'token': 'KL89PBNG51'}
+
+    # when
+    response = req.post(API_URL + '/users/new-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['newPassword'] == [
+        'Vous devez renseigner un nouveau mot de passe.'
+    ]

@@ -51,5 +51,24 @@ def validate_reset_request(request):
         raise errors
 
 
+def validate_new_password_request(request):
+    if 'token' not in request.get_json():
+        errors = ApiErrors()
+        errors.addError('token', 'Votre lien de changement de mot de passe est invalide.')
+        raise errors
+
+    if 'newPassword' not in request.get_json():
+        errors = ApiErrors()
+        errors.addError('newPassword', 'Vous devez renseigner un nouveau mot de passe.')
+        raise errors
+
+
+def check_reset_token_validity(user):
+    if datetime.utcnow() > user.resetPasswordTokenValidityLimit:
+        errors = ApiErrors()
+        errors.addError('token', 'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.')
+        raise errors
+
+
 def _random_alphanum_char():
     return secrets.choice(string.ascii_uppercase + string.digits)

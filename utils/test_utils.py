@@ -234,7 +234,8 @@ def create_booking_for_event(amount=50, quantity=1, user=None, isCancelled=False
 
 
 def create_user(public_name='John Doe', departement_code='93', email='john.doe@test.com', can_book_free_offers=True,
-                password='totallysafepsswd', validation_token=None, is_admin=False, reset_password_token=None):
+                password='totallysafepsswd', validation_token=None, is_admin=False, reset_password_token=None,
+        reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24)):
     user = User()
     user.publicName = public_name
     user.email = email
@@ -244,6 +245,7 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     user.setPassword(password)
     user.isAdmin = is_admin
     user.resetPasswordToken = reset_password_token
+    user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
     return user
 
 

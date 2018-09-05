@@ -48,7 +48,7 @@ class User(PcObject,
                      server_default=expression.false(),
                      default=False)
 
-    resetPasswordToken = Column(String(10))
+    resetPasswordToken = Column(String(10), unique=True)
 
     resetPasswordTokenValidityLimit = Column(DateTime)
 
@@ -100,6 +100,8 @@ class User(PcObject,
         self.clearTextPassword = newpass
         self.password = bcrypt.hashpw(newpass.encode('utf-8'),
                                       bcrypt.gensalt())
+        self.resetPasswordToken = None
+        self.resetPasswordTokenValidityLimit = None
 
     def hasRights(self, rights, offerer_id):
         if self.isAdmin:

@@ -16,7 +16,7 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('user', sa.Column('resetPasswordToken', sa.VARCHAR(10), nullable=True))
+    op.add_column('user', sa.Column('resetPasswordToken', sa.VARCHAR(10), unique=True, nullable=True))
     op.add_column('user', sa.Column('resetPasswordTokenValidityLimit', sa.DateTime, nullable=True))
 
 
