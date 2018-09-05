@@ -1,4 +1,4 @@
-import { requestData, withLogin } from 'pass-culture-shared'
+import { requestData, withLogin, Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
@@ -42,12 +42,16 @@ const CounterState = ({ message, level, booking }) => (
         </tr>
       </tbody>
     </table>
-    <div className={`state ${level}`}>{message}</div>
+    <div className={`state ${level}`}>
+      {level === 'success' && <Icon svg="picto-validation" />}
+      {level === 'error' && <Icon svg="picto-echec" />}
+      <span>{message}</span>
+    </div>
   </div>
 )
 
 CounterState.defaultProps = {
-  level: 'success',
+  level: 'pending',
 }
 
 CounterState.propTypes = {
@@ -199,6 +203,7 @@ class CounterPage extends Component {
             <CounterState
               booking={this.state.booking}
               message="Enregistrement réussi!"
+              level="success"
             />
           )}
 
