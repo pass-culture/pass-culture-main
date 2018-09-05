@@ -154,6 +154,7 @@ elif [[ "$CMD" == "psql-file" ]]; then
   COLUMNS=${COLUMNS:-''};
   RUN='docker exec -t `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
 elif [[ "$CMD" == "psql" ]]; then
+	COLUMNS=${COLUMNS:-''};
   if [[ "$ENV" == "production" ]]; then
 		scalingo -a pass-culture-api pgsql-console
 		exit
