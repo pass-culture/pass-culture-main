@@ -1,5 +1,6 @@
 /* eslint-disabler */
 
+import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -9,10 +10,10 @@ import {
   assignData,
   Icon,
   InfiniteScroller,
-  Logger,
   requestData,
   showModal,
   withSearch,
+  pluralize,
 } from 'pass-culture-shared'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
@@ -29,33 +30,30 @@ Recherche
 )
 
 const renderPageFooter = () => {
-  const footerProps = { borderTop: true }
+  const footerProps = { borderTop: true, colored: true }
   return <Footer {...footerProps} />
 }
 
 class SearchPage extends Component {
-  componentDidMount() {
-    Logger.log('DiscoveryPage ---> componentDidMount')
-  }
-
-  componentWillUnmount() {
-    Logger.log('DiscoveryPage ---> componentWillUnmount')
-  }
-
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const { goToNextSearchPage, querySearch, requestData } = this.props // eslint-disable-line no-shadow
-    requestData('GET', `recommendations?${querySearch}`, {
-      handleFail,
-      handleSuccess: (state, action) => {
-        handleSuccess(state, action)
-        goToNextSearchPage()
-      },
-    })
+    const {
+      goToNextSearchPage,
+      location,
+      querySearch,
+      requestData, // eslint-disable-line no-shadow
+    } = this.props
+    if (get(location, 'search.length'))
+      requestData('GET', `recommendations?${querySearch}`, {
+        handleFail,
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          goToNextSearchPage()
+        },
+      })
   }
 
   render() {
     const { handleSearchChange, queryParams, recommendations } = this.props
-
     const { search } = queryParams || {}
 
     return (
@@ -64,15 +62,11 @@ class SearchPage extends Component {
         header={renderPageHeader}
         name="search"
         footer={renderPageFooter}
-        redBg
       >
         <div>
           <form className="section" onSubmit={handleSearchChange}>
-            <label className="label" id="search" htmlFor="search">
-              Rechercher une offre :
-            </label>
-            <div className="field is-grouped">
-              <p className="control is-expanded">
+            <div className="field has-addons">
+              <div className="control is-expanded">
                 <input
                   id="search"
                   className="input search-input"
@@ -80,25 +74,28 @@ class SearchPage extends Component {
                   type="text"
                   defaultValue={search}
                 />
-              </p>
-              <p className="control">
-                <button type="submit" className="button is-primary is-outlined">
-                  OK
+              </div>
+              <div className="control">
+                <button className="button is-rounded is-medium" type="submit">
+                  Chercher
                 </button>
-                {' '}
-                <button type="button" className="button is-secondary">
-                  &nbsp;
-                  <Icon svg="ico-filter" />
-                  &nbsp;
-                </button>
-              </p>
+              </div>
+              <button type="button" className="button is-secondary">
+                &nbsp;
+                <Icon svg="ico-filter" />
+                &nbsp;
+              </button>
             </div>
           </form>
         </div>
         <InfiniteScroller
-          className="offers-list main-list"
+          className="recommendations-list main-list"
           handleLoadMore={this.handleDataRequest}
         >
+          <h2>
+            {search &&
+              `"${search}" : ${pluralize(recommendations.length, 'résultats')}`}
+          </h2>
           {recommendations.map(o => (
             <SearchResultItem key={o.id} recommendation={o} />
           ))}
@@ -115,6 +112,7 @@ SearchPage.defaultProps = {
 SearchPage.propTypes = {
   goToNextSearchPage: PropTypes.func.isRequired,
   handleSearchChange: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired,
   queryParams: PropTypes.object.isRequired,
   querySearch: PropTypes.string,
   recommendations: PropTypes.array.isRequired,
