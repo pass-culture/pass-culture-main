@@ -33,7 +33,6 @@ def send_final_booking_recap_email(stock):
     if stock.resolvedOffer.bookingEmail:
         recipients.append(stock.resolvedOffer.bookingEmail)
 
-
     if feature_send_mail_to_users_enabled():
         email['To'] = ", ".join(recipients)
     else:
@@ -209,6 +208,30 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
         'Subject': email_subject,
         'Html-part': email_html,
     }
+
+
+def make_reset_password_email(user):
+    email_html = render_template(
+        'user_reset_password_email.html',
+        user_public_name=user.publicName,
+        token=user.resetPasswordToken,
+        api_url=API_URL
+    )
+
+    return {
+        'FromName': 'Pass Culture',
+        'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'Subject': 'Réinitialisation de votre mot de passe',
+        'Html-part': email_html,
+        'To': user.email
+    }
+
+
+def send_reset_password_email(user):
+    email = make_reset_password_email(user)
+    mailjet_result = app.mailjet_client.send.create(data=email)
+    if mailjet_result.status_code != 200:
+        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
 def get_contact(user):

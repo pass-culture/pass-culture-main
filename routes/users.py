@@ -14,7 +14,7 @@ from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.mailing import maybe_send_offerer_validation_email, \
-    subscribe_newsletter
+    subscribe_newsletter, send_reset_password_email, MailServiceException
 from utils.rest import expect_json_data, \
     login_or_api_key_required
 
@@ -58,9 +58,16 @@ def reset_password():
     email = request.get_json()['email']
     user = User.query.filter_by(email=email).first()
 
-    if user:
-        password.generate_reset_token(user)
-        PcObject.check_and_save(user)
+    if not user:
+        return '', 204
+
+    password.generate_reset_token(user)
+    PcObject.check_and_save(user)
+
+    try:
+        send_reset_password_email(user)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
 
     return '', 204
 

@@ -8,7 +8,8 @@ from tests.conftest import clean_database, mocked_mail
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import make_user_booking_recap_email, send_booking_confirmation_email_to_user, \
     make_booking_recap_email, make_final_recap_email_for_stock_with_event, write_object_validation_email, \
-    maybe_send_offerer_validation_email, MailServiceException, send_booking_recap_emails, send_final_booking_recap_email
+    maybe_send_offerer_validation_email, MailServiceException, send_booking_recap_emails, \
+    send_final_booking_recap_email, make_reset_password_email, send_reset_password_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer
@@ -731,7 +732,8 @@ def test_send_booking_recap_emails_sends_email_to_offer_booking_email_if_feature
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_send_booking_recap_emails_email_sends_email_only_to_passculture_if_feature_is_enabled_but_no_offer_booking_email(app):
+def test_send_booking_recap_emails_email_sends_email_only_to_passculture_if_feature_is_enabled_but_no_offer_booking_email(
+        app):
     # given
     user = create_user()
     booking = create_booking(user)
@@ -780,7 +782,7 @@ def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_fe
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, booking_email = 'offer.booking.email@test.com')
+    stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@test.com')
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
@@ -795,15 +797,15 @@ def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_fe
     assert 'passculture@beta.gouv.fr' in args[1]['data']['To']
 
 
-
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_send_final_booking_recap_email_sends_email_only_to_passculture_if_feature_is_enabled_but_no_offer_booking_email(app):
+def test_send_final_booking_recap_email_sends_email_only_to_passculture_if_feature_is_enabled_but_no_offer_booking_email(
+        app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, booking_email = None)
+    stock = create_stock_with_event_offer(offerer, venue, booking_email=None)
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
@@ -815,3 +817,51 @@ def test_send_final_booking_recap_email_sends_email_only_to_passculture_if_featu
     app.mailjet_client.send.create.assert_called_once()
     args = app.mailjet_client.send.create.call_args
     assert args[1]['data']['To'] == 'passculture@beta.gouv.fr'
+
+
+@pytest.mark.standalone
+def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app):
+    # given
+    user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+
+    # when
+    email = make_reset_password_email(user)
+
+    # then
+    html = BeautifulSoup(email['Html-part'], features="html.parser")
+    assert html.select('a.reset-password-link')[
+               0].text.strip() == 'localhost/route-to-form/reset-password?token=AZ45KNB99H'
+    assert html.select('div.validity-info')[
+               0].text.strip() == 'Le lien est valable 24h. Au delà de ce délai, vous devrez demander une nouvelle réinitialisation.'
+
+
+@mocked_mail
+@pytest.mark.standalone
+def test_send_reset_password_email_sends_a_reset_password_email_to_the_recipient(app):
+    # given
+    user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    # when
+    send_reset_password_email(user)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    data = args[1]['data']
+    assert data['FromName'] == 'Pass Culture'
+    assert data['FromEmail'] == 'passculture-dev@beta.gouv.fr'
+    assert data['Subject'] == 'Réinitialisation de votre mot de passe'
+    assert data['To'] == 'bobby@test.com'
+
+
+@mocked_mail
+@pytest.mark.standalone
+def test_send_reset_password_email_raises_an_exception_if_mailjet_failed(app):
+    # given
+    user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+    app.mailjet_client.send.create.return_value = Mock(status_code=400)
+
+    # when
+    with pytest.raises(MailServiceException):
+        send_reset_password_email(user)
