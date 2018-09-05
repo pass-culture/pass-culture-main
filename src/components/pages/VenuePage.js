@@ -164,7 +164,7 @@ class VenuePage extends Component {
             </h2>
             <div className="field-group">
               <Field label="SIRET" name="siret" type="siret" />
-              <Field label="Nom du lieu" name="name" required />
+              <Field label="Nom du lieu" name="name" isExpanded required />
               <Field label="E-mail" name="bookingEmail" required type="email" />
             </div>
           </div>

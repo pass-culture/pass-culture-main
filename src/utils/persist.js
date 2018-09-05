@@ -5,7 +5,7 @@ const persist = {
   storage,
   whitelist: [
     //'data',
-    //'tracker',
+    'tracker',
     //'user'
   ],
 }

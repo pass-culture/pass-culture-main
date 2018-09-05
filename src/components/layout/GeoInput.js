@@ -1,8 +1,8 @@
 import classnames from 'classnames'
 import L from 'leaflet'
 import debounce from 'lodash.debounce'
-import React, { Component } from 'react'
 import { BasicInput } from 'pass-culture-shared'
+import React, { Component } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
@@ -35,16 +35,16 @@ class GeoInput extends Component {
 
   static defaultProps = {
     debounceTimeout: 300,
-    showMap: true,
-    maxSuggestions: 5,
-    placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
-    zoom: 15,
     defaultInitialPosition: {
       // Displays France
       latitude: 46.98025235521883,
       longitude: 1.9335937500000002,
       zoom: 5,
     },
+    maxSuggestions: 5,
+    placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
+    withMap: false,
+    zoom: 15,
   }
 
   static extraFormPatch = ['latitude', 'longitude']
@@ -150,7 +150,15 @@ class GeoInput extends Component {
   }
 
   render() {
-    const { className, id, readOnly, required, placeholder } = this.props
+    const {
+      className,
+      id,
+      readOnly,
+      required,
+      placeholder,
+      size,
+      withMap,
+    } = this.props
 
     const { marker, position, suggestions, value } = this.state
 
@@ -167,7 +175,7 @@ class GeoInput extends Component {
         autocomplete="street-address"
         getItemValue={value => value.label}
         inputProps={{
-          className: className || 'input',
+          className: className || `input is-${size}`,
           id,
           placeholder,
           readOnly,
@@ -198,7 +206,7 @@ class GeoInput extends Component {
       />
     )
 
-    if (!this.props.withMap) return $input
+    if (!withMap) return $input
     const { latitude, longitude, zoom } = position
 
     return (
