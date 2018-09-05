@@ -27,14 +27,16 @@ class BookFormat(enum.Enum):
 
 
 class ThingType(enum.Enum):
-    Book = "Livre"
-#    CD = "CD"
-#    Vinyl = "Vinyle"
-#    StreamingMusicSubscription = "Musique en streaming"
-#    MusicDownload = "Musique en téléchargement"
-#    Bluray = "Bluray"
-#    DVD = "DVD"
-#    VOD = "VOD"
+    AUDIOVISUEL = {'label': "Audiovisuel (Films sur supports physiques et VOD)", 'offlineOnly': False, 'onlineOnly': False}
+    CINEMA_ABO = {'label': "Cinéma (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
+    JEUX_ABO = {'label': "Jeux (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
+    JEUX = {'label': "Jeux (Biens physiques)", 'offlineOnly': True, 'onlineOnly': False}
+    LIVRE_EDITION = {'label': "Livre — Édition", 'offlineOnly': False, 'onlineOnly': False}
+    MUSEES_PATRIMOINE_ABO = {'label': "Musées — Patrimoine (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
+    MUSIQUE_ABO = {'label': "Musique (Abonnements concerts)", 'offlineOnly': True, 'onlineOnly': False}
+    MUSIQUE = {'label': "Musique (sur supports physiques ou en ligne)", 'offlineOnly': False, 'onlineOnly': False}
+    PRATIQUE_ARTISTIQUE_ABO = {'label': "Pratique Artistique (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
+    PRESSE_ABO = {'label': "Presse (Abonnements)", 'offlineOnly': False, 'onlineOnly': True}
 
 
 class Thing(PcObject,

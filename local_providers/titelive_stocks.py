@@ -8,7 +8,7 @@ import pandas as pd
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.offer import Offer
 from models.stock import Stock
-from models.thing import Thing
+from models.thing import Thing, ThingType
 from models.venue import Venue
 
 DATE_FORMAT = "%d/%m/%Y"
@@ -79,7 +79,7 @@ class TiteLiveStocks(LocalProvider):
                 line = self.data_lines.__next__()
             isRightVenue = str(line[1]) == self.venueProvider.venueIdAtOfferProvider
 
-        thing = Thing.query.filter((Thing.type == "Book") &
+        thing = Thing.query.filter((Thing.type == ThingType.LIVRE_EDITION) &
                                    (Thing.idAtProviders == str(line[2])))\
                            .one_or_none()
 

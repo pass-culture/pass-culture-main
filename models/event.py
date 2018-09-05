@@ -30,24 +30,13 @@ class Accessibility(Enum):
 
 
 class EventType(Enum):
-    Workshop          = "Cours ou atelier de pratique artistique, bal..."
-    MovieScreening    = "Cinéma / Projection de film"
-    Meeting           = "Dédicace / Rencontre / Conférence"
-    Game              = "Jeu / Concours / Tournoi"
-    SchoolHelp        = "Soutien scolaire"
-    StreetPerformance = "Arts de la rue"
-    Other             = "Autres"
-    BookReading       = "Lecture"
-    CircusAndMagic    = "Cirque / Magie"
-    DancePerformance  = "Danse"
-    Comedy            = "Humour / Café-théâtre"
-    Concert           = "Concert"
-    Combo             = "Pluridisciplinaire"
-    Youth             = "Spectacle Jeunesse"
-    Musical           = "Spectacle Musical / Cabaret / Opérette"
-    Theater           = "Théâtre"
-    GuidedVisit       = "Visite guidée : Exposition, Musée, Monument..."
-    FreeVisit         = "Visite libre : Exposition, Musée, Monument..."
+    CINEMA = {'label': "Cinéma (Projections, Séances, Évènements)", 'offlineOnly': True, 'onlineOnly': False}
+    CONFERENCE_DEBAT_DEDICACE = {'label': "Conférence — Débat — Dédicace", 'offlineOnly': True, 'onlineOnly': False}
+    JEUX = {'label': "Jeux (Évenements, Rencontres, Concours)", 'offlineOnly': True, 'onlineOnly': False}
+    MUSIQUE = {'label': "Musique (Concerts, Festivals)", 'offlineOnly': True, 'onlineOnly': False}
+    MUSEES_PATRIMOINE = {'label': "Musées — Patrimoine (Expositions, Visites, Activités spécifiques)", 'offlineOnly': True, 'onlineOnly': False}
+    PRATIQUE_ARTISTIQUE = {'label': "Pratique Artistique (Stages ponctuels)", 'offlineOnly': True, 'onlineOnly': False}
+    SPECTACLE_VIVANT = {'label': "Spectacle vivant", 'offlineOnly': True, 'onlineOnly': False}
 
 
 class Event(PcObject,
