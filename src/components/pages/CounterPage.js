@@ -151,15 +151,13 @@ class CounterPage extends Component {
             value={this.state.code}
           />
 
-          <span className="buttonContainer">
-            {this.state.state === COUNTER_RECEIVE_VERIFICATION && (
-              <button
-                type="submit"
-                onClick={() => this.handleCodeRegistration(this.state.code)}>
-                OK
-              </button>
-            )}
-          </span>
+          <button
+            disabled={this.state.state !== COUNTER_RECEIVE_VERIFICATION}
+            className="button"
+            type="submit"
+            onClick={() => this.handleCodeRegistration(this.state.code)}>
+            Valider
+          </button>
 
           {this.state.state === COUNTER_WAIT && (
             <CounterState message="Saisissez un code" />
@@ -213,6 +211,7 @@ class CounterPage extends Component {
           )}
 
           <NavLink
+            id="exitlink"
             className="button is-primary is-medium is-pulled-right"
             to="/offres">
             Terminer

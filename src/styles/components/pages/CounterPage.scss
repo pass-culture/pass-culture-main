@@ -22,10 +22,8 @@
     button {
       background: $red;
       border: 1px solid $red;
-      border-radius: 50%;
+      border-radius: 1.125em;
       font-size: 30px;
-      width: 72px;
-      min-width:72px;
       height: 72px;
       color: white;
       margin-left: 20px;
@@ -62,8 +60,8 @@
     }
   }
 
-  input[type="reset"] {
-    margin-top: -50px
+  #exitlink {
+    margin-top: -40px
   }
 
 }
