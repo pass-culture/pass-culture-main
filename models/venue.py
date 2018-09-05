@@ -145,6 +145,14 @@ class TooManyVirtualVenuesException(Exception):
     pass
 
 
+def create_digital_venue(offerer):
+    digital_venue = Venue()
+    digital_venue.isVirtual = True
+    digital_venue.name = "Offre en ligne"
+    digital_venue.managingOfferer = offerer
+    return digital_venue
+
+
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT),
     cast(coalesce(Venue.address, ''), TEXT),
@@ -158,3 +166,4 @@ Venue.__table_args__ = (
         postgresql_using='gin'
     ),
 )
+

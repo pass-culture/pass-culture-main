@@ -6,6 +6,7 @@ from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.expenses import get_expenses
 from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
+from models.venue import create_digital_venue
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
@@ -107,7 +108,8 @@ def signup():
                                                RightsType.admin)
             # offerer.bookingEmail = new_user.email
             # Don't validate the first user / offerer link so that the user can immediately start loading stocks
-            objects_to_save = [new_user, offerer, user_offerer]
+            digital_venue = create_digital_venue(offerer)
+            objects_to_save = [digital_venue, new_user, offerer, user_offerer]
         else:
             offerer = existing_offerer
             new_user.departementCode = offerer.postalCode[:2]

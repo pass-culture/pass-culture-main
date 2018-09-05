@@ -3,7 +3,8 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.reimbursement import find_all_booking_reimbursement
-from models import Offerer, PcObject, RightsType, UserOfferer, Venue
+from models import Offerer, PcObject, RightsType, UserOfferer
+from models.venue import create_digital_venue, Venue
 from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES
@@ -51,10 +52,7 @@ def create_offerer():
     offerer = Offerer()
     offerer.populateFromDict(request.json)
 
-    digital_venue = Venue()
-    digital_venue.isVirtual = True
-    digital_venue.name = "Offre en ligne"
-    digital_venue.managingOfferer = offerer
+    digital_venue = create_digital_venue(offerer)
 
     PcObject.check_and_save(offerer, digital_venue)
 
