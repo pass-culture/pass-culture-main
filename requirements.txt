@@ -1,4 +1,5 @@
 alembic==1.0.0
+apscheduler==3.5.3
 babel==2.6.0
 bcrypt==3.1.4
 beautifulsoup4==4.6.3
