@@ -7,6 +7,11 @@ import { connect } from 'react-redux'
 
 import Main from '../layout/Main'
 
+// Configurable
+const CONFIG_CODE_LENGTH = 6
+const CONFIG_BAD_CODE_REGEX = /[^a-z0-9]/i
+
+// Component states
 const COUNTER_WAIT = 'COUNTER_WAIT'
 const COUNTER_TYPE = 'COUNTER_TYPE'
 const COUNTER_INVALID = 'COUNTER_INVALID'
@@ -98,11 +103,11 @@ class CounterPage extends Component {
       return this.setState({ state: COUNTER_WAIT })
     }
 
-    if (code.match(/[^a-z0-9]/i) !== null) {
+    if (code.match(CONFIG_BAD_CODE_REGEX) !== null) {
       return this.setState({ state: COUNTER_INVALID })
     }
 
-    if (code.length < 6) {
+    if (code.length < CONFIG_CODE_LENGTH) {
       return this.setState({ state: COUNTER_TYPE })
     }
 
@@ -111,12 +116,9 @@ class CounterPage extends Component {
   }
 
   handleCodeRegistration(code) {
-    this.setState({ state: COUNTER_POST_REGISTER })
+    this.setState({ state: COUNTER_POST_REGISTER, code: '' })
     this.postRegistrationFor(code)
-  }
-
-  handleReset() {
-    this.setState(DEFAULT_STATE)
+    this.input.focus()
   }
 
   componentDidMount() {
@@ -145,7 +147,7 @@ class CounterPage extends Component {
             ref={element => (this.input = element)}
             name="code"
             onChange={this.handleCodeChange.bind(this)}
-            maxLength="6"
+            maxLength={CONFIG_CODE_LENGTH}
             value={this.state.code}
           />
 
@@ -165,7 +167,8 @@ class CounterPage extends Component {
 
           {this.state.state === COUNTER_TYPE && (
             <CounterState
-              message={`caractères restants: ${6 - this.state.code.length}/6`}
+              message={`caractères restants: ${CONFIG_CODE_LENGTH -
+                this.state.code.length}/${CONFIG_CODE_LENGTH}`}
             />
           )}
 
@@ -209,12 +212,11 @@ class CounterPage extends Component {
             />
           )}
 
-          <input
-            type="reset"
+          <NavLink
             className="button is-primary is-medium is-pulled-right"
-            onClick={() => this.handleReset()}
-            value="Terminer"
-          />
+            to="/offres">
+            Terminer
+          </NavLink>
         </div>
       </Main>
     )
