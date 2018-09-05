@@ -62,3 +62,7 @@ class ApiErrors(Exception):
             return json.dumps(self.errors, indent=2)
 
     status_code = None
+
+
+class ResourceGoneError(ApiErrors):
+    pass

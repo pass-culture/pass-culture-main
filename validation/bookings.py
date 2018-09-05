@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from models import ApiErrors
+from models.api_errors import ResourceGoneError
 
 
 def check_has_stock_id(stock_id):
@@ -59,6 +60,28 @@ def check_expenses_limits(expenses, booking, stock):
         _check_digital_expense_limit(booking, expenses)
     else:
         _check_physical_expense_limit(booking, expenses)
+
+
+def check_user_is_logged_in_or_has_email(user, email):
+    if not (user.is_authenticated or email):
+        api_errors = ApiErrors()
+        api_errors.addError('email', 'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)')
+        raise api_errors
+
+
+def check_booking_not_cancelled(booking):
+    if booking.isCancelled:
+        resource_gone_error = ResourceGoneError()
+        resource_gone_error.addError('booking', 'Cette réservation a été annulée')
+        raise resource_gone_error
+
+
+def check_booking_not_already_validated(booking):
+    if booking.isValidated:
+        resource_gone_error = ResourceGoneError()
+        resource_gone_error.addError('booking', 'Cette réservation a déjà été validée')
+        raise resource_gone_error
+
 
 
 def _check_physical_expense_limit(booking, expenses):

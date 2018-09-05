@@ -3,21 +3,24 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from sqlalchemy.exc import InternalError
 
-
 from domain.expenses import get_expenses
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
+from models.pc_object import serialize
+from repository import booking_queries
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
 from utils.mailing import send_booking_recap_emails, send_booking_confirmation_email_to_user
-from utils.rest import expect_json_data
+from utils.rest import expect_json_data, ensure_current_user_has_rights
 from utils.token import random_token
 from validation.bookings import check_has_stock_id, check_has_quantity, check_existing_stock, check_can_book_free_offer, \
-    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits
+    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, check_user_is_logged_in_or_has_email, \
+    check_booking_not_cancelled, check_booking_not_already_validated
 
 
 @app.route('/bookings', methods=['GET'])
 @login_required
 def get_bookings():
+    print('in booking route')
     bookings = Booking.query.filter_by(userId=current_user.id).all()
     return jsonify([booking._asdict(include=BOOKING_INCLUDES)
                     for booking in bookings]), 200
@@ -94,12 +97,38 @@ def create_booking():
 def cancel_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
-    if not booking.user == current_user\
-       and not current_user.hasRights(RightsType.editor,
-                                      booking.stock.resolvedOffer.venue.managingOffererId):
+    if not booking.user == current_user \
+            and not current_user.hasRights(RightsType.editor,
+                                           booking.stock.resolvedOffer.venue.managingOffererId):
         return "Vous n'avez pas le droit d'annuler cette réservation", 403
 
     booking.isCancelled = True
     PcObject.check_and_save(booking)
 
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
+
+
+@app.route("/bookings/token/<token>", defaults={'email': None}, methods=["GET"])
+@app.route("/bookings/token/<token>/<email>", methods=["GET"])
+def get_booking_by_token(token, email):
+    check_user_is_logged_in_or_has_email(current_user, email)
+    booking = booking_queries.find_by_token(token, email)
+    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    date = serialize(booking.stock.eventOccurrence.beginningDatetime)
+    response = {'bookingId': booking.id, 'email': booking.user.email, 'offerName': offer_name, 'date': date,
+                'isValidated': booking.isValidated} if current_user.is_authenticated else {}
+    return jsonify(response), 200
+
+
+@app.route("/bookings/token/<token>", methods=["PATCH"])
+@expect_json_data
+def patch_booking_by_token(token):
+    booking = booking_queries.find_by_token(token)
+    check_booking_not_cancelled(booking)
+    check_booking_not_already_validated(booking)
+    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    ensure_current_user_has_rights(RightsType.editor, offerer_id)
+    booking.populateFromDict(request.json)
+    PcObject.check_and_save(booking)
+
+    return '', 200

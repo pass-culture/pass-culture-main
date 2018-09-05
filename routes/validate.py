@@ -2,12 +2,12 @@
 from flask import current_app as app, jsonify, request
 
 import models
-from models import ApiErrors,\
-                   PcObject
+from models import ApiErrors, \
+    PcObject
 
 
 @app.route("/validate", methods=["GET"])
-def validate():
+def validate_offerer():
     token = request.args.get('token')
 
     if token is None:
@@ -26,14 +26,14 @@ def validate():
 
     objects_to_validate = []
     for model_name in model_names:
-        query = getattr(models, model_name)\
-                .query\
-                .filter_by(validationToken=token)
+        query = getattr(models, model_name) \
+            .query \
+            .filter_by(validationToken=token)
         objects_to_validate += query.all()
 
     if len(objects_to_validate) == 0:
-        return "Aucun(e) objet ne correspond à ce code de validation"\
-               + " ou l'objet est déjà validé",\
+        return "Aucun(e) objet ne correspond à ce code de validation" \
+               + " ou l'objet est déjà validé", \
                404
 
     for obj in objects_to_validate:

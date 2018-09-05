@@ -1,4 +1,4 @@
-from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer
+from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer, User
 
 
 def find_all_by_user_id(user_id):
@@ -40,3 +40,10 @@ def find_bookings_from_recommendation(reco, user):
 
 def find_all_with_soft_deleted_stocks():
     return Booking.query.join(Stock).filter_by(isSoftDeleted=True).all()
+
+
+def find_by_token(token, email=None):
+    query = Booking.query.filter_by(token=token)
+    if email:
+        query = query.join(User).filter_by(email=email)
+    return query.first_or_404()

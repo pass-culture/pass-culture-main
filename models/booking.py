@@ -69,6 +69,11 @@ class Booking(PcObject,
                          server_default=expression.false(),
                          default=False)
 
+    isValidated = Column(Boolean,
+                         nullable=False,
+                         server_default=expression.false(),
+                         default=False)
+
     @property
     def value(self):
         return self.amount * self.quantity

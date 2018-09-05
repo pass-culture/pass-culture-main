@@ -10,7 +10,7 @@
             <h2>Nouveau rattachement :</h2>
 
             <strong class="validation">
-                Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_offerer.validationToken }}">cliquez ici</a>
+                Pour valider, <a href="{{ api_url }}/validate_offerer?modelNames=UserOfferer&token={{ user_offerer.validationToken }}">cliquez ici</a>
             </strong>
             {% endif %}
 
@@ -26,7 +26,7 @@
             {% else %}
             <h2>Nouvelle structure :</h2>
             <strong class="validation">
-                Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer.validationToken }}">cliquez ici</a>
+                Pour valider, <a href="{{ api_url }}/validate_offerer?modelNames=Offerer&token={{ offerer.validationToken }}">cliquez ici</a>
             </strong>
             {% endif %}
 
