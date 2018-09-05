@@ -218,7 +218,7 @@ class CounterPage extends Component {
           <NavLink
             id="exitlink"
             className="button is-primary is-medium is-pulled-right"
-            to="/offres">
+            to="/accueil">
             Terminer
           </NavLink>
         </div>
