@@ -33,8 +33,8 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
   BACKUP_FILE=$2
   shift 2
 elif [[ "$*" == *"-o"* ]]; then
-  SERVER_URL="deploy@api.passculture-staging.beta.gouv.fr"
-  DUMP_DIRECTORY="~/dumps_prod/"
+  SERVER_URL="deploy@api.passculture.beta.gouv.fr"
+  DUMP_DIRECTORY="~/pass-culture-main/db_dumps/"
   BACKUP_FILE=$(ssh "$SERVER_URL" "ls -t $DUMP_DIRECTORY | head -n1")
   scp "$SERVER_URL":"$DUMP_DIRECTORY""$BACKUP_FILE" .
 else
