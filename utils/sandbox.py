@@ -12,7 +12,9 @@ from mock.scripts import booking_mocks,\
                          offer_mocks,\
                          offerer_mocks,\
                          stock_mocks,\
+                         thing_mocks,\
                          user_mocks,\
+                         user_offerer_mocks,\
                          venue_mocks
 from models.pc_object import PcObject
 from models import Booking,\
@@ -22,6 +24,7 @@ from models import Booking,\
                    Offer,\
                    Offerer,\
                    Stock,\
+                   Thing,\
                    User,\
                    UserOfferer,\
                    Venue
@@ -30,7 +33,7 @@ from utils.mock import set_from_mock
 
 def do_sandbox():
 
-    offerers = []
+    offerers_by_name = {}
     for offerer_mock in offerer_mocks:
         query = Offerer.query.filter_by(name=offerer_mock['name'])
         if query.count() == 0:
@@ -38,11 +41,11 @@ def do_sandbox():
             PcObject.check_and_save(offerer)
             print("CREATED offerer")
             pprint(vars(offerer))
-            offerers.append(offerer)
         else:
-            offerers.append(query.one())
+            offerer = query.first()
+        offerers_by_name[offerer_mock['name']] = offerer
 
-
+    users_by_email = {}
     for (user_index, user_mock) in enumerate(user_mocks):
         query = User.query.filter_by(email=user_mock['email'])
         if query.count() == 0:
@@ -62,22 +65,40 @@ def do_sandbox():
                     userOfferer.offerer = offerer
                     PcObject.check_and_save(userOfferer)
             set_from_mock("thumbs", user, user_index)
+        else:
+            user = query.first()
+        users_by_email[user_mock['email']] = user
 
+    for user_offerer_mock in user_offerer_mocks:
+        user = users_by_email[user_offerer_mock['userEmail']]
+        offerer = offerers_by_name[user_offerer_mock['offererName']]
 
-    venues = []
+        query = UserOfferer.query.filter_by(
+            userId=user.id,
+            offererId=offerer.id
+        )
+        if query.count() == 0:
+            user_offerer = UserOfferer(from_dict=user_offerer_mock)
+            user_offerer.user = user
+            user_offerer.offerer = offerer
+            PcObject.check_and_save(user_offerer)
+            print("CREATED user_offerer")
+            pprint(vars(user_offerer))
+
+    venues_by_name = {}
     for venue_mock in venue_mocks:
         query = Venue.query.filter_by(name=venue_mock['name'])
         if query.count() == 0:
             venue = Venue(from_dict=venue_mock)
-            venue.managingOfferer = offerers[venue_mock['offererIndex']]
+            venue.managingOfferer = offerers_by_name[venue_mock['offererName']]
             PcObject.check_and_save(venue)
             print("CREATED venue")
             pprint(vars(venue))
-            venues.append(venue)
         else:
-            venues.append(query.one())
+            venue = query.first()
+        venues_by_name[venue_mock['name']] = venue
 
-    events = []
+    events_by_name = {}
     for event_mock in event_mocks:
         query = Event.query.filter_by(name=event_mock['name'])
         if query.count() == 0:
@@ -85,22 +106,34 @@ def do_sandbox():
             PcObject.check_and_save(event)
             print("CREATED event")
             pprint(vars(event))
-            events.append(event)
         else:
-            events.append(query.one())
+            event = query.first()
+        events_by_name[event_mock['name']] = event
+
+    things_by_name = {}
+    for thing_mock in thing_mocks:
+        query = Thing.query.filter_by(name=thing_mock['name'])
+        if query.count() == 0:
+            thing = Thing(from_dict=thing_mock)
+            PcObject.check_and_save(thing)
+            print("CREATED thing")
+            pprint(vars(thing))
+        else:
+            thing = query.first()
+        things_by_name[thing_mock['name']] = thing
 
     offers = []
     for offer_mock in offer_mocks:
-        if 'eventIndex' in offer_mock:
-            event_or_thing = events[offer_mock['eventIndex']]
+        if 'eventName' in offer_mock:
+            event_or_thing = events_by_name[offer_mock['eventName']]
             is_event = True
             query = Offer.query.filter_by(eventId=event_or_thing.id)
         else:
-            event_or_thing = events[offer_mock['thingIndex']]
+            event_or_thing = things_by_name[offer_mock['thingName']]
             is_event = False
             query = Offer.query.filter_by(thingId=event_or_thing.id)
 
-        venue = venues[offer_mock['venueIndex']]
+        venue = venues_by_name[offer_mock['venueName']]
         query.filter_by(venueId=venue.id)
 
         if query.count() == 0:
@@ -113,9 +146,10 @@ def do_sandbox():
             PcObject.check_and_save(offer)
             print("CREATED offer")
             pprint(vars(offer))
-            offers.append(offer)
         else:
-            offers.append(query.one())
+            offer = query.first()
+        offers.append(offer)
+
 
     event_occurrences = []
     for event_occurrence_mock in event_occurrence_mocks:
@@ -129,9 +163,9 @@ def do_sandbox():
             PcObject.check_and_save(event_occurrence)
             print("CREATED event_occurrence")
             pprint(vars(event_occurrence))
-            event_occurrences.append(event_occurrence)
         else:
-            event_occurrences.append(query.one())
+            event_occurrence = query.first()
+        event_occurrences.append(event_occurrence)
 
     stocks = []
     for stock_mock in stock_mocks:
@@ -143,9 +177,9 @@ def do_sandbox():
             PcObject.check_and_save(stock)
             print("CREATED stock")
             pprint(vars(stock))
-            stocks.append(stock)
         else:
-            stocks.append(query.one())
+            stock = query.first()
+        stocks.append(stock)
 
     deposits = []
     for deposit_mock in deposit_mocks:
@@ -157,7 +191,9 @@ def do_sandbox():
             PcObject.check_and_save(deposit)
             print("CREATED deposit")
             pprint(vars(deposit))
-            deposits.append(deposit)
+        else:
+            deposit = query.first()
+        deposits.append(deposit)
 
     bookings = []
     for booking_mock in booking_mocks:
@@ -172,4 +208,6 @@ def do_sandbox():
             PcObject.check_and_save(booking)
             print("CREATED booking")
             pprint(vars(booking))
-            bookings.append(booking)
+        else:
+            booking = query.first()
+        bookings.append(booking)

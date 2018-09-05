@@ -1,7 +1,7 @@
 """ events """
 event_mocks = [
   {
-    "name": "Event1",
+    "name": "Rencontre avec Franck Lepage",
     "durationMinutes": 60
   },
   {

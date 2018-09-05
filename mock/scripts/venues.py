@@ -1,12 +1,13 @@
 """ venue """
 venue_mocks = [
-  {
-    "name": "LE GRAND REX PARIS",
-    "departementCode": "75",
-    "bookingEmail": "fake@email.com",
-    "offererIndex": 0,
-    "address": "1 BD POISSONNIERE",
-    "postalCode": "75002",
-    "city": "Paris"
-  }
+    {
+        "address": "1 BD POISSONNIERE",
+        "bookingEmail": "fake@email.com",
+        "city": "Paris",
+        "departementCode": "75",
+        "name": "LE GRAND REX PARIS",
+        "offererName": "LE GRAND REX PARIS",
+        "postalCode": "75002",
+        "siret": "50763357600016"
+    }
 ]

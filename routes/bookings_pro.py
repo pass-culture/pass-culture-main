@@ -15,7 +15,8 @@ from utils.search import get_search_filter
 @login_required
 def get_bookings_pro():
 
-    offerer_ids = ','.split(request.args.get('offererIds', ''))
+    #offerer_ids = ','.split(request.args.get('offererIds', ''))
+    offerer_ids = [request.args.get('offererId')]
     for offerer_id in offerer_ids:
         ensure_current_user_has_rights(RightsType.editor, dehumanize(offerer_id))
 
