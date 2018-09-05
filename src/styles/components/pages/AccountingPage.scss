@@ -1,5 +1,9 @@
 .accounting-page {
   width: 999px;
+
+  .page-content {
+    width: 999px;
+  }
   .search {
     margin-bottom: 0.25rem;
   }
@@ -16,8 +20,7 @@
   .list-header {
     display: flex;
     border-bottom: 1px solid;
-    justify-content: space-between;
-    margin-bottom: 2rem;
+    justify-content: center;
     padding-bottom: 0.5rem;
     align-items: center;
 
@@ -31,10 +34,16 @@
       }
     }
   }
+
+  .sortPlaceHolder {
+    width: 24px;
+    display: inline-block;
+  }
 }
 
 table.accounting {
-  th, td {
+  th,
+  td {
     border: 1px solid #ccc;
     font-size: 13px;
     text-align: center;
@@ -50,14 +59,16 @@ table.accounting {
 
   th.first-row {
     font-size: 13px;
-
+    border-top: none;
   }
 
-  th:first-child, td:first-child {
+  th:first-child,
+  td:first-child {
     border-left: none;
   }
 
-  th:last-child, td:last-child {
+  th:last-child,
+  td:last-child {
     border-right: none;
   }
 
@@ -67,7 +78,25 @@ table.accounting {
     border-bottom: none;
   }
 
-  .first-col td{
+  .first-col td {
     border-top: none;
   }
+
+  th span {
+    display: inline-block;
+    line-height: 25px;
+  }
+
+  .actionButton {
+    background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
+    width: 15px;
+    height: 15px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+  }
+}
+
+.picto.tiny {
+  width: 18px;
 }

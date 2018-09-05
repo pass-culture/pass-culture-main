@@ -6,6 +6,7 @@ import {
   withSearch,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -16,6 +17,29 @@ import searchSelector from '../../selectors/search'
 import { BookingNormalizer } from '../../utils/normalizers'
 import BookingItem from '../items/BookingItem'
 import Main from '../layout/Main'
+
+const TableSortableTh = ({ field, label, sort, action, style }) => (
+  <th style={style}>
+    <a onClick={() => action(field, sort)}>
+      <span>{label}</span>
+
+      <span className="sortPlaceHolder">
+        {sort.field === field && (
+          // @TODO: onclick sort action
+          <Icon svg={`ico-sort-${sort.dir}ending`} />
+        )}
+      </span>
+    </a>
+  </th>
+)
+
+TableSortableTh.propTypes = {
+  sort: PropTypes.object.isRequired,
+  field: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  action: PropTypes.func.isRequired,
+  style: PropTypes.object,
+}
 
 class AccoutingPage extends Component {
   fetchBookings(handleSuccess = () => {}, handleFail = () => {}) {
@@ -52,6 +76,15 @@ class AccoutingPage extends Component {
     this.fetchOfferers(handleSuccess, handleFail)
   }
 
+  handleSortChange(field, currentSort) {
+    let dir = currentSort.dir
+    if (currentSort.field === field) {
+      dir = dir === 'asc' ? 'desc' : 'asc'
+    }
+
+    this.props.handleQueryParamsChange({ order_by: [field, dir].join('+') })
+  }
+
   render() {
     const {
       handleOrderByChange,
@@ -67,19 +100,34 @@ class AccoutingPage extends Component {
     const { search, order_by } = queryParams || {}
     const [orderBy, orderDirection] = (order_by || '').split('+')
 
+    // Inject sort and action once for all
+    const Th = ({ field, label, style }) => (
+      <TableSortableTh
+        field={field}
+        label={label}
+        sort={{ field: orderBy, dir: orderDirection }}
+        action={this.handleSortChange.bind(this)}
+        style={style}
+      />
+    )
+
     return (
       <Main
         name="accounting"
-        handleDataRequest={this.handleDataRequest.bind(this)}>
+        handleDataRequest={this.handleDataRequest.bind(this)}
+        backTo={{ path: '/accueil', label: 'Accueil' }}>
         <div className="section">
           <h1 className="main-title">Comptabilité</h1>
+          <p className="subtitle">
+            Suivez vos réservations et vos remboursements.
+          </p>
         </div>
         <form className="section" onSubmit={handleSearchChange} />
         <div className="section">
           <div className="list-header">
             {offerer && (
               <div>
-                Filtrer par:
+                Structure:
                 <span className="select is-rounded is-small">
                   <select
                     onChange={event =>
@@ -96,32 +144,8 @@ class AccoutingPage extends Component {
                 </span>
               </div>
             )}
-            <div>
-              Trier par:
-              <span className="select is-rounded is-small">
-                <select
-                  onChange={handleOrderByChange}
-                  className=""
-                  value={orderBy}>
-                  <option value="sold">Offres écoulées</option>
-                  <option value="createdAt">Date de création</option>
-                </select>
-              </span>
-            </div>
-            <div>
-              <button
-                onClick={handleOrderDirectionChange}
-                className="button is-secondary">
-                <Icon
-                  svg={
-                    orderDirection === 'asc'
-                      ? 'ico-sort-ascending'
-                      : 'ico-sort-descending'
-                  }
-                />
-              </button>
-            </div>
           </div>
+
           <table className="accounting" style={{ width: '100%' }}>
             <thead>
               <tr>
@@ -136,16 +160,37 @@ class AccoutingPage extends Component {
                 </th>
               </tr>
               <tr>
-                <th>Date</th>
-                <th>Catégorie</th>
-                <th>Structure</th>
-                <th>Lieu</th>
-                <th style={{ width: '50px' }}>Type</th>
-                <th style={{ width: '90px' }}>Date limite d'annulation</th>
-                <th style={{ width: '50px' }}>Taux écoulé</th>
-                <th style={{ width: '40px' }}>Prix pass</th>
-                <th style={{ width: '40px' }}>Montant rbt.</th>
-                <th style={{ width: '100px' }}>État du paiement</th>
+                {/* @TODO: Fix fake key attributes !*/}
+                <Th label="Date" field="date" />
+                <Th label="Catégorie" field="category" />
+                <Th label="Structure" field="structure" />
+                <Th label="Lieu" field="place" />
+                <Th style={{ width: '60px' }} label="Type" field="type" />
+                <Th
+                  style={{ width: '100px' }}
+                  label="Date limite d'annulation"
+                  field="cancelDate"
+                />
+                <Th
+                  style={{ width: '85px' }}
+                  label="Taux écoulé"
+                  field="rate"
+                />
+                <Th
+                  style={{ width: '60px' }}
+                  label="Prix pass"
+                  field="passPrice"
+                />
+                <Th
+                  style={{ width: '80px' }}
+                  label="Montant rbt."
+                  field="ammount"
+                />
+                <Th
+                  style={{ width: '120px' }}
+                  label="État du paiement"
+                  field="state"
+                />
                 <th style={{ width: '25px' }} />
               </tr>
             </thead>
@@ -194,8 +239,5 @@ export default compose(
       offererId: null,
     },
   }),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps, mapDispatchToProps)
 )(AccoutingPage)

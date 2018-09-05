@@ -1,6 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import { Icon } from 'pass-culture-shared'
+
+const statePictoMap = {
+  payement: 'picto-validation',
+  validation: 'picto-encours-S',
+  pending: 'picto-temps-S',
+  error: 'picto-echec',
+}
+
 const BookingItem = ({ booking }) => (
   <React.Fragment>
     <tr className="offer-item">
@@ -11,9 +20,12 @@ const BookingItem = ({ booking }) => (
       <td rowSpan="2">5/10</td>
       <td rowSpan="2">5&euro;</td>
       <td rowSpan="2">4&euro;</td>
-      <td rowSpan="2">Réglé</td>
+      <td rowSpan="2">
+        <Icon svg={statePictoMap['payement']} className="picto tiny" /> Réglé
+      </td>
       <td rowSpan="2">
         <button
+          className="actionButton"
           type="button"
           onClick={() => {
             if (window.confirm('Annuler cette réservation ?')) {
@@ -21,9 +33,8 @@ const BookingItem = ({ booking }) => (
             } else {
               console.log('ko')
             }
-          }}>
-          Annuler
-        </button>
+          }}
+        />
       </td>
     </tr>
     <tr className="offer-item first-col">
@@ -31,7 +42,10 @@ const BookingItem = ({ booking }) => (
       <td>DÉDICACE</td>
       <td>Structure</td>
       <td>Folies d'encre</td>
-      <td>Type</td>
+      <td>
+        {/*<Icon svg="picto-user" />*/}
+        <Icon svg="picto-group" /> 5
+      </td>
     </tr>
   </React.Fragment>
 )
