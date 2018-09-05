@@ -47,15 +47,6 @@ def get_offerer(id):
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 
 
-@app.route('/offerers/<id>/bookings', methods=['GET'])
-@login_required
-def get_offerer_bookings(id):
-    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
-    bookings = find_all_by_offerer_sorted_by_date_modified_asc(dehumanize(id))
-    bookings_reimbursements = find_all_booking_reimbursement(bookings)
-    return jsonify(list(map(lambda b: b.as_dict(), bookings_reimbursements))[::-1]), 200
-
-
 @app.route('/offerers', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
