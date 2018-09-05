@@ -150,7 +150,17 @@ class GeoInput extends Component {
   }
 
   render() {
-    const { className, id, readOnly, required, placeholder } = this.props
+    const {
+      className,
+      id,
+      readOnly,
+      required,
+      placeholder,
+      size,
+      withMap,
+    } = this.props
+
+    console.log('withMap', withMap)
 
     const { marker, position, suggestions, value } = this.state
 
@@ -160,6 +170,8 @@ class GeoInput extends Component {
       id: 'placeholder',
     }
 
+    console.log('size', size)
+
     const $input = readOnly ? (
       <BasicInput {...this.props} />
     ) : (
@@ -167,7 +179,7 @@ class GeoInput extends Component {
         autocomplete="street-address"
         getItemValue={value => value.label}
         inputProps={{
-          className: className || 'input',
+          className: className || `input is-${size}`,
           id,
           placeholder,
           readOnly,
@@ -198,7 +210,7 @@ class GeoInput extends Component {
       />
     )
 
-    if (!this.props.withMap) return $input
+    if (!withMap) return $input
     const { latitude, longitude, zoom } = position
 
     return (
