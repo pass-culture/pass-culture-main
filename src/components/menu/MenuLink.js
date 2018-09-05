@@ -27,7 +27,7 @@ class MenuLink extends React.PureComponent {
         disabled={disabled}
         onClick={clickHandler}
         activeClassName={opts.activeClass}
-        className={`navlink flex-columns ${opts.cssclass}`}
+        className={`navlink flex-columns ${opts.cssclass} mx12`}
       >
         {renderLinkContent(icon, title)}
       </NavLink>

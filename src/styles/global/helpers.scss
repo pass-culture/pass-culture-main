@@ -171,3 +171,7 @@
   white-space: pre-wrap;
   background-color: transparent;
 }
+
+.pc-gradient {
+  background-image: linear-gradient(to bottom right, $primary, $purple);
+}

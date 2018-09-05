@@ -22,16 +22,18 @@ const ProfilePage = ({ user }) => {
       {isloaded && (
         <React.Fragment>
           <header className="padded pc-primary-element text-center flex-0">
-            <h1>
+            <h1 className="fs19">
               <span>Mon profil</span>
             </h1>
           </header>
-          <main role="main" className="is-relative flex-1">
+          <main
+            role="main"
+            className="is-relative flex-1"
+            style={{ backgroundImage }}
+          >
             <Scrollbars autoHide>
-              <div style={{ backgroundImage }}>
-                <MonAvatar provider={user} />
-                <MonPassCulture provider={user} />
-              </div>
+              <MonAvatar provider={user} />
+              <MonPassCulture provider={user} />
               <MesInformations provider={user} />
             </Scrollbars>
           </main>

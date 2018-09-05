@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 const jaugeHeight = 34
 const jaugePadding = 12
 const jaugesStyles = {
-  container: { height: 'auto', padding: '0' },
+  container: { height: 'auto' },
   digital: {
     height: `${jaugeHeight}px`,
     top: `${jaugePadding + jaugeHeight + jaugePadding}px`,
@@ -27,6 +27,8 @@ const MonPassCulture = ({ provider }) => {
   const { expenses } = provider
   expenses.all.actual = 500
   let scale = 1
+  // TODO si le pourentage des jauges digital/physical est en dessous
+  // de la globale alors il faut faire en sorte que le pourcentage des juages physical/digital soit égal à celui de la globale
   const percentOverall = getPercent(expenses.all, scale)
   //
   expenses.physical.actual = expenses.physical.max // 100%
@@ -37,14 +39,14 @@ const MonPassCulture = ({ provider }) => {
   scale = expenses.digital.max / expenses.all.max
   const percentDigital = getPercent(expenses.digital, scale)
   return (
-    <div id="mon-pass-culuture">
+    <div id="mon-pass-culture">
       <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb8 px12">
         <i>Mon PassCulture</i>
       </h3>
-      <div id="wallet-jauges" className="jauges padded mb40">
+      <div id="wallet-jauges" className="jauges padded">
         <div className="text overall flex-1">
           <b className="is-block">Il reste {expenses.all.actual} €</b>
-          <span className="is-block">sur vore Pass Culture</span>
+          <span className="is-block fs14">sur votre Pass Culture</span>
         </div>
         <div className="flex-columns flex-center mt12">
           <div className="text-containers text-right flex-0 py12 mr8">
@@ -54,7 +56,7 @@ const MonPassCulture = ({ provider }) => {
               </span>
               <span className="is-block">pour les biens culturels</span>
             </div>
-            <div className="text digital mt8">
+            <div className="text digital mt12 fs14">
               <span className="is-block">
                 jusqu&apos;à <b>{expenses.digital.actual} €</b>
               </span>

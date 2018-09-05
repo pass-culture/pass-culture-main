@@ -14,8 +14,9 @@ target.zip
 # misc
 .DS_Store
 .env.local
-.env.testing.local
+.env.dev.local
 .env.development.local
+.env.testing.local
 .env.test.local
 .env.production.local
 .tern-port
