@@ -72,7 +72,7 @@ class AccoutingPage extends Component {
         name="accounting"
         handleDataRequest={this.handleDataRequest.bind(this)}>
         <div className="section">
-          <h1 className="main-title">Vos Bookings</h1>
+          <h1 className="main-title">Comptabilité</h1>
         </div>
         <form className="section" onSubmit={handleSearchChange} />
         <div className="section">
@@ -122,15 +122,31 @@ class AccoutingPage extends Component {
               </button>
             </div>
           </div>
-          <table>
+          <table className="accounting" style={{ width: '100%' }}>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Qté</th>
-                <th>Montant</th>
-                <th>Règle</th>
-                <th>Annulé ?</th>
-                <th>Annuler</th>
+                <th className="first-row" colSpan="5">
+                  OFFRE
+                </th>
+                <th className="first-row" colSpan="2">
+                  RESERVATION
+                </th>
+                <th className="first-row" colSpan="4">
+                  REMBOURSEMENT
+                </th>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <th>Catégorie</th>
+                <th>Structure</th>
+                <th>Lieu</th>
+                <th style={{ width: '50px' }}>Type</th>
+                <th style={{ width: '90px' }}>Date limite d'annulation</th>
+                <th style={{ width: '50px' }}>Taux écoulé</th>
+                <th style={{ width: '40px' }}>Prix pass</th>
+                <th style={{ width: '40px' }}>Montant rbt.</th>
+                <th style={{ width: '100px' }}>État du paiement</th>
+                <th style={{ width: '25px' }} />
               </tr>
             </thead>
             <InfiniteScroller
