@@ -1,6 +1,6 @@
 import pytest
 
-from domain.password import change_password
+from domain.password import change_password, validate_password_strength
 from models import User, ApiErrors
 
 
@@ -49,3 +49,53 @@ def test_change_password_sets_the_new_password():
 
     # then
     assert user.checkPassword(new_password) is True
+
+
+@pytest.mark.standalone
+@pytest.mark.parametrize('password', [
+    '__v4l1d_P455sw0rd__',
+    '-_v4l1d_P455sw0rd_-',
+    '&_v4l1d_P455sw0rd_&',
+    '?_v4l1d_P455sw0rd_?',
+    '~_v4l1d_P455sw0rd_~',
+    '#_v4l1d_P455sw0rd_#',
+    '|_v4l1d_P455sw0rd_|',
+    '^_v4l1d_P455sw0rd_^',
+    '@_v4l1d_P455sw0rd_@',
+    '=_v4l1d_P455sw0rd_=',
+    '+_v4l1d_P455sw0rd_+',
+    '$_v4l1d_P455sw0rd_$',
+    '<_v4l1d_P455sw0rd_<',
+    '>_v4l1d_P455sw0rd_>',
+    '%_v4l1d_P455sw0rd_%',
+    '*_v4l1d_P455sw0rd_*',
+    '!_v4l1d_P455sw0rd_!',
+    ':_v4l1d_P455sw0rd_:',
+    ';_v4l1d_P455sw0rd_;',
+    '._v4l1d_P455sw0rd_.'
+])
+def test_valid_passwords(password):
+    try:
+        validate_password_strength(password)
+    except ApiErrors:
+        assert False, 'This password=\'%s\' should be valid' % password
+
+
+@pytest.mark.standalone
+@pytest.mark.parametrize('password', [
+    't00::5H0rt@',
+    'n0upper_c4s3^letter',
+    'NO-LOWER_CASE.L3TT3R',
+    'MIXED.case-WITHOUT_digits',
+    'MIXEDcaseWITHOUTSP3C14lchars'
+])
+def test_invalid_passwords(password):
+    # when
+    with pytest.raises(ApiErrors) as e:
+        validate_password_strength(password)
+
+    # then
+    assert e.value.errors['password'] == [
+        'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
+        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi #~|=+><?!@$%^&*_-'
+    ]

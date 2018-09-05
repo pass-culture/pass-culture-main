@@ -1,3 +1,4 @@
+import re
 import secrets
 import string
 from datetime import datetime, timedelta
@@ -66,7 +67,33 @@ def validate_new_password_request(request):
 def check_reset_token_validity(user):
     if datetime.utcnow() > user.resetPasswordTokenValidityLimit:
         errors = ApiErrors()
-        errors.addError('token', 'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.')
+        errors.addError('token',
+                        'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.')
+        raise errors
+
+
+def validate_password_strength(password):
+    at_least_one_uppercase = '(?=.*?[A-Z])'
+    at_least_one_lowercase = '(?=.*?[a-z])'
+    at_least_one_digit = '(?=.*?[0-9])'
+    min_length = '.{12,}'
+    at_least_one_special_char = '(?=.*?[#~|=+><?!@$%^&*_-])'
+
+    regex = '^' \
+            + at_least_one_uppercase \
+            + at_least_one_lowercase \
+            + at_least_one_digit \
+            + at_least_one_special_char \
+            + min_length \
+            + '$'
+
+    if not re.match(regex, password):
+        errors = ApiErrors()
+        errors.addError(
+            'password',
+            'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
+            '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi #~|=+><?!@$%^&*_-'
+        )
         raise errors
 
 
