@@ -398,7 +398,14 @@ export default compose(
       const thingId = get(offer, 'thingId')
       const thing = thingSelector(state, thingId)
 
-      const types = typesSelector(state)
+      const venueId =
+        get(state, 'form.offer.venueId') ||
+        search.venueId ||
+        get(event, 'venueId') ||
+        get(thing, 'venueId')
+      const venue = venueSelector(state, venueId)
+
+      const types = typesSelector(state, get(venue, 'isVirtual'))
 
       const typeValue =
         get(state, 'form.offer.type') ||
@@ -409,13 +416,7 @@ export default compose(
 
       let offererId = get(state, 'form.offer.offererId') || search.offererId
 
-      const venues = venuesSelector(state, offererId)
-      const venueId =
-        get(state, 'form.offer.venueId') ||
-        search.venueId ||
-        get(event, 'venueId') ||
-        get(thing, 'venueId')
-      const venue = venueSelector(state, venueId)
+      const venues = venuesSelector(state, offererId, type)
 
       offererId = offererId || get(venue, 'managingOffererId')
 
