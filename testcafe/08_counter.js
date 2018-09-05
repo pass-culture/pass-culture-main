@@ -10,7 +10,8 @@ const navbarAnchor = Selector(
 ).filterVisible()
 const codeInput = Selector('.form input[type="text"]')
 const state = Selector('.form .state')
-const resetButton = Selector('.form input[type="reset"]')
+const stateText = Selector('.form .state span')
+const exitlink = Selector('#exitlink')
 const registerButton = Selector('.form button[type="submit"]')
 
 // @TODO Get a working code
@@ -28,43 +29,41 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   // intiial state
   await t.expect(pageTitleHeader.innerText).eql('Guichet')
   await t.expect(codeInput.innerText).eql('')
-  await t.expect(Selector('.form .state').innerText).eql('Saisissez un code')
-  await t.expect(state.classNames).contains('success')
+  await t.expect(stateText.innerText).eql('Saisissez un code')
+  await t.expect(state.classNames).contains('pending')
 
   // typing...
   await t.typeText(codeInput, 'AZE')
-  await t.expect(state.innerText).eql('caractères restants: 3/6')
+  await t.expect(stateText.innerText).eql('caractères restants: 3/6')
 
   // typed + verified (beware of real validation lag)
   await t.typeText(codeInput, TEST_GOOD_CODE)
   await t
-    .expect(state.innerText)
+    .expect(stateText.innerText)
     .eql('Booking vérifié, cliquez sur OK pour enregistrer')
-  await t.expect(state.classNames).contains('success')
-
-  // reset
-  await t.click(resetButton)
+  await t.expect(state.classNames).contains('pending')
   await t.expect(codeInput.innerText).eql('')
-  await t.expect(state.innerText).eql('Saisissez un code')
-  await t.expect(state.classNames).contains('success')
 
   // Bad input format
+  await t.click(registerButton) // Rest field
   await t.typeText(codeInput, 'AZE{}')
   await t
-    .expect(state.innerText)
+    .expect(stateText.innerText)
     .eql('Caractères valides : de A à Z et de 0 à 9')
   await t.expect(state.classNames).contains('error')
 
   // @TODO : Complete with adequate codes
   // // Registration success
-  // await t.click(resetButton)
   // await t.typeText(codeInput, TEST_GOOD_CODE)
   // await t.click(registerButton)
   // await t.expect(state.classNames).contains('success')
   //
   // // Registration failure
-  // await t.click(resetButton)
   // await t.typeText(codeInput, TEST_BAD_CODE)
   // await t.click(registerButton)
   // await t.expect(state.classNames).contains('error')
+
+  await t.click(exitlink).wait(500)
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/accueil')
 })
