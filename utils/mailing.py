@@ -1,5 +1,6 @@
 """ mailing """
 import os
+from pathlib import Path
 from datetime import datetime
 from pprint import pformat
 from flask import current_app as app, render_template
@@ -93,7 +94,11 @@ def make_final_recap_email_for_stock_with_event(stock):
     formatted_datetime = format_datetime(date_in_tz)
     email_subject = '[Reservations] Récapitulatif pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
                                                                         formatted_datetime)
-    email_html = render_template('offerer_final_recap_email.html',
+
+
+    template_file = Path(os.path.dirname(os.path.realpath(__file__))) / '..' / 'templates' / 'offerer_final_recap_email.html'
+
+    email_html = render_template(str(template_file),
                                  number_of_bookings=len(stock.bookings),
                                  stock_name=stock.eventOccurrence.offer.event.name,
                                  stock_date_time=formatted_datetime,
