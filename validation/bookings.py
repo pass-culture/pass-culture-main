@@ -62,7 +62,7 @@ def check_expenses_limits(expenses, booking, stock):
         _check_physical_expense_limit(booking, expenses)
 
 
-def check_user_is_logged_in_or_has_email(user, email):
+def check_user_is_logged_in_or_email_is_provided(user, email):
     if not (user.is_authenticated or email):
         api_errors = ApiErrors()
         api_errors.addError('email', 'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)')

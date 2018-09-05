@@ -478,7 +478,7 @@ def test_validate_get_booking_by_token_when_logged_in(app):
     date = serialize(event_occurrence.beginningDatetime)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
-
+    event_occurrence.offer
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format(booking.token))
     # Then
@@ -551,6 +551,70 @@ def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email(a
     # Then
     assert response.status_code == 200
     assert response.json() == {}
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.token
+def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id(app):
+    # Given
+    user = create_user(email='user@email.fr')
+    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue, event_name='Event Name')
+    event_occurrence = create_event_occurrence(offer)
+    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+    booking = create_booking(user, stock)
+
+    PcObject.check_and_save(admin_user, booking, event_occurrence)
+
+    # When
+    response = req.get(API_URL + '/bookings/token/{}/{}/{}'.format(booking.token, 'user@email.fr', offer.id))
+    # Then
+    assert response.status_code == 200
+    assert response.json() == {}
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.token
+def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing(app):
+    # Given
+    user = create_user(email='user@email.fr')
+    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+    booking = create_booking(user, stock)
+
+    PcObject.check_and_save(admin_user, booking)
+
+    # When
+    response = req.get(API_URL + '/bookings/token/{}/{}/{}'.format(booking.token, 'user@email.fr', stock.offerId))
+    # Then
+    assert response.status_code == 200
+    assert response.json() == {}
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.token
+def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_and_wrong_offer(app):
+    # Given
+    user = create_user(email='user@email.fr')
+    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+    booking = create_booking(user, stock)
+
+    PcObject.check_and_save(admin_user, booking)
+
+    # When
+    response = req.get(API_URL + '/bookings/token/{}/{}/{}'.format(booking.token, 'user@email.fr', 123))
+    # Then
+    assert response.status_code == 404
 
 
 @clean_database
