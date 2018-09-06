@@ -57,7 +57,8 @@ def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new
     '!_v4l1d_P455sw0rd_!',
     ':_v4l1d_P455sw0rd_:',
     ';_v4l1d_P455sw0rd_;',
-    '._v4l1d_P455sw0rd_.'
+    '._v4l1d_P455sw0rd_.',
+    ',_v4l1d_P455sw0rd_,'
 ])
 def test_valid_passwords(password):
     try:
@@ -82,5 +83,5 @@ def test_invalid_passwords(password):
     # then
     assert e.value.errors['password'] == [
         'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
-        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi #~|=+><?!@$%^&*_-'
+        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
     ]

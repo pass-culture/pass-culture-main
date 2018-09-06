@@ -89,7 +89,7 @@ def check_password_strength(password):
         errors.addError(
             'password',
             'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
-            '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi #~|=+><?!@$%^&*_-'
+            '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
         )
         raise errors
 
