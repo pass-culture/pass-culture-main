@@ -707,6 +707,8 @@ def test_patch_booking_by_token_when_user_not_editor_and_no_email(app):
     # Then
     assert response.status_code == 400
     assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
+    db.session.refresh(booking)
+    assert booking.isValidated == False
 
 
 @clean_database
@@ -751,6 +753,8 @@ def test_patch_booking_by_token_when_user_not_editor_and_unvalid_email(app):
 
     # Then
     assert response.status_code == 404
+    db.session.refresh(booking)
+    assert booking.isValidated == False
 
 
 @clean_database
@@ -772,6 +776,8 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_unvalid
 
     # Then
     assert response.status_code == 404
+    db.session.refresh(booking)
+    assert booking.isValidated == False
 
 
 @clean_database
@@ -819,6 +825,8 @@ def test_patch_booking_by_token_when_booking_is_cancelled(app):
     # Then
     assert response.status_code == 410
     assert response.json()['booking'] == ['Cette réservation a été annulée']
+    db.session.refresh(booking)
+    assert booking.isValidated == False
 
 
 @clean_database
@@ -843,3 +851,5 @@ def test_patch_booking_by_token_when_booking_already_validated(app):
     # Then
     assert response.status_code == 410
     assert response.json()['booking'] == ['Cette réservation a déjà été validée']
+    db.session.refresh(booking)
+    assert booking.isValidated == True
