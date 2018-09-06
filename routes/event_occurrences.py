@@ -1,15 +1,15 @@
 """ event_occurrences """
 from flask import current_app as app, jsonify, request
 
+from domain.event_occurrences import soft_delete_event_occurrence
 from models import Event, EventOccurrence, Offer, PcObject, RightsType, Venue
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_OCCURRENCE_INCLUDES
-from utils.rest import delete, \
-    ensure_current_user_has_rights, \
-    expect_json_data, \
-    load_or_404, \
-    login_or_api_key_required, \
-    handle_rest_get_list
+from utils.rest import ensure_current_user_has_rights, \
+                       expect_json_data, \
+                       load_or_404, \
+                       login_or_api_key_required, \
+                       handle_rest_get_list
 
 
 @app.route('/eventOccurrences', methods=['GET'])
@@ -67,4 +67,7 @@ def delete_event_occurrence(id):
     eo = load_or_404(EventOccurrence, id)
     ensure_current_user_has_rights(RightsType.editor,
                                    eo.offer.venue.managingOffererId)
-    return delete(eo)
+
+    soft_delete_event_occurrence(eo)
+
+    return jsonify(eo._asdict()), 200

@@ -1,7 +1,7 @@
 """ rest """
 import re
 from functools import wraps
-from flask import abort, jsonify, request
+from flask import jsonify, request
 from flask_login import current_user
 from sqlalchemy.exc import ProgrammingError
 

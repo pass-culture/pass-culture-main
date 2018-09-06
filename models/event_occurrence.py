@@ -8,12 +8,14 @@ from models.deactivable_mixin import DeactivableMixin
 from models.event import EventType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from models.soft_deletable_mixin import SoftDeletableMixin
 
 
 class EventOccurrence(PcObject,
                       Model,
                       DeactivableMixin,
-                      ProvidableMixin):
+                      ProvidableMixin,
+                      SoftDeletableMixin):
 
     id = Column(BigInteger,
                 primary_key=True)

@@ -1,15 +1,14 @@
 """ stock """
 from datetime import datetime, timedelta
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import BigInteger, \
-    CheckConstraint, \
-    Column, \
-    DateTime, \
-    DDL, \
-    event, \
-    ForeignKey, \
-    Integer, \
-    Numeric, Boolean
+                       CheckConstraint, \
+                       Column, \
+                       DateTime, \
+                       DDL, \
+                       event, \
+                       ForeignKey, \
+                       Integer, \
+                       Numeric
 from sqlalchemy.orm import relationship
 
 from models.versioned_mixin import VersionedMixin

@@ -3,10 +3,8 @@ from pprint import pformat
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 from sqlalchemy.exc import InternalError
-from sqlalchemy.sql.expression import and_, or_
 
-from domain.stocks import find_offerer_for_new_stock
-from models import Offerer, User, Booking
+from domain.stocks import find_offerer_for_new_stock, soft_delete_stock
 from models.api_errors import ApiErrors
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -16,7 +14,7 @@ from models.pc_object import PcObject
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import booking_queries, stock_queries
+from repository import stock_queries
 from utils.human_ids import dehumanize
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -52,15 +50,6 @@ def query_stocks(ts_query):
             for model in search_models
         ]
     )
-
-
-def _cancel_bookings(all_bookings_with_soft_deleted_stocks):
-    soft_deleted_bookings = []
-    for booking in all_bookings_with_soft_deleted_stocks:
-        booking.isCancelled = True
-        soft_deleted_bookings.append(booking)
-    if soft_deleted_bookings:
-        PcObject.check_and_save(*soft_deleted_bookings)
 
 
 @app.route('/stocks', methods=['GET'])
@@ -141,10 +130,7 @@ def delete_stock(id):
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor,
                                    offerer_id)
-    stock.isSoftDeleted = True
-    PcObject.check_and_save(stock)
 
-    all_bookings_with_soft_deleted_stocks = booking_queries.find_all_with_soft_deleted_stocks()
-    _cancel_bookings(all_bookings_with_soft_deleted_stocks)
+    soft_delete_stock(stock)
 
     return jsonify(stock._asdict()), 200
