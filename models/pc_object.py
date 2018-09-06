@@ -82,7 +82,9 @@ class PcObject():
                 continue
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
-            elif issubclass(type(self), ExtraDataMixin) and key == 'extraData':
+            elif issubclass(type(self), ExtraDataMixin)\
+                 and key == 'extraData'\
+                 and self.extraData:
                 for sub_key in self.extraData:
                     result[sub_key] = self.extraData[sub_key]
             else:
