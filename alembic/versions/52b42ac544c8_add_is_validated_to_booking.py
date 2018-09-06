@@ -1,7 +1,7 @@
 """add isValidated column to booking
 
 Revision ID: 52b42ac544c8
-Revises: 10ea71b5a60b
+Revises: a462a0208015
 Create Date: 2018-09-05 14:35:02.335559
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from sqlalchemy.sql import expression
 
 revision = '52b42ac544c8'
-down_revision = '10ea71b5a60b'
+down_revision = 'a462a0208015'
 branch_labels = None
 depends_on = None
 
