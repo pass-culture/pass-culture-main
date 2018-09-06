@@ -728,6 +728,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email(app):
 
     # Then
     assert response.status_code == 200
+    db.session.refresh(booking)
     assert booking.isValidated == True
 
 
@@ -792,6 +793,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_and_offer_i
 
     # Then
     assert response.status_code == 200
+    db.session.refresh(booking)
     assert booking.isValidated == True
 
 
