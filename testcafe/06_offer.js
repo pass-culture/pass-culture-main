@@ -38,11 +38,9 @@ const scheduleSubmitButton = Selector('button.button.is-primary').withText(
 const submitButton = Selector('button.button.is-primary').withText(
   'Enregistrer'
 )
-const typeOption = Selector('option').withText(
-  'Dédicace / Rencontre / Conférence'
-)
+const typeOption = Selector('option').withText('Conférence — Débat — Dédicace')
 const typeInput = Selector('#offer-type')
-const venueAnchor = Selector("a[href^='/structures/']").withText(
+const venueAnchor = Selector("a[href='/structures/AE/lieux/AE']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 
