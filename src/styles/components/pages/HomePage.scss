@@ -16,7 +16,7 @@
 
 .home-cards {
   margin: auto;
-  box-shadow: 0 0 60px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 0 60px 0 rgba(0, 0, 0, 0.2);
   .home-card {
     color: $white;
     background-color: $red;
@@ -24,7 +24,7 @@
     padding-bottom: 2.6rem;
     &:not(:last-child) {
       border-right: 0.4rem dotted $white;
-      @media(max-width: $tablet) {
+      @media (max-width: $tablet) {
         border-right: none;
         border-bottom: 0.4rem dotted $white;
       }
@@ -49,6 +49,4 @@
       }
     }
   }
-
 }
-
