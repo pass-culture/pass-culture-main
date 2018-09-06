@@ -126,12 +126,10 @@ def get_booking_by_token(token):
         response = {'bookingId': booking.id, 'email': booking.user.email, 'userName': booking.user.publicName, 'offerName': offer_name, 'date': date,
                     'isValidated': booking.isValidated}
         return jsonify(response), 200
-    else:
-        return '', 204
+    return '', 204
 
 
 @app.route('/bookings/token/<token>', methods=["PATCH"])
-@expect_json_data
 def patch_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
@@ -141,7 +139,7 @@ def patch_booking_by_token(token):
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
     check_booking_not_cancelled(booking)
     check_booking_not_already_validated(booking)
-    booking.populateFromDict(request.json)
+    booking.populateFromDict({'isValidated': True})
     PcObject.check_and_save(booking)
 
     return '', 200

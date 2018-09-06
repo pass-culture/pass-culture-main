@@ -679,7 +679,7 @@ def test_patch_booking_by_token_when_user_has_rights(app):
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token), json={'isValidated': True})
+        API_URL + '/bookings/token/{}'.format(booking.token))
 
     # Then
     assert response.status_code == 200
@@ -702,7 +702,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_no_email(app):
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token), json={'isValidated': True})
+        API_URL + '/bookings/token/{}'.format(booking.token))
 
     # Then
     assert response.status_code == 400
@@ -724,10 +724,11 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email(app):
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email), json={'isValidated': True})
+        API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
 
     # Then
     assert response.status_code == 200
+    assert booking.isValidated == True
 
 
 @clean_database
@@ -745,7 +746,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_unvalid_email(app):
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr'), json={'isValidated': True})
+        API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr'))
 
     # Then
     assert response.status_code == 404
@@ -766,7 +767,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_unvalid
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123)), json={'isValidated': True})
+        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123)))
 
     # Then
     assert response.status_code == 404
@@ -787,10 +788,11 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_and_offer_i
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(stock.resolvedOffer.id)), json={'isValidated': True})
+        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(stock.resolvedOffer.id)))
 
     # Then
     assert response.status_code == 200
+    assert booking.isValidated == True
 
 
 @clean_database
@@ -810,7 +812,7 @@ def test_patch_booking_by_token_when_booking_is_cancelled(app):
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token), json={'isValidated': True})
+        API_URL + '/bookings/token/{}'.format(booking.token))
 
     # Then
     assert response.status_code == 410
@@ -834,7 +836,7 @@ def test_patch_booking_by_token_when_booking_already_validated(app):
 
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token), json={'isValidated': True})
+        API_URL + '/bookings/token/{}'.format(booking.token))
 
     # Then
     assert response.status_code == 410
