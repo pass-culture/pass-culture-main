@@ -5,13 +5,10 @@ import { regularOfferer } from './helpers/roles'
 const activationMessage = Selector('ul.actions li.is-italic')
 const arrow = Selector('.caret a')
 const backAnchor = Selector('a.button.is-secondary')
-const closeButton = Selector('.close')
-const createOfferAnchor = Selector('a.button.is-primary')
 const createOffererAnchor = Selector(
   "a.button.is-primary[href='/structures/nouveau']"
 )
 const firstArrow = arrow.nth(0)
-const modalContent = Selector('.modal-content')
 const navbarLink = Selector('a.navbar-link, span.navbar-burger').filterVisible()
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const pageTitleHeader = Selector('h1')
@@ -26,25 +23,6 @@ fixture`03_01 OfferersPage | Je me connecte pour la première fois en tant que n
 
 test("J'arrive sur la page /offres après m'être connecté·e", async t => {
   await t.expect(pageTitleHeader.innerText).eql('Vos offres')
-})
-
-test("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une modale m'informe et je suis redirigé·e vers la page /structures", async t => {
-  await t
-    .expect(createOfferAnchor.innerText)
-    .eql('\nCréer une offre\n')
-    .click(createOfferAnchor)
-    .wait(1000)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres/nouveau')
-  await t
-    .expect(modalContent.innerText)
-    .eql(
-      'Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres\n'
-    )
-  await t.wait(2000).click(closeButton)
-
-  const structuresLocation = await t.eval(() => window.location)
-  await t.expect(structuresLocation.pathname).eql('/structures')
 })
 
 fixture`03_02 OfferersPage | Voir la liste de mes structures`.beforeEach(
