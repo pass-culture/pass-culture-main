@@ -1,7 +1,9 @@
+import get from 'lodash.get'
 import {
   Icon,
   InfiniteScroller,
   requestData,
+  Spinner,
   withLogin,
   withSearch,
 } from 'pass-culture-shared'
@@ -43,36 +45,37 @@ TableSortableTh.propTypes = {
 
 class AccoutingPage extends Component {
   fetchBookings(handleSuccess = () => {}, handleFail = () => {}) {
-    this.props.requestData(
-      'GET',
-      `/offerers/${this.props.offerer.id}/bookings`,
-      {
-        handleSuccess: (state, action) => {
-          handleSuccess(state, action)
-          this.props.goToNextSearchPage()
-        },
-        key: 'bookings',
-        handleFail,
-        normalizer: BookingNormalizer,
-        isMergingArray: false,
-      }
-    )
+    const { dispatch, goToNextSearchPage, offerer } = this.props
+    offerer &&
+      dispatch(
+        requestData('GET', `offerers/${get(offerer, 'id')}/bookings`, {
+          handleSuccess: (state, action) => {
+            handleSuccess(state, action)
+            goToNextSearchPage()
+          },
+          key: 'bookings',
+          handleFail,
+          normalizer: BookingNormalizer,
+          isMergingArray: false,
+        })
+      )
   }
 
   fetchOfferers(handleSuccess = () => {}, handleFail = () => {}) {
-    this.props.requestData('GET', '/offerers', {
-      handleSuccess: (state, action) => {
-        handleSuccess(state, action)
-        this.fetchBookings()
-      },
-      key: 'offerers',
-      handlefail: () => {},
-    })
+    this.props.dispatch(
+      requestData('GET', 'offerers', {
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          this.fetchBookings()
+        },
+        handleFail,
+      })
+    )
   }
 
   handleOffererFilter() {}
 
-  handleDataRequest(handleSuccess, handleFail) {
+  handleDataRequest = (handleSuccess, handleFail) => {
     this.fetchOfferers(handleSuccess, handleFail)
   }
 
@@ -83,6 +86,18 @@ class AccoutingPage extends Component {
     }
 
     this.props.handleQueryParamsChange({ order_by: [field, dir].join('+') })
+  }
+
+  componentDidUpdate(prevProps) {
+    const { handleQueryParamsChange, queryParams, offerers } = this.props
+    const offererId = get(queryParams, 'offererId')
+    if (
+      !offererId &&
+      offerers !== prevProps.offerers &&
+      get(offerers, 'length')
+    ) {
+      handleQueryParamsChange({ offererId: offerers[0].id })
+    }
   }
 
   render() {
@@ -97,7 +112,7 @@ class AccoutingPage extends Component {
       queryParams,
     } = this.props
 
-    const { search, order_by } = queryParams || {}
+    const { order_by } = queryParams || {}
     const [orderBy, orderDirection] = (order_by || '').split('+')
 
     // Inject sort and action once for all
@@ -114,7 +129,7 @@ class AccoutingPage extends Component {
     return (
       <Main
         name="accounting"
-        handleDataRequest={this.handleDataRequest.bind(this)}
+        handleDataRequest={this.handleDataRequest}
         backTo={{ path: '/accueil', label: 'Accueil' }}>
         <div className="section">
           <h1 className="main-title">Comptabilité</h1>
@@ -197,7 +212,12 @@ class AccoutingPage extends Component {
             <InfiniteScroller
               Tag="tbody"
               className="offers-list main-list"
-              handleLoadMore={this.handleDataRequest.bind(this)}>
+              handleLoadMore={this.handleDataRequest}
+              renderLoading={() => (
+                <tr>
+                  <Spinner Tag="td" style={{ justifyContent: 'center' }} />
+                </tr>
+              )}>
               {bookings.map(booking => (
                 <BookingItem key={booking.id} booking={booking} />
               ))}
@@ -212,21 +232,14 @@ class AccoutingPage extends Component {
 const mapStateToProps = (state, ownProps) => {
   const queryParams = searchSelector(state, ownProps.location.search)
   const offerers = offerersSelector(state)
-  let offererId = queryParams.offererId
-  if (!offererId && offerers.length > 0) {
-    offererId = offerers[0].id
-  }
-
   return {
     bookings: bookingsSelector(state),
-    offerer: offererSelector(state, offererId),
+    offerer: offererSelector(state, get(queryParams, 'offererId')),
     offerers,
     queryParams,
     user: state.user,
   }
 }
-
-const mapDispatchToProps = { requestData }
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
@@ -239,5 +252,5 @@ export default compose(
       offererId: null,
     },
   }),
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(mapStateToProps)
 )(AccoutingPage)

@@ -3,6 +3,7 @@
 const autoprefixer = require('autoprefixer')
 const path = require('path')
 const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
@@ -12,7 +13,6 @@ const eslintFormatter = require('react-dev-utils/eslintFormatter')
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
 const paths = require('./paths')
 const getClientEnvironment = require('./env')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -267,8 +267,8 @@ module.exports = {
     // in order to make the sw cache aware of them
     new CopyWebpackPlugin(
       ['bmp', 'pdf', 'jpg', 'jpeg', 'png'].map(extension => ({
-        from: path.resolve(paths.appPublic + `/**/*.${extension}`),
-        to: path.resolve(paths.appBuild + `/**/*.${extension}`),
+        from: path.resolve(`${paths.appPublic}/**/*.${extension}`),
+        to: path.resolve(`${paths.appBuild}/**/*.${extension}`),
       }))
     ),
     // Makes some environment variables available in index.html.
