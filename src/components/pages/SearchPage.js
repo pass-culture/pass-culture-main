@@ -7,19 +7,21 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import {
-  assignData,
   Icon,
   InfiniteScroller,
   requestData,
-  showModal,
   withSearch,
   pluralize,
 } from 'pass-culture-shared'
+
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
 import SearchResultItem from '../SearchResultItem'
+import { SearchFilter } from '../SearchFilter'
 import { selectRecommendations } from '../../selectors'
 import searchSelector from '../../selectors/search'
+// import { toggleFilterMenu } from '../reducers/filterMenu'
+import { toggleMainMenu } from '../../reducers/menu'
 
 const renderPageHeader = () => (
   <header>
@@ -35,25 +37,34 @@ const renderPageFooter = () => {
 }
 
 class SearchPage extends Component {
+  onFilterClick = () => {
+    const { dispatch } = this.props
+    dispatch(toggleMainMenu())
+  }
+
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const {
-      goToNextSearchPage,
-      location,
-      querySearch,
-      requestData, // eslint-disable-line no-shadow
-    } = this.props
+    const { dispatch, goToNextSearchPage, location, querySearch } = this.props
     if (get(location, 'search.length'))
-      requestData('GET', `recommendations?${querySearch}`, {
-        handleFail,
-        handleSuccess: (state, action) => {
-          handleSuccess(state, action)
-          goToNextSearchPage()
-        },
-      })
+      dispatch(
+        requestData('GET', `recommendations?${querySearch}`, {
+          handleFail,
+          handleSuccess: (state, action) => {
+            handleSuccess(state, action)
+            goToNextSearchPage()
+          },
+        })
+      )
   }
 
   render() {
-    const { handleSearchChange, queryParams, recommendations } = this.props
+    const {
+      handleClearQueryParams,
+      handleQueryParamsChange,
+      handleRemoveFilter,
+      handleSearchChange,
+      queryParams,
+      recommendations,
+    } = this.props
     const { search } = queryParams || {}
 
     return (
@@ -80,7 +91,11 @@ class SearchPage extends Component {
                   Chercher
                 </button>
               </div>
-              <button type="button" className="button is-secondary">
+              <button
+                type="button"
+                className="button is-secondary"
+                onClick={this.onFilterClick}
+              >
                 &nbsp;
                 <Icon svg="ico-filter" />
                 &nbsp;
@@ -88,6 +103,11 @@ class SearchPage extends Component {
             </div>
           </form>
         </div>
+        <SearchFilter
+          handleQueryParamsChange={handleQueryParamsChange}
+          handleRemoveFilter={handleRemoveFilter}
+          handleClearQueryParams={handleClearQueryParams}
+        />
         <InfiniteScroller
           className="recommendations-list main-list"
           handleLoadMore={this.handleDataRequest}
@@ -110,13 +130,16 @@ SearchPage.defaultProps = {
 }
 
 SearchPage.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   goToNextSearchPage: PropTypes.func.isRequired,
+  handleClearQueryParams: PropTypes.func.isRequired,
+  handleQueryParamsChange: PropTypes.func.isRequired,
+  handleRemoveFilter: PropTypes.func.isRequired,
   handleSearchChange: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
   queryParams: PropTypes.object.isRequired,
   querySearch: PropTypes.string,
   recommendations: PropTypes.array.isRequired,
-  requestData: PropTypes.func.isRequired,
 }
 
 export default compose(
@@ -126,15 +149,12 @@ export default compose(
       search: undefined,
     },
   }),
-  connect(
-    (state, ownProps) => {
-      const queryParams = searchSelector(state, ownProps.location.search)
-      return {
-        queryParams,
-        recommendations: selectRecommendations(state),
-        user: state.user,
-      }
-    },
-    { assignData, requestData, showModal }
-  )
+  connect((state, ownProps) => {
+    const queryParams = searchSelector(state, ownProps.location.search)
+    return {
+      queryParams,
+      recommendations: selectRecommendations(state),
+      user: state.user,
+    }
+  })
 )(SearchPage)
