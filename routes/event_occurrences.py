@@ -66,5 +66,5 @@ def edit_event_occurrence(id):
 def delete_event_occurrence(id):
     eo = load_or_404(EventOccurrence, id)
     ensure_current_user_has_rights(RightsType.editor,
-                                   eo.venue.managingOffererId)
+                                   eo.offer.venue.managingOffererId)
     return delete(eo)
