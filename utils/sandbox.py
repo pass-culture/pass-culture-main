@@ -205,7 +205,7 @@ def do_sandbox():
     for booking_mock in booking_mocks:
         stock = stocks[booking_mock['stockIndex']]
         user = User.query.filter_by(email=booking_mock['userEmail']).one()
-        query = Booking.query.filter_by(stockId=stock.id)
+        query = Booking.query.filter_by(stockId=stock.id, userId=user.id, token=booking_mock['token'])
         if query.count() == 0:
             booking = Booking(from_dict=booking_mock)
             booking.stock = stock

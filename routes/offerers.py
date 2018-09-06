@@ -8,7 +8,7 @@ from models import Offerer, PcObject, RightsType, UserOfferer
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
 from utils.human_ids import dehumanize
-from utils.includes import BOOKING_INCLUDES, OFFERER_INCLUDES
+from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
                        expect_json_data, \
                        handle_rest_get_list, \
@@ -64,7 +64,7 @@ def get_offerer_bookings(id):
 
     bookings_reimbursements = find_all_booking_reimbursement(bookings)
 
-    return jsonify([b.as_dict(include=BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
+    return jsonify([b.as_dict(include=PRO_BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
 
 @app.route('/offerers', methods=['POST'])
 @login_or_api_key_required
