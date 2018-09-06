@@ -2,14 +2,11 @@ import traceback
 from datetime import datetime
 from pprint import pprint
 
-from flask import current_app as app
-
 from models.event_occurrence import EventOccurrence
 from models.stock import Stock
 from utils.mailing import send_final_booking_recap_email
 
 
-@app.manager.command
 def send_final_booking_recaps():
     try:
         do_send_final_booking_recaps()

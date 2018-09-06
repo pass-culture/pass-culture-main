@@ -5,6 +5,7 @@ from flask_script import Manager
 from mailjet_rest import Client
 
 from local_providers.install import install_local_providers
+from scripts.install import install_scripts
 from models.db import db
 from models.install import install_models
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
@@ -26,7 +27,7 @@ app.manager = Manager(create_app)
 with app.app_context():
     install_models()
     install_local_providers()
-    import scripts
+    install_scripts()
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
 
