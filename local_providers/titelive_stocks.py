@@ -79,7 +79,7 @@ class TiteLiveStocks(LocalProvider):
                 line = self.data_lines.__next__()
             isRightVenue = str(line[1]) == self.venueProvider.venueIdAtOfferProvider
 
-        thing = Thing.query.filter((Thing.type == ThingType.LIVRE_EDITION) &
+        thing = Thing.query.filter((Thing.type == ThingType.LIVRE_EDITION.name) &
                                    (Thing.idAtProviders == str(line[2])))\
                            .one_or_none()
 
