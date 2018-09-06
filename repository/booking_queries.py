@@ -1,4 +1,6 @@
-from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer
+from sqlalchemy.orm import aliased
+
+from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer, User
 
 
 def find_all_by_user_id(user_id):
@@ -40,3 +42,15 @@ def find_bookings_from_recommendation(reco, user):
 
 def find_all_with_soft_deleted_stocks():
     return Booking.query.join(Stock).filter_by(isSoftDeleted=True).all()
+
+
+def find_by_token(token, email=None, offer_id=None):
+    query = Booking.query.filter_by(token=token)
+    if email:
+        query = query.join(User).filter_by(email=email)
+    if offer_id:
+        query_offer_1 = Booking.query.join(Stock).join(Offer).filter_by(id=offer_id)
+        query_offer_2 = Booking.query.join(Stock).join(EventOccurrence).join(aliased(Offer)).filter_by(id=offer_id)
+        query_offer = query_offer_1.union_all(query_offer_2)
+        query = query.intersect_all(query_offer)
+    return query.first_or_404()
