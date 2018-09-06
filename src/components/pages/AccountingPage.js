@@ -77,7 +77,7 @@ class AccoutingPage extends Component {
   }
 
   handleSortChange(field, currentSort) {
-    let dir = currentSort.dir
+    let dir = currentSort.dir || 'asc'
     if (currentSort.field === field) {
       dir = dir === 'asc' ? 'desc' : 'asc'
     }
