@@ -21,7 +21,7 @@ def upgrade():
     """
       BEGIN TRANSACTION;
         ALTER TABLE venue ALTER COLUMN "bookingEmail" DROP NOT NULL;
-        INSERT INTO venue ("name", "isVirtual", "managingOffererId") (SELECT 'Offre en ligne', True, o.id FROM offerer o);
+        INSERT INTO venue ("name", "isVirtual", "managingOffererId", "thumbCount") (SELECT 'Offre en ligne', True, o.id, 0 FROM offerer o);
       COMMIT;
     """)
 
