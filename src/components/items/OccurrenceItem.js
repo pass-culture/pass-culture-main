@@ -34,34 +34,20 @@ class OccurrenceForm extends Component {
   }
 
   onDeleteClick = () => {
-    const { occurrence, stock, isFullyEditable, requestData } = this.props
-
-    // IF AN OFFER IS ASSOCIATED WE NEED TO DELETE IT FIRST
-    if (get(stock, 'id')) {
-      requestData('DELETE', `stocks/${stock.id}`, {
-        key: 'stocks',
-        handleSuccess: () => {
-          isFullyEditable &&
-            requestData('DELETE', `eventOccurrences/${occurrence.id}`, {
-              key: 'eventOccurrences',
-            })
-        },
-      })
-    } else if (isFullyEditable) {
-      requestData('DELETE', `eventOccurrences/${occurrence.id}`, {
-        key: 'eventOccurrences',
-      })
-    }
+    const { dispatch, occurrence } = this.props
+    dispatch(requestData('DELETE', `eventOccurrences/${occurrence.id}`))
   }
 
   handleCrossingEndDatetime = () => {
-    const { formBeginningDatetime, formEndDatetime, mergeForm } = this.props
+    const { dispatch, formBeginningDatetime, formEndDatetime } = this.props
     if (formEndDatetime < formBeginningDatetime) {
-      mergeForm('occurrence', {
-        endDatetime: moment(formEndDatetime)
-          .add(1, 'day')
-          .toISOString(),
-      })
+      dispatch(
+        mergeForm('occurrence', {
+          endDatetime: moment(formEndDatetime)
+            .add(1, 'day')
+            .toISOString(),
+        })
+      )
     }
   }
 
@@ -77,46 +63,55 @@ class OccurrenceForm extends Component {
 
   handleInitBookingLimitDatetime = () => {
     const {
+      dispatch,
       formBookingLimitDatetime,
       isOfferReadOnly,
-      mergeForm,
       occurrence,
     } = this.props
     if (!get(occurrence, 'id') || formBookingLimitDatetime || isOfferReadOnly) {
       return
     }
 
-    mergeForm('stock', {
-      bookingLimitDatetime: moment(occurrence.beginningDatetime)
-        .subtract(2, 'day')
-        .toISOString(),
-    })
+    dispatch(
+      mergeForm('stock', {
+        bookingLimitDatetime: moment(occurrence.beginningDatetime)
+          .subtract(2, 'day')
+          .toISOString(),
+      })
+    )
   }
 
   handleInitEndDatetime = () => {
-    const { formBeginningDatetime, mergeForm, occurrence } = this.props
+    const {
+      dispatch,
+      formBeginningDatetime,
+      mergeForm,
+      occurrence,
+    } = this.props
     if (get(occurrence, 'id')) {
       return
     }
-    mergeForm('occurrence', {
-      endDatetime: moment(formBeginningDatetime)
-        .add(1, 'hour')
-        .toISOString(),
-    })
+    dispatch(
+      mergeForm('occurrence', {
+        endDatetime: moment(formBeginningDatetime)
+          .add(1, 'hour')
+          .toISOString(),
+      })
+    )
   }
 
   handleInitPrice = () => {
-    const { formPrice, mergeForm, stock } = this.props
+    const { dispatch, formPrice, stock } = this.props
     if (get(stock, 'id') || formPrice) {
       return
     }
-    mergeForm('stock', { price: 0 })
+    dispatch(mergeForm('stock', { price: 0 }))
   }
 
   handleNextDatetimes = () => {
     const {
+      dispatch,
       formBeginningDatetime,
-      mergeForm,
       occurrence,
       occurrences,
     } = this.props
@@ -130,10 +125,12 @@ class OccurrenceForm extends Component {
         1,
         'day'
       )
-      mergeForm('occurrence', {
-        beginningDatetime,
-        endDatetime: moment(beginningDatetime).add(1, 'hour'),
-      })
+      dispatch(
+        mergeForm('occurrence', {
+          beginningDatetime,
+          endDatetime: moment(beginningDatetime).add(1, 'hour'),
+        })
+      )
     }
   }
 
@@ -143,9 +140,9 @@ class OccurrenceForm extends Component {
   }
 
   handleResetForm = () => {
-    const { isEditing, resetForm } = this.props
+    const { dispatch, isEditing } = this.props
     if (!isEditing) {
-      resetForm()
+      dispatch(resetForm())
     }
   }
 
@@ -342,80 +339,77 @@ class OccurrenceForm extends Component {
 
 export default compose(
   withRouter,
-  connect(
-    (state, ownProps) => {
-      const search = searchSelector(state, ownProps.location.search)
-      const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
+  connect((state, ownProps) => {
+    const search = searchSelector(state, ownProps.location.search)
+    const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
 
-      const offer = offerSelector(state, ownProps.match.params.offerId)
-      const { eventId, venueId } = offer || {}
+    const offer = offerSelector(state, ownProps.match.params.offerId)
+    const { eventId, venueId } = offer || {}
 
-      const occurrence = occurrenceSelector(
+    const occurrence = occurrenceSelector(
+      state,
+      ownProps.occurrence,
+      ownProps.match.params.offerId,
+      venueId
+    )
+    const occurrenceId = get(occurrence, 'id')
+
+    const isEventOccurrenceReadOnly =
+      !eventOccurrenceIdOrNew ||
+      (eventOccurrenceIdOrNew === 'nouvelle' && occurrenceId) ||
+      (eventOccurrenceIdOrNew !== 'nouvelle' &&
+        occurrenceId !== eventOccurrenceIdOrNew) ||
+      stockIdOrNew ||
+      !ownProps.isFullyEditable
+
+    const venue = venueSelector(state, venueId)
+
+    const stock = stockSelector(
+      state,
+      get(ownProps, 'occurrence.id'),
+      get(venue, 'managingOffererId')
+    )
+    const stockId = get(stock, 'id')
+
+    const isOfferReadOnly =
+      !occurrenceId ||
+      !eventOccurrenceIdOrNew ||
+      eventOccurrenceIdOrNew === 'nouvelle' ||
+      eventOccurrenceIdOrNew !== occurrenceId ||
+      !stockIdOrNew ||
+      (stockIdOrNew === 'nouveau' && stockId) ||
+      (stockIdOrNew !== 'nouveau' && stockId !== stockIdOrNew)
+
+    const isEditing = !isEventOccurrenceReadOnly || !isOfferReadOnly
+
+    return {
+      event: eventSelector(state, eventId),
+      eventId,
+      eventOccurrenceIdOrNew,
+      formBeginningDatetime: get(
         state,
-        ownProps.occurrence,
-        ownProps.match.params.offerId,
-        venueId
-      )
-      const occurrenceId = get(occurrence, 'id')
-
-      const isEventOccurrenceReadOnly =
-        !eventOccurrenceIdOrNew ||
-        (eventOccurrenceIdOrNew === 'nouvelle' && occurrenceId) ||
-        (eventOccurrenceIdOrNew !== 'nouvelle' &&
-          occurrenceId !== eventOccurrenceIdOrNew) ||
-        stockIdOrNew ||
-        !ownProps.isFullyEditable
-
-      const venue = venueSelector(state, venueId)
-
-      const stock = stockSelector(
+        `form.occurrence${occurrenceId || ''}.beginningDatetime`
+      ),
+      formBookingLimitDatetime: get(
         state,
-        get(ownProps, 'occurrence.id'),
-        get(venue, 'managingOffererId')
-      )
-      const stockId = get(stock, 'id')
-
-      const isOfferReadOnly =
-        !occurrenceId ||
-        !eventOccurrenceIdOrNew ||
-        eventOccurrenceIdOrNew === 'nouvelle' ||
-        eventOccurrenceIdOrNew !== occurrenceId ||
-        !stockIdOrNew ||
-        (stockIdOrNew === 'nouveau' && stockId) ||
-        (stockIdOrNew !== 'nouveau' && stockId !== stockIdOrNew)
-
-      const isEditing = !isEventOccurrenceReadOnly || !isOfferReadOnly
-
-      return {
-        event: eventSelector(state, eventId),
-        eventId,
-        eventOccurrenceIdOrNew,
-        formBeginningDatetime: get(
-          state,
-          `form.occurrence${occurrenceId || ''}.beginningDatetime`
-        ),
-        formBookingLimitDatetime: get(
-          state,
-          `form.stock${stockId || ''}.bookingLimitDatetime`
-        ),
-        formEndDatetime: get(
-          state,
-          `form.occurrence${occurrenceId || ''}.endDatetime`
-        ),
-        formPrice: get(state, `form.stock${stockId || ''}.price`),
-        isEditing,
-        isEventOccurrenceReadOnly,
-        isOfferReadOnly,
-        occurrence,
-        offer,
-        occurrences: occurrencesSelector(state, venueId, eventId),
-        stock,
-        stockIdOrNew,
-        tz: timezoneSelector(state, venueId),
-        venue,
-        venueId,
-      }
-    },
-    { mergeForm, requestData, resetForm }
-  )
+        `form.stock${stockId || ''}.bookingLimitDatetime`
+      ),
+      formEndDatetime: get(
+        state,
+        `form.occurrence${occurrenceId || ''}.endDatetime`
+      ),
+      formPrice: get(state, `form.stock${stockId || ''}.price`),
+      isEditing,
+      isEventOccurrenceReadOnly,
+      isOfferReadOnly,
+      occurrence,
+      offer,
+      occurrences: occurrencesSelector(state, venueId, eventId),
+      stock,
+      stockIdOrNew,
+      tz: timezoneSelector(state, venueId),
+      venue,
+      venueId,
+    }
+  })
 )(OccurrenceForm)
