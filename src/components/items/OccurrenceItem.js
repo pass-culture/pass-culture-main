@@ -196,30 +196,6 @@ class OccurrenceForm extends Component {
     const beginningDatetime =
       formBeginningDatetime || get(occurrence, 'beginningDatetime')
 
-    const $confirmDelete = isDeleting && (
-      <tr className="occurrence-form">
-        <td colSpan="6">
-          En confirmant l'annulation de cette date, vous supprimerez aussi
-          toutes les réservations associées. Êtes-vous sûrs de vouloir continuer
-          ?
-        </td>
-        <td>
-          <button
-            className="button is-primary"
-            onClick={this.onConfirmDeleteClick}>
-            Oui
-          </button>
-        </td>
-        <td>
-          <button
-            className="button is-primary"
-            onClick={this.onCancelDeleteClick}>
-            Non
-          </button>
-        </td>
-      </tr>
-    )
-
     return (
       <Fragment>
         <tr
@@ -370,7 +346,29 @@ class OccurrenceForm extends Component {
             )}
           </td>
         </tr>
-        {$confirmDelete}
+        {isDeleting && (
+          <tr>
+            <td className="is-size-7" colSpan="6">
+              En confirmant l'annulation de cette date, vous supprimerez aussi
+              toutes les réservations associées. <br />
+              Êtes-vous sûrs de vouloir continuer&nbsp;?
+            </td>
+            <td>
+              <button
+                className="button is-primary"
+                onClick={this.onConfirmDeleteClick}>
+                Oui
+              </button>
+            </td>
+            <td>
+              <button
+                className="button is-primary"
+                onClick={this.onCancelDeleteClick}>
+                Non
+              </button>
+            </td>
+          </tr>
+        )}
       </Fragment>
     )
   }
