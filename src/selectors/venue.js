@@ -4,7 +4,7 @@ import createCachedSelector from 're-reselect'
 import venuesSelector from './venues'
 
 export default createCachedSelector(
-  state => venuesSelector(state),
+  state => state.data.venues,
   (state, venueId) => venueId,
   (state, venueId, offererId) => offererId,
   state => get(state, 'user.email'),
