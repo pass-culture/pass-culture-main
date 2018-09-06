@@ -467,7 +467,7 @@ def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_t
 @pytest.mark.token
 def test_get_booking_by_token_when_user_has_rights(app):
     # Given
-    user = create_user(email='user@email.fr')
+    user = create_user(email='user@email.fr', public_name='John Doe')
     admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
     offerer = create_offerer()
     user_offerer = create_user_offerer(admin_user, offerer)
@@ -490,6 +490,7 @@ def test_get_booking_by_token_when_user_has_rights(app):
     assert response_json['date'] == date
     assert response_json['isValidated'] == False
     assert response_json['bookingId'] == booking.id
+    assert response_json['userName'] == 'John Doe'
 
 
 @clean_database
