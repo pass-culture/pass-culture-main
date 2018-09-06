@@ -7,6 +7,7 @@
     "antd": "^3.8.1",
     "archiver": "^2.1.1",
     "autoprefixer": "7.1.6",
+    "copy-webpack-plugin": "^4.5.2",
     "babel-core": "6.26.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
