@@ -2,6 +2,7 @@
   "name": "pass-culture-browser",
   "version": "0.2.1",
   "private": true,
+  "homepage": "/",
   "dependencies": {
     "antd": "^3.8.1",
     "archiver": "^2.1.1",
@@ -164,6 +165,5 @@
       "jsx",
       "node"
     ]
-  },
-  "homepage": "."
+  }
 }
