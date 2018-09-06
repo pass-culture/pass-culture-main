@@ -1,3 +1,4 @@
+""" models event occurrence test """
 from datetime import datetime, timedelta
 
 import pytest
@@ -5,9 +6,13 @@ import pytest
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.includes import EVENT_OCCURRENCE_INCLUDES
-from utils.test_utils import create_event_occurrence, create_thing_offer, create_venue, create_offerer, \
-    create_stock_from_event_occurrence, create_event_offer
+from utils.includes import EVENT_OCCURRENCE_INCLUDES, OFFER_INCLUDES
+from utils.test_utils import create_event_occurrence, \
+                             create_event_offer, \
+                             create_thing_offer, \
+                             create_offerer, \
+                             create_stock_from_event_occurrence, \
+                             create_venue
 
 
 @pytest.mark.standalone
@@ -49,6 +54,29 @@ def test_soft_deleted_stocks_do_not_appear_in_asdict(app):
     event_occurrence_dict = event_occurrence._asdict(include=EVENT_OCCURRENCE_INCLUDES)
 
     # Then
-    retrieved_stock_ids = set(map(lambda x: x['id'], event_occurrence_dict['stocks']))
-    expected_stock_ids = set(map(humanize, [stock1.id, stock2.id, stock3.id]))
+    retrieved_stock_ids = set([s['id'] for s in event_occurrence_dict['stocks']])
+    expected_stock_ids = set([humanize(s_id) for s_id in [stock1.id, stock2.id, stock3.id]])
     assert retrieved_stock_ids == expected_stock_ids
+
+@pytest.mark.standalone
+@clean_database
+def test_soft_deleted_event_occurences_do_not_appear_in_asdict(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    eo1 = create_event_occurrence(offer)
+    eo2 = create_event_occurrence(offer)
+    eo3 = create_event_occurrence(offer)
+    eo4 = create_event_occurrence(offer)
+
+    eo4.isSoftDeleted = True
+    PcObject.check_and_save(eo1, eo2, eo3, eo4)
+
+    # When
+    offer_dict = offer._asdict(include=OFFER_INCLUDES)
+
+    # Then
+    retrieved_eo_ids = set([eo['id'] for eo in offer_dict['eventOccurences']])
+    expected_eo_ids = set([humanize(eo_id) for eo_id in [eo1.id, eo2.id, eo3.id]])
+    assert retrieved_eo_ids == expected_eo_ids
