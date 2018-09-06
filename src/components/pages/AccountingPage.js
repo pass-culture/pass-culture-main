@@ -16,7 +16,7 @@ import bookingsSelector from '../../selectors/bookings'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import searchSelector from '../../selectors/search'
-import { BookingNormalizer } from '../../utils/normalizers'
+import { bookingNormalizer, offererNormalizer } from '../../utils/normalizers'
 import BookingItem from '../items/BookingItem'
 import Main from '../layout/Main'
 
@@ -55,7 +55,7 @@ class AccoutingPage extends Component {
           },
           key: 'bookings',
           handleFail,
-          normalizer: BookingNormalizer,
+          normalizer: bookingNormalizer,
           isMergingArray: false,
         })
       )
@@ -69,6 +69,7 @@ class AccoutingPage extends Component {
           this.fetchBookings()
         },
         handleFail,
+        normalizer: offererNormalizer,
       })
     )
   }
