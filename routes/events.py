@@ -25,11 +25,10 @@ def get_event(id):
 def post_event():
     event = Event()
     event.populateFromDict(request.json)
-    del(event.extraData['venueId'])
-    offer = Offer()
-    offer.venueId = dehumanize(request.json['venueId'])
-    offer.event = event
-    PcObject.check_and_save(event, offer)
+    ocas = Offer()
+    ocas.venueId = dehumanize(request.json['venueId'])
+    ocas.event = event
+    PcObject.check_and_save(event, ocas)
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)
     ), 201

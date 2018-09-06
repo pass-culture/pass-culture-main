@@ -5,7 +5,6 @@ from flask import current_app as app, jsonify, request
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.thing import Thing
-from utils.human_ids import dehumanize
 from utils.includes import THING_INCLUDES
 from utils.rest import expect_json_data, \
     load_or_404, \
@@ -23,13 +22,6 @@ def get_thing(ofType, identifier):
     return json.dumps(thing)
 
 
-@app.route('/things/<identifier>', methods=['GET'])
-def get_thing_by_id(identifier):
-    query = Thing.query.filter_by(id=dehumanize(identifier))
-    thing = query.first_or_404()
-    return json.dumps(thing)
-
-
 @app.route('/things', methods=['GET'])
 def list_things():
     return handle_rest_get_list(Thing)
@@ -41,10 +33,10 @@ def list_things():
 def post_thing():
     thing = Thing()
     thing.populateFromDict(request.json)
-    offer = Offer()
-    offer.venueId = dehumanize(request.json['venueId'])
-    offer.thing = thing
-    PcObject.check_and_save(thing, offer)
+    ocas = Offer()
+    ocas.venue = request.json['venueId']
+    ocas.thing = thing
+    PcObject.check_and_save(thing, ocas)
     return jsonify(thing._asdict(
         include=THING_INCLUDES,
         has_dehumanized_id=True,
