@@ -19,6 +19,7 @@ from models import Thing
 from models import User
 from models import UserOfferer
 from models import Venue
+from models import Recommendation
 from models.api_errors import ApiErrors
 from models.db import db
 from models.pc_object import PcObject
@@ -238,6 +239,58 @@ def get_tracked_activity_from_id():
     file_name = 'export_%s_tracked_activity.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = []
     return _make_csv_response(file_name, headers, result)
+
+@app.route('/exports/offerers_users_offers_bookings', methods=['GET'])
+def get_offerers_users_offers_bookings():
+    _check_token()
+    department = request.args.get('department')
+
+    query = db.session.query(Offerer.name, UserOfferer.id, User.email, User.dateCreated, Venue.departementCode, Offer.dateCreated, Event.name, Activity.issued_at, Booking.dateModified) \
+        .join(Venue) \
+        .outerjoin(Offer) \
+        .outerjoin(EventOccurrence)\
+        .join(Stock)\
+        .outerjoin(Booking) \
+        .join(Event) \
+        .outerjoin(UserOfferer) \
+        .outerjoin (User) \
+        .join(Activity, Activity.table_name == 'event') \
+        .filter(Activity.verb == 'insert', Activity.data['id'].astext.cast(db.Integer) == Event.id)
+
+    if department:
+        query = query.filter(Venue.departementCode == department)
+
+    result = query.order_by(Offerer.id).all()
+    file_name = 'export_%s_offerers_users_offers_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = ['Offerer_name', 'UserOfferer_id', 'User_email', 'User_dateCreated', 'Venue_departementCode', 'Offer_dateCreated', 'Event_name', 'Activity_issued_at', 'Booking_dateModified']
+    return _make_csv_response(file_name, headers, result)
+
+
+@app.route('/exports/recommendations', methods=['GET'])
+def get_recommendations():
+    _check_token()
+    department = request.args.get('department')
+    date_min = request.args.get('date_min')
+    date_max = request.args.get('date_max')
+
+    query = db.session.query(Offer.id, Event.name, Thing.name, func.count(Offer.id), Venue.departementCode, Recommendation.isClicked, Recommendation.isFavorite) \
+        .join(Recommendation) \
+        .outerjoin(Event) \
+        .outerjoin(Thing) \
+        .join(Venue) \
+
+    if department:
+        query = query.filter(Venue.departementCode == department)
+    if date_min:
+        query = query.filter(Recommendation.dateCreated >= date_min)
+    if date_max:
+        query = query.filter(Recommendation.dateCreated <= date_max)
+
+    result = query.group_by(Offer.id, Event.name, Thing.name, Venue.departementCode, Recommendation.isClicked, Recommendation.isFavorite).order_by(Offer.id).all()
+    file_name = 'export_%s_recommendations.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = ['Offer_id', 'Event_name', 'Thing_name', 'countOffer_id', 'Venue_departementCode', 'Recommendation_isClicked', 'Recommendation_isFavorite']
+    return _make_csv_response(file_name, headers, result)
+
 
 def _make_csv_response(file_name, headers, result):
     csv_file = StringIO()
