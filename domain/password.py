@@ -8,7 +8,7 @@ from models import ApiErrors
 RESET_PASSWORD_TOKEN_LENGTH = 10
 
 
-def change_password(user, old_password, new_password):
+def check_new_password_validity(user, old_password, new_password):
     errors = ApiErrors()
 
     if not user.checkPassword(old_password):
@@ -18,9 +18,6 @@ def change_password(user, old_password, new_password):
     if user.checkPassword(new_password):
         errors.addError('newPassword', 'Votre nouveau mot de passe est identique à l\'ancien')
         raise errors
-
-    user.setPassword(new_password)
-
 
 def validate_request(json):
     errors = ApiErrors()

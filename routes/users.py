@@ -4,10 +4,9 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
-from domain import password
 from domain.expenses import get_expenses
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
-    check_password_strength
+    check_password_strength, check_new_password_validity, generate_reset_token, validate_request
 from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -47,9 +46,12 @@ def patch_profile():
 @expect_json_data
 def post_change_password():
     json = request.get_json()
-    password.validate_request(json)
-    check_password_strength(request.get_json()['newPassword'])
-    password.change_password(current_user, json.get('oldPassword'), json.get('newPassword'))
+    validate_request(json)
+    new_password = request.get_json()['newPassword']
+    old_password = json.get('oldPassword')
+    check_password_strength(new_password)
+    check_new_password_validity(current_user, old_password, new_password)
+    current_user.setPassword(new_password)
     PcObject.check_and_save(current_user)
     return '', 204
 
@@ -64,7 +66,7 @@ def post_for_password_token():
     if not user:
         return '', 204
 
-    password.generate_reset_token(user)
+    generate_reset_token(user)
     PcObject.check_and_save(user)
 
     try:
@@ -79,7 +81,9 @@ def post_for_password_token():
 @expect_json_data
 def post_new_password():
     validate_new_password_request(request)
-    user = find_user_by_reset_password_token(request.get_json()['token'])
+    token = request.get_json()['token']
+    new_password = request.get_json()['newPassword']
+    user = find_user_by_reset_password_token(token)
 
     if not user:
         errors = ApiErrors()
@@ -87,8 +91,8 @@ def post_new_password():
         raise errors
 
     check_reset_token_validity(user)
-    check_password_strength(request.get_json()['newPassword'])
-    user.setPassword(request.get_json()['newPassword'])
+    check_password_strength(new_password)
+    user.setPassword(new_password)
     PcObject.check_and_save(user)
     return '', 204
 
