@@ -4,6 +4,7 @@ import string
 from datetime import datetime, timedelta
 
 from models import ApiErrors
+from utils.token import random_token
 
 RESET_PASSWORD_TOKEN_LENGTH = 10
 
@@ -19,7 +20,7 @@ def check_new_password_validity(user, old_password, new_password):
         errors.addError('newPassword', 'Votre nouveau mot de passe est identique à l\'ancien')
         raise errors
 
-def validate_request(json):
+def validate_change_password_request(json):
     errors = ApiErrors()
 
     if 'oldPassword' not in json:
@@ -32,7 +33,7 @@ def validate_request(json):
 
 
 def generate_reset_token(user):
-    token = ''.join(_random_alphanum_char() for _ in range(RESET_PASSWORD_TOKEN_LENGTH))
+    token = random_token(length=RESET_PASSWORD_TOKEN_LENGTH)
     user.resetPasswordToken = token
     user.resetPasswordTokenValidityLimit = datetime.utcnow() + timedelta(hours=24)
 

@@ -5,15 +5,17 @@ import random
 from utils.human_ids import humanize
 
 
-def tokenify(indexes):
-    return  "".join([humanize(index) for index in indexes])
-
-def random_token(length = 3):
+def random_token(length=6):
     token = random.SystemRandom()
-    return tokenify([token.randint(1, 255) for index in range(length)])
+    return _tokenify([token.randint(1, 255) for index in range(length // 2)])
 
-def get_all_tokens(length = 3):
+
+def get_all_tokens(length=3):
     return map(
-        tokenify,
+        _tokenify,
         itertools.product(*[range(1, 256) for index in range(length)])
     )
+
+
+def _tokenify(indexes):
+    return "".join([humanize(index) for index in indexes])

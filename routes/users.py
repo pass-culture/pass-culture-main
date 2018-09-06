@@ -6,7 +6,7 @@ from flask_login import current_user, login_required, logout_user, login_user
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.expenses import get_expenses
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
-    check_password_strength, check_new_password_validity, generate_reset_token, validate_request
+    check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
 from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -46,7 +46,7 @@ def patch_profile():
 @expect_json_data
 def post_change_password():
     json = request.get_json()
-    validate_request(json)
+    validate_change_password_request(json)
     new_password = request.get_json()['newPassword']
     old_password = json.get('oldPassword')
     check_password_strength(new_password)
