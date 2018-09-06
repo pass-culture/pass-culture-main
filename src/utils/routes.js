@@ -14,6 +14,7 @@ import SigninPage from '../components/pages/SigninPage'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
 import VenuePage from '../components/pages/VenuePage'
+import LostPasswordPage from '../components/pages/LostPasswordPage'
 
 const routes = [
   {
@@ -104,6 +105,11 @@ const routes = [
     component: TermsPage,
     path: '/mentions-legales',
     title: 'Mentions Légales',
+  },
+  {
+    component: LostPasswordPage,
+    path: '/mot-de-passe-perdu',
+    title: 'Mot de passe perdu',
   },
 ]
 
