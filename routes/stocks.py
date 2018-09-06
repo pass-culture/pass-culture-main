@@ -131,6 +131,8 @@ def delete_stock(id):
     ensure_current_user_has_rights(RightsType.editor,
                                    offerer_id)
 
-    soft_delete_stock(stock)
+    stock_and_bookings_to_save = soft_delete_stock(stock)
+
+    PcObject.check_and_save(*stock_and_bookings_to_save)
 
     return jsonify(stock._asdict()), 200

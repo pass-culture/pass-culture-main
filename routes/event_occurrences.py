@@ -68,6 +68,8 @@ def delete_event_occurrence(id):
     ensure_current_user_has_rights(RightsType.editor,
                                    eo.offer.venue.managingOffererId)
 
-    soft_delete_event_occurrence(eo)
+    event_occurence_and_stock_and_bookings_to_save = soft_delete_event_occurrence(eo)
+
+    PcObject.check_and_save(*event_occurence_and_stock_and_bookings_to_save)
 
     return jsonify(eo._asdict()), 200

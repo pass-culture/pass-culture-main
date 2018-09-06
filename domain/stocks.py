@@ -1,8 +1,7 @@
 """ stocks """
-from models import PcObject
 from repository import booking_queries, offerer_queries
-from utils.rest import delete
-from validation.stocks import check_offer_offerer_exists, check_event_occurrence_offerer_exists
+from validation.stocks import check_offer_offerer_exists, \
+                              check_event_occurrence_offerer_exists
 
 
 def find_offerer_for_new_stock(offer_id, event_occurrence_id):
@@ -19,12 +18,10 @@ def _cancel_bookings(all_bookings_with_soft_deleted_stocks):
     for booking in all_bookings_with_soft_deleted_stocks:
         booking.isCancelled = True
         soft_deleted_bookings.append(booking)
-    if soft_deleted_bookings:
-        PcObject.check_and_save(*soft_deleted_bookings)
+    return soft_deleted_bookings
 
 def soft_delete_stock(stock):
     stock.isSoftDeleted = True
-    PcObject.check_and_save(stock)
 
     all_bookings_with_soft_deleted_stocks = booking_queries.find_all_with_soft_deleted_stocks()
-    _cancel_bookings(all_bookings_with_soft_deleted_stocks)
+    return [stock] + _cancel_bookings(all_bookings_with_soft_deleted_stocks)
