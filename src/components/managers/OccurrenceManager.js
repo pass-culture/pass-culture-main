@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import { closeModal, mergeForm } from 'pass-culture-shared'
+import { closeModal } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -16,8 +16,8 @@ import providerSelector from '../../selectors/provider'
 
 class OccurrenceManager extends Component {
   onCloseClick = e => {
-    const { offer, history, closeModal } = this.props
-    closeModal()
+    const { dispatch, offer, history } = this.props
+    dispatch(closeModal())
     history.push(`/offres/${get(offer, 'id')}`)
   }
 
@@ -126,32 +126,29 @@ class OccurrenceManager extends Component {
 
 export default compose(
   withRouter,
-  connect(
-    (state, ownProps) => {
-      const search = searchSelector(state, ownProps.location.search)
-      const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
-      const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
+  connect((state, ownProps) => {
+    const search = searchSelector(state, ownProps.location.search)
+    const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
+    const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
 
-      const offer = offerSelector(state, ownProps.match.params.offerId)
-      const { eventId } = offer || {}
-      const event = eventSelector(state, eventId)
-      const occurrences = occurrencesSelector(
-        state,
-        ownProps.match.params.offerId
-      )
+    const offer = offerSelector(state, ownProps.match.params.offerId)
+    const { eventId } = offer || {}
+    const event = eventSelector(state, eventId)
+    const occurrences = occurrencesSelector(
+      state,
+      ownProps.match.params.offerId
+    )
 
-      const errors = occurrenceErrorsSelector(state)
+    const errors = occurrenceErrorsSelector(state)
 
-      return {
-        errors,
-        event,
-        eventOccurrenceIdOrNew,
-        isEditing,
-        occurrences,
-        offer,
-        provider: providerSelector(state, get(event, 'lastProviderId')),
-      }
-    },
-    { closeModal, mergeForm }
-  )
+    return {
+      errors,
+      event,
+      eventOccurrenceIdOrNew,
+      isEditing,
+      occurrences,
+      offer,
+      provider: providerSelector(state, get(event, 'lastProviderId')),
+    }
+  })
 )(OccurrenceManager)

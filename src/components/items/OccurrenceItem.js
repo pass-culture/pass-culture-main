@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   Field,
@@ -9,7 +10,7 @@ import {
   SubmitButton,
 } from 'pass-culture-shared'
 import moment from 'moment'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Portal } from 'react-portal'
 import { withRouter } from 'react-router'
@@ -30,10 +31,19 @@ class OccurrenceForm extends Component {
     super()
     this.state = {
       $submit: null,
+      isDeleting: false,
     }
   }
 
   onDeleteClick = () => {
+    this.setState({ isDeleting: true })
+  }
+
+  onCancelDeleteClick = () => {
+    this.setState({ isDeleting: false })
+  }
+
+  onConfirmDeleteClick = () => {
     const { dispatch, occurrence } = this.props
     dispatch(requestData('DELETE', `eventOccurrences/${occurrence.id}`))
   }
@@ -71,7 +81,6 @@ class OccurrenceForm extends Component {
     if (!get(occurrence, 'id') || formBookingLimitDatetime || isOfferReadOnly) {
       return
     }
-
     dispatch(
       mergeForm('stock', {
         bookingLimitDatetime: moment(occurrence.beginningDatetime)
@@ -82,12 +91,7 @@ class OccurrenceForm extends Component {
   }
 
   handleInitEndDatetime = () => {
-    const {
-      dispatch,
-      formBeginningDatetime,
-      mergeForm,
-      occurrence,
-    } = this.props
+    const { dispatch, formBeginningDatetime, occurrence } = this.props
     if (get(occurrence, 'id')) {
       return
     }
@@ -187,152 +191,187 @@ class OccurrenceForm extends Component {
       stock,
       tz,
     } = this.props
+    const { isDeleting } = this.state
 
     const beginningDatetime =
       formBeginningDatetime || get(occurrence, 'beginningDatetime')
 
-    return (
+    const $confirmDelete = isDeleting && (
       <tr className="occurrence-form">
-        <Form
-          action={`/eventOccurrences/${get(occurrence, 'id', '')}`}
-          handleSuccess={this.handleEventOccurrenceSuccessData}
-          layout="input-only"
-          name={`occurrence${get(occurrence, 'id', '')}`}
-          patch={occurrence}
-          readOnly={isEventOccurrenceReadOnly}
-          size="small"
-          Tag={null}>
-          <td>
-            <Field name="offerId" type="hidden" />
-            <Field name="venueId" type="hidden" />
-            <Field
-              minDate={beginningDatetime}
-              name="endDatetime"
-              type="hidden"
-            />
-
-            <Field
-              debug
-              highlightedDates={occurrences.map(o => o.beginningDatetime)}
-              minDate="today"
-              name="beginningDate"
-              patchKey="beginningDatetime"
-              readOnly={isEventOccurrenceReadOnly}
-              required
-              title="Date"
-              type="date"
-            />
-          </td>
-          <td>
-            <Field
-              name="beginningTime"
-              patchKey="beginningDatetime"
-              readOnly={isEventOccurrenceReadOnly}
-              required
-              title="Heure"
-              type="time"
-              tz={tz}
-            />
-          </td>
-          <td>
-            <Field
-              name="endTime"
-              patchKey="endDatetime"
-              readOnly={isEventOccurrenceReadOnly}
-              required
-              title="Heure de fin"
-              type="time"
-              tz={tz}
-            />
-          </td>
-          {!isEventOccurrenceReadOnly && (
-            <Portal node={this.state.$submit}>
-              <SubmitButton className="button is-primary is-small">
-                Valider
-              </SubmitButton>
-            </Portal>
-          )}
-        </Form>
-        <Form
-          action={`/stocks/${get(stock, 'id', '')}`}
-          handleSuccess={this.handleOfferSuccessData}
-          layout="input-only"
-          key={1}
-          name={`stock${get(stock, 'id', '')}`}
-          patch={stock}
-          size="small"
-          readOnly={isOfferReadOnly}
-          Tag={null}>
-          <td title="Vide si gratuit">
-            <Field name="eventOccurrenceId" type="hidden" />
-            <Field name="offerId" type="hidden" />
-            <Field
-              displayValue={(value, { readOnly }) =>
-                value === 0
-                  ? readOnly
-                    ? 'Gratuit'
-                    : 0
-                  : readOnly
-                    ? `${value}€`
-                    : value
-              }
-              name="price"
-              placeholder="Gratuit"
-              type="number"
-              title="Prix"
-            />
-          </td>
-          <td title="Laissez vide si pas de limite">
-            <Field
-              maxDate={beginningDatetime}
-              name="bookingLimitDatetime"
-              placeholder="Laissez vide si pas de limite"
-              type="date"
-            />
-          </td>
-          <td title="Laissez vide si pas de limite">
-            <Field name="available" title="Places disponibles" type="number" />
-          </td>
-          {!isOfferReadOnly && (
-            <Portal node={this.state.$submit}>
-              <SubmitButton className="button is-primary is-small">
-                Valider
-              </SubmitButton>
-            </Portal>
-          )}
-        </Form>
-        <td>
-          {isEditing ? (
-            <NavLink
-              className="button is-secondary is-small"
-              to={`/offres/${get(offer, 'id')}?gestion`}>
-              Annuler
-            </NavLink>
-          ) : (
-            <button
-              className="button is-small is-secondary"
-              onClick={this.onDeleteClick}>
-              <span className="icon">
-                <Icon svg="ico-close-r" />
-              </span>
-            </button>
-          )}
+        <td colSpan="6">
+          En confirmant l'annulation de cette date, vous supprimerez aussi
+          toutes les réservations associées. Êtes-vous sûrs de vouloir continuer
+          ?
         </td>
-        <td ref={_e => (this.$submit = _e)}>
-          {!isEditing && (
-            <NavLink
-              to={`/offres/${get(offer, 'id')}?gestion&date=${get(
-                occurrence,
-                'id'
-              )}`}
-              className="button is-small is-secondary">
-              <span className="icon">
-                <Icon svg="ico-pen-r" />
-              </span>
-            </NavLink>
-          )}
+        <td>
+          <button
+            className="button is-primary"
+            onClick={this.onConfirmDeleteClick}>
+            Oui
+          </button>
+        </td>
+        <td>
+          <button
+            className="button is-primary"
+            onClick={this.onCancelDeleteClick}>
+            Non
+          </button>
         </td>
       </tr>
+    )
+
+    return (
+      <Fragment>
+        <tr
+          className={classnames('occurrence-item', {
+            'with-confirm': isDeleting,
+          })}>
+          <Form
+            action={`/eventOccurrences/${get(occurrence, 'id', '')}`}
+            handleSuccess={this.handleEventOccurrenceSuccessData}
+            layout="input-only"
+            name={`occurrence${get(occurrence, 'id', '')}`}
+            patch={occurrence}
+            readOnly={isEventOccurrenceReadOnly}
+            size="small"
+            Tag={null}>
+            <td>
+              <Field name="offerId" type="hidden" />
+              <Field name="venueId" type="hidden" />
+              <Field
+                minDate={beginningDatetime}
+                name="endDatetime"
+                type="hidden"
+              />
+
+              <Field
+                debug
+                highlightedDates={occurrences.map(o => o.beginningDatetime)}
+                minDate="today"
+                name="beginningDate"
+                patchKey="beginningDatetime"
+                readOnly={isEventOccurrenceReadOnly}
+                required
+                title="Date"
+                type="date"
+              />
+            </td>
+            <td>
+              <Field
+                name="beginningTime"
+                patchKey="beginningDatetime"
+                readOnly={isEventOccurrenceReadOnly}
+                required
+                title="Heure"
+                type="time"
+                tz={tz}
+              />
+            </td>
+            <td>
+              <Field
+                name="endTime"
+                patchKey="endDatetime"
+                readOnly={isEventOccurrenceReadOnly}
+                required
+                title="Heure de fin"
+                type="time"
+                tz={tz}
+              />
+            </td>
+            {!isEventOccurrenceReadOnly && (
+              <Portal node={this.state.$submit}>
+                <SubmitButton className="button is-primary is-small">
+                  Valider
+                </SubmitButton>
+              </Portal>
+            )}
+          </Form>
+          <Form
+            action={`/stocks/${get(stock, 'id', '')}`}
+            handleSuccess={this.handleOfferSuccessData}
+            layout="input-only"
+            key={1}
+            name={`stock${get(stock, 'id', '')}`}
+            patch={stock}
+            size="small"
+            readOnly={isOfferReadOnly}
+            Tag={null}>
+            <td title="Vide si gratuit">
+              <Field name="eventOccurrenceId" type="hidden" />
+              <Field name="offerId" type="hidden" />
+              <Field
+                displayValue={(value, { readOnly }) =>
+                  value === 0
+                    ? readOnly
+                      ? 'Gratuit'
+                      : 0
+                    : readOnly
+                      ? `${value}€`
+                      : value
+                }
+                name="price"
+                placeholder="Gratuit"
+                type="number"
+                title="Prix"
+              />
+            </td>
+            <td title="Laissez vide si pas de limite">
+              <Field
+                maxDate={beginningDatetime}
+                name="bookingLimitDatetime"
+                placeholder="Laissez vide si pas de limite"
+                type="date"
+              />
+            </td>
+            <td title="Laissez vide si pas de limite">
+              <Field
+                name="available"
+                title="Places disponibles"
+                type="number"
+              />
+            </td>
+            {!isOfferReadOnly && (
+              <Portal node={this.state.$submit}>
+                <SubmitButton className="button is-primary is-small">
+                  Valider
+                </SubmitButton>
+              </Portal>
+            )}
+          </Form>
+          <td>
+            {isEditing ? (
+              <NavLink
+                className="button is-secondary is-small"
+                to={`/offres/${get(offer, 'id')}?gestion`}>
+                Annuler
+              </NavLink>
+            ) : (
+              <button
+                className="button is-small is-secondary"
+                onClick={this.onDeleteClick}>
+                <span className="icon">
+                  <Icon svg="ico-close-r" />
+                </span>
+              </button>
+            )}
+          </td>
+          <td ref={_e => (this.$submit = _e)}>
+            {!isEditing && (
+              <NavLink
+                to={`/offres/${get(offer, 'id')}?gestion&date=${get(
+                  occurrence,
+                  'id'
+                )}`}
+                className="button is-small is-secondary">
+                <span className="icon">
+                  <Icon svg="ico-pen-r" />
+                </span>
+              </NavLink>
+            )}
+          </td>
+        </tr>
+        {$confirmDelete}
+      </Fragment>
     )
   }
 }
