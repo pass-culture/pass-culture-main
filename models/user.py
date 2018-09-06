@@ -1,10 +1,11 @@
 """User model"""
 from datetime import datetime
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql import expression
-from sqlalchemy.orm import relationship
-from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
+
 import bcrypt
+from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from models.db import Model, db
 from models.has_thumb_mixin import HasThumbMixin
@@ -46,6 +47,10 @@ class User(PcObject,
                      nullable=False,
                      server_default=expression.false(),
                      default=False)
+
+    resetPasswordToken = Column(String(10), unique=True)
+
+    resetPasswordTokenValidityLimit = Column(DateTime)
 
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
@@ -95,6 +100,8 @@ class User(PcObject,
         self.clearTextPassword = newpass
         self.password = bcrypt.hashpw(newpass.encode('utf-8'),
                                       bcrypt.gensalt())
+        self.resetPasswordToken = None
+        self.resetPasswordTokenValidityLimit = None
 
     def hasRights(self, rights, offerer_id):
         if self.isAdmin:
