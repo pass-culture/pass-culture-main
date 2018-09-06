@@ -186,15 +186,18 @@ export default compose(
     () => {
       return (state, ownProps) => {
         const { id, eventId, thingId, venueId } = ownProps.offer
+        const event = eventSelector(state, eventId)
+        const thing = thingSelector(state, thingId)
+        const typeValue = get(event, 'type') || get(thing, 'type')
         return {
           aggregatedStock: aggregatedStockSelector(state, venueId),
-          event: eventSelector(state, eventId),
+          event: event,
           maxDate: maxDateSelector(state, id),
           mediations: mediationsSelector(state, id),
           occurrences: occurrencesSelector(state, id),
-          thing: thingSelector(state, thingId),
+          thing: thing,
           thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
-          type: typeSelector(state, eventId, thingId),
+          type: typeSelector(state, typeValue),
         }
       }
     },

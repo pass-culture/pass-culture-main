@@ -198,7 +198,9 @@ class OfferPage extends Component {
       thing,
       type,
       types,
+      venue,
       venues,
+      url,
       user,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
@@ -215,8 +217,12 @@ class OfferPage extends Component {
             {isNew ? 'Ajouter une offre' : "Détails de l'offre"}
           </h1>
           <p className="subtitle">
-            Renseignez les détails de cette offre et mettez-la en avant en
-            ajoutant une ou plusieurs accorches.
+            Renseignez les détails de cette offre, puis mettez-la en avant en
+            ajoutant une ou plusieurs accroches.
+          </p>
+          <p className="subtitle">
+            Attention : les offres payantes ne seront visibles auprès du public
+            qu’à partir du début de l’expérimentation.
           </p>
           <Form
             action={apiPath}
@@ -300,6 +306,16 @@ class OfferPage extends Component {
                         type="select"
                       />
                     )
+                  )}
+                  {(get(venue, 'isVirtual') || url) && (
+                    <Field
+                      isExpanded
+                      label="URL"
+                      name="url"
+                      required
+                      sublabel="Vous pouvez include {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
+                      type="text"
+                    />
                   )}
                   {get(user, 'isAdmin') && (
                     <Field
@@ -428,6 +444,9 @@ export default compose(
         ownProps.match.params.offerId
       )
 
+      const url =
+        get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
+
       const user = state.user
 
       return {
@@ -444,6 +463,7 @@ export default compose(
         types,
         type,
         user,
+        url,
       }
     },
     {
