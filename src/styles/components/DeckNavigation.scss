@@ -1,13 +1,14 @@
 #deck-navigation {
   top: inherit;
   width: 100%;
-  height: auto;
-  bottom: 2.5rem;
+  height: 240px;
+  bottom: 0;
   position: absolute;
 
   .controls {
     height: 100%;
-    padding: 60px 40px;
+    padding: 0 12px;
+    padding-bottom: 90px;
   }
 
   .controls button {
@@ -16,6 +17,11 @@
     border-radius: 0;
     user-select: none;
     background-color: transparent;
+  }
+
+  .controls button.after,
+  .controls button.before {
+    margin-bottom: 25px;
   }
 
   .controls button.after {

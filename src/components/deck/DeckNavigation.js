@@ -33,7 +33,7 @@ class DeckNavigation extends React.PureComponent {
     return (
       <div id="deck-navigation" style={{ background: backgroundGradient }}>
         <div
-          className="controls flex-columns wrap-3"
+          className="controls flex-columns items-end wrap-3"
           style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
         >
           {/* previous button */}
