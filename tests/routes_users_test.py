@@ -347,8 +347,8 @@ def test_pro_signup_should_create_user_offerer_digital_venue_and_userOfferer(app
         .first()
     assert offerer is not None
     assert offerer.validationToken is not None
-    assert len(offerer.venues) == 1
-    assert offerer.venues[0].isVirtual
+    assert len(offerer.managedVenues) == 1
+    assert offerer.managedVenues[0].isVirtual
     user_offerer = UserOfferer.query \
         .filter_by(user=user,
                    offerer=offerer) \
