@@ -40,7 +40,7 @@ const submitButton = Selector('button.button.is-primary').withText(
 )
 const typeOption = Selector('option').withText('Conférence — Débat — Dédicace')
 const typeInput = Selector('#offer-type')
-const venueAnchor = Selector("a[href='/structures/AE/lieux/AE']").withText(
+const venueAnchor = Selector("a[href^='/structures/']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 
