@@ -154,8 +154,19 @@ elif [[ "$CMD" == "psql-file" ]]; then
   COLUMNS=${COLUMNS:-''};
   RUN='docker exec -t `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
 elif [[ "$CMD" == "psql" ]]; then
-  COLUMNS=${COLUMNS:-''};
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
+	COLUMNS=${COLUMNS:-''};
+  if [[ "$ENV" == "production" ]]; then
+		scalingo -a pass-culture-api pgsql-console
+		exit
+	elif [[ "$ENV" == "staging" ]]; then
+		scalingo -a pass-culture-api-staging pgsql-console
+		exit
+	elif [[ "$ENV" == "testing" ]]; then
+		scalingo -a pass-culture-api-dev pgsql-console
+		exit
+	else
+		RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
+	fi
 elif [[ "$CMD" == "python" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 elif [[ "$CMD" == "rebuild-backend" ]]; then
@@ -188,6 +199,8 @@ elif [[ "$CMD" == "reset-sandbox-db" ]]; then
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
        docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,recommendation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
+elif [[ "$CMD" == "reset-all-storage" ]]; then
+	RUN='sudo rm -rf $ROOT_PATH/flask/static/object_store_data;'
 elif [[ "$CMD" == "reset-reco-db" ]]; then
   RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation RESTART IDENTITY;\""'
 elif [[ "$CMD" == "reset-users-db" ]]; then
