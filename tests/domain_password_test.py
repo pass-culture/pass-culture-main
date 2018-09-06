@@ -1,6 +1,6 @@
 import pytest
 
-from domain.password import change_password, validate_password_strength
+from domain.password import change_password, check_password_strength
 from models import User, ApiErrors
 
 
@@ -76,7 +76,7 @@ def test_change_password_sets_the_new_password():
 ])
 def test_valid_passwords(password):
     try:
-        validate_password_strength(password)
+        check_password_strength(password)
     except ApiErrors:
         assert False, 'This password=\'%s\' should be valid' % password
 
@@ -92,7 +92,7 @@ def test_valid_passwords(password):
 def test_invalid_passwords(password):
     # when
     with pytest.raises(ApiErrors) as e:
-        validate_password_strength(password)
+        check_password_strength(password)
 
     # then
     assert e.value.errors['password'] == [

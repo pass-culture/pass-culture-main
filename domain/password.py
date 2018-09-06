@@ -72,7 +72,7 @@ def check_reset_token_validity(user):
         raise errors
 
 
-def validate_password_strength(password):
+def check_password_strength(password):
     at_least_one_uppercase = '(?=.*?[A-Z])'
     at_least_one_lowercase = '(?=.*?[a-z])'
     at_least_one_digit = '(?=.*?[0-9])'

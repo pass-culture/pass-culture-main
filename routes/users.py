@@ -6,7 +6,8 @@ from flask_login import current_user, login_required, logout_user, login_user
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain import password
 from domain.expenses import get_expenses
-from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request
+from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
+    check_password_strength
 from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -44,9 +45,10 @@ def patch_profile():
 @app.route('/users/current/change-password', methods=['POST'])
 @login_required
 @expect_json_data
-def change_password():
+def post_change_password():
     json = request.get_json()
     password.validate_request(json)
+    check_password_strength(request.get_json()['newPassword'])
     password.change_password(current_user, json.get('oldPassword'), json.get('newPassword'))
     PcObject.check_and_save(current_user)
     return '', 204
@@ -54,7 +56,7 @@ def change_password():
 
 @app.route("/users/reset-password", methods=['POST'])
 @expect_json_data
-def post_reset_password():
+def post_for_password_token():
     validate_reset_request(request)
     email = request.get_json()['email']
     user = find_user_by_email(email)
@@ -85,6 +87,7 @@ def post_new_password():
         raise errors
 
     check_reset_token_validity(user)
+    check_password_strength(request.get_json()['newPassword'])
     user.setPassword(request.get_json()['newPassword'])
     PcObject.check_and_save(user)
     return '', 204

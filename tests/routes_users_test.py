@@ -187,7 +187,7 @@ def test_signup_should_not_work_with_invalid_contact_ok():
 
 @pytest.mark.standalone
 @clean_database
-def test_signup(app):
+def test_signup_is_successful(app):
     r_signup = req.post(API_URL + '/users/signup',
                         json=BASE_DATA)
     assert r_signup.status_code == 201
@@ -516,30 +516,30 @@ def test_get_current_user_returns_expenses(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_change_password_changes_the_current_user_password(app):
+def test_post_change_password_changes_the_current_user_password(app):
     # given
     user = create_user(email='user@test.com', password='testpsswd')
     PcObject.check_and_save(user)
     auth = req_with_auth(user.email, user.clearTextPassword)
-    data = {'oldPassword': 'testpsswd', 'newPassword': 'n3wp4ssw0rd'}
+    data = {'oldPassword': 'testpsswd', 'newPassword': 'N3W_p4ssw0rd'}
 
     # when
     response = auth.post(API_URL + '/users/current/change-password', json=data)
 
     # then
     db.session.refresh(user)
-    assert user.checkPassword('n3wp4ssw0rd') is True
+    assert user.checkPassword('N3W_p4ssw0rd') is True
     assert response.status_code == 204
 
 
 @clean_database
 @pytest.mark.standalone
-def test_change_password_returns_bad_request_if_old_password_is_missing(app):
+def test_post_change_password_returns_bad_request_if_old_password_is_missing(app):
     # given
     user = create_user(email='user@test.com', password='testpsswd')
     PcObject.check_and_save(user)
     auth = req_with_auth(user.email, user.clearTextPassword)
-    data = {'newPassword': 'n3wp4ssw0rd'}
+    data = {'newPassword': 'N3W_p4ssw0rd'}
 
     # when
     response = auth.post(API_URL + '/users/current/change-password', json=data)
@@ -551,7 +551,7 @@ def test_change_password_returns_bad_request_if_old_password_is_missing(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_change_password_returns_bad_request_if_old_password_is_missing(app):
+def test_post_change_password_returns_bad_request_if_old_password_is_missing(app):
     # given
     user = create_user(email='user@test.com', password='testpsswd')
     PcObject.check_and_save(user)
@@ -568,7 +568,27 @@ def test_change_password_returns_bad_request_if_old_password_is_missing(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_post_reset_password_token_records_a_new_password_token_if_email_is_known(app):
+def test_post_change_password_returns_bad_request_if_the_new_password_is_not_strong_enough(app):
+    # given
+    user = create_user(email='user@test.com', password='testpsswd')
+    PcObject.check_and_save(user)
+    auth = req_with_auth(user.email, user.clearTextPassword)
+    data = {'oldPassword': '0ldp4ssw0rd', 'newPassword': 'weakpassword'}
+
+    # when
+    response = auth.post(API_URL + '/users/current/change-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['password'] == [
+        'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
+        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi #~|=+><?!@$%^&*_-'
+    ]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_for_password_token_records_a_new_password_token_if_email_is_known(app):
     # given
     data = {'email': 'bobby@test.com'}
     user = create_user(email='bobby@test.com')
@@ -587,7 +607,7 @@ def test_post_reset_password_token_records_a_new_password_token_if_email_is_know
 
 @clean_database
 @pytest.mark.standalone
-def test_post_reset_password_token_returns_no_content_if_email_is_unknown(app):
+def test_post_for_password_token_returns_no_content_if_email_is_unknown(app):
     # given
     data = {'email': 'unknown.user@test.com'}
 
@@ -600,7 +620,7 @@ def test_post_reset_password_token_returns_no_content_if_email_is_unknown(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_post_reset_password_token_returns_bad_request_if_email_is_empty(app):
+def test_post_for_password_token_returns_bad_request_if_email_is_empty(app):
     # given
     data = {'email': ''}
 
@@ -614,7 +634,7 @@ def test_post_reset_password_token_returns_bad_request_if_email_is_empty(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_post_reset_password_token_returns_bad_request_if_email_is_missing(app):
+def test_post_for_password_token_returns_bad_request_if_email_is_missing(app):
     # given
     data = {}
 
@@ -635,7 +655,7 @@ def test_post_new_password_changes_the_user_password(app):
 
     data = {
         'token': 'KL89PBNG51',
-        'newPassword': 'n3w_p455w0rd'
+        'newPassword': 'N3W_p4ssw0rd'
     }
 
     # when
@@ -644,7 +664,7 @@ def test_post_new_password_changes_the_user_password(app):
     # then
     db.session.refresh(user)
     assert response.status_code == 204
-    assert user.checkPassword('n3w_p455w0rd')
+    assert user.checkPassword('N3W_p4ssw0rd')
 
 
 @clean_database
@@ -656,7 +676,7 @@ def test_post_new_password_remove_the_reset_token_and_the_validity_date(app):
 
     data = {
         'token': 'KL89PBNG51',
-        'newPassword': 'n3w_p455w0rd'
+        'newPassword': 'N3W_p4ssw0rd'
     }
 
     # when
@@ -678,7 +698,7 @@ def test_post_new_password_returns_bad_request_if_the_token_is_outdated(app):
 
     data = {
         'token': 'KL89PBNG51',
-        'newPassword': 'n3w_p455w0rd'
+        'newPassword': 'N3W_p4ssw0rd'
     }
 
     # when
@@ -700,7 +720,7 @@ def test_post_new_password_returns_bad_request_if_the_token_is_unknown(app):
 
     data = {
         'token': 'AZER1QSDF2',
-        'newPassword': 'n3w_p455w0rd'
+        'newPassword': 'N3W_p4ssw0rd'
     }
 
     # when
@@ -720,7 +740,7 @@ def test_post_new_password_returns_bad_request_if_the_token_is_missing(app):
     user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
     PcObject.check_and_save(user)
 
-    data = {'newPassword': 'n3w_p455w0rd'}
+    data = {'newPassword': 'N3W_p4ssw0rd'}
 
     # when
     response = req.post(API_URL + '/users/new-password', json=data)
@@ -748,4 +768,24 @@ def test_post_new_password_returns_bad_request_if_the_new_password_is_missing(ap
     assert response.status_code == 400
     assert response.json()['newPassword'] == [
         'Vous devez renseigner un nouveau mot de passe.'
+    ]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_new_password_returns_bad_request_if_the_new_password_is_not_strong_enough(app):
+    # given
+    user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+    PcObject.check_and_save(user)
+
+    data = {'token': 'KL89PBNG51', 'newPassword': 'weak_password'}
+
+    # when
+    response = req.post(API_URL + '/users/new-password', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['password'] == [
+        'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
+        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi #~|=+><?!@$%^&*_-'
     ]
