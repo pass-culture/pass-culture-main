@@ -20,6 +20,7 @@ from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
 from models.db import db
+from models.extra_data_mixin import ExtraDataMixin
 from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
@@ -81,6 +82,9 @@ class PcObject():
                 continue
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
+            elif issubclass(type(self), ExtraDataMixin) and key == 'extraData':
+                for sub_key in self.extraData:
+                    result[sub_key] = self.extraData[sub_key]
             else:
                 result[key] = serialize(value, **options)
         # add the model name
@@ -250,12 +254,13 @@ class PcObject():
             if (key=='deleted') or (key in skipped_keys):
                 continue
 
+            if key.endswith('Id'):
+                value = dehumanize(data.get(key))
+            else:
+                value = data.get(key)
+
             if cols.__contains__(key):
                 col = cols[key]
-                if key.endswith('Id'):
-                    value = dehumanize(data.get(key))
-                else:
-                    value = data.get(key)
                 if isinstance(value, str) and isinstance(col.type, Integer):
                     try:
                         setattr(self, key, Decimal(value))
@@ -272,6 +277,10 @@ class PcObject():
                                         key)
                 else:
                     setattr(self, key, value)
+            elif issubclass(type(self), ExtraDataMixin):
+                if self.extraData is None:
+                    self.extraData = {}
+                self.extraData[key] = value
 
 
     @staticmethod
