@@ -200,12 +200,62 @@ def send_dev_email(subject, html_text):
         raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
+def make_offerer_driven_cancellation_email_for_user(booking):
+    is_event = booking.stock.resolvedOffer.event
+    if is_event:
+        email_html, email_subject = _generate_offerer_driven_cancellation_email_for_user_event(booking)
+    else:
+        email_html, email_subject = _generate_offerer_driven_cancellation_email_for_user_thing(booking)
+
+    return {
+        'FromName': 'Pass Culture',
+        'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'Subject': email_subject,
+        'Html-part': email_html,
+    }
+
+
+def _generate_offerer_driven_cancellation_email_for_user_thing(booking):
+    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
+    booking_value = booking.amount * booking.quantity
+    user_public_name = booking.user.publicName
+    email_html = render_template('user_cancellation_by_offerer_email_thing.html',
+                                 user_public_name=user_public_name,
+                                 offer_name=offer_name,
+                                 offerer_name=offerer_name,
+                                 booking_value=booking_value
+                                 )
+    email_subject = 'Votre commande pour {}, proposé par {} a été annulée par l\'offreur'.format(offer_name,
+                                                                                                 offerer_name)
+    return email_html, email_subject
+
+
+def _generate_offerer_driven_cancellation_email_for_user_event(booking):
+    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
+    booking_value = booking.amount * booking.quantity
+    user_public_name = booking.user.publicName
+    date_in_tz = _get_event_datetime(booking.stock)
+    formatted_datetime = format_datetime(date_in_tz)
+    email_html = render_template('user_cancellation_by_offerer_email_event.html',
+                                 user_public_name=user_public_name,
+                                 offer_name=offer_name,
+                                 event_date=formatted_datetime,
+                                 offerer_name=offerer_name,
+                                 booking_value=booking_value
+                                 )
+    email_subject = 'Votre réservation pour {}, proposé par {} a été annulée par l\'offreur'.format(offer_name,
+                                                                                                    offerer_name)
+    return email_html, email_subject
+
+
 def make_user_booking_recap_email(booking, is_cancellation=False):
     stock = booking.stock
     user = booking.user
     if is_cancellation:
-        email_html, email_subject = _generate_cancellation_email_html_and_subject(user,
-                                                                                  stock)
+        email_html, email_subject = _generate_user_driven_cancellation_email_for_user(user,
+                                                                                      stock)
     else:
         email_html, email_subject = _generate_reservation_email_html_subject(booking)
 
@@ -307,7 +357,7 @@ def _generate_reservation_email_html_subject(booking):
     return email_html, email_subject
 
 
-def _generate_cancellation_email_html_and_subject(user, stock):
+def _generate_user_driven_cancellation_email_for_user(user, stock):
     venue = stock.resolvedOffer.venue
     if stock.eventOccurrence == None:
         email_subject = 'Annulation de votre commande pour {}'.format(stock.resolvedOffer.thing.name)
@@ -347,7 +397,3 @@ def _get_stock_description(stock):
         description = str(stock.resolvedOffer.thing.name)
 
     return description
-
-
-def make_offerer_driven_cancellation_email_for_user(booking):
-    return None

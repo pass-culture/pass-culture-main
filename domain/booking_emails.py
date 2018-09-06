@@ -26,9 +26,10 @@ def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
 
 def send_offerer_driven_cancellation_email_to_user(booking, send_create_email):
     email = make_offerer_driven_cancellation_email_for_user(booking)
-    recipients = [booking.stock.resolvedOffer.venue.bookingEmail]
+    recipients = [booking.user.email]
     email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
+    _check_if_email_sent(mail_result)
 
 
 def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email):
