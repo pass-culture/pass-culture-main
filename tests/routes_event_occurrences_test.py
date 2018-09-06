@@ -62,7 +62,7 @@ def test_when_deleted_event_occurrence_only_all_bookings_related_to_soft_deleted
     booking2 = create_booking(user1, stock2, venue, recommendation=recommendation1, fill_stock_bookings=False)
     booking3 = create_booking(user2, stock1, venue, recommendation=recommendation2, fill_stock_bookings=False)
 
-    PcObject.check_and_save(event_occurrence, booking1, booking2, booking3, user_offerer)
+    PcObject.check_and_save(event_occurrence1, event_occurrence2, booking1, booking2, booking3, user_offerer)
 
     # When
     req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/eventOccurrences/' + humanize(event_occurrence1.id))
