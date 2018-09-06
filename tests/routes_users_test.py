@@ -333,7 +333,7 @@ def test_pro_signup_should_not_work_with_invalid_offerer_postal_code():
 
 @pytest.mark.standalone
 @clean_database
-def test_pro_signup_should_create_user_offerer_and_userOfferer(app):
+def test_pro_signup_should_create_user_offerer_digital_venue_and_userOfferer(app):
     r_signup = req.post(API_URL + '/users/signup',
                         json=BASE_DATA_PRO)
     assert r_signup.status_code == 201
@@ -347,6 +347,8 @@ def test_pro_signup_should_create_user_offerer_and_userOfferer(app):
         .first()
     assert offerer is not None
     assert offerer.validationToken is not None
+    assert len(offerer.venues) == 1
+    assert offerer.venues[0].isVirtual
     user_offerer = UserOfferer.query \
         .filter_by(user=user,
                    offerer=offerer) \
