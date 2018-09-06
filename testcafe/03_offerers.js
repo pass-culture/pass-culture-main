@@ -33,6 +33,7 @@ test("Je ne peut pas encore créer d'offre car je n'ai pas ajouté de lieu, une 
     .expect(createOfferAnchor.innerText)
     .eql('\nCréer une offre\n')
     .click(createOfferAnchor)
+    .wait(1000)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres/nouveau')
   await t
