@@ -44,15 +44,12 @@ from utils.search import get_search_filter,\
                          login_or_api_key_required
 
 @app.route('/recommendations', methods=['GET'])
-#@login_required
+@login_required
 def list_recommendations():
-
-    print(User.query.first())
 
     recommendations = create_recommendations_for_search(
         request.args.get('page', 1),
-        #current_user,
-        User.query.first(),
+        current_user,
         request.args.get('search')
     )
 
