@@ -6,9 +6,9 @@ from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType, UserOfferer
 from models.venue import create_digital_venue
-from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
+from repository.booking_queries import get_offerer_bookings
 from utils.human_ids import dehumanize
-from utils.includes import OFFERER_INCLUDES
+from utils.includes import BOOKING_INCLUDES, OFFERER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     handle_rest_get_list, \
@@ -46,6 +46,22 @@ def get_offerer(id):
     offerer = load_or_404(Offerer, id)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 
+@app.route('/offerers/<id>/bookings', methods=['GET'])
+@login_required
+def get_offerer_bookings(id):
+
+    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
+
+    bookings = get_offerer_bookings(
+        id,
+        request.args.get('search'),
+        request.args.get('order_by'),
+        request.args.get('page')
+    )
+
+    bookings_reimbursements = find_all_booking_reimbursement(bookings)
+
+    return jsonify([b.as_dict(includes=BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
 
 @app.route('/offerers', methods=['POST'])
 @login_or_api_key_required

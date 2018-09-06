@@ -1,5 +1,4 @@
 import routes.bookings
-import routes.bookings_pro
 import routes.client_errors
 import routes.error_handlers
 import routes.event_occurrences
