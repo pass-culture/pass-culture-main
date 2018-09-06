@@ -13,7 +13,8 @@ from utils.mailing import send_booking_recap_emails, send_booking_confirmation_e
 from utils.rest import expect_json_data, ensure_current_user_has_rights
 from utils.token import random_token
 from validation.bookings import check_has_stock_id, check_has_quantity, check_existing_stock, check_can_book_free_offer, \
-    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, check_user_is_logged_in_or_email_is_provided, \
+    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, \
+    check_user_is_logged_in_or_email_is_provided, \
     check_booking_not_cancelled, check_booking_not_already_validated
 
 
@@ -106,31 +107,40 @@ def cancel_booking(booking_id):
 
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
 
+@app.route('/bookings/token/<token>', methods=["GET"])
+def get_booking_by_token(token):
+    email = request.args.get('email', None)
+    offer_id = dehumanize(request.args.get('offer_id', None))
 
-@app.route("/bookings/token/<token>", defaults={'email': None, 'offer_id': None}, methods=["GET"])
-@app.route("/bookings/token/<token>/<email>", defaults={'offer_id': None}, methods=["GET"])
-@app.route("/bookings/token/<token>/<email>/<offer_id>", methods=["GET"])
-def get_booking_by_token(token, email, offer_id):
     check_user_is_logged_in_or_email_is_provided(current_user, email)
+
     booking = booking_queries.find_by_token(token, email, offer_id)
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    date = None
     if booking.stock.eventOccurrence:
         date = serialize(booking.stock.eventOccurrence.beginningDatetime)
+    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+
+    current_user_can_validate_bookings = current_user.is_authenticated and current_user.hasRights(RightsType.editor, offerer_id)
+    if current_user_can_validate_bookings:
+        response = {'bookingId': booking.id, 'email': booking.user.email, 'offerName': offer_name, 'date': date,
+                    'isValidated': booking.isValidated}
+        return jsonify(response), 200
     else:
-        date = None
-    response = {'bookingId': booking.id, 'email': booking.user.email, 'offerName': offer_name, 'date': date,
-                'isValidated': booking.isValidated} if current_user.is_authenticated else {}
-    return jsonify(response), 200
+        return '', 204
 
 
-@app.route("/bookings/token/<token>", methods=["PATCH"])
+@app.route('/bookings/token/<token>', methods=["PATCH"])
 @expect_json_data
 def patch_booking_by_token(token):
-    booking = booking_queries.find_by_token(token)
+    email = request.args.get('email', None)
+    offer_id = dehumanize(request.args.get('offer_id', None))
+    booking = booking_queries.find_by_token(token, email, offer_id)
+    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    if not email:
+        ensure_current_user_has_rights(RightsType.editor, offerer_id)
     check_booking_not_cancelled(booking)
     check_booking_not_already_validated(booking)
-    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
-    ensure_current_user_has_rights(RightsType.editor, offerer_id)
     booking.populateFromDict(request.json)
     PcObject.check_and_save(booking)
 

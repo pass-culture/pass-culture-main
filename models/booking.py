@@ -71,7 +71,6 @@ class Booking(PcObject,
 
     isValidated = Column(Boolean,
                          nullable=False,
-                         server_default=expression.false(),
                          default=False)
 
     @property
