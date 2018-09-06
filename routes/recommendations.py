@@ -6,42 +6,20 @@ from flask_login import current_user, login_required
 from domain.build_recommendations import build_mixed_recommendations,\
                                          move_requested_recommendation_first,\
                                          move_tutorial_recommendations_first
-from models import Booking,\
-                   Event,\
-                   EventOccurrence,\
-                   Mediation,\
-                   Offer,\
-                   PcObject,\
-                   Recommendation,\
-                   Thing,\
-                   Venue,\
-                   User
-from recommendations_engine import create_recommendations,\
-                                   give_requested_recommendation_to_user,\
-                                   move_requested_recommendation_first,\
-                                   move_tutorial_recommendations_first,\
-                                   pick_random_offers_given_blob_size,\
-                                   RecommendationNotFoundException
-from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import count_read_recommendations_for_user, \
-                                              find_all_unread_recommendations, \
-                                              find_all_read_recommendations,\
-                                              give_requested_recommendation_to_user
+from models import Recommendation, PcObject
 from recommendations_engine import create_recommendations_for_discovery,\
                                    create_recommendations_for_search,\
                                    give_requested_recommendation_to_user,\
                                    RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import find_all_read_recommendations
+from repository.recommendation_queries import count_read_recommendations_for_user,\
+                                              find_all_read_recommendations,\
+                                              find_all_unread_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
-from utils.rest import expect_json_data,\
-                       handle_rest_get_list
-from utils.search import get_search_filter,\
-                         handle_rest_get_list,\
-                         login_or_api_key_required
+from utils.rest import expect_json_data
 
 @app.route('/recommendations', methods=['GET'])
 @login_required
