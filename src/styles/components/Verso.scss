@@ -6,9 +6,10 @@
   top: 0;
   bottom: 0;
   z-index: 500;
-  transform: translate(0, 100vh);
+  transform: translate(0, 100%);
   will-change: transform;
   height: 100%;
+
   &.flipped {
     transform: translate(0, 0);
   }
@@ -16,5 +17,4 @@
   .over-wrapper {
     margin-top: 50%;
   }
-
 }
