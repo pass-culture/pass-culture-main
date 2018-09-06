@@ -169,8 +169,14 @@ def do_sandbox():
 
     stocks = []
     for stock_mock in stock_mocks:
-        event_occurrence = event_occurrences[stock_mock['eventOccurrenceIndex']]
-        query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
+
+        if 'eventOccurrenceIndex' in stock_mock:
+            event_occurrence = event_occurrences[stock_mock['eventOccurrenceIndex']]
+            query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
+        else:
+            offer = offers[stock_mock['offerIndex']]
+            query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
+
         if query.count() == 0:
             stock = Stock(from_dict=stock_mock)
             stock.eventOccurrence = event_occurrence

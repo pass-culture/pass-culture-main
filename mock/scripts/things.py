@@ -1,7 +1,7 @@
 """ events """
 thing_mocks = [
-  {
-    "name": "Ravage",
-    "type": "Livre"
-  }
+    {
+        "name": "Ravage",
+        "type": "Livre"
+    }
 ]
