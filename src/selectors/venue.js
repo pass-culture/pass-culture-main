@@ -9,12 +9,16 @@ export default createCachedSelector(
   (state, venueId, offererId) => offererId,
   state => get(state, 'user.email'),
   (venues, venueId, offererId, bookingEmail) => {
-    return Object.assign(
-      {
-        bookingEmail,
-        managingOffererId: offererId,
-      },
-      venues.find(v => v.id === venueId)
+    const venue = venues.find(v => v.id === venueId)
+    return (
+      venue &&
+      Object.assign(
+        {
+          bookingEmail,
+          managingOffererId: offererId,
+        },
+        venue
+      )
     )
   }
 )((state, venueId) => venueId || '')
