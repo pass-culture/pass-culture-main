@@ -347,3 +347,7 @@ def _get_stock_description(stock):
         description = str(stock.resolvedOffer.thing.name)
 
     return description
+
+
+def make_offerer_driven_cancellation_email_for_user(booking):
+    return None

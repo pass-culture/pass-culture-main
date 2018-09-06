@@ -3,7 +3,7 @@ from pprint import pformat
 from repository.features import feature_send_mail_to_users_enabled
 from utils.config import ENV
 from utils.mailing import make_user_booking_recap_email, MailServiceException, \
-    make_offerer_booking_recap_email_after_user_action
+    make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user
 
 
 def send_user_driven_cancellation_email_to_user(booking, send_create_email):
@@ -25,7 +25,7 @@ def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
 
 
 def send_offerer_driven_cancellation_email_to_user(booking, send_create_email):
-    pass
+    email = make_offerer_driven_cancellation_email_for_user(booking)
 
 
 def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email):
