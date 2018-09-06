@@ -77,6 +77,6 @@ def test_soft_deleted_event_occurences_do_not_appear_in_asdict(app):
     offer_dict = offer._asdict(include=OFFER_INCLUDES)
 
     # Then
-    retrieved_eo_ids = set([eo['id'] for eo in offer_dict['eventOccurences']])
+    retrieved_eo_ids = set([eo['id'] for eo in offer_dict['eventOccurrences']])
     expected_eo_ids = set([humanize(eo_id) for eo_id in [eo1.id, eo2.id, eo3.id]])
     assert retrieved_eo_ids == expected_eo_ids
