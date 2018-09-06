@@ -6,15 +6,19 @@ from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType, UserOfferer
 from models.venue import create_digital_venue
-from repository.booking_queries import get_offerer_bookings
+from repository.booking_queries import find_offerer_bookings
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, OFFERER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
-    handle_rest_get_list, \
-    load_or_404, \
-    login_or_api_key_required
-from utils.search import get_search_filter
+                       expect_json_data, \
+                       handle_rest_get_list, \
+                       load_or_404, \
+                       login_or_api_key_required
+from utils.search import expect_json_data, \
+                         get_search_filter, \
+                         handle_rest_get_list, \
+                         load_or_404, \
+                         login_or_api_key_required
 
 
 @app.route('/offerers', methods=['GET'])
@@ -52,16 +56,15 @@ def get_offerer_bookings(id):
 
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
 
-    bookings = get_offerer_bookings(
-        id,
-        request.args.get('search'),
-        request.args.get('order_by'),
-        request.args.get('page')
+    bookings = find_offerer_bookings(dehumanize(id),
+        search=request.args.get('search'),
+        order_by=request.args.get('order_by'),
+        page=request.args.get('page', 1),
     )
 
     bookings_reimbursements = find_all_booking_reimbursement(bookings)
 
-    return jsonify([b.as_dict(includes=BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
+    return jsonify([b.as_dict(include=BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
 
 @app.route('/offerers', methods=['POST'])
 @login_or_api_key_required

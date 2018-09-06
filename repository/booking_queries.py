@@ -5,6 +5,7 @@ from sqlalchemy.orm import aliased
 
 from models import ApiErrors,\
                    Booking,\
+                   Event,\
                    EventOccurrence,\
                    PcObject,\
                    Offer,\
@@ -25,8 +26,9 @@ def find_all_by_stock_id(stock):
     return Booking.query.filter_by(stockId=stock.id).all()
 
 
-def get_offerer_bookings(offerer_id, search = None, order_by = None, page = 1):
+def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
     query_event = Booking.query \
+        .join(Stock) \
         .join(EventOccurrence) \
         .join(Offer) \
         .join(Venue) \

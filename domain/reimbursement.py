@@ -9,8 +9,8 @@ class BookingReimbursement:
         self.reimbursement = reimbursement
         self.reimbursed_amount = reimbursed_amount
 
-    def as_dict(self):
-        dict_booking = self.booking._asdict()
+    def as_dict(self, include=None):
+        dict_booking = self.booking._asdict(include=include)
         dict_booking['reimbursed_amount'] = self.reimbursed_amount
         dict_booking['reimbursement_rule'] = self.reimbursement.value.description
         return dict_booking
