@@ -34,7 +34,7 @@ def test_10_get_event_occurences_should_return_a_list_of_event_occurences(app):
     PcObject.check_and_save(user, eo1, eo2, eo3)
 
     # When
-    request = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/event_occurrences')
+    request = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/eventOccurrences')
 
     # Then
     assert request.status_code == 200
@@ -52,9 +52,10 @@ def test_when_deleted_event_occurrence_only_all_bookings_related_to_soft_deleted
     user_offerer = create_user_offerer(user_admin, offerer)
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
-    event_occurrence = create_event_occurrence(offer)
-    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence, price=0, available=10)
-    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence, price=0, available=10)
+    event_occurrence1 = create_event_occurrence(offer)
+    event_occurrence2 = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence1, price=0, available=10)
+    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence2, price=0, available=10)
     recommendation1 = create_recommendation(offer, user1)
     recommendation2 = create_recommendation(offer, user2)
     booking1 = create_booking(user1, stock1, venue, recommendation=recommendation1, fill_stock_bookings=False)
@@ -64,7 +65,7 @@ def test_when_deleted_event_occurrence_only_all_bookings_related_to_soft_deleted
     PcObject.check_and_save(event_occurrence, booking1, booking2, booking3, user_offerer)
 
     # When
-    req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/eventOccurrences/' + humanize(event_occurrence.id))
+    req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/eventOccurrences/' + humanize(event_occurrence1.id))
 
     # Then
     db.session.refresh(booking1)
