@@ -3,7 +3,8 @@ from pprint import pformat
 from repository.features import feature_send_mail_to_users_enabled
 from utils.config import ENV
 from utils.mailing import make_user_booking_recap_email, MailServiceException, \
-    make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user
+    make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
+    make_offerer_driven_cancellation_email_for_offerer
 
 
 def send_user_driven_cancellation_email_to_user(booking, send_create_email):
@@ -33,7 +34,13 @@ def send_offerer_driven_cancellation_email_to_user(booking, send_create_email):
 
 
 def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email):
-    pass
+    offerer_email = booking.stock.resolvedOffer.venue.bookingEmail
+    if offerer_email:
+        recipients = [offerer_email]
+        email = make_offerer_driven_cancellation_email_for_offerer(booking)
+        email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+        mail_result = send_create_email(data=email)
+        _check_if_email_sent(mail_result)
 
 
 def _edit_email_html_part_and_recipients(email_html_part, recipients):

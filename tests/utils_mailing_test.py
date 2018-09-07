@@ -1,5 +1,5 @@
 import secrets
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from unittest.mock import Mock, MagicMock, patch
 
 import pytest
@@ -12,12 +12,12 @@ from utils.mailing import make_user_booking_recap_email, send_booking_confirmati
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, \
     maybe_send_offerer_validation_email, MailServiceException, send_booking_recap_emails, \
-    send_final_booking_recap_email, make_reset_password_email, send_reset_password_email, \
-    make_offerer_driven_cancellation_email_for_user
+    send_final_booking_recap_email, make_offerer_driven_cancellation_email_for_user, make_reset_password_email, \
+    send_reset_password_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
-    create_offerer, create_venue, create_thing_offer, create_event_offer, create_event_occurrence, \
-    create_stock_from_event_occurrence, create_stock_from_offer
+    create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
+    create_stock_from_event_occurrence, create_event_occurrence
 
 
 def get_mocked_response_status_200(entity):
@@ -980,59 +980,42 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
                'Subject'] == 'Votre commande pour Test Book, proposé par Test offerer a été annulée par l\'offreur'
 
 
-
 @clean_database
 @pytest.mark.standalone
 @pytest.mark.offerer_driven_cancellation
-def test_make_offerer_driven_cancellation_email_for_offerer_event(app):
+def test_make_offerer_driven_cancellation_email_for_offerer(app):
     # Given
-    user = create_user(public_name='John Doe')
+
+    user = create_user(public_name='John Doe', email='john@doe.fr')
     offerer = create_offerer(name='Test offerer')
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, 'Mains, sorts et papiers')
+    venue = create_venue(offerer, name='Le petit thêatre', address='1 rue de la Libération', city='Montreuil',
+                         postal_code='93100')
+    offer = create_event_offer(venue, event_name='Le théâtre des ombres')
     event_occurrence = create_event_occurrence(offer,
                                                beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
     stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=20, available=10)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, is_cancellation=True)
+    print(booking.stock)
+    booking.stock.bookings = []
+    print(booking.stock)
+    print(booking.stock.bookings)
 
     # When
-    email = make_offerer_driven_cancellation_email_for_user(booking)
+    email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    print(email_html.find("div", {"id": "mail-content"}))
-    print(type(email_html.find("div", {"id": "mail-content"})))
-    mail_content = str(email_html.find("div", {"id": "mail-content"}))
-    assert 'réservation' in mail_content
-    assert 'pour Mains, sorts et papiers' in mail_content
-    assert 'le 20 juillet 2019 à 14:00' in mail_content
-    assert 'proposé par Test offerer' in mail_content
-    assert 'recrédité de 20 euros' in mail_content
+    html_action = str(email_html.find("p", {"id": "action"}))
+    html_recap = str(email_html.find("p", {"id": "recap"}))
+    print(email_html)
+    assert 'Vous venez d\'annuler' in html_action
+    assert 'John Doe' in html_action
+    assert 'john@doe.fr' in html_action
+    assert 'pour Le théâtre des ombres' in html_recap
+    assert 'proposé par Le petit théâtre' in html_recap
+    assert '1 rue de la Libération' in html_recap
+    assert 'Montreuil' in html_recap
+    assert '93100' in html_recap
+    assert '<td>John Doe</td>' not in html_recap
     assert email[
-               'Subject'] == 'Votre réservation pour Mains, sorts et papiers, proposé par Test offerer a été annulée par l\'offreur'
-
-expected_html = '''
-        <html>
-            <body>
-                <p id="mail-greeting">Cher partenaire pass Culture,</p>
-                <p>Vous venez d'annuler la réservation de <strong>Test2</strong> (test2@email.com).</p>
-                <p id="recap">
-                Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
-                </p>
-                <table>
-                    <tr>
-                        <th>Nom ou pseudo</th>
-                        <th>Email</th>
-                        <th>Code réservation</th>
-                    </tr> 
-
-                    <tr>
-                        <td>Test1</td>
-                        <td>test1@email.com</td>
-                        <td>{token}</td>
-                    </tr>
-
-                </table>
-
-            </body>
-        </html>'''
+               'Subject'] == 'Confirmation de votre annulation de réservation pour Mains, sorts et papiers, proposé par Test offerer'

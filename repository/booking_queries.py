@@ -88,3 +88,8 @@ def save_booking(booking):
 
 def find_by_id(booking_id):
     return Booking.query.filter_by(id=booking_id).first_or_404()
+
+
+
+def find_all_ongoing_bookings_by_stock(stock):
+    return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isValidated=False).all()

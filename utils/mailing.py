@@ -214,6 +214,29 @@ def make_offerer_driven_cancellation_email_for_user(booking):
         'Html-part': email_html,
     }
 
+def make_offerer_driven_cancellation_email_for_offerer(booking):
+    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    venue = booking.stock.resolvedOffer.venue
+    user_name = booking.user.publicName
+    user_email = booking.user.email
+    email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(offer_name, venue.name)
+    stock_bookings = booking.stock.bookings
+    email_html = render_template('offerer_recap_email_after_offerer_action.html',
+                                 user_name=user_name,
+                                 user_email=user_email,
+                                 number_of_bookings=len(stock_bookings),
+                                 stock_bookings=stock_bookings,
+                                 stock_name=venue.name,
+                                 venue_address=venue.address,
+                                 venue_postal_code=venue.postalCode,
+                                 venur_city=venue.city
+                                 )
+    return {
+        'FromName': 'Pass Culture',
+        'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'Subject': email_subject,
+        'Html-part': email_html,
+    }
 
 def _generate_offerer_driven_cancellation_email_for_user_thing(booking):
     offer_name = booking.stock.resolvedOffer.eventOrThing.name

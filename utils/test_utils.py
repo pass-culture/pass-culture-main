@@ -200,9 +200,11 @@ def create_booking(user, stock=None, venue=None, recommendation=None, is_cancell
     booking.dateModified = date_modified
     if recommendation:
         booking.recommendation = recommendation
-    else:
+    elif not stock.offer:
         offer = create_thing_offer(venue)
         booking.recommendation = create_recommendation(offer, user)
+    else:
+        booking.recommendation = create_recommendation(stock.offer, user)
     if not is_cancellation and fill_stock_bookings:
         stock.bookings = [booking]
     return booking
