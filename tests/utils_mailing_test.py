@@ -17,7 +17,7 @@ from utils.mailing import make_user_booking_recap_email, send_booking_confirmati
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence
+    create_stock_from_event_occurrence, create_event_occurrence, create_thing
 
 
 def get_mocked_response_status_200(entity):
@@ -983,39 +983,77 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
 @clean_database
 @pytest.mark.standalone
 @pytest.mark.offerer_driven_cancellation
-def test_make_offerer_driven_cancellation_email_for_offerer(app):
+def test_make_offerer_driven_cancellation_email_for_offerer_event(app):
     # Given
-
     user = create_user(public_name='John Doe', email='john@doe.fr')
     offerer = create_offerer(name='Test offerer')
-    venue = create_venue(offerer, name='Le petit thêatre', address='1 rue de la Libération', city='Montreuil',
+    venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
     offer = create_event_offer(venue, event_name='Le théâtre des ombres')
     event_occurrence = create_event_occurrence(offer,
                                                beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
     stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=20, available=10)
     booking = create_booking(user, stock, is_cancellation=True)
-    print(booking.stock)
-    booking.stock.bookings = []
-    print(booking.stock)
-    print(booking.stock.bookings)
 
     # When
-    email = make_offerer_driven_cancellation_email_for_offerer(booking)
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[]):
+        email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_action = str(email_html.find("p", {"id": "action"}))
     html_recap = str(email_html.find("p", {"id": "recap"}))
-    print(email_html)
+    html_no_recal = str(email_html.find("p", {"id": "no-recap"}))
     assert 'Vous venez d\'annuler' in html_action
     assert 'John Doe' in html_action
     assert 'john@doe.fr' in html_action
     assert 'pour Le théâtre des ombres' in html_recap
     assert 'proposé par Le petit théâtre' in html_recap
+    assert 'le 20 juillet 2019 à 14:00' in html_recap
     assert '1 rue de la Libération' in html_recap
     assert 'Montreuil' in html_recap
     assert '93100' in html_recap
-    assert '<td>John Doe</td>' not in html_recap
+    assert 'Aucune réservation' in html_no_recal
     assert email[
-               'Subject'] == 'Confirmation de votre annulation de réservation pour Mains, sorts et papiers, proposé par Test offerer'
+               'Subject'] == 'Confirmation de votre annulation de réservation pour Le théâtre des ombres, proposé par Le petit théâtre'
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.offerer_driven_cancellation
+def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(app):
+    # Given
+    user = create_user(public_name='John Doe', email='john@doe.fr')
+    offerer = create_offerer(name='Test offerer')
+    venue = create_venue(offerer, name='La petite librairie', address='1 rue de la Libération', city='Montreuil',
+                         postal_code='93100')
+    thing = create_thing(thing_name='Le récit de voyage')
+    offer = create_thing_offer(venue, thing)
+    stock = create_stock_from_offer(offerer, offer, price=0, available=10)
+    booking = create_booking(user, stock, is_cancellation=True)
+
+    user2 = create_user(public_name='James Bond', email='bond@james.bond.uk')
+    booking2 = create_booking(user2, stock, is_cancellation=True)
+    ongoing_bookings = [booking2]
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+        email = make_offerer_driven_cancellation_email_for_offerer(booking)
+
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_action = str(email_html.find("p", {"id": "action"}))
+    html_recap = str(email_html.find("p", {"id": "recap"}))
+    html_recap_table = str(email_html.find("table", {"id": "recap-table"}))
+    assert 'Vous venez d\'annuler' in html_action
+    assert 'John Doe' in html_action
+    assert 'john@doe.fr' in html_action
+    assert 'pour Le récit de voyage' in html_recap
+    assert 'proposé par La petite librairie' in html_recap
+    assert '1 rue de la Libération' in html_recap
+    assert 'Montreuil' in html_recap
+    assert '93100' in html_recap
+    assert '<td>James Bond</td>' in html_recap_table
+    assert '<td>John Doe</td>' not in html_recap_table
+    assert email[
+               'Subject'] == 'Confirmation de votre annulation de réservation pour Le récit de voyage, proposé par La petite librairie'

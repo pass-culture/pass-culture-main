@@ -7,6 +7,7 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from models.pc_object import PcObject
+from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from utils.config import API_URL, ENV
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
@@ -215,21 +216,27 @@ def make_offerer_driven_cancellation_email_for_user(booking):
     }
 
 def make_offerer_driven_cancellation_email_for_offerer(booking):
-    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    stock_name = booking.stock.resolvedOffer.eventOrThing.name
     venue = booking.stock.resolvedOffer.venue
     user_name = booking.user.publicName
     user_email = booking.user.email
-    email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(offer_name, venue.name)
-    stock_bookings = booking.stock.bookings
+    email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(stock_name, venue.name)
+    ongoing_stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
+    stock_date_time = None
+    if booking.stock.eventOccurrence:
+        date_in_tz =_get_event_datetime(booking.stock)
+        stock_date_time = format_datetime(date_in_tz)
     email_html = render_template('offerer_recap_email_after_offerer_action.html',
                                  user_name=user_name,
                                  user_email=user_email,
-                                 number_of_bookings=len(stock_bookings),
-                                 stock_bookings=stock_bookings,
-                                 stock_name=venue.name,
+                                 stock_date_time=stock_date_time,
+                                 number_of_bookings=len(ongoing_stock_bookings),
+                                 stock_bookings=ongoing_stock_bookings,
+                                 stock_name=stock_name,
+                                 venue_name=venue.name,
                                  venue_address=venue.address,
                                  venue_postal_code=venue.postalCode,
-                                 venur_city=venue.city
+                                 venue_city=venue.city
                                  )
     return {
         'FromName': 'Pass Culture',

@@ -3,7 +3,7 @@
 {% block past_or_future %}des réservations à ce jour{% endblock %}
 {% block recap %}
 {% if stock_bookings %}
-<table>
+<table id="recap-table">
     <tr>
         <th>Nom ou pseudo</th>
         <th>Email</th>
@@ -16,7 +16,7 @@
         <td>{{ booking.token }}</td>
     </tr>
     {% else %}
-    <p>Aucune réservation</p>
+    <p id="no-recap">Aucune réservation</p>
     {% endfor %}
 </table>
 {% endblock %}
