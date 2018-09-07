@@ -9,7 +9,7 @@ offer_mocks = [
         "venueName": "LE GRAND REX PARIS"
     },
     {
-        "eventName": "Concert de Gaël Faye",
+        "eventName": "Concert de Gael Faye",
         "venueName": "THEATRE DE L ODEON"
     },
     {

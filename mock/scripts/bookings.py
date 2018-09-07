@@ -43,7 +43,7 @@ booking_mocks = [
 
     {
         "stockIndex": 5,
-        "token": "AAQY53",
+        "token": "AAQY33",
         "userEmail": "pctest.jeune.93@btmx.fr"
     },
     {

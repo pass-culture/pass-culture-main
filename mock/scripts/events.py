@@ -5,7 +5,7 @@ event_mocks = [
         "durationMinutes": 60
     },
     {
-        "name": "Concert de Gaël Faye",
+        "name": "Concert de Gael Faye",
         "durationMinutes": 120
     },
     {

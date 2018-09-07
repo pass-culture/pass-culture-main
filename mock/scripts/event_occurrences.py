@@ -17,8 +17,13 @@ event_occurrence_mocks = [
         "offerIndex": 1
     },
 
+
+    {
+        "offerIndex": 2
+    },
+
     {
         "offerIndex": 2
     }
->>>>>>> more mock data
+
 ]
