@@ -1,13 +1,12 @@
 {
   "name": "pass-culture-browser",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
   "homepage": "/",
   "dependencies": {
     "antd": "^3.8.1",
     "archiver": "^2.1.1",
     "autoprefixer": "7.1.6",
-    "copy-webpack-plugin": "^4.5.2",
     "babel-core": "6.26.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
@@ -21,6 +20,7 @@
     "classnames": "2.2.5",
     "colorsys": "^1.0.20",
     "commander": "^2.14.1",
+    "copy-webpack-plugin": "^4.5.2",
     "css-loader": "0.28.7",
     "dotenv": "4.0.0",
     "es5-shim": "^4.5.10",
