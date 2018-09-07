@@ -76,7 +76,7 @@
 }
 
 .padded {
-  padding: 1rem;
+  padding: $page-padding;
 }
 
 /* -------------------------------------------------
@@ -152,14 +152,39 @@
 
 ------------------------------------------------- */
 
+.pc-label {
+  color: $grey;
+  font-size: 0.8rem;
+}
+
+.pc-white-element {
+  color: $primary;
+  background-color: $white;
+}
+
+.pc-primary-element {
+  color: $white;
+  background-color: $primary;
+}
+
+.pc-gradient {
+  background-image: linear-gradient(to bottom right, $primary, $purple);
+}
+
+.pc-main,
 .application-main {
   @extend .padded;
 }
 
+.pc-footer,
 .application-footer {
   height: $footer-height;
   min-height: $footer-height;
   padding: 1rem 1rem 1rem 3rem;
+
+  .icon-user-circle-outline {
+    font-size: 2.7rem;
+  }
 }
 
 .is-raw-description {
@@ -170,8 +195,4 @@
   word-wrap: break-word;
   white-space: pre-wrap;
   background-color: transparent;
-}
-
-.pc-gradient {
-  background-image: linear-gradient(to bottom right, $primary, $purple);
 }

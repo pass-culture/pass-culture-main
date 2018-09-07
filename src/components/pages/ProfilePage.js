@@ -21,7 +21,7 @@ const ProfilePage = ({ user }) => {
     <div id="profile-page" className="page is-relative flex-rows">
       {isloaded && (
         <React.Fragment>
-          <header className="padded pc-primary-element text-center flex-0">
+          <header className="padded pc-primary-element has-text-centered flex-0">
             <h1 className="fs19">
               <span>Mon profil</span>
             </h1>
@@ -33,7 +33,7 @@ const ProfilePage = ({ user }) => {
           >
             <Scrollbars autoHide>
               <MonAvatar provider={user} />
-              <MonPassCulture provider={user} />
+              {user.expenses && <MonPassCulture provider={user} />}
               <MesInformations provider={user} />
             </Scrollbars>
           </main>

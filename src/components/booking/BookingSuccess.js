@@ -16,7 +16,7 @@ const BookingSuccess = ({ isEvent, data }) => {
   // juste pour du debug
   const cssclass = (isEvent && 'event') || 'thing'
   return (
-    <div className={`booked text-center ${cssclass}`}>
+    <div className={`booked has-text-centered ${cssclass}`}>
       <h3 style={{ fontSize: '22px' }}>
         {/* <!-- ICON --> */}
         <span

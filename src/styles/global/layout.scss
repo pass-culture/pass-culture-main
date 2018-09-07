@@ -60,6 +60,24 @@ button {
   z-index: 100000;
 }
 
+#application-loader {
+  @extend .flex-center;
+  @extend .flex-rows;
+  @extend .has-text-centered;
+  @extend .is-italic;
+  @extend .is-overlay;
+  //
+  @extend .pc-gradient;
+  @extend .pc-primary-element; // fallback to pc-gradient
+
+  z-index: $zindex-application-loader;
+  opacity: 1;
+
+  img {
+    margin-bottom: $page-padding;
+  }
+}
+
 .app .beta-corner {
   left: 0;
   bottom: 0;
@@ -68,40 +86,4 @@ button {
   width: $footer-height;
   height: $footer-height;
   z-index: $zindex-beta-corner;
-}
-
-.is-relative {
-  position: relative;
-}
-
-.pc-gradient {
-  background-image: linear-gradient(to bottom right, $primary, $purple);
-}
-
-// doivent etre remplaces par une regle simple s'appliquant a toutes les pages
-// Ex: .page main {} || .page footer {}
-
-.pc-footer {
-  height: $footer-height;
-  min-height: $footer-height;
-  padding: 1rem 1rem 1rem 3rem;
-
-  .icon-user-circle-outline {
-    font-size: 2.7rem;
-  }
-}
-
-.pc-label {
-  color: $grey;
-  font-size: 0.8rem;
-}
-
-.pc-white-element {
-  color: $primary;
-  background-color: $white;
-}
-
-.pc-primary-element {
-  color: $white;
-  background-color: $primary;
 }

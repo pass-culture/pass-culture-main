@@ -26,7 +26,6 @@ const Loader = ({ haserror, isempty, isloading }) => {
       {state => (
         <div
           id="application-loader"
-          className="pc-gradient flex-rows flex-center is-overlay text-center is-italic"
           style={{ ...defaultStyle, ...transitionStyles[state] }}
         >
           <Icon

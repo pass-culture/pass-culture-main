@@ -8,7 +8,8 @@ const noop = () => {}
 
 const renderInformation = (label, value, disabled = false, islast = false) => {
   const placeholder = 'Non renseigné'
-  const cssclass = islast ? '' : 'dotted-bottom-black'
+  let cssclass = islast ? '' : 'dotted-bottom-black'
+  cssclass = `${cssclass} ${(disabled && 'no-pointer') || ''}`
   const strvalue =
     (typeof value === 'string' && value.trim() !== '' && value) || false
   return (
@@ -56,10 +57,10 @@ const MesInformations = ({ provider }) => {
         <i>Mes Informations</i>
       </h3>
       <div className="px12 list">
-        {renderInformation('Identifiant', publicName)}
-        {renderInformation('Nom et prénom', '')}
-        {renderInformation('Adresse e-mail', email)}
-        {renderInformation('Mot de passe', '', false)}
+        {renderInformation('Identifiant', publicName, true)}
+        {renderInformation('Nom et prénom', '', true)}
+        {renderInformation('Adresse e-mail', email, true)}
+        {renderInformation('Mot de passe', '', true)}
         {renderInformation('Département de résidence', departement, true, true)}
       </div>
     </div>

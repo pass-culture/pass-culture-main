@@ -24,7 +24,7 @@ const BookingError = ({ errors }) => {
       ? Object.values(errors).reduce(flattenErrors, [])
       : []
   return (
-    <div className="booked has-text-centered">
+    <div className="booked has-has-text-centereded">
       <h3 style={{ fontSize: '22px' }} className="mb16">
         <span
           className="is-block"

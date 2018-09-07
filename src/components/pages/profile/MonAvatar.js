@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 
 import ProfilePicture from '../../layout/ProfilePicture'
 
-const noop = () => {}
-
 const UserAvatar = ({ provider }) => (
   <div id="mon-avatar" className="padded flex-columns">
     <span className="flex-1 my22">
@@ -15,10 +13,10 @@ const UserAvatar = ({ provider }) => (
         {provider.publicName}
       </b>
     </span>
-    <button
+    {/* <button
       disabled
       type="button"
-      onClick={noop}
+      onClick={() => {}}
       className="no-border no-background flex-0"
     >
       <span
@@ -26,7 +24,7 @@ const UserAvatar = ({ provider }) => (
         className="icon-next"
         title="Modifier Mes Notifications"
       />
-    </button>
+    </button> */}
   </div>
 )
 

@@ -59,7 +59,7 @@ class MainMenu extends React.PureComponent {
         className="navlink flex-columns"
         onClick={this.onSignOutClick}
       >
-        <span className="text-center menu-icon">
+        <span className="has-text-centered menu-icon">
           <Icon svg="ico-deconnect-w" alt="" />
         </span>
         <span>
