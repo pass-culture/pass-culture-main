@@ -4,13 +4,16 @@
   background-color: black;
 
   .react-draggable {
-    width: 100%;
-    height: 100%;
+    z-index: $zindex-deckdraggable;
     cursor: -webkit-grab;
-    position: relative;
     transition-property: transform;
     transition-timing-function: ease;
     transition-duration: 250ms;
+  }
+
+  .react-draggable .inner {
+    width: 100%;
+    height: 100%;
   }
 
   .close {

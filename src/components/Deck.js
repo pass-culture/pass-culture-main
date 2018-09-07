@@ -244,10 +244,12 @@ class Deck extends Component {
         enableUserSelectHack={false}
         axis={isFlipped ? 'none' : 'exclude'}
       >
-        <div className="is-relative">
-          {previousRecommendation && <Card position="previous" />}
-          <Card position="current" />
-          {nextRecommendation && <Card position="next" />}
+        <div className="is-overlay">
+          <div className="inner is-relative">
+            {previousRecommendation && <Card position="previous" />}
+            <Card position="current" />
+            {nextRecommendation && <Card position="next" />}
+          </div>
         </div>
       </Draggable>
     )
@@ -273,6 +275,7 @@ class Deck extends Component {
             type="button"
             className="close-button"
             onClick={this.handleUnFlip}
+            style={{ zIndex: 300 }}
           >
             <Icon svg="ico-close" alt="Fermer" />
           </button>

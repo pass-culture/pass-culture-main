@@ -6,7 +6,9 @@ export const isRecommendationFinished = (recommendation, offerId) => {
   const stocks = (offer && offer.stocks) || []
   const availableDates = filterAvailableDates(stocks)
   const isFinished =
-    offerId !== 'tuto' && !(availableDates && availableDates.length > 0)
+    offerId &&
+    offerId !== 'tuto' &&
+    !(availableDates && availableDates.length > 0)
   return isFinished
 }
 

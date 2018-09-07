@@ -1,7 +1,9 @@
 $button-margin: 0.75rem;
 $button-size: $header-height - 2 * $button-margin;
 
-button.back-button, button.close-button {
+button.back-button,
+button.close-button {
+  z-index: $zindex-close-button;
   position: absolute;
   width: $button-size;
   height: $button-size;
@@ -9,7 +11,7 @@ button.back-button, button.close-button {
   margin: $button-margin;
   background: none;
   border: none;
-  z-index: 1;
+
   img {
     width: 1.2rem;
     height: 1.2rem;
@@ -29,6 +31,7 @@ button.back-button, button.close-button {
 
 button.close-button {
   right: 0;
+
   img {
     left: 0;
   }
