@@ -1,7 +1,6 @@
 ul.verso-control {
   list-style: none;
-  background-color: #ACE539;
-  // background-color: $primary;
+  background-color: $primary;
   height: $footer-height;
   padding-left: $page-padding;
   padding-right: $page-padding;
@@ -11,21 +10,17 @@ ul.verso-control {
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
-
   li {
     display: inline-block;
     text-align: center;
-
     .pass-label {
       display: block;
       margin-bottom: -3px;
     }
-
     .pass-value {
       display: block;
       font-size: 1.5em;
     }
-
     .button.is-go {
       .price {
         font-weight: normal;
@@ -37,7 +32,6 @@ ul.verso-control {
         margin-top: -0.5em;
         margin-bottom: -0.5em;
       }
-
       svg {
         margin-right: 5px;
       }
