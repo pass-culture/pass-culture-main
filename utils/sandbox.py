@@ -30,6 +30,19 @@ from utils.mock import set_from_mock
 
 def do_sandbox():
 
+    offerers = []
+    for offerer_mock in offerer_mocks:
+        query = Offerer.query.filter_by(name=offerer_mock['name'])
+        if query.count() == 0:
+            offerer = Offerer(from_dict=offerer_mock)
+            PcObject.check_and_save(offerer)
+            print("CREATED offerer")
+            pprint(vars(offerer))
+            offerers.append(offerer)
+        else:
+            offerers.append(query.one())
+
+
     for (user_index, user_mock) in enumerate(user_mocks):
         query = User.query.filter_by(email=user_mock['email'])
         if query.count() == 0:
@@ -50,18 +63,6 @@ def do_sandbox():
                     PcObject.check_and_save(userOfferer)
             set_from_mock("thumbs", user, user_index)
 
-
-    offerers = []
-    for offerer_mock in offerer_mocks:
-        query = Offerer.query.filter_by(name=offerer_mock['name'])
-        if query.count() == 0:
-            offerer = Offerer(from_dict=offerer_mock)
-            PcObject.check_and_save(offerer)
-            print("CREATED offerer")
-            pprint(vars(offerer))
-            offerers.append(offerer)
-        else:
-            offerers.append(query.one())
 
     venues = []
     for venue_mock in venue_mocks:
