@@ -12,18 +12,41 @@ import {
   getPriceRangeFromStocks,
   isRecommendationFinished,
 } from '../../helpers'
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { ROOT_PATH } from '../../utils/config'
 
 class DeckNavigation extends React.PureComponent {
+  renderPreviousButton = () => {
+    const { handleGoPrevious } = this.props
+    return (
+      (handleGoPrevious && (
+        <button
+          type="button"
+          className="button before"
+          onClick={handleGoPrevious}
+        >
+          <Icon svg="ico-prev-w-group" alt="Précédent" />
+        </button>
+      )) || <span />
+    )
+  }
+
+  renderNextButton = () => {
+    const { handleGoNext } = this.props
+    return (
+      (handleGoNext && (
+        <button type="button" className="button after" onClick={handleGoNext}>
+          <Icon svg="ico-next-w-group" alt="Suivant" />
+        </button>
+      )) || <span />
+    )
+  }
+
   render() {
     const {
       isFinished,
       headerColor,
       recommendation,
       flipHandler,
-      handleGoNext,
-      handleGoPrevious,
       transitionTimeout,
     } = this.props
     const { distance, offer } = recommendation || {}
@@ -37,15 +60,7 @@ class DeckNavigation extends React.PureComponent {
           style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
         >
           {/* previous button */}
-          {(handleGoPrevious && (
-            <button
-              type="button"
-              className="button before"
-              onClick={handleGoPrevious}
-            >
-              <Icon svg="ico-prev-w-group" alt="Précédent" />
-            </button>
-          )) || <span />}
+          {this.renderPreviousButton()}
           {/* flip button */}
           {(flipHandler && (
             <div className="flex-rows">
@@ -74,15 +89,7 @@ class DeckNavigation extends React.PureComponent {
             </div>
           )) || <span />}
           {/* next button */}
-          {(handleGoNext && (
-            <button
-              type="button"
-              className="button after"
-              onClick={handleGoNext}
-            >
-              <Icon svg="ico-next-w-group" alt="Suivant" />
-            </button>
-          )) || <span />}
+          {this.renderNextButton()}
         </div>
       </div>
     )
@@ -112,18 +119,13 @@ DeckNavigation.propTypes = {
 export default compose(
   withRouter,
   connect((state, ownProps) => {
-    const { mediationId, offerId } = ownProps.match.params
-    const recommendation = currentRecommendationSelector(
-      state,
-      offerId,
-      mediationId
-    )
+    const { recommendation } = ownProps
+    const { offerId } = recommendation
     const isFinished = isRecommendationFinished(recommendation, offerId)
     const headerColor = getHeaderColor(recommendation.firstThumbDominantColor)
     return {
       headerColor,
       isFinished,
-      recommendation,
     }
   })
 )(DeckNavigation)

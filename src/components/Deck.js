@@ -9,14 +9,12 @@ import { compose, bindActionCreators } from 'redux'
 import withSizes from 'react-sizes'
 
 import Card from './Card'
-import DeckDebugger from './deck/DeckDebugger'
 import DeckNavigation from './deck/DeckNavigation'
 import { flip, flipUnflippable, unFlip } from '../reducers/verso'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import nextRecommendationSelector from '../selectors/nextRecommendation'
 import previousRecommendationSelector from '../selectors/previousRecommendation'
 import recommendationsSelector from '../selectors/recommendations'
-import { IS_DEV } from '../utils/config'
 import { PREVIOUS_NEXT_LIMIT } from '../utils/deck'
 
 class Deck extends Component {
@@ -246,7 +244,7 @@ class Deck extends Component {
         enableUserSelectHack={false}
         axis={isFlipped ? 'none' : 'exclude'}
       >
-        <div>
+        <div className="is-relative">
           {previousRecommendation && <Card position="previous" />}
           <Card position="current" />
           {nextRecommendation && <Card position="next" />}
@@ -282,15 +280,13 @@ class Deck extends Component {
         {this.renderDraggableCards()}
         {showNavigation && (
           <DeckNavigation
+            recommendation={currentRecommendation}
             flipHandler={(!isFlipDisabled && this.handleFlip) || null}
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={
               (previousRecommendation && this.handleGoPrevious) || null
             }
           />
-        )}
-        {IS_DEV && (
-          <DeckDebugger currentRecommendation={currentRecommendation} />
         )}
       </div>
     )
