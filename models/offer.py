@@ -70,7 +70,7 @@ class Offer(PcObject,
     @property
     def stocks(self):
         if self.thing:
-            return self.stocks
+            return self.thingStocks
         elif self.event:
             return list(chain(*map(lambda eo: eo.stocks,
                                    self.eventOccurrences)))

@@ -54,7 +54,7 @@ class Stock(PcObject,
 
     offer = relationship('Offer',
                          foreign_keys=[offerId],
-                         backref = 'stocks')
+                         backref = 'thingStocks')
 
 
     price = Column(Numeric(10, 2),

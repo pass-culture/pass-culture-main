@@ -294,6 +294,13 @@ def create_stock_from_offer(offerer, offer, price=10, available=10):
     return stock
 
 
+def create_stock(price=10, available=10):
+    stock = Stock()
+    stock.price = price
+    stock.available = available
+    return stock
+
+
 def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50,
                                   booking_email='offer.booking.email@test.com'):
     stock = Stock()
