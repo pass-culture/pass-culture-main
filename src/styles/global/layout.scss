@@ -73,3 +73,7 @@ button {
 .is-relative {
   position: relative;
 }
+
+.pc-gradient {
+  background-image: linear-gradient(to bottom right, $primary, $purple);
+}

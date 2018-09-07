@@ -4,7 +4,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const BetaPage = () => (
-  <div id="beta-page" className="page flex-rows">
+  <div id="beta-page" className="pc-gradient page flex-rows">
     <main
       role="main"
       className="application-main flex-rows flex-around items-center"

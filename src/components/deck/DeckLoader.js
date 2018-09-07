@@ -26,7 +26,7 @@ const DeckLoader = ({ haserror, isempty, isloading }) => {
       {state => (
         <div
           id="deckloader"
-          className="flex-rows flex-center is-overlay has-text-centered is-italic"
+          className="pc-gradient flex-rows flex-center is-overlay has-text-centered is-italic"
           style={{ ...defaultStyle, ...transitionStyles[state] }}
         >
           <Icon
