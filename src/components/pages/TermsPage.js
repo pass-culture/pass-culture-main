@@ -1,11 +1,9 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import { version } from '../../../package.json'
-
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
-import { ROOT_PATH } from '../../utils/config'
+import { ROOT_PATH, APP_VERSION } from '../../utils/config'
 
 const renderPageHeader = () => (
   <header>
@@ -44,7 +42,7 @@ class TermsPage extends React.PureComponent {
           <p className="version">
             <br />
             <br />
-            {`Pass Culture version v${version}`}
+            {`Pass Culture version v${APP_VERSION}`}
           </p>
         </div>
       </Main>
