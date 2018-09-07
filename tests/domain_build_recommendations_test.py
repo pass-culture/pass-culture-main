@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 from domain.build_recommendations import build_mixed_recommendations
@@ -96,6 +98,22 @@ def test_build_mixed_recommendations_with_read_recommendations_and_unread_but_no
 
 @pytest.mark.standalone
 def test_build_mixed_recommendations_with_all_sorts_of_recommendations():
+    # given
+    created_recommendations = [create_recommendation(id=5), create_recommendation(id=6)]
+    read_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
+    unread_recommendations = [create_recommendation(id=3), create_recommendation(id=4)]
+
+    # when
+    created_recommendations = build_mixed_recommendations(created_recommendations, read_recommendations,
+                                                          unread_recommendations)
+
+    # then
+    assert [r.id for r in created_recommendations] == [5, 6, 3, 4, 1, 2]
+
+
+@pytest.mark.standalone
+@patch('domain.build_recommendations.feature_paid_offers_enabled', return_value=False)
+def test_build_mixed_recommendations_removes_the_recommendations_on_paid_offers_if_feature_is_disabled(feature_enabled):
     # given
     created_recommendations = [create_recommendation(id=5), create_recommendation(id=6)]
     read_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]

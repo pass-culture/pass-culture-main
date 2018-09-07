@@ -309,8 +309,8 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
-                 url=None):
+def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author', url=None,
+                 thumb_count=1):
     thing = Thing()
     thing.type = thing_type
     thing.name = thing_name
@@ -318,6 +318,9 @@ def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/url
     thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
     thing.extraData = {'author': author_name}
     thing.url = url
+    thing.thumbCount = thumb_count
+    if thumb_count > 0:
+        thing.firstThumbDominantColor = b'123'
     return thing
 
 
@@ -329,13 +332,14 @@ def create_event(event_name='Test event', duration_minutes=60):
 
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author'):
+                       thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
+                       thumb_count=1):
     offer = Offer()
     if thing:
         offer.thing = thing
     else:
         offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                                   author_name=author_name)
+                                   author_name=author_name, thumb_count=thumb_count)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
@@ -407,11 +411,13 @@ def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
     return user_offerer
 
 
-def create_recommendation(offer=None, user=None, id=None):
+def create_recommendation(offer=None, user=None, id=None, date_read=None, valid_until_date=datetime.utcnow() + timedelta(days=7)):
     recommendation = Recommendation()
     recommendation.id = id
     recommendation.offer = offer
     recommendation.user = user
+    recommendation.dateRead = date_read
+    recommendation.validUntilDate = valid_until_date
     return recommendation
 
 
