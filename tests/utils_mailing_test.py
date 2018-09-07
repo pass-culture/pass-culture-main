@@ -88,7 +88,7 @@ SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
 HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '<html><body>' + \
     '<p id="mail-greeting">Cher partenaire pass Culture,</p>' + \
-    '<p id="user-action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>' + \
+    '<p id="action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>' + \
     '<p id="recap">Voici le récapitulatif des réservations à ce jour (total 1)' + \
     ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
     ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
@@ -430,7 +430,7 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
         <html>
             <body>
                 <p id="mail-greeting">Cher partenaire pass Culture,</p>
-                <p id="user-action"><strong>Test 2</strong> (other_test@email.com) vient de faire une nouvelle réservation.</p>
+                <p id="action"><strong>Test 2</strong> (other_test@email.com) vient de faire une nouvelle réservation.</p>
                 <p id="recap">
                     Voici le récapitulatif des réservations à ce jour (total 2) pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
@@ -485,7 +485,7 @@ def test_offerer_booking_recap_email_book(app):
     <html>
         <body>
             <p id="mail-greeting">Cher partenaire pass Culture,</p>
-            <p id="user-action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>
+            <p id="action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>
             <p id="recap">
             Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
             </p>
@@ -890,7 +890,7 @@ def test_make_offerer_booking_user_cancellation_email(app):
         <html>
             <body>
                 <p id="mail-greeting">Cher partenaire pass Culture,</p>
-                <p id="user-action"><strong>Test2</strong> (test2@email.com) vient d'annuler sa réservation.</p>
+                <p id="action"><strong>Test2</strong> (test2@email.com) vient d'annuler sa réservation.</p>
                 <p id="recap">
                 Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
