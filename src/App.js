@@ -9,12 +9,15 @@ import MainMenu from './components/MainMenu'
 import Debug from './components/layout/Debug'
 import Splash from './components/layout/Splash'
 import Overlay from './components/layout/Overlay'
+import { getReactRoutes } from './utils/routes-utils'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
+
+const appRoutes = getReactRoutes(routes).filter(o => o)
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
-const getCurrentRouteObjectByPath = locpathname =>
-  routes.filter(obj => matchPath(locpathname, obj))[0] || null
+const getCurrentRouteObjectByPath = (entries, locpathname) =>
+  entries.filter(obj => obj && matchPath(locpathname, obj))[0] || null
 
 const getBodyClass = obj => {
   const path = (obj && obj.path.split('/').filter(v => v)[0]) || ''
@@ -22,7 +25,10 @@ const getBodyClass = obj => {
 }
 
 const App = ({ location, children }) => {
-  const currentRouteObj = getCurrentRouteObjectByPath(location.pathname)
+  const currentRouteObj = getCurrentRouteObjectByPath(
+    appRoutes,
+    location.pathname
+  )
   const bodyClass = getBodyClass(currentRouteObj)
   const pageTitle = getPageTitle(currentRouteObj)
   return (

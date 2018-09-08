@@ -14,7 +14,7 @@ import { getMainMenuItems } from '../utils/routes-utils'
 
 const transitionDelay = 250
 const transitionDuration = 250
-const navigations = getMainMenuItems(routes)
+const navigations = getMainMenuItems(routes).filter(o => o)
 
 const defaultStyle = {
   opacity: '0',

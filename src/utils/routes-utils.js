@@ -13,8 +13,8 @@ export const getMainMenuItems = items =>
   items
     // si un element n'a pas de propriete `icon`
     // alors il ne sera pas affiche dans le menu principal
-    .filter(obj => obj && obj.icon)
     .map(obj => {
+      if (!obj.icon || (!obj.path && !obj.href)) return null
       if (!obj.path) return obj
       const splitted = obj.path.split('/')
       if (splitted.length <= 1) return obj

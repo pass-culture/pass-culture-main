@@ -1,6 +1,4 @@
 /* eslint no-console: 0, max-nested-callbacks: 0 */
-import { expect } from 'chai'
-
 import MyHelper from './my/helper/relative/path'
 
 describe('My helper name', function() {

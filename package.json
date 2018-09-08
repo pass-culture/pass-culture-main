@@ -123,9 +123,8 @@
     "precommit": "./scripts/precommit.sh",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
     "start": "node scripts/start.js",
-    "test": "node scripts/jesttest.js --env=jsdom",
-    "testcafe": "testcafe 'chrome:headless' testcafe",
-    "spec": "jest --env=jsdom",
+    "test": "testcafe 'chrome:headless' testcafe",
+    "spec": "jest --env=jsdom --watchAll",
     "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi"
   }
 }
