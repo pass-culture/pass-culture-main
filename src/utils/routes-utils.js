@@ -15,9 +15,10 @@ export const getMainMenuItems = items =>
     // alors il ne sera pas affiche dans le menu principal
     .map(obj => {
       if (!obj.icon || (!obj.path && !obj.href)) return null
-      if (!obj.path) return obj
-      const splitted = obj.path.split('/')
-      if (splitted.length <= 1) return obj
-      const path = `/${splitted[1]}`
+      if (!obj.path || obj.href) return obj
+      const path = obj.path
+        .split('/')
+        .slice(0, 2)
+        .join('/')
       return Object.assign({}, obj, { path })
     })

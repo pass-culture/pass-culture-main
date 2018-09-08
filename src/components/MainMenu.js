@@ -5,8 +5,9 @@ import { connect } from 'react-redux'
 import { compose, bindActionCreators } from 'redux'
 import { Transition } from 'react-transition-group'
 import { Scrollbars } from 'react-custom-scrollbars'
-import { withRouter, NavLink } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
+import MenuLink from './menu/MenuLink'
 import { ROOT_PATH } from '../utils/config'
 import { toggleMainMenu } from '../reducers/menu'
 import routes from '../utils/routes'
@@ -62,37 +63,9 @@ class MainMenu extends React.PureComponent {
           <Icon svg="ico-deconnect-w" alt="" />
         </span>
         <span>
-          {'Déconnexion'}
+Déconnexion
         </span>
       </button>
-    )
-  }
-
-  renderNavLink = obj => {
-    const { location } = this.props
-    const { path, title, icon, disabled, href } = obj
-    // regle stricte
-    // si on est sur la page verso d'une offre
-    // aucun menu n'est actif
-    const cssclass = (disabled && 'is-disabled') || ''
-    const isverso =
-      location.search && location.search.indexOf('?to=verso') !== -1
-    const activeClass = isverso ? null : 'active'
-    return (
-      <NavLink
-        key={path || href}
-        to={path || href}
-        onClick={this.toggleMainMenu}
-        activeClassName={activeClass}
-        className={`navlink flex-columns ${cssclass}`}
-      >
-        <span className="has-text-centered menu-icon">
-          <Icon svg={`ico-${icon}`} alt="" />
-        </span>
-        <span>
-          {title}
-        </span>
-      </NavLink>
     )
   }
 
@@ -155,7 +128,13 @@ Mon Pass
               <div className="scroll-container is-clipped">
                 <Scrollbars>
                   <nav className="navigation flex-rows mt16 pb0">
-                    {navigations.map(this.renderNavLink)}
+                    {navigations.map(obj => (
+                      <MenuLink
+                        key={obj.path || obj.href}
+                        item={obj}
+                        clickHandler={this.toggleMainMenu}
+                      />
+                    ))}
                     {this.renderSignOutLink()}
                   </nav>
                 </Scrollbars>
@@ -176,7 +155,6 @@ MainMenu.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isVisible: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 

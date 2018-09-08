@@ -34,8 +34,8 @@ describe('getMainMenuItems', () => {
       { href: '/toto/:vars?', icon: 'toto' },
       { exact: true, path: '/toto/:vars?/vars2?' },
       { icon: 'toto', path: '/toto/:vars?/:vars2?/:vars3?' },
-      { href: 'maitlo:mail.cool' },
-      { href: 'maitlo:mail.cool', icon: 'toto' },
+      { href: 'mailto:mail.cool' },
+      { href: 'mailto:mail.cool', icon: 'toto' },
     ]
     const results = getMainMenuItems(values)
     const expected = [
@@ -47,7 +47,7 @@ describe('getMainMenuItems', () => {
       null,
       { icon: 'toto', path: '/toto' },
       null,
-      { href: 'maitlo:mail.cool', icon: 'toto' },
+      { href: 'mailto:mail.cool', icon: 'toto' },
     ]
     expect(results).toStrictEqual(expected)
   })

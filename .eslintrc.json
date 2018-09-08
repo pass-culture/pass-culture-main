@@ -1,6 +1,11 @@
 {
   "extends": ["airbnb", "prettier"],
   "parser": "babel-eslint",
+  "settings": {
+    "react": {
+      "version": "15"
+    }
+  },
   "env": {
     "jest": true,
     "node": true,
