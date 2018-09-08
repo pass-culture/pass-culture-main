@@ -1,5 +1,4 @@
 import React from 'react'
-import has from 'lodash.has'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
@@ -8,8 +7,12 @@ import App from './App'
 import routes from './utils/routes'
 import { configureStore } from './utils/store'
 import NotMatch from './components/pages/NotMatch'
+import { getReactRoutes } from './utils/routes-utils'
 
 const { store, persistor } = configureStore()
+const applicationRoutes = getReactRoutes(routes)
+
+console.log('applicationRoutes', applicationRoutes)
 
 const Root = () => (
   <Provider store={store}>
@@ -17,12 +20,9 @@ const Root = () => (
       <BrowserRouter>
         <App>
           <Switch>
-            {routes.map(route => {
-              const hasExact = has(route, 'exact')
-              const isexact = hasExact ? route.exact : true
-              // first props, last overrides
-              return <Route {...route} key={route.path} exact={isexact} />
-            })}
+            {applicationRoutes.map(
+              obj => obj && <Route {...obj} key={obj.path} />
+            )}
             <Route component={NotMatch} />
           </Switch>
         </App>

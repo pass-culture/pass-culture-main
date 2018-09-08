@@ -9,25 +9,17 @@ import { withRouter, NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from '../utils/config'
 import { toggleMainMenu } from '../reducers/menu'
+import routes from '../utils/routes'
+import { getMainMenuItems } from '../utils/routes-utils'
 
-// FIXME -> hardcoded, peut etre defini de routes.js
-const navigations = [
-  // [route-path, link-label, link-icon, is-disabled]
-  ['decouverte', 'Les offres', 'offres'],
-  ['reservations', 'Mes réservations', 'calendar'],
-  ['favoris', 'Mes préférés', 'like'],
-  ['reglages', 'Réglages', 'settings', true],
-  ['profil', 'Mon profil', 'user', true],
-  ['mentions-legales', 'Mentions légales', 'txt'],
-]
-
-const delay = 250
-const duration = 250
+const transitionDelay = 250
+const transitionDuration = 250
+const navigations = getMainMenuItems(routes)
 
 const defaultStyle = {
   opacity: '0',
   top: '100vh',
-  transitionDuration: `${duration}ms`,
+  transitionDuration: `${transitionDuration}ms`,
   transitionProperty: 'opacity, top',
   transitionTimingFunction: 'ease',
 }
@@ -37,17 +29,6 @@ const transitionStyles = {
   entering: { opacity: 0, top: '100vh' },
 }
 
-const renderContactUsLink = () => (
-  <a className="navlink flex-columns" href="mailto:pass@culture.gouv.fr">
-    <span className="has-text-centered menu-icon">
-      <Icon svg="ico-mail-w" alt="" />
-    </span>
-    <span>
-      {'Nous contacter'}
-    </span>
-  </a>
-)
-
 class MainMenu extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -55,19 +36,19 @@ class MainMenu extends React.PureComponent {
     this.actions = bindActionCreators({ requestData }, dispatch)
   }
 
-  onNavLinkClick = () => {
-    const { dispatch } = this.props
-    dispatch(toggleMainMenu())
-  }
-
   onSignOutClick = () => {
-    const { dispatch, history } = this.props
+    const { history } = this.props
     this.actions.requestData('GET', 'users/signout', {
       handleSuccess: () => {
         history.push('/connexion')
-        dispatch(toggleMainMenu())
+        this.toggleMainMenu()
       },
     })
+  }
+
+  toggleMainMenu = () => {
+    const { dispatch } = this.props
+    dispatch(toggleMainMenu())
   }
 
   renderSignOutLink() {
@@ -87,8 +68,9 @@ class MainMenu extends React.PureComponent {
     )
   }
 
-  renderNavLink(path, title, icon, disabled) {
+  renderNavLink = obj => {
     const { location } = this.props
+    const { path, title, icon, disabled, href } = obj
     // regle stricte
     // si on est sur la page verso d'une offre
     // aucun menu n'est actif
@@ -98,14 +80,14 @@ class MainMenu extends React.PureComponent {
     const activeClass = isverso ? null : 'active'
     return (
       <NavLink
-        key={path}
-        to={`/${path}`}
-        onClick={this.onNavLinkClick}
+        key={path || href}
+        to={path || href}
+        onClick={this.toggleMainMenu}
         activeClassName={activeClass}
         className={`navlink flex-columns ${cssclass}`}
       >
         <span className="has-text-centered menu-icon">
-          <Icon svg={`ico-${icon}-w`} alt="" />
+          <Icon svg={`ico-${icon}`} alt="" />
         </span>
         <span>
           {title}
@@ -114,20 +96,24 @@ class MainMenu extends React.PureComponent {
     )
   }
 
-  renderMenuHeader() {
-    const { user, dispatch } = this.props
+  renderCloseButton = () => (
+    <button
+      type="button"
+      className="close-button is-overlay"
+      onClick={this.toggleMainMenu}
+    >
+      <Icon svg="ico-close" alt="Fermer" />
+    </button>
+  )
+
+  renderMenuHeader = () => {
+    const { user } = this.props
+    const avatar = `${ROOT_PATH}/icons/avatar-default-w-XL.svg`
     return (
-      <div className="header flex-columns is-relative p16">
-        <button
-          type="button"
-          className="close-button is-overlay"
-          onClick={() => dispatch(toggleMainMenu())}
-        >
-          <Icon svg="ico-close" alt="Fermer" />
-        </button>
+      <React.Fragment>
         <div className="profile has-text-centered">
           <p className="avatar">
-            <img alt="" src={`${ROOT_PATH}/icons/avatar-default-w-XL.svg`} />
+            <img alt="" src={avatar} />
           </p>
           <p className="username is-clipped">
             <span>
@@ -138,7 +124,7 @@ class MainMenu extends React.PureComponent {
         <div className="account items-center flex-center flex-rows">
           <p>
             <span>
-              {'Mon Pass'}
+Mon Pass
             </span>
           </p>
           <p>
@@ -147,14 +133,14 @@ class MainMenu extends React.PureComponent {
             </strong>
           </p>
         </div>
-      </div>
+      </React.Fragment>
     )
   }
 
   render() {
     const { isVisible } = this.props
     return (
-      <Transition in={isVisible} timeout={delay}>
+      <Transition in={isVisible} timeout={transitionDelay}>
         {state => (
           <div
             id="main-menu"
@@ -162,12 +148,14 @@ class MainMenu extends React.PureComponent {
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
             <div className="inner is-relative is-clipped flex-rows">
-              {this.renderMenuHeader()}
+              <div className="header flex-columns is-relative p16">
+                {this.renderCloseButton()}
+                {this.renderMenuHeader()}
+              </div>
               <div className="scroll-container is-clipped">
                 <Scrollbars>
                   <nav className="navigation flex-rows mt16 pb0">
-                    {navigations.map(o => this.renderNavLink(...o))}
-                    {renderContactUsLink()}
+                    {navigations.map(this.renderNavLink)}
                     {this.renderSignOutLink()}
                   </nav>
                 </Scrollbars>

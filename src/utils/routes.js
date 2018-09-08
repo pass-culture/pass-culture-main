@@ -30,29 +30,52 @@ const routes = [
     path: '/inscription',
     title: 'Inscription',
   },
+  /* ---------------------------------------------------
+   *
+   * MENU ITEMS
+   * NOTE les elements ci-dessous sont les elements du main menu
+   *
+   ---------------------------------------------------  */
   {
     component: DiscoveryPage,
-    // il s'agit de l'URL optimale qui peut être partagée
+    disabled: false,
+    icon: 'offres-w',
+    // exemple d'URL optimale qui peut être partagée
+    // par les sous composants
     path: '/decouverte/:offerId?/:mediationId?/:view(booking|verso)?',
     title: 'Les offres',
   },
   {
+    component: BookingsPage,
+    disabled: false,
+    icon: 'calendar-w',
+    path: '/reservations',
+    title: 'Mes Réservations',
+  },
+  {
     component: FavoritesPage,
+    disabled: false,
+    icon: 'like-w',
     path: '/favoris',
-    title: 'Mes favoris',
+    title: 'Mes Préférés',
   },
   {
     component: ProfilePage,
+    disabled: false,
+    icon: 'user-w',
     path: '/profil',
-    title: 'Profil',
+    title: 'Mon Profil',
   },
   {
-    component: BookingsPage,
-    path: '/reservations',
-    title: 'Réservations',
+    disabled: false,
+    href: 'mailto:pass@culture.gouv.fr',
+    icon: 'mail-w',
+    title: 'Nous contacter',
   },
   {
     component: TermsPage,
+    disabled: false,
+    icon: 'txt-w',
     path: '/mentions-legales',
     title: 'Mentions Légales',
   },

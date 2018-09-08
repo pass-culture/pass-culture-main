@@ -9,7 +9,7 @@
 #main-menu .inner {
   width: 100%;
   height: 100%;
-  max-height: 615px;
+  max-height: 560px;
   border-radius: 1rem;
   background-color: $primary;
 }
@@ -76,6 +76,7 @@
   min-height: 56px;
   line-height: 56px;
   font-size: 1.1875rem;
+  text-decoration: none;
 
   .menu-icon {
     width: 44px;
