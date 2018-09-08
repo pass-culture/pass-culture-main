@@ -1,5 +1,13 @@
 module.exports = {
-  verbose: true,
-  setupFiles: ['<rootDir>/jest.setup.js'],
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/']
+  testEnvironment: 'node',
+  testMatch: ['**/?(*.)+(spec).js?(x)'],
+  testURL: 'http://localhost',
+  transform: {
+    '^.+\\.js$': 'babel-jest',
+  },
+  transformIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$',
+  ],
+  verbose: false,
 }
