@@ -15,7 +15,7 @@ import { getMainMenuItems } from '../utils/routes-utils'
 
 const transitionDelay = 250
 const transitionDuration = 250
-const navigations = getMainMenuItems(routes).filter(o => o)
+const menuitems = getMainMenuItems(routes)
 
 const defaultStyle = {
   opacity: '0',
@@ -128,13 +128,17 @@ Mon Pass
               <div className="scroll-container is-clipped">
                 <Scrollbars>
                   <nav className="navigation flex-rows mt16 pb0">
-                    {navigations.map(obj => (
-                      <MenuLink
-                        key={obj.path || obj.href}
-                        item={obj}
-                        clickHandler={this.toggleMainMenu}
-                      />
-                    ))}
+                    {menuitems &&
+                      menuitems.map(
+                        obj =>
+                          obj && (
+                            <MenuLink
+                              key={obj.path || obj.href}
+                              item={obj}
+                              clickHandler={this.toggleMainMenu}
+                            />
+                          )
+                      )}
                     {this.renderSignOutLink()}
                   </nav>
                 </Scrollbars>

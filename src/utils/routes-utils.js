@@ -1,3 +1,5 @@
+// NOTE: le filter pour supprimer les éléments `null`
+// augmente les tests unitaires de 3s
 export const getReactRoutes = items =>
   items
     // si un element a une propriete href

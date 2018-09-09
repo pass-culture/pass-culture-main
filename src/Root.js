@@ -9,8 +9,8 @@ import { configureStore } from './utils/store'
 import NotMatch from './components/pages/NotMatch'
 import { getReactRoutes } from './utils/routes-utils'
 
+const approutes = getReactRoutes(routes)
 const { store, persistor } = configureStore()
-const applicationRoutes = getReactRoutes(routes).filter(o => o)
 
 const Root = () => (
   <Provider store={store}>
@@ -18,9 +18,8 @@ const Root = () => (
       <BrowserRouter>
         <App>
           <Switch>
-            {applicationRoutes.map(obj => (
-              <Route {...obj} key={obj.path} />
-            ))}
+            {approutes &&
+              approutes.map(obj => obj && <Route {...obj} key={obj.path} />)}
             <Route component={NotMatch} />
           </Switch>
         </App>
