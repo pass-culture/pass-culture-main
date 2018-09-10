@@ -31,6 +31,7 @@ class ThingType(enum.Enum):
     CINEMA_ABO = {'label': "Cinéma (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
     JEUX_ABO = {'label': "Jeux (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
     JEUX = {'label': "Jeux (Biens physiques)", 'offlineOnly': True, 'onlineOnly': False}
+    JEUX_VIDEO = {'label': "Jeux Vidéo", 'offlineOnly': False, 'onlineOnly': True}
     LIVRE_EDITION = {'label': "Livre — Édition", 'offlineOnly': False, 'onlineOnly': False}
     MUSEES_PATRIMOINE_ABO = {'label': "Musées — Patrimoine (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
     MUSIQUE_ABO = {'label': "Musique (Abonnements concerts)", 'offlineOnly': True, 'onlineOnly': False}
