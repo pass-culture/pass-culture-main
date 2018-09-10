@@ -92,6 +92,9 @@ class Venue(PcObject,
         if self.siret is not None \
                 and not len(self.siret) == 14:
             api_errors.addError('siret', 'Ce code SIRET est invalide : ' + self.siret)
+        if self.postalCode is not None \
+           and len(self.postalCode) != 5:
+            api_errors.addError('postalCode', 'Ce code postal est invalide')
         if self.managingOffererId is not None:
             if self.managingOfferer is None:
                 managingOfferer = Offerer.query \
