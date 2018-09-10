@@ -1,8 +1,6 @@
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
-import venuesSelector from './venues'
-
 export default createCachedSelector(
   state => state.data.venues,
   (state, venueId) => venueId,

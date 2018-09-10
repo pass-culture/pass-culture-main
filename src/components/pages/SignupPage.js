@@ -39,7 +39,7 @@ const SignupPage = ({ errors, sirenName }) => {
                   action="/users/signup"
                   layout="vertical"
                   handleSuccessNotification={() =>
-                    "Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d'inscription par e-mail."
+                    'Votre compte a été créé avec succès.'
                   }
                   handleSuccessRedirect={() => '/structures'}>
                   <Field

@@ -229,7 +229,13 @@ class OfferPage extends Component {
             name="offer"
             handleSuccess={this.handleSuccess}
             handleFail={this.handleFail}
-            patch={event || thing}
+            patch={Object.assign(
+              {
+                offererId: get(offerer, 'id'),
+                venueId: get(venue, 'id'),
+              },
+              event || thing
+            )}
             readOnly={isReadOnly}>
             <div className="field-group">
               <Field name="name" label="Titre de l'offre" required isExpanded />
@@ -319,7 +325,11 @@ class OfferPage extends Component {
                   )}
                   {get(user, 'isAdmin') && (
                     <Field
-                      label="Offre à rayonnement national"
+                      label={
+                        <span>
+                          Rayonnement<br /> national
+                        </span>
+                      }
                       name="isNational"
                       type="checkbox"
                     />
@@ -415,10 +425,9 @@ export default compose(
       const thing = thingSelector(state, thingId)
 
       const venueId =
+        get(offer, 'venueId') ||
         get(state, 'form.offer.venueId') ||
-        search.venueId ||
-        get(event, 'venueId') ||
-        get(thing, 'venueId')
+        search.venueId
       const venue = venueSelector(state, venueId)
 
       const types = typesSelector(state, get(venue, 'isVirtual'))

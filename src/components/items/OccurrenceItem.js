@@ -314,7 +314,7 @@ class OccurrenceForm extends Component {
               </Portal>
             )}
           </Form>
-          <td>
+          <td className="is-clipped">
             {isEditing ? (
               <NavLink
                 className="button is-secondary is-small"
@@ -324,6 +324,7 @@ class OccurrenceForm extends Component {
             ) : (
               <button
                 className="button is-small is-secondary"
+                style={{ width: '100%' }}
                 onClick={this.onDeleteClick}>
                 <span className="icon">
                   <Icon svg="ico-close-r" />
