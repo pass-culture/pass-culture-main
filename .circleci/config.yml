@@ -63,14 +63,8 @@ jobs: # a collection of steps
 
       - run:
           name: Check outdated dependencies
-          command: |
-            pip list --outdated > tmp.txt
-            if [[ -s tmp.txt ]]; then
-                cat tmp.txt
-                exit 1
-            else
-                echo "Everything is up-to-date !"
-            fi
+          command:
+            check-pip-dependencies.sh
 
 workflows:
   version: 2
