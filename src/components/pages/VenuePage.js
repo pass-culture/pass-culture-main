@@ -105,6 +105,7 @@ class VenuePage extends Component {
         params: { offererId, venueId },
       },
       offerer,
+      sirenName,
       venue,
     } = this.props
 
@@ -163,8 +164,13 @@ class VenuePage extends Component {
               </span>
             </h2>
             <div className="field-group">
-              <Field label="SIRET" name="siret" type="siret" />
-              <Field label="Nom du lieu" name="name" isExpanded required />
+              <Field
+                fetchedName={sirenName || ''}
+                label="SIRET"
+                name="siret"
+                type="siret"
+              />
+              <Field isExpanded label="Nom du lieu" name="name" required />
               <Field label="E-mail" name="bookingEmail" required type="email" />
             </div>
           </div>
@@ -251,6 +257,7 @@ export default compose(
     (state, ownProps) => {
       const { offererId, venueId } = ownProps.match.params
       return {
+        sirenName: get(state, `form.venue.name`),
         user: state.user,
         venue: venueSelector(state, venueId, offererId),
         offerer: offererSelector(state, offererId),
