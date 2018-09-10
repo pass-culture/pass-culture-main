@@ -5,6 +5,7 @@ from flask import current_app as app, jsonify, request
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.thing import Thing
+from utils.humanids import dehumanize
 from utils.includes import THING_INCLUDES
 from utils.rest import expect_json_data, \
     load_or_404, \
@@ -34,7 +35,7 @@ def post_thing():
     thing = Thing()
     thing.populateFromDict(request.json)
     offer = Offer()
-    offer.venueId = request.json['venueId']
+    offer.venueId = dehumanize(request.json['venueId'])
     offer.thing = thing
     PcObject.check_and_save(thing, offer)
     return jsonify(thing._asdict(
