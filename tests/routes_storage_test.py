@@ -74,12 +74,12 @@ def test_post_storage_file_on_a_mediation_returns_bad_request_if_user_is_not_att
 
     # then
     assert response.status_code == 400
-    assert response.json()['text'] == 'user is not allowed to add mediation in this offerer'
+    assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
 @clean_database
 @pytest.mark.standalone
-def test_post_storage_file_on_a_mediation_returns_200_if_user_is_not_attached_to_offerer(app):
+def test_post_storage_file_on_a_mediation_returns_200_if_user_is_attached_to_offerer(app):
     # given
     user = create_user(password='p@55sw0rd')
     offerer = create_offerer()
