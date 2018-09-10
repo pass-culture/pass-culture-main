@@ -15,6 +15,7 @@ from sqlalchemy.sql import expression
 from models.db import Model
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
+from utils.human_ids import humanize
 
 
 class Booking(PcObject,
@@ -76,6 +77,17 @@ class Booking(PcObject,
     @property
     def value(self):
         return self.amount * self.quantity
+
+    @property
+    def completedUrl(self):
+        offer = self.stock.resolvedOffer
+        url = offer.eventOrThing.url
+        if url is None:
+            return None
+        return url.replace('{token}', self.token)\
+                  .replace('{offerId}', humanize(offer.id))\
+                  .replace('{email}', self.user.email)
+
 
 
 Booking.trig_ddl = """

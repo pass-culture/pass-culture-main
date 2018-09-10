@@ -99,6 +99,7 @@ RECOMMENDATION_INCLUDES = [
 
 
 BOOKING_INCLUDES = [
+    "completedUrl",
     {
         "key": "stock",
         "sub_joins":
