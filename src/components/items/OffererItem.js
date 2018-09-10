@@ -20,7 +20,7 @@ const OffererItem = ({ offerer, venues }) => {
         <ul className="actions">
           {isValidated === false ? (
             <li className="is-italic">
-              Structure en cours de validation : vous allez recevoir un e-mail.
+              Structure en cours de validation par l&apos;équipe Pass Culture.
             </li>
           ) : (
             [
