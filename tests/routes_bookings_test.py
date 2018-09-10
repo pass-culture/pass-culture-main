@@ -387,6 +387,58 @@ def test_create_booking_returns_bad_request_if_no_quantity_is_given(app):
 
 @clean_database
 @pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_negative_quantity_is_given(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    thing_offer = create_thing_offer(venue)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+    PcObject.check_and_save(stock, user)
+
+    booking_json = {
+        'stockId': humanize(stock.id),
+        'recommendationId': None,
+        'quantity': -3
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_null_quantity_is_given(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    thing_offer = create_thing_offer(venue)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+    PcObject.check_and_save(stock, user)
+
+    booking_json = {
+        'stockId': humanize(stock.id),
+        'recommendationId': None,
+        'quantity': 0
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+
+
+@clean_database
+@pytest.mark.standalone
 def test_cancel_booking_returns_200_and_effectively_marks_the_booking_as_cancelled(app):
     # Given
     user = create_user(email='test@email.com', password='testpsswd')
