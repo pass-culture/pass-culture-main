@@ -33,10 +33,10 @@ def post_storage_file(collectionName, id, index):
         model = getattr(models, model_name)
         entity = model.query.filter_by(id=dehumanize(id)).first_or_404()
         if model_name == 'Mediation':
-            offerer = entity.offer.eventOccurrences[0].stock[0].offerer
+            offerer = entity.offer.venue.managingOfferer
             if offerer not in current_user.offerers:
                 return jsonify({
-                    'text': "user is not allowed to add mediation in this offerer"
+                    'text': 'user is not allowed to add mediation in this offerer'
                 }), 400
         entity.save_thumb(
             request.files['file'].read(),
