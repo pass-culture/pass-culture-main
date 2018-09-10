@@ -33,10 +33,10 @@ def list_things():
 def post_thing():
     thing = Thing()
     thing.populateFromDict(request.json)
-    ocas = Offer()
-    ocas.venue = request.json['venueId']
-    ocas.thing = thing
-    PcObject.check_and_save(thing, ocas)
+    offer = Offer()
+    offer.venueId = request.json['venueId']
+    offer.thing = thing
+    PcObject.check_and_save(thing, offer)
     return jsonify(thing._asdict(
         include=THING_INCLUDES,
         has_dehumanized_id=True,
