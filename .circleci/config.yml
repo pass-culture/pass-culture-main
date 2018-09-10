@@ -59,7 +59,7 @@ jobs:
   deploy:
     docker:
       # specify the version you desire here
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8.11.4-browsers
     working_directory: ~/repo
     steps:
       - checkout
@@ -71,18 +71,21 @@ jobs:
           - v1-dependencies-
       - run:
           name: Install dependencies
-          command:
-           yarn install
+          command: |
+            yarn install
+            sudo npm install -g netlify-cli
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: Build package to deploy
+          # TODO: remove export CI, when no warning found during yarn build
           command: |
             export API_URL=$BUILD_API_URL
             export NODE_ENV=$BUILD_NODE_ENV
-            exprot THUMBS_URL=$BUILD_THUMBS_URL
+            export THUMBS_URL=$BUILD_THUMBS_URL
+            export CI=false
             yarn build
       - run:
           name: Deploy to Netlify
@@ -95,7 +98,8 @@ workflows:
     jobs:
       - build
       - deploy:
-          requires: build
+          requires:
+            - build
           filters:
             branches:
               only:
