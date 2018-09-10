@@ -1,0 +1,647 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | SearchResultItem snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <SearchResultItem
+    recommendation={
+      Object {
+        "bookingsIds": Array [],
+        "dateCreated": "2018-09-10T14:27:31.787900Z",
+        "dateRead": null,
+        "dateUpdated": "2018-09-10T14:27:31.787917Z",
+        "dehumanizedId": 257,
+        "dehumanizedInviteforEventOccurrenceId": null,
+        "dehumanizedMediationId": null,
+        "dehumanizedOfferId": 186,
+        "dehumanizedUserId": 1,
+        "distance": "6802 km",
+        "firstThumbDominantColor": Array [
+          12,
+          62,
+          123,
+        ],
+        "id": "AEAQ",
+        "index": 0,
+        "inviteforEventOccurrenceId": null,
+        "isClicked": false,
+        "isFavorite": false,
+        "isFirst": false,
+        "mediationId": null,
+        "modelName": "Recommendation",
+        "offer": Object {
+          "bookingEmail": null,
+          "dateCreated": "2018-09-06T08:17:50.169269Z",
+          "dateModifiedAtLastProvider": "2018-02-01T14:47:00Z",
+          "dateRange": Array [],
+          "dehumanizedEventId": null,
+          "dehumanizedId": 186,
+          "dehumanizedLastProviderId": 6,
+          "dehumanizedThingId": 129,
+          "dehumanizedVenueId": 2,
+          "eventId": null,
+          "eventOrThing": Object {
+            "dateModifiedAtLastProvider": "2018-01-30T00:00:00Z",
+            "dehumanizedId": 129,
+            "dehumanizedLastProviderId": 8,
+            "description": null,
+            "extraData": Object {
+              "author": "Jouve, Jessica ;Dufour, Anthony",
+              "dewey": "840",
+              "num_in_collection": "0",
+              "prix_livre": "12.90",
+              "rayon": "Littérature française",
+              "titelive_regroup": "0",
+            },
+            "firstThumbDominantColor": Array [
+              12,
+              62,
+              123,
+            ],
+            "id": "QE",
+            "idAtProviders": "9782367740911",
+            "isActive": false,
+            "lastProviderId": "BA",
+            "mediaUrls": Array [],
+            "modelName": "Thing",
+            "name": "sur la route des migrants ; rencontres à Calais",
+            "thumbCount": 2,
+            "type": "Book",
+            "url": null,
+          },
+          "id": "X9",
+          "idAtProviders": "2921:9782367740911",
+          "lastProviderId": "AY",
+          "modelName": "Offer",
+          "thingId": "QE",
+          "venue": Object {
+            "address": "72 rue Carnot",
+            "bookingEmail": "passculture-dev@beta.gouv.fr",
+            "city": "ROMAINVILLE",
+            "dateModifiedAtLastProvider": "2018-02-01T14:47:00Z",
+            "dehumanizedId": 2,
+            "dehumanizedLastProviderId": 7,
+            "dehumanizedManagingOffererId": 2,
+            "departementCode": "93",
+            "firstThumbDominantColor": null,
+            "id": "A9",
+            "idAtProviders": "2921",
+            "isVirtual": false,
+            "lastProviderId": "A4",
+            "latitude": 2.44072,
+            "longitude": 48.88381,
+            "managingOfferer": Object {
+              "address": "72 rue Carnot",
+              "city": "ROMAINVILLE",
+              "dateCreated": "2018-09-06T08:16:23.133432Z",
+              "dateModifiedAtLastProvider": "2018-02-01T14:47:00Z",
+              "dehumanizedId": 2,
+              "dehumanizedLastProviderId": 7,
+              "firstThumbDominantColor": null,
+              "id": "A9",
+              "idAtProviders": "2921",
+              "isActive": true,
+              "lastProviderId": "A4",
+              "modelName": "Offerer",
+              "name": "Les Pipelettes",
+              "postalCode": "93230",
+              "siren": "302559639",
+              "thumbCount": 0,
+            },
+            "managingOffererId": "A9",
+            "modelName": "Venue",
+            "name": "Les Pipelettes",
+            "postalCode": "93230",
+            "siret": "30255963934017",
+            "thumbCount": 0,
+          },
+          "venueId": "A9",
+        },
+        "offerId": "X9",
+        "search": "route",
+        "shareMedium": null,
+        "thumbUrl": "http://localhost/storage/thumbs/things/QE",
+        "tz": "Europe/Paris",
+        "uniqId": "thing_QE",
+        "userId": "AE",
+        "validUntilDate": "2018-09-11T14:27:31.798174Z",
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <Link
+        replace={false}
+        to="/decouverte/X9"
+      >
+        <Thumb
+          src="http://localhost/storage/thumbs/things/QE"
+          translated={false}
+          withMediation={null}
+        />
+        <div
+          className="infos"
+        >
+          <div
+            className="top"
+          >
+            <h5
+              title="sur la route des migrants ; rencontres à Calais"
+            >
+              <Dotdotdot
+                clamp="2"
+                tagName="div"
+                truncationChar="…"
+                useNativeClamp={true}
+              >
+                sur la route des migrants ; rencontres à Calais
+              </Dotdotdot>
+            </h5>
+            <span>
+              permanent
+            </span>
+          </div>
+        </div>
+        <div
+          className="arrow"
+        >
+          <Icon
+            className="Suivant"
+            svg="ico-next-S"
+          />
+        </div>
+      </Link>,
+      "className": "recommendation-item",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "class",
+      "props": Object {
+        "children": Array [
+          <Thumb
+            src="http://localhost/storage/thumbs/things/QE"
+            translated={false}
+            withMediation={null}
+          />,
+          <div
+            className="infos"
+          >
+            <div
+              className="top"
+            >
+              <h5
+                title="sur la route des migrants ; rencontres à Calais"
+              >
+                <Dotdotdot
+                  clamp="2"
+                  tagName="div"
+                  truncationChar="…"
+                  useNativeClamp={true}
+                >
+                  sur la route des migrants ; rencontres à Calais
+                </Dotdotdot>
+              </h5>
+              <span>
+                permanent
+              </span>
+            </div>
+          </div>,
+          <div
+            className="arrow"
+          >
+            <Icon
+              className="Suivant"
+              svg="ico-next-S"
+            />
+          </div>,
+        ],
+        "replace": false,
+        "to": "/decouverte/X9",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "src": "http://localhost/storage/thumbs/things/QE",
+            "translated": false,
+            "withMediation": null,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="top"
+            >
+              <h5
+                title="sur la route des migrants ; rencontres à Calais"
+              >
+                <Dotdotdot
+                  clamp="2"
+                  tagName="div"
+                  truncationChar="…"
+                  useNativeClamp={true}
+                >
+                  sur la route des migrants ; rencontres à Calais
+                </Dotdotdot>
+              </h5>
+              <span>
+                permanent
+              </span>
+            </div>,
+            "className": "infos",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <h5
+                  title="sur la route des migrants ; rencontres à Calais"
+                >
+                  <Dotdotdot
+                    clamp="2"
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={true}
+                  >
+                    sur la route des migrants ; rencontres à Calais
+                  </Dotdotdot>
+                </h5>,
+                <span>
+                  permanent
+                </span>,
+              ],
+              "className": "top",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <Dotdotdot
+                    clamp="2"
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={true}
+                  >
+                    sur la route des migrants ; rencontres à Calais
+                  </Dotdotdot>,
+                  "title": "sur la route des migrants ; rencontres à Calais",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "class",
+                  "props": Object {
+                    "children": "sur la route des migrants ; rencontres à Calais",
+                    "clamp": "2",
+                    "tagName": "div",
+                    "truncationChar": "…",
+                    "useNativeClamp": true,
+                  },
+                  "ref": null,
+                  "rendered": "sur la route des migrants ; rencontres à Calais",
+                  "type": [Function],
+                },
+                "type": "h5",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "permanent",
+                },
+                "ref": null,
+                "rendered": "permanent",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Icon
+              className="Suivant"
+              svg="ico-next-S"
+            />,
+            "className": "arrow",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "className": "Suivant",
+              "svg": "ico-next-S",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "div",
+        },
+      ],
+      "type": [Function],
+    },
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <Link
+          replace={false}
+          to="/decouverte/X9"
+        >
+          <Thumb
+            src="http://localhost/storage/thumbs/things/QE"
+            translated={false}
+            withMediation={null}
+          />
+          <div
+            className="infos"
+          >
+            <div
+              className="top"
+            >
+              <h5
+                title="sur la route des migrants ; rencontres à Calais"
+              >
+                <Dotdotdot
+                  clamp="2"
+                  tagName="div"
+                  truncationChar="…"
+                  useNativeClamp={true}
+                >
+                  sur la route des migrants ; rencontres à Calais
+                </Dotdotdot>
+              </h5>
+              <span>
+                permanent
+              </span>
+            </div>
+          </div>
+          <div
+            className="arrow"
+          >
+            <Icon
+              className="Suivant"
+              svg="ico-next-S"
+            />
+          </div>
+        </Link>,
+        "className": "recommendation-item",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "children": Array [
+            <Thumb
+              src="http://localhost/storage/thumbs/things/QE"
+              translated={false}
+              withMediation={null}
+            />,
+            <div
+              className="infos"
+            >
+              <div
+                className="top"
+              >
+                <h5
+                  title="sur la route des migrants ; rencontres à Calais"
+                >
+                  <Dotdotdot
+                    clamp="2"
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={true}
+                  >
+                    sur la route des migrants ; rencontres à Calais
+                  </Dotdotdot>
+                </h5>
+                <span>
+                  permanent
+                </span>
+              </div>
+            </div>,
+            <div
+              className="arrow"
+            >
+              <Icon
+                className="Suivant"
+                svg="ico-next-S"
+              />
+            </div>,
+          ],
+          "replace": false,
+          "to": "/decouverte/X9",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "src": "http://localhost/storage/thumbs/things/QE",
+              "translated": false,
+              "withMediation": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <div
+                className="top"
+              >
+                <h5
+                  title="sur la route des migrants ; rencontres à Calais"
+                >
+                  <Dotdotdot
+                    clamp="2"
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={true}
+                  >
+                    sur la route des migrants ; rencontres à Calais
+                  </Dotdotdot>
+                </h5>
+                <span>
+                  permanent
+                </span>
+              </div>,
+              "className": "infos",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <h5
+                    title="sur la route des migrants ; rencontres à Calais"
+                  >
+                    <Dotdotdot
+                      clamp="2"
+                      tagName="div"
+                      truncationChar="…"
+                      useNativeClamp={true}
+                    >
+                      sur la route des migrants ; rencontres à Calais
+                    </Dotdotdot>
+                  </h5>,
+                  <span>
+                    permanent
+                  </span>,
+                ],
+                "className": "top",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <Dotdotdot
+                      clamp="2"
+                      tagName="div"
+                      truncationChar="…"
+                      useNativeClamp={true}
+                    >
+                      sur la route des migrants ; rencontres à Calais
+                    </Dotdotdot>,
+                    "title": "sur la route des migrants ; rencontres à Calais",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "children": "sur la route des migrants ; rencontres à Calais",
+                      "clamp": "2",
+                      "tagName": "div",
+                      "truncationChar": "…",
+                      "useNativeClamp": true,
+                    },
+                    "ref": null,
+                    "rendered": "sur la route des migrants ; rencontres à Calais",
+                    "type": [Function],
+                  },
+                  "type": "h5",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "permanent",
+                  },
+                  "ref": null,
+                  "rendered": "permanent",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Icon
+                className="Suivant"
+                svg="ico-next-S"
+              />,
+              "className": "arrow",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "className": "Suivant",
+                "svg": "ico-next-S",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+        ],
+        "type": [Function],
+      },
+      "type": "li",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    "attachTo": undefined,
+    "hydrateIn": undefined,
+  },
+}
+`;

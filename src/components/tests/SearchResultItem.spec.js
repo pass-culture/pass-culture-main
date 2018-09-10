@@ -5,15 +5,17 @@ import Dotdotdot from 'react-dotdotdot'
 
 import SearchResultItem from '../SearchResultItem'
 import Thumb from '../layout/Thumb'
-import recommendationItems from './mocks/recommendationItems'
-import { THUMBS_URL } from '../../utils/config'
+import state from './mocks/state'
+import { selectRecommendations } from '../../selectors/recommendations'
 
 describe('src | components | pages | SearchResultItem', () => {
+  const recommendations = selectRecommendations(state)
+
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        recommendation: recommendationItems.event,
+        recommendation: recommendations[0],
       }
 
       // when
@@ -29,21 +31,20 @@ describe('src | components | pages | SearchResultItem', () => {
     let props
     let wrapper
     describe('with an event type recommendation', () => {
-      it('it should display item details', () => {
-        // NOTE Voir si ce n'est pas overkilled avec testcafe. Au moins ici au peut bouchonner.
+      it('it should display item details with a permanent date', () => {
         props = {
-          recommendation: recommendationItems.event,
+          recommendation: recommendations[0],
         }
-
         wrapper = shallow(<SearchResultItem {...props} />)
 
         const linkUrl = wrapper.find(Link).props()
         const thumbUrl = wrapper.find(Thumb).props()
         const dotdotdot = wrapper.find(Dotdotdot).props()
-
-        expect(linkUrl.to).toEqual('/decouverte/AFUQ')
-        expect(thumbUrl.src).toEqual(`${THUMBS_URL}/events/B9`)
-        expect(dotdotdot.children).toEqual('Atelier Emploi niveau 1')
+        const span = wrapper.find('span').props()
+        expect(linkUrl.to).toEqual('/decouverte/X9')
+        expect(thumbUrl.src).toEqual('http://localhost/storage/thumbs/things/QE')
+        expect(dotdotdot.children).toEqual('sur la route des migrants ; rencontres à Calais')
+        expect(span.children).toEqual('permanent')
       })
     })
   })

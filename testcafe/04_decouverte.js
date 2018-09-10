@@ -13,8 +13,8 @@ const closeButton = Selector('.close-button')
 // // const spanPrice  = Selector('.price')
 // const draggableImage = Selector('.react-draggable')
 
-fixture`O4_01 Découverte | Je ne suis pas connecté·e`.page`${ROOT_PATH + // eslint-disable-line
-  'decouverte'}` // eslint-disable-line
+fixture`O4_01 Découverte | Je ne suis pas connecté·e` // eslint-disable-line
+  .page`${ROOT_PATH}decouverte`
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t

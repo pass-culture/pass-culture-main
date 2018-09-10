@@ -8,10 +8,10 @@ import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
-import Thumb from './layout/Thumb'
 import { getQueryURL } from '../helpers'
-import { THUMBS_URL } from '../utils/config'
 import { getTimezone } from '../utils/timezone'
+import Thumb from './layout/Thumb'
+import { THUMBS_URL } from '../utils/config'
 
 const formatDate = (date, tz) =>
   capitalize(
@@ -24,12 +24,13 @@ const getRecommendationDateString = (offer, tz) => {
   if (offer.eventId === null) {
     return 'permanent'
   }
+  const fromDate = offer.dateRange[0]
+  const toDate = offer.dateRange[1]
 
-  return `du
-  ${formatDate(offer.dateRange[0], tz)} au ${formatDate(
-    offer.dateRange[1],
-    tz
-  )}`
+  const formatedDate = `du
+  ${formatDate(fromDate, tz)} au ${formatDate(toDate, tz)}`
+
+  return formatedDate
 }
 
 const getRecommendationThumb = offer => {
@@ -61,6 +62,7 @@ const SearchResultItem = ({ recommendation }) => {
   return (
     <li className="recommendation-item">
       <Link to={linkURL}>
+        {/* <Thumb src={recommendation.thumbUrl} /> */}
         <Thumb src={getRecommendationThumb(recommendation.offer)} />
         <div className="infos">
           <div className="top">

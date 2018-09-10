@@ -1,5 +1,3 @@
-/* eslint-disabler */
-
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -19,7 +17,7 @@ import Footer from '../layout/Footer'
 import SearchResultItem from '../SearchResultItem'
 import { selectRecommendations } from '../../selectors'
 import searchSelector from '../../selectors/search'
-import { toggleFilterMenu } from '../reducers/filterMenu'
+import { toggleFilterMenu } from '../../reducers/filterMenu'
 
 const renderPageHeader = () => (
   <header>
@@ -42,16 +40,17 @@ class SearchPage extends Component {
 
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
     const { dispatch, goToNextSearchPage, location, querySearch } = this.props
-    if (get(location, 'search.length'))
-      dispatch(
-        requestData('GET', `recommendations?${querySearch}`, {
-          handleFail,
-          handleSuccess: (state, action) => {
-            handleSuccess(state, action)
-            goToNextSearchPage()
-          },
-        })
-      )
+    const len = get(location, 'search.length')
+    if (!len) return
+    dispatch(
+      requestData('GET', `recommendations?${querySearch}`, {
+        handleFail,
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          goToNextSearchPage()
+        },
+      })
+    )
   }
 
   render() {
