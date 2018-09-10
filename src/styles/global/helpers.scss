@@ -1,3 +1,19 @@
+// doivent etre remplaces par une regle simple s'appliquant a toutes les pages
+// Ex: .page main {} || .page footer {}
+.padded {
+  padding: 1rem;
+}
+
+.application-main {
+  padding: 1rem;
+}
+
+.application-footer {
+  height: $footer-height;
+  min-height: $footer-height;
+  padding: 1rem 1rem 1rem 3rem;
+}
+
 .is-primary-text {
   color: $primary;
 }
@@ -18,4 +34,20 @@
 
 .is-primary-border {
   border: 2px solid $primary;
+}
+
+.is-uppercase {
+  text-transform: uppercase;
+}
+
+.no-border {
+  border: 0 !important;
+}
+
+.no-background {
+  background: transparent !important;
+}
+
+.fs19 {
+  @include fontSize(19px);
 }

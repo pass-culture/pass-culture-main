@@ -7,9 +7,9 @@ import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import { Link } from 'react-router-dom'
 import get from 'lodash.get'
+import { Scrollbars } from 'react-custom-scrollbars'
 
 import BookingItem from '../layout/BookingItem'
-import Main from '../layout/Main'
 import {
   selectSoonBookings,
   selectOtherBookings,
@@ -20,16 +20,12 @@ import { toggleMainMenu } from '../../reducers/menu'
 import ProfilePicture from '../layout/ProfilePicture'
 import { bookingNormalizer } from '../../utils/normalizers'
 
-const renderPageHeader = () => (
-  <header>
-    <h1>Mes réservations</h1>
-  </header>
-)
-
 const renderNoBookingSection = () => (
-  <div>
-    <p className="nothing">Pas encore de réservation.</p>
-    <p className="nothing">
+  <div className="has-text-centered">
+    <p className="mt20">
+      <b>Pas encore de réservation.</b>
+    </p>
+    <p className="mt20">
       <Link to="/decouverte" className="button is-primary">
         Allez-y !
       </Link>
@@ -40,7 +36,9 @@ const renderNoBookingSection = () => (
 const renderBookingList = items => (
   <ul className="bookings">
     {items.map(booking => (
-      <BookingItem key={booking.id} booking={booking} />
+      <React.Fragment>
+        <BookingItem key={booking.id} booking={booking} />
+      </React.Fragment>
     ))}
   </ul>
 )
@@ -74,20 +72,6 @@ class BookingsPage extends Component {
     this.setState({ isempty, isloading: false })
   }
 
-  renderPageFooter = () => (
-    <footer className="footer bordered">
-      <div className="button-wrapper">
-        <button
-          className="profile-button"
-          onClick={this.actions.toggleMainMenu}
-          type="button"
-        >
-          <ProfilePicture alt="Mon menu" />
-        </button>
-      </div>
-    </footer>
-  )
-
   render() {
     const { soonBookings, otherBookings } = this.props
     const { isempty, isloading, haserror } = this.state
@@ -96,31 +80,58 @@ class BookingsPage extends Component {
     const otherBookingsLength = otherBookings.length
     const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
     return (
-      <Main
-        header={renderPageHeader}
-        name="bookings"
-        footer={this.renderPageFooter}
-        redBg
-      >
-        {soonBookingsLength > 0 && (
-          <div>
-            <h4>C&apos;est bientôt !</h4>
-            {renderBookingList(soonBookings)}
-          </div>
+      <div id="bookings-page" className="page is-relative flex-rows red-bg">
+        {!isloading && (
+          <React.Fragment>
+            <header className="padded has-text-centered flex-0 fs19">
+              <h1>Mes réservations</h1>
+            </header>
+            <main role="main" className="application-main flex-rows flex-start">
+              <Scrollbars>
+                {soonBookingsLength > 0 && (
+                  <div>
+                    <h4 className="mb16 fs19 is-uppercase">
+                      <i>C&apos;est bientôt !</i>
+                    </h4>
+                    {renderBookingList(soonBookings)}
+                  </div>
+                )}
+                {otherBookingsLength > 0 && (
+                  <div>
+                    <h4 className="mb16 fs19 is-uppercase">
+                      <i>Réservations</i>
+                    </h4>
+                    {renderBookingList(otherBookings)}
+                  </div>
+                )}
+                {/*
+                FIXME: calcul qui n'a pas de sens sur deux choix
+                - si aucune reservations API
+                - si aucune reservations dans les deja charges
+              */}
+                {(isempty || hasNoBooking) && renderNoBookingSection()}
+              </Scrollbars>
+            </main>
+            <footer
+              role="navigation"
+              className="application-footer dotted-top flex-columns items-center flex-center flex-0"
+            >
+              <button
+                className="profile-button no-border no-background"
+                onClick={this.actions.toggleMainMenu}
+                type="button"
+              >
+                <ProfilePicture alt="Mon menu" />
+              </button>
+            </footer>
+          </React.Fragment>
         )}
-        {otherBookingsLength > 0 && (
-          <div>
-            <h4>Réservations</h4>
-            {renderBookingList(otherBookings)}
-          </div>
-        )}
-        {hasNoBooking && renderNoBookingSection()}
-        <DeckLoader
-          isempty={isempty}
-          haserror={haserror}
-          isloading={isloading}
-        />
-      </Main>
+        {/*
+          FIXME: le isempty a pas de sens ici
+          Dans tous les cas on affiche un écran si il n'y pas de réservations
+        */}
+        {!isempty && <DeckLoader haserror={haserror} isloading={isloading} />}
+      </div>
     )
   }
 }

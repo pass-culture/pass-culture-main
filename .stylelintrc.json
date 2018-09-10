@@ -9,7 +9,7 @@
     "declaration-colon-newline-after": "always-multi-line",
     "at-rule-no-unknown": [
       true, {
-      "ignoreAtRules": ["extend", "include", "if", "else", "elseif", "each"]
+      "ignoreAtRules": ["extend", "function", "include", "if", "else", "elseif", "each", "mixin", "return"]
       }
     ]
   }

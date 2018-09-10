@@ -7,15 +7,3 @@
 @import 'mixins/index.scss';
 @import 'global/index.scss';
 @import 'components/index.scss';
-
-// doivent etre remplaces par une regle simple s'appliquant a toutes les pages
-// Ex: .page main {} || .page footer {}
-.application-main {
-  padding: 1rem;
-}
-
-.application-footer {
-  height: $footer-height;
-  min-height: $footer-height;
-  padding: 1rem 1rem 1rem 3rem;
-}

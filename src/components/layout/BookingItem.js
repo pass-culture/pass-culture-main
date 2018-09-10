@@ -35,8 +35,11 @@ const BookingItem = ({ booking, recommendation }) => {
   const queryURL = getQueryURL({ mediationId, offerId })
   const linkURL = `/decouverte/${queryURL}?to=verso`
   const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
+  const isEvent = (get(recommendation, 'offer.eventId') && true) || false
+  const cssclass = (isEvent && 'event') || 'thing'
+  const completedUrl = get(recommendation, 'completedUrl')
   return (
-    <li className="booking-item">
+    <li className={`booking-item mb16 ${cssclass}`}>
       <Link to={linkURL}>
         <Thumb src={thumbUrl} />
         <div className="infos">
@@ -46,7 +49,7 @@ const BookingItem = ({ booking, recommendation }) => {
             </h5>
             <span>{dateString}</span>
           </div>
-          <div className="token">{token}</div>
+          {!completedUrl && <div className="token">{token}</div>}
         </div>
         <div className="arrow">
           <Icon svg="ico-next-S" className="Suivant" />

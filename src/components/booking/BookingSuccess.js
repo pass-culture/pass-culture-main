@@ -13,6 +13,7 @@ const BookingSuccess = ({ isEvent, data }) => {
   let price = get(data, 'stock.price')
   price = getPrice(price)
   const completedUrl = get(data, 'completedUrl')
+  // juste pour du debug
   const cssclass = (isEvent && 'event') || 'thing'
   return (
     <div className={`booked has-text-centered ${cssclass}`}>

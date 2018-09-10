@@ -5,10 +5,7 @@ li.booking-item {
   width: 100%;
   overflow: hidden;
   font-size: 1.2rem;
-  margin-bottom: 1rem;
-  &:last-child {
-    margin-bottom: 0;
-  }
+
   a {
     color: $black;
     width: 100%;
@@ -16,6 +13,7 @@ li.booking-item {
     display: block;
     padding: 0;
   }
+
   .thumb {
     height: 100%;
     width: 27%;
@@ -24,11 +22,12 @@ li.booking-item {
   }
 
   .infos {
+    @include dotted($primary, left);
+
     width: 58%;
     float: left;
     height: 100%;
     position: relative;
-    @include dotted($primary, left)
 
     .top {
       position: absolute;
@@ -40,6 +39,7 @@ li.booking-item {
       display: flex;
       flex-direction: column;
       justify-content: space-around;
+
       h5 {
         font-weight: 500;
         font-size: 1.1em;
@@ -52,8 +52,9 @@ li.booking-item {
     }
 
     .token {
+      @include dotted($primary, top);
+
       padding: 0.5rem;
-      @include dotted($primary, top)
       font-size: 2.3em;
       color: $primary;
       position: absolute;
@@ -68,6 +69,7 @@ li.booking-item {
     height: 100%;
     position: relative;
     float: left;
+
     img {
       position: absolute;
       top: 0;
