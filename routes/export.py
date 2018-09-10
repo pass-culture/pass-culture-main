@@ -3,6 +3,7 @@ import csv
 import os
 from inspect import isclass
 from io import BytesIO, StringIO
+
 from flask import current_app as app, jsonify, request, send_file
 
 import models
@@ -27,23 +28,23 @@ def check_token():
 
 def is_exportable(model_name):
     model = getattr(models, model_name)
-    return not model_name == 'PcObject'\
-           and isclass(model)\
+    return not model_name == 'PcObject' \
+           and isclass(model) \
            and issubclass(model, PcObject)
 
 
 @app.route('/export/', methods=['GET'])
 def list_export_urls():
     check_token()
-    return "\n".join([request.host_url+'export/'+model_name
-                                      +'?token='+request.args.get('token')
+    return "\n".join([request.host_url + 'export/' + model_name
+                      + '?token=' + request.args.get('token')
                       for model_name in filter(is_exportable, models.__all__)])
 
 
 def clean_dict_for_export(model_name, dct):
     if model_name == 'User':
-        del(dct['password'])
-        del(dct['id'])
+        del (dct['password'])
+        del (dct['id'])
     return dct
 
 
@@ -51,14 +52,18 @@ def clean_dict_for_export(model_name, dct):
 def export_table(model_name):
     check_token()
     ae = ApiErrors()
+    if model_name not in models.__all__:
+        ae.addError('global', 'Classe inconnue : ' + model_name)
+        return jsonify(ae.errors), 400
+
     try:
         model = getattr(models, model_name)
     except KeyError:
-        ae.addError('global', 'Nom de classe incorrect : '+model_name)
+        ae.addError('global', 'Nom de classe incorrect : ' + model_name)
         return jsonify(ae.errors), 400
 
     if not is_exportable(model_name):
-        ae.addError('global', 'Classe non exportable : '+model_name)
+        ae.addError('global', 'Classe non exportable : ' + model_name)
         return jsonify(ae.errors), 400
 
     objects = model.query.all()
@@ -69,7 +74,7 @@ def export_table(model_name):
     csvfile = StringIO()
     header = clean_dict_for_export(model_name, objects[0]._asdict()).keys()
     if model_name == 'User':
-        header = list(filter(lambda h: h!='id' and h!='password', header))
+        header = list(filter(lambda h: h != 'id' and h != 'password', header))
     writer = csv.DictWriter(csvfile, header, extrasaction='ignore')
     writer.writeheader()
     for obj in objects:
