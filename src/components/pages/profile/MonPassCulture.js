@@ -25,17 +25,14 @@ const getPercent = (expense, scale) => {
 
 const MonPassCulture = ({ provider }) => {
   const { expenses } = provider
-  expenses.all.actual = 500
   let scale = 1
   // TODO si le pourentage des jauges digital/physical est en dessous
   // de la globale alors il faut faire en sorte que le pourcentage des juages physical/digital soit égal à celui de la globale
   const percentOverall = getPercent(expenses.all, scale)
   //
-  expenses.physical.actual = expenses.physical.max // 100%
   scale = expenses.physical.max / expenses.all.max
   const percentPhysical = getPercent(expenses.physical, scale)
   //
-  expenses.digital.actual = expenses.digital.max
   scale = expenses.digital.max / expenses.all.max
   const percentDigital = getPercent(expenses.digital, scale)
   return (

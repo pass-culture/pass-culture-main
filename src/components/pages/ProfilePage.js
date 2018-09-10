@@ -10,7 +10,7 @@ import { Scrollbars } from 'react-custom-scrollbars'
 import { ROOT_PATH } from '../../utils/config'
 import Loader from '../Loader'
 import MonAvatar from './profile/MonAvatar'
-import MonPassCulture from './profile/MonPassCulture'
+// import MonPassCulture from './profile/MonPassCulture'
 import MesInformations from './profile/MesInformations'
 import NavigationFooter from '../layout/NavigationFooter'
 
@@ -33,7 +33,7 @@ const ProfilePage = ({ user }) => {
           >
             <Scrollbars autoHide>
               <MonAvatar provider={user} />
-              {user.expenses && <MonPassCulture provider={user} />}
+              {/* {user.expenses && <MonPassCulture provider={user} />} */}
               <MesInformations provider={user} />
             </Scrollbars>
           </main>
