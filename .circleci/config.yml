@@ -2,10 +2,10 @@
 version: 2
 jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
-    working_directory: ~/pass-culture-api-ci # directory where steps will run
-    docker: # run the steps with Docker
-      - image: circleci/python:3.6.1 # ...with this image as the primary container; this is where all `steps` will run
-        environment: # environment variables for database
+    working_directory: ~/pass-culture-api-ci
+    docker:
+      - image: circleci/python:3.7.0 # ...with this image as the primary container; this is where all `steps` will run
+        environment:
               POSTGRES_USER: pass_culture_user
               POSTGRES_PASSWORD: pass_culture_pass
               POSTGRES_DB: pass_culture
@@ -13,16 +13,17 @@ jobs: # a collection of steps
               MAILJET_API_KEY: $MAILJET_API_KEY
               MAILJET_API_SECRET: $MAILJET_API_SECRET
               EXPORT_TOKEN: $EXPORT_TOKEN
-      - image: circleci/postgres:9.6.2 # database image for service container available at `localhost:<port>`
-        environment: # environment variables for database
+      - image: circleci/postgres:9.6.2
+        environment:
           POSTGRES_USER: pass_culture_user
           POSTGRES_PASSWORD: pass_culture_pass
           POSTGRES_DB: pass_culture
-    steps: # a collection of executable commands
+    steps:
       - checkout # special step to check out source code to the working directory
       - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run: # install and activate virtual environment with pip
+          name: Install requirements
           command: |
             python3 -m venv venv
             . venv/bin/activate
@@ -40,6 +41,49 @@ jobs: # a collection of steps
             python app.py
           background: true
       - run: # run tests
+          name: Running tests
           command: |
             . venv/bin/activate
             pytest tests
+
+  check-dependencies:
+    working_directory: ~/pass-culture-api-ci # directory where steps will run
+    docker: # run the steps with Docker
+      - image: circleci/python:3.7.0
+    steps: # a collection of executable commands
+      - checkout # special step to check out source code to the working directory
+      - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run: # install and activate virtual environment with pip
+          name: Install requirements
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - run:
+          name: Check outdated dependencies
+          command: |
+            pip list --outdated > tmp.txt
+            if [[ -s tmp.txt ]]; then
+                cat tmp.txt
+                exit 1
+            else
+                echo "Everything is up-to-date !"
+            fi
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+  schedule:
+    triggers: #use the triggers key to indicate a scheduled build
+      - schedule:
+          cron: "0 1 * * 1" # run every monday at 1 am !!!! UTC TIME !!!!
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - check-dependencies
