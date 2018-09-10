@@ -281,7 +281,6 @@ class OfferPage extends Component {
                     name="offererId"
                     options={offerers}
                     placeholder="Sélectionnez une structure"
-                    required
                     type="select"
                   />
                   {offerer && get(venues, 'length') === 0 ? (

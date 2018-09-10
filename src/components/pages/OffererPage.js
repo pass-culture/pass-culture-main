@@ -56,9 +56,9 @@ class OffererPage extends Component {
   }
 
   render() {
-    const { offerer, venues, fetchedName } = this.props
+    const { offerer, sirenName, venues } = this.props
 
-    const hasOffererName = get(offerer, 'name') || fetchedName
+    const hasOffererName = get(offerer, 'name') || sirenName
 
     return (
       <Main
@@ -84,6 +84,7 @@ class OffererPage extends Component {
           patch={offerer}>
           <div className="field-group">
             <Field
+              disabling={() => !sirenName}
               label="SIREN"
               name="siren"
               readOnly={get(offerer, 'id')}
@@ -159,7 +160,7 @@ export default compose(
         offerer: offererSelector(state, offererId),
         venues: venuesSelector(state, offererId),
         user: state.user,
-        fetchedName: get(state, 'form.offerer.name'),
+        sirenName: get(state, 'form.offerer.name'),
       }
     },
     {

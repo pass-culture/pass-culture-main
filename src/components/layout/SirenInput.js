@@ -1,5 +1,7 @@
+import get from 'lodash.get'
 import { BasicInput, removeWhitespaces } from 'pass-culture-shared'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import { formatSiren } from '../../utils/string'
 
@@ -13,7 +15,9 @@ class SirenInput extends Component {
   }
 
   render() {
-    const { errors, fetchedName, readOnly, value } = this.props
+    const { errors, fetchedName, readOnly, value, withFetchedName } = this.props
+
+    console.log('this.props', this.props)
 
     const $input = (
       <BasicInput
@@ -27,16 +31,16 @@ class SirenInput extends Component {
     return (
       <div className="with-display-name">
         {$input}
-        {fetchedName ? (
-          <div className="display-name">{fetchedName}</div>
-        ) : (
-          value &&
-          !errors &&
-          !readOnly && <button className="button is-loading" />
-        )}
+        {fetchedName
+          ? withFetchedName && <div className="display-name">{fetchedName}</div>
+          : value &&
+            !errors &&
+            !readOnly && <button className="button is-loading" />}
       </div>
     )
   }
 }
 
-export default SirenInput
+export default connect((state, ownProps) => ({
+  fetchedName: get(state, `form.${ownProps.formName}.name`),
+}))(SirenInput)

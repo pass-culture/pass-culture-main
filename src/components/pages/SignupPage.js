@@ -35,27 +35,27 @@ const SignupPage = ({ errors, sirenName }) => {
                   obligatoires
                 </span>
                 <Form
-                  name="user"
                   action="/users/signup"
-                  layout="vertical"
                   handleSuccessNotification={() =>
                     'Votre compte a été créé avec succès.'
                   }
-                  handleSuccessRedirect={() => '/structures'}>
+                  handleSuccessRedirect={() => '/structures'}
+                  layout="vertical"
+                  name="user">
                   <Field
-                    name="email"
                     label="Adresse e-mail"
+                    name="email"
                     sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
                     placeholder="nom@exemple.fr"
                     required
                     type="email"
                   />
                   <Field
-                    name="publicName"
+                    autoComplete="name"
                     label="Identifiant"
+                    name="publicName"
                     sublabel="vu par les autres utilisateurs"
                     placeholder="Mon nom ou pseudo"
-                    autoComplete="name"
                     required
                   />
                   <Field
@@ -69,13 +69,13 @@ const SignupPage = ({ errors, sirenName }) => {
                   />
                   <Field
                     disabling={() => !sirenName}
-                    name="siren"
                     label="SIREN"
+                    name="siren"
                     sublabel="de la structure à rattacher"
                     placeholder="123 456 789"
-                    fetchedName={sirenName || ''}
                     required
                     type="siren"
+                    withFetchedName
                   />
                   <Field
                     label="Je souhaite recevoir les actualités du Pass Culture."
