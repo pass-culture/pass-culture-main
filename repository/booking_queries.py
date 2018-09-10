@@ -92,4 +92,4 @@ def find_by_id(booking_id):
 
 
 def find_all_ongoing_bookings_by_stock(stock):
-    return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isValidated=False).all()
+    return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()

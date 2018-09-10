@@ -1,15 +1,13 @@
 """ mailing """
 import os
-from datetime import datetime
 from pprint import pformat
 
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
-from models.pc_object import PcObject
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
-from utils.config import API_URL, ENV
+from utils.config import API_URL
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
@@ -26,67 +24,9 @@ class MailServiceException(Exception):
     pass
 
 
-def send_final_booking_recap_email(stock):
-    if len(stock.bookings) == 0:
-        print("Not sending recap for  " + str(stock) + " as it has no bookings")
-    email = make_final_recap_email_for_stock_with_event(stock)
-
-    recipients = ['passculture@beta.gouv.fr']
-    if stock.resolvedOffer.bookingEmail:
-        recipients.append(stock.resolvedOffer.bookingEmail)
-
-    if feature_send_mail_to_users_enabled():
-        email['To'] = ", ".join(recipients)
-    else:
-        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
-                             + ", ".join(recipients) \
-                             + '</p>' + email['Html-part']
-        email['To'] = 'passculture-dev@beta.gouv.fr'
-
-    mailjet_result = app.mailjet_client.send.create(data=email)
-    if mailjet_result.status_code != 200:
-        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
-
-    stock.bookingRecapSent = datetime.utcnow()
-    PcObject.check_and_save(stock)
-
-
-def send_booking_recap_emails(stock, booking):
-    email = make_offerer_booking_recap_email_after_user_action(booking)
-
-    recipients = ['passculture@beta.gouv.fr']
-    if stock.resolvedOffer.bookingEmail:
-        recipients.append(stock.resolvedOffer.bookingEmail)
-
-    if feature_send_mail_to_users_enabled():
-        email['To'] = ", ".join(recipients)
-    else:
-
-        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
-                             + ", ".join(recipients) \
-                             + '</p>' + email['Html-part']
-        email['To'] = 'passculture-dev@beta.gouv.fr'
-
-    mailjet_result = app.mailjet_client.send.create(data=email)
-    if mailjet_result.status_code != 200:
-        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
-
-
-def send_booking_confirmation_email_to_user(booking, is_cancellation=False):
-    email = make_user_booking_recap_email(booking, is_cancellation)
-    recipients = [booking.user.email]
-
-    if feature_send_mail_to_users_enabled():
-        email['To'] = ", ".join(recipients)
-    else:
-        email['Html-part'] = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
-                             + ", ".join(recipients) \
-                             + '</p>' + email['Html-part']
-        email['To'] = 'passculture-dev@beta.gouv.fr'
-
-    mailjet_result = app.mailjet_client.send.create(data=email)
-    if mailjet_result.status_code != 200:
-        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
+def check_if_email_sent(mail_result):
+    if mail_result.status_code != 200:
+        raise MailServiceException("Email send failed: " + pformat(vars(mail_result)))
 
 
 def make_final_recap_email_for_stock_with_event(stock):
@@ -95,16 +35,16 @@ def make_final_recap_email_for_stock_with_event(stock):
     formatted_datetime = format_datetime(date_in_tz)
     email_subject = '[Reservations] Récapitulatif pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
                                                                         formatted_datetime)
-
+    stock_bookings = find_all_ongoing_bookings_by_stock(stock)
     email_html = render_template('offerer_final_recap_email.html',
-                                 number_of_bookings=len(stock.bookings),
+                                 number_of_bookings=len(stock_bookings),
                                  stock_name=stock.eventOccurrence.offer.event.name,
                                  stock_date_time=formatted_datetime,
                                  venue_name=venue.name,
                                  venue_address=venue.address,
                                  venue_postal_code=venue.postalCode,
                                  venue_city=venue.city,
-                                 stock_bookings=stock.bookings)
+                                 stock_bookings=stock_bookings)
 
     return {
         'FromName': 'Pass Culture',
@@ -117,7 +57,7 @@ def make_final_recap_email_for_stock_with_event(stock):
 def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=False):
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
-    stock_bookings = [b for b in booking.stock.bookings if not b.isCancelled]
+    stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
     stock_name = booking.stock.resolvedOffer.eventOrThing.name
 
     if booking.stock.eventOccurrence is None:
@@ -145,8 +85,6 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
                                  user_name=user.publicName,
                                  user_email=user.email)
 
-    print(email_html)
-
     return {
         'FromName': 'Pass Culture',
         'FromEmail': 'passculture@beta.gouv.fr',
@@ -173,32 +111,10 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
         'FromName': 'Pass Culture',
         'FromEmail': 'passculture@beta.gouv.fr',
         'Subject': "%s - inscription / rattachement PRO à valider : %s" % (
-        user_offerer.user.departementCode, offerer.name),
+            user_offerer.user.departementCode, offerer.name),
         'Html-part': email_html,
         'To': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'
     }
-
-
-def maybe_send_offerer_validation_email(offerer, user_offerer):
-    if offerer.isValidated and user_offerer.isValidated:
-        return
-    email = write_object_validation_email(offerer, user_offerer)
-    mailjet_result = app.mailjet_client.send.create(data=email)
-    if mailjet_result.status_code != 200:
-        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
-
-
-def send_dev_email(subject, html_text):
-    email = {
-        'FromName': 'Pass Culture Dev',
-        'FromEmail': 'passculture-dev@beta.gouv.fr',
-        'Subject': subject,
-        'Html-part': html_text,
-        'To': 'passculture-dev@beta.gouv.fr'
-    }
-    mailjet_result = app.mailjet_client.send.create(data=email)
-    if mailjet_result.status_code != 200:
-        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
 def make_offerer_driven_cancellation_email_for_user(booking):
@@ -215,16 +131,18 @@ def make_offerer_driven_cancellation_email_for_user(booking):
         'Html-part': email_html,
     }
 
+
 def make_offerer_driven_cancellation_email_for_offerer(booking):
     stock_name = booking.stock.resolvedOffer.eventOrThing.name
     venue = booking.stock.resolvedOffer.venue
     user_name = booking.user.publicName
     user_email = booking.user.email
-    email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(stock_name, venue.name)
+    email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(stock_name,
+                                                                                                     venue.name)
     ongoing_stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
     stock_date_time = None
     if booking.stock.eventOccurrence:
-        date_in_tz =_get_event_datetime(booking.stock)
+        date_in_tz = _get_event_datetime(booking.stock)
         stock_date_time = format_datetime(date_in_tz)
     email_html = render_template('offerer_recap_email_after_offerer_action.html',
                                  user_name=user_name,
@@ -244,6 +162,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
         'Subject': email_subject,
         'Html-part': email_html,
     }
+
 
 def _generate_offerer_driven_cancellation_email_for_user_thing(booking):
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
@@ -312,13 +231,6 @@ def make_reset_password_email(user):
         'Html-part': email_html,
         'To': user.email
     }
-
-
-def send_reset_password_email(user):
-    email = make_reset_password_email(user)
-    mailjet_result = app.mailjet_client.send.create(data=email)
-    if mailjet_result.status_code != 200:
-        raise MailServiceException("Email send failed: " + pformat(vars(mailjet_result)))
 
 
 def get_contact(user):

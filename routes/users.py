@@ -4,7 +4,9 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
+from domain.booking_emails import send_reset_password_email
 from domain.expenses import get_expenses
+from domain.booking_emails import maybe_send_offerer_validation_email
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
 from models import ApiErrors, Offerer, PcObject, User
@@ -14,8 +16,8 @@ from repository.user_queries import find_user_by_email, find_user_by_reset_passw
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
-from utils.mailing import maybe_send_offerer_validation_email, \
-    subscribe_newsletter, send_reset_password_email, MailServiceException
+from utils.mailing import \
+    subscribe_newsletter, MailServiceException
 from utils.rest import expect_json_data, \
     login_or_api_key_required
 
@@ -70,7 +72,7 @@ def post_for_password_token():
     PcObject.check_and_save(user)
 
     try:
-        send_reset_password_email(user)
+        send_reset_password_email(user, app.mailjet_client.send.create)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -183,7 +185,7 @@ def signup():
     PcObject.check_and_save(*objects_to_save)
 
     if do_pro_signup:
-        maybe_send_offerer_validation_email(offerer, user_offerer)
+        maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)

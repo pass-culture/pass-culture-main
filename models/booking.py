@@ -70,9 +70,9 @@ class Booking(PcObject,
                          server_default=expression.false(),
                          default=False)
 
-    isValidated = Column(Boolean,
-                         nullable=False,
-                         default=False)
+    isUsed = Column(Boolean,
+                    nullable=False,
+                    default=False)
 
     @property
     def value(self):

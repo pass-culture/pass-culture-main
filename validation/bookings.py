@@ -76,8 +76,8 @@ def check_booking_not_cancelled(booking):
         raise resource_gone_error
 
 
-def check_booking_not_already_validated(booking):
-    if booking.isValidated:
+def check_booking_not_already_used(booking):
+    if booking.isUsed:
         resource_gone_error = ResourceGoneError()
         resource_gone_error.addError('booking', 'Cette réservation a déjà été validée')
         raise resource_gone_error

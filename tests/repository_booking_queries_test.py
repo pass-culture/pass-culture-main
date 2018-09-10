@@ -52,11 +52,9 @@ def test_find_all_ongoing_bookings(app):
     venue = create_venue(offerer)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
     user = create_user()
-    cancelled_booking = create_booking(user, stock, fill_stock_bookings=False)
-    validated_booking = create_booking(user, stock, fill_stock_bookings=False)
-    ongoing_booking = create_booking(user, stock, fill_stock_bookings=False)
-    validated_booking.isValidated = True
-    cancelled_booking.isCancelled = True
+    cancelled_booking = create_booking(user, stock, is_cancelled=True)
+    validated_booking = create_booking(user, stock, is_used=True)
+    ongoing_booking = create_booking(user, stock, is_cancelled=False, is_used=False)
     PcObject.check_and_save(ongoing_booking)
     PcObject.check_and_save(validated_booking)
     PcObject.check_and_save(cancelled_booking)

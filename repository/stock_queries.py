@@ -1,10 +1,10 @@
+from datetime import datetime
 from pprint import pformat
 
 from sqlalchemy.exc import InternalError
 
 from models import Stock, Offerer, User, ApiErrors, PcObject
 from utils.human_ids import dehumanize
-
 
 
 def _check_offerer_user(query, user):
@@ -23,6 +23,11 @@ def find_stocks_with_possible_filters(filters, user):
     return query
 
 
+def set_booking_recap_sent_and_save(stock):
+    stock.bookingRecapSent = datetime.utcnow()
+    PcObject.check_and_save(stock)
+
+
 def save_stock(stock):
     try:
         PcObject.check_and_save(stock)
@@ -32,11 +37,11 @@ def save_stock(stock):
 
             if 'available_too_low' in str(ie.orig):
                 api_errors.addError('available', 'la quantité pour cette offre'
-                            + ' ne peut pas être inférieure'
-                            + ' au nombre de réservations existantes.')
+                                    + ' ne peut pas être inférieure'
+                                    + ' au nombre de réservations existantes.')
             elif 'bookingLimitDatetime_too_late' in str(ie.orig):
                 api_errors.addError('bookingLimitDatetime',
-                            'la date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement')
+                                    'la date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement')
             else:
                 app.log.error("Unexpected error in patch stocks: " + pformat(ie))
 
