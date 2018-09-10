@@ -12,6 +12,7 @@ const BookingSuccess = ({ isEvent, data }) => {
   const token = get(data, 'token')
   let price = get(data, 'stock.price')
   price = getPrice(price)
+  const completedUrl = get(data, 'completedUrl')
   const cssclass = (isEvent && 'event') || 'thing'
   return (
     <div className={`booked has-text-centered ${cssclass}`}>
@@ -25,16 +26,25 @@ const BookingSuccess = ({ isEvent, data }) => {
         <span className="is-block mb36">
           {isEvent
             ? 'Votre réservation est validée.'
-            : 'Votre pouvez accéder à cette offfre à tout moment.'}
+            : 'Votre pouvez accéder à cette offre à tout moment.'}
         </span>
       </h3>
       <p>
-        <span className="is-block">{price} ont été déduit de votre pass.</span>
-        <span className="is-block">Présentez le code suivant sur place:</span>
+        <span className="is-block">{price} ont été déduits de votre pass.</span>
+        {!completedUrl && (
+          <span className="is-block">Présentez le code suivant sur place:</span>
+        )}
       </p>
-      <p className="is-size-1 my28">
-        <b>{token}</b>
-      </p>
+      {!completedUrl && (
+        <p className="is-size-1 my28">
+          <b>{token}</b>
+        </p>
+      )}
+      {completedUrl && (
+        <p className="is-block">
+          <a href={completedUrl}>Accéder à l&apos;offre</a>
+        </p>
+      )}
       <p>
         Retrouvez ce code et les détails de l&apos;offre dans la rubrique
         <Link to="/reservations">
