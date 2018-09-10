@@ -125,9 +125,9 @@ class BookingsPage extends Component {
             </footer>
           </React.Fragment>
         )}
-        {/* {!isempty && ( */}
-        <Loader isempty={isempty} haserror={haserror} isloading={isloading} />
-        {/* )} */}
+        {!isempty && (
+          <Loader isempty={isempty} haserror={haserror} isloading={isloading} />
+        )}
       </div>
     )
   }

@@ -121,7 +121,7 @@ ShallowWrapper {
                   du Pass Culture
                 </i>,
               ],
-              "className": "has-has-text-centereded",
+              "className": "has-text-centered",
             },
             "ref": null,
             "rendered": Array [
@@ -363,7 +363,7 @@ ShallowWrapper {
                     du Pass Culture
                   </i>,
                 ],
-                "className": "has-has-text-centereded",
+                "className": "has-text-centered",
               },
               "ref": null,
               "rendered": Array [
