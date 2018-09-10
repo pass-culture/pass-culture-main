@@ -115,13 +115,6 @@ class OfferPage extends Component {
     handleSuccess()
   }
 
-  handleFail = (state, action) => {
-    this.props.showNotification({
-      type: 'danger',
-      text: "Un problème est survenu lors de l'enregistrement",
-    })
-  }
-
   handleSuccess = (state, action) => {
     const { data, method } = action
     const { history, offer, showNotification, venue } = this.props
@@ -228,7 +221,6 @@ class OfferPage extends Component {
             action={apiPath}
             name="offer"
             handleSuccess={this.handleSuccess}
-            handleFail={this.handleFail}
             patch={Object.assign(
               {
                 offererId: get(offerer, 'id'),
@@ -238,7 +230,7 @@ class OfferPage extends Component {
             )}
             readOnly={isReadOnly}>
             <div className="field-group">
-              <Field name="name" label="Titre de l'offre" required isExpanded />
+              <Field isExpanded label="Titre de l'offre" name="name" required />
               <Field
                 label="Type"
                 name="type"
@@ -351,7 +343,6 @@ class OfferPage extends Component {
                     label="Description"
                     maxLength={1000}
                     name="description"
-                    required
                     type="textarea"
                   />
                   <Field name="author" label="Auteur" isExpanded />
