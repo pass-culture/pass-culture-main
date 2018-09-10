@@ -1,9 +1,8 @@
 """events"""
+import binascii
 from flask import current_app as app, jsonify, request
 
-from models.event import Event
-from models.offer import Offer
-from models.pc_object import PcObject
+from models import ApiErrors, Event, Offer, Offerer, PcObject
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data, \
@@ -25,10 +24,15 @@ def get_event(id):
 def post_event():
     event = Event()
     event.populateFromDict(request.json)
-    ocas = Offer()
-    ocas.venueId = dehumanize(request.json['venueId'])
-    ocas.event = event
-    PcObject.check_and_save(event, ocas)
+    offer = Offer()
+    api_errors = ApiErrors()
+    try:
+        offer.venueId = dehumanize(request.json['venueId'])
+    except binascii.Error:
+        api_errors.addError('venueId', 'le lieu est invalide')
+        raise api_errors
+    offer.event = event
+    PcObject.check_and_save(event, offer)
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)
     ), 201

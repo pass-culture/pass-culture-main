@@ -57,7 +57,7 @@ class Event(PcObject,
     description = Column(Text, nullable=True)
 
     conditions = Column(String(120),
-                           nullable=True)
+                        nullable=True)
 
     ageMin = Column(Integer,
                     nullable=True)
