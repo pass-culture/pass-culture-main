@@ -17,7 +17,7 @@ import { compose } from 'redux'
 import Main from '../layout/Main'
 import ProviderManager from '../managers/ProviderManager'
 import offererSelector from '../../selectors/offerer'
-import venueSelector from '../../selectors/venue'
+import selectVenuePatchByVenueIdByOffererId from '../../selectors/selectVenuePatchByVenueIdByOffererId'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
 
 class VenuePage extends Component {
@@ -106,7 +106,7 @@ class VenuePage extends Component {
       },
       offerer,
       sirenName,
-      venue,
+      venuePatch,
     } = this.props
 
     const { isNew, isReadOnly } = this.state
@@ -115,7 +115,7 @@ class VenuePage extends Component {
       <Main
         backTo={{
           label:
-            get(offerer, 'name') === get(venue, 'name')
+            get(offerer, 'name') === get(venuePatch, 'name')
               ? 'STRUCTURE'
               : get(offerer, 'name'),
           path: `/structures/${offererId}`,
@@ -124,7 +124,7 @@ class VenuePage extends Component {
         handleDataRequest={this.handleDataRequest}>
         <div className="section hero">
           <h2 className="subtitle has-text-weight-bold">
-            {get(venue, 'name')}
+            {get(venuePatch, 'name')}
           </h2>
 
           <h1 className="main-title">Lieu</h1>
@@ -134,9 +134,9 @@ class VenuePage extends Component {
           )}
 
           {get(offerer, 'id') &&
-            get(venue, 'id') && (
+            get(venuePatch, 'id') && (
               <NavLink
-                to={`/offres/nouveau?lieu=${venue.id}`}
+                to={`/offres/nouveau?lieu=${venuePatch.id}`}
                 className="button is-primary is-medium is-pulled-right cta">
                 <span className="icon">
                   <Icon svg="ico-offres-w" />
@@ -146,13 +146,13 @@ class VenuePage extends Component {
             )}
         </div>
 
-        {!isNew && <ProviderManager venue={venue} />}
+        {!isNew && <ProviderManager venue={venuePatch} />}
 
         <Form
-          action={`/venues/${get(venue, 'id', '')}`}
+          action={`/venues/${get(venuePatch, 'id', '')}`}
           handleSuccess={this.handleSuccess}
           name="venue"
-          patch={venue}
+          patch={venuePatch}
           readOnly={isReadOnly}>
           <Field type="hidden" name="managingOffererId" />
           <div className="section">
@@ -259,7 +259,11 @@ export default compose(
       return {
         sirenName: get(state, `form.venue.name`),
         user: state.user,
-        venue: venueSelector(state, venueId, offererId),
+        venuePatch: selectVenuePatchByVenueIdByOffererId(
+          state,
+          venueId,
+          offererId
+        ),
         offerer: offererSelector(state, offererId),
       }
     },
