@@ -280,6 +280,7 @@ class OfferPage extends Component {
                     label="Structure"
                     name="offererId"
                     options={offerers}
+                    required
                     placeholder="Sélectionnez une structure"
                     type="select"
                   />
