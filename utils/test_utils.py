@@ -159,6 +159,8 @@ MOCKED_SIREN_ENTREPRISES_API_RETURN = {
     'total_results': 6
 }
 
+ONE_PIXEL_PNG = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x01\x03\x00\x00\x00%\xdbV\xca\x00\x00\x00\x03PLTE`\x00\x86\xebv\xd0\xef\x00\x00\x00\x01tRNS\xcc\xd24V\xfd\x00\x00\x00\nIDATx\x9ccb\x00\x00\x00\x06\x00\x0367|\xa8\x00\x00\x00\x00IEND\xaeB`\x82'
+
 
 def req_with_auth(email=None, password=None):
     request = req.Session()
@@ -184,7 +186,8 @@ def create_booking(user, stock=None, venue=None, recommendation=None, is_cancell
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
+                             '93')
     if stock:
         booking.stock = stock
     else:
@@ -235,7 +238,7 @@ def create_booking_for_event(amount=50, quantity=1, user=None, isCancelled=False
 
 def create_user(public_name='John Doe', departement_code='93', email='john.doe@test.com', can_book_free_offers=True,
                 password='totallysafepsswd', validation_token=None, is_admin=False, reset_password_token=None,
-        reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24)):
+                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24)):
     user = User()
     user.publicName = public_name
     user.email = email
@@ -247,7 +250,6 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     user.resetPasswordToken = reset_password_token
     user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
     return user
-
 
 
 def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10,
@@ -341,8 +343,7 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
 
 
 def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
-                       booking_email = 'booking.email@test.com'):
-
+                       booking_email='booking.email@test.com'):
     offer = Offer()
     event = create_event(event_name=event_name, duration_minutes=duration_minutes)
     offer.event = event
@@ -433,4 +434,3 @@ def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_t
     mediation.author = author
     mediation.isActive = is_active
     return mediation
-

@@ -30,7 +30,7 @@ def send_storage_file(bucketId, objectId):
 def post_storage_file(collectionName, id, index):
     model_name = inflect_engine.singular_noun(collectionName.title(), 1)
     if model_name in GENERIC_STORAGE_MODEL_NAMES:
-        model = getattr(model, model_name)
+        model = getattr(models, model_name)
         entity = model.query.filter_by(id=dehumanize(id)).first_or_404()
         if model_name == 'Mediation':
             offerer = entity.offer.eventOccurrences[0].stock[0].offerer
@@ -44,4 +44,4 @@ def post_storage_file(collectionName, id, index):
         )
         return jsonify(entity._asdict()), 200
     else:
-        return jsonify({'text': "upload is not authorized for this model"}), 400
+        return jsonify({'text': 'upload is not authorized for this model'}), 400
