@@ -17,7 +17,7 @@ describe('offererSelector', () => {
       isValidated: true,
       lastProviderId: 'A4',
       modelName: 'Offerer',
-      nOccasions: 188,
+      nOffers: 188,
       name: "Folies d'encre Aulnay-sous-Bois",
       postalCode: '93600',
       siren: '302559178',

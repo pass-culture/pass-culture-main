@@ -36,13 +36,13 @@ const OffererItem = ({ offerer, venues }) => {
                     </NavLink>
                   </li>,
                   // J'ai au moins 1 offre
-                  offerer.nOccasions > 0 ? (
+                  offerer.nOffers > 0 ? (
                     <li key={1}>
                       <NavLink
                         to={`/offres?structure=${id}`}
                         className="has-text-primary">
                         <Icon svg="ico-offres-r" />
-                        {pluralize(offerer.nOccasions, 'offres')}
+                        {pluralize(offerer.nOffers, 'offres')}
                       </NavLink>
                     </li>
                   ) : (

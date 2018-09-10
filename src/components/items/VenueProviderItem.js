@@ -29,7 +29,7 @@ class VenueProviderItem extends Component {
     const { events, things, venue, venueProvider } = this.props
     const { isActive, lastSyncDate, provider, venueIdAtOfferProvider } =
       venueProvider || {}
-    const nOccasions = (events || []).concat(things).length
+    const nOffers = (events || []).concat(things).length
 
     return (
       <li className={classnames('is-disabled')}>
@@ -47,13 +47,13 @@ class VenueProviderItem extends Component {
         </div>
         {lastSyncDate ? (
           [
-            nOccasions ? (
+            nOffers ? (
               <NavLink
                 key={0}
                 to={`/offres?lieu=${get(venue, 'id')}`}
                 className="has-text-primary">
                 <Icon svg="ico-offres-r" />
-                {pluralize(nOccasions, 'offres')}
+                {pluralize(nOffers, 'offres')}
               </NavLink>
             ) : (
               <div key={0}>0 offre</div>
