@@ -17,11 +17,9 @@ import {
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'
 import SearchResultItem from '../SearchResultItem'
-import { SearchFilter } from '../SearchFilter'
 import { selectRecommendations } from '../../selectors'
 import searchSelector from '../../selectors/search'
-// import { toggleFilterMenu } from '../reducers/filterMenu'
-import { toggleMainMenu } from '../../reducers/menu'
+import { toggleFilterMenu } from '../reducers/filterMenu'
 
 const renderPageHeader = () => (
   <header>
@@ -39,7 +37,7 @@ const renderPageFooter = () => {
 class SearchPage extends Component {
   onFilterClick = () => {
     const { dispatch } = this.props
-    dispatch(toggleMainMenu())
+    dispatch(toggleFilterMenu())
   }
 
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
@@ -57,14 +55,7 @@ class SearchPage extends Component {
   }
 
   render() {
-    const {
-      handleClearQueryParams,
-      handleQueryParamsChange,
-      handleRemoveFilter,
-      handleSearchChange,
-      queryParams,
-      recommendations,
-    } = this.props
+    const { handleSearchChange, queryParams, recommendations } = this.props
     const { search } = queryParams || {}
 
     return (
@@ -103,11 +94,6 @@ class SearchPage extends Component {
             </div>
           </form>
         </div>
-        <SearchFilter
-          handleQueryParamsChange={handleQueryParamsChange}
-          handleRemoveFilter={handleRemoveFilter}
-          handleClearQueryParams={handleClearQueryParams}
-        />
         <InfiniteScroller
           className="recommendations-list main-list"
           handleLoadMore={this.handleDataRequest}
@@ -132,9 +118,6 @@ SearchPage.defaultProps = {
 SearchPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   goToNextSearchPage: PropTypes.func.isRequired,
-  handleClearQueryParams: PropTypes.func.isRequired,
-  handleQueryParamsChange: PropTypes.func.isRequired,
-  handleRemoveFilter: PropTypes.func.isRequired,
   handleSearchChange: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
   queryParams: PropTypes.object.isRequired,

@@ -73,8 +73,10 @@ const routes = [
     icon: 'mail-w',
     title: 'Nous contacter',
   },
-{
+  {
     component: SearchPage,
+    disabled: false,
+    icon: 'search-w',
     path: '/recherche',
     title: 'Recherche',
   },
