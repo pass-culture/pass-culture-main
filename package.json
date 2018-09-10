@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "/",
   "dependencies": {
-    "antd": "^3.9.1",
+    "antd": "3.8.1",
     "bulma": "^0.7.1",
     "classnames": "2.2.5",
     "colorsys": "^1.0.20",
