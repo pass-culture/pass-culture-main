@@ -17,6 +17,7 @@ const BookingSuccess = ({ isEvent, data }) => {
   return (
     <div className={`booked has-text-centered ${cssclass}`}>
       <h3 style={{ fontSize: '22px' }}>
+        {/* <!-- ICON --> */}
         <span
           className="is-block mb12"
           style={{ color: '#27AE60', fontSize: '4.5rem' }}
@@ -24,9 +25,15 @@ const BookingSuccess = ({ isEvent, data }) => {
           <Icon type="check-circle" />
         </span>
         <span className="is-block mb36">
-          {isEvent
-            ? 'Votre réservation est validée.'
-            : 'Votre pouvez accéder à cette offre à tout moment.'}
+          {isEvent && 'Votre réservation est validée.'}
+          {!isEvent && (
+            <React.Fragment>
+              <span className="is-block">
+                Votre pouvez accéder à cette offre
+              </span>
+              <span className="is-block">à tout moment.</span>
+            </React.Fragment>
+          )}
         </span>
       </h3>
       <p>
@@ -35,22 +42,47 @@ const BookingSuccess = ({ isEvent, data }) => {
           <span className="is-block">Présentez le code suivant sur place:</span>
         )}
       </p>
-      {!completedUrl && (
-        <p className="is-size-1 my28">
-          <b>{token}</b>
-        </p>
-      )}
-      {completedUrl && (
-        <p className="is-block">
-          <a href={completedUrl}>Accéder à l&apos;offre</a>
-        </p>
-      )}
+      {/* <!-- CODE / LIEN --> */}
+      <p className="my28">
+        {!completedUrl && <b className="is-block is-size-1">{token}</b>}
+        {completedUrl && (
+          <a
+            className="is-primary-text is-primary-border px12 py8"
+            href={completedUrl}
+          >
+            <b>Accéder à l&apos;offre en ligne</b>
+          </a>
+        )}
+      </p>
       <p>
-        Retrouvez ce code et les détails de l&apos;offre dans la rubrique
-        <Link to="/reservations">
-          <b className="is-primary-text"> Mes Réservations </b>
-        </Link>
-        de votre compte
+        {!completedUrl && (
+          <React.Fragment>
+            <span className="is-block">
+              Retrouvez ce code et les détails de l&apos;offre dans
+            </span>
+            <span className="is-block">
+              la rubrique
+              <Link to="/reservations">
+                <b className="is-primary-text"> Mes Réservations </b>
+              </Link>
+              de votre compte
+            </span>
+          </React.Fragment>
+        )}
+        {completedUrl && (
+          <React.Fragment>
+            <span className="is-block">
+              Retrouvez l&apos;adresse Internet et les détails de
+            </span>
+            <span className="is-block">
+              l&apos;offre dans la rubrique
+              <Link to="/reservations">
+                <b className="is-primary-text"> Mes Réservations </b>
+              </Link>
+            </span>
+            <span className="is-block">de votre compte</span>
+          </React.Fragment>
+        )}
       </p>
     </div>
   )

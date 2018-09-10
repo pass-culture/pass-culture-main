@@ -1,0 +1,21 @@
+.is-primary-text {
+  color: $primary;
+}
+
+.is-relative {
+  position: relative;
+}
+
+.is-raw-description {
+  padding: 0;
+  font-size: 1rem;
+  line-height: inherit;
+  font-family: inherit;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  background-color: transparent;
+}
+
+.is-primary-border {
+  border: 2px solid $primary;
+}
