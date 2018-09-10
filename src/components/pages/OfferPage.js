@@ -157,14 +157,16 @@ class OfferPage extends Component {
 
   handleShowOccurrencesModal = () => {
     const {
+      dispatch,
       location: { search },
-      showModal,
     } = this.props
     search.indexOf('gestion') > -1
-      ? showModal(<OccurrenceManager />, {
-          isUnclosable: true,
-        })
-      : closeModal()
+      ? dispatch(
+          showModal(<OccurrenceManager />, {
+            isUnclosable: true,
+          })
+        )
+      : dispatch(closeModal())
   }
 
   componentDidMount() {
