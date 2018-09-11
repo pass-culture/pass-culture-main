@@ -1,7 +1,6 @@
 /* eslint no-console: 0, max-nested-callbacks: 0 */
 import 'moment-timezone'
 import moment from 'moment'
-import { expect } from 'chai'
 import { filterAvailableDates } from './filterAvailableDates'
 
 const inTwoDays = moment().add(2, 'days')
@@ -20,6 +19,6 @@ describe('filterAvailableDates', () => {
       { bookingLimitDatetime: inOneDay },
     ]
     const result = filterAvailableDates(stocks)
-    expect(expected).to.deep.equal(result)
+    expect(expected).toStrictEqual(result)
   })
 })
