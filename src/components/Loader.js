@@ -12,7 +12,7 @@ const defaultStyle = {
 
 const transitionStyles = {
   entered: { opacity: 1 },
-  entering: { opacity: 0 },
+  entering: { opacity: 1 },
   exited: { display: 'none', visibility: 'none' },
 }
 
