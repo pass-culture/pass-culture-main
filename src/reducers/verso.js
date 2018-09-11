@@ -18,7 +18,7 @@ const initialState = {
 function verso(state = initialState, action) {
   switch (action.type) {
     case CLOSE_VERSO:
-      return Object.assign({}, state, { isFlipped: false })
+      return Object.assign({}, state, { isFlipped: false, unFlippable: false })
     case SHOW_VERSO:
       return Object.assign({}, state, { isFlipped: true })
     case MAKE_UNDRAGGABLE:
