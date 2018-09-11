@@ -47,13 +47,13 @@ class VersoControl extends React.PureComponent {
       isReserved,
       offer,
       url,
-      wallet,
+      // wallet,
     } = this.props
     return (
       <ul className="verso-control">
         <li>
           <small className="pass-label">Mon Pass</small>
-          <span className="pass-value">{wallet}€</span>
+          <span className="pass-value">--€</span>
         </li>
         <li>
           <button
@@ -96,7 +96,7 @@ VersoControl.defaultProps = {
   isReserved: false,
   offer: null,
   recommendationId: null,
-  wallet: null,
+  // wallet: null,
 }
 
 VersoControl.propTypes = {
@@ -107,7 +107,7 @@ VersoControl.propTypes = {
   offer: PropTypes.object,
   recommendationId: PropTypes.string,
   url: PropTypes.string.isRequired,
-  wallet: PropTypes.number,
+  // wallet: PropTypes.number,
 }
 
 const mapStateToProps = (state, ownProps) => {
