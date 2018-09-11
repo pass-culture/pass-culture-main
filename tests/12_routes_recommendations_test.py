@@ -9,7 +9,7 @@ from models import PcObject
 from tests.conftest import clean_database
 from utils.config import BLOB_SIZE
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req, req_with_auth, create_offerer, create_venue, create_event_offer, create_user, \
+from utils.test_utils import API_URL, req_with_auth, create_offerer, create_venue, create_event_offer, create_user, \
     create_event_occurrence, create_stock_from_event_occurrence, create_thing_offer, create_stock_from_offer, \
     create_recommendation
 
@@ -61,15 +61,6 @@ def subtest_recos_with_params(params,
     assert_no_duplicate_mediations(recos)
     assert_recos_offer_venue_is_in_93_is_event_is_not_national(recos)
     return recos
-
-
-@pytest.mark.standalone
-def test_put_recommendations_works_only_when_logged_in():
-    # when
-    response = req.put(RECOMMENDATION_URL)
-
-    # then
-    assert response.status_code == 401
 
 
 def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():

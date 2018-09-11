@@ -1,3 +1,4 @@
+from repository.features import feature_paid_offers_enabled
 from repository.recommendation_queries import find_unseen_tutorials_for_user
 from utils.config import BLOB_SIZE, BLOB_UNREAD_NUMBER
 from utils.logger import logger
@@ -11,6 +12,9 @@ def build_mixed_recommendations(created_recommendations, read_recommendations, u
     while _can_populate_with_read_or_unread_recommendations(recommendations, remaining_read, remaining_unread):
         recommendations, remaining_unread = _populate_recommendations(recommendations, remaining_unread)
         recommendations, remaining_read = _populate_recommendations(recommendations, remaining_read)
+
+    if not feature_paid_offers_enabled():
+        recommendations = _remove_recommendations_on_paid_offers(recommendations)
 
     return recommendations
 
@@ -54,3 +58,11 @@ def _populate_recommendations(recommendations, potential_recommendations):
     populated_recommendations = recommendations + potential_recommendations[:quantity_to_add]
     remaining_potential = potential_recommendations[quantity_to_add:]
     return populated_recommendations, remaining_potential
+
+
+def _remove_recommendations_on_paid_offers(recommendations):
+    recommendations_on_free_offers = []
+    for reco in recommendations:
+        if all(stock.price == 0 for stock in reco.offer.stocks):
+            recommendations_on_free_offers.append(reco)
+    return recommendations_on_free_offers

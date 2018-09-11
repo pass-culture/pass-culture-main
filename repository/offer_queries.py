@@ -1,5 +1,4 @@
 from datetime import datetime
-from flask import current_app as app
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
@@ -62,11 +61,7 @@ def not_currently_recommended_offers(query, user):
     return query
 
 
-def get_offers_by_type(offer_type,
-                          user=None,
-                          coords=None,
-                          departement_codes=None,
-                          offer_id=None):
+def get_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
     query = Offer.query
     if offer_type == Event:
         query = query.join(aliased(EventOccurrence))

@@ -1,25 +1,26 @@
 """ user mediations routes """
 from random import shuffle
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.build_recommendations import build_mixed_recommendations,\
-                                         move_requested_recommendation_first,\
-                                         move_tutorial_recommendations_first
-from models import Recommendation, PcObject
-from recommendations_engine import create_recommendations_for_discovery,\
-                                   create_recommendations_for_search,\
-                                   give_requested_recommendation_to_user,\
-                                   RecommendationNotFoundException
+from domain.build_recommendations import build_mixed_recommendations, \
+    move_requested_recommendation_first, \
+    move_tutorial_recommendations_first
+from models import PcObject, Recommendation
+from recommendations_engine import create_recommendations_for_discovery, \
+    create_recommendations_for_search
+from recommendations_engine import give_requested_recommendation_to_user, RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import count_read_recommendations_for_user,\
-                                              find_all_read_recommendations,\
-                                              find_all_unread_recommendations
+from repository.recommendation_queries import count_read_recommendations_for_user, \
+    find_all_unread_recommendations, \
+    find_all_read_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
 from utils.rest import expect_json_data
+
 
 @app.route('/recommendations', methods=['GET'])
 @login_required
@@ -79,7 +80,6 @@ def put_recommendations():
     unread_recos = find_all_unread_recommendations(current_user, seen_recommendation_ids)
     read_recos = find_all_read_recommendations(current_user, seen_recommendation_ids)
 
-
     needed_new_recos = BLOB_SIZE \
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
                        - min(len(read_recos), BLOB_READ_NUMBER)
@@ -93,7 +93,6 @@ def put_recommendations():
     logger.info('(new reco) count %i', len(created_recommendations))
 
     recommendations = build_mixed_recommendations(created_recommendations, read_recos, unread_recos)
-
     shuffle(recommendations)
 
     all_read_recos_count = count_read_recommendations_for_user(current_user)

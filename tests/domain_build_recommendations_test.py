@@ -1,7 +1,19 @@
+from unittest.mock import patch
+
 import pytest
 
 from domain.build_recommendations import build_mixed_recommendations
-from utils.test_utils import create_recommendation
+from models import Offer
+from utils.test_utils import create_recommendation, create_stock
+
+
+class MockedOffer(Offer):
+    def __init__(self, stocks):
+        self._stocks = stocks
+
+    @property
+    def stocks(self):
+        return self._stocks
 
 
 @pytest.mark.standalone
@@ -107,3 +119,28 @@ def test_build_mixed_recommendations_with_all_sorts_of_recommendations():
 
     # then
     assert [r.id for r in created_recommendations] == [5, 6, 3, 4, 1, 2]
+
+
+@pytest.mark.standalone
+@patch('domain.build_recommendations.feature_paid_offers_enabled', return_value=False)
+def test_build_mixed_recommendations_removes_the_recommendations_on_paid_offers_if_feature_is_disabled(feature_enabled):
+    # given
+
+    paid_stock = create_stock(price=10)
+    free_stock = create_stock(price=0)
+    offer_with_paid_stock = MockedOffer([paid_stock, free_stock])
+    offer_with_free_stock = MockedOffer([free_stock])
+
+    created_recommendations = [create_recommendation(id=5, offer=offer_with_paid_stock),
+                               create_recommendation(id=6, offer=offer_with_free_stock)]
+    read_recommendations = [create_recommendation(id=1, offer=offer_with_free_stock),
+                            create_recommendation(id=2, offer=offer_with_free_stock)]
+    unread_recommendations = [create_recommendation(id=3, offer=offer_with_paid_stock),
+                              create_recommendation(id=4, offer=offer_with_paid_stock)]
+
+    # when
+    created_recommendations = build_mixed_recommendations(created_recommendations, read_recommendations,
+                                                          unread_recommendations)
+
+    # then
+    assert [r.id for r in created_recommendations] == [6, 1, 2]

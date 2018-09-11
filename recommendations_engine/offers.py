@@ -43,17 +43,10 @@ def make_score_tuples(offers, departement_codes):
 
 def sort_by_score(offers, departement_codes):
     offer_tuples = make_score_tuples(offers, departement_codes)
-    return list(map(lambda st: st[0],
-                    sorted(filter(lambda st: st[1] is not None, offer_tuples),
-                           key=lambda st: st[1],
-                           reverse=True)))
+    return list(_extract_offer(offer_tuples))
 
 
 def score_offer(offer):
-    if not feature_paid_offers_enabled():
-        if any(stock.price > 0 for stock in offer.stocks):
-            return None
-
     common_score = 0
 
     if len(offer.mediations) > 0:
@@ -105,8 +98,7 @@ def remove_duplicate_things_or_events(offers):
     seen_event_ids = {}
     result = []
     for offer in offers:
-        if offer.thingId not in seen_thing_ids \
-                and offer.eventId not in seen_event_ids:
+        if offer.thingId not in seen_thing_ids and offer.eventId not in seen_event_ids:
             if offer.thingId:
                 seen_thing_ids[offer.thingId] = True
             else:
@@ -123,14 +115,8 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
         if user.departementCode == '93' \
         else [user.departementCode]
 
-    event_offers = get_offers_by_type(Event,
-                                      user=user,
-                                      coords=coords,
-                                      departement_codes=departement_codes)
-    thing_offers = get_offers_by_type(Thing,
-                                      user=user,
-                                      coords=coords,
-                                      departement_codes=departement_codes)
+    event_offers = get_offers_by_type(Event, user=user, departement_codes=departement_codes)
+    thing_offers = get_offers_by_type(Thing, user=user, departement_codes=departement_codes)
     offers = sort_by_score(event_offers + thing_offers, departement_codes)
     offers = remove_duplicate_things_or_events(offers)
 
@@ -138,6 +124,7 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
                 len(offers))
 
     return roundrobin(offers, limit)
+
 
 def get_offers_for_recommendations_search(page=1, search=None):
     offer_query = Offer.query
@@ -151,3 +138,25 @@ def get_offers_for_recommendations_search(page=1, search=None):
                         .items
 
     return offers
+
+
+def _extract_offer(offer_tuples):
+    return map(
+        lambda st: st[0],
+        _sort_by_score_desc(offer_tuples)
+    )
+
+
+def _sort_by_score_desc(offer_tuples):
+    return sorted(
+        _remove_none_scores(offer_tuples),
+        key=lambda st: st[1],
+        reverse=True
+    )
+
+
+def _remove_none_scores(offer_tuples):
+    return filter(
+        lambda st: st[1] is not None,
+        offer_tuples
+    )
