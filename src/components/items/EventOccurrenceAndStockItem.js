@@ -80,7 +80,6 @@ class EventOccurrenceAndStockItem extends Component {
   handleEventOccurrenceSuccessData = (state, action) => {
     const { history, offer, stockPatch } = this.props
     const stockIdOrNew = get(stockPatch, 'id', 'nouveau')
-    console.log('NON')
     history.push(
       `/offres/${get(offer, 'id')}?gestion&date=${
         action.data.id
@@ -134,7 +133,7 @@ class EventOccurrenceAndStockItem extends Component {
 
   handleInitPrice = () => {
     const { dispatch, formPrice, stockPatch } = this.props
-    if (get(stockPatch, 'id') || formPrice) {
+    if (get(stockPatch, 'id') || typeof formPrice !== 'undefined') {
       return
     }
     dispatch(mergeForm('stock', { price: 0 }))
@@ -168,9 +167,6 @@ class EventOccurrenceAndStockItem extends Component {
 
   handleOfferSuccessData = (state, action) => {
     const { history, offer } = this.props
-
-    console.log('BEN')
-
     history.push(`/offres/${get(offer, 'id')}?gestion`)
   }
 
@@ -199,7 +195,6 @@ class EventOccurrenceAndStockItem extends Component {
       this.handleResetForm()
     }
 
-    /*
     this.handleNextDatetimes()
     this.handleInitBookingLimitDatetime()
     this.handleCrossingEndDatetime()
@@ -209,7 +204,6 @@ class EventOccurrenceAndStockItem extends Component {
     }
 
     this.handleInitPrice()
-    */
   }
 
   render() {

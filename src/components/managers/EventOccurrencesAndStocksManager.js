@@ -181,7 +181,6 @@ export default compose(
     const thing = thingSelector(state, thingId)
 
     const stocks = stocksSelector(state, offerId)
-    console.log('stocks', stocks)
 
     const errors = occurrenceErrorsSelector(state)
 
