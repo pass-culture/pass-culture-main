@@ -1,6 +1,5 @@
 export * from './getPrice'
 export * from './getQueryParams'
-export * from './parseAPIErrors'
 export * from './getPriceRangeFromStocks'
 export * from './isSameDayInEachTimezone'
 export * from './getMobileOperatingSystem'

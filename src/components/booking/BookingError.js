@@ -9,21 +9,20 @@ import { Icon } from 'pass-culture-shared'
 // lire plus -> https://reactjs.org/docs/lists-and-keys.html#keys
 const getArrayIndex = index => `error_${index}`
 
-const parseErrors = (acc, errors) => {
-  if (!errors) return acc
-  const isstring = errors && typeof errors === 'string'
-  const isobject = errors && typeof errors === 'object'
-  if (isstring) return acc.concat([errors])
-  if (isobject && !Array.isArray(errors)) {
-    const values = Object.values(errors)
-    return acc.concat(values)
-  }
-  return acc.concat(errors)
+const flattenErrors = (acc, err) => {
+  let value = err
+  if (Array.isArray(err)) value = Array.prototype.concat.apply([], err)
+  return acc.concat(value)
 }
 
 const BookingError = ({ errors }) => {
-  let entries = (Array.isArray(errors) && errors) || []
-  entries = entries.reduce(parseErrors, [])
+  // NOTE: 404, 500 -> donne un array
+  // sinon donne un object, on veut afficher les erreurs aux users
+  // donc on garde que le cas de l'object
+  const entries =
+    errors && !Array.isArray(errors) && typeof errors === 'object'
+      ? Object.values(errors).reduce(flattenErrors, [])
+      : []
   return (
     <div className="booked has-text-centered">
       <h3 style={{ fontSize: '22px' }} className="mb16">
@@ -35,7 +34,7 @@ const BookingError = ({ errors }) => {
         </span>
       </h3>
       <div style={{ fontSize: '20px' }}>
-        <p className="mb36">Une erreur est survenue lors de la réservation :</p>
+        <p className="mb36">Une erreur est survenue lors de la réservation</p>
         {entries.map(
           (msg, index) => entries && <p key={getArrayIndex(index)}>{msg}</p>
         )}
