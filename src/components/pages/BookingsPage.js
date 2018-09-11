@@ -17,7 +17,7 @@ import {
 } from '../../selectors'
 import Loader from '../Loader'
 import { toggleMainMenu } from '../../reducers/menu'
-import ProfilePicture from '../layout/ProfilePicture'
+import NavigationFooter from '../layout/NavigationFooter'
 import { bookingNormalizer } from '../../utils/normalizers'
 
 const renderNoBookingSection = () => (
@@ -85,7 +85,7 @@ class BookingsPage extends Component {
             <header className="padded has-text-centered flex-0 fs19">
               <h1>Mes réservations</h1>
             </header>
-            <main role="main" className="application-main flex-rows flex-start">
+            <main role="main" className="pc-main flex-rows flex-start">
               <Scrollbars>
                 {soonBookingsLength > 0 && (
                   <div>
@@ -111,18 +111,7 @@ class BookingsPage extends Component {
                 {(isempty || hasNoBooking) && renderNoBookingSection()}
               </Scrollbars>
             </main>
-            <footer
-              role="navigation"
-              className="application-footer dotted-top flex-columns items-center flex-center flex-0"
-            >
-              <button
-                className="profile-button no-border no-background"
-                onClick={this.actions.toggleMainMenu}
-                type="button"
-              >
-                <ProfilePicture alt="Mon menu" />
-              </button>
-            </footer>
+            <NavigationFooter />
           </React.Fragment>
         )}
         {!isempty && (

@@ -196,11 +196,14 @@
   @extend .padded;
 }
 
-.pc-footer,
-.application-footer {
+.pc-footer {
+  @extend .flex-0;
+  @extend .padded;
+  @extend .items-center;
+  @extend .flex-columns;
+
   height: $footer-height;
   min-height: $footer-height;
-  padding: 1rem 1rem 1rem 3rem;
 
   .icon-user-circle-outline {
     font-size: 2.7rem;

@@ -5,26 +5,26 @@
 
 #beta-page {
   color: $white;
-  font-size: $size-medium;
 
   .pc-main {
     height: 66%;
     min-height: 66%;
   }
 
-  footer a,
-  footer a:hover {
+  .pc-footer {
+    height: 33%;
+    min-height: 33%;
+    border-top: 4px dotted $white;
+  }
+
+  .pc-footer a,
+  .pc-footer a:hover {
     color: $white;
     text-decoration: none;
   }
 
-  footer a span {
-    font-size: 2.4rem;
-  }
-
-  .pc-footer {
-    height: 33%;
-    min-height: 33%;
+  .pc-footer .pc-icon {
+    @include fontSize(38px);
   }
 }
 

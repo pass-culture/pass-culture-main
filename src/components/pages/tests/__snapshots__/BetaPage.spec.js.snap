@@ -21,7 +21,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <main
-          className="application-main flex-rows flex-around items-center"
+          className="pc-main flex-rows flex-around items-center"
           role="main"
         >
           <h1
@@ -47,7 +47,7 @@ ShallowWrapper {
           </p>
         </main>,
         <footer
-          className="application-footer dotted-top flex-columns items-center flex-end flex-0"
+          className="pc-footer dotted-top flex-columns items-center flex-end flex-0"
           role="navigation"
         >
           <Link
@@ -99,7 +99,7 @@ ShallowWrapper {
               </i>
             </p>,
           ],
-          "className": "application-main flex-rows flex-around items-center",
+          "className": "pc-main flex-rows flex-around items-center",
           "role": "main",
         },
         "ref": null,
@@ -198,7 +198,7 @@ ShallowWrapper {
               title="C'est par là"
             />
           </Link>,
-          "className": "application-footer dotted-top flex-columns items-center flex-end flex-0",
+          "className": "pc-footer dotted-top flex-columns items-center flex-end flex-0",
           "role": "navigation",
         },
         "ref": null,
@@ -263,7 +263,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <main
-            className="application-main flex-rows flex-around items-center"
+            className="pc-main flex-rows flex-around items-center"
             role="main"
           >
             <h1
@@ -289,7 +289,7 @@ ShallowWrapper {
             </p>
           </main>,
           <footer
-            className="application-footer dotted-top flex-columns items-center flex-end flex-0"
+            className="pc-footer dotted-top flex-columns items-center flex-end flex-0"
             role="navigation"
           >
             <Link
@@ -341,7 +341,7 @@ ShallowWrapper {
                 </i>
               </p>,
             ],
-            "className": "application-main flex-rows flex-around items-center",
+            "className": "pc-main flex-rows flex-around items-center",
             "role": "main",
           },
           "ref": null,
@@ -440,7 +440,7 @@ ShallowWrapper {
                 title="C'est par là"
               />
             </Link>,
-            "className": "application-footer dotted-top flex-columns items-center flex-end flex-0",
+            "className": "pc-footer dotted-top flex-columns items-center flex-end flex-0",
             "role": "navigation",
           },
           "ref": null,
