@@ -35,11 +35,10 @@ const renderNoBookingSection = () => (
 
 const renderBookingList = items => (
   <ul className="bookings">
-    {items.map(booking => (
-      <React.Fragment>
-        <BookingItem key={booking.id} booking={booking} />
-      </React.Fragment>
-    ))}
+    {items.map(booking => {
+      const key = booking.id
+      return <BookingItem key={key} booking={booking} />
+    })}
   </ul>
 )
 
