@@ -1,6 +1,6 @@
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 
 import Logo from '../layout/Logo'
 import Main from '../layout/Main'
@@ -57,6 +57,9 @@ const SigninPage = ({ errors }) => {
                       required
                       type="password"
                     />
+                    <span>
+                      <Link to="/mot-de-passe-perdu">Mot de passe égaré ?</Link>
+                    </span>
                   </div>
                   <div className="errors">{errors}</div>
                   <div className="field buttons-field">

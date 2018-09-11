@@ -1,63 +1,173 @@
-import { Field, Form, SubmitButton } from 'pass-culture-shared'
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import {
+  Field,
+  Form,
+  SubmitButton,
+  queryStringToObject,
+  mergeForm,
+} from 'pass-culture-shared'
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 
 import Logo from '../layout/Logo'
 import Main from '../layout/Main'
 
-const LostPasswordPage = ({ errors }) => {
-  return (
-    <Main name="sign-in" fullscreen>
-      <div className="logo-side">
-        <Logo noLink signPage />
-      </div>
-      <div className="container">
-        <div className="columns">
-          <div className="column is-offset-6 is-two-fifths">
-            <section className="hero has-text-grey">
-              <div className="hero-body">
-                <h1 className="title is-spaced is-1">
-                  <span className="has-text-weight-normal">
-                    Mot de passe égaré ?
-                  </span>
-                </h1>
-                <h2 className="subtitle is-2">
-                  Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez
-                  créé votre compte.
-                </h2>
-                <span className="has-text-grey">
-                  {' '}
-                  <span className="required-legend"> * </span> Champs
-                  obligatoires
-                </span>
-                <Form
-                  action="post_for_password_token"
-                  BlockComponent={null}
-                  layout="vertical"
-                  name="user"
-                  handleSuccessNotification={null}
-                  handleSuccessRedirect={() => '/mot-de-passe-perdu/envoye'}>
-                  <Field
-                    label="Adresse e-mail"
-                    name="identifier"
-                    placeholder="Identifiant (email)"
-                    required
-                    type="email"
-                  />
-                  <div className="errors">{errors}</div>
-                  <div className="field buttons-field">
-                    <SubmitButton className="button is-primary is-outlined">
-                      Envoyer
-                    </SubmitButton>
+class LostPasswordPage extends Component {
+  componentDidMount() {
+    const { token } = queryStringToObject(this.props.location.search)
+    this.props.mergeForm('user', { token })
+  }
+
+  render() {
+    const { errors } = this.props
+    const { envoye, change, token } = queryStringToObject(
+      window.location.search
+    )
+
+    return (
+      <Main name="sign-in" fullscreen>
+        <div className="logo-side">
+          <Logo noLink signPage />
+        </div>
+        <div className="container">
+          <div className="columns">
+            <div className="column is-offset-6 is-two-fifths">
+              {change && (
+                <section className="hero has-text-grey">
+                  <div className="hero-body">
+                    <h1 className="title is-spaced is-1">
+                      <span className="has-text-weight-normal">
+                        Mot de passe changé !
+                      </span>
+                    </h1>
+                    <h2 className="subtitle is-2">
+                      Vous pouvez dès à présent vous connecter avec votre
+                      nouveau mot de passe
+                    </h2>
+
+                    <Link to="/connexion">Se connecter</Link>
                   </div>
-                </Form>
-              </div>
-            </section>
+                </section>
+              )}
+              {envoye && (
+                <section className="hero has-text-grey">
+                  <div className="hero-body">
+                    <h1 className="title is-spaced is-1">
+                      <span className="has-text-weight-normal">Merci !</span>
+                    </h1>
+                    <h2 className="subtitle is-2">
+                      Vous allez recevoir par e-mail les instructions pour
+                      définir un nouveau mot de passe.
+                    </h2>
+
+                    <Link to="/accueil">Revenir à l'accueil</Link>
+                  </div>
+                </section>
+              )}
+              {token && (
+                <section className="hero has-text-grey">
+                  <div className="hero-body">
+                    <h1 className="title is-spaced is-1">
+                      <span className="has-text-weight-normal">
+                        Créer un nouveau mot de passe
+                      </span>
+                    </h1>
+                    <h2 className="subtitle is-2">
+                      Saisissez le nouveau mot de passe
+                    </h2>
+                    <span className="has-text-grey">
+                      {' '}
+                      <span className="required-legend"> * </span> Champs
+                      obligatoires
+                    </span>
+                    <Form
+                      action="/users/new-password"
+                      BlockComponent={null}
+                      layout="vertical"
+                      name="user"
+                      handleSuccessNotification={null}
+                      handleSuccessRedirect={() =>
+                        '/mot-de-passe-perdu?change=1'
+                      }>
+                      <Field
+                        type="hidden"
+                        name="token"
+                        storeValue={() => token}
+                      />
+
+                      <Field
+                        label="Nouveau mot de passe"
+                        name="password"
+                        placeholder="******"
+                        required
+                        type="password"
+                        value="lolilol"
+                      />
+                      <div className="errors">{errors}</div>
+                      <div className="field buttons-field">
+                        <SubmitButton className="button is-primary is-outlined">
+                          Envoyer
+                        </SubmitButton>
+                      </div>
+                    </Form>
+                  </div>
+                </section>
+              )}
+              {!token &&
+                !envoye &&
+                !change && (
+                  <section className="hero has-text-grey">
+                    <div className="hero-body">
+                      <h1 className="title is-spaced is-1">
+                        <span className="has-text-weight-normal">
+                          Mot de passe égaré ?
+                        </span>
+                      </h1>
+                      <h2 className="subtitle is-2">
+                        Indiquez ci-dessous l’adresse e-mail avec laquelle vous
+                        avez créé votre compte.
+                      </h2>
+                      <span className="has-text-grey">
+                        {' '}
+                        <span className="required-legend"> * </span> Champs
+                        obligatoires
+                      </span>
+                      <Form
+                        action="/users/reset-password"
+                        BlockComponent={null}
+                        layout="vertical"
+                        name="user"
+                        handleSuccessNotification={null}
+                        handleSuccessRedirect={() =>
+                          '/mot-de-passe-perdu?envoye=1'
+                        }>
+                        <Field
+                          label="Adresse e-mail"
+                          name="email"
+                          placeholder="Identifiant (email)"
+                          required
+                          type="email"
+                        />
+                        <div className="errors">{errors}</div>
+                        <div className="field buttons-field">
+                          <SubmitButton className="button is-primary is-outlined">
+                            Envoyer
+                          </SubmitButton>
+                        </div>
+                      </Form>
+                    </div>
+                  </section>
+                )}
+            </div>
           </div>
         </div>
-      </div>
-    </Main>
-  )
+      </Main>
+    )
+  }
 }
 
-export default LostPasswordPage
+const mapDispatchToProps = {
+  mergeForm,
+}
+
+export default connect(null, mapDispatchToProps)(LostPasswordPage)
