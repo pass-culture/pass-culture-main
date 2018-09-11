@@ -6,6 +6,13 @@ from models import Booking, Stock, EventOccurrence, Offer, Venue, User, PcObject
 
 class BookingNotFound(ApiErrors):
     pass
+from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer, User
+from sqlalchemy import func, distinct
+from models.db import db
+from models import Booking, Stock, EventOccurrence, User, Venue
+from postgresql_audit.flask import versioning_manager
+
+Activity = versioning_manager.activity_cls
 
 
 def find_all_by_user_id(user_id):
@@ -86,10 +93,17 @@ def save_booking(booking):
         raise api_errors
 
 
-def find_by_id(booking_id):
-    return Booking.query.filter_by(id=booking_id).first_or_404()
+def find_bookings_stats_per_department(time_intervall):
+    result = db.session.query(Venue.departementCode, func.date_trunc(time_intervall, Activity.issued_at), func.count(Booking.id), func.count(User.id),
+                              func.count(distinct(User.id))) \
+        .join(Booking) \
+        .join(Stock) \
+        .join(EventOccurrence) \
+        .join(Activity, Activity.table_name == 'booking') \
+        .filter(Activity.verb == 'insert', Activity.data['id'].astext.cast(db.Integer) == Booking.id) \
+        .filter(User.canBookFreeOffers == 'true') \
+        .group_by(func.date_trunc(time_intervall, Activity.issued_at), Venue.departementCode) \
+        .order_by(func.date_trunc(time_intervall, Activity.issued_at), Venue.departementCode) \
+        .all()
+    return result
 
-
-
-def find_all_ongoing_bookings_by_stock(stock):
-    return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()

@@ -1,6 +1,6 @@
 from sqlalchemy import func, distinct
 
-from models import User, Booking
+from models import User
 from models.db import db
 
 
@@ -24,12 +24,11 @@ def find_users_by_department_and_date_range(date_max, date_min, department):
     return result
 
 
-def find_users_booking_stats_per_department(time_intervall):
+def find_users_stats_per_department(time_intervall):
     result = db.session.query(User.departementCode, func.date_trunc(time_intervall, User.dateCreated),
-                              func.count(distinct(User.id)), func.count(Booking.id),
-                              func.count(distinct(Booking.userId))) \
+                              func.count(distinct(User.id))) \
         .filter(User.canBookFreeOffers == 'true') \
-        .join(Booking, isouter='true') \
         .group_by(func.date_trunc(time_intervall, User.dateCreated), User.departementCode) \
+        .order_by(func.date_trunc(time_intervall, User.dateCreated), User.departementCode) \
         .all()
     return result

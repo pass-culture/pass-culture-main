@@ -6,6 +6,7 @@ from os import path
 from pathlib import Path
 
 import requests as req
+from postgresql_audit.flask import versioning_manager
 
 from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation
 from models.booking import Booking
@@ -454,3 +455,12 @@ def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_t
     mediation.author = author
     mediation.isActive = is_active
     return mediation
+
+
+def create_activity(entity, table_name, verb, issued_at=datetime.utcnow):
+    Activity = versioning_manager.activity_cls
+    activity = Activity()
+    activity.issued_at = issued_at
+    activity.table_name = table_name
+    activity.verb = verb
+    activity.changed_data = entity._asdict()

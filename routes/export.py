@@ -26,7 +26,8 @@ from models.pc_object import PcObject
 
 from postgresql_audit.flask import versioning_manager
 
-from repository.user_queries import find_users_by_department_and_date_range, find_users_booking_stats_per_department
+from repository.booking_queries import find_bookings_stats_per_department
+from repository.user_queries import find_users_by_department_and_date_range, find_users_stats_per_department
 
 Activity = versioning_manager.activity_cls
 
@@ -101,11 +102,23 @@ def get_users_stats():
     _check_token()
     date_intervall = valid_time_intervall_or_default(request.args.get('type_date'))
 
-    users_booking_stats = find_users_booking_stats_per_department(date_intervall)
+    users_stats = find_users_stats_per_department(date_intervall)
 
     file_name = 'export_%s_users_stats.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['department', date_intervall, 'distinct_user', 'count_booking', 'count_distinct_booking_users']
-    return _make_csv_response(file_name, headers, users_booking_stats)
+    headers = ['department', 'date_intervall', 'distinct_user']
+    return _make_csv_response(file_name, headers, users_stats)
+
+
+@app.route('/exports/bookings_stats', methods=['GET'])
+def get_bookings_stats():
+    _check_token()
+    date_intervall = valid_time_intervall_or_default(request.args.get('type_date'))
+
+    bookings_stats = find_bookings_stats_per_department(date_intervall)
+
+    file_name = 'export_%s_users_stats.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    headers = ['department', 'date_intervall', 'bookings_per_venue_dpt', 'bookings_per_user_dpt', 'distinct_user']
+    return _make_csv_response(file_name, headers, bookings_stats)
 
 
 @app.route('/exports/bookings', methods=['GET'])
@@ -231,6 +244,7 @@ def get_tracked_activity_from_id():
     headers = []
     return _make_csv_response(file_name, headers, result)
 
+
 @app.route('/exports/offerers_users_offers_bookings', methods=['GET'])
 def get_offerers_users_offers_bookings():
     _check_token()
@@ -324,9 +338,10 @@ def _clean_dict_for_export(model_name, dct):
 
 
 def valid_time_intervall_or_default(time_intervall):
-    if time_intervall == 'year' or time_intervall == 'month' or time_intervall == 'day':
+    if time_intervall == 'year' or time_intervall == 'month' or time_intervall == 'week' or time_intervall == 'day':
         return time_intervall
     return 'day'
+
 
 def _check_int(checked_int):
     try: 
