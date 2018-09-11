@@ -27,7 +27,7 @@ SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
 HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = \
 '''<html>
     <body>
-        <p id="mail-greeting">Cher Test,</p>
+        <p id="mail-greeting">Bonjour Test,</p>
 
         <div id="mail-content">
             Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city). Votre code de réservation est le 56789.
@@ -35,7 +35,7 @@ HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = \
 
         <p id="mail-salutation">
             Cordialement,
-            <br>L\'équipe pass culture
+            <br>L\'équipe pass Culture
         </p>
 
     </body>
@@ -45,45 +45,45 @@ SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre commande pour Test Book'
 
 HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL = '<html><body>' + \
-                                             '<p id="mail-greeting">Cher Test,</p>' + \
+                                             '<p id="mail-greeting">Bonjour Test,</p>' + \
                                              '<div id="mail-content">Nous vous confirmons votre commande pour Test Book (Ref: 12345),' + \
                                              ' proposé par Test offerer.' + \
                                              ' Votre code de réservation est le 56789.</div>' + \
                                              '<p id="mail-salutation">Cordialement,' + \
-                                             '<br>L\'équipe pass culture</p>' + \
+                                             '<br>L\'équipe pass Culture</p>' + \
                                              '</body></html>'
 
 SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL = \
     'Annulation de votre commande pour Test Book'
 
 HTML_USER_BOOKING_THING_CANCELLATION_EMAIL = '<html><body>' + \
-                                             '<p id="mail-greeting">Cher Test,</p>' + \
+                                             '<p id="mail-greeting">Bonjour Test,</p>' + \
                                              '<div id="mail-content">Votre commande pour Test Book (Ref: 12345), ' + \
                                              'proposé par Test offerer ' + \
                                              'a bien été annulée.</div>' + \
                                              '<p id="mail-salutation">Cordialement,' + \
-                                             '<br>L\'équipe pass culture</p>' + \
+                                             '<br>L\'équipe pass Culture</p>' + \
                                              '</body></html>'
 
 SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL = \
     'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
 
 HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL = '<html><body>' + \
-                                             '<p id="mail-greeting">Cher Test,</p>' + \
+                                             '<p id="mail-greeting">Bonjour Test,</p>' + \
                                              '<div id="mail-content">Votre réservation pour Mains, sorts et papiers, ' + \
                                              'proposé par Test offerer ' + \
                                              'le 20 juillet 2019 à 14:00, ' + \
                                              'a bien été annulée.</div>' + \
                                              '<p id="mail-salutation">Cordialement,' + \
-                                             '<br>L\'équipe pass culture</p>' + \
+                                             '<br>L\'équipe pass Culture</p>' + \
                                              '</body></html>'
 
 SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
-    '[Reservations] Nouvelle reservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+    '[Reservations] Nouvelle reservation pour Mains, sorts et papiers - 20 juillet 2019 à 14:00'
 HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '<html><body>' + \
-    '<p>Cher partenaire Pass Culture,</p>' + \
-    '<p>Test (test@email.com) vient de faire une nouvelle réservation.</p>' + \
+    '<p>Cher partenaire pass Culture,</p>' + \
+    '<p><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>' + \
     '<p>Voici le récapitulatif des réservations à ce jour (total 1)' + \
     ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
     ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
@@ -350,7 +350,7 @@ def test_offerer_recap_email_past_offer_without_booking(app):
     expected_html = '''
         <html>
             <body>
-                <p>Cher partenaire Pass Culture,</p>
+                <p>Cher partenaire pass Culture,</p>
                 <p>
                     Voici le récapitulatif final des réservations (total 0) pour Mains, sorts et papiers le 20 juillet 2017 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
@@ -380,7 +380,7 @@ def test_offerer_recap_email_past_offer_with_booking(app):
     expected_html = '''
         <html>
             <body>
-                <p>Cher partenaire Pass Culture,</p>
+                <p>Cher partenaire pass Culture,</p>
                 <p>
                     Voici le récapitulatif final des réservations (total 1) pour Mains, sorts et papiers le 20 juillet 2017 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
@@ -424,8 +424,8 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
     expected_html = '''
         <html>
             <body>
-                <p>Cher partenaire Pass Culture,</p>
-                <p>Test 2 (other_test@email.com) vient de faire une nouvelle réservation.</p>
+                <p>Cher partenaire pass Culture,</p>
+                <p><strong>Test 2</strong> (other_test@email.com) vient de faire une nouvelle réservation.</p>
                 <p>
                     Voici le récapitulatif des réservations à ce jour (total 2) pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
@@ -479,8 +479,8 @@ def test_offerer_booking_recap_email_book(app):
     expected_html = '''
     <html>
         <body>
-            <p>Cher partenaire Pass Culture,</p>
-            <p>Test (test@email.com) vient de faire une nouvelle réservation.</p>
+            <p>Cher partenaire pass Culture,</p>
+            <p><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>
             <p>
             Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
             </p>

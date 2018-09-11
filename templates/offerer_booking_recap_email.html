@@ -1,5 +1,5 @@
 {% extends "offerer_recap_email.html" %}
-{% block new_reservation %}<p>{{ user_name }} ({{ user_email }}) vient de faire une nouvelle réservation.</p>{% endblock %}
+{% block new_reservation %}<p><strong>{{ user_name }}</strong> ({{ user_email }}) vient de faire une nouvelle réservation.</p>{% endblock %}
 {% block past_or_future %}des réservations à ce jour{% endblock %}
 {% block recap %}
 {% if stock_bookings %}
@@ -8,7 +8,7 @@
         <th>Nom ou pseudo</th>
         <th>Email</th>
         <th>Code réservation</th>
-    </tr> {% endif %}
+    </tr>{% endif %}
     {% for booking in stock_bookings %}
     <tr>
         <td>{{ booking.user.publicName }}</td>

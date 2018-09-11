@@ -123,7 +123,7 @@ def make_booking_recap_email(stock, booking):
         date_in_tz = _get_event_datetime(stock)
         formatted_datetime = format_datetime(date_in_tz)
         stock_name = stock.eventOccurrence.offer.event.name
-        email_subject = '[Reservations] Nouvelle reservation pour {} le {}'.format(stock_name,
+        email_subject = '[Reservations] Nouvelle reservation pour {} - {}'.format(stock_name,
                                                                                    formatted_datetime)
 
     email_html = render_template('offerer_booking_recap_email.html',
@@ -165,7 +165,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
     return {
         'FromName': 'Pass Culture',
         'FromEmail': 'passculture@beta.gouv.fr',
-        'Subject': "Inscription ou rattachement PRO à valider",
+        'Subject': "%s - inscription / rattachement PRO à valider : %s" % (user_offerer.user.departementCode, offerer.name),
         'Html-part': email_html,
         'To': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'
     }
