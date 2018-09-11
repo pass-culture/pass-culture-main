@@ -70,7 +70,7 @@ def check_reset_token_validity(user):
         raise errors
 
 
-def check_password_strength(password):
+def check_password_strength(field_name, field_value):
     at_least_one_uppercase = '(?=.*?[A-Z])'
     at_least_one_lowercase = '(?=.*?[a-z])'
     at_least_one_digit = '(?=.*?[0-9])'
@@ -85,10 +85,10 @@ def check_password_strength(password):
             + min_length \
             + '$'
 
-    if not re.match(regex, password):
+    if not re.match(regex, field_value):
         errors = ApiErrors()
         errors.addError(
-            'password',
+            field_name,
             'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
             '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
         )

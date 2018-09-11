@@ -49,7 +49,7 @@ def post_change_password():
     validate_change_password_request(json)
     new_password = request.get_json()['newPassword']
     old_password = json.get('oldPassword')
-    check_password_strength(new_password)
+    check_password_strength('newPassword', new_password)
     check_new_password_validity(current_user, old_password, new_password)
     current_user.setPassword(new_password)
     PcObject.check_and_save(current_user)
@@ -91,7 +91,7 @@ def post_new_password():
         raise errors
 
     check_reset_token_validity(user)
-    check_password_strength(new_password)
+    check_password_strength('newPassword', new_password)
     user.setPassword(new_password)
     PcObject.check_and_save(user)
     return '', 204

@@ -62,7 +62,7 @@ def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new
 ])
 def test_valid_passwords(password):
     try:
-        check_password_strength(password)
+        check_password_strength('password', password)
     except ApiErrors:
         assert False, 'This password=\'%s\' should be valid' % password
 
@@ -78,7 +78,7 @@ def test_valid_passwords(password):
 def test_invalid_passwords(password):
     # when
     with pytest.raises(ApiErrors) as e:
-        check_password_strength(password)
+        check_password_strength('password', password)
 
     # then
     assert e.value.errors['password'] == [

@@ -580,7 +580,7 @@ def test_post_change_password_returns_bad_request_if_the_new_password_is_not_str
 
     # then
     assert response.status_code == 400
-    assert response.json()['password'] == [
+    assert response.json()['newPassword'] == [
         'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
         '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
     ]
@@ -785,7 +785,7 @@ def test_post_new_password_returns_bad_request_if_the_new_password_is_not_strong
 
     # then
     assert response.status_code == 400
-    assert response.json()['password'] == [
+    assert response.json()['newPassword'] == [
         'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
         '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
     ]
