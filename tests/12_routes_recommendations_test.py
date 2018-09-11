@@ -304,5 +304,5 @@ def test_get_recommendations_returns_one_recommendation_found_from_search():
     recommendations = response.json()
 
     # then
-    assert 'Rencontre' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0]['search'] == 'sur la route des migrants ; rencontres à Calais'
+    assert 'sur la route des migrants ; rencontres à Calais' in recommendations[0]['offer']['eventOrThing']['name']
+    assert recommendations[0]['search'] == 'Rencontre'
