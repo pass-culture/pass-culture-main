@@ -53,6 +53,7 @@ OFFER_INCLUDES = [
         ]
     },
     "mediations",
+    "stocks",
     {
         "key": "thing",
         "sub_joins": [
