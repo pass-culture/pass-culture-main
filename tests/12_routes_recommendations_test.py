@@ -305,4 +305,4 @@ def test_get_recommendations_returns_one_recommendation_found_from_search():
 
     # then
     assert 'Rencontre' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0]['search'] == 'Rencontre'
+    assert recommendations[0]['search'] == 'sur la route des migrants ; rencontres à Calais'
