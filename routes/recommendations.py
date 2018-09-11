@@ -1,26 +1,37 @@
 """ user mediations routes """
 from random import shuffle
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.build_recommendations import build_mixed_recommendations,\
-                                         move_requested_recommendation_first, \
+                                         move_requested_recommendation_first,\
                                          move_tutorial_recommendations_first
-from models import PcObject, Recommendation
-from recommendations_engine import create_recommendations, \
-                                   give_requested_recommendation_to_user, \
+from models import Recommendation, PcObject
+from recommendations_engine import create_recommendations_for_discovery,\
+                                   create_recommendations_for_search,\
+                                   give_requested_recommendation_to_user,\
                                    RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import count_read_recommendations_for_user, \
-                                              find_all_unread_recommendations, \
-                                              find_all_read_recommendations
+from repository.recommendation_queries import count_read_recommendations_for_user,\
+                                              find_all_read_recommendations,\
+                                              find_all_unread_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
 from utils.rest import expect_json_data
 
+@app.route('/recommendations', methods=['GET'])
+@login_required
+def list_recommendations():
+
+    recommendations = create_recommendations_for_search(
+        request.args.get('page', 1),
+        current_user,
+        request.args.get('search')
+    )
+
+    return jsonify(_serialize_recommendations(recommendations)), 200
 
 @app.route('/recommendations/<recommendationId>', methods=['PATCH'])
 @login_required
@@ -73,7 +84,7 @@ def put_recommendations():
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
-    created_recommendations = create_recommendations(needed_new_recos, user=current_user)
+    created_recommendations = create_recommendations_for_discovery(needed_new_recos, user=current_user)
 
     logger.info('(unread reco) count %i', len(unread_recos))
     logger.info('(read reco) count %i', len(read_recos))

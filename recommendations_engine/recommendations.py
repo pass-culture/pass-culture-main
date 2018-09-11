@@ -1,10 +1,10 @@
+""" recommendations """
 from datetime import datetime, timedelta
-
 from sqlalchemy import func
 
 from models import Recommendation, Offer, Mediation, PcObject
-from recommendations_engine import get_offers
-from utils.config import BLOB_SIZE
+from recommendations_engine import get_offers_for_recommendations_discovery,\
+                                   get_offers_for_recommendations_search
 from utils.logger import logger
 
 
@@ -25,7 +25,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations(limit=3, user=None, coords=None):
+def create_recommendations_for_discovery(limit=3, user=None, coords=None):
     if user and user.is_authenticated:
         recommendation_count = Recommendation.query.filter_by(user=user) \
             .count()
@@ -37,7 +37,7 @@ def create_recommendations(limit=3, user=None, coords=None):
         tuto_mediations[to.tutoIndex] = to
 
     inserted_tuto_mediations = 0
-    for (index, offer) in enumerate(get_offers(limit, user=user, coords=coords)):
+    for (index, offer) in enumerate(get_offers_for_recommendations_discovery(limit, user=user, coords=coords)):
 
         while recommendation_count + index + inserted_tuto_mediations \
                 in tuto_mediations:
@@ -112,7 +112,7 @@ def _create_recommendation(user, offer, mediation=None):
     else:
         recommendation.validUntilDate = datetime.utcnow() + timedelta(days=1)
 
-    if offer.lastStock.bookingLimitDatetime:
+    if offer.lastStock and offer.lastStock.bookingLimitDatetime:
         recommendation.validUntilDate = min(
             recommendation.validUntilDate,
             offer.lastStock.bookingLimitDatetime - timedelta(minutes=1)
@@ -120,3 +120,40 @@ def _create_recommendation(user, offer, mediation=None):
 
     PcObject.check_and_save(recommendation)
     return recommendation
+
+def create_recommendations_for_search(page=1, user=None, search=None):
+
+    offers = get_offers_for_recommendations_search(page, search)
+
+    # now check that recommendations from these filtered offers
+    # match with already built recommendations coming from the same search
+    offer_ids = [offer.id for offer in offers]
+    already_created_recommendations = Recommendation.query.filter(
+        Recommendation.userId == user.id,
+        Recommendation.offerId.in_(offer_ids),
+        Recommendation.search == search
+    )
+    offer_ids_with_already_created_recommendations = [
+        recommendation.offerId for recommendation in already_created_recommendations
+    ]
+    recommendations = []
+    recommendations_to_save = []
+    for offer in offers:
+        if offer.id in offer_ids_with_already_created_recommendations:
+            # NOTE: these arrays are mapped like:
+            # offer_ids_with_already_created_recommendations [<offerId1>, <offerId2>,...]
+            # already_created_recommendations [<reco.offerId1>, <reco.offerId2>]
+            # so we can find the matching reco given the index in the offer ids array
+            recommendation_index = offer_ids_with_already_created_recommendations.index(offer.id)
+            recommendation = already_created_recommendations[recommendation_index]
+        else:
+            recommendation = _create_recommendation(user, offer)
+            recommendation.search = search
+            recommendations_to_save.append(recommendation)
+
+        recommendations.append(recommendation)
+
+    if recommendations_to_save:
+        PcObject.check_and_save(*recommendations_to_save)
+
+    return recommendations

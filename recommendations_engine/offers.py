@@ -2,14 +2,16 @@
 from datetime import datetime
 from itertools import cycle
 from random import randint
+from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
 from repository.features import feature_paid_offers_enabled
 
 from repository.offer_queries import get_offers_by_type
-from models import Event, EventOccurrence, Offer, Thing
+from models import Event, EventOccurrence, Offer, Thing, Venue
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.logger import logger
+from utils.search import get_search_filter
 
 roundrobin_predicates = [
     lambda offer: offer.thingId,
@@ -113,7 +115,7 @@ def remove_duplicate_things_or_events(offers):
     return result
 
 
-def get_offers(limit=3, user=None, coords=None):
+def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
     if not user or not user.is_authenticated():
         return []
 
@@ -136,3 +138,16 @@ def get_offers(limit=3, user=None, coords=None):
                 len(offers))
 
     return roundrobin(offers, limit)
+
+def get_offers_for_recommendations_search(page=1, search=None):
+    offer_query = Offer.query
+    if search is not None:
+        offer_query = offer_query.outerjoin(Event)\
+                                 .outerjoin(Thing)\
+                                 .outerjoin(Venue)\
+                                 .filter(get_search_filter([Event, Thing, Venue], search))
+
+    offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
+                        .items
+
+    return offers

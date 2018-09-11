@@ -27,7 +27,7 @@ def test_11_create_venue_provider(app):
     read_json = create_json
     tries = 0
     while read_json['lastSyncDate'] is None:
-        assert tries < 10 
+        assert tries < 20 
         r_check = req_with_auth().get(API_URL + '/venueProviders/' + vp_id)
         assert r_check.status_code == 200
         read_json = r_check.json()

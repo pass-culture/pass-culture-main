@@ -257,7 +257,6 @@ def test_patch_recommendations_returns_is_clicked_true():
     assert r_update.status_code == 200
     assert r_update.json()['isClicked']
 
-
 @clean_database
 @pytest.mark.standalone
 def test_put_recommendation_does_not_return_soft_deleted_recommendation(app):
@@ -289,3 +288,21 @@ def test_put_recommendation_does_not_return_soft_deleted_recommendation(app):
     assert humanize(recommendation1.id) in recommendation_ids
     assert humanize(recommendation2.id) not in recommendation_ids
     assert humanize(recommendation3.id) in recommendation_ids
+
+
+def test_get_recommendations_returns_one_recommendation_found_from_search():
+    # get
+    response = req_with_auth().get(RECOMMENDATION_URL + '?search=Training', json={})
+    recommendations = response.json()
+
+    # then
+    assert 'Training' in recommendations[0]['offer']['eventOrThing']['name']
+    assert recommendations[0]['search'] == 'Training'
+
+    # get
+    response = req_with_auth().get(RECOMMENDATION_URL + '?search=Rencontre', json={})
+    recommendations = response.json()
+
+    # then
+    assert 'sur la route des migrants ; rencontres à Calais' in recommendations[0]['offer']['eventOrThing']['name']
+    assert recommendations[0]['search'] == 'Rencontre'

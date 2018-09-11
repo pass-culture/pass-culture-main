@@ -87,3 +87,6 @@ class Recommendation(PcObject, Model):
                      nullable=False,
                      server_default=expression.false(),
                      default=False)
+
+    search = Column(String(300),
+                    nullable=True)
