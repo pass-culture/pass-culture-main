@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
-import { withRouter, NavLink } from 'react-router-dom'
+import { withRouter, NavLink, matchPath } from 'react-router-dom'
 
 const noop = () => {}
 
@@ -18,12 +18,15 @@ const renderLinkContent = (icon, title) => (
 
 class MenuLink extends React.PureComponent {
   renderNavLink = opts => {
-    const { clickHandler, item } = this.props
+    const { clickHandler, item, location } = this.props
     const { title, disabled, icon, path } = item
+    const currentpath = location.pathname
+    const isactive = matchPath(currentpath, item)
+    const pathto = isactive ? currentpath : path
     return (
       <NavLink
-        to={path}
         key={path}
+        to={pathto}
         disabled={disabled}
         onClick={clickHandler}
         activeClassName={opts.activeClass}
