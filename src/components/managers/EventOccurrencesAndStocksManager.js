@@ -165,7 +165,8 @@ export default compose(
 
     const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
     const isNew =
-      eventOccurrenceIdOrNew === 'nouvelle' || stockIdOrNew === 'nouveau'
+      eventOccurrenceIdOrNew === 'nouvelle' ||
+      (!eventOccurrenceIdOrNew && stockIdOrNew === 'nouveau')
 
     const offerId = ownProps.match.params.offerId
     const offer = offerSelector(state, offerId)

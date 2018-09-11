@@ -224,6 +224,7 @@ class OfferPage extends Component {
     const {
       event,
       eventOccurrences,
+      hasEventOrThing,
       location: { search },
       offer,
       offerer,
@@ -283,45 +284,46 @@ class OfferPage extends Component {
                 type="select"
               />
             </div>
-            {!isNew && (
-              <div className="field">
-                <div className="field form-field is-horizontal">
-                  <div className="field-label">
-                    <label className="label" htmlFor="input_offers_name">
-                      <div className="subtitle">
-                        {isEventType ? 'Dates :' : 'Stocks :'}
+            {!isNew &&
+              hasEventOrThing && (
+                <div className="field">
+                  <div className="field form-field is-horizontal">
+                    <div className="field-label">
+                      <label className="label" htmlFor="input_offers_name">
+                        <div className="subtitle">
+                          {isEventType ? 'Dates :' : 'Stocks :'}
+                        </div>
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="nb-dates">
+                          {pluralize(
+                            get(
+                              isEventType ? eventOccurrences : stocks,
+                              'length'
+                            ),
+                            isEventType ? 'date' : 'stock'
+                          )}
+                        </div>
+                        <NavLink
+                          className="button is-primary is-outlined is-small"
+                          to={`/offres/${get(offer, 'id')}?gestion`}>
+                          <span className="icon">
+                            <Icon svg="ico-calendar" />
+                          </span>
+                          <span>
+                            {isEventType
+                              ? 'Gérer les dates et les prix'
+                              : 'Gérer les prix'}
+                          </span>
+                        </NavLink>
                       </div>
-                    </label>
-                  </div>
-                  <div className="field-body">
-                    <div className="field">
-                      <div className="nb-dates">
-                        {pluralize(
-                          get(
-                            isEventType ? eventOccurrences : stocks,
-                            'length'
-                          ),
-                          isEventType ? 'date' : 'stock'
-                        )}
-                      </div>
-                      <NavLink
-                        className="button is-primary is-outlined is-small"
-                        to={`/offres/${get(offer, 'id')}?gestion`}>
-                        <span className="icon">
-                          <Icon svg="ico-calendar" />
-                        </span>
-                        <span>
-                          {isEventType
-                            ? 'Gérer les dates et les prix'
-                            : 'Gérer les prix'}
-                        </span>
-                      </NavLink>
                     </div>
                   </div>
+                  <MediationManager />
                 </div>
-                <MediationManager />
-              </div>
-            )}
+              )}
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
