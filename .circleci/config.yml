@@ -21,6 +21,15 @@ jobs:
       - checkout:
           path: ~/pass-culture-main/webapp
       - run:
+          name: Running Unit Tests
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/webapp
+            yarn install
+            yarn test
+      - run:
           name: Install dockerize
           command: |
             wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
@@ -41,7 +50,6 @@ jobs:
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
-            yarn install
             yarn start
           background: true
 
@@ -54,3 +62,52 @@ jobs:
             cd ~/pass-culture-main/webapp
             dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
             yarn testcafe
+
+  deploy:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:8.11.4-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run:
+          name: Install dependencies
+          command: |
+            yarn install
+            sudo npm install -g netlify-cli
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Build package to deploy
+          # TODO: remove export CI, when no warning found during yarn build
+          command: |
+            export API_URL=$BUILD_API_URL
+            export NODE_ENV=$BUILD_NODE_ENV
+            export THUMBS_URL=$BUILD_THUMBS_URL
+            export CI=false
+            yarn build
+      - run:
+          name: Deploy to Netlify
+          command:
+            netlify deploy -e testing -t "$NETLIFY_ACCESS_TOKEN" -p ./build
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
