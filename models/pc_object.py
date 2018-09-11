@@ -283,7 +283,8 @@ class PcObject():
         # CUMULATE ERRORS IN ONE SINGLE API ERRORS DURING ADD TIME
         api_errors = ApiErrors()
         for obj in objects:
-            obj_api_errors = obj.errors()
+            with db.session.no_autoflush:
+                obj_api_errors = obj.errors()
             if obj_api_errors.errors.keys():
                 api_errors.errors.update(obj_api_errors.errors)
             else:
