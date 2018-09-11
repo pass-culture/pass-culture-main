@@ -14,9 +14,9 @@ LOG_LEVEL = int(os.environ.get('LOG_LEVEL', LOG_LEVEL_INFO))
 if IS_DEV:
     API_URL = 'localhost'
 elif IS_STAGING:
-    API_URL = 'https://api.passculture-staging.beta.gouv.fr'
+    API_URL = 'https://backend.passculture-staging.beta.gouv.fr'
 else:
-    API_URL = 'https://api.passculture.beta.gouv.fr'
+    API_URL = 'https://backend.passculture.beta.gouv.fr'
 
 BLOB_SIZE = 80
 BLOB_UNREAD_NUMBER = int(BLOB_SIZE/5)
