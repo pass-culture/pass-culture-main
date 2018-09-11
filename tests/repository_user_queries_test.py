@@ -3,7 +3,8 @@ from datetime import datetime
 import pytest
 
 from models import PcObject
-from repository.booking_queries import find_bookings_stats_per_department
+from models.db import db
+from repository.stats_queries import find_bookings_stats_per_department
 from repository.user_queries import find_users_by_department_and_date_range, \
     find_users_stats_per_department
 from tests.conftest import clean_database
