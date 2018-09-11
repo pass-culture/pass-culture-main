@@ -40,24 +40,25 @@ export function queryStringToObject(string = '') {
     .split('&')
     .filter(el => el)
     .reduce((result, group) => {
-      let [key, value] = group.split('=')
+      let objectkey = null
+      const [key, value] = group.split('=')
       switch (key) {
         case 'date':
-          key = 'eventOccurrenceIdOrNew'
+          objectkey = 'eventOccurrenceIdOrNew'
           break
         case 'stock':
-          key = 'stockIdOrNew'
+          objectkey = 'stockIdOrNew'
           break
         case 'lieu':
-          key = 'venueId'
+          objectkey = 'venueId'
           break
         case 'structure':
-          key = 'offererId'
+          objectkey = 'offererId'
           break
         default:
           break
       }
-      return Object.assign({}, result, { [key]: value })
+      return Object.assign({}, result, { [objectkey]: value })
     }, {})
 }
 
