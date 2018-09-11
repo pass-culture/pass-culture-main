@@ -1,11 +1,11 @@
 import createCachedSelector from 're-reselect'
 
-import occurrencesSelector from './occurrences'
+import eventOccurrencesSelector from './eventOccurrences'
 
 export default createCachedSelector(
-  (state, offerId) => occurrencesSelector(state, offerId),
-  occurrences => {
-    return occurrences.reduce(
+  (state, offerId) => eventOccurrencesSelector(state, offerId),
+  eventOccurrences => {
+    return eventOccurrences.reduce(
       (max, d) =>
         max && max.isAfter(d.beginningDatetimeMoment)
           ? max

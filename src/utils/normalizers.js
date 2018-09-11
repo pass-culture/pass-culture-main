@@ -13,6 +13,7 @@ export const offerNormalizer = {
   },
   eventOccurrences: 'eventOccurrences',
   mediations: 'mediations',
+  stocks: 'stocks',
   thing: {
     key: 'things',
     normalizer: thingNormalizer,

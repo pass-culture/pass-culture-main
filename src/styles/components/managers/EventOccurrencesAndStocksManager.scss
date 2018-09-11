@@ -6,6 +6,15 @@
     overflow-y: auto;
 
     table.event-occurrences-and-stocks-table {
+      &.small {
+        margin: 5rem;
+        td {
+          input {
+            width: 50%;
+          }
+        }
+      }
+
       // width: 80vw;
       thead,
       tbody {

@@ -21,7 +21,7 @@ import Main from '../layout/Main'
 import MediationManager from '../managers/MediationManager'
 import EventOccurrencesAndStocksManager from '../managers/EventOccurrencesAndStocksManager'
 import eventSelector from '../../selectors/event'
-import occurrencesSelector from '../../selectors/occurrences'
+import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
@@ -126,7 +126,6 @@ class OfferPage extends Component {
   handleSuccess = (state, action) => {
     const { data, method } = action
     const { dispatch, history, offer, venue } = this.props
-    const { isEventType } = this.state
 
     dispatch(
       showNotification({
@@ -157,11 +156,13 @@ class OfferPage extends Component {
 
   handleShowManagerModal = () => {
     const {
+      hasEventOrThing,
       dispatch,
       location: { search },
     } = this.props
     search.indexOf('gestion') > -1
-      ? dispatch(
+      ? hasEventOrThing &&
+        dispatch(
           showModal(<EventOccurrencesAndStocksManager />, {
             isUnclosable: true,
           })
@@ -175,11 +176,12 @@ class OfferPage extends Component {
 
   componentDidUpdate(prevProps) {
     const {
+      eventOccurrences,
       dispatch,
+      hasEventOrThing,
       location: { pathname, search },
       offer,
       offerer,
-      occurrences,
       type,
       venue,
       venues,
@@ -188,9 +190,10 @@ class OfferPage extends Component {
     if (search.indexOf('gestion') > -1) {
       if (
         prevProps.offer !== offer ||
-        prevProps.occurrences !== occurrences ||
+        prevProps.eventOccurrences !== eventOccurrences ||
         prevProps.location.pathname !== pathname ||
-        prevProps.location.search !== search
+        prevProps.location.search !== search ||
+        (hasEventOrThing && !prevProps.hasEventOrThing)
       ) {
         this.handleShowManagerModal()
       }
@@ -220,8 +223,8 @@ class OfferPage extends Component {
   render() {
     const {
       event,
+      eventOccurrences,
       location: { search },
-      occurrences,
       offer,
       offerer,
       offerers,
@@ -294,7 +297,10 @@ class OfferPage extends Component {
                     <div className="field">
                       <div className="nb-dates">
                         {pluralize(
-                          get(isEventType ? occurrences : stocks, 'length'),
+                          get(
+                            isEventType ? eventOccurrences : stocks,
+                            'length'
+                          ),
                           isEventType ? 'date' : 'stock'
                         )}
                       </div>
@@ -482,7 +488,7 @@ export default compose(
     const offerers = offerersSelector(state)
     const offerer = offererSelector(state, offererId)
 
-    const occurrences = occurrencesSelector(state, offerId)
+    const eventOccurrences = eventOccurrencesSelector(state, offerId)
 
     const stocks = stocksSelector(state, offerId)
 
@@ -491,22 +497,25 @@ export default compose(
 
     const user = state.user
 
+    const hasEventOrThing = event || thing
+
     return {
-      search,
-      providers,
       event,
+      eventOccurrences,
+      hasEventOrThing,
+      providers,
+      search,
       thing,
-      occurrences,
       offer,
-      venues,
-      venue,
-      offerers,
       offerer,
+      offerers,
       stocks,
       types,
       type,
-      user,
       url,
+      user,
+      venue,
+      venues,
     }
   })
 )(OfferPage)

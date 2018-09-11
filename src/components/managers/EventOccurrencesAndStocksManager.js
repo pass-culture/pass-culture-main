@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import { closeModal } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
@@ -8,12 +9,13 @@ import { compose } from 'redux'
 
 import EventOccurrenceAndStockItem from '../items/EventOccurrenceAndStockItem'
 import eventSelector from '../../selectors/event'
+import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import occurrenceErrorsSelector from '../../selectors/occurrenceErrors'
-import occurrencesSelector from '../../selectors/occurrences'
 import offerSelector from '../../selectors/offer'
 import searchSelector from '../../selectors/search'
 import thingSelector from '../../selectors/thing'
 import providerSelector from '../../selectors/provider'
+import stocksSelector from '../../selectors/stocks'
 
 class EventOccurrencesAndStocksManager extends Component {
   onCloseClick = e => {
@@ -26,12 +28,13 @@ class EventOccurrencesAndStocksManager extends Component {
     const {
       errors,
       event,
+      eventOccurrences,
       isEditing,
       isNew,
       location,
       provider,
       offer,
-      occurrences,
+      stocks,
       thing,
     } = this.props
     const isStockOnly = typeof get(thing, 'id') !== 'undefined'
@@ -56,7 +59,11 @@ class EventOccurrencesAndStocksManager extends Component {
             {get(event, 'id') && 'Dates, horaires et prix'}
             {get(thing, 'id') && 'Prix'}
           </div>
-          <table className="table is-hoverable event-occurrences-and-stocks-table">
+          <table
+            className={classnames(
+              'table is-hoverable event-occurrences-and-stocks-table',
+              { small: isStockOnly }
+            )}>
             <thead>
               <tr>
                 {!isStockOnly && (
@@ -67,7 +74,7 @@ class EventOccurrencesAndStocksManager extends Component {
                   </Fragment>
                 )}
                 <td>Prix</td>
-                <td>Date Limite de Réservation</td>
+                {!isStockOnly && <td>Date Limite de Réservation</td>}
                 <td>Places (total)</td>
                 <td>Supprimer</td>
                 <td>Modifier</td>
@@ -111,16 +118,16 @@ class EventOccurrencesAndStocksManager extends Component {
                   isStockOnly={isStockOnly}
                 />
               )}
-              {occurrences.map(o => (
+              {(isStockOnly ? stocks : eventOccurrences).map(item => (
                 <EventOccurrenceAndStockItem
-                  key={o.id}
+                  key={item.id}
                   isFullyEditable={!provider}
                   isStockOnly={isStockOnly}
-                  occurrence={o}
+                  {...{ [isStockOnly ? 'stock' : 'eventOccurrence']: item }}
                 />
               ))}
             </tbody>
-            {occurrences.length > 12 && (
+            {eventOccurrences.length > 12 && (
               <thead>
                 <tr>
                   {!isStockOnly && (
@@ -131,7 +138,7 @@ class EventOccurrencesAndStocksManager extends Component {
                     </Fragment>
                   )}
                   <td>Prix</td>
-                  <td>Date Limite de Réservation</td>
+                  {!isStockOnly && <td>Date Limite de Réservation</td>}
                   <td>Places (total)</td>
                   <td>Supprimer</td>
                   <td>Modifier</td>
@@ -155,15 +162,17 @@ export default compose(
   connect((state, ownProps) => {
     const search = searchSelector(state, ownProps.location.search)
     const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
+
     const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
     const isNew =
       eventOccurrenceIdOrNew === 'nouvelle' || stockIdOrNew === 'nouveau'
 
-    const offer = offerSelector(state, ownProps.match.params.offerId)
+    const offerId = ownProps.match.params.offerId
+    const offer = offerSelector(state, offerId)
 
     const eventId = get(offer, 'eventId')
     const event = eventSelector(state, eventId)
-    const occurrences = occurrencesSelector(
+    const eventOccurrences = eventOccurrencesSelector(
       state,
       ownProps.match.params.offerId
     )
@@ -171,17 +180,21 @@ export default compose(
     const thingId = get(offer, 'thingId')
     const thing = thingSelector(state, thingId)
 
+    const stocks = stocksSelector(state, offerId)
+    console.log('stocks', stocks)
+
     const errors = occurrenceErrorsSelector(state)
 
     return {
       errors,
       event,
       eventOccurrenceIdOrNew,
+      eventOccurrences,
       isEditing,
       isNew,
-      occurrences,
       offer,
       provider: providerSelector(state, get(event, 'lastProviderId')),
+      stocks,
       thing,
     }
   })
