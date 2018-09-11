@@ -26,8 +26,8 @@ class EventOccurrencesAndStocksManager extends Component {
     const {
       errors,
       event,
-      eventOccurrenceIdOrNew,
       isEditing,
+      isNew,
       location,
       provider,
       offer,
@@ -37,7 +37,7 @@ class EventOccurrencesAndStocksManager extends Component {
     const isStockOnly = typeof get(thing, 'id') !== 'undefined'
 
     return (
-      <div className="occurrence-manager">
+      <div className="event-occurrences-and-stocks-manager">
         {errors && (
           <div className="notification is-danger">
             {Object.keys(errors).map(key => (
@@ -48,7 +48,7 @@ class EventOccurrencesAndStocksManager extends Component {
             ))}
           </div>
         )}
-        <div className="occurrence-table-wrapper">
+        <div className="event-occurrences-and-stocks-table-wrapper">
           <div className="subtitle has-text-weight-bold has-text-left is-uppercase">
             {get(event, 'name')}
           </div>
@@ -56,7 +56,7 @@ class EventOccurrencesAndStocksManager extends Component {
             {get(event, 'id') && 'Dates, horaires et prix'}
             {get(thing, 'id') && 'Prix'}
           </div>
-          <table className="table is-hoverable occurrence-table">
+          <table className="table is-hoverable event-occurrences-and-stocks-table">
             <thead>
               <tr>
                 {!isStockOnly && (
@@ -105,7 +105,7 @@ class EventOccurrencesAndStocksManager extends Component {
                   )}
                 </td>
               </tr>
-              {eventOccurrenceIdOrNew === 'nouvelle' && (
+              {isNew && (
                 <EventOccurrenceAndStockItem
                   isFullyEditable={!provider}
                   isStockOnly={isStockOnly}
@@ -156,6 +156,8 @@ export default compose(
     const search = searchSelector(state, ownProps.location.search)
     const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
     const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
+    const isNew =
+      eventOccurrenceIdOrNew === 'nouvelle' || stockIdOrNew === 'nouveau'
 
     const offer = offerSelector(state, ownProps.match.params.offerId)
 
@@ -176,6 +178,7 @@ export default compose(
       event,
       eventOccurrenceIdOrNew,
       isEditing,
+      isNew,
       occurrences,
       offer,
       provider: providerSelector(state, get(event, 'lastProviderId')),

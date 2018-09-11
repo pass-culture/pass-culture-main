@@ -202,7 +202,7 @@ class EventOccurrenceAndStockItem extends Component {
     return (
       <Fragment>
         <tr
-          className={classnames('occurrence-item', {
+          className={classnames('event-occurrences-and-stocks-item', {
             'with-confirm': isDeleting,
           })}>
           <Form
@@ -425,6 +425,13 @@ export default compose(
       (stockIdOrNew !== 'nouveau' && stockId !== stockIdOrNew)
 
     const isEditing = !isEventOccurrenceReadOnly || !isStockReadOnly
+
+    console.log(
+      'isStockReadOnly',
+      isStockReadOnly,
+      'isEventOccurrenceReadOnly',
+      isEventOccurrenceReadOnly
+    )
 
     return {
       event: eventSelector(state, eventId),
