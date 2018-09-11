@@ -103,9 +103,15 @@ class LostPasswordPage extends Component {
                         type="password"
                         value="lolilol"
                       />
-                      <div className="errors">{errors}</div>
+                      <div className="errors">
+                        {Object.keys(errors).map(field => (
+                          <div key={field}>{errors[field].join(' ')}</div>
+                        ))}
+                      </div>
                       <div className="field buttons-field">
-                        <SubmitButton className="button is-primary is-outlined">
+                        <SubmitButton
+                          id="changePassword"
+                          className="button is-primary is-outlined">
                           Envoyer
                         </SubmitButton>
                       </div>
@@ -148,9 +154,11 @@ class LostPasswordPage extends Component {
                           required
                           type="email"
                         />
-                        <div className="errors">{errors}</div>
+
                         <div className="field buttons-field">
-                          <SubmitButton className="button is-primary is-outlined">
+                          <SubmitButton
+                            id="sendTokenByMail"
+                            className="button is-primary is-outlined">
                             Envoyer
                           </SubmitButton>
                         </div>
@@ -170,4 +178,8 @@ const mapDispatchToProps = {
   mergeForm,
 }
 
-export default connect(null, mapDispatchToProps)(LostPasswordPage)
+const mapStateToProps = state => ({
+  errors: state.errors.user || [],
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(LostPasswordPage)

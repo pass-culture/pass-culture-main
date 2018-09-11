@@ -58,7 +58,9 @@ const SigninPage = ({ errors }) => {
                       type="password"
                     />
                     <span>
-                      <Link to="/mot-de-passe-perdu">Mot de passe égaré ?</Link>
+                      <Link to="/mot-de-passe-perdu" id="lostPasswordLink">
+                        Mot de passe égaré ?
+                      </Link>
                     </span>
                   </div>
                   <div className="errors">{errors}</div>
