@@ -48,7 +48,7 @@ const routes = [
   },
   {
     component: SearchPage,
-    disabled: false,
+    disabled: true,
     icon: 'search-w',
     path: '/recherche',
     title: 'Recherche',
@@ -62,14 +62,14 @@ const routes = [
   },
   {
     component: FavoritesPage,
-    disabled: false,
+    disabled: true,
     icon: 'like-w',
     path: '/favoris',
     title: 'Mes Préférés',
   },
   {
     component: ProfilePage,
-    disabled: false,
+    disabled: true,
     icon: 'user-w',
     path: '/profil',
     title: 'Mon Profil',
