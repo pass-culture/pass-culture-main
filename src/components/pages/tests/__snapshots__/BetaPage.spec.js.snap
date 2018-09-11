@@ -2,15 +2,15 @@
 
 exports[`src | components | pages | BetaPage snapshot should match snapshot 1`] = `
 ShallowWrapper {
-  "length": 1,
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BetaPage
     errors={Object {}}
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "getNode": [Function],
     "render": [Function],
+    "simulateError": [Function],
     "simulateEvent": [Function],
     "unmount": [Function],
   },
@@ -23,50 +23,50 @@ ShallowWrapper {
         <main
           className="application-main flex-rows flex-around items-center"
           role="main"
->
+        >
           <h1
-                    className="has-text-centered"
+            className="has-text-centered"
           >
-                    <i
-                              className="is-block"
-                    >
-                              Bienvenue dans la version beta
-                    </i>
-                    <i
-                              className="is-block"
-                    >
-                              du Pass Culture
-                    </i>
+            <i
+              className="is-block"
+            >
+              Bienvenue dans la version beta
+            </i>
+            <i
+              className="is-block"
+            >
+              du Pass Culture
+            </i>
           </h1>
           <p
-                    className="has-text-centered"
+            className="has-text-centered"
           >
-                    <i>
-                              Et merci de votre participation pour nous aider à l'améliorer !
-                    </i>
+            <i>
+              Et merci de votre participation pour nous aider à l'améliorer !
+            </i>
           </p>
-</main>,
+        </main>,
         <footer
           className="application-footer dotted-top flex-columns items-center flex-end flex-0"
           role="navigation"
->
+        >
           <Link
-                    className="flex-center items-center"
-                    replace={false}
-                    to="/inscription"
+            className="flex-center items-center"
+            replace={false}
+            to="/inscription"
           >
-                    <i>
-                              C'est par là
-                    </i>
-                    <span
-                              aria-hidden="true"
-                              className="icon-next"
-                              title="C'est par là"
-                    />
+            <i>
+              C'est par là
+            </i>
+            <span
+              aria-hidden="true"
+              className="icon-next"
+              title="C'est par là"
+            />
           </Link>
-</footer>,
+        </footer>,
       ],
-      "className": "page flex-rows",
+      "className": "pc-gradient page flex-rows",
       "id": "beta-page",
     },
     "ref": null,
@@ -79,25 +79,25 @@ ShallowWrapper {
           "children": Array [
             <h1
               className="has-text-centered"
->
+            >
               <i
-                            className="is-block"
+                className="is-block"
               >
-                            Bienvenue dans la version beta
+                Bienvenue dans la version beta
               </i>
               <i
-                            className="is-block"
+                className="is-block"
               >
-                            du Pass Culture
+                du Pass Culture
               </i>
-</h1>,
+            </h1>,
             <p
               className="has-text-centered"
->
+            >
               <i>
-                            Et merci de votre participation pour nous aider à l'améliorer !
+                Et merci de votre participation pour nous aider à l'améliorer !
               </i>
-</p>,
+            </p>,
           ],
           "className": "application-main flex-rows flex-around items-center",
           "role": "main",
@@ -112,14 +112,14 @@ ShallowWrapper {
               "children": Array [
                 <i
                   className="is-block"
->
+                >
                   Bienvenue dans la version beta
-</i>,
+                </i>,
                 <i
                   className="is-block"
->
+                >
                   du Pass Culture
-</i>,
+                </i>,
               ],
               "className": "has-text-centered",
             },
@@ -159,7 +159,7 @@ ShallowWrapper {
             "props": Object {
               "children": <i>
                 Et merci de votre participation pour nous aider à l'améliorer !
-</i>,
+              </i>,
               "className": "has-text-centered",
             },
             "ref": null,
@@ -188,16 +188,16 @@ ShallowWrapper {
             className="flex-center items-center"
             replace={false}
             to="/inscription"
->
+          >
             <i>
-                        C'est par là
+              C'est par là
             </i>
             <span
-                        aria-hidden="true"
-                        className="icon-next"
-                        title="C'est par là"
+              aria-hidden="true"
+              className="icon-next"
+              title="C'est par là"
             />
-</Link>,
+          </Link>,
           "className": "application-footer dotted-top flex-columns items-center flex-end flex-0",
           "role": "navigation",
         },
@@ -210,12 +210,12 @@ ShallowWrapper {
             "children": Array [
               <i>
                 C'est par là
-</i>,
+              </i>,
               <span
                 aria-hidden="true"
                 className="icon-next"
                 title="C'est par là"
-/>,
+              />,
             ],
             "className": "flex-center items-center",
             "replace": false,
@@ -265,50 +265,50 @@ ShallowWrapper {
           <main
             className="application-main flex-rows flex-around items-center"
             role="main"
->
+          >
             <h1
-                        className="has-text-centered"
+              className="has-text-centered"
             >
-                        <i
-                                    className="is-block"
-                        >
-                                    Bienvenue dans la version beta
-                        </i>
-                        <i
-                                    className="is-block"
-                        >
-                                    du Pass Culture
-                        </i>
+              <i
+                className="is-block"
+              >
+                Bienvenue dans la version beta
+              </i>
+              <i
+                className="is-block"
+              >
+                du Pass Culture
+              </i>
             </h1>
             <p
-                        className="has-text-centered"
+              className="has-text-centered"
             >
-                        <i>
-                                    Et merci de votre participation pour nous aider à l'améliorer !
-                        </i>
+              <i>
+                Et merci de votre participation pour nous aider à l'améliorer !
+              </i>
             </p>
-</main>,
+          </main>,
           <footer
             className="application-footer dotted-top flex-columns items-center flex-end flex-0"
             role="navigation"
->
+          >
             <Link
-                        className="flex-center items-center"
-                        replace={false}
-                        to="/inscription"
+              className="flex-center items-center"
+              replace={false}
+              to="/inscription"
             >
-                        <i>
-                                    C'est par là
-                        </i>
-                        <span
-                                    aria-hidden="true"
-                                    className="icon-next"
-                                    title="C'est par là"
-                        />
+              <i>
+                C'est par là
+              </i>
+              <span
+                aria-hidden="true"
+                className="icon-next"
+                title="C'est par là"
+              />
             </Link>
-</footer>,
+          </footer>,
         ],
-        "className": "page flex-rows",
+        "className": "pc-gradient page flex-rows",
         "id": "beta-page",
       },
       "ref": null,
@@ -321,25 +321,25 @@ ShallowWrapper {
             "children": Array [
               <h1
                 className="has-text-centered"
->
+              >
                 <i
-                                className="is-block"
+                  className="is-block"
                 >
-                                Bienvenue dans la version beta
+                  Bienvenue dans la version beta
                 </i>
                 <i
-                                className="is-block"
+                  className="is-block"
                 >
-                                du Pass Culture
+                  du Pass Culture
                 </i>
-</h1>,
+              </h1>,
               <p
                 className="has-text-centered"
->
+              >
                 <i>
-                                Et merci de votre participation pour nous aider à l'améliorer !
+                  Et merci de votre participation pour nous aider à l'améliorer !
                 </i>
-</p>,
+              </p>,
             ],
             "className": "application-main flex-rows flex-around items-center",
             "role": "main",
@@ -354,14 +354,14 @@ ShallowWrapper {
                 "children": Array [
                   <i
                     className="is-block"
->
+                  >
                     Bienvenue dans la version beta
-</i>,
+                  </i>,
                   <i
                     className="is-block"
->
+                  >
                     du Pass Culture
-</i>,
+                  </i>,
                 ],
                 "className": "has-text-centered",
               },
@@ -401,7 +401,7 @@ ShallowWrapper {
               "props": Object {
                 "children": <i>
                   Et merci de votre participation pour nous aider à l'améliorer !
-</i>,
+                </i>,
                 "className": "has-text-centered",
               },
               "ref": null,
@@ -430,16 +430,16 @@ ShallowWrapper {
               className="flex-center items-center"
               replace={false}
               to="/inscription"
->
+            >
               <i>
-                            C'est par là
+                C'est par là
               </i>
               <span
-                            aria-hidden="true"
-                            className="icon-next"
-                            title="C'est par là"
+                aria-hidden="true"
+                className="icon-next"
+                title="C'est par là"
               />
-</Link>,
+            </Link>,
             "className": "application-footer dotted-top flex-columns items-center flex-end flex-0",
             "role": "navigation",
           },
@@ -452,12 +452,12 @@ ShallowWrapper {
               "children": Array [
                 <i>
                   C'est par là
-</i>,
+                </i>,
                 <span
                   aria-hidden="true"
                   className="icon-next"
                   title="C'est par là"
-/>,
+                />,
               ],
               "className": "flex-center items-center",
               "replace": false,
@@ -502,8 +502,20 @@ ShallowWrapper {
     "adapter": ReactSixteenAdapter {
       "options": Object {
         "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
       },
     },
+    "attachTo": undefined,
+    "hydrateIn": undefined,
   },
 }
 `;
