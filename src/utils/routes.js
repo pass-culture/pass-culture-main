@@ -47,6 +47,13 @@ const routes = [
     title: 'Les offres',
   },
   {
+    component: SearchPage,
+    disabled: false,
+    icon: 'search-w',
+    path: '/recherche',
+    title: 'Recherche',
+  },
+  {
     component: BookingsPage,
     disabled: false,
     icon: 'calendar-w',
@@ -72,18 +79,6 @@ const routes = [
     href: 'mailto:pass@culture.gouv.fr',
     icon: 'mail-w',
     title: 'Nous contacter',
-  },
-  {
-    component: SearchPage,
-    disabled: false,
-    icon: 'search-w',
-    path: '/recherche',
-    title: 'Recherche',
-  },
-  {
-    component: BookingsPage,
-    path: '/reservations',
-    title: 'Réservations',
   },
   {
     component: TermsPage,
