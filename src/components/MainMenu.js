@@ -81,7 +81,6 @@ Déconnexion
 
   renderMenuHeader = () => {
     const { user } = this.props
-    const wallet = user ? user.wallet_balance : '--'
     const avatar = `${ROOT_PATH}/icons/avatar-default-w-XL.svg`
     return (
       <React.Fragment>
@@ -103,7 +102,7 @@ Mon Pass
           </p>
           <p>
             <strong>
-              {`${wallet}€`}
+              {'--€'}
             </strong>
           </p>
         </div>
