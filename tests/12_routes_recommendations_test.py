@@ -2,16 +2,10 @@
 from collections import Counter
 from datetime import datetime
 
-import pytest
 from dateutil.parser import parse as parse_date
 
-from models import PcObject
-from tests.conftest import clean_database
 from utils.config import BLOB_SIZE
-from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth, create_offerer, create_venue, create_event_offer, create_user, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_thing_offer, create_stock_from_offer, \
-    create_recommendation
+from utils.test_utils import API_URL, req_with_auth
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
@@ -247,53 +241,3 @@ def test_patch_recommendations_returns_is_clicked_true():
     # then
     assert r_update.status_code == 200
     assert r_update.json()['isClicked']
-
-@clean_database
-@pytest.mark.standalone
-def test_put_recommendation_does_not_return_soft_deleted_recommendation(app):
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue)
-    user = create_user(email='test@email.com', password='P@55w0rd')
-    event_occurrence1 = create_event_occurrence(offer)
-    event_occurrence2 = create_event_occurrence(offer)
-    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence1)
-    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence2)
-    thing_offer1 = create_thing_offer(venue)
-    thing_offer2 = create_thing_offer(venue)
-    stock3 = create_stock_from_offer(offerer, thing_offer1)
-    stock4 = create_stock_from_offer(offerer, thing_offer2)
-    stock1.isSoftDeleted = True
-    stock3.isSoftDeleted = True
-    recommendation1 = create_recommendation(offer, user)
-    recommendation2 = create_recommendation(thing_offer1, user)
-    recommendation3 = create_recommendation(thing_offer2, user)
-    PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
-
-    # When
-    response = req_with_auth('test@email.com', 'P@55w0rd').put(RECOMMENDATION_URL, json={})
-
-    # Then
-    recommendation_ids = [r['id'] for r in (response.json())]
-    assert humanize(recommendation1.id) in recommendation_ids
-    assert humanize(recommendation2.id) not in recommendation_ids
-    assert humanize(recommendation3.id) in recommendation_ids
-
-
-def test_get_recommendations_returns_one_recommendation_found_from_search():
-    # get
-    response = req_with_auth().get(RECOMMENDATION_URL + '?search=Training', json={})
-    recommendations = response.json()
-
-    # then
-    assert 'Training' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0]['search'] == 'Training'
-
-    # get
-    response = req_with_auth().get(RECOMMENDATION_URL + '?search=Rencontre', json={})
-    recommendations = response.json()
-
-    # then
-    assert 'sur la route des migrants ; rencontres à Calais' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0]['search'] == 'Rencontre'

@@ -276,21 +276,23 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
     return stock
 
 
-def create_stock_from_event_occurrence(offerer, event_occurrence, price=10, available=10):
+def create_stock_from_event_occurrence(offerer, event_occurrence, price=10, available=10, soft_deleted=False):
     stock = Stock()
     stock.offerer = offerer
     stock.eventOccurrence = event_occurrence
     stock.price = price
     stock.available = available
+    stock.isSoftDeleted = soft_deleted
     return stock
 
 
-def create_stock_from_offer(offerer, offer, price=10, available=10):
+def create_stock_from_offer(offerer, offer, price=10, available=10, soft_deleted=False):
     stock = Stock()
     stock.offerer = offerer
     stock.offer = offer
     stock.price = price
     stock.available = available
+    stock.isSoftDeleted = soft_deleted
     return stock
 
 
@@ -418,13 +420,15 @@ def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
     return user_offerer
 
 
-def create_recommendation(offer=None, user=None, id=None, date_read=None, valid_until_date=datetime.utcnow() + timedelta(days=7)):
+def create_recommendation(offer=None, user=None, id=None, date_read=None,
+                          valid_until_date=datetime.utcnow() + timedelta(days=7), search=None):
     recommendation = Recommendation()
     recommendation.id = id
     recommendation.offer = offer
     recommendation.user = user
     recommendation.dateRead = date_read
     recommendation.validUntilDate = valid_until_date
+    recommendation.search = search
     return recommendation
 
 

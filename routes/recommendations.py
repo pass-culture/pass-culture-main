@@ -25,11 +25,10 @@ from utils.rest import expect_json_data
 @app.route('/recommendations', methods=['GET'])
 @login_required
 def list_recommendations():
-
     recommendations = create_recommendations_for_search(
-        request.args.get('page', 1),
         current_user,
-        request.args.get('search')
+        page=request.args.get('page', 1),
+        search=request.args.get('search')
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200

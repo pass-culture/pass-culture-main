@@ -3,8 +3,9 @@ from datetime import datetime, timedelta
 from sqlalchemy import func
 
 from models import Recommendation, Offer, Mediation, PcObject
-from recommendations_engine import get_offers_for_recommendations_discovery,\
-                                   get_offers_for_recommendations_search
+from recommendations_engine import get_offers_for_recommendations_discovery
+from repository.offer_queries import get_offers_for_recommendations_search
+from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search_term
 from utils.logger import logger
 
 
@@ -65,7 +66,7 @@ def _find_recommendation(offer_id, mediation_id):
     logger.info('Requested Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
     query = Recommendation.query
     if offer_id:
-        query=query.join(Offer)
+        query = query.join(Offer)
     mediation = Mediation.query.filter_by(id=mediation_id).first()
     offer = Offer.query.filter_by(id=offer_id).first()
 
@@ -79,7 +80,7 @@ def _find_recommendation(offer_id, mediation_id):
 
     if offer_id:
         if offer is None:
-            logger.info('Offer not found for offer_id=%s' % (offer_id, ))
+            logger.info('Offer not found for offer_id=%s' % (offer_id,))
             raise RecommendationNotFoundException()
 
         query = query.filter(Offer.id == offer_id)
@@ -101,9 +102,9 @@ def _create_recommendation(user, offer, mediation=None):
     if mediation:
         recommendation.mediation = mediation
     else:
-        mediation = Mediation.query\
-            .filter(Mediation.offer == offer)\
-            .order_by(func.random())\
+        mediation = Mediation.query \
+            .filter(Mediation.offer == offer) \
+            .order_by(func.random()) \
             .first()
         recommendation.mediation = mediation
 
@@ -121,31 +122,19 @@ def _create_recommendation(user, offer, mediation=None):
     PcObject.check_and_save(recommendation)
     return recommendation
 
-def create_recommendations_for_search(page=1, user=None, search=None):
 
+def create_recommendations_for_search(user, page=1, search=None):
     offers = get_offers_for_recommendations_search(page, search)
-
-    # now check that recommendations from these filtered offers
-    # match with already built recommendations coming from the same search
     offer_ids = [offer.id for offer in offers]
-    already_created_recommendations = Recommendation.query.filter(
-        Recommendation.userId == user.id,
-        Recommendation.offerId.in_(offer_ids),
-        Recommendation.search == search
-    )
-    offer_ids_with_already_created_recommendations = [
-        recommendation.offerId for recommendation in already_created_recommendations
-    ]
+    existing_recommendations = find_recommendations_for_user_matching_offers_and_search_term(user.id, offer_ids, search)
+    offer_ids_with_already_created_recommendations = [reco.offerId for reco in existing_recommendations]
     recommendations = []
     recommendations_to_save = []
+
     for offer in offers:
         if offer.id in offer_ids_with_already_created_recommendations:
-            # NOTE: these arrays are mapped like:
-            # offer_ids_with_already_created_recommendations [<offerId1>, <offerId2>,...]
-            # already_created_recommendations [<reco.offerId1>, <reco.offerId2>]
-            # so we can find the matching reco given the index in the offer ids array
             recommendation_index = offer_ids_with_already_created_recommendations.index(offer.id)
-            recommendation = already_created_recommendations[recommendation_index]
+            recommendation = existing_recommendations[recommendation_index]
         else:
             recommendation = _create_recommendation(user, offer)
             recommendation.search = search

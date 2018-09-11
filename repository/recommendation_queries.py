@@ -37,7 +37,7 @@ def find_all_unread_recommendations(user, seen_recommendation_ids, limit=BLOB_SI
 
 
 def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
-    return filter_out_recommendation_on_soft_deleted_stocks()\
+    return filter_out_recommendation_on_soft_deleted_stocks() \
         .outerjoin(Mediation) \
         .filter((Recommendation.user == user)
                 & ~Recommendation.id.in_(seen_recommendation_ids)
@@ -47,6 +47,14 @@ def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE
         .filter(Recommendation.dateRead != None) \
         .order_by(func.random()) \
         .limit(limit) \
+        .all()
+
+
+def find_recommendations_for_user_matching_offers_and_search_term(user_id, offer_ids, search):
+    return filter_out_recommendation_on_soft_deleted_stocks() \
+        .filter(Recommendation.userId == user_id) \
+        .filter(Recommendation.offerId.in_(offer_ids)) \
+        .filter(Recommendation.search == search) \
         .all()
 
 
