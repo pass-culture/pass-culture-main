@@ -5,6 +5,7 @@ import {
   Field,
   Form,
   Icon,
+  mergeForm,
   requestData,
   showModal,
   showNotification,
@@ -40,6 +41,7 @@ class OfferPage extends Component {
     this.state = {
       isNew: false,
       isEventType: false,
+      isOffererAndVenueSelectsReadOnly: true,
       isReadOnly: true,
     }
   }
@@ -52,6 +54,7 @@ class OfferPage extends Component {
       },
       offer,
       type,
+      venue,
     } = nextProps
     const { eventId, thingId } = offer || {}
 
@@ -74,56 +77,63 @@ class OfferPage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      history,
+      dispatch,
       match: {
         params: { offerId },
       },
-      history,
       offer,
       offerers,
       providers,
-      requestData,
-      showModal,
       types,
     } = this.props
     !offer &&
       offerId !== 'nouveau' &&
-      requestData('GET', `offers/${offerId}`, {
-        key: 'offers',
-        normalizer: offerNormalizer,
-      })
+      dispatch(
+        requestData('GET', `offers/${offerId}`, {
+          key: 'offers',
+          normalizer: offerNormalizer,
+        })
+      )
     offerers.length === 0 &&
-      requestData('GET', 'offerers', {
-        handleSuccess: (state, action) => {
-          if (!get(state, 'data.venues.length')) {
-            showModal(
-              <div>
-                Vous devez avoir déjà enregistré un lieu dans une de vos
-                structures pour ajouter des offres
-              </div>,
-              {
-                onCloseClick: () => history.push('/structures'),
-              }
-            )
-          }
-        },
-        handleFail,
-        normalizer: { managedVenues: 'venues' },
-      })
-    providers.length === 0 && requestData('GET', 'providers')
-    types.length === 0 && requestData('GET', 'types')
+      dispatch(
+        requestData('GET', 'offerers', {
+          handleSuccess: (state, action) => {
+            if (!get(state, 'data.venues.length')) {
+              dispatch(
+                showModal(
+                  <div>
+                    Vous devez avoir déjà enregistré un lieu dans une de vos
+                    structures pour ajouter des offres
+                  </div>,
+                  {
+                    onCloseClick: () => history.push('/structures'),
+                  }
+                )
+              )
+            }
+          },
+          handleFail,
+          normalizer: { managedVenues: 'venues' },
+        })
+      )
+    providers.length === 0 && dispatch(requestData('GET', 'providers'))
+    types.length === 0 && dispatch(requestData('GET', 'types'))
 
     handleSuccess()
   }
 
   handleSuccess = (state, action) => {
     const { data, method } = action
-    const { history, offer, showNotification, venue } = this.props
+    const { dispatch, history, offer, venue } = this.props
     const { isEventType } = this.state
 
-    showNotification({
-      text: 'Votre offre a bien été enregistrée',
-      type: 'success',
-    })
+    dispatch(
+      showNotification({
+        text: 'Votre offre a bien été enregistrée',
+        type: 'success',
+      })
+    )
 
     // PATCH
     if (method === 'PATCH') {
@@ -147,14 +157,16 @@ class OfferPage extends Component {
 
   handleShowOccurrencesModal = () => {
     const {
+      dispatch,
       location: { search },
-      showModal,
     } = this.props
     search.indexOf('gestion') > -1
-      ? showModal(<OccurrenceManager />, {
-          isUnclosable: true,
-        })
-      : closeModal()
+      ? dispatch(
+          showModal(<OccurrenceManager />, {
+            isUnclosable: true,
+          })
+        )
+      : dispatch(closeModal())
   }
 
   componentDidMount() {
@@ -163,9 +175,14 @@ class OfferPage extends Component {
 
   componentDidUpdate(prevProps) {
     const {
+      dispatch,
       location: { pathname, search },
       offer,
+      offerer,
       occurrences,
+      type,
+      venue,
+      venues,
     } = this.props
 
     if (search.indexOf('gestion') > -1) {
@@ -177,6 +194,26 @@ class OfferPage extends Component {
       ) {
         this.handleShowOccurrencesModal()
       }
+    }
+
+    if ((!offerer && prevProps.offerer) || (!type && prevProps.type)) {
+      dispatch(
+        mergeForm('offer', {
+          offererId: null,
+          venueId: null,
+        })
+      )
+    }
+
+    if (
+      (offerer && get(venues, 'length') === 0 && venue) ||
+      (!venue && prevProps.venue)
+    ) {
+      dispatch(
+        mergeForm('offer', {
+          venueId: null,
+        })
+      )
     }
   }
 
@@ -280,8 +317,9 @@ class OfferPage extends Component {
                     label="Structure"
                     name="offererId"
                     options={offerers}
-                    required
                     placeholder="Sélectionnez une structure"
+                    readOnly={!isNew}
+                    required
                     type="select"
                   />
                   {offerer && get(venues, 'length') === 0 ? (
@@ -294,12 +332,14 @@ class OfferPage extends Component {
                       </div>
                     </div>
                   ) : (
+                    offerer &&
                     get(venues, 'length') > 0 && (
                       <Field
                         label="Lieu"
                         name="venueId"
                         options={venues}
                         placeholder="Sélectionnez un lieu"
+                        readOnly={!isNew}
                         required
                         type="select"
                       />
@@ -401,76 +441,65 @@ class OfferPage extends Component {
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  connect(
-    (state, ownProps) => {
-      const search = searchSelector(state, ownProps.location.search)
+  connect((state, ownProps) => {
+    const search = searchSelector(state, ownProps.location.search)
 
-      const providers = providersSelector(state)
+    const providers = providersSelector(state)
 
-      const offer = offerSelector(state, ownProps.match.params.offerId)
+    const offer = offerSelector(state, ownProps.match.params.offerId)
 
-      const eventId = get(offer, 'eventId')
-      const event = eventSelector(state, eventId)
+    const eventId = get(offer, 'eventId')
+    const event = eventSelector(state, eventId)
 
-      const thingId = get(offer, 'thingId')
-      const thing = thingSelector(state, thingId)
+    const thingId = get(offer, 'thingId')
+    const thing = thingSelector(state, thingId)
 
-      const venueId =
-        get(offer, 'venueId') ||
-        get(state, 'form.offer.venueId') ||
-        search.venueId
-      const venue = venueSelector(state, venueId)
+    const venueId = get(state, 'form.offer.venueId') || search.venueId
+    console.log('venueId', venueId)
+    const venue = venueSelector(state, venueId)
+    console.log('venue', venue)
 
-      const types = typesSelector(state, get(venue, 'isVirtual'))
+    const types = typesSelector(state, get(venue, 'isVirtual'))
 
-      const typeValue =
-        get(state, 'form.offer.type') ||
-        get(event, 'type') ||
-        get(thing, 'type')
+    const typeValue =
+      get(state, 'form.offer.type') || get(event, 'type') || get(thing, 'type')
 
-      const type = typeSelector(state, typeValue)
+    const type = typeSelector(state, typeValue)
 
-      let offererId = get(state, 'form.offer.offererId') || search.offererId
+    let offererId = get(state, 'form.offer.offererId') || search.offererId
 
-      const venues = venuesSelector(state, offererId, type)
+    const venues = venuesSelector(state, offererId, type)
 
-      offererId = offererId || get(venue, 'managingOffererId')
+    offererId = offererId || get(venue, 'managingOffererId')
 
-      const offerers = offerersSelector(state)
-      const offerer = offererSelector(state, offererId)
+    const offerers = offerersSelector(state)
+    const offerer = offererSelector(state, offererId)
 
-      const occurrences = occurrencesSelector(
-        state,
-        ownProps.match.params.offerId
-      )
+    const occurrences = occurrencesSelector(
+      state,
+      ownProps.match.params.offerId
+    )
 
-      const url =
-        get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
+    const url =
+      get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
 
-      const user = state.user
+    const user = state.user
 
-      return {
-        search,
-        providers,
-        event,
-        thing,
-        occurrences,
-        offer,
-        venues,
-        venue,
-        offerers,
-        offerer,
-        types,
-        type,
-        user,
-        url,
-      }
-    },
-    {
-      showModal,
-      closeModal,
-      requestData,
-      showNotification,
+    return {
+      search,
+      providers,
+      event,
+      thing,
+      occurrences,
+      offer,
+      venues,
+      venue,
+      offerers,
+      offerer,
+      types,
+      type,
+      user,
+      url,
     }
-  )
+  })
 )(OfferPage)
