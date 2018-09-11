@@ -26,7 +26,7 @@ import stockSelector from '../../selectors/stock'
 import timezoneSelector from '../../selectors/timezone'
 import venueSelector from '../../selectors/venue'
 
-class OccurrenceForm extends Component {
+class EventOccurrenceAndStockItem extends Component {
   constructor() {
     super()
     this.state = {
@@ -75,10 +75,10 @@ class OccurrenceForm extends Component {
     const {
       dispatch,
       formBookingLimitDatetime,
-      isOfferReadOnly,
+      isStockReadOnly,
       occurrence,
     } = this.props
-    if (!get(occurrence, 'id') || formBookingLimitDatetime || isOfferReadOnly) {
+    if (!get(occurrence, 'id') || formBookingLimitDatetime || isStockReadOnly) {
       return
     }
     dispatch(
@@ -184,7 +184,8 @@ class OccurrenceForm extends Component {
       formBeginningDatetime,
       isEditing,
       isEventOccurrenceReadOnly,
-      isOfferReadOnly,
+      isStockOnly,
+      isStockReadOnly,
       offer,
       occurrence,
       occurrences,
@@ -195,6 +196,8 @@ class OccurrenceForm extends Component {
 
     const beginningDatetime =
       formBeginningDatetime || get(occurrence, 'beginningDatetime')
+
+    console.log('isStockOnly', isStockOnly)
 
     return (
       <Fragment>
@@ -211,49 +214,52 @@ class OccurrenceForm extends Component {
             readOnly={isEventOccurrenceReadOnly}
             size="small"
             Tag={null}>
-            <td>
-              <Field name="offerId" type="hidden" />
-              <Field name="venueId" type="hidden" />
-              <Field
-                minDate={beginningDatetime}
-                name="endDatetime"
-                type="hidden"
-              />
-
-              <Field
-                debug
-                highlightedDates={occurrences.map(o => o.beginningDatetime)}
-                minDate="today"
-                name="beginningDate"
-                patchKey="beginningDatetime"
-                readOnly={isEventOccurrenceReadOnly}
-                required
-                title="Date"
-                type="date"
-              />
-            </td>
-            <td>
-              <Field
-                name="beginningTime"
-                patchKey="beginningDatetime"
-                readOnly={isEventOccurrenceReadOnly}
-                required
-                title="Heure"
-                type="time"
-                tz={tz}
-              />
-            </td>
-            <td>
-              <Field
-                name="endTime"
-                patchKey="endDatetime"
-                readOnly={isEventOccurrenceReadOnly}
-                required
-                title="Heure de fin"
-                type="time"
-                tz={tz}
-              />
-            </td>
+            {!isStockOnly && (
+              <Fragment>
+                <td>
+                  <Field name="offerId" type="hidden" />
+                  <Field name="venueId" type="hidden" />
+                  <Field
+                    minDate={beginningDatetime}
+                    name="endDatetime"
+                    type="hidden"
+                  />
+                  <Field
+                    debug
+                    highlightedDates={occurrences.map(o => o.beginningDatetime)}
+                    minDate="today"
+                    name="beginningDate"
+                    patchKey="beginningDatetime"
+                    readOnly={isEventOccurrenceReadOnly}
+                    required
+                    title="Date"
+                    type="date"
+                  />
+                </td>
+                <td>
+                  <Field
+                    name="beginningTime"
+                    patchKey="beginningDatetime"
+                    readOnly={isEventOccurrenceReadOnly}
+                    required
+                    title="Heure"
+                    type="time"
+                    tz={tz}
+                  />
+                </td>
+                <td>
+                  <Field
+                    name="endTime"
+                    patchKey="endDatetime"
+                    readOnly={isEventOccurrenceReadOnly}
+                    required
+                    title="Heure de fin"
+                    type="time"
+                    tz={tz}
+                  />
+                </td>
+              </Fragment>
+            )}
             {!isEventOccurrenceReadOnly && (
               <Portal node={this.state.$submit}>
                 <SubmitButton className="button is-primary is-small">
@@ -270,7 +276,7 @@ class OccurrenceForm extends Component {
             name={`stock${get(stock, 'id', '')}`}
             patch={stock}
             size="small"
-            readOnly={isOfferReadOnly}
+            readOnly={isStockReadOnly}
             Tag={null}>
             <td title="Vide si gratuit">
               <Field name="eventOccurrenceId" type="hidden" />
@@ -306,7 +312,7 @@ class OccurrenceForm extends Component {
                 type="number"
               />
             </td>
-            {!isOfferReadOnly && (
+            {!isStockReadOnly && (
               <Portal node={this.state.$submit}>
                 <SubmitButton className="button is-primary is-small">
                   Valider
@@ -409,7 +415,7 @@ export default compose(
     )
     const stockId = get(stock, 'id')
 
-    const isOfferReadOnly =
+    const isStockReadOnly =
       !occurrenceId ||
       !eventOccurrenceIdOrNew ||
       eventOccurrenceIdOrNew === 'nouvelle' ||
@@ -418,7 +424,7 @@ export default compose(
       (stockIdOrNew === 'nouveau' && stockId) ||
       (stockIdOrNew !== 'nouveau' && stockId !== stockIdOrNew)
 
-    const isEditing = !isEventOccurrenceReadOnly || !isOfferReadOnly
+    const isEditing = !isEventOccurrenceReadOnly || !isStockReadOnly
 
     return {
       event: eventSelector(state, eventId),
@@ -439,7 +445,7 @@ export default compose(
       formPrice: get(state, `form.stock${stockId || ''}.price`),
       isEditing,
       isEventOccurrenceReadOnly,
-      isOfferReadOnly,
+      isStockReadOnly,
       occurrence,
       offer,
       occurrences: occurrencesSelector(state, venueId, eventId),
@@ -450,4 +456,4 @@ export default compose(
       venueId,
     }
   })
-)(OccurrenceForm)
+)(EventOccurrenceAndStockItem)

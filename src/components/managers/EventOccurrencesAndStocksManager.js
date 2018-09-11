@@ -1,20 +1,21 @@
 import get from 'lodash.get'
 import { closeModal } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OccurrenceItem from '../items/OccurrenceItem'
+import EventOccurrenceAndStockItem from '../items/EventOccurrenceAndStockItem'
 import eventSelector from '../../selectors/event'
 import occurrenceErrorsSelector from '../../selectors/occurrenceErrors'
 import occurrencesSelector from '../../selectors/occurrences'
 import offerSelector from '../../selectors/offer'
 import searchSelector from '../../selectors/search'
+import thingSelector from '../../selectors/thing'
 import providerSelector from '../../selectors/provider'
 
-class OccurrenceManager extends Component {
+class EventOccurrencesAndStocksManager extends Component {
   onCloseClick = e => {
     const { dispatch, offer, history } = this.props
     dispatch(closeModal())
@@ -31,7 +32,9 @@ class OccurrenceManager extends Component {
       provider,
       offer,
       occurrences,
+      thing,
     } = this.props
+    const isStockOnly = typeof get(thing, 'id') !== 'undefined'
 
     return (
       <div className="occurrence-manager">
@@ -50,14 +53,19 @@ class OccurrenceManager extends Component {
             {get(event, 'name')}
           </div>
           <div className="main-title has-text-left">
-            Dates, horaires et prix
+            {get(event, 'id') && 'Dates, horaires et prix'}
+            {get(thing, 'id') && 'Prix'}
           </div>
           <table className="table is-hoverable occurrence-table">
             <thead>
               <tr>
-                <td>Date</td>
-                <td>Heure de début</td>
-                <td>Heure de fin</td>
+                {!isStockOnly && (
+                  <Fragment>
+                    <td>Date</td>
+                    <td>Heure de début</td>
+                    <td>Heure de fin</td>
+                  </Fragment>
+                )}
                 <td>Prix</td>
                 <td>Date Limite de Réservation</td>
                 <td>Places (total)</td>
@@ -80,20 +88,34 @@ class OccurrenceManager extends Component {
                       to={
                         isEditing
                           ? `${location.pathname}${location.search}`
-                          : `/offres/${get(offer, 'id')}?gestion&date=nouvelle`
+                          : isStockOnly
+                            ? `/offres/${get(
+                                offer,
+                                'id'
+                              )}?gestion&stock=nouveau`
+                            : `/offres/${get(
+                                offer,
+                                'id'
+                              )}?gestion&date=nouvelle`
                       }>
-                      + Ajouter un horaire
+                      {isStockOnly
+                        ? '+ Ajouter un prix'
+                        : '+ Ajouter un horaire'}
                     </NavLink>
                   )}
                 </td>
               </tr>
               {eventOccurrenceIdOrNew === 'nouvelle' && (
-                <OccurrenceItem isFullyEditable={!provider} />
+                <EventOccurrenceAndStockItem
+                  isFullyEditable={!provider}
+                  isStockOnly={isStockOnly}
+                />
               )}
               {occurrences.map(o => (
-                <OccurrenceItem
+                <EventOccurrenceAndStockItem
                   key={o.id}
                   isFullyEditable={!provider}
+                  isStockOnly={isStockOnly}
                   occurrence={o}
                 />
               ))}
@@ -101,9 +123,13 @@ class OccurrenceManager extends Component {
             {occurrences.length > 12 && (
               <thead>
                 <tr>
-                  <td>Date</td>
-                  <td>Heure de début</td>
-                  <td>Heure de fin</td>
+                  {!isStockOnly && (
+                    <Fragment>
+                      <td>Date</td>
+                      <td>Heure de début</td>
+                      <td>Heure de fin</td>
+                    </Fragment>
+                  )}
                   <td>Prix</td>
                   <td>Date Limite de Réservation</td>
                   <td>Places (total)</td>
@@ -132,12 +158,16 @@ export default compose(
     const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
 
     const offer = offerSelector(state, ownProps.match.params.offerId)
-    const { eventId } = offer || {}
+
+    const eventId = get(offer, 'eventId')
     const event = eventSelector(state, eventId)
     const occurrences = occurrencesSelector(
       state,
       ownProps.match.params.offerId
     )
+
+    const thingId = get(offer, 'thingId')
+    const thing = thingSelector(state, thingId)
 
     const errors = occurrenceErrorsSelector(state)
 
@@ -149,6 +179,7 @@ export default compose(
       occurrences,
       offer,
       provider: providerSelector(state, get(event, 'lastProviderId')),
+      thing,
     }
   })
-)(OccurrenceManager)
+)(EventOccurrencesAndStocksManager)
