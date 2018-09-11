@@ -26,6 +26,8 @@ from models.pc_object import PcObject
 
 from postgresql_audit.flask import versioning_manager
 
+from repository.user_queries import find_users_by_department_and_date_range, find_users_booking_stats_per_department
+
 Activity = versioning_manager.activity_cls
 
 EXPORT_TOKEN = os.environ.get('EXPORT_TOKEN')
@@ -88,34 +90,23 @@ def get_users_per_date_per_department():
     date_max = request.args.get('date_max')
     department = request.args.get('department')
 
-    query = db.session.query(User.id, User.dateCreated, User.departementCode) \
-
-    if department:
-        query = query.filter(User.departementCode == department)
-    if date_min:
-        query = query.filter(User.dateCreated >= date_min)
-    if date_max:
-        query = query.filter(User.dateCreated <= date_max)
-
-    result = query.order_by(User.dateCreated).all()
+    users = find_users_by_department_and_date_range(date_max, date_min, department)
     file_name = 'export_%s_users.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['user_id', 'dateCreated', 'department']
-    return _make_csv_response(file_name, headers, result)
+    return _make_csv_response(file_name, headers, users)
+
 
 @app.route('/exports/users_stats', methods=['GET'])
 def get_users_stats():
     _check_token()
-    type_date = _check_type_date(request.args.get('type_date'))
+    date_intervall = valid_time_intervall_or_default(request.args.get('type_date'))
 
-    result = db.session.query(User.departementCode, func.date_trunc(type_date, User.dateCreated), func.count(distinct(User.id)), func.count(Booking.id), func.count(distinct(Booking.userId))) \
-        .filter(User.canBookFreeOffers == 'true') \
-        .join(Booking, isouter = 'true') \
-        .group_by(func.date_trunc(type_date, User.dateCreated), User.departementCode) \
-        .all()
+    users_booking_stats = find_users_booking_stats_per_department(date_intervall)
 
     file_name = 'export_%s_users_stats.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['department', type_date, 'distinct_user', 'count_booking', 'count_distinct_booking_users']
-    return _make_csv_response(file_name, headers, result)
+    headers = ['department', date_intervall, 'distinct_user', 'count_booking', 'count_distinct_booking_users']
+    return _make_csv_response(file_name, headers, users_booking_stats)
+
 
 @app.route('/exports/bookings', methods=['GET'])
 def get_bookings_per_date_per_departement():
@@ -332,9 +323,9 @@ def _clean_dict_for_export(model_name, dct):
     return dct
 
 
-def _check_type_date(type_date):
-    if type_date == 'year' or type_date == 'month' or type_date == 'day':
-        return type_date
+def valid_time_intervall_or_default(time_intervall):
+    if time_intervall == 'year' or time_intervall == 'month' or time_intervall == 'day':
+        return time_intervall
     return 'day'
 
 def _check_int(checked_int):
