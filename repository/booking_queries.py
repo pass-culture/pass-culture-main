@@ -1,6 +1,7 @@
+from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
-from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer, User, ApiErrors
+from models import Booking, Stock, EventOccurrence, Offer, Venue, User, PcObject, ApiErrors
 
 
 class BookingNotFound(ApiErrors):
@@ -57,6 +58,7 @@ def find_by_token(token, email=None, offer_id=None):
         query_offer_2 = Booking.query.join(Stock).join(EventOccurrence).join(aliased(Offer)).filter_by(id=offer_id)
         query_offer = query_offer_1.union_all(query_offer_2)
         query = query.intersect_all(query_offer)
+
     booking = query.first()
 
     if booking is None:
@@ -68,3 +70,17 @@ def find_by_token(token, email=None, offer_id=None):
         raise errors
 
     return booking
+
+
+def save_booking(booking):
+    try:
+        PcObject.check_and_save(booking)
+    except InternalError as internal_error:
+        api_errors = ApiErrors()
+
+        if 'tooManyBookings' in str(internal_error.orig):
+            api_errors.addError('global', 'la quantité disponible pour cette offre est atteinte')
+        elif 'insufficientFunds' in str(internal_error.orig):
+            api_errors.addError('insufficientFunds', 'l\'utilisateur ne dispose pas de fonds suffisants pour '
+                                                     'effectuer une réservation.')
+        raise api_errors

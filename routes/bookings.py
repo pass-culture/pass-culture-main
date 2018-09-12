@@ -1,7 +1,6 @@
 """ bookings routes """
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
-from sqlalchemy.exc import InternalError
 
 from domain.expenses import get_expenses
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
@@ -69,22 +68,9 @@ def create_booking():
 
     expenses = get_expenses(current_user)
 
-    try:
-        check_expenses_limits(expenses, new_booking, stock)
-    except ApiErrors as api_errors:
-        return jsonify(api_errors.errors), 400
-
-    try:
-        PcObject.check_and_save(new_booking)
-    except InternalError as internal_error:
-        api_errors = ApiErrors()
-        if 'tooManyBookings' in str(internal_error.orig):
-            api_errors.addError('global', 'la quantité disponible pour cette offre est atteinte')
-        elif 'insufficientFunds' in str(internal_error.orig):
-            api_errors.addError('insufficientFunds', 'l\'utilisateur ne dispose pas de fonds suffisants pour '
-                                                     'effectuer une réservation.')
-        return jsonify(api_errors.errors), 400
-
+    check_expenses_limits(expenses, new_booking, stock)
+    booking_queries.save_booking(new_booking)
+    
     new_booking_stock = Stock.query.get(new_booking.stockId)
     send_booking_recap_emails(new_booking_stock, new_booking)
     send_booking_confirmation_email_to_user(new_booking)
