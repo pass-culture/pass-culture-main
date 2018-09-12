@@ -36,7 +36,7 @@ const Loader = ({ haserror, isempty, isloading }) => {
             svg="ico-loading-card"
             alt="Chargement en cours. Merci de patienter…"
           />
-          <h2 className="subtitle">
+          <h2 className="fs20">
             {(isempty && 'Aucune offre pour le moment') || ''}
             {/* // FIXME -> mettre un label plus sexy avec redirection */}
             {(haserror && 'Erreur de chargement') || ''}

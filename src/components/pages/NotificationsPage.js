@@ -25,7 +25,7 @@ const NotificationsPage = ({ user }) => {
           <main role="main" className="is-relative flex-1">
             <Scrollbars autoHide />
           </main>
-          <NavigationFooter className="pc-white-element dotted-top-primary" />
+          <NavigationFooter theme="white" className="dotted-top-primary" />
         </React.Fragment>
       )}
       <Loader isloading={!isloaded} />

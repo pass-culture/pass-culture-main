@@ -4,15 +4,14 @@ import { connect } from 'react-redux'
 
 import { toggleMainMenu } from '../../reducers/menu'
 
-const NavigationFooter = ({ dispatch, className, theme }) => {
-  console.log('theme', theme)
-  const cssclass = `pc-footer dotted-top flex-center flex-0 ${className}`
+const NavigationFooter = ({ className, dispatch, theme }) => {
+  const cssclass = `pc-theme-${theme} pc-footer flex-center flex-0 ${className}`
   return (
     <footer className={cssclass}>
       <button
         type="button"
         onClick={() => dispatch(toggleMainMenu())}
-        className="no-border no-background no-outline no-select is-white"
+        className="no-border no-background no-outline no-select"
       >
         <span
           aria-hidden
@@ -26,13 +25,12 @@ const NavigationFooter = ({ dispatch, className, theme }) => {
 
 NavigationFooter.defaultProps = {
   className: '',
-  theme: 'red',
 }
 
 NavigationFooter.propTypes = {
   className: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
-  theme: PropTypes.string,
+  theme: PropTypes.string.isRequired,
 }
 
 export default connect()(NavigationFooter)

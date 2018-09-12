@@ -5,8 +5,8 @@ import ReactMarkdown from 'react-markdown'
 import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH, APP_VERSION } from '../../utils/config'
+import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
-import HistoryBackButton from '../layout/HistoryBackButton'
 
 class TermsPage extends React.PureComponent {
   constructor(props) {
@@ -24,14 +24,9 @@ class TermsPage extends React.PureComponent {
     const { source } = this.state
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     return (
-      <div id="terms-page" className="page flex-rows">
-        <header className="pc-header pc-theme-red is-relative">
-          <h1>
-            <span>Mentions légales</span>
-            <HistoryBackButton />
-          </h1>
-        </header>
-        <main role="main" className="pc-main">
+      <div id="terms-page" className="page is-relative flex-rows">
+        <PageHeader theme="red" title="Mentions légales" />
+        <main role="main" className="pc-main my12">
           <Scrollbars>
             <div className="padded content" style={{ backgroundImage }}>
               <ReactMarkdown source={source} />
@@ -41,7 +36,7 @@ class TermsPage extends React.PureComponent {
             </div>
           </Scrollbars>
         </main>
-        <NavigationFooter theme="white" />
+        <NavigationFooter theme="white" className="dotted-top-red" />
       </div>
     )
   }

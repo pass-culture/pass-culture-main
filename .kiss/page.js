@@ -5,7 +5,7 @@ import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH } from '../../utils/config'
 import PageHeader from '../layout/PageHeader'
-import NavigationFooter from '../layout/NavigationFooter'
+import PageFooter from '../layout/PageFooter'
 
 const FavoritesPage = () => {
   const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
@@ -17,7 +17,7 @@ const FavoritesPage = () => {
           <div className="padded content" style={{ backgroundImage }} />
         </Scrollbars>
       </main>
-      <NavigationFooter theme="white" className="dotted-top-red" />
+      <PageFooter theme="white" className="dotted-top-red" />
     </div>
   )
 }

@@ -11,7 +11,9 @@ $directions: (top, right, bottom, left);
   // NOTE: genere les classes
   // .dotted-right-primary, .dotted-left-black...
   $colors: (
+    red: $red,
     black: $black,
+    white: $white,
     primary: $primary,
   );
 

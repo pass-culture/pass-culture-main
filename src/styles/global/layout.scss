@@ -66,10 +66,10 @@ button {
   @extend .has-text-centered;
   @extend .is-italic;
   @extend .is-overlay;
-  //
   @extend .pc-gradient;
-  @extend .pc-primary-element; // fallback to pc-gradient
+  @extend .is-white-text;
 
+  background-color: $primary; // fallback to pc-gradient
   z-index: $zindex-application-loader;
   opacity: 1;
 

@@ -16,6 +16,7 @@ import {
   selectRecommendations,
 } from '../../selectors'
 import Loader from '../layout/Loader'
+import PageHeader from '../layout/PageHeader'
 import { toggleMainMenu } from '../../reducers/menu'
 import NavigationFooter from '../layout/NavigationFooter'
 import { bookingNormalizer } from '../../utils/normalizers'
@@ -79,17 +80,21 @@ class BookingsPage extends Component {
     const otherBookingsLength = otherBookings.length
     const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
     return (
-      <div id="bookings-page" className="page is-relative flex-rows red-bg">
+      <div id="bookings-page" className="page is-relative flex-rows">
         {!isloading && (
           <React.Fragment>
-            <header className="padded has-text-centered flex-0 fs19">
-              <h1>Mes réservations</h1>
-            </header>
-            <main role="main" className="pc-main padded flex-rows flex-start">
+            <PageHeader
+              title="Mes réservations"
+              className="dotted-bottom-white"
+            />
+            <main
+              role="main"
+              className="pc-main pc-gradient padded flex-rows flex-start"
+            >
               <Scrollbars>
                 {soonBookingsLength > 0 && (
                   <div>
-                    <h4 className="mb16 fs19 is-uppercase">
+                    <h4 className="mb16 fs19 is-uppercase is-white-text">
                       <i>C&apos;est bientôt !</i>
                     </h4>
                     {renderBookingList(soonBookings)}
@@ -97,7 +102,7 @@ class BookingsPage extends Component {
                 )}
                 {otherBookingsLength > 0 && (
                   <div>
-                    <h4 className="mb16 fs19 is-uppercase">
+                    <h4 className="mb16 fs19 is-uppercase is-white-text">
                       <i>Réservations</i>
                     </h4>
                     {renderBookingList(otherBookings)}
@@ -111,7 +116,7 @@ class BookingsPage extends Component {
                 {(isempty || hasNoBooking) && renderNoBookingSection()}
               </Scrollbars>
             </main>
-            <NavigationFooter />
+            <NavigationFooter theme="purple" className="dotted-top-white" />
           </React.Fragment>
         )}
         {!isempty && (

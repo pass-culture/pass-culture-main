@@ -1,2 +1,1 @@
-// import NavigationFooter from 'src/components/layout/NavigationFooter'
-<NavigationFooter theme="white" />
+<PageFooter theme="white" className="dotted-top-red" />

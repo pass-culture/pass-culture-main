@@ -10,6 +10,7 @@ import { Scrollbars } from 'react-custom-scrollbars'
 import { ROOT_PATH } from '../../utils/config'
 import Loader from '../layout/Loader'
 import MonAvatar from './profile/MonAvatar'
+import PageHeader from '../layout/PageHeader'
 // import MonPassCulture from './profile/MonPassCulture'
 import MesInformations from './profile/MesInformations'
 import NavigationFooter from '../layout/NavigationFooter'
@@ -21,11 +22,7 @@ const ProfilePage = ({ user }) => {
     <div id="profile-page" className="page is-relative flex-rows">
       {isloaded && (
         <React.Fragment>
-          <header className="padded pc-theme-red text-center flex-0">
-            <h1 className="fs19">
-              <span>Mon profil</span>
-            </h1>
-          </header>
+          <PageHeader theme="red" title="Mon profil" />
           <main
             role="main"
             className="is-relative flex-1"
@@ -37,7 +34,7 @@ const ProfilePage = ({ user }) => {
               <MesInformations provider={user} />
             </Scrollbars>
           </main>
-          <NavigationFooter className="pc-white-element dotted-top-primary" />
+          <NavigationFooter theme="red" className="dotted-top-white" />
         </React.Fragment>
       )}
       <Loader isloading={!isloaded} />

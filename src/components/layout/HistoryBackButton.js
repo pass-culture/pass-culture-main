@@ -2,19 +2,30 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router-dom'
 
-const HistoryBackButton = ({ history }) => (
-  <button
-    type="button"
+const HistoryBackButton = ({ className, history, theme }) => (
+  <span
     style={{ left: 0 }}
-    onClick={history.goBack}
-    className="is-absolute is-white no-border no-background no-outline ml12"
+    className={`pc-theme-${theme} is-absolute ml12 ${className}`}
   >
-    <span aria-hidden className="icon-previous" title="" />
-  </button>
+    <button
+      type="button"
+      onClick={history.goBack}
+      className="no-border no-background no-outline"
+    >
+      <span aria-hidden className="icon-previous" title="" />
+    </button>
+  </span>
 )
 
+HistoryBackButton.defaultProps = {
+  className: '',
+  theme: 'red',
+}
+
 HistoryBackButton.propTypes = {
+  className: PropTypes.string,
   history: PropTypes.object.isRequired,
+  theme: PropTypes.string,
 }
 
 export default withRouter(HistoryBackButton)
