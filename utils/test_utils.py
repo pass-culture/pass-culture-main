@@ -6,6 +6,7 @@ from os import path
 from pathlib import Path
 
 import requests as req
+import simplejson
 from postgresql_audit.flask import versioning_manager
 
 from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation
@@ -240,7 +241,8 @@ def create_booking_for_event(amount=50, quantity=1, user=None, isCancelled=False
 
 def create_user(public_name='John Doe', departement_code='93', email='john.doe@test.com', can_book_free_offers=True,
                 password='totallysafepsswd', validation_token=None, is_admin=False, reset_password_token=None,
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24), date_created=datetime.utcnow):
+                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
+                date_created=datetime.utcnow):
     user = User()
     user.publicName = public_name
     user.email = email
@@ -463,4 +465,8 @@ def create_activity(entity, table_name, verb, issued_at=datetime.utcnow):
     activity.issued_at = issued_at
     activity.table_name = table_name
     activity.verb = verb
-    activity.changed_data = entity._asdict()
+    variables = {"id": entity.id, "token": entity.token, "userId": entity.userId, "stockId": entity.stockId,
+                 "isCancelled": entity.isCancelled, "quantity": entity.quantity,
+                 "recommendationId": entity.recommendationId, "isValidated": entity.isValidated}
+    activity.changed_data = variables
+    return activity

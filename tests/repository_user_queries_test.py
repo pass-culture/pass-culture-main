@@ -4,13 +4,12 @@ import pytest
 
 from models import PcObject
 from models.db import db
-from repository.stats_queries import find_bookings_stats_per_department
+from repository.booking_queries import find_bookings_stats_per_department
 from repository.user_queries import find_users_by_department_and_date_range, \
     find_users_stats_per_department
 from tests.conftest import clean_database
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_stock_with_thing_offer, create_activity, create_recommendation, create_thing_offer, create_event_offer, \
-    create_thing
+    create_stock_with_thing_offer, create_activity, create_thing_offer
 
 
 @pytest.mark.standalone
@@ -72,31 +71,31 @@ def test_find_bookings_stats_per_department(app):
     user2 = create_user(email='a@2.f', departement_code='93', date_created=datetime(2018, 5, 10))
     user3 = create_user(email='a@3.f', departement_code='34', date_created=datetime(2018, 4, 10))
     user4 = create_user(email='a@4.f', departement_code='34', date_created=datetime(2018, 9, 10))
-    user5 = create_user(email='a@6.f', departement_code='93', date_created=datetime(2018, 5, 10))
-    user6 = create_user(email='a@7.f', departement_code='34', date_created=datetime(2018, 5, 10))
 
     offerer = create_offerer()
-    venue34 = create_venue(offerer, departement_code='34')
-    venue93 = create_venue(offerer, departement_code='93')
+    venue34 = create_venue(offerer, departement_code='34', postal_code='34000')
+    venue93 = create_venue(offerer, departement_code='93', postal_code='93100')
     thing_offer = create_thing_offer(venue93)
 
-    stock1 = create_stock_with_event_offer(offerer, venue34)
-    booking1 = create_booking(user1, stock1, venue34, recommendation='')
+    stock1 = create_stock_with_event_offer(offerer, venue34, price=0)
+    booking1 = create_booking(user1, stock1, venue34, recommendation=None)
 
-    stock2 = create_stock_with_event_offer(offerer, venue93)
-    booking2 = create_booking(user2, stock2, venue93, recommendation='')
+    stock2 = create_stock_with_event_offer(offerer, venue93, price=0)
+    booking2 = create_booking(user2, stock2, venue93, recommendation=None)
 
-    stock3 = create_stock_with_thing_offer(offerer, venue93, thing_offer)
-    booking3 = create_booking(user2, stock3, venue93, recommendation='')
+    stock3 = create_stock_with_thing_offer(offerer, venue93, thing_offer, price=0)
+    booking3 = create_booking(user2, stock3, venue93, recommendation=None)
 
-    stock4 = create_stock_with_event_offer(offerer, venue34)
-    booking4 = create_booking(user1, stock4, venue34, recommendation='')
+    stock4 = create_stock_with_event_offer(offerer, venue34, price=0)
+    booking4 = create_booking(user1, stock4, venue34, recommendation=None)
 
-    stock5 = create_stock_with_event_offer(offerer, venue93)
-    booking5 = create_booking(user3, stock5, venue93, recommendation='')
+    stock5 = create_stock_with_event_offer(offerer, venue93, price=0)
+    booking5 = create_booking(user3, stock5, venue93, recommendation=None)
 
-    stock6 = create_stock_with_thing_offer(offerer, venue93, thing_offer)
-    booking6 = create_booking(user4, stock6, venue93, recommendation='')
+    stock6 = create_stock_with_thing_offer(offerer, venue93, thing_offer, price=0)
+    booking6 = create_booking(user4, stock6, venue93, recommendation=None)
+
+    PcObject.check_and_save(booking1, booking2, booking3, booking4, booking5, booking6)
 
     activity1 = create_activity(booking1, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
     activity2 = create_activity(booking2, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
@@ -104,20 +103,22 @@ def test_find_bookings_stats_per_department(app):
     activity4 = create_activity(booking4, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
     activity5 = create_activity(booking5, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
     activity6 = create_activity(booking6, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
+    db.session.add(activity1)
+    db.session.add(activity2)
+    db.session.add(activity3)
+    db.session.add(activity4)
+    db.session.add(activity5)
+    db.session.add(activity6)
 
-    PcObject.check_and_save(user1, user2, user3, user4, user5, user6, \
-                            offerer, venue34, venue93, thing_offer, \
-                            stock1, stock2, stock3, stock4, stock5, stock6, \
-                            booking1, booking2, booking3, booking4, booking5, booking6)
-    db.session.add(activity1, activity2, activity3, activity4, activity4, activity5, activity6)
+    db.session.commit()
 
     # when
     bookings_stats = find_bookings_stats_per_department(time_intervall)
 
     # then
-    assert ('34', datetime(2018, 5, 1), 1, 1, 1) in bookings_stats
-    assert ('93', datetime(2018, 5, 1), 2, 2, 1) in bookings_stats
-    assert ('34', datetime(2018, 6, 1), 1, 3, 3) in bookings_stats
-    assert ('93', datetime(2018, 6, 1), 2, 0, 0) in bookings_stats
+    assert ('34', datetime(2018, 5, 1), 1, 1) in bookings_stats
+    assert ('93', datetime(2018, 5, 1), 2, 1) in bookings_stats
+    assert ('34', datetime(2018, 6, 1), 1, 1) in bookings_stats
+    assert ('93', datetime(2018, 6, 1), 2, 2) in bookings_stats
 
 

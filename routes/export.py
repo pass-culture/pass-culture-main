@@ -6,7 +6,8 @@ from inspect import isclass
 from io import BytesIO, StringIO
 
 from flask import current_app as app, jsonify, request, send_file
-from sqlalchemy import func, distinct, extract, join
+from postgresql_audit.flask import versioning_manager
+from sqlalchemy import func
 
 import models
 from models import Booking
@@ -14,19 +15,16 @@ from models import Event
 from models import EventOccurrence
 from models import Offer
 from models import Offerer
+from models import Recommendation
 from models import Stock
 from models import Thing
 from models import User
 from models import UserOfferer
 from models import Venue
-from models import Recommendation
 from models.api_errors import ApiErrors
 from models.db import db
 from models.pc_object import PcObject
-
-from postgresql_audit.flask import versioning_manager
-
-from repository.stats_queries import find_bookings_stats_per_department
+from repository.booking_queries import find_bookings_stats_per_department
 from repository.user_queries import find_users_by_department_and_date_range, find_users_stats_per_department
 
 Activity = versioning_manager.activity_cls
