@@ -1,21 +1,17 @@
 """ stocks """
-from pprint import pformat
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
-from sqlalchemy.exc import InternalError
 
 from domain.stocks import find_offerer_for_new_stock, soft_delete_stock
-from models.api_errors import ApiErrors
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.offer import Offer
-from models.stock import Stock
 from models.pc_object import PcObject
+from models.stock import Stock
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import stock_queries
-from repository.stock_queries import save_stock
 from utils.human_ids import dehumanize
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -90,10 +86,11 @@ def create_stock():
     event_occurrence_id = dehumanize(stock_dict.get('eventOccurrenceId', None))
     offerer = find_offerer_for_new_stock(offer_id, event_occurrence_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
-    stock_json = request.json
-    if event_occurrence_id:
-        del(stock_json['offerId'])
-    new_stock = Stock(from_dict=stock_json)
+
+    if event_occurrence_id and offer_id:
+        del(stock_dict['offerId'])
+
+    new_stock = Stock(from_dict=stock_dict)
     stock_queries.save_stock(new_stock)
     return jsonify(new_stock._asdict()), 201
 
