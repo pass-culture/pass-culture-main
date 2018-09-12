@@ -46,7 +46,13 @@ const DeskState = ({ message, level, booking }) => (
         </tr>
         <tr>
           <th>Date de l'offre :</th>
-          <td>{booking && formatLocalTimeDateString(booking.date)}</td>
+          <td>
+            {booking &&
+              formatLocalTimeDateString(
+                booking.date,
+                booking.venueDepartementCode
+              )}
+          </td>
         </tr>
       </tbody>
     </table>
