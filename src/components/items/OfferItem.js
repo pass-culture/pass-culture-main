@@ -15,7 +15,7 @@ import aggregatedStockSelector from '../../selectors/aggregatedStock'
 import eventSelector from '../../selectors/event'
 import maxDateSelector from '../../selectors/maxDate'
 import mediationsSelector from '../../selectors/mediations'
-import occurrencesSelector from '../../selectors/occurrences'
+import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import thingSelector from '../../selectors/thing'
 import thumbUrlSelector from '../../selectors/thumbUrl'
 import typeSelector from '../../selectors/type'
@@ -44,11 +44,11 @@ class OccasionItem extends Component {
     const {
       aggregatedStock,
       event,
+      eventOccurrences,
       location: { search },
       maxDate,
       mediations,
       offer,
-      occurrences,
       thing,
       thumbUrl,
       type,
@@ -90,7 +90,7 @@ class OccasionItem extends Component {
                 <NavLink
                   className="has-text-primary"
                   to={`/offres/${offer.id}?gestion`}>
-                  {pluralize(get(occurrences, 'length'), 'dates')}
+                  {pluralize(get(eventOccurrences, 'length'), 'dates')}
                 </NavLink>
               </li>
             )}
@@ -192,9 +192,9 @@ export default compose(
         return {
           aggregatedStock: aggregatedStockSelector(state, venueId),
           event: event,
+          eventOccurrences: eventOccurrencesSelector(state, id),
           maxDate: maxDateSelector(state, id),
           mediations: mediationsSelector(state, id),
-          occurrences: occurrencesSelector(state, id),
           thing: thing,
           thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
           type: typeSelector(state, typeValue),

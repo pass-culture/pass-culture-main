@@ -18,15 +18,16 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import eventSelector from '../../selectors/event'
-import occurrenceSelector from '../../selectors/occurrence'
-import occurrencesSelector from '../../selectors/occurrences'
+import eventOccurrenceSelector from '../../selectors/eventOccurrence'
+import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import offerSelector from '../../selectors/offer'
 import searchSelector from '../../selectors/search'
 import stockSelector from '../../selectors/stock'
+import stockPatchSelector from '../../selectors/stockPatch'
 import timezoneSelector from '../../selectors/timezone'
 import venueSelector from '../../selectors/venue'
 
-class OccurrenceForm extends Component {
+class EventOccurrenceAndStockItem extends Component {
   constructor() {
     super()
     this.state = {
@@ -44,15 +45,30 @@ class OccurrenceForm extends Component {
   }
 
   onConfirmDeleteClick = () => {
-    const { dispatch, occurrence } = this.props
-    dispatch(requestData('DELETE', `eventOccurrences/${occurrence.id}`))
+    const { dispatch, eventOccurrence, isStockOnly, stockPatch } = this.props
+    dispatch(
+      requestData(
+        'DELETE',
+        isStockOnly
+          ? `stocks/${stockPatch.id}`
+          : `eventOccurrences/${eventOccurrence.id}`
+      )
+    )
   }
 
   handleCrossingEndDatetime = () => {
-    const { dispatch, formBeginningDatetime, formEndDatetime } = this.props
+    const {
+      dispatch,
+      formBeginningDatetime,
+      formEndDatetime,
+      isStockOnly,
+    } = this.props
+    if (isStockOnly) {
+      return
+    }
     if (formEndDatetime < formBeginningDatetime) {
       dispatch(
-        mergeForm('occurrence', {
+        mergeForm('eventOccurrence', {
           endDatetime: moment(formEndDatetime)
             .add(1, 'day')
             .toISOString(),
@@ -62,8 +78,8 @@ class OccurrenceForm extends Component {
   }
 
   handleEventOccurrenceSuccessData = (state, action) => {
-    const { history, offer, stock } = this.props
-    const stockIdOrNew = get(stock, 'id', 'nouveau')
+    const { history, offer, stockPatch } = this.props
+    const stockIdOrNew = get(stockPatch, 'id', 'nouveau')
     history.push(
       `/offres/${get(offer, 'id')}?gestion&date=${
         action.data.id
@@ -74,16 +90,22 @@ class OccurrenceForm extends Component {
   handleInitBookingLimitDatetime = () => {
     const {
       dispatch,
+      eventOccurrence,
       formBookingLimitDatetime,
-      isOfferReadOnly,
-      occurrence,
+      isStockOnly,
+      isStockReadOnly,
     } = this.props
-    if (!get(occurrence, 'id') || formBookingLimitDatetime || isOfferReadOnly) {
+    if (
+      isStockOnly ||
+      !get(eventOccurrence, 'id') ||
+      formBookingLimitDatetime ||
+      isStockReadOnly
+    ) {
       return
     }
     dispatch(
       mergeForm('stock', {
-        bookingLimitDatetime: moment(occurrence.beginningDatetime)
+        bookingLimitDatetime: moment(eventOccurrence.beginningDatetime)
           .subtract(2, 'day')
           .toISOString(),
       })
@@ -91,12 +113,17 @@ class OccurrenceForm extends Component {
   }
 
   handleInitEndDatetime = () => {
-    const { dispatch, formBeginningDatetime, occurrence } = this.props
-    if (get(occurrence, 'id')) {
+    const {
+      dispatch,
+      eventOccurrence,
+      formBeginningDatetime,
+      isStockOnly,
+    } = this.props
+    if (isStockOnly || get(eventOccurrence, 'id')) {
       return
     }
     dispatch(
-      mergeForm('occurrence', {
+      mergeForm('eventOccurrence', {
         endDatetime: moment(formBeginningDatetime)
           .add(1, 'hour')
           .toISOString(),
@@ -105,8 +132,8 @@ class OccurrenceForm extends Component {
   }
 
   handleInitPrice = () => {
-    const { dispatch, formPrice, stock } = this.props
-    if (get(stock, 'id') || formPrice) {
+    const { dispatch, formPrice, stockPatch } = this.props
+    if (get(stockPatch, 'id') || typeof formPrice !== 'undefined') {
       return
     }
     dispatch(mergeForm('stock', { price: 0 }))
@@ -115,22 +142,22 @@ class OccurrenceForm extends Component {
   handleNextDatetimes = () => {
     const {
       dispatch,
+      eventOccurrence,
+      eventOccurrences,
       formBeginningDatetime,
-      occurrence,
-      occurrences,
+      isStockOnly,
     } = this.props
     // add automatically a default beginninDatetime and a endDatetime
-    // one day after the previous occurrence
-    if (get(occurrence, 'id')) {
+    // one day after the previous eventOccurrence
+    if (isStockOnly || get(eventOccurrence, 'id')) {
       return
     }
-    if (!formBeginningDatetime && get(occurrences, 'length')) {
-      const beginningDatetime = moment(occurrences[0].beginningDatetime).add(
-        1,
-        'day'
-      )
+    if (!formBeginningDatetime && get(eventOccurrences, 'length')) {
+      const beginningDatetime = moment(
+        eventOccurrences[0].beginningDatetime
+      ).add(1, 'day')
       dispatch(
-        mergeForm('occurrence', {
+        mergeForm('eventOccurrence', {
           beginningDatetime,
           endDatetime: moment(beginningDatetime).add(1, 'hour'),
         })
@@ -181,96 +208,100 @@ class OccurrenceForm extends Component {
 
   render() {
     const {
+      eventOccurrence,
+      eventOccurrences,
       formBeginningDatetime,
       isEditing,
       isEventOccurrenceReadOnly,
-      isOfferReadOnly,
+      isStockOnly,
+      isStockReadOnly,
       offer,
-      occurrence,
-      occurrences,
-      stock,
+      stockPatch,
       tz,
     } = this.props
     const { isDeleting } = this.state
 
     const beginningDatetime =
-      formBeginningDatetime || get(occurrence, 'beginningDatetime')
+      formBeginningDatetime || get(eventOccurrence, 'beginningDatetime')
 
     return (
       <Fragment>
         <tr
-          className={classnames('occurrence-item', {
+          className={classnames('event-occurrence-and-stock-item', {
             'with-confirm': isDeleting,
           })}>
+          {!isStockOnly && (
+            <Form
+              action={`/eventOccurrences/${get(eventOccurrence, 'id', '')}`}
+              handleSuccess={this.handleEventOccurrenceSuccessData}
+              layout="input-only"
+              name={`eventOccurrence${get(eventOccurrence, 'id', '')}`}
+              patch={eventOccurrence}
+              readOnly={isEventOccurrenceReadOnly}
+              size="small"
+              Tag={null}>
+              <td>
+                <Field name="offerId" type="hidden" />
+                <Field name="venueId" type="hidden" />
+                <Field
+                  minDate={beginningDatetime}
+                  name="endDatetime"
+                  type="hidden"
+                />
+                <Field
+                  debug
+                  highlightedDates={eventOccurrences.map(
+                    eo => eo.beginningDatetime
+                  )}
+                  minDate="today"
+                  name="beginningDate"
+                  patchKey="beginningDatetime"
+                  readOnly={isEventOccurrenceReadOnly}
+                  required
+                  title="Date"
+                  type="date"
+                />
+              </td>
+              <td>
+                <Field
+                  name="beginningTime"
+                  patchKey="beginningDatetime"
+                  readOnly={isEventOccurrenceReadOnly}
+                  required
+                  title="Heure"
+                  type="time"
+                  tz={tz}
+                />
+              </td>
+              <td>
+                <Field
+                  name="endTime"
+                  patchKey="endDatetime"
+                  readOnly={isEventOccurrenceReadOnly}
+                  required
+                  title="Heure de fin"
+                  type="time"
+                  tz={tz}
+                />
+              </td>
+              {!isEventOccurrenceReadOnly && (
+                <Portal node={this.state.$submit}>
+                  <SubmitButton className="button is-primary is-small">
+                    Valider
+                  </SubmitButton>
+                </Portal>
+              )}
+            </Form>
+          )}
           <Form
-            action={`/eventOccurrences/${get(occurrence, 'id', '')}`}
-            handleSuccess={this.handleEventOccurrenceSuccessData}
-            layout="input-only"
-            name={`occurrence${get(occurrence, 'id', '')}`}
-            patch={occurrence}
-            readOnly={isEventOccurrenceReadOnly}
-            size="small"
-            Tag={null}>
-            <td>
-              <Field name="offerId" type="hidden" />
-              <Field name="venueId" type="hidden" />
-              <Field
-                minDate={beginningDatetime}
-                name="endDatetime"
-                type="hidden"
-              />
-
-              <Field
-                debug
-                highlightedDates={occurrences.map(o => o.beginningDatetime)}
-                minDate="today"
-                name="beginningDate"
-                patchKey="beginningDatetime"
-                readOnly={isEventOccurrenceReadOnly}
-                required
-                title="Date"
-                type="date"
-              />
-            </td>
-            <td>
-              <Field
-                name="beginningTime"
-                patchKey="beginningDatetime"
-                readOnly={isEventOccurrenceReadOnly}
-                required
-                title="Heure"
-                type="time"
-                tz={tz}
-              />
-            </td>
-            <td>
-              <Field
-                name="endTime"
-                patchKey="endDatetime"
-                readOnly={isEventOccurrenceReadOnly}
-                required
-                title="Heure de fin"
-                type="time"
-                tz={tz}
-              />
-            </td>
-            {!isEventOccurrenceReadOnly && (
-              <Portal node={this.state.$submit}>
-                <SubmitButton className="button is-primary is-small">
-                  Valider
-                </SubmitButton>
-              </Portal>
-            )}
-          </Form>
-          <Form
-            action={`/stocks/${get(stock, 'id', '')}`}
+            action={`/stocks/${get(stockPatch, 'id', '')}`}
             handleSuccess={this.handleOfferSuccessData}
             layout="input-only"
             key={1}
-            name={`stock${get(stock, 'id', '')}`}
-            patch={stock}
+            name={`stock${get(stockPatch, 'id', '')}`}
+            patch={stockPatch}
             size="small"
-            readOnly={isOfferReadOnly}
+            readOnly={isStockReadOnly}
             Tag={null}>
             <td title="Vide si gratuit">
               <Field name="eventOccurrenceId" type="hidden" />
@@ -291,14 +322,16 @@ class OccurrenceForm extends Component {
                 title="Prix"
               />
             </td>
-            <td title="Laissez vide si pas de limite">
-              <Field
-                maxDate={beginningDatetime}
-                name="bookingLimitDatetime"
-                placeholder="Laissez vide si pas de limite"
-                type="date"
-              />
-            </td>
+            {!isStockOnly && (
+              <td title="Laissez vide si pas de limite">
+                <Field
+                  maxDate={beginningDatetime}
+                  name="bookingLimitDatetime"
+                  placeholder="Laissez vide si pas de limite"
+                  type="date"
+                />
+              </td>
+            )}
             <td title="Laissez vide si pas de limite">
               <Field
                 name="available"
@@ -306,7 +339,7 @@ class OccurrenceForm extends Component {
                 type="number"
               />
             </td>
-            {!isOfferReadOnly && (
+            {!isStockReadOnly && (
               <Portal node={this.state.$submit}>
                 <SubmitButton className="button is-primary is-small">
                   Valider
@@ -335,10 +368,11 @@ class OccurrenceForm extends Component {
           <td ref={_e => (this.$submit = _e)}>
             {!isEditing && (
               <NavLink
-                to={`/offres/${get(offer, 'id')}?gestion&date=${get(
-                  occurrence,
-                  'id'
-                )}`}
+                to={`/offres/${get(offer, 'id')}?gestion&${
+                  isStockOnly
+                    ? `stock=${get(stockPatch, 'id')}`
+                    : `date=${get(eventOccurrence, 'id')}`
+                }`}
                 className="button is-small is-secondary">
                 <span className="icon">
                   <Icon svg="ico-pen-r" />
@@ -349,10 +383,11 @@ class OccurrenceForm extends Component {
         </tr>
         {isDeleting && (
           <tr>
-            <td className="is-size-7" colSpan="6">
-              En confirmant l'annulation de cette date, vous supprimerez aussi
-              toutes les réservations associées. <br />
-              Êtes-vous sûrs de vouloir continuer&nbsp;?
+            <td className="is-size-7" colSpan={isStockOnly ? '2' : '6'}>
+              En confirmant l'annulation de{' '}
+              {isStockOnly ? 'ce stock' : 'cette date'}, vous supprimerez aussi
+              toutes les réservations associées. Êtes-vous sûrs de vouloir
+              continuer&nbsp;?
             </td>
             <td>
               <button
@@ -381,52 +416,63 @@ export default compose(
     const search = searchSelector(state, ownProps.location.search)
     const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
 
-    const offer = offerSelector(state, ownProps.match.params.offerId)
+    const offerId = ownProps.match.params.offerId
+    const offer = offerSelector(state, offerId)
     const { eventId, venueId } = offer || {}
 
-    const occurrence = occurrenceSelector(
+    const eventOccurrence = eventOccurrenceSelector(
       state,
-      ownProps.occurrence,
+      ownProps.eventOccurrence,
       ownProps.match.params.offerId,
       venueId
     )
-    const occurrenceId = get(occurrence, 'id')
+    const eventOccurrenceId = get(eventOccurrence, 'id')
 
     const isEventOccurrenceReadOnly =
       !eventOccurrenceIdOrNew ||
-      (eventOccurrenceIdOrNew === 'nouvelle' && occurrenceId) ||
+      (eventOccurrenceIdOrNew === 'nouvelle' && eventOccurrenceId) ||
       (eventOccurrenceIdOrNew !== 'nouvelle' &&
-        occurrenceId !== eventOccurrenceIdOrNew) ||
+        eventOccurrenceId !== eventOccurrenceIdOrNew) ||
       stockIdOrNew ||
       !ownProps.isFullyEditable
 
     const venue = venueSelector(state, venueId)
 
-    const stock = stockSelector(
+    const stock = ownProps.isStockOnly
+      ? ownProps.stock
+      : stockSelector(state, offerId, get(ownProps, 'eventOccurrence.id'))
+
+    const stockPatch = stockPatchSelector(
       state,
-      get(ownProps, 'occurrence.id'),
+      stock,
+      offerId,
+      get(ownProps, 'eventOccurrence.id'),
       get(venue, 'managingOffererId')
     )
+
     const stockId = get(stock, 'id')
 
-    const isOfferReadOnly =
-      !occurrenceId ||
-      !eventOccurrenceIdOrNew ||
-      eventOccurrenceIdOrNew === 'nouvelle' ||
-      eventOccurrenceIdOrNew !== occurrenceId ||
+    const isStockReadOnly =
+      (!ownProps.isStockOnly &&
+        (!eventOccurrenceId ||
+          !eventOccurrenceIdOrNew ||
+          eventOccurrenceIdOrNew === 'nouvelle' ||
+          eventOccurrenceIdOrNew !== eventOccurrenceId)) ||
       !stockIdOrNew ||
       (stockIdOrNew === 'nouveau' && stockId) ||
       (stockIdOrNew !== 'nouveau' && stockId !== stockIdOrNew)
 
-    const isEditing = !isEventOccurrenceReadOnly || !isOfferReadOnly
+    const isEditing = !isEventOccurrenceReadOnly || !isStockReadOnly
 
     return {
       event: eventSelector(state, eventId),
       eventId,
+      eventOccurrence,
+      eventOccurrences: eventOccurrencesSelector(state, venueId, eventId),
       eventOccurrenceIdOrNew,
       formBeginningDatetime: get(
         state,
-        `form.occurrence${occurrenceId || ''}.beginningDatetime`
+        `form.eventOccurrence${eventOccurrenceId || ''}.beginningDatetime`
       ),
       formBookingLimitDatetime: get(
         state,
@@ -434,20 +480,18 @@ export default compose(
       ),
       formEndDatetime: get(
         state,
-        `form.occurrence${occurrenceId || ''}.endDatetime`
+        `form.eventOccurrence${eventOccurrenceId || ''}.endDatetime`
       ),
       formPrice: get(state, `form.stock${stockId || ''}.price`),
       isEditing,
       isEventOccurrenceReadOnly,
-      isOfferReadOnly,
-      occurrence,
+      isStockReadOnly,
       offer,
-      occurrences: occurrencesSelector(state, venueId, eventId),
-      stock,
+      stockPatch,
       stockIdOrNew,
       tz: timezoneSelector(state, venueId),
       venue,
       venueId,
     }
   })
-)(OccurrenceForm)
+)(EventOccurrenceAndStockItem)

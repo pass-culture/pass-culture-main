@@ -1,11 +1,20 @@
-.occurrence-manager {
-  .occurrence-table-wrapper {
+.event-occurrences-and-stocks-manager {
+  .event-occurrences-and-stocks-table-wrapper {
     position: relative;
     max-height: 60vh;
     min-height: 500px;
     overflow-y: auto;
 
-    table.occurrence-table {
+    table.event-occurrences-and-stocks-table {
+      &.small {
+        margin: 5rem;
+        td {
+          input {
+            width: 50%;
+          }
+        }
+      }
+
       // width: 80vw;
       thead,
       tbody {
@@ -22,29 +31,16 @@
             &:first-child {
               width: 20%;
             }
-          }
-        }
-
-        .occurrence-item {
-          display: table-row;
-          td {
-            vertical-align: baseline;
-            .input {
-              min-width: 75px;
-              &.date-picker {
-                min-width: 100px;
-              }
-              &[type='time'] {
-                padding-left: 2rem;
-              }
+            input.date {
+              width: 100px;
             }
-          }
-
-          &.with-confirm {
-            background-image: none;
+            input[type='time'] {
+              padding-left: 1rem;
+            }
           }
         }
       }
+
       thead {
         tr {
           td {

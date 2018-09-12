@@ -1,0 +1,25 @@
+.event-occurrence-and-stock-item {
+  display: table-row;
+  td {
+    vertical-align: baseline;
+    .input {
+      min-width: 75px;
+
+      &.date-picker {
+        min-width: 100px;
+      }
+
+      &[type='time'] {
+        padding-left: 2rem;
+      }
+
+      &[readonly] {
+        text-align: center;
+      }
+    }
+  }
+
+  &.with-confirm {
+    background-image: none;
+  }
+}

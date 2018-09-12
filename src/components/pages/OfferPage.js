@@ -19,14 +19,15 @@ import { compose } from 'redux'
 
 import Main from '../layout/Main'
 import MediationManager from '../managers/MediationManager'
-import OccurrenceManager from '../managers/OccurrenceManager'
+import EventOccurrencesAndStocksManager from '../managers/EventOccurrencesAndStocksManager'
 import eventSelector from '../../selectors/event'
-import occurrencesSelector from '../../selectors/occurrences'
+import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
 import searchSelector from '../../selectors/search'
+import stocksSelector from '../../selectors/stocks'
 import thingSelector from '../../selectors/thing'
 import typesSelector from '../../selectors/types'
 import typeSelector from '../../selectors/type'
@@ -54,7 +55,6 @@ class OfferPage extends Component {
       },
       offer,
       type,
-      venue,
     } = nextProps
     const { eventId, thingId } = offer || {}
 
@@ -126,7 +126,6 @@ class OfferPage extends Component {
   handleSuccess = (state, action) => {
     const { data, method } = action
     const { dispatch, history, offer, venue } = this.props
-    const { isEventType } = this.state
 
     dispatch(
       showNotification({
@@ -142,7 +141,7 @@ class OfferPage extends Component {
     }
 
     // POST
-    if (isEventType && method === 'POST') {
+    if (method === 'POST') {
       const { offers } = data || {}
       const offer = offers && offers.find(o => o.venueId === get(venue, 'id'))
       if (!offer) {
@@ -155,14 +154,16 @@ class OfferPage extends Component {
     }
   }
 
-  handleShowOccurrencesModal = () => {
+  handleShowManagerModal = () => {
     const {
+      hasEventOrThing,
       dispatch,
       location: { search },
     } = this.props
     search.indexOf('gestion') > -1
-      ? dispatch(
-          showModal(<OccurrenceManager />, {
+      ? hasEventOrThing &&
+        dispatch(
+          showModal(<EventOccurrencesAndStocksManager />, {
             isUnclosable: true,
           })
         )
@@ -170,16 +171,17 @@ class OfferPage extends Component {
   }
 
   componentDidMount() {
-    this.handleShowOccurrencesModal()
+    this.handleShowManagerModal()
   }
 
   componentDidUpdate(prevProps) {
     const {
+      eventOccurrences,
       dispatch,
+      hasEventOrThing,
       location: { pathname, search },
       offer,
       offerer,
-      occurrences,
       type,
       venue,
       venues,
@@ -188,11 +190,12 @@ class OfferPage extends Component {
     if (search.indexOf('gestion') > -1) {
       if (
         prevProps.offer !== offer ||
-        prevProps.occurrences !== occurrences ||
+        prevProps.eventOccurrences !== eventOccurrences ||
         prevProps.location.pathname !== pathname ||
-        prevProps.location.search !== search
+        prevProps.location.search !== search ||
+        (hasEventOrThing && !prevProps.hasEventOrThing)
       ) {
-        this.handleShowOccurrencesModal()
+        this.handleShowManagerModal()
       }
     }
 
@@ -220,11 +223,13 @@ class OfferPage extends Component {
   render() {
     const {
       event,
+      eventOccurrences,
+      hasEventOrThing,
       location: { search },
-      occurrences,
       offer,
       offerer,
       offerers,
+      stocks,
       thing,
       type,
       types,
@@ -279,19 +284,27 @@ class OfferPage extends Component {
                 type="select"
               />
             </div>
-            {!isNew && (
-              <div className="field">
-                {event && (
+            {!isNew &&
+              hasEventOrThing && (
+                <div className="field">
                   <div className="field form-field is-horizontal">
                     <div className="field-label">
                       <label className="label" htmlFor="input_offers_name">
-                        <div className="subtitle">Dates :</div>
+                        <div className="subtitle">
+                          {isEventType ? 'Dates :' : 'Stocks :'}
+                        </div>
                       </label>
                     </div>
                     <div className="field-body">
                       <div className="field">
                         <div className="nb-dates">
-                          {pluralize(get(occurrences, 'length'), 'date')}
+                          {pluralize(
+                            get(
+                              isEventType ? eventOccurrences : stocks,
+                              'length'
+                            ),
+                            isEventType ? 'date' : 'stock'
+                          )}
                         </div>
                         <NavLink
                           className="button is-primary is-outlined is-small"
@@ -299,15 +312,18 @@ class OfferPage extends Component {
                           <span className="icon">
                             <Icon svg="ico-calendar" />
                           </span>
-                          <span>Gérer les dates et les prix</span>
+                          <span>
+                            {isEventType
+                              ? 'Gérer les dates et les prix'
+                              : 'Gérer les prix'}
+                          </span>
                         </NavLink>
                       </div>
                     </div>
                   </div>
-                )}
-                <MediationManager />
-              </div>
-            )}
+                  <MediationManager />
+                </div>
+              )}
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
@@ -446,7 +462,8 @@ export default compose(
 
     const providers = providersSelector(state)
 
-    const offer = offerSelector(state, ownProps.match.params.offerId)
+    const offerId = ownProps.match.params.offerId
+    const offer = offerSelector(state, offerId)
 
     const eventId = get(offer, 'eventId')
     const event = eventSelector(state, eventId)
@@ -455,9 +472,7 @@ export default compose(
     const thing = thingSelector(state, thingId)
 
     const venueId = get(state, 'form.offer.venueId') || search.venueId
-    console.log('venueId', venueId)
     const venue = venueSelector(state, venueId)
-    console.log('venue', venue)
 
     const types = typesSelector(state, get(venue, 'isVirtual'))
 
@@ -475,31 +490,34 @@ export default compose(
     const offerers = offerersSelector(state)
     const offerer = offererSelector(state, offererId)
 
-    const occurrences = occurrencesSelector(
-      state,
-      ownProps.match.params.offerId
-    )
+    const eventOccurrences = eventOccurrencesSelector(state, offerId)
+
+    const stocks = stocksSelector(state, offerId)
 
     const url =
       get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
 
     const user = state.user
 
+    const hasEventOrThing = event || thing
+
     return {
-      search,
-      providers,
       event,
+      eventOccurrences,
+      hasEventOrThing,
+      providers,
+      search,
       thing,
-      occurrences,
       offer,
-      venues,
-      venue,
-      offerers,
       offerer,
+      offerers,
+      stocks,
       types,
       type,
-      user,
       url,
+      user,
+      venue,
+      venues,
     }
   })
 )(OfferPage)

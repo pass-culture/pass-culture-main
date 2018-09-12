@@ -1,20 +1,23 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import { closeModal } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OccurrenceItem from '../items/OccurrenceItem'
+import EventOccurrenceAndStockItem from '../items/EventOccurrenceAndStockItem'
 import eventSelector from '../../selectors/event'
+import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import occurrenceErrorsSelector from '../../selectors/occurrenceErrors'
-import occurrencesSelector from '../../selectors/occurrences'
 import offerSelector from '../../selectors/offer'
 import searchSelector from '../../selectors/search'
+import thingSelector from '../../selectors/thing'
 import providerSelector from '../../selectors/provider'
+import stocksSelector from '../../selectors/stocks'
 
-class OccurrenceManager extends Component {
+class EventOccurrencesAndStocksManager extends Component {
   onCloseClick = e => {
     const { dispatch, offer, history } = this.props
     dispatch(closeModal())
@@ -25,16 +28,19 @@ class OccurrenceManager extends Component {
     const {
       errors,
       event,
-      eventOccurrenceIdOrNew,
+      eventOccurrences,
       isEditing,
+      isNew,
       location,
       provider,
       offer,
-      occurrences,
+      stocks,
+      thing,
     } = this.props
+    const isStockOnly = typeof get(thing, 'id') !== 'undefined'
 
     return (
-      <div className="occurrence-manager">
+      <div className="event-occurrences-and-stocks-manager">
         {errors && (
           <div className="notification is-danger">
             {Object.keys(errors).map(key => (
@@ -45,21 +51,34 @@ class OccurrenceManager extends Component {
             ))}
           </div>
         )}
-        <div className="occurrence-table-wrapper">
+        <div className="event-occurrences-and-stocks-table-wrapper">
           <div className="subtitle has-text-weight-bold has-text-left is-uppercase">
             {get(event, 'name')}
           </div>
           <div className="main-title has-text-left">
-            Dates, horaires et prix
+            {get(event, 'id') && 'Dates, horaires et prix'}
+            {get(thing, 'id') && 'Prix'}
           </div>
-          <table className="table is-hoverable occurrence-table">
+          <table
+            className={classnames(
+              'table is-hoverable event-occurrences-and-stocks-table',
+              { small: isStockOnly }
+            )}>
             <thead>
               <tr>
-                <td>Date</td>
-                <td>Heure de début</td>
-                <td>Heure de fin</td>
+                {!isStockOnly && (
+                  <Fragment>
+                    <td>Date</td>
+                    <td>
+                      Heure de<br />début
+                    </td>
+                    <td>
+                      Heure de<br />fin
+                    </td>
+                  </Fragment>
+                )}
                 <td>Prix</td>
-                <td>Date Limite de Réservation</td>
+                {!isStockOnly && <td>Date Limite de Réservation</td>}
                 <td>Places (total)</td>
                 <td>Supprimer</td>
                 <td>Modifier</td>
@@ -80,32 +99,50 @@ class OccurrenceManager extends Component {
                       to={
                         isEditing
                           ? `${location.pathname}${location.search}`
-                          : `/offres/${get(offer, 'id')}?gestion&date=nouvelle`
+                          : isStockOnly
+                            ? `/offres/${get(
+                                offer,
+                                'id'
+                              )}?gestion&stock=nouveau`
+                            : `/offres/${get(
+                                offer,
+                                'id'
+                              )}?gestion&date=nouvelle`
                       }>
-                      + Ajouter un horaire
+                      {isStockOnly
+                        ? '+ Ajouter un prix'
+                        : '+ Ajouter un horaire'}
                     </NavLink>
                   )}
                 </td>
               </tr>
-              {eventOccurrenceIdOrNew === 'nouvelle' && (
-                <OccurrenceItem isFullyEditable={!provider} />
-              )}
-              {occurrences.map(o => (
-                <OccurrenceItem
-                  key={o.id}
+              {isNew && (
+                <EventOccurrenceAndStockItem
                   isFullyEditable={!provider}
-                  occurrence={o}
+                  isStockOnly={isStockOnly}
+                />
+              )}
+              {(isStockOnly ? stocks : eventOccurrences).map(item => (
+                <EventOccurrenceAndStockItem
+                  key={item.id}
+                  isFullyEditable={!provider}
+                  isStockOnly={isStockOnly}
+                  {...{ [isStockOnly ? 'stock' : 'eventOccurrence']: item }}
                 />
               ))}
             </tbody>
-            {occurrences.length > 12 && (
+            {eventOccurrences.length > 12 && (
               <thead>
                 <tr>
-                  <td>Date</td>
-                  <td>Heure de début</td>
-                  <td>Heure de fin</td>
+                  {!isStockOnly && (
+                    <Fragment>
+                      <td>Date</td>
+                      <td>Heure de début</td>
+                      <td>Heure de fin</td>
+                    </Fragment>
+                  )}
                   <td>Prix</td>
-                  <td>Date Limite de Réservation</td>
+                  {!isStockOnly && <td>Date Limite de Réservation</td>}
                   <td>Places (total)</td>
                   <td>Supprimer</td>
                   <td>Modifier</td>
@@ -129,15 +166,26 @@ export default compose(
   connect((state, ownProps) => {
     const search = searchSelector(state, ownProps.location.search)
     const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
-    const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
 
-    const offer = offerSelector(state, ownProps.match.params.offerId)
-    const { eventId } = offer || {}
+    const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
+    const isNew =
+      eventOccurrenceIdOrNew === 'nouvelle' ||
+      (!eventOccurrenceIdOrNew && stockIdOrNew === 'nouveau')
+
+    const offerId = ownProps.match.params.offerId
+    const offer = offerSelector(state, offerId)
+
+    const eventId = get(offer, 'eventId')
     const event = eventSelector(state, eventId)
-    const occurrences = occurrencesSelector(
+    const eventOccurrences = eventOccurrencesSelector(
       state,
       ownProps.match.params.offerId
     )
+
+    const thingId = get(offer, 'thingId')
+    const thing = thingSelector(state, thingId)
+
+    const stocks = stocksSelector(state, offerId)
 
     const errors = occurrenceErrorsSelector(state)
 
@@ -145,10 +193,13 @@ export default compose(
       errors,
       event,
       eventOccurrenceIdOrNew,
+      eventOccurrences,
       isEditing,
-      occurrences,
+      isNew,
       offer,
       provider: providerSelector(state, get(event, 'lastProviderId')),
+      stocks,
+      thing,
     }
   })
-)(OccurrenceManager)
+)(EventOccurrencesAndStocksManager)
