@@ -37,10 +37,10 @@ const Loader = ({ haserror, isempty, isloading }) => {
             alt="Chargement en cours. Merci de patienter…"
           />
           <h2 className="subtitle">
-            {(isempty && 'aucune offre pour le moment') || ''}
+            {(isempty && 'Aucune offre pour le moment') || ''}
             {/* // FIXME -> mettre un label plus sexy avec redirection */}
-            {(haserror && 'erreur de chargement') || ''}
-            {(!isempty && !haserror && 'chargement des offres') || ''}
+            {(haserror && 'Erreur de chargement') || ''}
+            {(!isempty && !haserror && 'Chargement des offres') || ''}
           </h2>
           {showfooter && <NavigationFooter />}
         </div>

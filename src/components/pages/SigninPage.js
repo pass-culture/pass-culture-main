@@ -59,6 +59,7 @@ Bonjour&nbsp;!
               name="identifier"
               placeholder="Identifiant (email)"
               type="email"
+              required
             />
             <Field
               autoComplete="current-password"
@@ -67,6 +68,7 @@ Bonjour&nbsp;!
               name="password"
               placeholder="Mot de passe"
               type="password"
+              required
             />
 
             <Portal node={$footer}>
