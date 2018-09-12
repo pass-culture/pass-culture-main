@@ -1,10 +1,10 @@
 """ offerers """
 offerer_mocks = [
   {
-    "name": "Théâtre Chaillot",
-    "siren": "692039514",
-    "address": "1 pl trocadero et 11 novembre",
-    "postalCode": "75116",
+    "name": "LE GRAND REX PARIS",
+    "siren": "507633576",
+    "address": "1 BD POISSONNIERE",
+    "postalCode": "75002",
     "city": "Paris"
   }
 ]
