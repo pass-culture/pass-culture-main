@@ -9,11 +9,13 @@ from utils.test_utils import API_URL, req_with_auth, create_venue, create_offere
 
 @clean_database
 @pytest.mark.standalone
-def test_get_venues_should_return_a_list_of_venues(app):
+def test_get_venues_should_return_a_list_of_venues_sorted_alphabetically(app):
     # given
     offerer = create_offerer()
-    venue = create_venue(offerer)
-    PcObject.check_and_save(venue)
+    venue1 = create_venue(offerer, name='librairie C')
+    venue2 = create_venue(offerer, name='librairie A')
+    venue3 = create_venue(offerer, name='librairie B')
+    PcObject.check_and_save(venue3, venue1, venue2)
     user = create_user(email='user.pro@test.com')
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
 
@@ -22,7 +24,10 @@ def test_get_venues_should_return_a_list_of_venues(app):
 
     # then
     assert response.status_code == 200
-    assert len(response.json()) > 0
+    venues = response.json()
+    assert len(venues) == 3
+    names = [venue['name'] for venue in venues]
+    assert names == ['librairie A', 'librairie B', 'librairie C']
 
 
 @clean_database

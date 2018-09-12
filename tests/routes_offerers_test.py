@@ -21,13 +21,15 @@ def test_get_offerers_should_work_only_when_logged_in():
 
 @pytest.mark.standalone
 @clean_database
-def test_get_offerers_should_return_a_list_of_offerers(app):
+def test_get_offerers_should_return_a_list_of_offerers_sorted_alphabetically(app):
     # given
-    offerer = create_offerer()
-    PcObject.check_and_save(offerer)
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    PcObject.check_and_save(offerer1, offerer3, offerer2)
 
     user = create_user(password='p@55sw0rd')
-    user.offerers = [offerer]
+    user.offerers = [offerer1, offerer2, offerer3]
     PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
@@ -36,7 +38,10 @@ def test_get_offerers_should_return_a_list_of_offerers(app):
 
     # then
     assert response.status_code == 200
-    assert len(response.json()) > 0
+    offerers = response.json()
+    assert len(offerers) > 0
+    names = [offerer['name'] for offerer in offerers]
+    assert names == ['offreur A', 'offreur B', 'offreur C']
 
 
 @pytest.mark.standalone
@@ -64,7 +69,6 @@ def test_post_offerers_create_an_offerer(app):
     virtual_venues = list(filter(lambda v: v['isVirtual'],
                                  response.json()['managedVenues']))
     assert len(virtual_venues) == 1
-
 
 
 @pytest.mark.standalone

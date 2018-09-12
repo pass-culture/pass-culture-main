@@ -1,20 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import pytest
 
-from models.booking import Booking
 from models.db import db
-from models.event_occurrence import EventOccurrence
-from models.stock import Stock
 from models.pc_object import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer, create_venue, \
     create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence, \
     create_recommendation, create_stock_from_event_occurrence
-
-from utils.token import random_token
-
 
 
 @clean_database

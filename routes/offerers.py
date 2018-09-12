@@ -25,7 +25,8 @@ def list_offerers():
             .filter_by(user=current_user)
     return handle_rest_get_list(Offerer,
                                 query=query,
-                                include=OFFERER_INCLUDES)
+                                include=OFFERER_INCLUDES,
+                                order_by=Offerer.name)
 
 
 @app.route('/offerers/<id>', methods=['GET'])
