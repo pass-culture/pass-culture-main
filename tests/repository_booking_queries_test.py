@@ -1,13 +1,19 @@
+""" repository booking queries test """
 from datetime import datetime, timedelta
 
 import pytest
 
 from models import PcObject
-from repository import booking_queries
-from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
+from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
+                                       find_offerer_bookings
 from tests.conftest import clean_database
-from utils.test_utils import create_offerer, create_venue, create_stock_with_thing_offer, create_booking, create_user, \
-    create_deposit, create_stock_with_event_offer
+from utils.test_utils import create_booking, \
+                             create_deposit, \
+                             create_offerer, \
+                             create_stock_with_event_offer, \
+                             create_stock_with_thing_offer, \
+                             create_user, \
+                             create_venue
 
 
 @clean_database
@@ -30,11 +36,10 @@ def test_find_all_by_offerer_sorted_by_date_modified_asc_with_event_and_things(a
                               date_modified=now - timedelta(days=10))
     booking3 = create_booking(user, stock3, venue2, recommendation=None, quantity=2,
                               date_modified=now - timedelta(days=1))
-
     PcObject.check_and_save(booking1, booking2, booking3)
 
     # when
-    bookings = find_all_by_offerer_sorted_by_date_modified_asc(offerer1.id)
+    bookings = find_offerer_bookings(offerer1.id, order_by="booking.id asc")
 
     # then
     assert bookings[0].dateModified < bookings[1].dateModified
@@ -61,7 +66,7 @@ def test_find_all_ongoing_bookings(app):
 
 
     # When
-    all_ongoing_bookings = booking_queries.find_all_ongoing_bookings_by_stock(stock)
+    all_ongoing_bookings = find_all_ongoing_bookings_by_stock(stock)
 
     # Then
     assert all_ongoing_bookings == [ongoing_booking]
