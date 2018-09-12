@@ -42,6 +42,13 @@
  NEGATES
 
 ------------------------------------------------- */
+.no-margin {
+  margin: 0;
+}
+
+.no-padding {
+  padding: 0;
+}
 
 .no-border {
   border: 0;
@@ -72,11 +79,11 @@
 // default padding to 1rem
 // appliquer aux pages, aux sections de pages
 .marged {
-  margin: $page-padding;
+  margin: $page-padding !important;
 }
 
 .padded {
-  padding: $page-padding;
+  padding: $page-padding !important;
 }
 
 /* -------------------------------------------------
@@ -99,6 +106,10 @@
 
 .fs18 {
   @include fontSize(18px);
+}
+
+.fs16 {
+  @include fontSize(16px);
 }
 
 .fs14 {
@@ -171,11 +182,9 @@
   font-weight: 800;
 }
 
-/* -------------------------------------------------
-
- FONT CASE
-
-------------------------------------------------- */
+.is-italic {
+  font-style: italic;
+}
 
 .is-uppercase {
   text-transform: uppercase;
@@ -211,11 +220,14 @@
   font-size: 0.8rem;
 }
 
+.pc-theme-white,
 .pc-white-element {
   color: $primary;
   background-color: $white;
 }
 
+.pc-theme-red,
+.pc-theme-primary,
 .pc-primary-element {
   color: $white;
   background-color: $primary;
@@ -225,9 +237,15 @@
   background-image: linear-gradient(to bottom right, $primary, $purple);
 }
 
-.pc-main,
-.application-main {
+.pc-main {
+  @extend .flex-1;
+}
+
+.pc-header {
+  @extend .flex-0;
   @extend .padded;
+  @extend .text-center;
+  @extend .fs19;
 }
 
 .pc-footer {
@@ -245,8 +263,9 @@
 }
 
 .is-raw-description {
+  @extend .fs16;
+
   padding: 0;
-  font-size: 1rem;
   line-height: inherit;
   font-family: inherit;
   word-wrap: break-word;

@@ -21,7 +21,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <main
-          className="pc-main flex-rows flex-center flex-0"
+          className="pc-main padded flex-rows flex-center flex-0"
           role="main"
         >
           <h1
@@ -125,7 +125,7 @@ ShallowWrapper {
               </span>
             </p>,
           ],
-          "className": "pc-main flex-rows flex-center flex-0",
+          "className": "pc-main padded flex-rows flex-center flex-0",
           "role": "main",
         },
         "ref": null,
@@ -335,7 +335,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <main
-            className="pc-main flex-rows flex-center flex-0"
+            className="pc-main padded flex-rows flex-center flex-0"
             role="main"
           >
             <h1
@@ -439,7 +439,7 @@ ShallowWrapper {
                 </span>
               </p>,
             ],
-            "className": "pc-main flex-rows flex-center flex-0",
+            "className": "pc-main padded flex-rows flex-center flex-0",
             "role": "main",
           },
           "ref": null,

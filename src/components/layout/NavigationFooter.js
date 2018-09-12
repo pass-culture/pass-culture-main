@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 
 import { toggleMainMenu } from '../../reducers/menu'
 
-const NavigationFooter = ({ dispatch, className }) => {
+const NavigationFooter = ({ dispatch, className, theme }) => {
+  console.log('theme', theme)
   const cssclass = `pc-footer dotted-top flex-center flex-0 ${className}`
   return (
     <footer className={cssclass}>
@@ -25,11 +26,13 @@ const NavigationFooter = ({ dispatch, className }) => {
 
 NavigationFooter.defaultProps = {
   className: '',
+  theme: 'red',
 }
 
 NavigationFooter.propTypes = {
   className: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
+  theme: PropTypes.string,
 }
 
 export default connect()(NavigationFooter)

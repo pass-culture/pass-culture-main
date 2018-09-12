@@ -1,0 +1,23 @@
+// NOTE: genere les classes
+// .dotted-top, .dotted-right ...
+$directions: (top, right, bottom, left);
+
+@each $direction in $directions {
+  .dotted-#{$direction} {
+    // white color default
+    @include dotted(white, $direction);
+  }
+
+  // NOTE: genere les classes
+  // .dotted-right-primary, .dotted-left-black...
+  $colors: (
+    black: $black,
+    primary: $primary,
+  );
+
+  @each $colorname, $colorvalue in $colors {
+    .dotted-#{$direction}-#{$colorname} {
+      @include dotted($colorvalue, $direction);
+    }
+  }
+}

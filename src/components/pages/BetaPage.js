@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 const BetaPage = () => (
   <div id="beta-page" className="page pc-gradient flex-rows">
-    <main role="main" className="pc-main flex-rows flex-center flex-0">
+    <main role="main" className="pc-main padded flex-rows flex-center flex-0">
       <h1 className="text-left fs32">
         <span className="is-bold is-italic is-block">Bienvenue</span>
         <span className="is-italic is-block">dans la version beta</span>

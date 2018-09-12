@@ -85,7 +85,7 @@ class BookingsPage extends Component {
             <header className="padded has-text-centered flex-0 fs19">
               <h1>Mes réservations</h1>
             </header>
-            <main role="main" className="pc-main flex-rows flex-start">
+            <main role="main" className="pc-main padded flex-rows flex-start">
               <Scrollbars>
                 {soonBookingsLength > 0 && (
                   <div>

@@ -21,7 +21,7 @@ const ProfilePage = ({ user }) => {
     <div id="profile-page" className="page is-relative flex-rows">
       {isloaded && (
         <React.Fragment>
-          <header className="padded pc-primary-element has-text-centered flex-0">
+          <header className="padded pc-theme-red text-center flex-0">
             <h1 className="fs19">
               <span>Mon profil</span>
             </h1>
