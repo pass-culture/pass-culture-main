@@ -543,6 +543,7 @@ def test_get_booking_by_token_when_user_has_rights(app):
     assert response_json['isValidated'] == False
     assert response_json['bookingId'] == booking.id
     assert response_json['userName'] == 'John Doe'
+    assert response_json['venueDepartementCode'] == venue.departementCode
 
 
 @clean_database
@@ -580,6 +581,7 @@ def test_get_booking_by_token_when_token_does_not_exist(app):
     response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format('12345'))
     # Then
     assert response.status_code == 404
+    assert response.json()['global'] == ["Ce coupon n'a pas été trouvé"]
 
 
 @clean_database
@@ -690,6 +692,7 @@ def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_a
     response = req.get(API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123)))
     # Then
     assert response.status_code == 404
+    assert response.json()['global'] == ["Ce coupon n'a pas été trouvé"]
 
 
 @clean_database
@@ -713,6 +716,7 @@ def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
         API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr'))
     # Then
     assert response.status_code == 404
+    assert response.json()['global'] == ["Ce coupon n'a pas été trouvé"]
 
 
 @clean_database
@@ -734,7 +738,7 @@ def test_patch_booking_by_token_when_user_has_rights(app):
         API_URL + '/bookings/token/{}'.format(booking.token))
 
     # Then
-    assert response.status_code == 200
+    assert response.status_code == 204
     db.session.refresh(booking)
     assert booking.isValidated == True
 
@@ -781,7 +785,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email(app):
         API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
 
     # Then
-    assert response.status_code == 200
+    assert response.status_code == 204
     db.session.refresh(booking)
     assert booking.isValidated == True
 
@@ -850,7 +854,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_and_offer_i
         API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(stock.resolvedOffer.id)))
 
     # Then
-    assert response.status_code == 200
+    assert response.status_code == 204
     db.session.refresh(booking)
     assert booking.isValidated == True
 

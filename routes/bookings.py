@@ -114,15 +114,7 @@ def get_booking_by_token(token):
 
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
-    try:
-        booking = booking_queries.find_by_token(token, email, offer_id)
-    except:
-        errors = ApiErrors()
-        errors.addError(
-            'global',
-            "Ce coupon n'a pas été trouvé"
-        )
-        raise errors
+    booking = booking_queries.find_by_token(token, email, offer_id)
 
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
     date = None
