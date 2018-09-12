@@ -31,6 +31,12 @@
             &:first-child {
               width: 20%;
             }
+            input.date {
+              width: 100px;
+            }
+            input[type='time'] {
+              padding-left: 1rem;
+            }
           }
         }
       }

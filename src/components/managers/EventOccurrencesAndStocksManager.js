@@ -69,8 +69,12 @@ class EventOccurrencesAndStocksManager extends Component {
                 {!isStockOnly && (
                   <Fragment>
                     <td>Date</td>
-                    <td>Heure de début</td>
-                    <td>Heure de fin</td>
+                    <td>
+                      Heure de<br />début
+                    </td>
+                    <td>
+                      Heure de<br />fin
+                    </td>
                   </Fragment>
                 )}
                 <td>Prix</td>
