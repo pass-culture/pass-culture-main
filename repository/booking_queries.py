@@ -1,6 +1,10 @@
 from sqlalchemy.orm import aliased
 
-from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer, User
+from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer, User, ApiErrors
+
+
+class BookingNotFound(ApiErrors):
+    pass
 
 
 def find_all_by_user_id(user_id):
@@ -53,4 +57,14 @@ def find_by_token(token, email=None, offer_id=None):
         query_offer_2 = Booking.query.join(Stock).join(EventOccurrence).join(aliased(Offer)).filter_by(id=offer_id)
         query_offer = query_offer_1.union_all(query_offer_2)
         query = query.intersect_all(query_offer)
-    return query.first_or_404()
+    booking = query.first()
+
+    if booking is None:
+        errors = BookingNotFound()
+        errors.addError(
+            'global',
+            "Ce coupon n'a pas été trouvé"
+        )
+        raise errors
+
+    return booking

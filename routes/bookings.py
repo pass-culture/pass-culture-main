@@ -115,16 +115,18 @@ def get_booking_by_token(token):
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
     booking = booking_queries.find_by_token(token, email, offer_id)
+
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
     date = None
     if booking.stock.eventOccurrence:
         date = serialize(booking.stock.eventOccurrence.beginningDatetime)
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
 
     current_user_can_validate_bookings = current_user.is_authenticated and current_user.hasRights(RightsType.editor, offerer_id)
     if current_user_can_validate_bookings:
         response = {'bookingId': booking.id, 'email': booking.user.email, 'userName': booking.user.publicName, 'offerName': offer_name, 'date': date,
-                    'isValidated': booking.isValidated}
+                    'isValidated': booking.isValidated, 'venueDepartementCode': venue_departement_code}
         return jsonify(response), 200
     return '', 204
 
@@ -142,4 +144,4 @@ def patch_booking_by_token(token):
     booking.populateFromDict({'isValidated': True})
     PcObject.check_and_save(booking)
 
-    return '', 200
+    return '', 204
