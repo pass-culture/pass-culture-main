@@ -25,7 +25,7 @@ def restize_booking_not_found_error(e):
     return jsonify(e.errors), e.status_code or 404
 
 
-@app.errorhandler(Exception)
+@app.errorhandler(500)
 def internal_error(error):
     tb = traceback.format_exc()
     oneline_stack = ''.join(tb).replace('\n', ' ### ')
