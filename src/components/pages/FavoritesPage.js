@@ -28,7 +28,6 @@ const FavoritesPage = ({ favorites }) => (
   <Main
     name="favorites"
     redBg
-    backButton
     footer={renderPageFooter}
     header={renderPageHeader}
   >

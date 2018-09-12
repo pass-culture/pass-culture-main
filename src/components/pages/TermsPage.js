@@ -6,6 +6,7 @@ import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH, APP_VERSION } from '../../utils/config'
 import NavigationFooter from '../layout/NavigationFooter'
+import HistoryBackButton from '../layout/HistoryBackButton'
 
 class TermsPage extends React.PureComponent {
   constructor(props) {
@@ -27,6 +28,7 @@ class TermsPage extends React.PureComponent {
         <header className="pc-header pc-theme-red is-relative">
           <h1>
             <span>Mentions légales</span>
+            <HistoryBackButton />
           </h1>
         </header>
         <main role="main" className="pc-main">
