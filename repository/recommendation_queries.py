@@ -51,7 +51,7 @@ def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE
 
 
 def find_recommendations_for_user_matching_offers_and_search_term(user_id, offer_ids, search):
-    return filter_out_recommendation_on_soft_deleted_stocks() \
+    return Recommendation.query \
         .filter(Recommendation.userId == user_id) \
         .filter(Recommendation.offerId.in_(offer_ids)) \
         .filter(Recommendation.search == search) \
