@@ -97,7 +97,7 @@ class LostPasswordPage extends Component {
 
                       <Field
                         label="Nouveau mot de passe"
-                        name="password"
+                        name="newPassword"
                         placeholder="******"
                         required
                         type="password"
