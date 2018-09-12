@@ -87,7 +87,10 @@ def create_stock():
     event_occurrence_id = dehumanize(stock_dict.get('eventOccurrenceId', None))
     offerer = find_offerer_for_new_stock(offer_id, event_occurrence_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
-    new_stock = Stock(from_dict=request.json)
+    stock_json = request.json
+    if event_occurrence_id:
+        del(stock_json['offerId'])
+    new_stock = Stock(from_dict=stock_json)
     PcObject.check_and_save(new_stock)
     return jsonify(new_stock._asdict()), 201
 
