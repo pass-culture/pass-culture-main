@@ -1,10 +1,17 @@
-import { requestData, withLogin, Icon } from 'pass-culture-shared'
+import {
+  requestData,
+  withLogin,
+  Icon,
+  getTimeZone,
+  getRequestErrorString,
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
+import { formatLocalTimeDateString } from '../../utils/timezone'
 import Main from '../layout/Main'
 
 // Configurable
@@ -12,33 +19,34 @@ const CONFIG_CODE_LENGTH = 6
 const CONFIG_BAD_CODE_REGEX = /[^a-z0-9]/i
 
 // Component states
-const COUNTER_WAIT = 'COUNTER_WAIT'
-const COUNTER_TYPE = 'COUNTER_TYPE'
-const COUNTER_INVALID = 'COUNTER_INVALID'
-const COUNTER_GET_VERIFICATION = 'COUNTER_GET_VERIFICATION'
-const COUNTER_RECEIVE_VERIFICATION = 'COUNTER_RECEIVE_VERIFICATION'
-const COUNTER_FAIL_VERIFICATION = 'COUNTER_FAIL_VERIFICATION'
-const COUNTER_POST_REGISTER = 'COUNTER_POST_REGISTER'
-const COUNTER_RECEIVE_REGISTER = 'COUNTER_RECEIVE_REGISTER'
-const COUNTER_FAIL_REGISTER = 'COUNTER_FAIL_REGISTER'
+const DESK_WAIT = 'DESK_WAIT'
+const DESK_TYPE = 'DESK_TYPE'
+const DESK_INVALID = 'DESK_INVALID'
+const DESK_GET_VERIFICATION = 'DESK_GET_VERIFICATION'
+const DESK_RECEIVE_VERIFICATION_USED = 'DESK_RECEIVE_VERIFICATION_USED'
+const DESK_RECEIVE_VERIFICATION_NOT_USED = 'DESK_RECEIVE_VERIFICATION_NOT_USED'
+const DESK_FAIL_VERIFICATION = 'DESK_FAIL_VERIFICATION'
+const DESK_POST_REGISTER = 'DESK_POST_REGISTER'
+const DESK_RECEIVE_REGISTER = 'DESK_RECEIVE_REGISTER'
+const DESK_FAIL_REGISTER = 'DESK_FAIL_REGISTER'
 
-const DEFAULT_STATE = { state: COUNTER_WAIT, code: '', booking: null }
+const DEFAULT_STATE = { name: DESK_WAIT, code: '', booking: null }
 
-const CounterState = ({ message, level, booking }) => (
-  <div className="counter-state">
+const DeskState = ({ message, level, booking }) => (
+  <div className="desk-state">
     <table className="booking-summary">
       <tbody>
         <tr>
-          <th>email :</th>
-          <td>{booking && 'xxx'}</td>
+          <th>Utilisateur :</th>
+          <td>{booking && booking.userName}</td>
         </tr>
         <tr>
           <th>Offre :</th>
-          <td>{booking && booking.token}</td>
+          <td>{booking && booking.offerName}</td>
         </tr>
         <tr>
           <th>Date de l'offre :</th>
-          <td>{booking && 'xxx'}</td>
+          <td>{booking && formatLocalTimeDateString(booking.date)}</td>
         </tr>
       </tbody>
     </table>
@@ -50,17 +58,17 @@ const CounterState = ({ message, level, booking }) => (
   </div>
 )
 
-CounterState.defaultProps = {
+DeskState.defaultProps = {
   level: 'pending',
 }
 
-CounterState.propTypes = {
+DeskState.propTypes = {
   message: PropTypes.string.isRequired,
   level: PropTypes.string,
   booking: PropTypes.object,
 }
 
-class CounterPage extends Component {
+class DeskPage extends Component {
   constructor(props) {
     super(props)
 
@@ -69,32 +77,37 @@ class CounterPage extends Component {
   }
 
   getBookingDataFor(code) {
-    // @TODO : Fix url with real endpoint
-    this.actions.requestData('GET', `/bookings/AE`, {
-      key: 'bookings',
+    this.actions.requestData('GET', `bookings/token/${code}`, {
+      key: 'deskBookings',
       handleSuccess: (state, request) => {
-        this.setState({
-          state: COUNTER_RECEIVE_VERIFICATION,
-          booking: request.data,
-        })
+        if (request.data.isValidated === true) {
+          this.setState({ name: DESK_RECEIVE_VERIFICATION_USED })
+        } else {
+          this.setState({ name: DESK_RECEIVE_VERIFICATION_NOT_USED })
+        }
+        this.setState({ booking: request.data })
       },
       handleFail: (state, request) => {
-        this.setState({ state: COUNTER_FAIL_VERIFICATION })
-        console.log(request.errors) // @TODO something more usefull...
+        console.log({ request })
+        this.setState({
+          name: DESK_FAIL_VERIFICATION,
+          message: getRequestErrorString(request),
+        })
       },
     })
   }
 
   postRegistrationFor(code) {
-    // @TODO : Fix url with real endpoint
-    this.actions.requestData('POST', '/some/url', {
-      body: { code },
+    this.actions.requestData('PATCH', `/bookings/token/${code}`, {
       handleSuccess: (state, request) => {
-        this.setState({ state: COUNTER_RECEIVE_REGISTER })
+        this.setState({ name: DESK_RECEIVE_REGISTER })
       },
       handleFail: (state, request) => {
-        this.setState({ state: COUNTER_FAIL_REGISTER })
-        console.log(request.errors) // @TODO something more usefull...
+        console.log('fail', { request })
+        this.setState({
+          name: DESK_FAIL_REGISTER,
+          message: getRequestErrorString(request),
+        })
       },
     })
   }
@@ -104,23 +117,23 @@ class CounterPage extends Component {
     this.setState({ code })
 
     if (code === '') {
-      return this.setState({ state: COUNTER_WAIT })
+      return this.setState({ name: DESK_WAIT })
     }
 
     if (code.match(CONFIG_BAD_CODE_REGEX) !== null) {
-      return this.setState({ state: COUNTER_INVALID })
+      return this.setState({ name: DESK_INVALID })
     }
 
     if (code.length < CONFIG_CODE_LENGTH) {
-      return this.setState({ state: COUNTER_TYPE })
+      return this.setState({ name: DESK_TYPE })
     }
 
-    this.setState({ state: COUNTER_GET_VERIFICATION })
+    this.setState({ name: DESK_GET_VERIFICATION })
     return this.getBookingDataFor(code)
   }
 
   handleCodeRegistration(code) {
-    this.setState({ state: COUNTER_POST_REGISTER, code: '' })
+    this.setState({ name: DESK_POST_REGISTER, code: '' })
     this.postRegistrationFor(code)
     this.input.focus()
   }
@@ -131,7 +144,7 @@ class CounterPage extends Component {
 
   render() {
     return (
-      <Main name="counter">
+      <Main name="desk">
         <div className="section hero">
           <h1 className="main-title">Guichet</h1>
           <p className="subtitle">
@@ -156,62 +169,71 @@ class CounterPage extends Component {
           />
 
           <button
-            disabled={this.state.state !== COUNTER_RECEIVE_VERIFICATION}
+            disabled={this.state.name !== DESK_RECEIVE_VERIFICATION_NOT_USED}
             className="button"
             type="submit"
             onClick={() => this.handleCodeRegistration(this.state.code)}>
             Valider
           </button>
 
-          {this.state.state === COUNTER_WAIT && (
-            <CounterState message="Saisissez un code" />
+          {this.state.name === DESK_WAIT && (
+            <DeskState message="Saisissez un code" />
           )}
 
-          {this.state.state === COUNTER_TYPE && (
-            <CounterState
+          {this.state.name === DESK_TYPE && (
+            <DeskState
               message={`caractères restants: ${CONFIG_CODE_LENGTH -
                 this.state.code.length}/${CONFIG_CODE_LENGTH}`}
             />
           )}
 
-          {this.state.state === COUNTER_INVALID && (
-            <CounterState
+          {this.state.name === DESK_INVALID && (
+            <DeskState
               level="error"
               message="Caractères valides : de A à Z et de 0 à 9"
             />
           )}
 
-          {this.state.state === COUNTER_GET_VERIFICATION && (
-            <CounterState message="Vérification..." />
+          {this.state.name === DESK_GET_VERIFICATION && (
+            <DeskState message="Vérification..." />
           )}
 
-          {this.state.state === COUNTER_RECEIVE_VERIFICATION && (
-            <CounterState
+          {this.state.name === DESK_RECEIVE_VERIFICATION_USED && (
+            <DeskState
               booking={this.state.booking}
-              message="Booking vérifié, cliquez sur OK pour enregistrer"
+              message="Ce coupon est déjà enregistré"
+              level="error"
             />
           )}
 
-          {this.state.state === COUNTER_POST_REGISTER && (
-            <CounterState
+          {this.state.name === DESK_RECEIVE_VERIFICATION_NOT_USED && (
+            <DeskState
+              booking={this.state.booking}
+              message="Coupon vérifié, cliquez sur OK pour enregistrer"
+            />
+          )}
+
+          {this.state.name === DESK_POST_REGISTER && (
+            <DeskState
               booking={this.state.booking}
               message="Enregistrement en cours..."
             />
           )}
 
-          {this.state.state === COUNTER_RECEIVE_REGISTER && (
-            <CounterState
+          {this.state.name === DESK_RECEIVE_REGISTER && (
+            <DeskState
               booking={this.state.booking}
               message="Enregistrement réussi!"
               level="success"
             />
           )}
 
-          {this.state.state === COUNTER_FAIL_REGISTER && (
-            <CounterState
+          {(this.state.name === DESK_FAIL_VERIFICATION ||
+            this.state.name === DESK_FAIL_REGISTER) && (
+            <DeskState
               booking={this.state.booking}
               level="error"
-              message="Echec de l'enregistrement (problème technique)"
+              message={this.state.message}
             />
           )}
 
@@ -227,4 +249,4 @@ class CounterPage extends Component {
   }
 }
 
-export default withLogin({ failRedirect: '/connexion' })(connect()(CounterPage))
+export default withLogin({ failRedirect: '/connexion' })(connect()(DeskPage))

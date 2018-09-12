@@ -2,7 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router'
 
 import AccoutingPage from '../components/pages/AccountingPage'
-import CounterPage from '../components/pages/CounterPage'
+import DeskPage from '../components/pages/DeskPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
 import OffersPage from '../components/pages/OffersPage'
@@ -38,7 +38,7 @@ const routes = [
     title: 'Connexion',
   },
   {
-    component: CounterPage,
+    component: DeskPage,
     path: '/guichet',
     title: 'Guichet',
   },

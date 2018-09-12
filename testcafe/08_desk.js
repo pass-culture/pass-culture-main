@@ -1,10 +1,10 @@
 import { Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
-import { regularOfferer } from './helpers/roles'
+import { admin } from './helpers/roles'
 
 const subTitleHeader = Selector('h2')
 const pageTitleHeader = Selector('h1')
-const counterLink = Selector("a[href^='/guichet']")
+const deskLink = Selector("a[href^='/guichet']")
 const navbarAnchor = Selector(
   'a.navbar-link, span.navbar-burger'
 ).filterVisible()
@@ -14,17 +14,15 @@ const stateText = Selector('.form .state span')
 const exitlink = Selector('#exitlink')
 const registerButton = Selector('.form button[type="submit"]')
 
-// @TODO Get a working code
-const TEST_GOOD_CODE = 'ABC123'
-// @TODO Get a not working code
+const TEST_GOOD_CODE = '2ALYY5'
 const TEST_BAD_CODE = 'ABC123'
 
 fixture`08_01 Guichet | Page guichet`.page`${ROOT_PATH}guichet`
 
 test("L'état de départ de la page /guichet est conforme", async t => {
-  await t.useRole(regularOfferer)
+  await t.useRole(admin)
   // Navigation
-  await t.click(navbarAnchor).click(counterLink)
+  await t.click(navbarAnchor).click(deskLink)
 
   // intiial state
   await t.expect(pageTitleHeader.innerText).eql('Guichet')
@@ -36,13 +34,19 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   await t.typeText(codeInput, 'AZE')
   await t.expect(stateText.innerText).eql('caractères restants: 3/6')
 
+  // Reset input
+  t.selectText(codeInput).pressKey('delete')
+
   // typed + verified (beware of real validation lag)
   await t.typeText(codeInput, TEST_GOOD_CODE)
   await t
     .expect(stateText.innerText)
-    .eql('Booking vérifié, cliquez sur OK pour enregistrer')
+    .eql('Coupon vérifié, cliquez sur OK pour enregistrer')
   await t.expect(state.classNames).contains('pending')
   await t.expect(codeInput.innerText).eql('')
+
+  // Reset input
+  t.selectText(codeInput).pressKey('delete')
 
   // Bad input format
   await t.click(registerButton) // Rest field
@@ -52,16 +56,18 @@ test("L'état de départ de la page /guichet est conforme", async t => {
     .eql('Caractères valides : de A à Z et de 0 à 9')
   await t.expect(state.classNames).contains('error')
 
-  // @TODO : Complete with adequate codes
-  // // Registration success
-  // await t.typeText(codeInput, TEST_GOOD_CODE)
-  // await t.click(registerButton)
-  // await t.expect(state.classNames).contains('success')
-  //
-  // // Registration failure
-  // await t.typeText(codeInput, TEST_BAD_CODE)
-  // await t.click(registerButton)
-  // await t.expect(state.classNames).contains('error')
+  // Reset input
+  t.selectText(codeInput).pressKey('delete')
+
+  // Registration success
+  await t.typeText(codeInput, TEST_GOOD_CODE)
+  await t.click(registerButton)
+  await t.expect(state.classNames).contains('success')
+
+  // Registration failure
+  await t.typeText(codeInput, TEST_BAD_CODE)
+  await t.click(registerButton)
+  await t.expect(state.classNames).contains('error')
 
   await t.click(exitlink).wait(500)
   const location = await t.eval(() => window.location)

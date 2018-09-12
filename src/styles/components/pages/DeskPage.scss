@@ -1,5 +1,4 @@
-.counter-page {
-
+.desk-page {
   .form {
     text-align: center;
 
@@ -8,7 +7,7 @@
       margin: auto;
     }
 
-    input[type="text"] {
+    input[type='text'] {
       width: 316px;
       height: 72px;
       font-size: 36px;
@@ -69,7 +68,6 @@
   }
 
   #exitlink {
-    margin-top: -70px
+    margin-top: -70px;
   }
-
 }
