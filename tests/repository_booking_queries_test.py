@@ -18,7 +18,7 @@ from utils.test_utils import create_booking, \
 
 @clean_database
 @pytest.mark.standalone
-def test_find_all_by_offerer_sorted_by_date_modified_asc_with_event_and_things(app):
+def test_find_all_by_offerer_with_event_and_things(app):
     # given
     user = create_user()
     now = datetime.utcnow()
@@ -39,7 +39,7 @@ def test_find_all_by_offerer_sorted_by_date_modified_asc_with_event_and_things(a
     PcObject.check_and_save(booking1, booking2, booking3)
 
     # when
-    bookings = find_offerer_bookings(offerer1.id, order_by="booking.id asc")
+    bookings = find_offerer_bookings(offerer1.id, order_by=["booking.id asc"])
 
     # then
     assert bookings[0].dateModified < bookings[1].dateModified
