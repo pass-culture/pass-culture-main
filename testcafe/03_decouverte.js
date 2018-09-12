@@ -85,3 +85,4 @@ test('Je vois le verso des cartes lorsque je fais glisser la carte vers le haut'
 })
 
 // TODO tester le drag des images https://devexpress.github.io/testcafe/documentation/test-api/actions/drag-element.html
+// S'il n'y a pas d'offres, je vois le message 'Aucune offre pour le moment' et je peux accéder au menu profil
