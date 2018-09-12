@@ -16,6 +16,7 @@ import eventSelector from '../../selectors/event'
 import maxDateSelector from '../../selectors/maxDate'
 import mediationsSelector from '../../selectors/mediations'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
+import stocksSelector from '../../selectors/stocks'
 import thingSelector from '../../selectors/thing'
 import thumbUrlSelector from '../../selectors/thumbUrl'
 import typeSelector from '../../selectors/type'
@@ -49,6 +50,7 @@ class OccasionItem extends Component {
       maxDate,
       mediations,
       offer,
+      stocks,
       thing,
       thumbUrl,
       type,
@@ -85,15 +87,15 @@ class OccasionItem extends Component {
             <li className="is-uppercase">
               {get(type, 'label') || (event ? 'Evénement' : 'Objet')}
             </li>
-            {event && (
-              <li>
-                <NavLink
-                  className="has-text-primary"
-                  to={`/offres/${offer.id}?gestion`}>
-                  {pluralize(get(eventOccurrences, 'length'), 'dates')}
-                </NavLink>
-              </li>
-            )}
+            <li>
+              <NavLink
+                className="has-text-primary"
+                to={`/offres/${offer.id}?gestion`}>
+                {event
+                  ? pluralize(get(eventOccurrences, 'length'), 'dates')
+                  : get(stocks, 'length') + ' prix'}
+              </NavLink>
+            </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             <li
               title={
@@ -195,6 +197,7 @@ export default compose(
           eventOccurrences: eventOccurrencesSelector(state, id),
           maxDate: maxDateSelector(state, id),
           mediations: mediationsSelector(state, id),
+          stocks: stocksSelector(state, id),
           thing: thing,
           thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
           type: typeSelector(state, typeValue),
