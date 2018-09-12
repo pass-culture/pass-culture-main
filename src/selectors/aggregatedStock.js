@@ -27,4 +27,9 @@ export default createCachedSelector(stocksSelector, stocks =>
       priceMax: 0,
     }
   )
-)((state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`)
+)(
+  (state, offerId, eventOccurrences) =>
+    `${offerId || ''}/${
+      eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
+    }`
+)

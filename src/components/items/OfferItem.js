@@ -191,13 +191,14 @@ export default compose(
         const event = eventSelector(state, eventId)
         const thing = thingSelector(state, thingId)
         const typeValue = get(event, 'type') || get(thing, 'type')
+        const eventOccurrences = eventOccurrencesSelector(state, id)
         return {
-          aggregatedStock: aggregatedStockSelector(state, venueId),
+          aggregatedStock: aggregatedStockSelector(state, id, eventOccurrences),
           event: event,
-          eventOccurrences: eventOccurrencesSelector(state, id),
+          eventOccurrences,
           maxDate: maxDateSelector(state, id),
           mediations: mediationsSelector(state, id),
-          stocks: stocksSelector(state, id),
+          stocks: stocksSelector(state, id, eventOccurrences),
           thing: thing,
           thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
           type: typeSelector(state, typeValue),

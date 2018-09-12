@@ -440,7 +440,7 @@ export default compose(
 
     const stock = ownProps.isStockOnly
       ? ownProps.stock
-      : stockSelector(state, offerId, get(ownProps, 'eventOccurrence.id'))
+      : stockSelector(state, offerId, get(ownProps, 'eventOccurrence'))
 
     const stockPatch = stockPatchSelector(
       state,
