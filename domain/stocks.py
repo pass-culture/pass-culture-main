@@ -5,6 +5,7 @@ from validation.stocks import check_offer_offerer_exists, \
 
 
 def find_offerer_for_new_stock(offer_id, event_occurrence_id):
+    offerer = None
     if offer_id:
         offerer = offerer_queries.get_by_offer_id(offer_id)
         check_offer_offerer_exists(offerer)
