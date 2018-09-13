@@ -66,6 +66,7 @@ class EventOccurrenceAndStockItem extends Component {
     if (isStockOnly) {
       return
     }
+    console.log('ben alors', formBeginningDatetime, formEndDatetime)
     if (formEndDatetime < formBeginningDatetime) {
       dispatch(
         mergeForm('eventOccurrence', {
@@ -233,6 +234,7 @@ class EventOccurrenceAndStockItem extends Component {
           {!isStockOnly && (
             <Form
               action={`/eventOccurrences/${get(eventOccurrence, 'id', '')}`}
+              BlockComponent={null}
               handleSuccess={this.handleEventOccurrenceSuccessData}
               layout="input-only"
               name={`eventOccurrence${get(eventOccurrence, 'id', '')}`}
@@ -295,6 +297,7 @@ class EventOccurrenceAndStockItem extends Component {
           )}
           <Form
             action={`/stocks/${get(stockPatch, 'id', '')}`}
+            BlockComponent={null}
             handleSuccess={this.handleOfferSuccessData}
             layout="input-only"
             key={1}
