@@ -62,9 +62,7 @@ class OffersPage extends Component {
     return (
       <Main name="offers" handleDataRequest={this.handleDataRequest}>
         <HeroSection title="Vos offres">
-          <NavLink
-            to={`/offres/nouveau`}
-            className="button is-primary is-medium is-pulled-right">
+          <NavLink to={`/offres/nouveau`} className="cta button is-primary">
             <span className="icon">
               <Icon svg="ico-offres-w" />
             </span>

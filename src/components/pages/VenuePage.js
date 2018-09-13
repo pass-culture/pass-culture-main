@@ -133,7 +133,7 @@ class VenuePage extends Component {
             get(venuePatch, 'id') && (
               <NavLink
                 to={`/offres/nouveau?lieu=${venuePatch.id}`}
-                className="cta button is-primary is-small">
+                className="cta button is-primary">
                 <span className="icon">
                   <Icon svg="ico-offres-w" />
                 </span>
