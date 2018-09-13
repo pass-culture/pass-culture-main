@@ -9,7 +9,7 @@ from repository.user_queries import find_users_by_department_and_date_range, \
     find_users_stats_per_department
 from tests.conftest import clean_database
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_stock_with_thing_offer, create_activity, create_thing_offer
+    create_stock_with_thing_offer, create_booking_activity, create_thing_offer, create_user_activity
 
 
 @pytest.mark.standalone
@@ -95,20 +95,29 @@ def test_find_bookings_stats_per_department(app):
     stock6 = create_stock_with_thing_offer(offerer, venue93, thing_offer, price=0)
     booking6 = create_booking(user4, stock6, venue93, recommendation=None)
 
-    PcObject.check_and_save(booking1, booking2, booking3, booking4, booking5, booking6)
+    cancelled_booking = create_booking(user1, stock1, venue34, fill_stock_bookings=False)
+    cancelled_booking.isCancelled = True
 
-    activity1 = create_activity(booking1, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
-    activity2 = create_activity(booking2, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
-    activity3 = create_activity(booking3, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
-    activity4 = create_activity(booking4, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
-    activity5 = create_activity(booking5, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
-    activity6 = create_activity(booking6, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
+    PcObject.check_and_save(booking1, booking2, booking3, booking4, booking5, booking6, cancelled_booking)
+
+    activity1 = create_booking_activity(booking1, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
+    activity2 = create_booking_activity(booking2, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
+    activity3 = create_booking_activity(booking3, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
+    activity4 = create_booking_activity(booking4, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
+    activity5 = create_booking_activity(booking5, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
+    activity6 = create_booking_activity(booking6, 'booking', 'insert', issued_at=datetime(2018, 6, 4))
+    activity_not_insert = create_booking_activity(booking6, 'booking', 'update', issued_at=datetime(2018, 6, 4))
+    activity_not_booking = create_user_activity(user1, 'user', 'insert', issued_at=datetime(2018, 6, 4))
+    activity_cancelled_booking = create_booking_activity(cancelled_booking, 'booking', 'insert', issued_at=datetime(2018, 5, 4))
     db.session.add(activity1)
     db.session.add(activity2)
     db.session.add(activity3)
     db.session.add(activity4)
     db.session.add(activity5)
     db.session.add(activity6)
+    db.session.add(activity_not_insert)
+    db.session.add(activity_not_booking)
+    db.session.add(activity_cancelled_booking)
 
     db.session.commit()
 

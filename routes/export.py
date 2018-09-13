@@ -115,7 +115,7 @@ def get_bookings_stats():
     bookings_stats = find_bookings_stats_per_department(date_intervall)
 
     file_name = 'export_%s_users_stats.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['department', 'date_intervall', 'bookings_per_venue_dpt', 'bookings_per_user_dpt', 'distinct_user']
+    headers = ['department', 'date_intervall', 'bookings_per_venue_dpt', 'distinct_booking_user']
     return _make_csv_response(file_name, headers, bookings_stats)
 
 

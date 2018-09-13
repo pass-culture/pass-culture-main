@@ -459,14 +459,30 @@ def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_t
     return mediation
 
 
-def create_activity(entity, table_name, verb, issued_at=datetime.utcnow):
+def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow):
     Activity = versioning_manager.activity_cls
     activity = Activity()
     activity.issued_at = issued_at
     activity.table_name = table_name
     activity.verb = verb
-    variables = {"id": entity.id, "token": entity.token, "userId": entity.userId, "stockId": entity.stockId,
-                 "isCancelled": entity.isCancelled, "quantity": entity.quantity,
-                 "recommendationId": entity.recommendationId, "isValidated": entity.isValidated}
+    variables = {"id": booking.id, "token": booking.token, "userId": booking.userId, "stockId": booking.stockId,
+                 "isCancelled": booking.isCancelled, "quantity": booking.quantity,
+                 "recommendationId": booking.recommendationId, "isValidated": booking.isValidated}
+    activity.changed_data = variables
+    return activity
+
+
+def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):
+    Activity = versioning_manager.activity_cls
+    activity = Activity()
+    activity.issued_at = issued_at
+    activity.table_name = table_name
+    activity.verb = verb
+    variables = {'email': user.email,
+                 'publicName': user.publicName,
+                 'offerers': user.offerers,
+                 'departementCode': user.departementCode,
+                 'canBookFreeOffers': user.canBookFreeOffers,
+                 'isAdmin': user.isAdmin}
     activity.changed_data = variables
     return activity
