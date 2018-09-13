@@ -1,8 +1,85 @@
-/* -------------------------------------------------
+/* ------------------------------------------------
 
- SIZES
+ Helpers:
+ - size
+ - color
+ - style
+ - align
 
-------------------------------------------------- */
+------------------------------------------------ */
+
+/* ------ ALIGN */
+.text-center,
+.has-text-centered {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+/* ------ COLORS */
+
+.is-grey-text {
+  color: $grey;
+}
+
+.is-white-text {
+  color: $white;
+}
+
+.is-black-text {
+  color: $black;
+}
+
+.is-red-text,
+.is-primary-text {
+  color: $primary;
+}
+
+/* ------ STYLE / WEIGHT */
+.is-light {
+  font-weight: 200;
+}
+
+.is-normal {
+  font-weight: 400;
+}
+
+.is-semi-bold {
+  font-weight: 600;
+}
+
+.is-bold {
+  font-weight: 800;
+}
+
+.is-italic {
+  font-style: italic;
+}
+
+.is-uppercase {
+  text-transform: uppercase;
+}
+
+.is-lowercase {
+  text-transform: lowercase;
+}
+
+.is-capitalized {
+  // capitalize each words first letter
+  text-transform: capitalize;
+}
+
+/* ------ SIZES */
 .fs32 {
   @include fontSize(32px);
 }

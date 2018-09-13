@@ -87,3 +87,59 @@ button {
   height: $footer-height;
   z-index: $zindex-beta-corner;
 }
+
+/* -------------------------------------------------
+
+ LAYOUTS
+
+------------------------------------------------- */
+
+.pc-theme-purple {
+  color: $white;
+  background-color: $purple;
+}
+
+.pc-theme-white {
+  color: $primary;
+  background-color: $white;
+}
+
+.pc-theme-red,
+.pc-theme-primary {
+  color: $white;
+  background-color: $primary;
+}
+
+.pc-label {
+  color: $grey;
+  font-size: 0.8rem;
+}
+
+.pc-gradient {
+  background-image: linear-gradient(to bottom right, $primary, $purple);
+}
+
+.pc-main {
+  @extend .flex-1;
+}
+
+.pc-header {
+  @extend .flex-0;
+  @extend .padded;
+  @extend .text-center;
+  @extend .fs19;
+}
+
+.pc-footer {
+  @extend .flex-0;
+  @extend .padded;
+  @extend .items-center;
+  @extend .flex-columns;
+
+  height: $footer-height;
+  min-height: $footer-height;
+
+  .icon-user-circle-outline {
+    font-size: 2.7rem;
+  }
+}

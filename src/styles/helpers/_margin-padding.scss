@@ -49,3 +49,13 @@ $sizes: (0, 3, 5, 7, 8, 12, 16, 20, 22, 28, 30, 32, 36, 40, 48, 60);
     }
   }
 }
+
+// default padding to 1rem
+// appliquer aux pages, aux sections de pages
+.marged {
+  margin: $page-padding !important;
+}
+
+.padded {
+  padding: $page-padding !important;
+}
