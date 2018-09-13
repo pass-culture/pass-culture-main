@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
-import { ROOT_PATH } from '../src/utils/config'
 import regularUser from './helpers/roles'
+import { ROOT_PATH } from '../src/utils/config'
 
 const menuButton = Selector('.profile-button')
 
