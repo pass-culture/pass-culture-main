@@ -110,6 +110,8 @@ class VenuePage extends Component {
     } = this.props
 
     const { isNew, isReadOnly } = this.state
+    const isVirtual = get(venuePatch, 'isVirtual')
+    console.log('isVirtual', isVirtual)
 
     return (
       <Main
@@ -131,7 +133,7 @@ class VenuePage extends Component {
             get(venuePatch, 'id') && (
               <NavLink
                 to={`/offres/nouveau?lieu=${venuePatch.id}`}
-                className="button is-primary is-medium is-pulled-right cta">
+                className="cta button is-primary is-small">
                 <span className="icon">
                   <Icon svg="ico-offres-w" />
                 </span>
@@ -142,98 +144,105 @@ class VenuePage extends Component {
 
         {!isNew && <ProviderManager venue={venuePatch} />}
 
-        <Form
-          action={`/venues/${get(venuePatch, 'id', '')}`}
-          handleSuccess={this.handleSuccess}
-          name="venue"
-          patch={venuePatch}
-          readOnly={isReadOnly}>
-          <Field type="hidden" name="managingOffererId" />
-          <div className="section">
-            <h2 className="main-list-title">
-              IDENTIFIANTS
-              <span className="is-pulled-right is-size-7 has-text-grey">
-                Les champs marqués d'un{' '}
-                <span className="required-legend"> * </span> sont obligatoires
-              </span>
-            </h2>
-            <div className="field-group">
-              <Field label="SIRET" name="siret" type="siret" />
-              <Field isExpanded label="Nom du lieu" name="name" required />
-              <Field label="E-mail" name="bookingEmail" required type="email" />
+        {!get(venuePatch, 'isVirtual') && (
+          <Form
+            action={`/venues/${get(venuePatch, 'id', '')}`}
+            handleSuccess={this.handleSuccess}
+            name="venue"
+            patch={venuePatch}
+            readOnly={isReadOnly}>
+            <Field type="hidden" name="managingOffererId" />
+            <div className="section">
+              <h2 className="main-list-title">
+                IDENTIFIANTS
+                <span className="is-pulled-right is-size-7 has-text-grey">
+                  Les champs marqués d'un{' '}
+                  <span className="required-legend"> * </span> sont obligatoires
+                </span>
+              </h2>
+              <div className="field-group">
+                <Field label="SIRET" name="siret" type="siret" />
+                <Field isExpanded label="Nom du lieu" name="name" required />
+                <Field
+                  label="E-mail"
+                  name="bookingEmail"
+                  required
+                  type="email"
+                />
+              </div>
             </div>
-          </div>
-          <div className="section">
-            <h2 className="main-list-title">ADRESSE</h2>
-            <div className="field-group">
-              <Field
-                isExpanded
-                label="Numéro et voie"
-                name="address"
-                required
-                type="geo"
-                withMap
-              />
-              <Field
-                autocomplete="postal-code"
-                label="Code postal"
-                name="postalCode"
-                required
-              />
-              <Field
-                autocomplete="address-level2"
-                label="Ville"
-                name="city"
-                required
-              />
-              <Field label="Longitude" name="longitude" required />
-              <Field label="Latitude" name="latitude" required />
+            <div className="section">
+              <h2 className="main-list-title">ADRESSE</h2>
+              <div className="field-group">
+                <Field
+                  isExpanded
+                  label="Numéro et voie"
+                  name="address"
+                  required
+                  type="geo"
+                  withMap
+                />
+                <Field
+                  autocomplete="postal-code"
+                  label="Code postal"
+                  name="postalCode"
+                  required
+                />
+                <Field
+                  autocomplete="address-level2"
+                  label="Ville"
+                  name="city"
+                  required
+                />
+                <Field label="Longitude" name="longitude" required />
+                <Field label="Latitude" name="latitude" required />
+              </div>
             </div>
-          </div>
-          <hr />
-          <div
-            className="field is-grouped is-grouped-centered"
-            style={{ justifyContent: 'space-between' }}>
-            <div className="control">
-              {isReadOnly ? (
-                <NavLink
-                  className="button is-secondary is-medium"
-                  to={`/structures/${offererId}/lieux/${venueId}?modifie`}>
-                  Modifier le lieu
-                </NavLink>
-              ) : (
-                <CancelButton
-                  className="button is-secondary is-medium"
-                  to={
-                    isNew
-                      ? `/structures/${offererId}`
-                      : `/structures/${offererId}/lieux/${venueId}`
-                  }>
-                  Annuler
-                </CancelButton>
-              )}
-            </div>
-            <div className="control">
-              <div
-                className="field is-grouped is-grouped-centered"
-                style={{ justifyContent: 'space-between' }}>
-                <div className="control">
-                  {isReadOnly ? (
-                    <NavLink
-                      className="button is-primary is-medium"
-                      to={`/structures/${offererId}`}>
-                      Terminer
-                    </NavLink>
-                  ) : (
-                    <SubmitButton className="button is-primary is-medium">
-                      {isNew ? 'Créer' : 'Valider'}
-                    </SubmitButton>
-                  )}
+            <hr />
+            <div
+              className="field is-grouped is-grouped-centered"
+              style={{ justifyContent: 'space-between' }}>
+              <div className="control">
+                {isReadOnly ? (
+                  <NavLink
+                    className="button is-secondary is-medium"
+                    to={`/structures/${offererId}/lieux/${venueId}?modifie`}>
+                    Modifier le lieu
+                  </NavLink>
+                ) : (
+                  <CancelButton
+                    className="button is-secondary is-medium"
+                    to={
+                      isNew
+                        ? `/structures/${offererId}`
+                        : `/structures/${offererId}/lieux/${venueId}`
+                    }>
+                    Annuler
+                  </CancelButton>
+                )}
+              </div>
+              <div className="control">
+                <div
+                  className="field is-grouped is-grouped-centered"
+                  style={{ justifyContent: 'space-between' }}>
+                  <div className="control">
+                    {isReadOnly ? (
+                      <NavLink
+                        className="button is-primary is-medium"
+                        to={`/structures/${offererId}`}>
+                        Terminer
+                      </NavLink>
+                    ) : (
+                      <SubmitButton className="button is-primary is-medium">
+                        {isNew ? 'Créer' : 'Valider'}
+                      </SubmitButton>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Form>
+          </Form>
+        )}
       </Main>
     )
   }

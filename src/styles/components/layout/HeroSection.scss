@@ -1,9 +1,25 @@
 .hero-section {
+  position: relative;
+
   &:first-child {
     padding-top: 0;
   }
 
   h1 {
+    color: $grey;
+    font-style: italic;
+    font-size: $size-1;
     line-height: initial;
+    margin-bottom: 0.5rem;
+  }
+
+  .cta {
+    right: 0;
+    position: absolute;
+    padding: 0.5rem 0.5rem;
+    top: 20%;
+    span:nth-child(2) {
+      padding-left: 0.375rem;
+    }
   }
 }
