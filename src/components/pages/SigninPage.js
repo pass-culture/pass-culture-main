@@ -41,21 +41,23 @@ const SigninPage = ({ errors }) => {
                   name="user"
                   handleSuccessNotification={null}
                   handleSuccessRedirect={() => '/offres'}>
-                  <Field
-                    label="Adresse e-mail"
-                    name="identifier"
-                    placeholder="Identifiant (email)"
-                    required
-                    type="email"
-                  />
-                  <Field
-                    autoComplete="current-password"
-                    label="Mot de passe"
-                    name="password"
-                    placeholder="Mot de passe"
-                    required
-                    type="password"
-                  />
+                  <div className="field-group">
+                    <Field
+                      label="Adresse e-mail"
+                      name="identifier"
+                      placeholder="Identifiant (email)"
+                      required
+                      type="email"
+                    />
+                    <Field
+                      autoComplete="current-password"
+                      label="Mot de passe"
+                      name="password"
+                      placeholder="Mot de passe"
+                      required
+                      type="password"
+                    />
+                  </div>
                   <div className="errors">{errors}</div>
                   <div className="field buttons-field">
                     <NavLink to="/inscription" className="button is-secondary">

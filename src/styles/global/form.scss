@@ -4,19 +4,6 @@
   margin-bottom: 1rem;
 
   .field {
-    &.field-text {
-      height: 3.375em;
-      &.readonly {
-        height: 2.375em;
-      }
-    }
-
-    &.field-textarea {
-      textarea {
-        margin-bottom: 1.125rem;
-      }
-    }
-
     &.field-checkbox {
       align-items: flex-start;
       display: flex;
@@ -42,6 +29,21 @@
             height: 100%;
           }
         }
+      }
+    }
+
+    &.field-siren,
+    &.field-siret,
+    &.field-text {
+      height: 3.375em;
+      &.readonly {
+        height: 2.375em;
+      }
+    }
+
+    &.field-textarea {
+      textarea {
+        margin-bottom: 1.125rem;
       }
     }
 
@@ -93,6 +95,10 @@
         .label {
           margin-bottom: 0;
         }
+
+        &.readonly {
+          padding-right: 0;
+        }
       }
 
       .field-body {
@@ -108,6 +114,7 @@
           &[readonly] {
             border: none;
             background-color: transparent;
+            padding-left: 0.125rem;
             resize: none;
           }
         }
@@ -121,6 +128,12 @@
 
         .help {
           .column {
+            &:first-child {
+              flex: none;
+              width: 6%;
+            }
+
+            line-height: initial;
             padding-right: 0;
           }
         }

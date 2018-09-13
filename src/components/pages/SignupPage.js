@@ -42,54 +42,56 @@ const SignupPage = ({ errors, sirenName }) => {
                   handleSuccessRedirect={() => '/structures'}
                   layout="vertical"
                   name="user">
-                  <Field
-                    label="Adresse e-mail"
-                    name="email"
-                    sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
-                    placeholder="nom@exemple.fr"
-                    required
-                    type="email"
-                  />
-                  <Field
-                    autoComplete="name"
-                    label="Identifiant"
-                    name="publicName"
-                    sublabel="vu par les autres utilisateurs"
-                    placeholder="Mon nom ou pseudo"
-                    required
-                  />
-                  <Field
-                    name="password"
-                    label="Mot de passe"
-                    sublabel="pour se connecter"
-                    placeholder="Mon mot de passe"
-                    autoComplete="new-password"
-                    required
-                    type="password"
-                  />
-                  <Field
-                    disabling={() => !sirenName}
-                    label="SIREN"
-                    name="siren"
-                    sublabel="de la structure à rattacher"
-                    placeholder="123 456 789"
-                    required
-                    type="siren"
-                    withFetchedName
-                  />
-                  <Field
-                    label="Je souhaite recevoir les actualités du Pass Culture."
-                    name="newsletter_ok"
-                    type="checkbox"
-                  />
-                  <Field
-                    label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
-                    name="contact_ok"
-                    type="checkbox"
-                    required
-                  />
-                  <div className="errors">{errors}</div>
-                  <div className="field buttons-field">
+                  <div className="field-group">
+                    <Field
+                      label="Adresse e-mail"
+                      name="email"
+                      sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
+                      placeholder="nom@exemple.fr"
+                      required
+                      type="email"
+                    />
+                    <Field
+                      autoComplete="name"
+                      label="Identifiant"
+                      name="publicName"
+                      sublabel="vu par les autres utilisateurs"
+                      placeholder="Mon nom ou pseudo"
+                      required
+                    />
+                    <Field
+                      name="password"
+                      label="Mot de passe"
+                      sublabel="pour se connecter"
+                      placeholder="Mon mot de passe"
+                      autoComplete="new-password"
+                      required
+                      type="password"
+                    />
+                    <Field
+                      disabling={() => !sirenName}
+                      label="SIREN"
+                      name="siren"
+                      sublabel="de la structure à rattacher"
+                      placeholder="123 456 789"
+                      required
+                      type="siren"
+                      withFetchedName
+                    />
+                    <Field
+                      label="Je souhaite recevoir les actualités du Pass Culture."
+                      name="newsletter_ok"
+                      type="checkbox"
+                    />
+                    <Field
+                      label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
+                      name="contact_ok"
+                      type="checkbox"
+                      required
+                    />
+                    <div className="errors">{errors}</div>
+                  </div>
+                  <div className="buttons-field">
                     <NavLink to="/connexion" className="button is-secondary">
                       J'ai déjà un compte
                     </NavLink>
