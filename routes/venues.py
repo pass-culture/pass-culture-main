@@ -12,7 +12,7 @@ from utils.rest import ensure_current_user_has_rights, \
 
 @app.route('/venues', methods=['GET'])
 def list_venues():
-    return handle_rest_get_list(Venue)
+    return handle_rest_get_list(Venue, order_by=Venue.name)
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
