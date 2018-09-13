@@ -185,7 +185,6 @@ export default compose(
     const thingId = get(offer, 'thingId')
     const thing = thingSelector(state, thingId)
 
-    console.log('EO', eventOccurrences)
     const stocks = stocksSelector(state, offerId, eventOccurrences)
 
     console.log(
