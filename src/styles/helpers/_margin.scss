@@ -1,0 +1,51 @@
+// used: 3, 8, 12, 16, 20, 22, 40
+$sizes: (0, 3, 5, 7, 8, 12, 16, 20, 22, 28, 30, 32, 36, 40, 48, 60);
+
+@each $size in $sizes {
+  $sides: (all, topbottom, leftright, top, left, right, bottom);
+
+  // convert value to SASS variables with unit
+  $value: number-to-pixel($size);
+
+  @each $side in $sides {
+    @if $side == 'all' {
+      .m#{$size} {
+        @include rem(margin, $value);
+      }
+
+      .p#{$size} {
+        @include rem(padding, $value);
+      }
+    }
+
+    @else if $side == 'topbottom' {
+      .my#{$size} {
+        @include rem(margin, $value 0);
+      }
+
+      .py#{$size} {
+        @include rem(padding, $value 0);
+      }
+    }
+
+    @else if $side == 'leftright' {
+      .mx#{$size} {
+        @include rem(margin, 0 $value);
+      }
+
+      .px#{$size} {
+        @include rem(padding, 0 $value);
+      }
+    }
+
+    @else {
+      .m#{str-slice($side, 0, 1)}#{$size} {
+        @include rem(margin-#{$side}, $value);
+      }
+
+      .p#{str-slice($side, 0, 1)}#{$size} {
+        @include rem(padding-#{$side}, $value);
+      }
+    }
+  }
+}

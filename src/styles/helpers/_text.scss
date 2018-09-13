@@ -1,0 +1,36 @@
+/* -------------------------------------------------
+
+ SIZES
+
+------------------------------------------------- */
+.fs32 {
+  @include fontSize(32px);
+}
+
+.fs22 {
+  @include fontSize(22px);
+}
+
+.fs20 {
+  @include fontSize(20px);
+}
+
+.fs19 {
+  @include fontSize(19px);
+}
+
+.fs18 {
+  @include fontSize(18px);
+}
+
+.fs16 {
+  @include fontSize(16px);
+}
+
+.fs14 {
+  @include fontSize(14px);
+}
+
+.fs13 {
+  @include fontSize(13px);
+}

@@ -16,8 +16,8 @@
 
   .verso-header {
     background-color: $black;
-    padding-top: calculateRem(33px);
-    padding-bottom: calculateRem(33px);
+    padding-top: rem(33px);
+    padding-bottom: rem(33px);
     padding-left: $page-padding;
     padding-right: $page-padding;
     color: $white;

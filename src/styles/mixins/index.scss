@@ -1,2 +1,8 @@
-@import 'pixel-to-rem.scss';
-@import 'dotted.scss';
+@import '_number-to-px.scss';
+@import '_rem.scss';
+@import '_dotted.scss';
+
+// Mixin that will include the fall back px declaration as well as the calculated rem value.
+@mixin fontSize($size) {
+  @include rem(font-size, $size);
+}
