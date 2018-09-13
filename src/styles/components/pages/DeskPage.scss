@@ -37,6 +37,7 @@
       font-size: 20px;
       text-align: left;
       height: 60px;
+      width: calc(100% - 110px);
 
       &.pending {
         color: green;
@@ -54,7 +55,7 @@
   }
 
   .booking-summary {
-    margin: auto;
+    margin: 10px auto;
     margin-left: 28%;
     th {
       font-weight: normal;
