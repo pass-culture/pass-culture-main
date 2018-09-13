@@ -2,7 +2,6 @@ import {
   requestData,
   withLogin,
   Icon,
-  getTimeZone,
   getRequestErrorString,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
