@@ -65,7 +65,7 @@ def test_patching_stocks_with_admin(app):
 
     # When
     request_update = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id,
-                                                                 json={'available': 5, 'price': 20})
+                                                                       json={'available': 5, 'price': 20})
 
     # Then
     assert request_update.status_code == 200
@@ -74,7 +74,7 @@ def test_patching_stocks_with_admin(app):
     assert request_after_update.json()['price'] == 20
 
 
-#TODO: check stock modification with missing items or incorrect values
+# TODO: check stock modification with missing items or incorrect values
 
 
 @clean_database
@@ -91,7 +91,7 @@ def test_patching_stocks_with_editor_rights(app):
 
     # When
     request_update = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id,
-                                                                 json={'available': 5, 'price': 20})
+                                                                       json={'available': 5, 'price': 20})
 
     # Then
     assert request_update.status_code == 200
@@ -111,22 +111,21 @@ def test_user_having_rights_can_create_stock(app):
     offer = create_event_offer(venue)
     PcObject.check_and_save(user_offerer, offer)
 
-    stock_data = {'price': 1222,
-                  'offerId': humanize(offer.id)
-                 }
+    stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
     PcObject.check_and_save(user)
 
     # When
-    r_create = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/',json=stock_data)
+    r_create = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
     # Then
     assert r_create.status_code == 201
     id = r_create.json()['id']
-    r_check = req_with_auth('test@email.fr', 'P@55w0rd').get(API_URL + '/stocks/'+id)
+    r_check = req_with_auth('test@email.fr', 'P@55w0rd').get(API_URL + '/stocks/' + id)
     assert r_check.status_code == 200
     created_stock_data = r_check.json()
     for (key, value) in stock_data.items():
         assert created_stock_data[key] == stock_data[key]
+
 
 @clean_database
 @pytest.mark.standalone
@@ -138,17 +137,15 @@ def test_user_with_no_rights_cannot_create_stock_from_offer(app):
     offer = create_event_offer(venue)
     PcObject.check_and_save(user, offer)
 
-    stock_data = {'price': 1222,
-                  'offerId': humanize(offer.id)
-                 }
+    stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
     PcObject.check_and_save(user)
 
     # When
-    r_create = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/',json=stock_data)
+    response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
     # Then
-    assert r_create.status_code == 400
-    assert r_create.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+    assert response.status_code == 400
+    assert response.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
 @clean_database
@@ -162,17 +159,15 @@ def test_user_with_no_rights_cannot_create_stock_from_event_occurrence(app):
     event_occurrence = create_event_occurrence(offer)
     PcObject.check_and_save(user, event_occurrence)
 
-    stock_data = {'price': 1222,
-                  'eventOccurrenceId': humanize(event_occurrence.id)
-                 }
+    stock_data = {'price': 1222, 'eventOccurrenceId': humanize(event_occurrence.id)}
     PcObject.check_and_save(user)
 
     # When
-    r_create = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/',json=stock_data)
+    response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
     # Then
-    assert r_create.status_code == 400
-    assert r_create.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+    assert response.status_code == 400
+    assert response.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
 @clean_database
@@ -190,18 +185,18 @@ def test_if_no_event_occurrence_id_or_offer(app):
     PcObject.check_and_save(user)
 
     # When
-    r_create = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/',json=stock_data)
+    response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
     # Then
-    assert r_create.status_code == 400
-    r_create_json = r_create.json()
+    assert response.status_code == 400
+    r_create_json = response.json()
     assert r_create_json["offerId"] == ["cette entrée est obligatoire en absence de eventOccurrenceId"]
     assert r_create_json["eventOccurrenceId"] == ["cette entrée est obligatoire en absence de offerId"]
 
 
 @clean_database
 @pytest.mark.standalone
-def test_number_of_avilable_stocks_cannot_be_updated_below_number_of_already_existing_bookings(app):
+def test_number_of_available_stocks_cannot_be_updated_below_number_of_already_existing_bookings(app):
     # Given
     user = create_user()
     user_admin = create_user(email='email@test.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
@@ -213,18 +208,45 @@ def test_number_of_avilable_stocks_cannot_be_updated_below_number_of_already_exi
     PcObject.check_and_save(booking, user_admin)
 
     # When
-    r_update = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
+    response = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
                                                                  json={'available': 0})
 
     # Then
-    assert r_update.status_code == 400
-    assert 'available' in r_update.json()
+    assert response.status_code == 400
+    assert 'available' in response.json()
 
 
 @clean_database
 @pytest.mark.standalone
 def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrence(app):
-    #Given
+    # Given
+    from models.pc_object import serialize
+    user = create_user(email='email@test.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    event_occurrence = create_event_occurrence(offer)
+    PcObject.check_and_save(user, event_occurrence)
+    data = {
+        'price': 1222,
+        'eventOccurrenceId': humanize(event_occurrence.id),
+        'bookingLimitDatetime': serialize(event_occurrence.beginningDatetime + timedelta(days=1))
+    }
+
+    # When
+    response = req_with_auth('email@test.com', 'P@55w0rd').post(API_URL + '/stocks/', json=data)
+
+    # Then
+    assert response.status_code == 400
+    assert response.json()['bookingLimitDatetime'] == [
+        'la date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement'
+    ]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_should_not_update_stock_if_booking_limit_datetime_after_event_occurrence(app):
+    # Given
     from models.pc_object import serialize
     user = create_user(email='email@test.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
     offerer = create_offerer()
@@ -236,13 +258,15 @@ def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrenc
 
     serialized_date = serialize(stock.eventOccurrence.beginningDatetime + timedelta(days=1))
 
-    #When
-    r_update = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId),
-                                     json={'bookingLimitDatetime': serialized_date})
+    # When
+    response = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId),
+                                                                 json={'bookingLimitDatetime': serialized_date})
 
-    #Then
-    assert r_update.status_code == 400
-    assert 'bookingLimitDatetime' in r_update.json()
+    # Then
+    assert response.status_code == 400
+    assert response.json()['bookingLimitDatetime'] == [
+        'la date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement'
+    ]
 
 
 @clean_database
@@ -256,12 +280,12 @@ def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
     PcObject.check_and_save(user, stock)
 
     # When
-    r_update = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
-                                     json={'available': 5})
+    response = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
+                                                                 json={'available': 5})
 
     # Then
-    assert r_update.status_code == 400
-    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_update.json()['global']
+    assert response.status_code == 400
+    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json()['global']
 
 
 @clean_database
@@ -297,11 +321,11 @@ def test_user_should_not_be_able_to_delete_stock_if_does_not_have_rights(app):
     PcObject.check_and_save(user, stock)
 
     # When
-    r_delete = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+    response = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
 
     # Then
-    assert r_delete.status_code == 400
-    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in r_delete.json()['global']
+    assert response.status_code == 400
+    assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json()['global']
 
 
 @clean_database
@@ -336,4 +360,3 @@ def test_when_deleted_stock_only_all_bookings_related_to_soft_deleted_stock_are_
     assert booking1.isCancelled == True
     assert booking2.isCancelled == False
     assert booking3.isCancelled == True
-
