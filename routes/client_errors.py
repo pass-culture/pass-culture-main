@@ -1,7 +1,7 @@
 from pprint import pformat
 from flask import current_app as app, request
 
-from domain.internal_emails import send_dev_email
+from domain.admin_emails import send_dev_email
 
 
 @app.route('/api/client_errors/store', methods=['POST'])

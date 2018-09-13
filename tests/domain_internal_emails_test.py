@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from domain.booking_emails import send_reset_password_email
-from domain.internal_emails import maybe_send_offerer_validation_email
+from domain.admin_emails import maybe_send_offerer_validation_email
 from utils.mailing import MailServiceException
 from utils.test_utils import create_offerer, create_user, \
     create_user_offerer

@@ -6,7 +6,7 @@ from flask_login import current_user, login_required, logout_user, login_user
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.booking_emails import send_reset_password_email
 from domain.expenses import get_expenses
-from domain.internal_emails import maybe_send_offerer_validation_email
+from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
 from models import ApiErrors, Offerer, PcObject, User
