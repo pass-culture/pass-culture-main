@@ -1,26 +1,27 @@
 """ pc_object """
+import re
+import traceback
 from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pprint import pprint
-import re
-import traceback
-from psycopg2.extras import DateTimeRange
 
-from sqlalchemy import CHAR,\
-                       BigInteger,\
-                       Column,\
-                       Enum,\
-                       Float,\
-                       Integer,\
-                       Numeric,\
-                       String
+from psycopg2.extras import DateTimeRange
+from sqlalchemy import CHAR, \
+    BigInteger, \
+    Column, \
+    Enum, \
+    Float, \
+    Integer, \
+    Numeric, \
+    String, DateTime
 from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
+from utils.date import match_format
 from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
 
@@ -32,18 +33,19 @@ OBLIGATORY_FIELD_ERROR_CODE = '23502'
 class DeletedRecordException(Exception):
     pass
 
+
 def serialize(value, **options):
     if isinstance(value, Enum):
         return value.name
     elif isinstance(value, datetime):
-        return value.isoformat()+"Z"
+        return value.isoformat() + "Z"
     elif isinstance(value, DateTimeRange):
         return {
             'start': value.lower,
             'end': value.upper
         }
-    elif isinstance(value, list)\
-            and len(value) > 0\
+    elif isinstance(value, list) \
+            and len(value) > 0 \
             and isinstance(value[0], DateTimeRange):
         return list(map(lambda d: {'start': d.lower,
                                    'end': d.upper},
@@ -64,10 +66,10 @@ class PcObject():
     def _asdict(self, **options):
         result = OrderedDict()
         for key in self.__mapper__.c.keys():
-            if options\
-               and 'include' in options\
-               and options.get('include')\
-               and "-"+key in options['include']:
+            if options \
+                    and 'include' in options \
+                    and options.get('include') \
+                    and "-" + key in options['include']:
                 continue
             value = getattr(self, key)
             if options and options.get('cut'):
@@ -85,12 +87,12 @@ class PcObject():
                 result[key] = serialize(value, **options)
         # add the model name
         result['modelName'] = self.__class__.__name__
-        if options\
-           and 'include' in options\
-           and options['include']:
+        if options \
+                and 'include' in options \
+                and options['include']:
             for join in options['include']:
-                if isinstance(join, str) and\
-                   join.startswith('-'):
+                if isinstance(join, str) and \
+                        join.startswith('-'):
                     continue
                 elif isinstance(join, dict):
                     key = join['key']
@@ -109,9 +111,9 @@ class PcObject():
                 if callable(value):
                     value = value()
                 if value is not None:
-                    if isinstance(value, InstrumentedList)\
-                       or value.__class__.__name__ == 'AppenderBaseQuery'\
-                       or isinstance(value, list):
+                    if isinstance(value, InstrumentedList) \
+                            or value.__class__.__name__ == 'AppenderBaseQuery' \
+                            or isinstance(value, list):
                         if refine is None:
                             final_value = value
                         else:
@@ -139,9 +141,9 @@ class PcObject():
                     else:
                         result[key] = serialize(value)
 
-        if options and\
-           'resolve' in options and\
-           options['resolve']:
+        if options and \
+                'resolve' in options and \
+                options['resolve']:
             return options['resolve'](result, options.get('filters', {}))
         else:
             return result
@@ -157,31 +159,31 @@ class PcObject():
             val = getattr(self, key)
             if not isinstance(col, Column):
                 continue
-            if not col.nullable\
-               and not col.foreign_keys\
-               and not col.primary_key\
-               and col.default is None\
-               and val is None:
+            if not col.nullable \
+                    and not col.foreign_keys \
+                    and not col.primary_key \
+                    and col.default is None \
+                    and val is None:
                 api_errors.addError(key, 'Cette information est obligatoire')
             if val is None:
                 continue
-            if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
-               and not isinstance(col.type, Enum)\
-               and not isinstance(val, str):
+            if (isinstance(col.type, String) or isinstance(col.type, CHAR)) \
+                    and not isinstance(col.type, Enum) \
+                    and not isinstance(val, str):
                 api_errors.addError(key, 'doit être une chaîne de caractères')
-            if (isinstance(col.type, String) or isinstance(col.type, CHAR))\
-               and isinstance(val, str)\
-               and col.type.length\
-               and len(val)>col.type.length:
+            if (isinstance(col.type, String) or isinstance(col.type, CHAR)) \
+                    and isinstance(val, str) \
+                    and col.type.length \
+                    and len(val) > col.type.length:
                 api_errors.addError(key,
-                                'Vous devez saisir moins de '
-                                      + str(col.type.length)
-                                      + ' caractères')
-            if isinstance(col.type, Integer)\
-               and not isinstance(val, int):
+                                    'Vous devez saisir moins de '
+                                    + str(col.type.length)
+                                    + ' caractères')
+            if isinstance(col.type, Integer) \
+                    and not isinstance(val, int):
                 api_errors.addError(key, 'doit être un entier')
-            if isinstance(col.type, Float)\
-               and not isinstance(val, float):
+            if isinstance(col.type, Float) \
+                    and not isinstance(val, float):
                 api_errors.addError(key, 'doit être un nombre')
         return api_errors
 
@@ -190,18 +192,20 @@ class PcObject():
 
     def _check_not_soft_deleted(self):
         if self.is_soft_deleted():
-                raise DeletedRecordException
+            raise DeletedRecordException
 
     @staticmethod
     def restize_global_error(e):
         logger.error("UNHANDLED ERROR : ")
         traceback.print_exc()
-        return ["global", "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
+        return ["global",
+                "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
 
     @staticmethod
     def restize_data_error(e):
         if e.args and len(e.args) > 0 and e.args[0].startswith('(psycopg2.DataError) value too long for type'):
-            max_length = re.search('\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)', e.args[0], re.IGNORECASE).group(2)
+            max_length = re.search('\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)', e.args[0],
+                                   re.IGNORECASE).group(2)
             return ['global', "La valeur d'une entrée est trop longue (max " + max_length + ")"]
         else:
             return PcObject.restize_global_error(e)
@@ -222,19 +226,19 @@ class PcObject():
 
     @staticmethod
     def restize_type_error(e):
-        if e.args and len(e.args)>1 and e.args[1] == 'geography':
+        if e.args and len(e.args) > 1 and e.args[1] == 'geography':
             return [e.args[2], 'doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]']
-        elif e.args and len(e.args)>1 and e.args[1] and e.args[1]=='decimal':
+        elif e.args and len(e.args) > 1 and e.args[1] and e.args[1] == 'decimal':
             return [e.args[2], 'doit être un nombre décimal']
-        elif e.args and len(e.args)>1 and e.args[1] and e.args[1]=='integer':
+        elif e.args and len(e.args) > 1 and e.args[1] and e.args[1] == 'integer':
             return [e.args[2], 'doit être un entier']
         else:
             return PcObject.restize_global_error(e)
 
     @staticmethod
     def restize_value_error(e):
-        if len(e.args)>1 and e.args[1] == 'enum':
-            return [e.args[2], ' doit etre dans cette liste : '+",".join(map(lambda x : '"'+x+'"', e.args[3]))]
+        if len(e.args) > 1 and e.args[1] == 'enum':
+            return [e.args[2], ' doit etre dans cette liste : ' + ",".join(map(lambda x: '"' + x + '"', e.args[3]))]
         else:
             return PcObject.restize_global_error(e)
 
@@ -247,7 +251,7 @@ class PcObject():
 
         cols = self.__class__.__table__.columns._data
         for key in data.keys():
-            if (key=='deleted') or (key in skipped_keys):
+            if (key == 'deleted') or (key in skipped_keys):
                 continue
 
             if cols.__contains__(key):
@@ -259,20 +263,27 @@ class PcObject():
                 if isinstance(value, str) and isinstance(col.type, Integer):
                     try:
                         setattr(self, key, Decimal(value))
-                    except InvalidOperation as io:
-                        raise TypeError('Invalid value for %s: %r' % (key, value),
-                                        'integer',
-                                        key)
-                elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type,Numeric)):
+                    except InvalidOperation:
+                        raise TypeError('Invalid value for %s: %r' % (key, value), 'integer', key)
+                elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type, Numeric)):
                     try:
                         setattr(self, key, Decimal(value))
-                    except InvalidOperation as io:
-                        raise TypeError('Invalid value for %s: %r' % (key, value),
-                                        'decimal',
-                                        key)
+                    except InvalidOperation:
+                        raise TypeError('Invalid value for %s: %r' % (key, value), 'decimal', key)
+                elif isinstance(value, str) and isinstance(col.type, DateTime):
+                    datetime_value = None
+                    valid_patterns = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%SZ']
+
+                    for pattern in valid_patterns:
+                        if match_format(value, pattern):
+                            datetime_value = datetime.strptime(value, pattern)
+
+                    if not datetime_value:
+                        raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
+
+                    setattr(self, key, datetime_value)
                 else:
                     setattr(self, key, value)
-
 
     @staticmethod
     def check_and_save(*objects):
@@ -323,8 +334,8 @@ class PcObject():
         db.session.add(self)
 
     def __repr__(self):
-        id = "unsaved"\
-               if self.id is None\
-               else str(self.id) + "/" + humanize(self.id)
+        id = "unsaved" \
+            if self.id is None \
+            else str(self.id) + "/" + humanize(self.id)
         return '<%s #%s>' % (self.__class__.__name__,
                              id)

@@ -1,9 +1,19 @@
+from datetime import datetime
 from math import floor
 
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil import tz
 
 from utils.string_processing import parse_timedelta
+
+
+def match_format(value: str, format: str):
+    try:
+        datetime.strptime(value, format)
+    except ValueError:
+        return False
+    else:
+        return True
 
 
 def format_datetime(dt):
@@ -13,7 +23,7 @@ def format_datetime(dt):
 
 
 def format_duration(dr):
-    return floor(parse_timedelta(dr).total_seconds()/60)
+    return floor(parse_timedelta(dr).total_seconds() / 60)
 
 
 def get_dept_timezone(departementCode):
