@@ -2,19 +2,22 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.booking_emails import send_user_driven_cancellation_email_to_user, \
+    send_user_driven_cancellation_email_to_offerer, send_offerer_driven_cancellation_email_to_user, \
+    send_offerer_driven_cancellation_email_to_offerer, send_booking_recap_emails, \
+    send_booking_confirmation_email_to_user
 from domain.expenses import get_expenses
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
 from models.pc_object import serialize
 from repository import booking_queries
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
-from utils.mailing import send_booking_recap_emails, send_booking_confirmation_email_to_user
 from utils.rest import expect_json_data, ensure_current_user_has_rights
 from utils.token import random_token
 from validation.bookings import check_has_stock_id, check_has_quantity, check_existing_stock, check_can_book_free_offer, \
     check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, \
     check_user_is_logged_in_or_email_is_provided, \
-    check_booking_not_cancelled, check_booking_not_already_validated
+    check_booking_not_cancelled, check_booking_not_already_used
 
 
 @app.route('/bookings', methods=['GET'])
@@ -70,10 +73,10 @@ def create_booking():
 
     check_expenses_limits(expenses, new_booking, stock)
     booking_queries.save_booking(new_booking)
-    
+
     new_booking_stock = Stock.query.get(new_booking.stockId)
-    send_booking_recap_emails(new_booking_stock, new_booking)
-    send_booking_confirmation_email_to_user(new_booking)
+    send_booking_recap_emails(new_booking, app.mailjet_client.send.create)
+    send_booking_confirmation_email_to_user(new_booking, app.mailjet_client.send.create)
 
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201
 
@@ -81,17 +84,28 @@ def create_booking():
 @app.route('/bookings/<booking_id>', methods=['DELETE'])
 @login_required
 def cancel_booking(booking_id):
-    booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
+    booking = booking_queries.find_by_id(dehumanize(booking_id))
 
-    if not booking.user == current_user \
-            and not current_user.hasRights(RightsType.editor,
-                                           booking.stock.resolvedOffer.venue.managingOffererId):
+    is_user_cancellation = booking.user == current_user
+    booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
+    is_offerer_cancellation = current_user.hasRights(RightsType.editor, booking_offerer)
+
+    if not is_user_cancellation and not is_offerer_cancellation:
         return "Vous n'avez pas le droit d'annuler cette réservation", 403
 
     booking.isCancelled = True
     PcObject.check_and_save(booking)
 
+    if is_user_cancellation:
+        send_user_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
+        send_user_driven_cancellation_email_to_offerer(booking, app.mailjet_client.send.create)
+
+    if is_offerer_cancellation:
+        send_offerer_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
+        send_offerer_driven_cancellation_email_to_offerer(booking, app.mailjet_client.send.create)
+
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
+
 
 @app.route('/bookings/token/<token>', methods=["GET"])
 def get_booking_by_token(token):
@@ -112,7 +126,7 @@ def get_booking_by_token(token):
     current_user_can_validate_bookings = current_user.is_authenticated and current_user.hasRights(RightsType.editor, offerer_id)
     if current_user_can_validate_bookings:
         response = {'bookingId': booking.id, 'email': booking.user.email, 'userName': booking.user.publicName, 'offerName': offer_name, 'date': date,
-                    'isValidated': booking.isValidated, 'venueDepartementCode': venue_departement_code}
+                    'isUsed': booking.isUsed, 'venueDepartementCode': venue_departement_code}
         return jsonify(response), 200
     return '', 204
 
@@ -126,8 +140,8 @@ def patch_booking_by_token(token):
     if not email:
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
     check_booking_not_cancelled(booking)
-    check_booking_not_already_validated(booking)
-    booking.populateFromDict({'isValidated': True})
+    check_booking_not_already_used(booking)
+    booking.populateFromDict({'isUsed': True})
     PcObject.check_and_save(booking)
 
     return '', 204

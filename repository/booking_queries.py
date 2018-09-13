@@ -84,3 +84,12 @@ def save_booking(booking):
             api_errors.addError('insufficientFunds', 'l\'utilisateur ne dispose pas de fonds suffisants pour '
                                                      'effectuer une réservation.')
         raise api_errors
+
+
+def find_by_id(booking_id):
+    return Booking.query.filter_by(id=booking_id).first_or_404()
+
+
+
+def find_all_ongoing_bookings_by_stock(stock):
+    return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()

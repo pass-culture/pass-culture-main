@@ -344,9 +344,9 @@ def test_when_deleted_stock_only_all_bookings_related_to_soft_deleted_stock_are_
     stock2 = create_stock_from_event_occurrence(offerer, event_occurrence, price=0, available=10)
     recommendation1 = create_recommendation(offer, user1)
     recommendation2 = create_recommendation(offer, user2)
-    booking1 = create_booking(user1, stock1, venue, recommendation=recommendation1, fill_stock_bookings=False)
-    booking2 = create_booking(user1, stock2, venue, recommendation=recommendation1, fill_stock_bookings=False)
-    booking3 = create_booking(user2, stock1, venue, recommendation=recommendation2, fill_stock_bookings=False)
+    booking1 = create_booking(user1, stock1, venue, recommendation=recommendation1)
+    booking2 = create_booking(user1, stock2, venue, recommendation=recommendation1)
+    booking3 = create_booking(user2, stock1, venue, recommendation=recommendation2)
 
     PcObject.check_and_save(booking1, booking2, booking3, user_offerer)
 

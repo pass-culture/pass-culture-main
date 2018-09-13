@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta
+from unittest import mock
+from unittest.mock import patch, Mock
 
 import pytest
 import requests as req
 
 from models.db import db
 from models import Booking, Offerer, PcObject
+from tests.conftest import clean_database, mocked_mail
 from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import humanize
@@ -540,7 +543,7 @@ def test_get_booking_by_token_when_user_has_rights(app):
     assert response_json['email'] == 'user@email.fr'
     assert response_json['offerName'] == 'Event Name'
     assert response_json['date'] == date
-    assert response_json['isValidated'] == False
+    assert response_json['isUsed'] == False
     assert response_json['bookingId'] == booking.id
     assert response_json['userName'] == 'John Doe'
     assert response_json['venueDepartementCode'] == venue.departementCode
@@ -740,7 +743,7 @@ def test_patch_booking_by_token_when_user_has_rights(app):
     # Then
     assert response.status_code == 204
     db.session.refresh(booking)
-    assert booking.isValidated == True
+    assert booking.isUsed == True
 
 
 @clean_database
@@ -764,7 +767,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_no_email(app):
     assert response.status_code == 400
     assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
     db.session.refresh(booking)
-    assert booking.isValidated == False
+    assert booking.isUsed == False
 
 
 @clean_database
@@ -787,7 +790,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email(app):
     # Then
     assert response.status_code == 204
     db.session.refresh(booking)
-    assert booking.isValidated == True
+    assert booking.isUsed == True
 
 
 @clean_database
@@ -810,7 +813,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_unvalid_email(app):
     # Then
     assert response.status_code == 404
     db.session.refresh(booking)
-    assert booking.isValidated == False
+    assert booking.isUsed == False
 
 
 @clean_database
@@ -833,7 +836,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_unvalid
     # Then
     assert response.status_code == 404
     db.session.refresh(booking)
-    assert booking.isValidated == False
+    assert booking.isUsed == False
 
 
 @clean_database
@@ -856,7 +859,7 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_and_offer_i
     # Then
     assert response.status_code == 204
     db.session.refresh(booking)
-    assert booking.isValidated == True
+    assert booking.isUsed == True
 
 
 @clean_database
@@ -882,7 +885,7 @@ def test_patch_booking_by_token_when_booking_is_cancelled(app):
     assert response.status_code == 410
     assert response.json()['booking'] == ['Cette réservation a été annulée']
     db.session.refresh(booking)
-    assert booking.isValidated == False
+    assert booking.isUsed == False
 
 
 @clean_database
@@ -897,7 +900,7 @@ def test_patch_booking_by_token_when_booking_already_validated(app):
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=0)
     booking = create_booking(user, stock)
-    booking.isValidated = True
+    booking.isUsed = True
     PcObject.check_and_save(booking, user_offerer)
 
     # When
@@ -908,4 +911,5 @@ def test_patch_booking_by_token_when_booking_already_validated(app):
     assert response.status_code == 410
     assert response.json()['booking'] == ['Cette réservation a déjà été validée']
     db.session.refresh(booking)
-    assert booking.isValidated == True
+    assert booking.isUsed == True
+

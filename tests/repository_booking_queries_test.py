@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import PcObject
+from repository import booking_queries
 from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
 from tests.conftest import clean_database
 from utils.test_utils import create_offerer, create_venue, create_stock_with_thing_offer, create_booking, create_user, \
@@ -40,3 +41,27 @@ def test_find_all_by_offerer_sorted_by_date_modified_asc_with_event_and_things(a
     assert booking1 in bookings
     assert booking2 in bookings
     assert booking3 not in bookings
+
+
+@clean_database
+@pytest.mark.standalone
+def test_find_all_ongoing_bookings(app):
+    # Given
+    offerer = create_offerer(siren='985281920')
+    PcObject.check_and_save(offerer)
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+    user = create_user()
+    cancelled_booking = create_booking(user, stock, is_cancelled=True)
+    validated_booking = create_booking(user, stock, is_used=True)
+    ongoing_booking = create_booking(user, stock, is_cancelled=False, is_used=False)
+    PcObject.check_and_save(ongoing_booking)
+    PcObject.check_and_save(validated_booking)
+    PcObject.check_and_save(cancelled_booking)
+
+
+    # When
+    all_ongoing_bookings = booking_queries.find_all_ongoing_bookings_by_stock(stock)
+
+    # Then
+    assert all_ongoing_bookings == [ongoing_booking]

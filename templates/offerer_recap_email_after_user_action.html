@@ -1,5 +1,6 @@
 {% extends "offerer_recap_email.html" %}
-{% block past_or_future %}final des réservations{% endblock %}
+{% block new_reservation %}<p id="action"><strong>{{ user_name }}</strong> ({{ user_email }}) vient {% block booking_or_cancellation %}{% endblock %}.</p>{% endblock %}
+{% block past_or_future %}des réservations à ce jour{% endblock %}
 {% block recap %}
 {% if stock_bookings %}
 <table id="recap-table">

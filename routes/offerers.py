@@ -2,13 +2,13 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType, UserOfferer
 from models.venue import create_digital_venue, Venue
 from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES
-from utils.mailing import maybe_send_offerer_validation_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     handle_rest_get_list, \
@@ -62,7 +62,7 @@ def create_offerer():
         user_offerer = offerer.give_rights(current_user,
                                            RightsType.admin)
         PcObject.check_and_save(offerer, user_offerer)
-    maybe_send_offerer_validation_email(offerer, user_offerer)
+    maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 201
 
 
