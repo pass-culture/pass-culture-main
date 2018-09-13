@@ -115,10 +115,11 @@ def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft
     offer2 = create_event_offer(venue, event_name='Rencontres avec des auteurs')
     recommendation1 = create_recommendation(offer1, user, search=search)
     recommendation2 = create_recommendation(offer2, user, search=search)
-    stock1 = create_stock_from_offer(offerer, offer1, soft_deleted=False)
-    stock2 = create_stock_from_offer(offerer, offer2, soft_deleted=True)
+    stock1 = create_stock_from_offer(offerer, offer1, price=10, soft_deleted=False)
+    stock2 = create_stock_from_offer(offerer, offer1, price=20, soft_deleted=True)
+    stock3 = create_stock_from_offer(offerer, offer2, price=30, soft_deleted=True)
 
-    PcObject.check_and_save(stock1, stock2, recommendation1, recommendation2)
+    PcObject.check_and_save(stock1, stock2, stock3, recommendation1, recommendation2)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
