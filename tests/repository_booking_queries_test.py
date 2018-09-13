@@ -39,7 +39,7 @@ def test_find_all_by_offerer_with_event_and_things(app):
     PcObject.check_and_save(booking1, booking2, booking3)
 
     # when
-    bookings = find_offerer_bookings(offerer1.id, order_by=["id asc"])
+    bookings = find_offerer_bookings(offerer1.id, order_by=["booking.id asc"])
 
     # then
     assert bookings[0].dateModified < bookings[1].dateModified
