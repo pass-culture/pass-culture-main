@@ -2,15 +2,16 @@ from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
-from models import Booking,\
-                   Event,\
-                   EventOccurrence,\
-                   Offer,\
-                   Stock,\
-                   Offerer,\
-                   Recommendation,\
-                   Venue
+from models import Booking, \
+    Event, \
+    EventOccurrence, \
+    Offer, \
+    Stock, \
+    Offerer, \
+    Recommendation, \
+    Venue, Thing
 from utils.logger import logger
+from utils.search import get_search_filter
 
 
 def departement_or_national_offers(query, offer_type, departement_codes):
@@ -83,3 +84,30 @@ def get_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=N
     query = not_currently_recommended_offers(query, user)
     query = query.distinct(offer_type.id)
     return query.all()
+
+
+def get_offers_for_recommendations_search(page=1, search=None):
+    offer_query = _filter_out_offers_on_soft_deleted_stocks()
+    if search is not None:
+        offer_query = offer_query.outerjoin(Event)\
+                                 .outerjoin(Thing)\
+                                 .outerjoin(Venue)\
+                                 .filter(get_search_filter([Event, Thing, Venue], search))
+
+    offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
+                        .items
+
+    return offers
+
+
+def _filter_out_offers_on_soft_deleted_stocks():
+    join_on_stocks = Offer.query \
+        .join(Stock) \
+        .filter_by(isSoftDeleted=False)
+
+    join_on_event_occurrences = Offer.query \
+        .join(EventOccurrence) \
+        .join(Stock) \
+        .filter_by(isSoftDeleted=False)
+
+    return join_on_stocks.union_all(join_on_event_occurrences)
