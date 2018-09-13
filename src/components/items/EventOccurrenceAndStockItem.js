@@ -64,7 +64,7 @@ class EventOccurrenceAndStockItem extends Component {
   handleCrossingEndDatetime = () => {
     const {
       dispatch,
-      eventOccurrenceIdOrNew,
+      eventOccurrencePatch,
       formBeginningDatetime,
       formEndDatetime,
       isStockOnly,
@@ -75,7 +75,7 @@ class EventOccurrenceAndStockItem extends Component {
     console.log('ben alors', formBeginningDatetime, formEndDatetime)
     if (formEndDatetime < formBeginningDatetime) {
       dispatch(
-        mergeForm(`eventOccurrence${eventOccurrenceIdOrNew}`, {
+        mergeForm(`eventOccurrence${get(eventOccurrencePatch, 'id', '')}`, {
           endDatetime: moment(formEndDatetime)
             .add(1, 'day')
             .toISOString(),
@@ -101,6 +101,7 @@ class EventOccurrenceAndStockItem extends Component {
       formBookingLimitDatetime,
       isStockOnly,
       isStockReadOnly,
+      stockPatch,
     } = this.props
     if (
       isStockOnly ||
@@ -111,7 +112,7 @@ class EventOccurrenceAndStockItem extends Component {
       return
     }
     dispatch(
-      mergeForm('stock', {
+      mergeForm(`stock${get(stockPatch, 'id', '')}`, {
         bookingLimitDatetime: moment(eventOccurrencePatch.beginningDatetime)
           .subtract(2, 'day')
           .toISOString(),
@@ -130,7 +131,7 @@ class EventOccurrenceAndStockItem extends Component {
       return
     }
     dispatch(
-      mergeForm('eventOccurrence', {
+      mergeForm(`eventOccurrence${get(eventOccurrencePatch, 'id', '')}`, {
         endDatetime: moment(formBeginningDatetime)
           .add(1, 'hour')
           .toISOString(),
@@ -143,7 +144,7 @@ class EventOccurrenceAndStockItem extends Component {
     if (get(stockPatch, 'id') || typeof formPrice !== 'undefined') {
       return
     }
-    dispatch(mergeForm('stock', { price: 0 }))
+    dispatch(mergeForm(`stock${get(stockPatch, 'id', '')}`, { price: 0 }))
   }
 
   handleNextDatetimes = () => {
@@ -164,7 +165,7 @@ class EventOccurrenceAndStockItem extends Component {
         eventOccurrences[0].beginningDatetime
       ).add(1, 'day')
       dispatch(
-        mergeForm('eventOccurrence', {
+        mergeForm(`eventOccurrence${get(eventOccurrencePatch, 'id', '')}`, {
           beginningDatetime,
           endDatetime: moment(beginningDatetime).add(1, 'hour'),
         })
