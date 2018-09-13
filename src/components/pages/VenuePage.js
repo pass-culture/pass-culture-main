@@ -16,7 +16,7 @@ import { compose } from 'redux'
 
 import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
-import ProviderManager from '../managers/ProviderManager'
+import VenueProvidersManager from '../managers/VenueProvidersManager'
 import offererSelector from '../../selectors/offerer'
 import selectVenuePatchByVenueIdByOffererId from '../../selectors/selectVenuePatchByVenueIdByOffererId'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
@@ -108,10 +108,7 @@ class VenuePage extends Component {
       offerer,
       venuePatch,
     } = this.props
-
     const { isNew, isReadOnly } = this.state
-    const isVirtual = get(venuePatch, 'isVirtual')
-    console.log('isVirtual', isVirtual)
 
     return (
       <Main
@@ -142,7 +139,7 @@ class VenuePage extends Component {
             )}
         </HeroSection>
 
-        {!isNew && <ProviderManager venue={venuePatch} />}
+        {!isNew && <VenueProvidersManager venue={venuePatch} />}
 
         {!get(venuePatch, 'isVirtual') && (
           <Form
@@ -162,7 +159,7 @@ class VenuePage extends Component {
               </h2>
               <div className="field-group">
                 <Field label="SIRET" name="siret" type="siret" />
-                <Field isExpanded label="Nom du lieu" name="name" required />
+                <Field isExpanded label="Nom" name="name" required />
                 <Field
                   label="E-mail"
                   name="bookingEmail"

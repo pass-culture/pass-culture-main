@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
+import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import OffererItem from '../items/OffererItem'
 import offerersSelector from '../../selectors/offerers'
@@ -23,23 +24,18 @@ class OfferersPage extends Component {
     const { offerers } = this.props
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
-        <h1 className="main-title">Vos structures</h1>
+        <HeroSection title="Vos structures">
+          <p className="subtitle">
+            Retrouvez ici la ou les structures dont vous gérez les offres Pass
+            Culture.
+          </p>
+          <NavLink
+            to={`/structures/nouveau`}
+            className="button is-primary is-outlined">
+            + Rattacher une structure supplémentaire
+          </NavLink>
+        </HeroSection>
 
-        <p className="subtitle">
-          Retrouvez ici la ou les structures dont vous gérez les offres Pass
-          Culture.
-        </p>
-
-        <br />
-        <NavLink
-          to={`/structures/nouveau`}
-          className="button is-primary is-outlined">
-          + Rattacher une structure
-        </NavLink>
-
-        <br />
-        <br />
-        <br />
         <ul className="main-list offerers-list">
           {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
         </ul>

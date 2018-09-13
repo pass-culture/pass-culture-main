@@ -4,6 +4,10 @@
   line-height: $body-line-height;
   border-radius: 1px;
 
+  &:focus {
+    outline: none;
+  }
+
   &:focus:not(:active) {
     box-shadow: none;
   }

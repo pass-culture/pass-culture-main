@@ -1,16 +1,16 @@
 .hero-section {
+  margin-bottom: 2rem;
+  padding-bottom: 0;
+  padding-top: 0;
   position: relative;
-
-  &:first-child {
-    padding-top: 0;
-  }
 
   h1 {
     color: $grey;
     font-style: italic;
     font-size: $size-1;
+    font-weight: 500;
     line-height: initial;
-    margin-bottom: 0.5rem;
+    margin-bottom: 2rem;
   }
 
   .cta {

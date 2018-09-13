@@ -19,7 +19,7 @@ import { compose } from 'redux'
 
 import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
-import MediationManager from '../managers/MediationManager'
+import MediationsManager from '../managers/MediationsManager'
 import EventOccurrencesAndStocksManager from '../managers/EventOccurrencesAndStocksManager'
 import eventSelector from '../../selectors/event'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
@@ -320,7 +320,7 @@ class OfferPage extends Component {
                       </div>
                     </div>
                   </div>
-                  <MediationManager />
+                  <MediationsManager />
                 </div>
               )}
             {showAllForm && (
@@ -393,11 +393,13 @@ class OfferPage extends Component {
                 <h2 className="main-list-title">Infos artistiques</h2>
                 <div className="field-group">
                   <Field
+                    class
                     displayMaxLength
                     isExpanded
                     label="Description"
                     maxLength={1000}
                     name="description"
+                    rows={5}
                     type="textarea"
                   />
                   <Field name="author" label="Auteur" isExpanded />

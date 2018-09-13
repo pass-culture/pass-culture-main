@@ -1,0 +1,194 @@
+.field-group {
+  display: table;
+  width: 100%;
+  margin-bottom: 1rem;
+
+  .field {
+    &.field-text {
+      height: 3.375em;
+      &.readonly {
+        height: 2.375em;
+      }
+    }
+
+    &.field-textarea {
+      textarea {
+        margin-bottom: 1.125rem;
+      }
+    }
+
+    &.field-checkbox {
+      align-items: flex-start;
+      display: flex;
+      input {
+        margin-right: 0.5rem;
+        background-image: url(/icons/checkbox.svg);
+        border: none;
+        background-repeat: no-repeat;
+        background-size: $body-line-height;
+        width: $body-line-height;
+        height: $body-line-height;
+        padding: 0;
+        border-radius: 0;
+        &:active,
+        &:checked {
+          &:after {
+            content: '';
+            background-repeat: no-repeat;
+            background-image: url(/icons/checkbox-check.svg);
+            background-position: center;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+
+    &.has-addons {
+      .control {
+        .button {
+          border-width: $control-border-width;
+          height: 100%;
+          &:focus {
+            border-color: $grey-light;
+
+            &:not(:active) {
+              box-shadow: none;
+            }
+          }
+        }
+        &:not(:last-child) {
+          .input {
+            border-right: none;
+          }
+        }
+        &:last-child {
+          .button {
+            border-left: none;
+          }
+        }
+      }
+
+      &:focus-within .button {
+        border-color: $input-focus-border-color;
+      }
+    }
+
+    &.is-horizontal {
+      display: table-row;
+      margin-bottom: 1.125rem;
+
+      .field-label,
+      .field-body {
+        display: table-cell;
+      }
+
+      .field-label {
+        padding-top: 0.5rem;
+        padding-right: 1rem;
+        white-space: nowrap;
+        vertical-align: top;
+
+        .label {
+          margin-bottom: 0;
+        }
+      }
+
+      .field-body {
+        width: 100%;
+
+        input {
+          font-weight: 500;
+        }
+
+        input.input,
+        .select select,
+        textarea.textarea {
+          &[readonly] {
+            border: none;
+            background-color: transparent;
+            resize: none;
+          }
+        }
+
+        .control:not(.is-expanded) {
+          input,
+          .select {
+            width: auto;
+          }
+        }
+
+        .help {
+          .column {
+            padding-right: 0;
+          }
+        }
+      }
+    }
+
+    .required:not(.readOnly) {
+      &:after {
+        content: ' *';
+        color: $violet;
+        display: inline;
+      }
+    }
+  }
+}
+
+.required-legend {
+  color: $violet;
+}
+
+textarea.textarea {
+  border-radius: $control-radius;
+}
+
+.select.readonly {
+  &:after {
+    display: none !important;
+  }
+  select[disabled] {
+    opacity: 1;
+    border: none;
+    background-color: transparent;
+    cursor: default;
+    color: $input-color;
+  }
+}
+
+@media (min-width: $tablet) {
+  .field-label {
+    text-align: left;
+  }
+
+  .field-body {
+    flex-grow: 4;
+  }
+}
+
+ul.help {
+  img {
+    vertical-align: text-bottom;
+  }
+}
+
+/*
+.with-display-name {
+  input {
+    display: inline-block;
+    width: 50%;
+  }
+  .display-name {
+    display: inline-block;
+    width: 49%;
+    font-weight: $weight-semibold;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+    color: text;
+  }
+}
+*/
