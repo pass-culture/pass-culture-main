@@ -6,8 +6,7 @@ import pytest
 from domain.booking_emails import send_user_driven_cancellation_email_to_user, \
     send_user_driven_cancellation_email_to_offerer, send_offerer_driven_cancellation_email_to_user, \
     send_offerer_driven_cancellation_email_to_offerer, \
-    send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
-    maybe_send_offerer_validation_email
+    send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email
 from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
     SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
 from utils.config import IS_DEV, IS_STAGING, ENV
@@ -316,51 +315,6 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
 
     # Then
     mocked_send_create_email.assert_called_once_with(data=expected_email)
-
-
-@pytest.mark.standalone
-def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
-    # Given
-    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
-                             name='Accenture', validation_token=None)
-
-    user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
-                       validation_token=None)
-
-    user_offerer = create_user_offerer(user, offerer, validation_token=None)
-
-    mocked_send_create_email = Mock()
-    return_value = Mock()
-    return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
-
-    # When
-    maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
-
-    # Then
-    assert not mocked_send_create_email.called
-
-
-@pytest.mark.standalone
-def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400(app):
-    # Given
-    validation_token = secrets.token_urlsafe(20)
-    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
-                             name='Accenture', validation_token=validation_token)
-
-    user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
-                       validation_token=validation_token)
-
-    user_offerer = create_user_offerer(user, offerer, validation_token)
-
-    mocked_send_create_email = Mock()
-    return_value = Mock()
-    return_value.status_code = 400
-    mocked_send_create_email.return_value = return_value
-
-    # When
-    with pytest.raises(MailServiceException):
-        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
 
 
 @pytest.mark.standalone

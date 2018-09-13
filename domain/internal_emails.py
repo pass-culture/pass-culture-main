@@ -11,3 +11,13 @@ def send_dev_email(subject, html_text, send_create_email):
     }
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
+
+
+
+def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email):
+    if offerer.isValidated and user_offerer.isValidated:
+        return
+    email = write_object_validation_email(offerer, user_offerer)
+    mail_result = send_create_email(data=email)
+
+    check_if_email_sent(mail_result)

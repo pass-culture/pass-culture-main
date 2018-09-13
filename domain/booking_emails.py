@@ -1,6 +1,7 @@
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.stock_queries import set_booking_recap_sent_and_save
+from utils import logger
 from utils.config import ENV
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
@@ -11,7 +12,7 @@ from utils.mailing import make_user_booking_recap_email, \
 def send_final_booking_recap_email(stock, send_create_email):
     stock_bookings = find_all_ongoing_bookings_by_stock(stock)
     if len(stock_bookings) == 0:
-        print("Not sending recap for  " + str(stock) + " as it has no bookings")
+        logger.info("Not sending recap for  " + str(stock) + " as it has no bookings")
     email = make_final_recap_email_for_stock_with_event(stock)
 
     recipients = ['passculture@beta.gouv.fr']
@@ -100,12 +101,3 @@ def _edit_email_html_part_and_recipients(email_html_part, recipients):
                           + '</p>' + email_html_part
         email_to = 'passculture-dev@beta.gouv.fr'
     return email_html_part, email_to
-
-
-def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email):
-    if offerer.isValidated and user_offerer.isValidated:
-        return
-    email = write_object_validation_email(offerer, user_offerer)
-    mail_result = send_create_email(data=email)
-
-    check_if_email_sent(mail_result)
