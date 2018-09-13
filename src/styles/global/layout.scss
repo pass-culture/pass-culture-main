@@ -143,3 +143,10 @@ button {
     font-size: 2.7rem;
   }
 }
+
+.pc-text-button {
+  @extend .no-border;
+  @extend .no-select;
+  @extend .no-outline;
+  @extend .no-background;
+}

@@ -1,0 +1,91 @@
+$main-menu-header-height: 152px;
+
+#main-menu {
+  z-index: $zindex-main-menu;
+}
+
+#main-menu .inner,
+#main-menu .scroll-container {
+  border-radius: rem(16px);
+}
+
+#main-menu .inner {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+}
+
+#main-menu-close-button {
+  z-index: 1;
+  top: rem(16px);
+  right: rem(16px);
+}
+
+#main-menu-header {
+  height: $main-menu-header-height;
+  min-height: $main-menu-header-height;
+  max-height: $main-menu-header-height;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+#main-menu-header .profile {
+  width: 40%;
+  min-width: 108px;
+}
+
+#main-menu-header-avatar img {
+  width: 88px;
+  height: auto;
+}
+
+#main-menu-header .account {
+  width: 60%;
+  border-left: 1px solid $white;
+}
+
+#main-menu .menu-icon {
+  @extend .mr16;
+  @extend .text-center;
+  $main-menu-menu-icon-height: 44px;
+
+  height: 100%;
+  width: $main-menu-menu-icon-height;
+  max-width: $main-menu-menu-icon-height;
+  min-width: $main-menu-menu-icon-height;
+
+  img {
+    vertical-align: middle;
+  }
+}
+
+#main-menu-navigation button,
+#main-menu-navigation .navlink {
+  @extend .fs19;
+  @extend .flex-columns;
+  @extend .is-white-text;
+}
+
+#main-menu-navigation .navlink {
+  @extend .mx12;
+
+  $navlink-height: 52px;
+
+  height: $navlink-height;
+  min-height: $navlink-height;
+  max-height: $navlink-height;
+  line-height: $navlink-height;
+}
+
+#main-menu-navigation .navlink + .navlink {
+  @extend .dotted-top-black;
+}
+
+#main-menu-navigation .navlink.active {
+  // disable le click sur les liens actifs dans le menu principal
+  // opacity: 0.9;
+  // text-decoration: none;
+}
+
+#main-menu-logout-button {
+  background-color: rgba(0, 0, 0, 0.2);
+}

@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import { Icon, requestData } from 'pass-culture-shared'
 import React from 'react'
@@ -7,10 +9,10 @@ import { Transition } from 'react-transition-group'
 import { Scrollbars } from 'react-custom-scrollbars'
 import { withRouter } from 'react-router-dom'
 
-import MenuLink from './menu/MenuLink'
-import { ROOT_PATH } from '../utils/config'
-import { toggleMainMenu } from '../reducers/menu'
 import routes from '../utils/routes'
+import MenuLink from './menu/MenuLink'
+import MenuHeader from './menu/MenuHeader'
+import { toggleMainMenu } from '../reducers/menu'
 import { getMainMenuItems } from '../utils/routes-utils'
 
 const transitionDelay = 250
@@ -52,19 +54,18 @@ class MainMenu extends React.PureComponent {
     dispatch(toggleMainMenu())
   }
 
-  renderSignOutLink() {
+  renderLogOutLink() {
     return (
       <button
         type="button"
-        className="navlink flex-columns"
+        id="main-menu-logout-button"
+        className="pc-text-button flex-columns text-left p16"
         onClick={this.onSignOutClick}
       >
-        <span className="has-text-centered menu-icon">
+        <span className="menu-icon">
           <Icon svg="ico-deconnect-w" alt="" />
         </span>
-        <span>
-Déconnexion
-        </span>
+        <span>Déconnexion</span>
       </button>
     )
   }
@@ -72,62 +73,30 @@ Déconnexion
   renderCloseButton = () => (
     <button
       type="button"
-      className="close-button is-overlay"
+      id="main-menu-close-button"
+      className="pc-text-button is-white-text is-absolute fs16"
       onClick={this.toggleMainMenu}
     >
-      <Icon svg="ico-close" alt="Fermer" />
+      <span aria-hidden className="icon-close" title="Fermer la navigation" />
     </button>
   )
 
-  renderMenuHeader = () => {
-    const { user } = this.props
-    const avatar = `${ROOT_PATH}/icons/avatar-default-w-XL.svg`
-    return (
-      <React.Fragment>
-        <div className="profile has-text-centered">
-          <p className="avatar">
-            <img alt="" src={avatar} />
-          </p>
-          <p className="username is-clipped">
-            <span>
-              {user && user.publicName}
-            </span>
-          </p>
-        </div>
-        <div className="account items-center flex-center flex-rows">
-          <p>
-            <span>
-Mon Pass
-            </span>
-          </p>
-          <p>
-            <strong>
-              {'--€'}
-            </strong>
-          </p>
-        </div>
-      </React.Fragment>
-    )
-  }
-
   render() {
-    const { isVisible } = this.props
+    const { isVisible, user } = this.props
     return (
       <Transition in={isVisible} timeout={transitionDelay}>
         {state => (
           <div
             id="main-menu"
-            className="is-overlay is-clipped flex-columns items-end p12"
+            className="is-overlay p12"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
-            <div className="inner is-relative is-clipped flex-rows">
-              <div className="header flex-columns is-relative p16">
-                {this.renderCloseButton()}
-                {this.renderMenuHeader()}
-              </div>
-              <div className="scroll-container is-clipped">
-                <Scrollbars autoHide>
-                  <nav className="navigation flex-rows mt16 pb0">
+            <div className="inner is-relative is-clipped flex-rows flex-end">
+              {this.renderCloseButton()}
+              <Scrollbars autoHide>
+                <div className="scroll-container pc-theme-red">
+                  <MenuHeader user={user} />
+                  <nav id="main-menu-navigation" className="flex-rows mt16 pb0">
                     {menuitems &&
                       menuitems.map(
                         obj =>
@@ -139,10 +108,10 @@ Mon Pass
                             />
                           )
                       )}
-                    {this.renderSignOutLink()}
+                    {this.renderLogOutLink()}
                   </nav>
-                </Scrollbars>
-              </div>
+                </div>
+              </Scrollbars>
             </div>
           </div>
         )}

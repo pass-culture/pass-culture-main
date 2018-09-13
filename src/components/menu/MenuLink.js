@@ -7,7 +7,7 @@ const noop = () => {}
 
 const renderLinkContent = (icon, title) => (
   <React.Fragment>
-    <span className="has-text-centered menu-icon">
+    <span className="text-center menu-icon">
       <Icon svg={`ico-${icon}`} alt="" />
     </span>
     <span>
@@ -30,7 +30,7 @@ class MenuLink extends React.PureComponent {
         disabled={disabled}
         onClick={clickHandler}
         activeClassName={opts.activeClass}
-        className={`navlink flex-columns ${opts.cssclass} mx12`}
+        className={`navlink ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
       </NavLink>
@@ -46,7 +46,7 @@ class MenuLink extends React.PureComponent {
         href={href}
         disabled={disabled}
         onClick={clickHandler}
-        className={`navlink flex-columns ${opts.cssclass} mx12`}
+        className={`navlink ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
       </a>

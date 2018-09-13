@@ -26,13 +26,20 @@
   text-align: justify;
 }
 
+.text-ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 /* ------ COLORS */
 
 .is-grey-text {
   color: $grey;
 }
 
-.is-white-text {
+.is-white-text,
+a.is-white-text,
+a.is-white-text:hover {
   color: $white;
 }
 
@@ -80,8 +87,16 @@
 }
 
 /* ------ SIZES */
+.fs48 {
+  @include fontSize(48px);
+}
+
 .fs32 {
   @include fontSize(32px);
+}
+
+.fs30 {
+  @include fontSize(30px);
 }
 
 .fs22 {
