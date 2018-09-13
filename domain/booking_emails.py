@@ -1,8 +1,8 @@
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.stock_queries import set_booking_recap_sent_and_save
-from utils import logger
 from utils.config import ENV
+from utils.logger import logger
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \

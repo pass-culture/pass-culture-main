@@ -66,7 +66,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     else:
         date_in_tz = _get_event_datetime(booking.stock)
         formatted_datetime = format_datetime(date_in_tz)
-        email_subject = '[Reservations] Nouvelle reservation pour {} le {}'.format(stock_name,
+        email_subject = '[Reservations] Nouvelle reservation pour {} - {}'.format(stock_name,
                                                                                    formatted_datetime)
 
     if is_cancellation:
