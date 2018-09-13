@@ -121,7 +121,7 @@ class VenuePage extends Component {
         }}
         name="venue"
         handleDataRequest={this.handleDataRequest}>
-        <div className="section hero">
+        <div className="section">
           <h2 className="subtitle has-text-weight-bold">
             {get(venuePatch, 'name')}
           </h2>

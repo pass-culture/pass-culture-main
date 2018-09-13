@@ -65,7 +65,7 @@ class OffererPage extends Component {
         backTo={{ label: 'Vos structures', path: '/structures' }}
         name="offerer"
         handleDataRequest={this.handleDataRequest}>
-        <div className="section hero">
+        <div className="section">
           <h2 className="subtitle has-text-weight-bold">
             {get(offerer, 'name')}
           </h2>

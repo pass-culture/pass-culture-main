@@ -22,6 +22,7 @@ import MediationManager from '../managers/MediationManager'
 import EventOccurrencesAndStocksManager from '../managers/EventOccurrencesAndStocksManager'
 import eventSelector from '../../selectors/event'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
+import eventOrThingPatchSelector from '../../selectors/eventOrThingPatch'
 import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
@@ -224,6 +225,7 @@ class OfferPage extends Component {
     const {
       event,
       eventOccurrences,
+      eventOrThingPatch,
       hasEventOrThing,
       location: { search },
       offer,
@@ -241,6 +243,7 @@ class OfferPage extends Component {
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
 
     const showAllForm = type || !isNew
+    const eventOrThingName = get(event, 'name') || get(thing, 'name')
 
     return (
       <Main
@@ -248,6 +251,12 @@ class OfferPage extends Component {
         name="offer"
         handleDataRequest={this.handleDataRequest}>
         <div className="section">
+          {eventOrThingName && (
+            <h2 className="subtitle has-text-weight-bold ">
+              {eventOrThingName.toUpperCase()}
+            </h2>
+          )}
+
           <h1 className="main-title">
             {isNew ? 'Ajouter une offre' : "Détails de l'offre"}
           </h1>
@@ -263,13 +272,7 @@ class OfferPage extends Component {
             action={apiPath}
             name="offer"
             handleSuccess={this.handleSuccess}
-            patch={Object.assign(
-              {
-                offererId: get(offerer, 'id'),
-                venueId: get(venue, 'id'),
-              },
-              event || thing
-            )}
+            patch={eventOrThingPatch}
             readOnly={isReadOnly}>
             <div className="field-group">
               <Field isExpanded label="Titre de l'offre" name="name" required />
@@ -501,9 +504,18 @@ export default compose(
 
     const hasEventOrThing = event || thing
 
+    const eventOrThingPatch = eventOrThingPatchSelector(
+      state,
+      event,
+      thing,
+      offerer,
+      venue
+    )
+
     return {
       event,
       eventOccurrences,
+      eventOrThingPatch,
       hasEventOrThing,
       providers,
       search,

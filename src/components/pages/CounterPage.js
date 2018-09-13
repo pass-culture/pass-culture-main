@@ -8,7 +8,7 @@ const CounterPage = () => {
   return (
     <Main name="counter">
       {/*
-      <div className='section hero'>
+      <div className='section'>
         <h1 className="main-title">Guichet</h1>
         <p className="subtitle">
           Enregistrez les codes de réservations présentés par les porteurs du Pass.

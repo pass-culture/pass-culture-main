@@ -5,6 +5,10 @@
   }
 
   .section {
+    &:first-child {
+      padding-top: 0;
+    }
+
     &.hero {
       margin-top: 1.5rem;
       position: relative;
@@ -60,8 +64,13 @@
       box-shadow: 0 0 3.75rem rgba(0, 0, 0, 0.2);
 
       .after-notification-content {
-        padding: (3 * $page-padding / 4) $page-padding;
+        padding: 4.125rem 4rem;
         position: relative;
+
+        &.with-padding {
+          padding-top: 4.625rem;
+        }
+
         .back-button {
           position: absolute;
           top: 1rem;

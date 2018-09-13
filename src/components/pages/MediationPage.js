@@ -191,7 +191,7 @@ class MediationPage extends Component {
         name="mediation"
         backTo={{ path: backPath, label: "Revenir à l'offre" }}
         handleDataRequest={this.handleDataRequest}>
-        <section className="section hero">
+        <section className="section">
           <h2 className="subtitle has-text-weight-bold">{name}</h2>
           <h1 className="main-title">
             {isNew ? 'Créez' : 'Modifiez'} une accroche

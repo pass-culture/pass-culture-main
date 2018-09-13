@@ -55,7 +55,6 @@ $size-5: 1.1rem;
 $size-6: 1rem;
 $size-7: 0.75rem;
 
-
 // Forms
 $control-height: 2.25em; // !! Not a bulma variable !!
 $control-border-width: 2px;
@@ -82,7 +81,6 @@ $button-disabled-opacity: 0.3;
 
 // Spacing
 $section-padding: 1rem 0;
-$page-padding: 4rem;
 $footer-height-padding: 1rem;
 
 $header-height: 3.375rem; // 54px
@@ -95,7 +93,7 @@ $navbar-dropdown-radius: 0;
 
 // Misc
 $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-$box-shadow-hover: 0 0 10px rgba(0,0,0,0.4);
+$box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);
 
 // Notifications
-$notification-padding: 0.75rem
+$notification-padding: 0.75rem;
