@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import UploadThumb from '../layout/UploadThumb'
 import mediationSelector from '../../selectors/mediation'
@@ -182,7 +183,6 @@ class MediationPage extends Component {
       mediation,
       offer,
     } = this.props
-    const { name } = offer || {}
     const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${offerId}`
 
@@ -191,17 +191,13 @@ class MediationPage extends Component {
         name="mediation"
         backTo={{ path: backPath, label: "Revenir à l'offre" }}
         handleDataRequest={this.handleDataRequest}>
-        <section className="section">
-          <h2 className="subtitle has-text-weight-bold">{name}</h2>
-          <h1 className="main-title">
-            {isNew ? 'Créez' : 'Modifiez'} une accroche
-          </h1>
+        <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
           <p className="subtitle">
             Ajoutez un visuel marquant pour mettre en avant cette offre.
             <br />
             <span className="label">Le fichier doit peser 100Ko minimum.</span>
           </p>
-        </section>
+        </HeroSection>
 
         <div className="section">
           <label className="label">Depuis une adresse Internet :</label>

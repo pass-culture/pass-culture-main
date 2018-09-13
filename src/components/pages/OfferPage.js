@@ -17,6 +17,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import MediationManager from '../managers/MediationManager'
 import EventOccurrencesAndStocksManager from '../managers/EventOccurrencesAndStocksManager'
@@ -250,24 +251,19 @@ class OfferPage extends Component {
         backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
         name="offer"
         handleDataRequest={this.handleDataRequest}>
-        <div className="section">
-          {eventOrThingName && (
-            <h2 className="subtitle has-text-weight-bold ">
-              {eventOrThingName.toUpperCase()}
-            </h2>
-          )}
-
-          <h1 className="main-title">
-            {isNew ? 'Ajouter une offre' : "Détails de l'offre"}
-          </h1>
+        <HeroSection
+          subtitle={eventOrThingName && eventOrThingName.toUpperCase()}
+          title={isNew ? 'Ajouter une offre' : "Détails de l'offre"}>
           <p className="subtitle">
             Renseignez les détails de cette offre, puis mettez-la en avant en
             ajoutant une ou plusieurs accroches.
           </p>
+
           <p className="subtitle">
             Attention : les offres payantes ne seront visibles auprès du public
             qu’à partir du début de l’expérimentation.
           </p>
+
           <Form
             action={apiPath}
             name="offer"
@@ -451,7 +447,7 @@ class OfferPage extends Component {
               </div>
             </div>
           </Form>
-        </div>
+        </HeroSection>
       </Main>
     )
   }

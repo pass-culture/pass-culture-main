@@ -1,0 +1,9 @@
+.hero-section {
+  &:first-child {
+    padding-top: 0;
+  }
+
+  h1 {
+    line-height: initial;
+  }
+}

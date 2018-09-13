@@ -14,7 +14,7 @@ const SigninPage = ({ errors }) => {
       <div className="container">
         <div className="columns">
           <div className="column is-offset-6 is-two-fifths">
-            <section className="hero has-text-grey">
+            <section className="has-text-grey">
               <div className="hero-body">
                 <h1 className="title is-spaced is-1">
                   <span className="has-text-weight-bold ">Bienvenue</span>{' '}

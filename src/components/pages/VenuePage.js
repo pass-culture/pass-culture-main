@@ -14,6 +14,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import ProviderManager from '../managers/ProviderManager'
 import offererSelector from '../../selectors/offerer'
@@ -121,13 +122,7 @@ class VenuePage extends Component {
         }}
         name="venue"
         handleDataRequest={this.handleDataRequest}>
-        <div className="section">
-          <h2 className="subtitle has-text-weight-bold">
-            {get(venuePatch, 'name')}
-          </h2>
-
-          <h1 className="main-title">Lieu</h1>
-
+        <HeroSection subtitle={get(venuePatch, 'name')} title="Lieu">
           {isNew && (
             <p className="subtitle">Ajoutez un lieu où accéder à vos offres.</p>
           )}
@@ -143,7 +138,7 @@ class VenuePage extends Component {
                 <span>Créer une offre</span>
               </NavLink>
             )}
-        </div>
+        </HeroSection>
 
         {!isNew && <ProviderManager venue={venuePatch} />}
 

@@ -14,6 +14,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import VenueItem from '../items/VenueItem'
 import Main from '../layout/Main'
 import offererSelector from '../../selectors/offerer'
@@ -65,16 +66,12 @@ class OffererPage extends Component {
         backTo={{ label: 'Vos structures', path: '/structures' }}
         name="offerer"
         handleDataRequest={this.handleDataRequest}>
-        <div className="section">
-          <h2 className="subtitle has-text-weight-bold">
-            {get(offerer, 'name')}
-          </h2>
-          <h1 className="main-title">Structure</h1>
+        <HeroSection subtitle={get(offerer, 'name')} title="Structure">
           <p className="subtitle">
             Détails de la structure rattachée, des lieux et des fournisseurs de
             ses offres.
           </p>
-        </div>
+        </HeroSection>
 
         <Form
           name="offerer"
