@@ -376,8 +376,7 @@ class OfferPage extends Component {
                     <Field
                       label={
                         <span>
-                          Rayonnement
-                          <br /> national
+                          Rayonnement<br /> national
                         </span>
                       }
                       name="isNational"
