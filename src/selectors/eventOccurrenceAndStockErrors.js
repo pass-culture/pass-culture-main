@@ -22,7 +22,6 @@ export default createSelector(
   (state, eventOccurrenceIdOrNew, stockIdOrNew) =>
     get(state, `errors.stock${stockIdOrNew}`),
   (eventOccurrenceErrors, stockErrors) => {
-    console.log('eventOccurrenceErrors', eventOccurrenceErrors)
     const errors = Object.assign({}, eventOccurrenceErrors, stockErrors)
     const e = Object.keys(errors)
       .filter(errorKeyToFrenchKey)

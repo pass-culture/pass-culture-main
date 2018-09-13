@@ -18,7 +18,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import eventSelector from '../../selectors/event'
-import eventOccurrenceSelector from '../../selectors/eventOccurrence'
+import eventOccurrencePatchSelector from '../../selectors/eventOccurrencePatch'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import offerSelector from '../../selectors/offer'
 import searchSelector from '../../selectors/search'
@@ -45,13 +45,18 @@ class EventOccurrenceAndStockItem extends Component {
   }
 
   onConfirmDeleteClick = () => {
-    const { dispatch, eventOccurrence, isStockOnly, stockPatch } = this.props
+    const {
+      dispatch,
+      eventOccurrencePatch,
+      isStockOnly,
+      stockPatch,
+    } = this.props
     dispatch(
       requestData(
         'DELETE',
         isStockOnly
           ? `stocks/${stockPatch.id}`
-          : `eventOccurrences/${eventOccurrence.id}`
+          : `eventOccurrences/${eventOccurrencePatch.id}`
       )
     )
   }
@@ -59,6 +64,7 @@ class EventOccurrenceAndStockItem extends Component {
   handleCrossingEndDatetime = () => {
     const {
       dispatch,
+      eventOccurrenceIdOrNew,
       formBeginningDatetime,
       formEndDatetime,
       isStockOnly,
@@ -69,7 +75,7 @@ class EventOccurrenceAndStockItem extends Component {
     console.log('ben alors', formBeginningDatetime, formEndDatetime)
     if (formEndDatetime < formBeginningDatetime) {
       dispatch(
-        mergeForm('eventOccurrence', {
+        mergeForm(`eventOccurrence${eventOccurrenceIdOrNew}`, {
           endDatetime: moment(formEndDatetime)
             .add(1, 'day')
             .toISOString(),
@@ -91,14 +97,14 @@ class EventOccurrenceAndStockItem extends Component {
   handleInitBookingLimitDatetime = () => {
     const {
       dispatch,
-      eventOccurrence,
+      eventOccurrencePatch,
       formBookingLimitDatetime,
       isStockOnly,
       isStockReadOnly,
     } = this.props
     if (
       isStockOnly ||
-      !get(eventOccurrence, 'id') ||
+      !get(eventOccurrencePatch, 'id') ||
       formBookingLimitDatetime ||
       isStockReadOnly
     ) {
@@ -106,7 +112,7 @@ class EventOccurrenceAndStockItem extends Component {
     }
     dispatch(
       mergeForm('stock', {
-        bookingLimitDatetime: moment(eventOccurrence.beginningDatetime)
+        bookingLimitDatetime: moment(eventOccurrencePatch.beginningDatetime)
           .subtract(2, 'day')
           .toISOString(),
       })
@@ -116,11 +122,11 @@ class EventOccurrenceAndStockItem extends Component {
   handleInitEndDatetime = () => {
     const {
       dispatch,
-      eventOccurrence,
+      eventOccurrencePatch,
       formBeginningDatetime,
       isStockOnly,
     } = this.props
-    if (isStockOnly || get(eventOccurrence, 'id')) {
+    if (isStockOnly || get(eventOccurrencePatch, 'id')) {
       return
     }
     dispatch(
@@ -143,14 +149,14 @@ class EventOccurrenceAndStockItem extends Component {
   handleNextDatetimes = () => {
     const {
       dispatch,
-      eventOccurrence,
+      eventOccurrencePatch,
       eventOccurrences,
       formBeginningDatetime,
       isStockOnly,
     } = this.props
     // add automatically a default beginninDatetime and a endDatetime
     // one day after the previous eventOccurrence
-    if (isStockOnly || get(eventOccurrence, 'id')) {
+    if (isStockOnly || get(eventOccurrencePatch, 'id')) {
       return
     }
     if (!formBeginningDatetime && get(eventOccurrences, 'length')) {
@@ -209,7 +215,7 @@ class EventOccurrenceAndStockItem extends Component {
 
   render() {
     const {
-      eventOccurrence,
+      eventOccurrencePatch,
       eventOccurrences,
       formBeginningDatetime,
       isEditing,
@@ -223,7 +229,7 @@ class EventOccurrenceAndStockItem extends Component {
     const { isDeleting } = this.state
 
     const beginningDatetime =
-      formBeginningDatetime || get(eventOccurrence, 'beginningDatetime')
+      formBeginningDatetime || get(eventOccurrencePatch, 'beginningDatetime')
 
     return (
       <Fragment>
@@ -233,12 +239,16 @@ class EventOccurrenceAndStockItem extends Component {
           })}>
           {!isStockOnly && (
             <Form
-              action={`/eventOccurrences/${get(eventOccurrence, 'id', '')}`}
+              action={`/eventOccurrences/${get(
+                eventOccurrencePatch,
+                'id',
+                ''
+              )}`}
               BlockComponent={null}
               handleSuccess={this.handleEventOccurrenceSuccessData}
               layout="input-only"
-              name={`eventOccurrence${get(eventOccurrence, 'id', '')}`}
-              patch={eventOccurrence}
+              name={`eventOccurrence${get(eventOccurrencePatch, 'id', '')}`}
+              patch={eventOccurrencePatch}
               readOnly={isEventOccurrenceReadOnly}
               size="small"
               Tag={null}>
@@ -374,7 +384,7 @@ class EventOccurrenceAndStockItem extends Component {
                 to={`/offres/${get(offer, 'id')}?gestion&${
                   isStockOnly
                     ? `stock=${get(stockPatch, 'id')}`
-                    : `date=${get(eventOccurrence, 'id')}`
+                    : `date=${get(eventOccurrencePatch, 'id')}`
                 }`}
                 className="button is-small is-secondary">
                 <span className="icon">
@@ -423,13 +433,13 @@ export default compose(
     const offer = offerSelector(state, offerId)
     const { eventId, venueId } = offer || {}
 
-    const eventOccurrence = eventOccurrenceSelector(
+    const eventOccurrencePatch = eventOccurrencePatchSelector(
       state,
       ownProps.eventOccurrence,
       ownProps.match.params.offerId,
       venueId
     )
-    const eventOccurrenceId = get(eventOccurrence, 'id')
+    const eventOccurrenceId = get(eventOccurrencePatch, 'id')
 
     const isEventOccurrenceReadOnly =
       !eventOccurrenceIdOrNew ||
@@ -470,7 +480,7 @@ export default compose(
     return {
       event: eventSelector(state, eventId),
       eventId,
-      eventOccurrence,
+      eventOccurrencePatch,
       eventOccurrences: eventOccurrencesSelector(state, venueId, eventId),
       eventOccurrenceIdOrNew,
       formBeginningDatetime: get(
