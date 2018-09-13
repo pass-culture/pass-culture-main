@@ -10,7 +10,7 @@ import { compose } from 'redux'
 import EventOccurrenceAndStockItem from '../items/EventOccurrenceAndStockItem'
 import eventSelector from '../../selectors/event'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
-import occurrenceErrorsSelector from '../../selectors/occurrenceErrors'
+import eventOccurrenceAndStocksErrorsSelector from '../../selectors/eventOccurrenceAndStockErrors'
 import offerSelector from '../../selectors/offer'
 import searchSelector from '../../selectors/search'
 import thingSelector from '../../selectors/thing'
@@ -185,10 +185,18 @@ export default compose(
     const thingId = get(offer, 'thingId')
     const thing = thingSelector(state, thingId)
 
-    console.log('EO', eventOccurrences)
     const stocks = stocksSelector(state, offerId, eventOccurrences)
 
-    const errors = occurrenceErrorsSelector(state)
+    console.log(
+      'eventOccurrenceIdOrNew, stockIdOrNew',
+      eventOccurrenceIdOrNew,
+      stockIdOrNew
+    )
+    const errors = eventOccurrenceAndStocksErrorsSelector(
+      state,
+      eventOccurrenceIdOrNew,
+      stockIdOrNew
+    )
 
     return {
       errors,

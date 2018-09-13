@@ -492,7 +492,7 @@ export default compose(
 
     const eventOccurrences = eventOccurrencesSelector(state, offerId)
 
-    const stocks = stocksSelector(state, offerId)
+    const stocks = stocksSelector(state, offerId, eventOccurrences)
 
     const url =
       get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
