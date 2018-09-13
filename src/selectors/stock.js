@@ -4,7 +4,7 @@ import stocksSelector from './stocks'
 
 export default createCachedSelector(
   (state, offerId, eventOccurrence) =>
-    stocksSelector(state, offerId, [eventOccurrence]),
+    stocksSelector(state, offerId, eventOccurrence && [eventOccurrence]),
   (state, offerId) => offerId,
   (stocks, offerId, eventOccurrence) => stocks && stocks[0]
 )(
