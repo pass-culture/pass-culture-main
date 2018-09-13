@@ -27,17 +27,39 @@ class BookFormat(enum.Enum):
 
 
 class ThingType(enum.Enum):
-    AUDIOVISUEL = {'label': "Audiovisuel (Films sur supports physiques et VOD)", 'offlineOnly': False, 'onlineOnly': False}
-    CINEMA_ABO = {'label': "Cinéma (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
-    JEUX_ABO = {'label': "Jeux (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
-    JEUX = {'label': "Jeux (Biens physiques)", 'offlineOnly': True, 'onlineOnly': False}
-    JEUX_VIDEO = {'label': "Jeux Vidéo", 'offlineOnly': False, 'onlineOnly': True}
-    LIVRE_EDITION = {'label': "Livre — Édition", 'offlineOnly': False, 'onlineOnly': False}
-    MUSEES_PATRIMOINE_ABO = {'label': "Musées — Patrimoine (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
-    MUSIQUE_ABO = {'label': "Musique (Abonnements concerts)", 'offlineOnly': True, 'onlineOnly': False}
-    MUSIQUE = {'label': "Musique (sur supports physiques ou en ligne)", 'offlineOnly': False, 'onlineOnly': False}
-    PRATIQUE_ARTISTIQUE_ABO = {'label': "Pratique Artistique (Abonnements)", 'offlineOnly': True, 'onlineOnly': False}
-    PRESSE_ABO = {'label': "Presse (Abonnements)", 'offlineOnly': False, 'onlineOnly': True}
+    AUDIOVISUEL = {
+    'label': "Audiovisuel (Films sur supports physiques et VOD)", 'offlineOnly': False, 'onlineOnly': False, 'sublabel': "Regarder"
+    }
+    CINEMA_ABO = {
+    'label': "Cinéma (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
+    }
+    JEUX_ABO = {
+    'label': "Jeux (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Jouer"
+    }
+    JEUX = {
+    'label': "Jeux (Biens physiques)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Jouer"
+    }
+    JEUX_VIDEO = {
+    'label': "Jeux Vidéo", 'offlineOnly': False, 'onlineOnly': True, 'sublabel': "Jouer"
+    }
+    LIVRE_EDITION = {
+    'label': "Livre — Édition", 'offlineOnly': False, 'onlineOnly': False, 'sublabel': "Lire"
+    }
+    MUSEES_PATRIMOINE_ABO = {
+    'label': "Musées — Patrimoine (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
+    }
+    MUSIQUE_ABO = {
+    'label': "Musique (Abonnements concerts)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Écouter"
+    }
+    MUSIQUE = {
+    'label': "Musique (sur supports physiques ou en ligne)", 'offlineOnly': False, 'onlineOnly': False, 'sublabel': "Écouter"
+    }
+    PRATIQUE_ARTISTIQUE_ABO = {
+    'label': "Pratique Artistique (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Pratiquer"
+    }
+    PRESSE_ABO = {
+    'label': "Presse (Abonnements)", 'offlineOnly': False, 'onlineOnly': True, 'sublabel': "Lire"
+    }
 
 
 class Thing(PcObject,
