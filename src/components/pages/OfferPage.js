@@ -375,11 +375,7 @@ class OfferPage extends Component {
                   )}
                   {get(user, 'isAdmin') && (
                     <Field
-                      label={
-                        <span>
-                          Rayonnement<br /> national
-                        </span>
-                      }
+                      label="Rayonnement national"
                       name="isNational"
                       type="checkbox"
                     />

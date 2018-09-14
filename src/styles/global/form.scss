@@ -78,6 +78,7 @@
   }
 
   &.is-horizontal {
+    &.field-checkbox,
     &.field-email,
     &.field-select,
     &.field-siren,
@@ -138,11 +139,15 @@
         border-radius: $control-radius;
       }
 
-      .control:not(.is-expanded) {
+      .control:not(.is-expanded):not(.control-checkbox) {
         input,
         .select {
           width: auto;
         }
+      }
+
+      .control-checkbox {
+        margin-top: 0.5rem;
       }
     }
   }
@@ -194,7 +199,7 @@ input.input,
 textarea.textarea {
   font-weight: 500;
 
-  &[readonly] {
+  &[readonly]:not([type='checkbox']) {
     border: none;
     background-color: transparent;
     padding-left: 0.125rem;
