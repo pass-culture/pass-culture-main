@@ -144,7 +144,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
     if booking.stock.eventOccurrence:
         date_in_tz = _get_event_datetime(booking.stock)
         stock_date_time = format_datetime(date_in_tz)
-    email_html = render_template('offerer_recap_email_after_offerer_action.html',
+    email_html = render_template('mails/offerer_recap_email_after_offerer_action.html',
                                  user_name=user_name,
                                  user_email=user_email,
                                  stock_date_time=stock_date_time,
@@ -169,7 +169,7 @@ def _generate_offerer_driven_cancellation_email_for_user_thing(booking):
     offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
     booking_value = booking.amount * booking.quantity
     user_public_name = booking.user.publicName
-    email_html = render_template('user_cancellation_by_offerer_email_thing.html',
+    email_html = render_template('mails/user_cancellation_by_offerer_email_thing.html',
                                  user_public_name=user_public_name,
                                  offer_name=offer_name,
                                  offerer_name=offerer_name,
@@ -187,7 +187,7 @@ def _generate_offerer_driven_cancellation_email_for_user_event(booking):
     user_public_name = booking.user.publicName
     date_in_tz = _get_event_datetime(booking.stock)
     formatted_datetime = format_datetime(date_in_tz)
-    email_html = render_template('user_cancellation_by_offerer_email_event.html',
+    email_html = render_template('mails/user_cancellation_by_offerer_email_event.html',
                                  user_public_name=user_public_name,
                                  offer_name=offer_name,
                                  event_date=formatted_datetime,

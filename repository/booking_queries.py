@@ -1,18 +1,14 @@
 from flask import render_template
-from postgresql_audit.flask import versioning_manager
-from datetime import datetime
-
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
-from models import Booking, Stock, EventOccurrence, Offer, Venue, User, PcObject, ApiErrors
+from models import PcObject, ApiErrors
 
 
 class BookingNotFound(ApiErrors):
     pass
-from models import Booking, Stock, EventOccurrence, Offer, Venue, Offerer, User
-from sqlalchemy import func, distinct, text, union
-from models.db import db
+
+
 from models import Booking, Stock, EventOccurrence, User, Venue
 from models import Offer
 from models.db import db
@@ -108,3 +104,11 @@ def find_bookings_in_date_range_for_given_user_or_venue_departement(booking_date
                             event_date_max=event_date_max, event_date_min=event_date_min,
                             user_department=user_department, venue_department=venue_department)
     return db.engine.execute(query).fetchall()
+
+
+def find_by_id(booking_id):
+    return Booking.query.filter_by(id=booking_id).first_or_404()
+
+
+def find_all_ongoing_bookings_by_stock(stock):
+    return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()

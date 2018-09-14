@@ -99,10 +99,10 @@ def test_find_bookings_stats_per_department(app):
     stock6 = create_stock_with_thing_offer(offerer, venue93, thing_offer, price=0)
     booking6 = create_booking(user4, stock6, venue93, recommendation=None)
 
-    cancelled_booking = create_booking(user1, stock1, venue34, fill_stock_bookings=False)
+    cancelled_booking = create_booking(user1, stock1, venue34)
     cancelled_booking.isCancelled = True
 
-    booking_cant_book_free_offers = create_booking(user5, stock1, venue34, fill_stock_bookings=False)
+    booking_cant_book_free_offers = create_booking(user5, stock1, venue34)
 
     PcObject.check_and_save(booking1, booking2, booking3, booking4, booking5, booking6, cancelled_booking,
                             booking_cant_book_free_offers)
@@ -256,14 +256,14 @@ def _create_bookings_for_test():
     stock_event_out_of_date = create_stock_with_event_offer(offerer, venue_75, price=0)
     stock_event_out_of_date.eventOccurrence.beginningDatetime = datetime(2018, 6, 21)
     stock_event_out_of_date.bookingLimitDatetime = datetime(2018, 6, 20)
-    booking_thing_OK = create_booking(user_93, stock_thing, venue_75, fill_stock_bookings=False)
-    booking_event_OK = create_booking(user_93, stock_event, venue_75, fill_stock_bookings=False)
-    booking_thing_stock_34 = create_booking(user_93, stock_thing_34, venue_34, fill_stock_bookings=False)
-    booking_event_out_of_date = create_booking(user_93, stock_event_out_of_date, venue_75, fill_stock_bookings=False)
-    booking_user_34 = create_booking(user_34, stock_event, venue_75, fill_stock_bookings=False)
+    booking_thing_OK = create_booking(user_93, stock_thing, venue_75)
+    booking_event_OK = create_booking(user_93, stock_event, venue_75)
+    booking_thing_stock_34 = create_booking(user_93, stock_thing_34, venue_34)
+    booking_event_out_of_date = create_booking(user_93, stock_event_out_of_date, venue_75)
+    booking_user_34 = create_booking(user_34, stock_event, venue_75)
     booking_user_cant_book_free_offers = create_booking(user_cant_book_free_offers, stock_thing, venue_75,
-                                                        fill_stock_bookings=False)
-    booking_activity_out_of_date = create_booking(user_93_2, stock_thing, venue_75, fill_stock_bookings=False)
+                                                )
+    booking_activity_out_of_date = create_booking(user_93_2, stock_thing, venue_75)
     return booking_activity_out_of_date, booking_event_OK, booking_event_out_of_date, booking_thing_OK, booking_thing_stock_34, booking_user_34, booking_user_cant_book_free_offers
 
 
