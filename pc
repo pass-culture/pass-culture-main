@@ -195,7 +195,7 @@ elif [[ "$CMD" == "install" ]]; then
 			 ./pc symlink;
 			 cd $ROOT_PATH/shared && yarn install;
        cd $ROOT_PATH/webapp && yarn;
-			 cd $ROOT_PATH/pro && yarn
+			 cd $ROOT_PATH/pro && yarn;
 	   ./pc install-private'
 elif [[ "$CMD" == "install-private" ]]; then
   RUN='cd $ROOT_PATH/api;
@@ -203,6 +203,9 @@ elif [[ "$CMD" == "install-private" ]]; then
             gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg;
             tar xf private.tar.gz;
             rm private.tar.gz'
+elif [[ "$CMD" == "install-hooks" ]]; then
+    RUN='cd $ROOT_PATH;
+            ln -s -f ../../../../hooks/pre-push .git/modules/api/hooks/pre-push'
 elif [[ "$CMD" == "install-geoip" ]]; then
 	RUN='wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz;
 	 		 gzip -df GeoLite2-City.mmdb.gz;
