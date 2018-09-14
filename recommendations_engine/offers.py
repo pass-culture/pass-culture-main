@@ -57,9 +57,9 @@ def score_offer(offer):
     common_score += randint(0, 10)
 
     if isinstance(offer.eventOrThing, Event):
-        specific_score = specific_score_event(offer)
+        specific_score = specific_score_event(offer.eventOrThing)
     else:
-        specific_score = specific_score_thing(offer)
+        specific_score = specific_score_thing(offer.eventOrThing)
 
     if specific_score is None:
         return None

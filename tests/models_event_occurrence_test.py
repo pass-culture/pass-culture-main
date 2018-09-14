@@ -43,10 +43,10 @@ def test_soft_deleted_stocks_do_not_appear_in_asdict(app):
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
     event_occurrence = create_event_occurrence(offer)
-    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence)
-    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence)
-    stock3 = create_stock_from_event_occurrence(offerer, event_occurrence)
-    stock4 = create_stock_from_event_occurrence(offerer, event_occurrence)
+    stock1 = create_stock_from_event_occurrence(event_occurrence)
+    stock2 = create_stock_from_event_occurrence(event_occurrence)
+    stock3 = create_stock_from_event_occurrence(event_occurrence)
+    stock4 = create_stock_from_event_occurrence(event_occurrence)
     stock4.isSoftDeleted = True
     PcObject.check_and_save(stock1, stock2, stock3, stock4)
 

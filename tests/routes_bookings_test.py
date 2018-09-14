@@ -529,7 +529,7 @@ def test_get_booking_by_token_when_user_has_rights(app):
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     booking = create_booking(user, stock)
     date = serialize(event_occurrence.beginningDatetime)
 
@@ -560,7 +560,7 @@ def test_get_booking_by_token_when_user_doesnt_have_rights(app):
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     booking = create_booking(user, stock)
 
     PcObject.check_and_save(querying_user, booking, event_occurrence)
@@ -598,7 +598,7 @@ def test_get_booking_by_token_when_not_logged_in_and_doesnt_give_email(app):
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     booking = create_booking(user, stock)
     date = serialize(event_occurrence.beginningDatetime)
 
@@ -624,7 +624,7 @@ def test_get_booking_by_token_when_user_does_not_have_rights_in_and_give_right_e
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     booking = create_booking(user, stock)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
@@ -646,7 +646,7 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     booking = create_booking(user, stock)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
@@ -709,7 +709,7 @@ def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=0)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     booking = create_booking(user, stock)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)

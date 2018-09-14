@@ -63,7 +63,7 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_from_offer(offerer, create_event_offer(venue))
+    stock = create_stock_from_offer(create_event_offer(venue))
     stock.isSoftDeleted = True
     PcObject.check_and_save(stock)
     # When

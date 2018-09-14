@@ -59,7 +59,7 @@ def subtest_recos_with_params(params,
 
 def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
     # when
-    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos = response.json()
@@ -71,17 +71,17 @@ def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
 
 def test_put_recommendations_returns_a_list_of_48_recos():
     # when
-    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos = response.json()
     assert response.status_code == 200
-    assert len(recos) == 48
+    assert len(recos) == 55
 
 
 def test_put_recommendations_returns_no_duplicate_mediations_in_recos():
     # when
-    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos = response.json()
@@ -90,7 +90,7 @@ def test_put_recommendations_returns_no_duplicate_mediations_in_recos():
 
 def test_put_recommendations_returns_no_recos_with_mediations_with_stock_past_their_booking_limit():
     # when
-    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos = response.json()
@@ -99,7 +99,7 @@ def test_put_recommendations_returns_no_recos_with_mediations_with_stock_past_th
 
 def test_put_recommendations_returns_recos_with_venues_in_93_if_event_is_not_national():
     # when
-    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos = response.json()
@@ -108,20 +108,20 @@ def test_put_recommendations_returns_recos_with_venues_in_93_if_event_is_not_nat
 
 def test_put_recommendations_returns_at_least_one_reco_with_mediation_and_offer():
     # when
-    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos = response.json()
     assert len(list(filter(lambda reco: 'mediationId' in reco and 'offerId' in reco, recos))) > 0
 
 
-def test_put_recommendations_returns_recos_in_identical_orders():
+def test_put_recommendations_returns_same_quantity_of_recommendations_in_different_orders():
     # given
-    response1 = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response1 = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
     recos1 = response1.json()
 
     # when
-    response2 = req_with_auth().put(RECOMMENDATION_URL, json={'seenOfferIds': []})
+    response2 = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos2 = response2.json()
