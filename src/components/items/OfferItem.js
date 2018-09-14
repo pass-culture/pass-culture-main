@@ -171,7 +171,7 @@ class OccasionItem extends Component {
             <li>
               <NavLink
                 to={`/offres/${offer.id}`}
-                className="button is-secondary is-small">
+                className="button is-secondary is-small editLink">
                 <Icon svg="ico-pen-r" />
                 Modifier
               </NavLink>

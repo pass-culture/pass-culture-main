@@ -1,4 +1,5 @@
 li.offer-item {
+
   img {
     max-height: 100px;
   }
@@ -35,6 +36,16 @@ li.offer-item {
       }
     }
 
+    li:last-child {
+      margin-top: 5px;
+    }
+
+    .editLink {
+      border-right: 1px solid #EFEFF4;
+      padding-right: 10px;
+      margin-right: 10px;
+    }
+
     .button.addMediations {
       margin-top: 5px;
     }
@@ -48,4 +59,9 @@ li.offer-item {
       display: inline;
     }
   }
+}
+
+
+ul.main-list li.offer-item {
+  padding-bottom: 0.6rem;
 }
