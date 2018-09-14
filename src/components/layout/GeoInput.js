@@ -210,7 +210,7 @@ class GeoInput extends Component {
     const { latitude, longitude, zoom } = position
 
     return (
-      <div className="form-geo">
+      <div className="geo-input">
         {$input}
         <Map center={[latitude, longitude]} zoom={zoom} className="map">
           <TileLayer

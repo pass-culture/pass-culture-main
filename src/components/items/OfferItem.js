@@ -105,11 +105,14 @@ class OccasionItem extends Component {
                     : `entre ${groupSizeMin} et ${groupSizeMax} personnes`
                   : undefined
               }>
-              {groupSizeMin === 0 && (
+              {
+                // DISABLE GROUP SIZE AMBIGUITY FOR THE MOMENT
+                /*groupSizeMin === 0 && (
                 <div>
                   <Icon svg="picto-user" /> {'ou '} <Icon svg="picto-group" />
                 </div>
-              )}
+                )*/
+              }
               {groupSizeMin === 1 && <Icon svg="picto-user" />}
               {groupSizeMin > 1 && (
                 <div>
@@ -187,7 +190,7 @@ export default compose(
   connect(
     () => {
       return (state, ownProps) => {
-        const { id, eventId, thingId, venueId } = ownProps.offer
+        const { id, eventId, thingId } = ownProps.offer
         const event = eventSelector(state, eventId)
         const thing = thingSelector(state, thingId)
         const typeValue = get(event, 'type') || get(thing, 'type')

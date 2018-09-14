@@ -9,6 +9,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import UploadThumb from '../layout/UploadThumb'
 import { apiUrl } from '../../utils/config'
@@ -28,9 +29,7 @@ class ProfilePage extends Component {
 
     return (
       <Main name="profile" backTo={{ path: '/accueil', label: 'Accueil' }}>
-        <div className="section">
-          <h1 className="main-title">Profil</h1>
-        </div>
+        <HeroSection title="Profil" />
         <Form
           action="users/me"
           className="section"

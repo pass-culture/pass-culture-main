@@ -8,6 +8,7 @@ import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
 import EventOccurrenceAndStockItem from '../items/EventOccurrenceAndStockItem'
+import HeroSection from '../layout/HeroSection'
 import eventSelector from '../../selectors/event'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import eventOccurrenceAndStocksErrorsSelector from '../../selectors/eventOccurrenceAndStockErrors'
@@ -52,13 +53,14 @@ class EventOccurrencesAndStocksManager extends Component {
           </div>
         )}
         <div className="event-occurrences-and-stocks-table-wrapper">
-          <div className="subtitle has-text-weight-bold has-text-left is-uppercase">
-            {get(event, 'name')}
-          </div>
-          <div className="main-title has-text-left">
-            {get(event, 'id') && 'Dates, horaires et prix'}
-            {get(thing, 'id') && 'Prix'}
-          </div>
+          <HeroSection
+            title={
+              get(event, 'id')
+                ? 'Dates, horaires et prix'
+                : get(thing, 'id') && 'Prix'
+            }
+            subtitle={get(event, 'name')}
+          />
           <table
             className={classnames(
               'table is-hoverable event-occurrences-and-stocks-table',

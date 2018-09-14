@@ -1,7 +1,8 @@
 .event-occurrence-and-stock-item {
   display: table-row;
   td {
-    vertical-align: baseline;
+    vertical-align: middle;
+
     .input {
       min-width: 75px;
 
@@ -9,12 +10,12 @@
         min-width: 100px;
       }
 
-      &[type='time'] {
-        padding-left: 2rem;
-      }
-
       &[readonly] {
         text-align: center;
+      }
+
+      &[type='time'] {
+        margin-left: 0.75rem;
       }
     }
   }

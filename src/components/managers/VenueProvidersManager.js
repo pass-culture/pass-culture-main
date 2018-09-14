@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   Field,
@@ -126,7 +127,7 @@ class ProviderManager extends Component {
     const { isNew, withError } = this.state
 
     return (
-      <div className="provider-manager section">
+      <div className="venue-providers-manager section">
         <h2 className="main-list-title">
           IMPORTATIONS D'OFFRES
           <span className="is-pulled-right is-size-7 has-text-grey">
@@ -134,7 +135,10 @@ class ProviderManager extends Component {
             successivement.
           </span>
         </h2>
-        <ul className="main-list">
+        <ul
+          className={classnames('main-list', {
+            'is-marginless': !get(venueProviders, 'lenght') && !isNew,
+          })}>
           {venueProviders.map((vp, index) => (
             <VenueProviderItem venue={venue} venueProvider={vp} key={vp.id} />
           ))}

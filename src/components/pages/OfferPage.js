@@ -17,11 +17,13 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
-import MediationManager from '../managers/MediationManager'
+import MediationsManager from '../managers/MediationsManager'
 import EventOccurrencesAndStocksManager from '../managers/EventOccurrencesAndStocksManager'
 import eventSelector from '../../selectors/event'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
+import eventOrThingPatchSelector from '../../selectors/eventOrThingPatch'
 import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
@@ -224,6 +226,7 @@ class OfferPage extends Component {
     const {
       event,
       eventOccurrences,
+      eventOrThingPatch,
       hasEventOrThing,
       location: { search },
       offer,
@@ -241,35 +244,31 @@ class OfferPage extends Component {
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
 
     const showAllForm = type || !isNew
+    const eventOrThingName = get(event, 'name') || get(thing, 'name')
 
     return (
       <Main
         backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
         name="offer"
         handleDataRequest={this.handleDataRequest}>
-        <div className="section">
-          <h1 className="main-title">
-            {isNew ? 'Ajouter une offre' : "Détails de l'offre"}
-          </h1>
+        <HeroSection
+          subtitle={eventOrThingName && eventOrThingName.toUpperCase()}
+          title={isNew ? 'Ajouter une offre' : "Détails de l'offre"}>
           <p className="subtitle">
             Renseignez les détails de cette offre, puis mettez-la en avant en
             ajoutant une ou plusieurs accroches.
           </p>
+
           <p className="subtitle">
             Attention : les offres payantes ne seront visibles auprès du public
             qu’à partir du début de l’expérimentation.
           </p>
+
           <Form
             action={apiPath}
             name="offer"
             handleSuccess={this.handleSuccess}
-            patch={Object.assign(
-              {
-                offererId: get(offerer, 'id'),
-                venueId: get(venue, 'id'),
-              },
-              event || thing
-            )}
+            patch={eventOrThingPatch}
             readOnly={isReadOnly}>
             <div className="field-group">
               <Field isExpanded label="Titre de l'offre" name="name" required />
@@ -283,11 +282,9 @@ class OfferPage extends Component {
                 required
                 type="select"
               />
-            </div>
-            {!isNew &&
-              hasEventOrThing && (
-                <div className="field">
-                  <div className="field form-field is-horizontal">
+              {!isNew &&
+                hasEventOrThing && (
+                  <div className="field is-horizontal field-text">
                     <div className="field-label">
                       <label className="label" htmlFor="input_offers_name">
                         <div className="subtitle">
@@ -296,8 +293,12 @@ class OfferPage extends Component {
                       </label>
                     </div>
                     <div className="field-body">
-                      <div className="field">
-                        <div className="nb-dates">
+                      <div
+                        className="control"
+                        style={{ paddingTop: '0.25rem' }}>
+                        <span
+                          className="nb-dates"
+                          style={{ paddingTop: '0.25rem' }}>
                           {pluralize(
                             get(
                               isEventType ? eventOccurrences : stocks,
@@ -305,7 +306,7 @@ class OfferPage extends Component {
                             ),
                             isEventType ? 'date' : 'stock'
                           )}
-                        </div>
+                        </span>
                         <NavLink
                           className="button is-primary is-outlined is-small"
                           to={`/offres/${get(offer, 'id')}?gestion`}>
@@ -321,9 +322,9 @@ class OfferPage extends Component {
                       </div>
                     </div>
                   </div>
-                  <MediationManager />
-                </div>
-              )}
+                )}
+            </div>
+            <MediationsManager />
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
@@ -394,11 +395,13 @@ class OfferPage extends Component {
                 <h2 className="main-list-title">Infos artistiques</h2>
                 <div className="field-group">
                   <Field
+                    class
                     displayMaxLength
                     isExpanded
                     label="Description"
                     maxLength={1000}
                     name="description"
+                    rows={isReadOnly ? 1 : 5}
                     type="textarea"
                   />
                   <Field name="author" label="Auteur" isExpanded />
@@ -448,7 +451,7 @@ class OfferPage extends Component {
               </div>
             </div>
           </Form>
-        </div>
+        </HeroSection>
       </Main>
     )
   }
@@ -501,9 +504,18 @@ export default compose(
 
     const hasEventOrThing = event || thing
 
+    const eventOrThingPatch = eventOrThingPatchSelector(
+      state,
+      event,
+      thing,
+      offerer,
+      venue
+    )
+
     return {
       event,
       eventOccurrences,
+      eventOrThingPatch,
       hasEventOrThing,
       providers,
       search,

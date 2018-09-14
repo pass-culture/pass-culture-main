@@ -5,7 +5,6 @@ import AccoutingPage from '../components/pages/AccountingPage'
 import CounterPage from '../components/pages/CounterPage'
 import HomePage from '../components/pages/HomePage'
 import MediationPage from '../components/pages/MediationPage'
-import MediationsPage from '../components/pages/MediationsPage'
 import OffersPage from '../components/pages/OffersPage'
 import OfferPage from '../components/pages/OfferPage'
 import OffererPage from '../components/pages/OffererPage'
@@ -95,11 +94,6 @@ const routes = [
     component: OfferPage,
     path: '/structures/:offererId/lieux/:venueId/offres/:offerId',
     title: 'Offres',
-  },
-  {
-    component: MediationsPage,
-    path: '/offres/:offerId/accroches',
-    title: 'Accroches',
   },
   {
     component: ProfilePage,

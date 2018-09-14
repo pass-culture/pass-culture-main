@@ -14,6 +14,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import OfferItem from '../items/OfferItem'
 import Main from '../layout/Main'
 import offersSelector from '../../selectors/offers'
@@ -60,17 +61,14 @@ class OffersPage extends Component {
     const [orderBy, orderDirection] = (order_by || '').split('+')
     return (
       <Main name="offers" handleDataRequest={this.handleDataRequest}>
-        <div className="section">
-          <NavLink
-            to={`/offres/nouveau`}
-            className="button is-primary is-medium is-pulled-right">
+        <HeroSection title="Vos offres">
+          <NavLink to={`/offres/nouveau`} className="cta button is-primary">
             <span className="icon">
               <Icon svg="ico-offres-w" />
             </span>
             <span>Créer une offre</span>
           </NavLink>
-          <h1 className="main-title">Vos offres</h1>
-        </div>
+        </HeroSection>
         <form className="section" onSubmit={handleSearchChange}>
           <label className="label">Rechercher une offre :</label>
           <div className="field is-grouped">
