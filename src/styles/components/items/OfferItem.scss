@@ -34,5 +34,18 @@ li.offer-item {
         margin-right: inherit;
       }
     }
+
+    .button.addMediations {
+      margin-top: 5px;
+    }
+  }
+
+  ul {
+    border-top: 1px solid #EFEFF4;
+
+    li, .label {
+      font-size: 0.82rem;
+      display: inline;
+    }
   }
 }
