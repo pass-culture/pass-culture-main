@@ -26,6 +26,7 @@ def list_offerers():
     return handle_rest_get_list(Offerer,
                                 include=OFFERER_INCLUDES,
                                 order_by=Offerer.name,
+                                page=request.args.get('page'),
                                 paginate=10,
                                 query=query
                                 )
