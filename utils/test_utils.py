@@ -467,7 +467,7 @@ def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow
     activity.verb = verb
     variables = {"id": booking.id, "token": booking.token, "userId": booking.userId, "stockId": booking.stockId,
                  "isCancelled": booking.isCancelled, "quantity": booking.quantity,
-                 "recommendationId": booking.recommendationId, "isValidated": booking.isValidated}
+                 "recommendationId": booking.recommendationId, "isUsed": booking.isUsed}
     activity.changed_data = variables
     return activity
 
